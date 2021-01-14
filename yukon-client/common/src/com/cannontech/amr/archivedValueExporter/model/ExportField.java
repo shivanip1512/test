@@ -172,7 +172,7 @@ public class ExportField implements Displayable {
                 }
             }
             if (!patternFound)
-                fieldValue = FieldValue.valueOf("DEFAULT");
+                fieldValue = FieldValue.DEFAULT;
         }
         return fieldValue;
     }

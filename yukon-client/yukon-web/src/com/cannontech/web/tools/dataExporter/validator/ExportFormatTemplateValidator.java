@@ -28,11 +28,27 @@ import com.google.common.collect.ImmutableList;
 
 public class ExportFormatTemplateValidator extends ExportFormatValidator {
 
-    private final Logger log = YukonLogManager.getLogger(ExportFormatTemplateValidator.class);
-    private final String invalidKey = "yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.invalid";
-    private final String requiredKey = "yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.required";
-    private final String notApplicableKey = "yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.notApplicable";
-    List<Field> fields = new ArrayList<Field>();
+    private static final Logger log = YukonLogManager.getLogger(ExportFormatTemplateValidator.class);
+    private static final String invalidKey = "yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.invalid";
+    private static final String requiredKey = "yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.required";
+    private static final String notApplicableKey = "yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.notApplicable";
+    private static final String fieldId = "fieldId";
+    private static final String field = "field";
+    private static final String formatId = "formatId";
+    private static final String attributeField = "attributeField";
+    private static final String readingPattern = "readingPattern";
+    private static final String timestampPattern = "timestampPattern";
+    private static final String maxLength = "maxLength";
+    private static final String padChar = "padChar";
+    private static final String padSide = "padSide";
+    private static final String roundingMode = "roundingMode";
+    private static final String missingAttribute = "missingAttribute";
+    private static final String missingAttributeValue = "missingAttributeValue";
+    private static final String pattern = "pattern";
+    private static final String fieldValue = "fieldValue";
+    private static final String attribute = "attribute";
+
+    private List<Field> fields = new ArrayList<Field>();
     private List<String> ignoredFields = new ArrayList<String>();
     private List<String> defaultedFieldNames = new ArrayList<String>();
 
@@ -43,15 +59,15 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
     public void init() {
         fields = FieldUtils.getAllFieldsList(ExportField.class);
         ImmutableList.Builder<String> builder = ImmutableList.builder();
-        builder.add("fieldId");
-        builder.add("formatId");
+        builder.add(fieldId);
+        builder.add(formatId);
         ignoredFields = builder.build();
         builder = ImmutableList.builder();
-        builder.add("readingPattern");
-        builder.add("timestampPattern");
-        builder.add("padSide");
-        builder.add("maxLength");
-        builder.add("missingAttribute");
+        builder.add(readingPattern);
+        builder.add(timestampPattern);
+        builder.add(padSide);
+        builder.add(maxLength);
+        builder.add(missingAttribute);
         defaultedFieldNames = builder.build();
     }
 
@@ -110,7 +126,7 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
      */
     private void validateAttributeFields(ExportField exportField, List<ExportAttribute> attributes, Errors errors) {
         if (exportField.getField().getAttribute() == null) {
-            errors.rejectValue("field.attribute", requiredKey, new Object[] { "attribute", FieldType.ATTRIBUTE }, "");
+            errors.rejectValue("field.attribute", requiredKey, new Object[] { attribute, FieldType.ATTRIBUTE }, "");
         } else {
             ExportAttribute exportAttribute = exportField.getField().getAttribute();
             boolean isValidField = false;
@@ -121,7 +137,7 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
                 }
             }
             if (!isValidField) {
-                errors.rejectValue("field.attribute", invalidKey, new Object[] { "attribute" }, "");
+                errors.rejectValue("field.attribute", invalidKey, new Object[] { attribute }, "");
             }
 
         }
@@ -142,43 +158,43 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
         case POINT_STATE:
         case UNIT_OF_MEASURE:
         case POINT_QUALITY:
-            checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                    "missingAttributeValue");
+            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
+                    missingAttributeValue);
             break;
         case ATTRIBUTE:
             if (exportField.getAttributeField() == AttributeField.POINT_STATE
                     || exportField.getAttributeField() == AttributeField.UNIT_OF_MEASURE
                     || exportField.getAttributeField() == AttributeField.QUALITY) {
-                checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                        "missingAttributeValue", "attributeField");
+                checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
+                        missingAttributeValue, attributeField);
             } else if (exportField.getAttributeField() == AttributeField.TIMESTAMP) {
-                checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                        "missingAttributeValue", "timestampPattern", "attributeField");
+                checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
+                        missingAttributeValue, timestampPattern, attributeField);
             } else if (exportField.getAttributeField() == AttributeField.VALUE) {
-                checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                        "missingAttributeValue", "readingPattern", "roundingMode", "attributeField");
+                checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
+                        missingAttributeValue, readingPattern, roundingMode, attributeField);
             }
             break;
         case ATTRIBUTE_NAME:
-            checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                    "missingAttributeValue", "fieldValue");
+            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
+                    missingAttributeValue, fieldValue);
             break;
         case DEVICE_TYPE:
-            checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar");
+            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar);
             break;
         case PLAIN_TEXT:
-            checkIfFieldApplicable(exportField, errors, "field");
+            checkIfFieldApplicable(exportField, errors, field);
             break;
         case POINT_TIMESTAMP:
-            checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                    "missingAttributeValue", "timestampPattern");
+            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
+                    missingAttributeValue, timestampPattern);
             break;
         case POINT_VALUE:
-            checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                    "missingAttributeValue", "readingPattern", "roundingMode");
+            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
+                    missingAttributeValue, readingPattern, roundingMode);
             break;
         case RUNTIME:
-            checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "timestampPattern");
+            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, timestampPattern);
             break;
         }
 
@@ -197,32 +213,31 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
                     field.setAccessible(true);
                     Object fieldValue = field.get(exportField);
                     String fieldName = field.getName();
-                    if (applicableFieldList.contains(fieldName) && fieldName.equals("readingPattern")) {
+                    if (applicableFieldList.contains(fieldName) && fieldName.equals(readingPattern)) {
                         if (exportField.getReadingPattern() == ReadingPattern.CUSTOM
                                 && StringUtils.isEmpty(exportField.getPattern())) {
-                            if (!errors.hasFieldErrors("pattern")) {
-                                errors.rejectValue("pattern", requiredKey, new Object[] { "pattern", type }, "");
+                            if (!errors.hasFieldErrors(pattern)) {
+                                errors.rejectValue(pattern, requiredKey, new Object[] { pattern, type }, "");
                             }
                         }
                         continue;
                     }
 
-                    if (applicableFieldList.contains(fieldName) && (fieldName.equals("padSide") || fieldName.equals("padChar"))) {
+                    if (applicableFieldList.contains(fieldName) && (fieldName.equals(padSide) || fieldName.equals(padChar))) {
                         if (exportField.getPadSide() != PadSide.NONE && exportField.getPadChar() == null) {
-                            if (!errors.hasFieldErrors("padChar")) {
-                                errors.rejectValue("padChar", requiredKey, new Object[] { "padChar", type }, "");
+                            if (!errors.hasFieldErrors(padChar)) {
+                                errors.rejectValue(padChar, requiredKey, new Object[] { padChar, type }, "");
                             }
                         }
                         continue;
                     }
                     if (applicableFieldList.contains(fieldName)
-                            && (fieldName.equals("missingAttribute") || fieldName.equals("missingAttributeValue"))) {
+                            && (fieldName.equals(missingAttribute) || fieldName.equals(missingAttributeValue))) {
                         if (exportField.getMissingAttribute() == MissingAttribute.FIXED_VALUE
                                 && exportField.getMissingAttributeValue() == null) {
-                            if (!errors.hasFieldErrors("missingAttributeValue")) {
-                                errors.rejectValue("missingAttributeValue", requiredKey,
-                                        new Object[] { "missingAttributeValue", type },
-                                        "");
+                            if (!errors.hasFieldErrors(missingAttributeValue)) {
+                                errors.rejectValue(missingAttributeValue, requiredKey,
+                                        new Object[] { missingAttributeValue, type }, "");
                             }
                         }
                         continue;
@@ -250,7 +265,7 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
      * pattern is auto populated or not.
      */
     private boolean isNotAutoPopulatedField(String fieldName, ExportField exportField) {
-        if (fieldName.equals("pattern")) {
+        if (fieldName.equals(pattern)) {
             return !(exportField.getField().getType() == FieldType.POINT_TIMESTAMP
                     || exportField.getField().getType() == FieldType.POINT_VALUE
                     || exportField.getField().getType() == FieldType.RUNTIME
