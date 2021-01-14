@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -89,18 +88,7 @@ public class HighChartServiceImpl implements HighChartService {
         long xAxisMax = stop.getMillis() + TimeZone.getDefault().getOffset(stop.getMillis());
         xaxisOptions.put(HighChartOptionKey.MIN.getKey(), xAxisMin);
         xaxisOptions.put(HighChartOptionKey.MAX.getKey(), xAxisMax);
-        
-        Duration duration = new Duration(start.getMillis(), stop.getMillis());
-        String dateTimeFormat = HighChartOptionKey.DATE_FORMAT_MONTH_DATE.getKey();
-        if (duration.getStandardDays() > 365) {
-            dateTimeFormat = HighChartOptionKey.DATE_FORMAT_MONTH_YEAR.getKey();
-        } else if (duration.getStandardDays() <= 1) {
-            dateTimeFormat = HighChartOptionKey.DATE_TIME_FORMAT_HOUR_MINUTE.getKey();
-        } else if (duration.getStandardDays() > 1 && duration.getStandardDays() <= 31) {
-            dateTimeFormat = HighChartOptionKey.DATE_TIME_FORMAT_DATE_MONTH_HOUR_MINUTE.getKey();
-        }
-        xaxisOptions.put("datetimeFormat", dateTimeFormat);
-        
+
         Map<String, Object> dataAndOptions = Maps.newHashMap();
         dataAndOptions.put("seriesDetails", seriesList);
         dataAndOptions.put(HighChartOptionKey.X_AXIS.getKey(), xaxisOptions);
