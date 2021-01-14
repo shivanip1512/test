@@ -107,19 +107,6 @@ public class YukonValidationUtilsCommon extends ValidationUtils {
     }
 
     /**
-     * FieldValue must be not empty.
-     * 
-     * @param field           - model object name
-     * @param fieldValue      - value of field
-     * @param messageArg      - field name text for error message
-     * @param fieldAllowsNull
-    
-    public static boolean checkIsBlank(String fieldValue, boolean fieldAllowsNull) {
-        return (!(fieldAllowsNull && fieldValue == null) && StringUtils.isBlank(fieldValue)) ? true : false;
-          //  errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { messageArg }, "");
-    } */
-
-    /**
      * Check if fieldValue <= targetValue
      * 
      * @param fieldValue      - value of field

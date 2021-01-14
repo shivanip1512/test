@@ -46,47 +46,6 @@ public class PointValidationUtilCommon extends ValidationUtils {
         return (PaoUtils.isValidPaoName(pointName)) ? true : false;
     }
 
-    /*
-     * public void validatePointOffset(LitePointModel pointModel, String fieldName, Errors errors,
-     * boolean isCopyOrCreate) {
-     * 
-     * if (pointModel.isPhysicalOffset() && !errors.hasFieldErrors(fieldName)) {
-     * MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
-     * String physicalPort = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.physicalOffset");
-     * if (pointModel.getPointType().isCalcPoint()) {
-     * physicalPort = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.offset");
-     * }
-     * Range<Integer> range = Range.inclusive(0, 99999999);
-     * YukonValidationUtils.checkRange(errors, fieldName, physicalPort,
-     * pointModel.getPointOffset(), range, true);
-     * }
-     * 
-     * int parentId = pointModel.getPaoId();
-     * List<LitePoint> pointsOnPao = pointDao.getLitePointsByPaObjectId(parentId);
-     * 
-     * if (pointModel.getPointOffset() != null) {
-     * for (LitePoint pointOnPao : pointsOnPao) {
-     * 
-     * if (pointModel.getPointOffset() != 0 && (pointOnPao.getPointOffset() == pointModel.getPointOffset()
-     * && pointOnPao.getPointTypeEnum() == pointModel.getPointType())) {
-     * /**
-     * 1. If the current operation is point copy and there already exists a point with the same name
-     * attached to the PAO, we should not proceed with the operation.
-     * 2. If the current operation is point edit and there exists any other point (other than the current
-     * one) with the same name attached to the PAO, we should not proceed with the operation.
-     *
-     * if (isCopyOrCreate
-     * || (pointModel.getPointId() != null && pointOnPao.getPointID() != pointModel.getPointId())) {
-     * List<Object> arguments = ImmutableList.of(pointOnPao.getPointName());
-     * errors.rejectValue(fieldName, ApiErrorDetails.POINT_OFFSET_NOT_AVAILABLE.getCodeString(),
-     * arguments.toArray(), "Invalid point offset");
-     * }
-     * }
-     * }
-     * }
-     * }
-     */
-
     public String isPointOrPhyicalOffset(LitePointModel pointModel, String fieldName, Errors errors) {
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
         if (pointModel.isPhysicalOffset() && !errors.hasFieldErrors(fieldName)) {

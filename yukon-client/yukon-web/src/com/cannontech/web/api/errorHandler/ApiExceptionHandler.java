@@ -79,8 +79,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private List<String> notSupportingUris = new ArrayList<String>();
 
     /**
-     * Here, we are adding those URLs where new API Error model returned.
-     * When any new module updated with API Error Model , we need to add those URLs here.
+     * Here, we are adding those URLs which old API Error model returned.
+     * When any new module updated with API Error Model , we need to remove those URLs from here.
      * After updating all these changes, this method will be removed.
      */
     @PostConstruct
