@@ -79,7 +79,7 @@
         <pointInfo name="kVA at Peak kW Coincidental" attributes="KVA_PEAK_DEMAND_COIN"/>
         <pointInfo name="kVA Load Profile" attributes="KVA_LOAD_PROFILE"/>
         <pointInfo name="kVAh" attributes="KVAH"/>
-        <pointInfo name="kVAh Lagging"/>
+        <pointInfo name="kVAh Lagging" attributes="DELIVERED_KVAH_LAGGING"/>
         <pointInfo name="kVAh Lagging Rate A"/>
         <pointInfo name="kVAh Lagging Rate B"/>
         <pointInfo name="kVAh Lagging Rate C"/>
@@ -119,7 +119,7 @@
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Peak kVA" attributes="PEAK_KVA"/>
         <pointInfo name="Peak kVA Frozen" attributes="PEAK_KVA_FROZEN"/>
-        <pointInfo name="Peak kVA Lagging"/>
+        <pointInfo name="Peak kVA Lagging" attributes="DELIVERED_PEAK_KVA_LAGGING"/>
         <pointInfo name="Peak kVA Lagging Rate A"/>
         <pointInfo name="Peak kVA Lagging Rate B"/>
         <pointInfo name="Peak kVA Lagging Rate C"/>

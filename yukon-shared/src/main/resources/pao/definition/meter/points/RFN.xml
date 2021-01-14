@@ -1183,12 +1183,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVAR"/>
         <decimalplaces value="3"/>
     </point>
-    <point offset="270" type="Analog">
-        <name>Delivered Peak kVA</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
     <point offset="271" type="Analog">
         <name>Received Peak kVA</name>
         <multiplier value="1"/>
@@ -1935,97 +1929,97 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <name>Delivered kWh Rate A per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="396" type="Analog">
         <name>Delivered kWh Rate B per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="397" type="Analog">
         <name>Delivered kWh Rate C per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="398" type="Analog">
         <name>Delivered kWh Rate D per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="399" type="Analog">
         <name>Received kWh Rate A per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="400" type="Analog">
         <name>Received kWh Rate B per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="401" type="Analog">
         <name>Received kWh Rate C per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="402" type="Analog">
         <name>Received kWh Rate D per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="403" type="Analog">
         <name>Net kWh Rate A per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="404" type="Analog">
         <name>Net kWh Rate B per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="405" type="Analog">
         <name>Net kWh Rate C per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="406" type="Analog">
         <name>Net kWh Rate D per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="407" type="Analog">
         <name>Sum kWh Rate A per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="408" type="Analog">
         <name>Sum kWh Rate B per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="409" type="Analog">
         <name>Sum kWh Rate C per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="410" type="Analog">
         <name>Sum kWh Rate D per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="411" type="Analog">
         <name>Average Power Factor Frozen</name>

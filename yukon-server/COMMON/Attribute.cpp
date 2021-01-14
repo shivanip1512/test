@@ -69,6 +69,7 @@ INIT_ATTRIBUTE( ForwardInductivekVArh,                              "FORWARD_IND
 INIT_ATTRIBUTE( GeneralAlarmFlag,                                   "GENERAL_ALARM_FLAG" );
 INIT_ATTRIBUTE( IEDDemandResetCount,                                "IED_DEMAND_RESET_COUNT" );
 INIT_ATTRIBUTE( kVAh,                                               "KVAH" );
+INIT_ATTRIBUTE( kVAhLagging,                                        "DELIVERED_KVAH_LAGGING" );
 INIT_ATTRIBUTE( kVAhRateA,                                          "KVAH_RATE_A" );
 INIT_ATTRIBUTE( kVAhRateB,                                          "KVAH_RATE_B" );
 INIT_ATTRIBUTE( kVAhRateC,                                          "KVAH_RATE_C" );
@@ -78,6 +79,7 @@ INIT_ATTRIBUTE( NetkVAhRateA,                                       "NET_KVAH_RA
 INIT_ATTRIBUTE( NetkVAhRateB,                                       "NET_KVAH_RATE_B" );
 INIT_ATTRIBUTE( NetkVAhRateC,                                       "NET_KVAH_RATE_C" );
 INIT_ATTRIBUTE( NetkVAhRateD,                                       "NET_KVAH_RATE_D" );
+INIT_ATTRIBUTE( ReceivedkVAhQ234,                                   "RECEIVED_KVAH_Q234" );
 INIT_ATTRIBUTE( ReceivedkVAhRateA,                                  "RECEIVED_KVAH_RATE_A" );
 INIT_ATTRIBUTE( ReceivedkVAhRateB,                                  "RECEIVED_KVAH_RATE_B" );
 INIT_ATTRIBUTE( ReceivedkVAhRateC,                                  "RECEIVED_KVAH_RATE_C" );
@@ -153,6 +155,7 @@ INIT_ATTRIBUTE( PeakkVAFrozenRateB,                                 "PEAK_KVA_FR
 INIT_ATTRIBUTE( PeakkVAFrozenRateC,                                 "PEAK_KVA_FROZEN_RATE_C");
 INIT_ATTRIBUTE( PeakkVAFrozenRateD,                                 "PEAK_KVA_FROZEN_RATE_D");
 INIT_ATTRIBUTE( PeakkVACoincidental,                                "PEAK_KVA_COIN" );
+INIT_ATTRIBUTE( DeliveredPeakkVALagging,                            "DELIVERED_PEAK_KVA_LAGGING" );
 INIT_ATTRIBUTE( ReceivedPeakkVA,                                    "RECEIVED_PEAK_KVA" );
 INIT_ATTRIBUTE( ReceivedPeakkVARateA,                               "RECEIVED_PEAK_KVA_RATE_A" );
 INIT_ATTRIBUTE( ReceivedPeakkVARateB,                               "RECEIVED_PEAK_KVA_RATE_B" );
@@ -757,6 +760,11 @@ INIT_ATTRIBUTE( EventStopped,                                       "EVENT_STOPP
 INIT_ATTRIBUTE( EventSuperseded,                                    "EVENT_SUPERSEDED" );
 INIT_ATTRIBUTE( MemoryMapLost,                                      "MEMORY_MAP_LOST" );
 INIT_ATTRIBUTE( RadioLinkQuality,                                   "RADIO_LINK_QUALITY" );
+
+INIT_ATTRIBUTE( CommsLossCount,                                     "COMMS_LOSS_COUNT" );
+INIT_ATTRIBUTE( FirmwareUpdateStatus,                               "FIRMWARE_UPDATE_STATUS" );
+INIT_ATTRIBUTE( Frequency,                                          "FREQUENCY" );
+INIT_ATTRIBUTE( Relay1ActivationStatus,                             "RELAY_1_ACTIVATION_STATUS" );
 
 AttributeNotFound::AttributeNotFound(const std::string &name)
 {

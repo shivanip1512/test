@@ -67,6 +67,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     IED_DEMAND_RESET_COUNT("IED Demand Reset Count", AttributeGroup.DEMAND),
     // Treating "kVAh" as "Delivered kVAh". May need to created separate attributes in the future.
     KVAH("kVAh", AttributeGroup.USAGE),
+    DELIVERED_KVAH_LAGGING("kVAh Lagging", AttributeGroup.REACTIVE),
     KVAH_RATE_A("kVAh Rate A", AttributeGroup.USAGE),
     KVAH_RATE_B("kVAh Rate B", AttributeGroup.USAGE),
     KVAH_RATE_C("kVAh Rate C", AttributeGroup.USAGE),
@@ -162,6 +163,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     PEAK_KVA_FROZEN_RATE_C("Peak kVA Frozen Rate C", AttributeGroup.REACTIVE),
     PEAK_KVA_FROZEN_RATE_D("Peak kVA Frozen Rate D", AttributeGroup.REACTIVE),
     PEAK_KVA_COIN("Peak kVA Coincidental", AttributeGroup.REACTIVE),
+    DELIVERED_PEAK_KVA_LAGGING("Delivered Peak kVA Lagging", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVA("Received Peak kVA", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVA_RATE_A("Received Peak kVA Rate A", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVA_RATE_B("Received Peak kVA Rate B", AttributeGroup.REACTIVE),
@@ -408,6 +410,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RECEIVED_KWH_RATE_D("Received kWh Rate D", AttributeGroup.USAGE),
     RECEIVED_KWH_RATE_E("Received kWh Rate E", AttributeGroup.USAGE),
     RECEIVED_KVAH("Received kVAh", AttributeGroup.USAGE),
+    RECEIVED_KVAH_Q234("Received kVAh (Quadrants 2 3 4)", AttributeGroup.USAGE),
 
     NET_KWH("Net kWh", AttributeGroup.USAGE),
     NET_KWH_RATE_A("Net kWh Rate A", AttributeGroup.USAGE),
@@ -763,6 +766,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     EVENT_SUPERSEDED("Event Superseded", AttributeGroup.ITRON, false),
     MEMORY_MAP_LOST("Memory Map Lost", AttributeGroup.ITRON, false),
     RADIO_LINK_QUALITY("Radio Link Quality", AttributeGroup.ITRON, false),
+
+    // Eaton Cloud attribute mapping for PXMiddleware / Cellular LCR
+    COMMS_LOSS_COUNT("Comms Loss Count", AttributeGroup.SYSTEM),
+    FIRMWARE_UPDATE_STATUS("Firmware Update Status", AttributeGroup.SYSTEM),
+    FREQUENCY("Frequency", AttributeGroup.OTHER),
+    RELAY_1_ACTIVATION_STATUS("Relay 1 Activation Status", AttributeGroup.RELAY)
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
