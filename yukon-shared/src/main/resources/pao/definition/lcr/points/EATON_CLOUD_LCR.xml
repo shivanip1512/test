@@ -251,7 +251,7 @@
     <point offset="1" type="Status">
         <name>Firmware Update Status</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="TrueFalse"/>
+        <stategroup value="LCR Firmware Update Status"/>
     </point>
     <point offset="2" type="Status">
         <name>Relay 1 Activation Status</name>
