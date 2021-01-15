@@ -1,12 +1,8 @@
 package com.cannontech.services.calculated;
 
-import static org.easymock.EasyMock.anyInt;
-import static org.easymock.EasyMock.anyLong;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -211,13 +207,13 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         replay(rphDao);
     }
 
-    private void buildRfwMeterRequestParameters(Instant instant, double pointValue) {
+    private void buildRfMeterRequestParameters(Instant instant, double pointValue, PaoPointIdentifier paoPointId) {
 
         final PointValueQualityHolder pointValueQualityHolder =
             PointValueBuilder.create().withPointId(12841773).withType(PointType.Analog).withPointQuality(
                 PointQuality.Normal).withValue(pointValue).withTimeStamp(instant.toDate()).build();
         calculationData =
-            CalculationData.of(PaoPointValue.of(RFW_PAO_POINT_IDENTIFIER, pointValueQualityHolder), 86400);
+            CalculationData.of(PaoPointValue.of(paoPointId, pointValueQualityHolder), 86400);
 
         CacheKey key =
             CacheKey.of(pointValueQualityHolder.getId(), pointValueQualityHolder.getPointDataTimeStamp().getTime());
@@ -239,150 +235,195 @@ public class PerIntervalAndLoadProfileCalculatorTest {
 
         replay(rphDao);
     }
+    
+    /**
+     * Helper method to build mocks and calculate for the specified dates/values, then assert that the correct number 
+     * of messages is generated.
+     */
+    public void checkNumberOfMessages(int numMessages, PaoPointIdentifier paoPointId, 
+            LinkedHashMap<Instant, Integer> calculationDateValues) {
+        
+        for (var dateValue : calculationDateValues.entrySet()) {
+            buildRfMeterRequestParameters(dateValue.getKey(), dateValue.getValue(), paoPointId);
+            calculator.calculate(recentReadings, calculationData, messagesToSend);
+        }
 
+        Assert.assertEquals(numMessages, messagesToSend.size());
+    }
+    
     @Test
-    public void Valid_Readings_0_0_0() {
-
-        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        Assert.assertEquals(12, messagesToSend.size());
+    public void validWaterReadings000() {
+        
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 0); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 0); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 0); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(12, RFW_PAO_POINT_IDENTIFIER, calculationDateValues);
+    }
+    
+    @Test
+    public void validElectricReadings000() {
+        
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 0); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 0); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 0); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(12, PAO_POINT_IDENTIFIER, calculationDateValues);
     }
 
     @Test
-    public void Invalid_Readings_1_0_0() {
+    public void invalidWaterReadings100() {
 
-        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 1); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 0); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 0); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(8, RFW_PAO_POINT_IDENTIFIER, calculationDateValues);
+    }
+    
+    @Test
+    public void invalidElectricReadings100() {
 
-        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 1); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 0); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 0); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(8, PAO_POINT_IDENTIFIER, calculationDateValues);
+    }
+    
+    @Test
+    public void invalidWaterReadings010() {
 
-        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 0); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 1); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 0); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(8, RFW_PAO_POINT_IDENTIFIER, calculationDateValues);
+    }
+    
+    @Test
+    public void invalidElectricReadings010() {
 
-        Assert.assertEquals(8, messagesToSend.size());
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 0); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 1); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 0); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(8, PAO_POINT_IDENTIFIER, calculationDateValues);
     }
 
     @Test
-    public void Invalid_Readings_0_1_0() { // tested
+    public void invalidWaterReadings110() {
 
-        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        System.out.println(messagesToSend.size());
-        Assert.assertEquals(8, messagesToSend.size());
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 1); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 1); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 0); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(8, RFW_PAO_POINT_IDENTIFIER, calculationDateValues);
     }
 
     @Test
-    public void Invalid_Readings_1_1_0() {
+    public void invalidElectricReadings110() {
 
-        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 1); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 1); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 0); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(8, PAO_POINT_IDENTIFIER, calculationDateValues);
+    }
+    
+    @Test
+    public void validWaterReadings001() {
 
-        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 0); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 0); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 1); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(12, RFW_PAO_POINT_IDENTIFIER, calculationDateValues);
+    }
+    
+    @Test
+    public void validElectricReadings001() {
 
-        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        Assert.assertEquals(8, messagesToSend.size());
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 0); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 0); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 1); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(12, PAO_POINT_IDENTIFIER, calculationDateValues);
     }
 
     @Test
-    public void Valid_Readings_0_0_1() {
+    public void invalidWaterReadings101() {
 
-        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 1); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 0); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 1); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(8, RFW_PAO_POINT_IDENTIFIER, calculationDateValues);
+    }
+    
+    @Test
+    public void invalidElectricReadings101() {
 
-        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        Assert.assertEquals(12, messagesToSend.size());
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 1); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 0); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 1); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(8, PAO_POINT_IDENTIFIER, calculationDateValues);
     }
 
     @Test
-    public void Invalid_Readings_1_0_1() {
+    public void validWaterReadings011() {
 
-        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 0); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 1); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 1); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(12, RFW_PAO_POINT_IDENTIFIER, calculationDateValues);
+    }
+    
+    @Test
+    public void validElectricReadings011() {
 
-        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        Assert.assertEquals(8, messagesToSend.size());
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 0); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 1); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 1); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(12, PAO_POINT_IDENTIFIER, calculationDateValues);
     }
 
     @Test
-    public void Invalid_Readings_0_1_1() {
+    public void validWaterReadings111() {
 
-        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 0);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        Assert.assertEquals(12, messagesToSend.size());
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 1); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 1); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 1); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(12, RFW_PAO_POINT_IDENTIFIER, calculationDateValues);
     }
-
+    
     @Test
-    public void Valid_Readings_1_1_1() {
+    public void validElectricReadings111() {
 
-        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
-        buildRfwMeterRequestParameters(instant, 1);
-        calculator.calculate(recentReadings, calculationData, messagesToSend);
-
-        Assert.assertEquals(12, messagesToSend.size());
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472102587787l), 1); // Date -2016-08-25T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472188987787l), 1); // Date -2016-08-26T05:23:07.787Z
+        calculationDateValues.put(new Instant(1472275387787l), 1); // Date -2016-08-27T05:23:07.787Z
+        
+        checkNumberOfMessages(12, PAO_POINT_IDENTIFIER, calculationDateValues);
     }
-
 }
