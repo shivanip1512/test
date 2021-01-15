@@ -210,6 +210,16 @@ AND PaObjectId IN (
 INSERT INTO DBUpdates VALUES ('YUK-23523', '9.0.0', SYSDATE);
 /* @end YUK-23523 */
 
+/* @start YUK-23540 */
+INSERT INTO StateGroup VALUES(-30, 'LCR Firmware Update Status', 'Status');
+INSERT INTO State VALUES(-30, 0, 'Received and Waiting', 7, 6, 0);
+INSERT INTO State VALUES(-30, 1, 'Nothing Pending', 9, 6, 0);
+INSERT INTO State VALUES(-30, 2, 'Success', 0, 6, 0);
+INSERT INTO State VALUES(-30, 3, 'Failed', 1, 6, 0);
+
+INSERT INTO DBUpdates VALUES ('YUK-23540', '9.0.0', SYSDATE);
+/* @end YUK-23540 */
+
 /* @start YUK-23532 */
 UPDATE Point
 SET PointName = 'kVAh Lagging', PointOffset = 245
