@@ -306,7 +306,7 @@ public class StyleGuideController {
         
         @Override
         protected void doValidation(Person person, Errors errors) {
-            YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "name", person.getName(), false, 60);
+            YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(errors, "name", person.getName(), false, 60);
             int age = person.getAge();
             String email = person.getEmail();
             if (age < 1 || age > 120) errors.rejectValue("age", null, "Age should be between 1 and 120.");

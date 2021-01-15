@@ -1023,8 +1023,8 @@ public class CcHomeController {
         //Validation
         DataBinder binder = new DataBinder(programFields);
         BindingResult bindingResult = binder.getBindingResult();
-        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(bindingResult, "programName", programName, false, 255);
-        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(bindingResult, "programIdentifierPrefix", programIdentifierPrefix, false, 32);
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(bindingResult, "programName", programName, false, 255);
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(bindingResult, "programIdentifierPrefix", programIdentifierPrefix, false, 32);
         YukonValidationUtils.checkIsPositiveInt(bindingResult, "programLastIdentifier", programLastIdentifier);
 
         CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
@@ -1123,7 +1123,7 @@ public class CcHomeController {
         } else {
             parameter.setParameterValue(null);
         }
-        YukonValidationUtils.checkIsValidNumber(bindingResult, programFields, parameterInput);
+        YukonValidationUtils.checkIsNumberPositiveIntOrDouble(bindingResult, programFields, parameterInput);
     }
     
     @RequestMapping("/cc/program/{programId}/event/{eventId}/revision/{revision}")

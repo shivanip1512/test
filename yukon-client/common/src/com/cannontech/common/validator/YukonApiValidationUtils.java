@@ -78,10 +78,10 @@ public class YukonApiValidationUtils extends ValidationUtils {
     public static void checkIsValidNumber(Errors errors, String field, Number fieldValue) {
         if (fieldValue == null) {
             errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { fieldValue }, "");
-        } else if (!YukonValidationUtilsCommon.checkIsValidNumberDouble(fieldValue)) {
+        } else if (fieldValue instanceof Double && !YukonValidationUtilsCommon.checkIsNumberPositiveDouble(fieldValue)) {
             errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "" },
                     "must be a positive number.");
-        } else if (!YukonValidationUtilsCommon.checkIsValidNumberInt(fieldValue)) {
+        } else if (fieldValue instanceof Integer && !YukonValidationUtilsCommon.checkIsNumberPositiveInt(fieldValue)) {
             errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "whole" },
                     "must be a positive whole number.");
         }

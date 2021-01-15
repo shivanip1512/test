@@ -13,13 +13,15 @@ import com.cannontech.common.util.Range;
 
 public class YukonValidationUtilsCommon extends ValidationUtils {
    
+    public static final String BASIC_BLACKLISTED_CHAR_LIST = "[\\\\!#$%&'*();+=<>?{}\"|,/]";
+
     public static  boolean checkExceedsMaxLength(String fieldValue, int max) {
         return (fieldValue != null && fieldValue.length() > max) ? true : false;
     }
     
     public static boolean checkBlacklistedCharacter(String fieldValue) {
         if (fieldValue != null) {
-            Matcher hasBlacklistedChar = Pattern.compile(YukonValidationUtils.BASIC_BLACKLISTED_CHAR_LIST).matcher(fieldValue);
+            Matcher hasBlacklistedChar = Pattern.compile(BASIC_BLACKLISTED_CHAR_LIST).matcher(fieldValue);
             return (hasBlacklistedChar.find()) ? true : false ;
         }
         return false;
@@ -51,22 +53,12 @@ public class YukonValidationUtilsCommon extends ValidationUtils {
         return (fieldValue == null || Double.isNaN(fieldValue) || Double.isInfinite(fieldValue)) ? false : true;
     }
 
-    public static boolean checkIsValidNumberDouble(Number fieldValue) {
-        if (fieldValue instanceof Double) {
-            if(!checkIsValidDouble(fieldValue.doubleValue()) && fieldValue.doubleValue() < 0) {
-                return false;
-            }
-        }
-        return true;
+    public static boolean checkIsNumberPositiveDouble(Number fieldValue) {
+           return (!checkIsValidDouble(fieldValue.doubleValue()) || fieldValue.doubleValue() < 0) ? false : true;
     }
     
-    public static boolean checkIsValidNumberInt(Number fieldValue) {
-        if (fieldValue instanceof Integer) {
-            if(fieldValue.intValue() < 0) {
-                return false;
-            }
-        }
-        return true;
+    public static boolean checkIsNumberPositiveInt(Number fieldValue) {
+        return (fieldValue.intValue() < 0) ? false : true;
     }
 
     public static <T extends Comparable<T>> boolean checkRange(T fieldValue, T min, T max) {

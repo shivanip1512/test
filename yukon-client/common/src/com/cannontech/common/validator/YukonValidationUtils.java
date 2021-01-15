@@ -26,7 +26,6 @@ public class YukonValidationUtils extends ValidationUtils {
     public static final String BASIC_URL_PATH_REGEX = "\\A" + BASIC_URL_PATH_FRAGMENT + "\\Z";
     public static final String BASIC_RESTFUL_URL_REGEX = "\\Ahttps?\\://([a-zA-Z0-9_\\-]+\\.)*[a-zA-Z0-9]+(\\:[0-9]+)?"
         + BASIC_URL_PATH_FRAGMENT + "\\Z";
-    public static final String BASIC_BLACKLISTED_CHAR_LIST = "[\\\\!#$%&'*();+=<>?{}\"|,/]";
 
     public static boolean isUrlPath(String input) {
         if (input == null) {
@@ -76,9 +75,10 @@ public class YukonValidationUtils extends ValidationUtils {
     }
 
     /*
-     * Convenience method to combine the above two common operations.
+     * Convenience method to combine the above three common operations i.e. checkExceedsMaxLength(), checkBlacklistedCharacter(),
+     * checkIsBlank().
      */
-    public static void checkIsBlankOrExceedsMaxLength(Errors errors, String field, String fieldValue,
+    public static void checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(Errors errors, String field, String fieldValue,
             boolean fieldAllowsNull, int max) {
         checkIsBlank(errors, field, fieldValue, fieldAllowsNull);
         checkExceedsMaxLength(errors, field, fieldValue, max);
@@ -111,12 +111,12 @@ public class YukonValidationUtils extends ValidationUtils {
         return true;
     }
 
-    public static void checkIsValidNumber(Errors errors, String field, Number fieldValue) {
+    public static void checkIsNumberPositiveIntOrDouble(Errors errors, String field, Number fieldValue) {
         if (fieldValue == null) {
             errors.rejectValue(field, "yukon.web.error.isBlank");
-        } else if (!YukonValidationUtilsCommon.checkIsValidNumberDouble(fieldValue)) {
+        } else if (fieldValue instanceof Double && !YukonValidationUtilsCommon.checkIsNumberPositiveDouble(fieldValue)) {
             errors.rejectValue(field, "yukon.web.error.isNotPositive");
-        } else if (!YukonValidationUtilsCommon.checkIsValidNumberInt(fieldValue)) {
+        } else if (fieldValue instanceof Integer && !YukonValidationUtilsCommon.checkIsNumberPositiveInt(fieldValue)) {
             errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");
         }
     }

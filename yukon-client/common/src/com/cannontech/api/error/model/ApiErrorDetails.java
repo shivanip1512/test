@@ -33,12 +33,11 @@ public enum ApiErrorDetails {
 
     VALUE_BELOW_MINIMUM(ApiErrorCategory.VALIDATION_FAILED, 110, "Value below minimum", "Provided value is below the allowed minimum."), // code : 101110
     INVALID_STRING_LENGTH(ApiErrorCategory.VALIDATION_FAILED, 111, "Invalid string length", "Invalid string length."), // code : 101111
-    DATA_ARCHIVING_INTERVEL_TOO_LARGE(ApiErrorCategory.VALIDATION_FAILED, 112, "Data archiving intervel is too large", "Data archiving intervel is too large."), // code : 101112
-    IS_NOT_POSITIVE(ApiErrorCategory.VALIDATION_FAILED, 113, "Must be a positive number", "Must be a positive number."), // code : 101113
-    POINT_OFFSET_NOT_AVAILABLE(ApiErrorCategory.VALIDATION_FAILED, 114, "Point offset not available", "Point offset not available."), // code : 101114
-    POINT_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 115, "Point type mismatch", "Point type mismatch."), // code : 101115
-    PAO_ID_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 116, "Pao id mismatch", "Pao id mismatch."), // code : 101116
-    PAO_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 117, "Pao type mismatch", "Pao type mismatch."); // code : 101117
+    IS_NOT_POSITIVE(ApiErrorCategory.VALIDATION_FAILED, 112, "Must be a positive number", "Must be a positive number."), // code : 101113
+    POINT_OFFSET_NOT_AVAILABLE(ApiErrorCategory.VALIDATION_FAILED, 113, "Point offset not available", "Point offset not available."), // code : 101114
+    POINT_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 114, "Point type mismatch", "Point type mismatch."), // code : 101115
+    PAO_ID_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 115, "Pao id mismatch", "Pao id mismatch."), // code : 101116
+    PAO_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 116, "Pao type mismatch", "Pao type mismatch."); // code : 101117
     
     private ApiErrorCategory category;
     private int code;
