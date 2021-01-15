@@ -7,7 +7,6 @@ import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.dataExporter.DataExporterFormatController;
 
 public class ExportFormatValidator extends SimpleValidator<ExportFormat> {
@@ -20,8 +19,7 @@ public class ExportFormatValidator extends SimpleValidator<ExportFormat> {
 
     @Override
     protected void doValidation(ExportFormat target, Errors errors) {
-        
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "formatName", DataExporterFormatController.BASE_KEY + "formatError.formatNameRequired");
+        YukonValidationUtils.checkIsBlank(errors, "formatName", target.getFormatName(), "Format Name", false);
         YukonValidationUtils.checkExceedsMaxLength(errors, "formatName", target.getFormatName(), 100);
         YukonValidationUtils.checkExceedsMaxLength(errors, "delimiter", target.getDelimiter(), 20);
         YukonValidationUtils.checkExceedsMaxLength(errors, "header", target.getHeader(), 255);

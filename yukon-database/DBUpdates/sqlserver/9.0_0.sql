@@ -218,10 +218,6 @@ INSERT INTO DBUpdates VALUES ('YUK-23523', '9.0.0', GETDATE());
 /* @end YUK-23523 */
 
 /* @start YUK-23502 */
-ALTER TABLE DeviceAddress
-DROP COLUMN PostCommWait;
-GO
-
 ALTER TABLE PortTiming
 ADD PostCommWait NUMERIC;
 GO
@@ -235,6 +231,29 @@ GO
 
 INSERT INTO DBUpdates VALUES ('YUK-23502', '9.0.0', GETDATE());
 /* @end YUK-23502 */
+
+/* @start YUK-23540 */
+INSERT INTO StateGroup VALUES(-30, 'LCR Firmware Update Status', 'Status');
+INSERT INTO State VALUES(-30, 0, 'Received and Waiting', 7, 6, 0);
+INSERT INTO State VALUES(-30, 1, 'Nothing Pending', 9, 6, 0);
+INSERT INTO State VALUES(-30, 2, 'Success', 0, 6, 0);
+INSERT INTO State VALUES(-30, 3, 'Failed', 1, 6, 0);
+
+INSERT INTO DBUpdates VALUES ('YUK-23540', '9.0.0', GETDATE());
+/* @end YUK-23540 */
+
+/* @start YUK-23532 */
+UPDATE Point
+SET PointName = 'kVAh Lagging', PointOffset = 245
+WHERE PointType = 'Analog'
+AND PointOffset = 150
+AND PaObjectId IN (
+    SELECT DISTINCT PaObjectId FROM YukonPaObject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-23532', '9.0.0', GETDATE());
+/* @end YUK-23532 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
