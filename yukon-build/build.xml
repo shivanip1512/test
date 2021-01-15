@@ -151,7 +151,7 @@
             <mkdir dir="${client.dir}/Import"/>
             <mkdir dir="${client.dir}/Log"/>
             <mkdir dir="${client.dir}/DBScripts"/>
-        
+
         <copy todir="${client.bag}" preservelastmodified="yes">
             <fileset dir="${basedir}/yukon-client/build/lib" excludes="*.jar"/>
             <fileset dir="${basedir}/yukon-client/sensus-jms/lib"/>
@@ -236,6 +236,11 @@
             <fileset dir="${client.bag}/exampleXml"/>
         </copy>
         
+        <!-- Add data export template folder and template files.-->
+        <copy todir="${install.bag}/Common Directories/Config/DataExportTemplates" preservelastmodified="true">
+            <fileset dir="${basedir}/yukon-shared/src/main/resources/DataExportTemplates/" includes="*.yaml" casesensitive="false"/>
+        </copy>
+ 
         <!-- JRE Component -->
         <copy todir="${install.bag}/JRE" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/JRE" />

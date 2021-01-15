@@ -137,7 +137,7 @@ public class ChartController {
                 .getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
 
         List<GraphDetail> graphDetails = new ArrayList<>();
-        GraphDetail graphDetail = new GraphDetail(pointId, leftYLabelUnits, 1, "left", false, ChartColorsEnum.GREEN, interval);
+        GraphDetail graphDetail = new GraphDetail(pointId, leftYLabelUnits, 1, "left", false, ChartColorsEnum.GREEN_FILL, interval);
         // Set minimum value for Y-axis
         graphDetail.setyMin(yMin);
         graphDetail.setConverterType(converterType);

@@ -8,7 +8,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
-import com.cannontech.amr.rfn.service.pointmapping.icd.YukonPointMappingIcdParser;
+import com.cannontech.common.util.YamlParserUtils;
 
 public class PointMappingIcdTest {
 
@@ -18,7 +18,7 @@ public class PointMappingIcdTest {
 
         ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
         
-        String icd = YukonPointMappingIcdParser.parseToJson(yukonPointMappingIcdYaml.getInputStream());
+        String icd = YamlParserUtils.parseToJson(yukonPointMappingIcdYaml.getInputStream());
 
         InputStream icdStream = this.getClass().getResource("icd.json").openStream();
 

@@ -5,16 +5,21 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -40,6 +45,7 @@ import com.cannontech.amr.archivedValueExporter.model.Preview;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -52,6 +58,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -97,6 +104,7 @@ public class DataExporterHomeController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
+    private Logger log = YukonLogManager.getLogger(DataExporterHomeController.class);
     
     private static DataRangeType[] FIXED_RUN_DATA_RANGE_TYPES = {DataRangeType.END_DATE};
     private static DataRangeType[] FIXED_SCHEDULE_DATA_RANGE_TYPES = {DataRangeType.END_DATE};
@@ -268,9 +276,8 @@ public class DataExporterHomeController {
     public @ResponseBody Map<String, Object> getAvaliableFormatTemplates(YukonUserContext userContext) {
         Map<String, Object> json = Maps.newHashMap();
         try {
-            //TODO: to be replaced with actual service layer call
-            List<ExportFormat> formatTemplates = mockAvailableFormatTemplates();
-            json.put("formatTemplates", formatTemplates);
+            List<String> templateFileNames = getAvailableFormatTemplates();
+            json.put("templateFileNames", templateFileNames);
         } catch (Exception exception) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             json.put("errorMessage", accessor.getMessage("yukon.web.modules.tools.bulk.archivedValueExporter.parseAvailableTemplates.error"));
@@ -291,16 +298,7 @@ public class DataExporterHomeController {
         }
     }
     
-    //TODO: to be replaced with actual service layer call
-    private List<ExportFormat> mockAvailableFormatTemplates() throws Exception {
-        List<ExportFormat> templates = Lists.newArrayList();
-        ExportFormat format = new ExportFormat();
-        format.setFormatId(1);
-        format.setFormatName("CEMP");
-        templates.add(format);
-        return templates;
-    }
-    
+
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         
@@ -328,5 +326,21 @@ public class DataExporterHomeController {
         binder.registerCustomEditor(LocalTime.class, "runDataRange.time", localTimeEditor);
 
     }
-    
+
+    /**
+     * Returns available templates in the Data Export Templates Directory.
+     */
+    private List<String> getAvailableFormatTemplates() {
+        List<String> templateFileNames = new ArrayList<String>();
+        try {
+            templateFileNames = Files.list(Paths.get(CtiUtilities.getDataExportTemplatesDirPath()))
+                                     .filter(path -> path.toString().endsWith(".yaml") || path.toString().endsWith(".yml"))
+                                     .map(Path::getFileName)
+                                     .map(Path::toString)
+                                     .collect(Collectors.toList());
+        } catch (IOException e) {
+            log.error("Error occurred while loading template file names ", e);
+        }
+        return templateFileNames;
+    }
 }

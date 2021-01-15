@@ -80,6 +80,7 @@ public final class CtiUtilities {
     public static final String CACHE_CORRELATION_DIR = "CacheCorrelation";
     public static final String NEST_DIR = "Nest";
     public static final String ITRON_DIR = "Itron";
+    public static final String DATA_EXPORT_TEMPLATES_DIR = "DataExportTemplates";
 
     public static final String STRING_NONE = "(none)";
     public static final String STRING_DEFAULT = "Default";
@@ -981,5 +982,13 @@ public final class CtiUtilities {
             return Integer.MIN_VALUE;
         }
         return (int) num;
+    }
+
+    /**
+     * Return Data Export Template directory path
+     */
+    public final static String getDataExportTemplatesDirPath() {
+        final String sep = System.getProperty("file.separator");
+        return StringUtils.joinWith(sep, getYukonBase(), "Server", "Config", DATA_EXPORT_TEMPLATES_DIR);
     }
 }

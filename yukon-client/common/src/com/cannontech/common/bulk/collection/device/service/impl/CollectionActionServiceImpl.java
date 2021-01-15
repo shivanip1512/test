@@ -20,6 +20,7 @@ import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionTerminate;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
@@ -185,6 +186,38 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     public void clearCache() {
         cache.invalidateAll();
     }
+    
+    @Override
+    public int terminate() {
+        // Cancels started collection actions with command request execution entry on start-up
+        List<CollectionActionTerminate> results = collectionActionDao.loadIncompeteResultsFromDb();
+        log.info("Attempting to terminate {} Collection Actions", results.size());
+        results.forEach(result -> {
+            log.debug("{}", result);
+            Date stopTime = new Date();
+            terminateExecution(result, result.getExecution(), stopTime);
+            terminateExecution(result, result.getVerificationExecution(), stopTime);
+            collectionActionDao.updateCollectionActionStatus(result.getCacheKey(), CommandRequestExecutionStatus.CANCELLED,
+                    stopTime);
+            eventLogHelper.log(result.toCollectionActionResult());
+        });
+        log.info("Terminated {} Collection Actions", results.size());
+        return results.size();
+    }
+
+    private void terminateExecution(CollectionActionTerminate result,
+            CommandRequestExecution execution, Date stopTime) {
+        if (execution != null && (execution.getCommandRequestExecutionStatus() == CommandRequestExecutionStatus.STARTED
+                || execution.getCommandRequestExecutionStatus() == CommandRequestExecutionStatus.CANCELING)) {
+            execution.setStopTime(stopTime);
+            execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.CANCELLED);
+            result.addDevices(CollectionActionDetail.CANCELED, result.getCancelableDevices());
+            commandRequestExecutionResultDao.saveUnsupported(Sets.newHashSet(result.getCancelableDevices()),
+                    result.getExecution().getId(),
+                    CANCELED.getCreUnsupportedType());
+            executionDao.saveOrUpdate(execution);
+        }
+    }
    
     @Override
     public List<CollectionActionResult> getCachedResults(List<Integer> cacheKeys) {
@@ -200,7 +233,9 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Override
     public void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
             List<? extends YukonPao> devices, String deviceErrorText) {
-        addUnsupportedToResult(detail, result, result.getExecution().getId(), devices, deviceErrorText);
+        if(result.getExecution() != null) {
+            addUnsupportedToResult(detail, result, result.getExecution().getId(), devices, deviceErrorText);
+        }
     }
 
     @Override
