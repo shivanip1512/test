@@ -57,7 +57,10 @@ public abstract class AbstractLuceneSearcher<E> {
                     @Override
                     public SearchResults<E> processHits(TopDocs topDocs, IndexSearcher indexSearcher)
                             throws IOException {
-                        int totalHitsInInt = Math.toIntExact(topDocs.totalHits.value);
+                                // In version 8.3 totalHits become TotalHits object. The total hit count is now stored in value
+                                // field of type long. We're assuming here that we will never get 2,147,483,647 or more hit counts
+                                // so converted it to int.
+                                int totalHitsInInt = Math.toIntExact(topDocs.totalHits.value);
                         final int stop = Math.min(start + count, totalHitsInInt);
                         final List<E> list = Lists.newArrayListWithCapacity(stop - start);
                         

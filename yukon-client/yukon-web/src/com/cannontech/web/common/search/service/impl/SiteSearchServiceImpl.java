@@ -96,6 +96,8 @@ public class SiteSearchServiceImpl implements SiteSearchService {
 
         @Override
         public Boolean processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
+            // In version 8.3 totalHits become TotalHits object. The total hit count is now stored in value field of type long.
+            // We're assuming here that we will never get 2,147,483,647 or more hit counts so converted it to int.
             int totalHitsInInt = Math.toIntExact(topDocs.totalHits.value);
             int stop = Math.min(numToQuery, totalHitsInInt);
             for (; numFoundCurrentPage < numWanted && index < stop; ++index) {
@@ -249,6 +251,8 @@ public class SiteSearchServiceImpl implements SiteSearchService {
             @Override
             public Boolean processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
                 boolean foundOne = false;
+                // In version 8.3 totalHits become TotalHits object. The total hit count is now stored in value field of type
+                // long. We're assuming here that we will never get 2,147,483,647 or more hit counts so converted it to int.
                 int totalHitsInInt = Math.toIntExact(topDocs.totalHits.value);
                 if (log.isTraceEnabled()) {
                     log.trace("found " + totalHitsInInt);
