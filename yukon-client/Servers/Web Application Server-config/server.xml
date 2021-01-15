@@ -164,7 +164,7 @@
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
                prefix="localhost_access_log" suffix=".txt"
                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
-
+      <Context docBase="yukon-web" path="/yukon" reloadable="false" source="org.eclipse.jst.jee.server:yukon-web"/>
       </Host>
     </Engine>
   </Service>
