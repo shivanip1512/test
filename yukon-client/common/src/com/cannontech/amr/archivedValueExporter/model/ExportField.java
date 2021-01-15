@@ -77,6 +77,9 @@ public class ExportField implements Displayable {
     }
 
     public void setReadingPattern(ReadingPattern readingPattern) {
+        if (isValue()) {
+            this.pattern = readingPattern.getPattern();
+        }
         this.readingPattern = readingPattern;
     }
 
@@ -96,6 +99,9 @@ public class ExportField implements Displayable {
     }
 
     public void setTimestampPattern(TimestampPattern timestampPattern) {
+        if (isTimestamp()) {
+            this.pattern = timestampPattern.getPattern();
+        }
         this.timestampPattern = timestampPattern;
     }
 
@@ -156,10 +162,25 @@ public class ExportField implements Displayable {
     }
 
     public FieldValue getFieldValue() {
+        boolean patternFound = false;
+        if (field.isAttributeName()) {
+            for (FieldValue value : FieldValue.values()) {
+                if (value.name().equals(pattern)) {
+                    fieldValue = value;
+                    patternFound = true;
+                    break;
+                }
+            }
+            if (!patternFound)
+                fieldValue = FieldValue.DEFAULT;
+        }
         return fieldValue;
     }
 
     public void setFieldValue(FieldValue fieldValue) {
+        if (field.isAttributeName()) {
+            this.pattern = fieldValue.name();
+        }
         this.fieldValue = fieldValue;
     }
 
