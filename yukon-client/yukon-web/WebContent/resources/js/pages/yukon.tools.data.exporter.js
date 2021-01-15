@@ -108,6 +108,31 @@ yukon.tools.dataExporter = (function () {
                 $(dataRangeTypeDiv).addClass('dn');
             }
         }
+    },
+    
+    _displayCreateFormatDialogContent = function (formatOptionRadioButton) {
+        if (formatOptionRadioButton.hasClass("js-use-template")) {
+            $(".js-create-format-option.js-do-not-use-template").prop("checked", false);
+            $.getJSON(yukon.url("/tools/data-export/getAvaliableFormatTemplates"), function (json) {
+                $(".js-template-formats-dropdown").find("option").remove();
+                if (json.hasOwnProperty('templateFileNames')) {
+                    $.each(json.templateFileNames, function (key, val) {
+                        $(".js-template-formats-dropdown").append(new Option(val, val));
+                    });
+                } else {
+                    $("#create-format-dialog").find(".user-message").remove();
+                    $("#create-format-dialog").addMessage({
+                        message: json.errorMessage,
+                        messageClass: 'error'
+                    }); 
+                }
+                $(".js-avaliable-template-formats").toggleClass("dn", json.hasOwnProperty('errorMessage'));
+            });
+        } else {
+            $("#create-format-dialog").find(".user-message").remove();
+            $(".js-create-format-option.js-use-template").prop("checked", false);
+            $(".js-avaliable-template-formats").addClass("dn");
+        }
     };
 
     mod = {
@@ -202,34 +227,16 @@ yukon.tools.dataExporter = (function () {
             });
             
             $(document).on("click", ".js-create-format-option", function () {
-                if ($(this).hasClass("js-use-template")) {
-                    $(".js-create-format-option.js-do-not-use-template").prop("checked", false);
-                    $.getJSON(yukon.url("/tools/data-export/getAvaliableFormatTemplates"), function (json) {
-                        $(".js-template-formats-dropdown").find("option").remove();
-                        if (json.hasOwnProperty('templateFileNames')) {
-                            $.each(json.templateFileNames, function (key, val) {
-                                $(".js-template-formats-dropdown").append(new Option(val, val));
-                            });
-                        } else {
-                            $("#create-format-dialog").find(".user-message").remove();
-                            $("#create-format-dialog").addMessage({
-                                message: json.errorMessage,
-                                messageClass: 'error'
-                            }); 
-                        }
-                        $(".js-avaliable-template-formats").toggleClass("dn", json.hasOwnProperty('errorMessage'));
-                    });
-                } else {
-                    $("#create-format-dialog").find(".user-message").remove();
-                    $(".js-create-format-option.js-use-template").prop("checked", false);
-                    $(".js-avaliable-template-formats").addClass("dn");
-                }
-                
+                _displayCreateFormatDialogContent($(this));
             });
             
             $(document).on("click", ".js-template-preview-link", function (event) {
                 event.preventDefault();	
                 window.open(yukon.url("/tools/data-exporter/format/renderTemplatePreview/" + $(".js-avaliable-template-formats option:selected").val()));
+            });
+            
+            $("#create-format-dialog").on("dialogopen", function (event, ui) {
+                _displayCreateFormatDialogContent($(this).find(".js-create-format-option:checked"));
             });
 
             _initialized = true;

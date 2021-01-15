@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -84,6 +86,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.Lists;
+import com.microsoft.azure.servicebus.primitives.StringUtil;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_EXPORT)
@@ -126,8 +129,10 @@ public class DataExporterFormatController {
         model.addAttribute("mode", PageEditMode.VIEW);
         try {
             exportFormat = parseAndValidateTemplate(fileName, flashScope, result, userContext);
-        } catch (Exception e) {
-            exportFormat = setExportFormatForErrorScenario(flashScope, e);
+        } catch (IOException e) {
+            log.error("Error occurred while parsing the template file", e);
+            flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.error"));
+            exportFormat = setExportFormatForErrorScenario();
         }
         model.addAttribute("showAttributeSection",
                 exportFormat.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
@@ -163,8 +168,10 @@ public class DataExporterFormatController {
         if (useTemplate) {
             try {
                 exportFormat = parseAndValidateTemplate(fileName, flashScope, result, userContext);
-            } catch (Exception e) {
-                exportFormat = setExportFormatForErrorScenario(flashScope, e);
+            } catch (IOException e) {
+                log.error("Error occurred while parsing the template file", e);
+                flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.error"));
+                exportFormat = setExportFormatForErrorScenario();
                 model.addAttribute("showAttributeSection",
                         exportFormat.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
             }
@@ -177,13 +184,11 @@ public class DataExporterFormatController {
         return "data-exporter/format/format.jsp";
     }
     
-    private ExportFormat setExportFormatForErrorScenario(FlashScope flashScope, Exception exception) {
-        log.error(exception);
+    private ExportFormat setExportFormatForErrorScenario() {
         ExportFormat format = new ExportFormat();
         format.setFormatType(ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
         format.setDelimiter(null);
         format.setDateTimeZoneFormat(null);
-        flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.error"));
         return format;
     }
 
@@ -611,30 +616,61 @@ public class DataExporterFormatController {
         ExportFormat exportFormat = YamlParserUtils.parseToObject(inputStream, ExportFormat.class);
         exportFormatTemplateValidator.validate(exportFormat, result);
         if (result.hasErrors()) {
-            logValidationErrors(result, userContext);
-            flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed"));
+            // When user tries to create multiple data exports from a single template, we get Name already exist validation
+            // message. This happens as we are using existing validatiors for validating fields. In current flow if there are any
+            // validation errors we are displaying empty form. To Prevent this we are filtering out the validations for formatName
+            // and resetting it to empty.
+            if (result.hasFieldErrors("formatName")) {
+                exportFormat.setFormatName(StringUtil.EMPTY);
+                BeanPropertyBindingResult resultWithoutName = new BeanPropertyBindingResult(exportFormat, result.getObjectName());
+                exportFormat.setFormatName(StringUtils.EMPTY);
+                resultWithoutName.getFieldErrors()
+                        .stream()
+                        .forEach(error -> {
+                            if (!StringUtils.equals("formatName", error.getField())) {
+                                resultWithoutName.addError(error);
+                            }
+                        });
+                resultWithoutName.getGlobalErrors()
+                        .stream()
+                        .forEach(error -> {
+                            resultWithoutName.addError(error);
+                        });
+                result = resultWithoutName;
+            }
+            if (result.hasErrors()) {
+                String commaSeparateErrorMsg = logAndRetreiveValidationErrors(result, userContext);
+                flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed", commaSeparateErrorMsg));
+                exportFormat = setExportFormatForErrorScenario();
+            }
         }
         return exportFormat;
     }
 
     /**
-     * Log all field validation errors and global errors.
+     * Log all field validation errors / global errors and return comma separated messages.
      */
-    private void logValidationErrors(BindingResult result, YukonUserContext userContext) {
+    private String logAndRetreiveValidationErrors(BindingResult result, YukonUserContext userContext) {
+        String errorMessage = StringUtils.EMPTY;
+        List<String> errorMessageLst = new ArrayList<String>();
         if (result.hasFieldErrors()) {
             List<FieldError> errors = result.getFieldErrors();
             for (FieldError error : errors) {
                 MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                log.info(error.getField() + " : " + accessor.getMessage(error.getCode(), error.getArguments()));
+                errorMessage = accessor.getMessage(error.getCode(), error.getArguments());
+                errorMessageLst.add(errorMessage);
+                log.info(error.getField() + " : " + errorMessage);
             }
         }
         if (result.hasGlobalErrors()) {
             List<ObjectError> errors = result.getGlobalErrors();
             for (ObjectError error : errors) {
                 MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+                errorMessage = accessor.getMessage(error.getCode(), error.getArguments());
+                errorMessageLst.add(errorMessage);
                 log.info(accessor.getMessage(error.getCode(), error.getArguments()));
             }
         }
-
+        return StringUtils.join(errorMessageLst, ", ");
     }
 }
