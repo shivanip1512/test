@@ -215,7 +215,12 @@ ALTER TABLE DeviceAddress
 DROP COLUMN PostCommWait;
 
 ALTER TABLE PortTiming
-ADD PostCommWait NUMBER NOT NULL DEFAULT '0';
+ADD PostCommWait NUMBER;
+
+UPDATE PortTiming SET PostCommWait = 0;
+
+ALTER TABLE PortTiming
+MODIFY PostCommWait NUMBER NOT NULL;
 
 INSERT INTO DBUpdates VALUES ('YUK-23502', '9.0.0', SYSDATE);
 /* @end YUK-23502 */

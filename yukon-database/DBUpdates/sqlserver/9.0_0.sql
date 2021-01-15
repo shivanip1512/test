@@ -220,9 +220,18 @@ INSERT INTO DBUpdates VALUES ('YUK-23523', '9.0.0', GETDATE());
 /* @start YUK-23502 */
 ALTER TABLE DeviceAddress
 DROP COLUMN PostCommWait;
+GO
 
 ALTER TABLE PortTiming
-ADD PostCommWait NUMERIC NOT NULL DEFAULT '0';
+ADD PostCommWait NUMERIC;
+GO
+
+UPDATE PortTiming SET PostCommWait = 0;
+GO
+
+ALTER TABLE PortTiming
+ALTER COLUMN PostCommWait NUMERIC NOT NULL;
+GO
 
 INSERT INTO DBUpdates VALUES ('YUK-23502', '9.0.0', GETDATE());
 /* @end YUK-23502 */
