@@ -37,9 +37,10 @@ public class YukonApiValidationUtils extends ValidationUtils {
     }
 
     /*
-     * Convenience method to combine the above two common operations.
+     * Convenience method to combine the above three common operations i.e. checkExceedsMaxLength(), checkBlacklistedCharacter(),
+     * checkIsBlank().
      */
-    public static void checkIsBlankOrExceedsMaxLength(Errors errors, String field, String fieldValue,
+    public static void checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(Errors errors, String field, String fieldValue,
             boolean fieldAllowsNull, int max) {
         checkIsBlank(errors, field, fieldValue, fieldAllowsNull);
         checkExceedsMaxLength(errors, field, fieldValue, max);
