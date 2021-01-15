@@ -44,16 +44,9 @@ yukon.highChart = (function () {
                     width: chartWidth,
                     height: chartHeight,
                     zoomType: 'x',
-                    plotBorderWidth: 2
-                },
-                yaxisOptionsJSON = {
-                    gridLineWidth: gridLineWidth
+                    plotBorderWidth: 2,
                 },
                 yaxesOptions = [];
-
-            $.each(jsonResponse.yaxis, function (index, item) {
-                $.extend(true, jsonResponse.yaxis[index], yaxisOptionsJSON)
-            });
             
             chartContainer.highcharts({
                 plotOptions: {
@@ -73,10 +66,15 @@ yukon.highChart = (function () {
                 },
                 xAxis: {
                     type: 'datetime',
-                    labels: {
-                        formatter: function() {
-                            return Highcharts.dateFormat(jsonResponse.xaxis.datetimeFormat, this.value);
-                        }
+                    dateTimeLabelFormats: {
+                        millisecond: '%H:%M:%S.%L',
+                        second: '%H:%M:%S',
+                        minute: '%H:%M',
+                        hour: '%H:%M',
+                        day: '%b %e',
+                        week: '%b %e',
+                        month: '%b \'%y',
+                        year: '%Y'
                     },
                     min: jsonResponse.xaxis.min,
                     max: jsonResponse.xaxis.max,
@@ -98,6 +96,9 @@ yukon.highChart = (function () {
                                 opacity: 1
                             }
                         }
+                    },
+                    column: {
+                        grouping: false,
                     }
                 }
             });

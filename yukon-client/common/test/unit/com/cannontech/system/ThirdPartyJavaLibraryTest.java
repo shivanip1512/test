@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cannontech.common.stream.StreamUtils;
+import com.cannontech.common.util.YamlParserUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -42,7 +43,7 @@ public class ThirdPartyJavaLibraryTest {
             "catalina-ssi.jar",
             "catalina-storeconfig.jar",
             "catalina-tribes.jar",
-            "ecj-4.15.jar",
+            "ecj-4.17.jar",
             "el-api.jar",
             "jasper-el.jar",
             "jasper.jar",
@@ -63,7 +64,7 @@ public class ThirdPartyJavaLibraryTest {
             "tomcat-websocket.jar",
             "websocket-api.jar",
             "catalina.jar",
-            "tomcat-juli-9.0.37.jar");
+            "tomcat-juli-9.0.41.jar");
 
     private static Stream<File> recurse(File f) {
         if (f.isDirectory()) {
@@ -77,7 +78,8 @@ public class ThirdPartyJavaLibraryTest {
 
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         
-        ThirdPartyLibraries documentedLibraries = ThirdPartyLibraryParser.parse(libraryYaml.getInputStream());
+        ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
+                ThirdPartyLibraries.class);
         
         Map<String, ThirdPartyJavaLibrary> documentedLibrariesByFilename = Maps.uniqueIndex(documentedLibraries.javaLibraries, l -> l.filename); 
         

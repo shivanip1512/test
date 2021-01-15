@@ -21,9 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
+import com.cannontech.common.util.YamlParserUtils;
 import com.cannontech.system.ThirdPartyIconLibrary;
 import com.cannontech.system.ThirdPartyLibraries;
-import com.cannontech.system.ThirdPartyLibraryParser;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -50,7 +50,8 @@ public class ThirdPartyIconLibraryTest {
 
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         
-        ThirdPartyLibraries documentedLibraries = ThirdPartyLibraryParser.parse(libraryYaml.getInputStream());
+        ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
+                ThirdPartyLibraries.class);
         
         Map<Path, ThirdPartyIconLibrary> documentedLibrariesByProject = 
                 Maps.uniqueIndex(documentedLibraries.iconLibraries, 
