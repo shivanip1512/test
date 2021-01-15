@@ -1767,8 +1767,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.14.0"
     md5 : 85ee6b9b4d0d13091e73db2d2b8ab939
     sha1 : c532ba992e0d748dc2bfa8592ea09d5d19527755
-    updated : 2019-05-02
-    jira : YUK-19826
+    updated : 2021-01-15
+    jira : YUK-23078
     notes : Apache Log4j API
   
   - filename : log4j-core-2.14.0.jar
@@ -1781,8 +1781,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.14.0"
     md5 : 62ad26fbfb783183663ba5bfdbfb5ace
     sha1 : 94bc1813a537b3b5c04f9b4adead3c434f364a70
-    updated : 2019-05-02
-    jira : YUK-19826
+    updated : 2021-01-15
+    jira : YUK-23078
     notes : Apache Log4j Core
   
   - filename : log4j-jcl-2.14.0.jar
@@ -1795,8 +1795,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-jcl/2.14.0"
     md5 : 14736dad73aa32c68e1b2b565183ca62
     sha1 : 1600323b15cda5c33424978e5cb179c67941aa8c
-    updated : 2019-05-02
-    jira : YUK-19826
+    updated : 2021-01-15
+    jira : YUK-23078
     notes : Apache Commons Logging Bridge for Log4j
   
   - filename : log4j-slf4j-impl-2.14.0.jar
@@ -1809,8 +1809,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.14.0"
     md5 : 0fecb509f39c3de5f481b6c33f8cfa5e
     sha1 : 79f3b3b85a8e75663f843c1ad14d94c1d6c65269
-    updated : 2018-05-02
-    jira : YUK-19826
+    updated : 2021-01-15
+    jira : YUK-23078
     notes : Apache Log4j 2 SLF4J Binding
   
   - filename : logging-interceptor-3.12.2.jar
