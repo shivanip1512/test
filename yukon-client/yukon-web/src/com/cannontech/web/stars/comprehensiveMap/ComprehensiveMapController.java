@@ -82,6 +82,7 @@ import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -233,14 +234,16 @@ public class ComprehensiveMapController {
 
        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
        log.debug("Getting data for download for {} gateways", gatewayRfnIdentifiers.size());
-       try {
-           metaData = metadataMultiService.getMetadataForGatewayRfnIdentifiers(gatewayRfnIdentifiers,
-                   Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM,
-                           RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
-                           RfnMetadataMulti.NODE_DATA,
-                           RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
-       } catch (NmCommunicationException e1) {
-           log.warn("caught exception in download", e1);
+       for (List<RfnIdentifier> splitGateways : Iterables.partition(gatewayRfnIdentifiers, 5)) {
+           try {
+               metaData.putAll(metadataMultiService.getMetadataForGatewayRfnIdentifiers(new HashSet<RfnIdentifier>(splitGateways),
+                       Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM,
+                               RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
+                               RfnMetadataMulti.NODE_DATA,
+                               RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA)));
+           } catch (NmCommunicationException e1) {
+               log.warn("caught exception in download", e1);
+           }
        }
 
        List<String[]> dataRows = retrieveDownloadDataRows(metaData, userContext);
