@@ -77,7 +77,7 @@ public class ExportField implements Displayable {
     }
 
     public void setReadingPattern(ReadingPattern readingPattern) {
-        if (isValue()) {
+        if (isValue() && readingPattern != ReadingPattern.CUSTOM) {
             this.pattern = readingPattern.getPattern();
         }
         this.readingPattern = readingPattern;
@@ -99,7 +99,7 @@ public class ExportField implements Displayable {
     }
 
     public void setTimestampPattern(TimestampPattern timestampPattern) {
-        if (isTimestamp()) {
+        if (isTimestamp() && timestampPattern != TimestampPattern.CUSTOM) {
             this.pattern = timestampPattern.getPattern();
         }
         this.timestampPattern = timestampPattern;
