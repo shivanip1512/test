@@ -31,8 +31,6 @@ ULONG  CtiTablePortTimings::getDelay(int Offset) const
 
 void CtiTablePortTimings::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-   ULONG    uTemp;
-
    rdr["pretxwait"]        >> _delays[PRE_RTS_DELAY];
    rdr["rtstotxwait"]      >> _delays[RTS_TO_DATA_OUT_DELAY];
    rdr["posttxwait"]       >> _delays[DATA_OUT_TO_RTS_DOWN_DELAY];

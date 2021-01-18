@@ -26,10 +26,12 @@ std::string RfDaPort::getSQLCoreStatement()
         "SELECT "
             "YP.paobjectid, 'PORT' category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
             "'N' alarminhibit, 'None' commonprotocol, 'Y' performancealarm, 90 performthreshold, '(none)' sharedporttype, 1025 sharedsocketnumber, "
-            "RFN.manufacturer, RFN.model, RFN.serialnumber "
+            "RFN.manufacturer, RFN.model, RFN.serialnumber, "
+            "TMG.pretxwait, TMG.rtstotxwait, TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout, TMG.PostCommWait "
         "FROM "
             "YukonPAObject YP "
             "JOIN RfnAddress RFN ON YP.paobjectid = RFN.deviceid "
+            "LEFT OUTER JOIN PortTiming TMG ON YP.paobjectid = TMG.PORTID "
         "WHERE "
             "type='RFN-1200'"; //  Future RF-DA device types will need to be added here as well.
 
@@ -46,6 +48,12 @@ void RfDaPort::DecodeDatabaseReader(Cti::RowReader &rdr)
         Inherited::DecodeDatabaseReader(rdr);
 
         _rfnId = RfnIdentifierTable::DecodeDatabaseReader(rdr);
+
+        // if we LEFT OUTER JOINed data, initialize it here, else stick with the default values (0s)
+        if ( ! rdr["PostCommWait"].isNull() )
+        {
+            _portTimings.DecodeDatabaseReader( rdr );
+        }
     }
     catch(...)
     {

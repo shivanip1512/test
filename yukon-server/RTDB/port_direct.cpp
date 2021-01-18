@@ -374,9 +374,9 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
         /* Do the extra delay if the message is a completing type */
         if( Xfer.isMessageComplete() )
         {
-            if ( Dev->getPostDelay() || getDelay(POST_REMOTE_DELAY) )
+            if ( auto postCommWaitDelay = std::max<ULONG>( Dev->getPostDelay(), getDelay( POST_REMOTE_DELAY ) ) )
             {
-                CTISleep( std::max<ULONG>( Dev->getPostDelay(), getDelay( POST_REMOTE_DELAY ) ) );
+                CTISleep( postCommWaitDelay );
             }
         }
 

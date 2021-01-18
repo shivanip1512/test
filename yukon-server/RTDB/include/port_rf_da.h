@@ -2,6 +2,7 @@
 
 #include "port_base.h"
 #include "rfn_identifier.h"
+#include "tbl_port_timing.h"
 
 namespace Cti   {
 namespace Ports {
@@ -9,6 +10,7 @@ namespace Ports {
 class IM_EX_PRTDB RfDaPort : public CtiPort
 {
    RfnIdentifier _rfnId;
+   CtiTablePortTimings _portTimings;
 
 public:
 
