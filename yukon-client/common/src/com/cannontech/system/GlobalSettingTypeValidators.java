@@ -123,7 +123,7 @@ public class GlobalSettingTypeValidators {
         Pattern urlWithPortMatcher = Pattern.compile("\\s*(.*?):(\\d+)\\s*");
         @Override
         public void validate(String urlWithPort, Errors errors, GlobalSettingType globalSettingType) {
-            YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "values[" + globalSettingType + "]", urlWithPort, true, 1000);
+            YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(errors, "values[" + globalSettingType + "]", urlWithPort, true, 1000);
 
             if (!StringUtils.isBlank(urlWithPort)
                     && !urlWithPortMatcher.matcher(urlWithPort).matches()) {
