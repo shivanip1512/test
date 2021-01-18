@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/14/2021 10:31:54 AM                        */
+/* Created on:     1/15/2021 3:56:25 PM                         */
 /*==============================================================*/
 
 
@@ -8106,6 +8106,7 @@ create table PortTiming  (
    POSTTXWAIT           NUMBER                          not null,
    RECEIVEDATAWAIT      NUMBER                          not null,
    EXTRATIMEOUT         NUMBER                          not null,
+   PostCommWait         NUMBER                          not null,
    constraint PK_PORTTIMING primary key (PORTID)
 );
 

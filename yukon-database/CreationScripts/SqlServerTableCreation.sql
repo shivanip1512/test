@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/14/2021 10:33:51 AM                        */
+/* Created on:     1/15/2021 3:57:44 PM                         */
 /*==============================================================*/
 
 
@@ -8615,6 +8615,7 @@ create table PortTiming (
    POSTTXWAIT           numeric              not null,
    RECEIVEDATAWAIT      numeric              not null,
    EXTRATIMEOUT         numeric              not null,
+   PostCommWait         numeric              not null,
    constraint PK_PORTTIMING primary key (PORTID)
 )
 go

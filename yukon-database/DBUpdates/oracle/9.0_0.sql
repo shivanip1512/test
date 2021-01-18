@@ -210,6 +210,18 @@ AND PaObjectId IN (
 INSERT INTO DBUpdates VALUES ('YUK-23523', '9.0.0', SYSDATE);
 /* @end YUK-23523 */
 
+/* @start YUK-23502 */
+ALTER TABLE PortTiming
+ADD PostCommWait NUMBER;
+
+UPDATE PortTiming SET PostCommWait = 0;
+
+ALTER TABLE PortTiming
+MODIFY PostCommWait NUMBER NOT NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-23502', '9.0.0', SYSDATE);
+/* @end YUK-23502 */
+
 /* @start YUK-23540 */
 INSERT INTO StateGroup VALUES(-30, 'LCR Firmware Update Status', 'Status');
 INSERT INTO State VALUES(-30, 0, 'Received and Waiting', 7, 6, 0);
