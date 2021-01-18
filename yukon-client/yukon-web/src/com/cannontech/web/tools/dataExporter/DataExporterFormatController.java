@@ -623,15 +623,14 @@ public class DataExporterFormatController {
             if (result.hasFieldErrors("formatName")) {
                 exportFormat.setFormatName(StringUtil.EMPTY);
                 BeanPropertyBindingResult resultWithoutName = new BeanPropertyBindingResult(exportFormat, result.getObjectName());
-                exportFormat.setFormatName(StringUtils.EMPTY);
-                resultWithoutName.getFieldErrors()
+                result.getFieldErrors()
                         .stream()
                         .forEach(error -> {
                             if (!StringUtils.equals("formatName", error.getField())) {
                                 resultWithoutName.addError(error);
                             }
                         });
-                resultWithoutName.getGlobalErrors()
+                result.getGlobalErrors()
                         .stream()
                         .forEach(error -> {
                             resultWithoutName.addError(error);
