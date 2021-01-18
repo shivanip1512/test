@@ -45,6 +45,9 @@
     <xsl:template match="loadmanagement[programname='First'][action='adjusting']">
         <xsl:call-template name="adjustFirst" />
     </xsl:template>
+    <xsl:template match="loadmanagement[programname='First'][action='cancelling']">
+        <xsl:call-template name="cancellingFirst" />
+    </xsl:template>
 
     <!-- Default Selection -->
     <xsl:template match="loadmanagement[action='starting']" priority="-1">
@@ -58,6 +61,9 @@
     </xsl:template>
     <xsl:template match="loadmanagement[action='adjusting']" priority="-1">
         <xsl:call-template name="adjustDefault" />
+    </xsl:template>
+    <xsl:template match="loadmanagement[action='cancelling']" priority="-1">
+        <xsl:call-template name="cancellingDefault" />
     </xsl:template>
     <!-- The following ensures that one of the XSLT default templates won't 
          get applied when there are no matches. -->
@@ -111,6 +117,15 @@ Today is <xsl:value-of select="today" />.  Utility is asking that you control yo
 <xsl:call-template name="closing" />
         </body>
     </xsl:template>
+    
+    <xsl:template name="cancellingFirst">
+        <subject>First Curtailment Event Cancel</subject>
+        <body>Utility is notifying all customers enrolled in the program of a Curtailment Event.
+
+Today is <xsl:value-of select="startdate" />. Utility has cancelled the event which originally started at <xsl:value-of select="starttime" />. You no longer need to control your load.
+<xsl:call-template name="closing" />
+        </body>
+    </xsl:template>
 
 
 
@@ -152,6 +167,14 @@ Today is <xsl:value-of select="startdate" />. Utility is modifying the event whi
         <body>Utility is notifying all customers enrolled in the program of a Scheduled Curtailment Event.
 
 Today is <xsl:value-of select="today" />.  Utility is asking that you control your electric load to your contracted firm demand level beginning at <xsl:value-of select="starttime" /> and continuing until <xsl:value-of select="stoptime" />.
+        </body>
+    </xsl:template>
+    <xsl:template name="cancellingDefault">
+        <subject>First Curtailment Event Cancel</subject>
+        <body>Utility is notifying all customers enrolled in the program of a Curtailment Event.
+
+Today is <xsl:value-of select="startdate" />. Utility has cancelled the event which originally started at <xsl:value-of select="starttime" />. You no longer need to control your load.
+<xsl:call-template name="closing" />
         </body>
     </xsl:template>
 

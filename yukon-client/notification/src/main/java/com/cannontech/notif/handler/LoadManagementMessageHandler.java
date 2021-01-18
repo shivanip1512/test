@@ -62,6 +62,9 @@ public class LoadManagementMessageHandler extends NotifHandler implements Messag
         case NotifLMControlMsg.SCHEDULING_NOTIFICATION:
             actionString = "scheduling";
             break;
+        case NotifLMControlMsg.CANCELLATION:
+            actionString = "cancelling";
+            break;
         default:
             actionString = "unknown";
         }
