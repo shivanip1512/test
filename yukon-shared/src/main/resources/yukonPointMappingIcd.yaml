@@ -1514,7 +1514,7 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Var-hours Delivered:                  { Unit: *Varh,   Modifiers: [ *Q1, *Q2                         ], Models: *__-RX-23 }
     - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q3, *Q4                         ], Models: *__-RX-23 }
     - Var-hours Total:                      { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *__-RX-23 }
-    - Var -hours Net:                       { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *__-RX-23 }
+    - Var-hours Net:                        { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *__-RX-23 }
     - VA-hours Lagging:                     { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4                    ], Models: *__-RX-23 }
     - VA-hours Received:                    { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4                    ], Models: *__-RX-23 }
     - VA-hours Total:                       { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *__-RX-23 }
@@ -1525,20 +1525,12 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time of Frozen Peak Delivered Demand: { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var:                   { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max                   ], Models: *__-RX-23 }
     - Time of Peak Delivered Var:           { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Delivered Var:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *Prev            ], Models: *__-RX-23 }
-    - Time of Frozen Peak Delivered Var:    { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
     - Peak Total Var:                       { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total Var:               { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Total Var:                { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23 }
-    - Time of Frozen Peak Total Var:        { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
     - Peak Volt-amperes Lagging:            { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max              ], Models: *__-RX-23 }
     - Time of Peak Volt-amperes Lagging:    { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Volt-amperes Lagging:     { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev       ], Models: *__-RX-23 }
-    - Time of Frozen Peak Volt-amperes Lagging: { Unit: *s,  Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
     - Peak Total VA:                        { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total VA:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Total VA:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23 }
-    - Time of Frozen Peak Total VA:         { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
     - Watt-hours Delivered Rate A:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateA                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate A:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateA                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate A:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *AX-RX-23 }
@@ -1571,10 +1563,6 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time of Peak Demand Rate D:           { Unit: *s,      Modifiers: [ *RateD                           ], Models: *AX-RX-23 }
     - Frozen Peak Demand Rate D:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev    ], Models: *AX-RX-23 }
     - Time of Frozen Peak Demand Rate D:    { Unit: *s,      Modifiers: [ *RateD, *Prev                    ], Models: *AX-RX-23 }
-    - Minimum Voltage:                      { Unit: *V,      Modifiers: [ *Min, *milli                     ], Models: *AX-RX-23 }
-    - Time for Minimum Voltage:             { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
-    - Peak Voltage:                         { Unit: *V,      Modifiers: [ *Max, *milli                     ], Models: *AX-RX-23 }
-    - Time for Peak Voltage:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
     - Peak Daily Voltage:                   { Unit: *V,      Modifiers: [ *DayMax, *milli                  ], Models: *AX-RX-23 }
     - Coincident Time of Peak Daily Voltage: { Unit: *s,     Modifiers: [                                  ], Models: *AX-RX-23 }
     - Minimum Daily Voltage:                { Unit: *V,      Modifiers: [ *DayMin, *milli                  ], Models: *AX-RX-23 }
@@ -1599,9 +1587,6 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Current Phase A:                      { Unit: *A,      Modifiers: [ *PhA, *milli                     ], Models: *AX-RX-23 }
     - Current Phase B:                      { Unit: *A,      Modifiers: [ *PhB, *milli                     ], Models: *AX-RX-_3 }
     - Current Phase C:                      { Unit: *A,      Modifiers: [ *PhC, *milli                     ], Models: *AX-RX-_3 }
-    - Power Factor Angle Phase A:           { Unit: *PF_deg, Modifiers: [ *PhA                             ], Models: *AX-RX-23 }
-    - Power Factor Angle Phase B:           { Unit: *PF_deg, Modifiers: [ *PhB                             ], Models: *AX-RX-_3 }
-    - Power Factor Angle Phase C:           { Unit: *PF_deg, Modifiers: [ *PhC                             ], Models: *AX-RX-_3 }
     - RFN Temperature:                      { Unit: *C,      Modifiers: [                                  ], Models: *AX-RX-23 }
 
 # Table 12 - Next Gen Water Node
