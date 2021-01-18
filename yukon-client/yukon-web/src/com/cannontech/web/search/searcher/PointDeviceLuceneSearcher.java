@@ -52,7 +52,7 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
         try {
             return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, new TopDocsCallbackHandler<SearchResults<UltraLightPoint>>() {
                 public SearchResults<UltraLightPoint> processHits(TopDocs hits, IndexSearcher indexSearcher) throws IOException {
-                    if (hits.totalHits != 1) {
+                    if (hits.totalHits.value != 1) {
                         return SearchResults.emptyResult();
                     }
                     

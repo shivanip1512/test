@@ -96,7 +96,10 @@ public class SiteSearchServiceImpl implements SiteSearchService {
 
         @Override
         public Boolean processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
-            int stop = Math.min(numToQuery, topDocs.totalHits);
+            // In version 8.3 totalHits become TotalHits object. The total hit count is now stored in value field of type long.
+            // We're assuming here that we will never get 2,147,483,647 or more hit counts so converted it to int.
+            int totalHitsInInt = Math.toIntExact(topDocs.totalHits.value);
+            int stop = Math.min(numToQuery, totalHitsInInt);
             for (; numFoundCurrentPage < numWanted && index < stop; ++index) {
                 int docId = topDocs.scoreDocs[index].doc;
                 Document document = indexSearcher.doc(docId);
@@ -115,11 +118,11 @@ public class SiteSearchServiceImpl implements SiteSearchService {
                 }
             }
             
-            totalHits = topDocs.totalHits - numDisallowed;
+            totalHits = totalHitsInInt - numDisallowed;
             
             // We know we've exhausted the search if we got fewer hits than we asked for.  We're assuming here
             // that we will never get 2,147,483,647 or more results.
-            searchExhausted = topDocs.totalHits < numToQuery;
+            searchExhausted = totalHitsInInt < numToQuery;
             iteration++;
             // The first time we tried startIndex + numWanted + 300
             // second we will try (startIndex + numWanted) * 3 + 300
@@ -248,11 +251,14 @@ public class SiteSearchServiceImpl implements SiteSearchService {
             @Override
             public Boolean processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
                 boolean foundOne = false;
+                // In version 8.3 totalHits become TotalHits object. The total hit count is now stored in value field of type
+                // long. We're assuming here that we will never get 2,147,483,647 or more hit counts so converted it to int.
+                int totalHitsInInt = Math.toIntExact(topDocs.totalHits.value);
                 if (log.isTraceEnabled()) {
-                    log.trace("found " + topDocs.totalHits);
+                    log.trace("found " + totalHitsInInt);
                 }
 
-                int stop = Math.min(maxResults, topDocs.totalHits);
+                int stop = Math.min(maxResults, totalHitsInInt);
                 for (int index = 0; index < stop && intoResults.size() < maxResults; ++index) {
                     
                     int docId = topDocs.scoreDocs[index].doc;

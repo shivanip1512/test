@@ -19,6 +19,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.YamlParserUtils;
 import com.cannontech.encryption.SystemPublisherMetadataCryptoUtils;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
@@ -53,14 +54,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
         try {
             InputStream systemPublisherYamlMetadataStream = new FileInputStream(
                     new File(CtiUtilities.getYukonBase(), ENCRYPTED_SYSTEM_PUBLISHER_METADATA));
-            Yaml yaml = new Yaml();
-            Object yamlObject = yaml.load(systemPublisherYamlMetadataStream);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            byte[] jsonBytes = objectMapper.writeValueAsBytes(yamlObject);
-            log.debug("YAML configuration " + yamlObject);
-            scalars = objectMapper.readValue(jsonBytes, ScalarField.class);
+            scalars = YamlParserUtils.parseToObject(systemPublisherYamlMetadataStream, ScalarField.class);
             if (scalars.getYukonConfigurations() != null) {
                 configurations.addAll(getDecryptedConfigurations(scalars.getYukonConfigurations(), SystemDataPublisher.YUKON));
             }

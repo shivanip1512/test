@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.chart.model.ChartColorsEnum;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.Graph;
 import com.cannontech.common.chart.model.GraphType;
@@ -59,19 +59,25 @@ public class HighChartServiceImpl implements HighChartService {
                     isTemperatureAxisDetailsAdded = true;
                 }
                 yAxes.put(HighChartOptionKey.OPPOSITE.getKey(), true);
+                yAxes.put(HighChartOptionKey.GRID_LINE_WIDTH.getKey(), 0);
             } else {
                 titleTxt = graphDetail.getyLabelUnits();
+                if (yMin != null && graphDetail.getyMin() != null) {
+                    yAxes.put(HighChartOptionKey.MIN.getKey(), graphDetail.getyMin());
+                }
+                if (yMax != null) {
+                    yAxes.put(HighChartOptionKey.MAX.getKey(), yMax);
+                }
+                yAxes.put(HighChartOptionKey.GRID_LINE_WIDTH.getKey(), 1);
             }
             titleOptions.put(HighChartOptionKey.TEXT.getKey(), titleTxt);
             titleOptions.put(HighChartOptionKey.ROTATION.getKey(), rotation);
             titleOptions.put(HighChartOptionKey.ALIGN.getKey(), "middle");
             yAxes.put(HighChartOptionKey.TITLE.getKey(), titleOptions);
-            if (yMin != null && graphDetail.getyMin() != null) {
-                yAxes.put(HighChartOptionKey.MIN.getKey(), graphDetail.getyMin());
-            }
-            if (yMax != null) {
-                yAxes.put(HighChartOptionKey.MAX.getKey(), yMax);
-            }
+            yAxes.put(HighChartOptionKey.ALIGN_TICKS.getKey(), true);
+            yAxes.put(HighChartOptionKey.START_ON_TICK.getKey(), false);
+            yAxes.put(HighChartOptionKey.END_ON_TICK.getKey(), false);
+            yAxes.put(HighChartOptionKey.TICK_AMOUNT.getKey(), 6);
             yAxesOptions.add(yAxes);
         }
 
@@ -82,18 +88,7 @@ public class HighChartServiceImpl implements HighChartService {
         long xAxisMax = stop.getMillis() + TimeZone.getDefault().getOffset(stop.getMillis());
         xaxisOptions.put(HighChartOptionKey.MIN.getKey(), xAxisMin);
         xaxisOptions.put(HighChartOptionKey.MAX.getKey(), xAxisMax);
-        
-        Duration duration = new Duration(start.getMillis(), stop.getMillis());
-        String dateTimeFormat = HighChartOptionKey.DATE_FORMAT_MONTH_DATE.getKey();
-        if (duration.getStandardDays() > 365) {
-            dateTimeFormat = HighChartOptionKey.DATE_FORMAT_MONTH_YEAR.getKey();
-        } else if (duration.getStandardDays() <= 1) {
-            dateTimeFormat = HighChartOptionKey.DATE_TIME_FORMAT_HOUR_MINUTE.getKey();
-        } else if (duration.getStandardDays() > 1 && duration.getStandardDays() <= 31) {
-            dateTimeFormat = HighChartOptionKey.DATE_TIME_FORMAT_DATE_MONTH_HOUR_MINUTE.getKey();
-        }
-        xaxisOptions.put("datetimeFormat", dateTimeFormat);
-        
+
         Map<String, Object> dataAndOptions = Maps.newHashMap();
         dataAndOptions.put("seriesDetails", seriesList);
         dataAndOptions.put(HighChartOptionKey.X_AXIS.getKey(), xaxisOptions);
@@ -106,18 +101,23 @@ public class HighChartServiceImpl implements HighChartService {
         Map<String, Object> seriesDetails = Maps.newHashMap();
         seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph.getChartData()));
         seriesDetails.put(HighChartOptionKey.SHOW_IN_LEGEND.getKey(), false);
-        seriesDetails.put(HighChartOptionKey.COLOR.getKey(), graph.getColor().getColorHex());
+        seriesDetails.put(HighChartOptionKey.BORDER_COLOR.getKey(), ChartColorsEnum.GREEN);
         if (isTemperaturePoint(graph.getPointId())) {
+            seriesDetails.put(HighChartOptionKey.THRESHOLD.getKey(), null);
+            seriesDetails.put(HighChartOptionKey.COLOR.getKey(), graph.getColor().getColorHex());
             seriesDetails.put(HighChartOptionKey.FILL_OPACITY.getKey(), "0");
             seriesDetails.put(HighChartOptionKey.MARKER.getKey(), Collections.singletonMap("enabled", false));
             seriesDetails.put(HighChartOptionKey.SERIES_GRAPH_TYPE.getKey(), GraphType.LINE.getHighChartType());
         } else {
-            seriesDetails.put(HighChartOptionKey.FILL_OPACITY.getKey(), "0.45");
             seriesDetails.put(HighChartOptionKey.MARKER.getKey(), Collections.singletonMap("enabled", true));
             seriesDetails.put(HighChartOptionKey.SERIES_GRAPH_TYPE.getKey(), graphType.getHighChartType());
             if (graphType == GraphType.COLUMN) {
-                //TODO: Bar width will be calculated in YUK-23481.
-                seriesDetails.put(HighChartOptionKey.POINT_WIDTH.getKey(), 10);
+                seriesDetails.put(HighChartOptionKey.BORDER_COLOR.getKey(), ChartColorsEnum.GREEN.getColorHex());
+                seriesDetails.put(HighChartOptionKey.COLOR.getKey(), graph.getColor().getColorHex());
+                seriesDetails.put(HighChartOptionKey.BORDER_WIDTH.getKey(), "2");
+            } else {
+                seriesDetails.put(HighChartOptionKey.FILL_OPACITY.getKey(), "0.45");
+                seriesDetails.put(HighChartOptionKey.COLOR.getKey(), ChartColorsEnum.GREEN.getColorHex());
             }
         }
         seriesDetails.put(HighChartOptionKey.SERIES_Y_AXIS.getKey(), graph.getAxisIndex() - 1); //The axis index in Highchart starts with 0

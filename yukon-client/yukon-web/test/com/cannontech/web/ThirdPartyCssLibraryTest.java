@@ -23,9 +23,9 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cannontech.common.stream.StreamUtils;
+import com.cannontech.common.util.YamlParserUtils;
 import com.cannontech.system.ThirdPartyLibraries;
 import com.cannontech.system.ThirdPartyLibrary;
-import com.cannontech.system.ThirdPartyLibraryParser;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -45,7 +45,8 @@ private static String cssPath = "../yukon-web/WebContent/resources/css/lib";
 
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         
-        ThirdPartyLibraries documentedLibraries = ThirdPartyLibraryParser.parse(libraryYaml.getInputStream());
+        ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
+                ThirdPartyLibraries.class);
         
         Map<String, ThirdPartyLibrary> documentedLibrariesByProject = Maps.uniqueIndex(documentedLibraries.cssLibraries, l -> l.project); 
         
