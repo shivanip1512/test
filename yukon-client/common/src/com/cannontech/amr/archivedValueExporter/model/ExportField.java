@@ -77,6 +77,8 @@ public class ExportField implements Displayable {
     }
 
     public void setReadingPattern(ReadingPattern readingPattern) {
+        // In yaml file, either readingPattern or pattern is mandatory. If it contains anything except CUSTOM, set pattern.
+        // If it contains COSTUM, yaml should contain a valid pattern.
         if (isValue() && readingPattern != ReadingPattern.CUSTOM) {
             this.pattern = readingPattern.getPattern();
         }
@@ -99,6 +101,8 @@ public class ExportField implements Displayable {
     }
 
     public void setTimestampPattern(TimestampPattern timestampPattern) {
+        // In yaml file, either timestampPattern or pattern is mandatory. If it contains anything except CUSTOM, set the pattern.
+        // If it contains COSTUM, yaml should contain a valid pattern.
         if (isTimestamp() && timestampPattern != TimestampPattern.CUSTOM) {
             this.pattern = timestampPattern.getPattern();
         }
