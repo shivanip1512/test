@@ -19,7 +19,7 @@ public class DeviceActionsRoleUserPicker extends UserPicker{
     @Override
     public YukonObjectCriteria combineCriteria(YukonObjectCriteria criteria, YukonUserContext userContext,
             String extraArgs) {
-        final BooleanQuery.Builder query = new BooleanQuery.Builder().setDisableCoord(false);
+        final BooleanQuery.Builder query = new BooleanQuery.Builder();
 
         if (criteria != null) {
             query.add(criteria.getCriteria(), Occur.MUST);
