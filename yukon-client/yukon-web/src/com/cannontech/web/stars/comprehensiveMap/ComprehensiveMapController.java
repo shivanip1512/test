@@ -234,19 +234,19 @@ public class ComprehensiveMapController {
 
        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
        log.debug("Getting data for download for {} gateways", gatewayRfnIdentifiers.size());
+       List<String[]> dataRows = new ArrayList<String[]>();
        for (List<RfnIdentifier> splitGateways : Iterables.partition(gatewayRfnIdentifiers, 5)) {
            try {
-               metaData.putAll(metadataMultiService.getMetadataForGatewayRfnIdentifiers(new HashSet<RfnIdentifier>(splitGateways),
+               metaData = metadataMultiService.getMetadataForGatewayRfnIdentifiers(new HashSet<RfnIdentifier>(splitGateways),
                        Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM,
                                RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
                                RfnMetadataMulti.NODE_DATA,
-                               RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA)));
+                               RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
+               dataRows.addAll(retrieveDownloadDataRows(metaData, userContext));
            } catch (NmCommunicationException e1) {
                log.warn("caught exception in download", e1);
            }
        }
-
-       List<String[]> dataRows = retrieveDownloadDataRows(metaData, userContext);
 
        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
        WebFileUtils.writeToCSV(response, headerRow, dataRows, "NetworkInformationDownload_" + now + ".csv");
