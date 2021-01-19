@@ -58,13 +58,10 @@ import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
-import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigState;
-import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
-import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -98,9 +95,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     @Autowired private CollectionActionService collectionActionService;
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandRequestExecutionDao executionDao;
-    @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceDao deviceDao;
@@ -139,8 +134,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         if (summary.supported.isEmpty()) {
             return configResult;
         }
-        CommandRequestExecution execution = createExecutionAndUpdateStateToInProgress(GROUP_DEVICE_CONFIG_VERIFY,
-                summary.supported, user);
+        
+        CommandRequestExecution execution = executionDao.createStartedExecution(CommandRequestType.DEVICE,
+                GROUP_DEVICE_CONFIG_VERIFY, summary.supported.size(), user);
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = waitableCommandCompletionCallbackFactory
                 .createWaitable(createVerifyCallback(configResult, summary.supported));
         logInitiated(devices, LogAction.VERIFY, user);
@@ -235,23 +231,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 .strip()
                 .replaceAll("\\s{2,}"," ");
         return commands.inverse().get(formattedString);
-    }
-    
-    @Override
-    public DeviceConfigState assignConfigToDevice(SimpleDevice device, DeviceConfiguration configuration,
-            LiteYukonUser user) throws InvalidDeviceTypeException {
-        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-        deviceConfigurationService.assignConfigToDevice(configuration, device, user, deviceName);
-        updateConfigStateForAssignAndUnassign(List.of(device), LastAction.ASSIGN, Instant.now(), Instant.now(), user);
-        return deviceConfigurationDao.getDeviceConfigStateByDeviceId(device.getPaoIdentifier().getPaoId());
-    }
-    
-    
-    @Override
-    public void unassignConfig(SimpleDevice device, LiteYukonUser user) throws InvalidDeviceTypeException {
-        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-        deviceConfigurationService.unassignConfig(device, user, deviceName);
-        updateConfigStateForAssignAndUnassign(List.of(device), LastAction.UNASSIGN, Instant.now(), Instant.now(), user);
     }
     
     /**
@@ -395,7 +374,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
             result.addCancellationCallback(new CollectionActionCancellationCallback(StrategyType.PORTER, null, execCallback));
             result.getExecution().setRequestCount(requests.size());
             log.debug("cache key:{} command:{} updating request count:{}", result.getCacheKey(), command, requests.size());
-            commandRequestExecutionDao.saveOrUpdate(result.getExecution());
+            executionDao.saveOrUpdate(result.getExecution());
             commandExecutionService.execute(requests, execCallback, result.getExecution(), false, context.getYukonUser());
         }
         return result.getCacheKey();
@@ -443,7 +422,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
      */
     private CommandRequestExecution createExecutionAndUpdateStateToInProgress(DeviceRequestType requestType,
             List<SimpleDevice> devices, LiteYukonUser user) {
-        CommandRequestExecution execution = executionDao.createStartedExecution(CommandRequestType.DEVICE, requestType, 0, user);
+        CommandRequestExecution execution = executionDao.createStartedExecution(CommandRequestType.DEVICE, requestType, devices.size(), user);
         updateStatusToInProgress(requestType, getDeviceIds(devices), Instant.now(), execution.getId());
         return execution;
     }
@@ -691,9 +670,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     private CommandCompletionCallback<CommandRequestDevice> createVerifyCallback(VerifyConfigCommandResult result,
             List<SimpleDevice> supported) {
         return new CommandCompletionCallback<CommandRequestDevice>() {
-            Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao
-                    .getDeviceConfigStatesByDeviceIds(getDeviceIds(new ArrayList<>(supported)));
-
             @Override
             public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
                 SimpleDevice device = command.getDevice();
@@ -711,9 +687,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 // This was commented out to prevent adding the final summary result status message to the out-of-sync parts list
                 // result.addError(device, error.getPorter());
                 logCompleted(command.getDevice(), LogAction.VERIFY, false);
-                DeviceConfigState currentState = deviceToState.get(command.getDevice().getDeviceId());
-                updateState(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, error.getDeviceError(), command.getDevice(),
-                        currentState);
             }
             
             @Override
@@ -726,9 +699,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
             public void receivedLastResultString(CommandRequestDevice command, String value) {
                 SimpleDevice device = command.getDevice();
                 result.addResultString(device, value);
-                DeviceConfigState currentState = deviceToState.get(command.getDevice().getDeviceId());
                 if (result.getVerifyResultsMap().get(device).getDiscrepancies().isEmpty()) {
-                    updateState(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, null, command.getDevice(), currentState);
                     logCompleted(command.getDevice(), LogAction.VERIFY, true);
                 } else {
                     logCompleted(command.getDevice(), LogAction.VERIFY, false);

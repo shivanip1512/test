@@ -10,9 +10,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus;
@@ -218,6 +220,10 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
     @Override
     public List<DeviceConfigActionHistoryDetail> getDeviceConfigActionHistory(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ExecType, StartTime, StopTime, ActionStatus, DeviceId");
+        sql.append("FROM (");
+        
+        //Getting config send and reads history from Command Request execution tables
         sql.append("SELECT");
         sql.append("CommandRequestExecType as ExecType,");
         sql.append("cre.StartTime,");
@@ -230,11 +236,31 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("FROM CommandRequestExec cre");
         sql.append("LEFT JOIN CommandRequestExecRequest request ON cre.CommandRequestExecId = request.CommandRequestExecId");
         sql.append("LEFT JOIN CommandRequestExecResult result ON cre.CommandRequestExecId = result.CommandRequestExecId AND request.DeviceId = result.DeviceId");
+        //GROUP_DEVICE_CONFIG_VERIFY is excluded because it doesn't always mean ASSIGN_CONFIG or UNASSIGN_CONFIG, clicking "Needs Upload" also does verify
         sql.append("WHERE cre.CommandRequestExecType").in_k(deviceConfigExecTypes);
         sql.append("AND (result.DeviceId").eq(deviceId);
         sql.append("    OR request.DeviceId").eq(deviceId).append(")");
-        sql.append("ORDER BY cre.StartTime DESC");
-        log.debug(sql);
+        
+        sql.append("UNION");
+        
+        //Getting assign and unassign history from collection action tables 
+        sql.append("SELECT");
+        sql.appendArgument_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY).append(" as ExecType,");
+        sql.append("ca.StartTime,");
+        sql.append("ca.StopTime,");
+        sql.append("CASE");
+        sql.append("    WHEN request.Result=").appendArgument_k(CommandRequestExecutionStatus.COMPLETE).append("THEN").appendArgument_k(LastActionStatus.SUCCESS);
+        sql.append("    WHEN request.Result=").appendArgument_k(CommandRequestExecutionStatus.FAILED).append("THEN").appendArgument_k(LastActionStatus.FAILURE);
+        sql.append("    ELSE").appendArgument_k(LastActionStatus.IN_PROGRESS);
+        sql.append("END as ActionStatus, request.PAObjectID as DeviceId");
+        sql.append("FROM CollectionAction ca");
+        sql.append("JOIN CollectionActionRequest request ON ca.CollectionActionId = request.CollectionActionId");
+        sql.append("WHERE Action").in_k(List.of(CollectionAction.ASSIGN_CONFIG, CollectionAction.UNASSIGN_CONFIG));
+        sql.append("AND request.PAObjectID").eq(deviceId);
+
+        sql.append(") results");
+        sql.append("ORDER BY StartTime DESC");
+        log.debug(sql.getDebugSql());
         return jdbcTemplate.query(sql, historyRowMapper);
     }
     
