@@ -128,7 +128,7 @@ inline CtiTime MillisecondsToCtiTime( const int64_t t )
     return CtiTime((unsigned long)(t/1000));
 }
 
-RfnIdentifier fromThrift(Thrift::Rfn::RfnIdentifier t)
+inline RfnIdentifier fromThrift(Thrift::Rfn::RfnIdentifier t)
 {
     return RfnIdentifier{
         t.sensorManufacturer,
@@ -137,7 +137,7 @@ RfnIdentifier fromThrift(Thrift::Rfn::RfnIdentifier t)
     };
 }
 
-Thrift::Rfn::RfnIdentifier toThrift(RfnIdentifier r)
+inline Thrift::Rfn::RfnIdentifier toThrift(RfnIdentifier r)
 {
     Thrift::Rfn::RfnIdentifier t;
     t.__set_sensorManufacturer(
