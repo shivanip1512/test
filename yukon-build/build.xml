@@ -219,6 +219,17 @@
         <mkdir dir="${server.dir}/Import"/>
         <mkdir dir="${server.dir}/Log"/>
         
+        <!-- Tools Component -->
+        <property name="tools.dir" value="${install.bag}/Yukon Base/Tools"/>
+        <mkdir dir="${tools.dir}/Data Collection Scripts/Days Data"/>
+        <mkdir dir="${tools.dir}/Data Collection Scripts/Location Data"/>
+        <copy todir="${tools.dir}/Data Collection Scripts/Days Data">
+            <fileset dir="${basedir}/yukon-install/resources/scripts/db_data_collection/daysData"/>
+        </copy>
+        <copy todir="${tools.dir}/Data Collection Scripts/Location Data">
+            <fileset dir="${basedir}/yukon-install/resources/scripts/db_data_collection/locationData"/>
+        </copy>
+        
         <!-- Initial Server Config Component -->
         <copy todir="${install.bag}/Initial Server Config/Config" file="${basedir}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
 
