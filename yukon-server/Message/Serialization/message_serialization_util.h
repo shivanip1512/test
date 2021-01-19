@@ -2,6 +2,7 @@
 
 #include "ctitime.h"
 #include "message.h"
+#include "rfn_identifier.h"
 #include "Thrift/Message_types.h"
 #include "Thrift/RfnAddressing_types.h"
 #include "message_factory.h"
