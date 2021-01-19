@@ -47,6 +47,7 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
     private static final String pattern = "pattern";
     private static final String fieldValue = "fieldValue";
     private static final String attribute = "attribute";
+    private static final String fieldAttribute = "field.attribute";
 
     private List<Field> fields = new ArrayList<Field>();
     private List<String> ignoredFields = new ArrayList<String>();
@@ -112,6 +113,10 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
             // only be used in field setup page. i.e if BLINK_COUNT is selected, BLINK_COUNT can be used in field setup.
             if (exportField.getField().getType() == FieldType.ATTRIBUTE) {
                 validateAttributeFields(exportField, exportFormat.getAttributes(), errors);
+                if (errors.hasFieldErrors(fieldAttribute) || errors.hasFieldErrors(attributeField)) {
+                    errors.popNestedPath();
+                    continue;
+                }
             }
 
             // Validate the dependent fields.
@@ -126,7 +131,7 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
      */
     private void validateAttributeFields(ExportField exportField, List<ExportAttribute> attributes, Errors errors) {
         if (exportField.getField().getAttribute() == null) {
-            errors.rejectValue("field.attribute", requiredKey, new Object[] { attribute, FieldType.ATTRIBUTE }, "");
+            errors.rejectValue(fieldAttribute, requiredKey, new Object[] { attribute, FieldType.ATTRIBUTE }, "");
         } else {
             ExportAttribute exportAttribute = exportField.getField().getAttribute();
             boolean isValidField = false;
@@ -137,9 +142,12 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
                 }
             }
             if (!isValidField) {
-                errors.rejectValue("field.attribute", invalidKey, new Object[] { attribute }, "");
+                errors.rejectValue(fieldAttribute, invalidKey, new Object[] { attribute }, "");
             }
-
+            // For Attribute Type, exportField.getAttributeField() should not be null.
+            if (exportField.getAttributeField() == null) {
+                errors.rejectValue(attributeField, requiredKey, new Object[] { attributeField, FieldType.ATTRIBUTE }, "");
+            }
         }
     }
 

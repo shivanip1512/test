@@ -603,6 +603,9 @@ yukon.tools.dataExporterFormat = (function () {
                     $('[preview-footer]').text(lastFooterValue);
                 }
             });
+            $(document).on("change", "#field-value-pattern-select", function () {
+                $("#pattern").val($(this).find('option:selected').val());
+            });
             
             _initialized = true;
         }

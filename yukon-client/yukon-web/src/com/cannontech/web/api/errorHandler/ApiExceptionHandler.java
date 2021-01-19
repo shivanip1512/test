@@ -76,17 +76,36 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = YukonLogManager.getLogger(ApiExceptionHandler.class);
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private List<String> supportingUris = new ArrayList<String>();
+    private List<String> notSupportingUris = new ArrayList<String>();
 
     /**
-     * Here, we are adding those URLs where new API Error model returned.
-     * When any new module updated with API Error Model , we need to add those URLs here.
+     * Here, we are adding those URLs which old API Error model returned.
+     * When any new module updated with API Error Model , we need to remove those URLs from here.
      * After updating all these changes, this method will be removed.
      */
     @PostConstruct
     public void init() {
-        // supportingUris.add(ApiURL.trendUrl);
-        // supportingUris.add(ApiURL.drLoadGroupUrl);
+        notSupportingUris.add(ApiURL.drLoadGroupUrl);
+        notSupportingUris.add(ApiURL.drSetupFilterUrl);
+        notSupportingUris.add(ApiURL.retrieveAllRoutesUrl);
+        notSupportingUris.add(ApiURL.pickerBuildUrl.substring(0, ApiURL.pickerBuildUrl.lastIndexOf("/")));
+        notSupportingUris.add(ApiURL.pickerSearchUrl);
+        notSupportingUris.add(ApiURL.pickerIdSearchUrl);
+        notSupportingUris.add(ApiURL.drMacroLoadGroupUrl);
+        notSupportingUris.add(ApiURL.drLoadProgramUrl);
+        notSupportingUris.add(ApiURL.drGearRetrieveUrl);
+        notSupportingUris.add(ApiURL.drProgramConstraintUrl);
+        notSupportingUris.add(ApiURL.drHolidayScheduleUrl);
+        notSupportingUris.add(ApiURL.drSeasonScheduleUrl);
+        notSupportingUris.add(ApiURL.drControlAreaUrl);
+        notSupportingUris.add(ApiURL.drControlScenarioUrl);
+        notSupportingUris.add(ApiURL.commChannelUrl);
+        notSupportingUris.add(ApiURL.virtualDeviceUrl);
+        notSupportingUris.add(ApiURL.trendUrl);
+        notSupportingUris.add(ApiURL.pointUrl.substring(0, ApiURL.pointUrl.lastIndexOf("/")));
+        notSupportingUris.add(ApiURL.attributeUrl);
+        notSupportingUris.add(ApiURL.attributeAssignmentsUrl);
+        notSupportingUris.add(ApiURL.aggregateDataReportUrl);
     }
 
     /**
@@ -94,10 +113,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
      */
     private boolean isNewApiErrorSupported(WebRequest request) {
         String url = ServletUtil.getFullURL(((ServletWebRequest) request).getRequest());
-        return supportingUris.stream()
+        return notSupportingUris.stream()
                              .filter(s -> url.contains(s))
                              .findFirst()
-                             .isEmpty() ? false : true;
+                             .isEmpty() ? true : false;
     }
 
     // 401
