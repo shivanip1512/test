@@ -43,6 +43,7 @@
     <entry key="yukon.web.error.noFieldsProvided">You must provide one of the following fields: {0}</entry>
     <entry key="yukon.web.error.date.startDateBeforeEndDate">The start date must be before the end date.</entry>
     <entry key="yukon.web.error.date.startDateBeforeOrEqualEndDate">The start date must be before or equal to the end date.</entry>
+    <entry key="yukon.web.error.date.rangeGreaterThanOneYear">Date range must not be greater than 1 year.</entry>
 
     <entry key="yukon.web.error.noJs">For full functionality of this site it is necessary to enable JavaScript. Please contact your administrator to enable JavaScript in your web browser.</entry>
     
