@@ -236,6 +236,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("FROM CommandRequestExec cre");
         sql.append("LEFT JOIN CommandRequestExecRequest request ON cre.CommandRequestExecId = request.CommandRequestExecId");
         sql.append("LEFT JOIN CommandRequestExecResult result ON cre.CommandRequestExecId = result.CommandRequestExecId AND request.DeviceId = result.DeviceId");
+        //GROUP_DEVICE_CONFIG_VERIFY is excluded because it doesn't always mean ASSIGN_CONFIG or UNASSIGN_CONFIG, clicking "Needs Upload" also does verify
         sql.append("WHERE cre.CommandRequestExecType").in_k(deviceConfigExecTypes);
         sql.append("AND (result.DeviceId").eq(deviceId);
         sql.append("    OR request.DeviceId").eq(deviceId).append(")");

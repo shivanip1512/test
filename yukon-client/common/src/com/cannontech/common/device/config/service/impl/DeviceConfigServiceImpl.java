@@ -670,9 +670,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     private CommandCompletionCallback<CommandRequestDevice> createVerifyCallback(VerifyConfigCommandResult result,
             List<SimpleDevice> supported) {
         return new CommandCompletionCallback<CommandRequestDevice>() {
-            Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao
-                    .getDeviceConfigStatesByDeviceIds(getDeviceIds(new ArrayList<>(supported)));
-
             @Override
             public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
                 SimpleDevice device = command.getDevice();
@@ -690,9 +687,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 // This was commented out to prevent adding the final summary result status message to the out-of-sync parts list
                 // result.addError(device, error.getPorter());
                 logCompleted(command.getDevice(), LogAction.VERIFY, false);
-                DeviceConfigState currentState = deviceToState.get(command.getDevice().getDeviceId());
-                updateState(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, error.getDeviceError(), command.getDevice(),
-                        currentState);
             }
             
             @Override
@@ -705,9 +699,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
             public void receivedLastResultString(CommandRequestDevice command, String value) {
                 SimpleDevice device = command.getDevice();
                 result.addResultString(device, value);
-                DeviceConfigState currentState = deviceToState.get(command.getDevice().getDeviceId());
                 if (result.getVerifyResultsMap().get(device).getDiscrepancies().isEmpty()) {
-                    updateState(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, null, command.getDevice(), currentState);
                     logCompleted(command.getDevice(), LogAction.VERIFY, true);
                 } else {
                     logCompleted(command.getDevice(), LogAction.VERIFY, false);
