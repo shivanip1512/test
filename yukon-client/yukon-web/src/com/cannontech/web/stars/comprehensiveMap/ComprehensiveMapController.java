@@ -303,7 +303,7 @@ public class ComprehensiveMapController {
         
         //Get Pao Locations for all devices
         List<RfnDevice> devices = metaData.keySet().stream()
-            .map(rfnIdentifier -> rfnDeviceDao.getDeviceForExactIdentifier(rfnIdentifier))
+            .map(rfnIdentifier -> rfnDeviceCreationService.createIfNotFound(rfnIdentifier))
             .collect(Collectors.toList());
 
         Map<Integer, PaoLocation> locations = paoLocationDao.getLocations(devices).stream()
@@ -317,8 +317,7 @@ public class ComprehensiveMapController {
 
         List<String[]> dataRows = Lists.newArrayList();
         log.debug("Got data from NM for {} devices", metaData.keySet().size());
-        for (RfnIdentifier device : metaData.keySet()) {
-            RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
+        for (RfnDevice rfnDevice : devices) {
             String[] dataRow = new String[14];
             LiteYukonPAObject pao = cache.getAllPaosMap().get(rfnDevice.getPaoIdentifier().getPaoId());
             dataRow[0] = pao.getPaoName();
@@ -327,13 +326,13 @@ public class ComprehensiveMapController {
                 dataRow[1] = meter.getMeterNumber();
             }
             dataRow[2] = pao.getPaoType().getPaoTypeName();
-            dataRow[3] = device.getSensorSerialNumber();
+            dataRow[3] = rfnDevice.getRfnIdentifier().getSensorSerialNumber();
             PaoLocation location = locations.get(rfnDevice.getPaoIdentifier().getPaoId());
             if (location != null) {
                 dataRow[4] = String.valueOf(location.getLatitude());
                 dataRow[5] = String.valueOf(location.getLongitude());
             }
-            RfnMetadataMultiQueryResult metadata = metaData.get(device);
+            RfnMetadataMultiQueryResult metadata = metaData.get(rfnDevice.getRfnIdentifier());
             if (metadata != null) {
                 String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
                 NodeComm comm = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
@@ -343,7 +342,7 @@ public class ComprehensiveMapController {
                 }
                 dataRow[7] = statusString;
 
-                DynamicRfnDeviceData deviceData = deviceDataMap.get(device);
+                DynamicRfnDeviceData deviceData = deviceDataMap.get(rfnDevice.getRfnIdentifier());
                 if (deviceData != null) {
                     dataRow[6] = deviceData.getGateway().getName();
                     dataRow[12] = String.valueOf(deviceData.getDescendantCount());
