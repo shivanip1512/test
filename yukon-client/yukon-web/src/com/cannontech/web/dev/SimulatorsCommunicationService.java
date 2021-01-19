@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -23,6 +24,7 @@ import com.cannontech.simulators.message.response.SimulatorResponse;
 public class SimulatorsCommunicationService {
     private static final Logger log = YukonLogManager.getLogger(SimulatorsCommunicationService.class);
     private static final String simulatorRequestCparm = "SIMULATOR_REQUEST";
+    private static final Duration requestTimeout = Duration.standardSeconds(5);
     @Autowired private ConfigurationSource configSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
@@ -32,7 +34,7 @@ public class SimulatorsCommunicationService {
     
     @PostConstruct
     public void init() {
-        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS, requestTimeout);
         requestTemplate = new RequestReplyTemplateImpl<>(simulatorRequestCparm, configSource, jmsTemplate, true);
     }
     

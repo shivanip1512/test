@@ -644,15 +644,15 @@ public class NmIntegrationController {
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
             return "redirect:viewBase";
         }
-        if (rfnMeterFieldSimulatorResponse == null) {
+        if (rfnMeterFieldSimulatorResponse != null) {
+            model.addAttribute("fieldSimulatorSettings", rfnMeterFieldSimulatorResponse.getSettings());
+        } else {
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
-            return "redirect:viewBase";
         }
         
         model.addAttribute("currentSettings", rfnMeterResponse.getSettings());
         model.addAttribute("selectedReportingInterval", rfnMeterResponse.getSettings().getReportingInterval());
         model.addAttribute("rfnMeterSimulatorStatus", buildSimulatorStatusJson(rfnMeterResponse.getStatus()));
-        model.addAttribute("fieldSimulatorSettings", rfnMeterFieldSimulatorResponse.getSettings());
         
         model.addAttribute("currentRfnMeterReadAndControlReadSimulatorSettings", rfnMeterReadAndControlResponse.getReadSettings());
         model.addAttribute("currentRfnMeterReadAndControlDisconnectSimulatorSettings", rfnMeterReadAndControlResponse.getDisconnectSettings());
