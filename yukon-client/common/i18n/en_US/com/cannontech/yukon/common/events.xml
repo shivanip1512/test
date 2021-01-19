@@ -883,6 +883,8 @@
     <entry key="yukon.common.events.infrastructure.warning.warningGenerated">{3}-severity {2} warning generated for device: {1}. Message: {4}</entry>
     <entry key="yukon.common.events.infrastructure.warning.warningGenerated.2">Warning Type</entry>
     <entry key="yukon.common.events.infrastructure.warning.warningGenerated.3">Severity</entry>
+    <entry key="yukon.common.events.infrastructure.warning.warningCleared">{2} warning has been cleared for device: {1}</entry>
+    <entry key="yukon.common.events.infrastructure.warning.warningCleared.2">Warning Type</entry>
     
     <!-- Dashboard Actions -->
     <entry key="yukon.common.events.system.tools.dashboard.dashboardAssigned">Dashboard {2} assigned to {7} user(s) by {1}.</entry>

@@ -152,6 +152,8 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                                                                      InfrastructureWarningSeverity.CLEAR,
                                                                      warning.getTimestamp(),
                                                                      warning.getArguments()));
+                    infrastructureEventLogService.warningCleared(serverDatabaseCache.getAllPaosMap().get(warning.getPaoIdentifier().getPaoId()).getPaoName(),
+                                                                     warning.getWarningType().toString());
                 }
                 sendSmartNotifications(clearedWarnings);
                 
