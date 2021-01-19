@@ -1362,7 +1362,9 @@ public final class JmsApiDirectory {
         addApis(jmsApis, RFN_METER, 
                 RFN_METER_DEMAND_RESET, 
                 RFN_METER_DISCONNECT,
+                RFN_METER_DISCONNECT_LEGACY,
                 RFN_METER_READ,
+                RFN_METER_READ_LEGACY,
                 RFN_METER_READ_ARCHIVE,
                 METER_PROGRAM_STATUS_ARCHIVE,
                 METER_PROGRAM_VALIDATION);
