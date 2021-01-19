@@ -210,6 +210,10 @@ void swap(ChannelData &a, ChannelData &b);
 
 std::ostream& operator<<(std::ostream& out, const ChannelData& obj);
 
+typedef struct _DatedChannelData__isset {
+  _DatedChannelData__isset() : baseChannelData(false) {}
+  bool baseChannelData :1;
+} _DatedChannelData__isset;
 
 class DatedChannelData : public virtual ::apache::thrift::TBase {
  public:
@@ -224,6 +228,8 @@ class DatedChannelData : public virtual ::apache::thrift::TBase {
    ::Cti::Messaging::Serialization::Thrift::Timestamp timeStamp;
   ChannelData baseChannelData;
 
+  _DatedChannelData__isset __isset;
+
   void __set_channelData(const ChannelData& val);
 
   void __set_timeStamp(const  ::Cti::Messaging::Serialization::Thrift::Timestamp val);
@@ -236,7 +242,9 @@ class DatedChannelData : public virtual ::apache::thrift::TBase {
       return false;
     if (!(timeStamp == rhs.timeStamp))
       return false;
-    if (!(baseChannelData == rhs.baseChannelData))
+    if (__isset.baseChannelData != rhs.__isset.baseChannelData)
+      return false;
+    else if (__isset.baseChannelData && !(baseChannelData == rhs.baseChannelData))
       return false;
     return true;
   }

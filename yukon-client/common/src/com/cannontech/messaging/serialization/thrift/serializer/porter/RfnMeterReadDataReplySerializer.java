@@ -54,8 +54,8 @@ public class RfnMeterReadDataReplySerializer extends RfnSerializationHelper impl
     private static DatedChannelData datedChannelDataConverter(com.cannontech.messaging.serialization.thrift.generated.DatedChannelData tdata) {
         var data = new DatedChannelData();
 
-        var tBaseData = tdata.getBaseChannelData();
-        if (tBaseData != null) {
+        if (tdata.isSetBaseChannelData()) {
+            var tBaseData = tdata.getBaseChannelData();
             data.setBaseChannelData(channelDataConverter(tBaseData));
         }
 

@@ -46,7 +46,7 @@ struct ChannelData {
 struct DatedChannelData {
     1: required     ChannelData           channelData;
     2: required     Types.Timestamp       timeStamp;
-    3: required     ChannelData           baseChannelData;
+    3: optional     ChannelData           baseChannelData;
 }
 
 struct RfnMeterReadingData {

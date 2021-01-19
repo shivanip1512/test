@@ -522,6 +522,7 @@ void DatedChannelData::__set_timeStamp(const  ::Cti::Messaging::Serialization::T
 
 void DatedChannelData::__set_baseChannelData(const ChannelData& val) {
   this->baseChannelData = val;
+__isset.baseChannelData = true;
 }
 std::ostream& operator<<(std::ostream& out, const DatedChannelData& obj)
 {
@@ -544,7 +545,6 @@ uint32_t DatedChannelData::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   bool isset_channelData = false;
   bool isset_timeStamp = false;
-  bool isset_baseChannelData = false;
 
   while (true)
   {
@@ -573,7 +573,7 @@ uint32_t DatedChannelData::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 3:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->baseChannelData.read(iprot);
-          isset_baseChannelData = true;
+          this->__isset.baseChannelData = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -591,8 +591,6 @@ uint32_t DatedChannelData::read(::apache::thrift::protocol::TProtocol* iprot) {
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_timeStamp)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_baseChannelData)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -609,10 +607,11 @@ uint32_t DatedChannelData::write(::apache::thrift::protocol::TProtocol* oprot) c
   xfer += oprot->writeI64(this->timeStamp);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("baseChannelData", ::apache::thrift::protocol::T_STRUCT, 3);
-  xfer += this->baseChannelData.write(oprot);
-  xfer += oprot->writeFieldEnd();
-
+  if (this->__isset.baseChannelData) {
+    xfer += oprot->writeFieldBegin("baseChannelData", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->baseChannelData.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -623,17 +622,20 @@ void swap(DatedChannelData &a, DatedChannelData &b) {
   swap(a.channelData, b.channelData);
   swap(a.timeStamp, b.timeStamp);
   swap(a.baseChannelData, b.baseChannelData);
+  swap(a.__isset, b.__isset);
 }
 
 DatedChannelData::DatedChannelData(const DatedChannelData& other15) {
   channelData = other15.channelData;
   timeStamp = other15.timeStamp;
   baseChannelData = other15.baseChannelData;
+  __isset = other15.__isset;
 }
 DatedChannelData& DatedChannelData::operator=(const DatedChannelData& other16) {
   channelData = other16.channelData;
   timeStamp = other16.timeStamp;
   baseChannelData = other16.baseChannelData;
+  __isset = other16.__isset;
   return *this;
 }
 void DatedChannelData::printTo(std::ostream& out) const {
@@ -641,7 +643,7 @@ void DatedChannelData::printTo(std::ostream& out) const {
   out << "DatedChannelData(";
   out << "channelData=" << to_string(channelData);
   out << ", " << "timeStamp=" << to_string(timeStamp);
-  out << ", " << "baseChannelData=" << to_string(baseChannelData);
+  out << ", " << "baseChannelData="; (__isset.baseChannelData ? (out << to_string(baseChannelData)) : (out << "<null>"));
   out << ")";
 }
 
