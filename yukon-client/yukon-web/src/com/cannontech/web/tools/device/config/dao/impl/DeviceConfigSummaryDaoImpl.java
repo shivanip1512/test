@@ -223,6 +223,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("SELECT ExecType, StartTime, StopTime, ActionStatus, DeviceId");
         sql.append("FROM (");
         
+        //Getting config send and reads history from Command Request execution tables
         sql.append("SELECT");
         sql.append("CommandRequestExecType as ExecType,");
         sql.append("cre.StartTime,");
@@ -241,6 +242,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         
         sql.append("UNION");
         
+        //Getting assign and unassign history from collection action tables 
         sql.append("SELECT");
         sql.appendArgument_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY).append(" as ExecType,");
         sql.append("ca.StartTime,");

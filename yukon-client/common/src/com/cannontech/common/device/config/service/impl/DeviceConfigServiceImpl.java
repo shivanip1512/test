@@ -134,8 +134,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         if (summary.supported.isEmpty()) {
             return configResult;
         }
-        CommandRequestExecution execution = createExecutionAndUpdateStateToInProgress(GROUP_DEVICE_CONFIG_VERIFY,
-                summary.supported, user);
+        
+        CommandRequestExecution execution = executionDao.createStartedExecution(CommandRequestType.DEVICE,
+                GROUP_DEVICE_CONFIG_VERIFY, summary.supported.size(), user);
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = waitableCommandCompletionCallbackFactory
                 .createWaitable(createVerifyCallback(configResult, summary.supported));
         logInitiated(devices, LogAction.VERIFY, user);
@@ -421,7 +422,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
      */
     private CommandRequestExecution createExecutionAndUpdateStateToInProgress(DeviceRequestType requestType,
             List<SimpleDevice> devices, LiteYukonUser user) {
-        CommandRequestExecution execution = executionDao.createStartedExecution(CommandRequestType.DEVICE, requestType, 0, user);
+        CommandRequestExecution execution = executionDao.createStartedExecution(CommandRequestType.DEVICE, requestType, devices.size(), user);
         updateStatusToInProgress(requestType, getDeviceIds(devices), Instant.now(), execution.getId());
         return execution;
     }
