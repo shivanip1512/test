@@ -173,8 +173,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             } else {
                 ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData = getDynamicPreviewAttributeData(format,
                         previewData);
-                generateDynamicBody(previewData.keySet(), previewData, format, userContext, BuiltInAttribute.USAGE, attributeData,
-                        null, writer);
+                generateDynamicBody(previewData.keySet(), previewData, format, userContext, BuiltInAttribute.DELIVERED_KWH,
+                        attributeData, null, writer);
             }
             writer.flush();
             preview.setBody(Lists.newArrayList(output.toString().split(System.lineSeparator())));
