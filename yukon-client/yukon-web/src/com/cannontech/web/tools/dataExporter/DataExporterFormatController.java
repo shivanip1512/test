@@ -86,7 +86,6 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.Lists;
-import com.microsoft.azure.servicebus.primitives.StringUtil;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_EXPORT)
@@ -621,7 +620,7 @@ public class DataExporterFormatController {
             // validation errors we are displaying empty form. To Prevent this we are filtering out the validations for formatName
             // and resetting it to empty.
             if (result.hasFieldErrors("formatName")) {
-                exportFormat.setFormatName(StringUtil.EMPTY);
+                exportFormat.setFormatName(StringUtils.EMPTY);
                 BeanPropertyBindingResult resultWithoutName = new BeanPropertyBindingResult(exportFormat, result.getObjectName());
                 result.getFieldErrors()
                         .stream()

@@ -1,13 +1,13 @@
 # CMEP Format
 # Do overwrite this provided template file as future updates will overwrite this file. Custom templates should be saved in a new file.
-formatName : 'CMEP Electric'
+formatName: 'CMEP Electric'
 delimiter: ','
-header :
-footer :
-formatType : DYNAMIC_ATTRIBUTE
+header:
+footer:
+formatType: DYNAMIC_ATTRIBUTE
 dateTimeZoneFormat: UTC
-excludeAbnormal :
-fields :
+excludeAbnormal:
+fields:
   - field:
       type: PLAIN_TEXT
     pattern: 'MEPMD01'
@@ -19,20 +19,24 @@ fields :
     pattern: 'EATON'
   - field:
       type: PLAIN_TEXT
+    pattern: ''
   - field:
       type: PLAIN_TEXT
+    pattern: ''
   - field:
       type: PLAIN_TEXT
+    pattern: ''
   - field:
-      type: PLAIN_TEXT
+      type: RUNTIME
+    pattern: 'yyyyMMddHHmm'
   - field:
       type: METER_NUMBER
   - field:
       type: PLAIN_TEXT
-    pattern : 'OK'
+    pattern: 'OK'
   - field:
       type: PLAIN_TEXT
-    pattern : 'E'
+    pattern: 'E'
   - field:
       type: ATTRIBUTE_NAME
     fieldValue: CMEP  
@@ -46,7 +50,7 @@ fields :
       type: PLAIN_TEXT
     pattern: '1'
   - field:
-      type: PLAIN_TEXT
+      type: POINT_TIMESTAMP
     pattern: 'yyyyMMddHHmm'
   - field:
       type: PLAIN_TEXT
