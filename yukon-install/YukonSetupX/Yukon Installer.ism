@@ -130,6 +130,7 @@
 		<row><td>Shortcut Holder</td><td>{F16F4E5C-A04A-4772-8309-98AEE3EF0456}</td><td>TARGETDIR</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tomcat</td><td>{0340C09C-1CA8-4C44-BA53-53138D1F8DD1}</td><td>WEB</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tomcat XML Config</td><td>{6F55A1F8-D6A1-46D4-9B10-F0CE4ABD4633}</td><td>CONF</td><td>16</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Tools</td><td>{5CA33C8A-1757-4367-96AF-4E90A6E1AFBF}</td><td>TOOLS</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Watchdog</td><td>{A11E02B2-037D-43A2-A5FE-EA6AE98E171E}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Web Deployment</td><td>{4DEA3DA8-40AC-43FF-90FF-EB6B8649160F}</td><td>WEBAPPS</td><td>0</td><td/><td/><td>529</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
@@ -376,6 +377,7 @@
 		<row><td>StartMenuFolder</td><td/><td>Start Menu</td><td/><td>3</td><td/></row>
 		<row><td>StartupFolder</td><td/><td>Startup</td><td/><td>3</td><td/></row>
 		<row><td>TARGETDIR</td><td/><td>Application Target Folder</td><td/><td>0</td><td/></row>
+		<row><td>TOOLS</td><td>TARGETDIR</td><td>Tools</td><td/><td>0</td><td/></row>
 		<row><td>USERPROFILE</td><td>TARGETDIR</td><td>.:USERPR~1|UserProfile</td><td/><td>0</td><td/></row>
 		<row><td>WEB</td><td>SERVER</td><td>web</td><td/><td>0</td><td/></row>
 		<row><td>WEBAPPS</td><td>WEB</td><td>webapps</td><td/><td>0</td><td/></row>
@@ -535,6 +537,7 @@
 		<row><td>Shortcut Holder</td><td/><td/><td>_1E90F88F_F141_41CA_A5F1_288EDD750C3E_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Tomcat</td><td/><td/><td>_DD4EA8E8_B253_4179_9C64_7142B2CF7172_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Tomcat XML Config</td><td/><td/><td>_B72B45A4_7E51_4635_A54E_2F559776381D_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Tools</td><td/><td/><td>_86DAC055_2E3F_4120_941D_75F5128BF055_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Watchdog</td><td/><td/><td>_13A7F99A_C8F5_481E_B049_4713177A4F1B_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Web Deployment</td><td/><td/><td>_39776812_3316_4905_B00F_4B78AFE83EAF_FILTER</td><td/><td/><td/><td/></row>
 	</table>
@@ -610,6 +613,7 @@
 		<row><td>Service Manager</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>appserver.conf</td><td/><td>0</td></row>
 		<row><td>Tomcat XML Config</td><td>&lt;PATH_TO_TOMCAT_XML_CONFIG&gt;</td><td>1</td><td>web.xml; server.xml</td><td/><td>2</td></row>
 		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;</td><td>1</td><td>*.*</td><td>web.xml; server.xml</td><td>2</td></row>
+		<row><td>Tools</td><td>&lt;PATH_TO_TOOLS_BASE&gt;</td><td>1</td><td>*.*</td><td/><td>0</td></row>
 		<row><td>Watchdog</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>watchdog.conf</td><td/><td>0</td></row>
 		<row><td>Web Deployment</td><td>&lt;PATH_TO_WEB_DEP_FILES&gt;</td><td>1</td><td>*.*</td><td>sublist.html; sublist.jlx;</td><td>2</td></row>
 	</table>
@@ -787,6 +791,7 @@
 		<row><td>PATH_TO_SERVER_BIN_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Yukon Base\Server\bin</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Tomcat</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT_XML_CONFIG</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;\conf</td><td/><td>2</td></row>
+		<row><td>PATH_TO_TOOLS_BASE</td><td>&lt;PATH_TO_YUKON_BASE&gt;\Tools</td><td/><td>2</td></row>
 		<row><td>PATH_TO_WEBSTARTJRE_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\WebStartJRE</td><td/><td>2</td></row>
 		<row><td>PATH_TO_WEB_DEP_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Yukon Web Deployment</td><td/><td>2</td></row>
 		<row><td>PATH_TO_WRAPPER_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Wrapper</td><td/><td>2</td></row>

@@ -1170,3 +1170,28 @@ begin
     endif;
 
 end;
+
+//----------------------------------------------------------
+// Remove Old RF Network data scripts. 
+//----------------------------------------------------------
+export prototype void RemoveOldRfnNetworkDataScripts();
+function void RemoveOldRfnNetworkDataScripts()
+number nResult;
+string szDir;
+begin
+    szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\historicData.bat";
+    nResult = Is (FILE_EXISTS, szDir);
+    if (nResult = TRUE) then
+        DeleteFile (shortcutDir);
+    endif;
+    szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\locationData.bat";
+    nResult = Is (FILE_EXISTS, szDir);
+    if (nResult = TRUE) then
+        DeleteFile (shortcutDir);
+    endif;
+    szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\ReadMe.txt";
+    nResult = Is (FILE_EXISTS, szDir);
+    if (nResult = TRUE) then
+        DeleteFile (shortcutDir);
+    endif;
+end;

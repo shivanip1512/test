@@ -221,13 +221,9 @@
         
         <!-- Tools Component -->
         <property name="tools.dir" value="${install.bag}/Yukon Base/Tools"/>
-        <mkdir dir="${tools.dir}/Data Collection Scripts/Days Data"/>
-        <mkdir dir="${tools.dir}/Data Collection Scripts/Location Data"/>
-        <copy todir="${tools.dir}/Data Collection Scripts/Days Data">
-            <fileset dir="${basedir}/yukon-install/resources/scripts/db_data_collection/daysData"/>
-        </copy>
-        <copy todir="${tools.dir}/Data Collection Scripts/Location Data">
-            <fileset dir="${basedir}/yukon-install/resources/scripts/db_data_collection/locationData"/>
+        <mkdir dir="${tools.dir}/RfNetworkData"/>
+        <copy todir="${tools.dir}/RfNetworkData">
+            <fileset dir="${basedir}/yukon-install/resources/scripts/rfNetworkData"/>
         </copy>
         
         <!-- Initial Server Config Component -->
