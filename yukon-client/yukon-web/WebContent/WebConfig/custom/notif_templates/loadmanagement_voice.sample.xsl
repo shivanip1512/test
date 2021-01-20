@@ -15,7 +15,7 @@
 
     <!-- Available script parameters:  
             programname - name of LM program
-            action - {starting,finishing,adjusting}
+            action - {starting,finishing,adjusting,canceling}
             startdate - date the event starts (e.g. "Tuesday, May 31")
             starttime - time the event starts (e.g. ""3:45 PM")
             stopdate - date the event stops (e.g. "Tuesday, May 31")
@@ -42,6 +42,9 @@
     <xsl:template match="loadmanagement[programname='First'][action='adjusting']">
         <xsl:call-template name="adjustFirst" />
     </xsl:template>
+    <xsl:template match="loadmanagement[programname='First'][action='canceling']">
+        <xsl:call-template name="cancelFirst" />
+    </xsl:template>
 
     <!-- Default Selection -->
     <xsl:template match="loadmanagement[action='starting']" priority="-1">
@@ -52,6 +55,9 @@
     </xsl:template>
     <xsl:template match="loadmanagement[action='adjusting']" priority="-1">
         <xsl:call-template name="adjustDefault" />
+    </xsl:template>
+    <xsl:template match="loadmanagement[action='canceling']" priority="-1">
+        <xsl:call-template name="cancelDefault" />
     </xsl:template>
     <!-- The following ensures that one of the XSLT default templates won't 
          get applied when there are no matches. -->
@@ -96,6 +102,16 @@
         <xsl:call-template name="closing" />
     </xsl:template>
 
+    <!-- First Canceling Script -->
+    <xsl:template name="cancelFirst">
+        Utility is canceling the First Program Interruption. Today is
+        <xsl:value-of select="startdate" />. Utility is canceling 
+        the event that was scheduled to begin at
+        <xsl:value-of select="starttime" />.
+
+        <xsl:call-template name="closing" />
+    </xsl:template>
+
 
 
     <!-- Default Starting Script -->
@@ -135,6 +151,16 @@
         hours and
         <xsl:value-of select="remainingminutes" />
         minutes.
+
+        <xsl:call-template name="closing" />
+    </xsl:template>
+
+    <!-- Default Canceling Script -->
+    <xsl:template name="cancelDefault">
+        Utility is canceling the Interruption. Today is
+        <xsl:value-of select="startdate" />. Utility is canceling 
+        the event that was scheduled to begin at
+        <xsl:value-of select="starttime" />.
 
         <xsl:call-template name="closing" />
     </xsl:template>

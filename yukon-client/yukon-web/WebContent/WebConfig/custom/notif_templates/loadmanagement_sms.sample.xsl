@@ -11,7 +11,7 @@
 
     <!-- Available script parameters:  
         programname - name of LM program
-        action - {starting,finishing,adjusting}
+        action - {starting,finishing,adjusting,canceling}
         startdate - date the event starts (e.g. "Tuesday, May 31")
         starttime - time the event starts (e.g. ""3:45 PM")
         stopdate - date the event stops (e.g. "Tuesday, May 31")
@@ -38,6 +38,9 @@
     <xsl:template match="loadmanagement[programname='firstprogram'][action='adjusting']">
         <xsl:call-template name="adjustFirst" />
     </xsl:template>
+    <xsl:template match="loadmanagement[programname='firstprogram'][action='canceling']">
+        <xsl:call-template name="cancelingFirst" />
+    </xsl:template>
 
     <!-- Default Selection -->
     <xsl:template match="loadmanagement[action='starting']" priority="-1">
@@ -48,6 +51,9 @@
     </xsl:template>
     <xsl:template match="loadmanagement[action='adjusting']" priority="-1">
         <xsl:call-template name="adjustDefault" />
+    </xsl:template>
+    <xsl:template match="loadmanagement[action='canceling']" priority="-1">
+        <xsl:call-template name="cancelingDefault" />
     </xsl:template>
     <!-- The following ensures that one of the XSLT default templates won't 
          get applied when there are no matches. -->
@@ -73,13 +79,17 @@
         <body>First Event Complete. You may restore your loads. Thank you.</body>
     </xsl:template>
 
-    <!--  First Adjusting Script
-    -->
+    <!--  First Adjusting Script -->
     <xsl:template name="adjustFirst">
         <subject>First Event Adjust</subject>
         <body>Economic Adjust: <xsl:value-of select="startdate" /> at <xsl:value-of select="starttime" /> until <xsl:value-of select="stoptime" />. Specific Adjust Message.</body>
     </xsl:template>
 
+    <!-- First Cancel Script -->
+    <xsl:template name="cancelFirst">
+        <subject>First Event Cancel</subject>
+        <body>First Event Canceled: Event on <xsl:value-of select="startdate" /> at <xsl:value-of select="starttime" /> is canceled. Specific Cancel Message </body>
+    </xsl:template>
 
     <!-- Default Starting Script -->
     <xsl:template name="startDefault">
@@ -97,6 +107,12 @@
     <xsl:template name="adjustDefault">
         <subject>Generic Event Adjust</subject>
         <body>Event Start Date: <xsl:value-of select="startdate" /> at <xsl:value-of select="starttime" />. New Completion <xsl:value-of select="stoptime" />. Generic Adjust Message.</body>
+    </xsl:template>
+
+    <!-- Default Cancel Script -->
+    <xsl:template name="cancelFirst">
+        <subject>Default Event Cancel</subject>
+        <body>Generic Event Canceled: Event on <xsl:value-of select="startdate" /> at <xsl:value-of select="starttime" /> is canceled. Generic Cancel Message </body>
     </xsl:template>
 </xsl:stylesheet>
 
