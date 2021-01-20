@@ -116,6 +116,8 @@ void UnsolicitedHandler::run( void )
 
                 work_remaining |= generateOutbounds   (loop_timer, loop_timer.elapsed() + 10);
 
+                work_remaining |= sendOutbounds       (loop_timer, loop_timer.elapsed() + 10);
+
                 work_remaining |= collectInbounds     (loop_timer, loop_timer.elapsed() + 10);
 
                 work_remaining |= expireTimeouts      (loop_timer, loop_timer.elapsed() + 10);
@@ -746,31 +748,46 @@ void UnsolicitedHandler::tryGenerate(device_record *dr)
 
     dr->xfer.setInCountActual(0UL);
 
-    if( dr->xfer.getOutCount() )
-    {
-        dr->comm_status = sendOutbound(*dr);
+    queueWaitingToSend(dr);
+}
 
-        traceOutbound(*dr, dr->comm_status);
-    }
-    else
-    {
-        dr->comm_status = ClientErrors::None;
-    }
+bool UnsolicitedHandler::sendOutbounds(const MillisecondTimer &timer, const unsigned long until)
+{
+    return processQueue(_waiting_to_send, __FUNCTION__, &UnsolicitedHandler::trySendOutbounds, timer, until);
+}
 
-    //  if we have data, are expecting no data, or we have an error, decode right away
-    if( ! dr->inbound.empty() || ! dr->xfer.getInCountExpected() || dr->comm_status )
-    {
-        queueToDecode(dr);
-    }
-    else
-    {
-        const CtiTime timeout = CtiTime::now() + getDeviceTimeout(*dr);
+void UnsolicitedHandler::trySendOutbounds(device_record *dr)
+{
+    const bool timeToSend = true;    // JMOC -- filtering goes here
 
-        queueWaitingForData(dr);
+    if ( timeToSend )
+    {
+        if (dr->xfer.getOutCount())
+        {
+            dr->comm_status = sendOutbound(*dr);
 
-        //  insert because it's a multimap - we might have multiple entries for this timeout value
-        _timeouts.emplace(timeout, dr);
-        dr->timeout = timeout;
+            traceOutbound(*dr, dr->comm_status);
+        }
+        else
+        {
+            dr->comm_status = ClientErrors::None;
+        }
+
+        //  if we have data, are expecting no data, or we have an error, decode right away
+        if( ! dr->inbound.empty() || ! dr->xfer.getInCountExpected() || dr->comm_status )
+        {
+            queueToDecode(dr);
+        }
+        else
+        {
+            const CtiTime timeout = CtiTime::now() + getDeviceTimeout(*dr);
+
+            queueWaitingForData(dr);
+
+            //  insert because it's a multimap - we might have multiple entries for this timeout value
+            _timeouts.emplace(timeout, dr);
+            dr->timeout = timeout;
+        }
     }
 }
 
@@ -1337,6 +1354,13 @@ void UnsolicitedHandler::queueRequestComplete(device_record *dr)
     CTILOG_TRACE(dout, "Queueing device " << dr->device->getID() << " to _request_complete");
 
     setDeviceState(_request_complete, dr, RequestComplete);
+}
+
+void UnsolicitedHandler::queueWaitingToSend(device_record *dr)
+{
+    CTILOG_TRACE(dout, "Queueing device " << dr->device->getID() << " to _waiting_to_send");
+
+    setDeviceState(_waiting_to_send, dr, WaitingToSend);
 }
 
 void UnsolicitedHandler::setDeviceState(device_list &queue, device_record *dr, DeviceState state)

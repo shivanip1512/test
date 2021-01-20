@@ -4,11 +4,7 @@
 #include "port_rf_da.h"
 #include "tbl_rfnidentifier.h"
 
-using std::string;
-using std::endl;
-
-namespace Cti   {
-namespace Ports {
+namespace Cti::Ports {
 
 RfDaPort::RfDaPort()
 {
@@ -31,7 +27,7 @@ std::string RfDaPort::getSQLCoreStatement()
         "FROM "
             "YukonPAObject YP "
             "JOIN RfnAddress RFN ON YP.paobjectid = RFN.deviceid "
-            "LEFT OUTER JOIN PortTiming TMG ON YP.paobjectid = TMG.PORTID "
+            "LEFT JOIN PortTiming TMG ON YP.paobjectid = TMG.PORTID "
         "WHERE "
             "type='RFN-1200'"; //  Future RF-DA device types will need to be added here as well.
 
@@ -49,7 +45,7 @@ void RfDaPort::DecodeDatabaseReader(Cti::RowReader &rdr)
 
         _rfnId = RfnIdentifierTable::DecodeDatabaseReader(rdr);
 
-        // if we LEFT OUTER JOINed data, initialize it here, else stick with the default values (0s)
+        // if we had a row, initialize it here, else stick with the default values (0s)
         if ( ! rdr["PostCommWait"].isNull() )
         {
             _portTimings.DecodeDatabaseReader( rdr );
@@ -86,9 +82,17 @@ unsigned RfDaPort::concurrentRequests() const
     return RfDaConcurrentRequests;
 }
 
+ULONG RfDaPort::getDelay(int Offset) const
+{
+    return _portTimings.getDelay(Offset);
+}
+
+CtiPort& RfDaPort::setDelay(int Offset, int D)
+{
+    _portTimings.setDelay(Offset, D);
+    return *this;
+}
+
 
 }
-}
-
-
 
