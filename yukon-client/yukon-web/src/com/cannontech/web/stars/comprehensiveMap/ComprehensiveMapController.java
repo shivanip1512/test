@@ -1,6 +1,9 @@
 package com.cannontech.web.stars.comprehensiveMap;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -85,6 +89,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.opencsv.CSVWriter;
 
 @RequestMapping("/comprehensiveMap/*")
 @Controller
@@ -223,7 +228,7 @@ public class ComprehensiveMapController {
     }
 
     @GetMapping("downloadNetworkInfo")
-    public void downloadNetworkInfo(YukonUserContext userContext, HttpServletResponse response) throws IOException {
+    public String downloadNetworkInfo(YukonUserContext userContext, HttpServletResponse response) throws IOException {
         String[] headerRow = retrieveDownloadHeaderRow(userContext);
         
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
@@ -234,22 +239,34 @@ public class ComprehensiveMapController {
 
        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
        log.debug("Getting data for download for {} gateways", gatewayRfnIdentifiers.size());
-       List<String[]> dataRows = new ArrayList<String[]>();
-       for (List<RfnIdentifier> splitGateways : Iterables.partition(gatewayRfnIdentifiers, 5)) {
-           try {
-               metaData = metadataMultiService.getMetadataForGatewayRfnIdentifiers(new HashSet<RfnIdentifier>(splitGateways),
-                       Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM,
-                               RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
-                               RfnMetadataMulti.NODE_DATA,
-                               RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
-               dataRows.addAll(retrieveDownloadDataRows(metaData, userContext));
-           } catch (NmCommunicationException e1) {
-               log.warn("caught exception in download", e1);
-           }
-       }
-
+       
+       response.setContentType("text/csv");
+       response.setHeader("Content-Type", "application/force-download");
        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-       WebFileUtils.writeToCSV(response, headerRow, dataRows, "NetworkInformationDownload_" + now + ".csv");
+       String fileName = "NetworkInformationDownload_" + now + ".csv";
+       response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+       
+       try (Writer writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+               CSVWriter csvWriter = new CSVWriter(writer);) {
+           csvWriter.writeNext(headerRow);
+       
+           for (List<RfnIdentifier> splitGateways : Iterables.partition(gatewayRfnIdentifiers, 5)) {
+               try {
+                   metaData = metadataMultiService.getMetadataForGatewayRfnIdentifiers(new HashSet<RfnIdentifier>(splitGateways),
+                           Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM,
+                                   RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
+                                   RfnMetadataMulti.NODE_DATA,
+                                   RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
+                   List<String[]> dataRows = retrieveDownloadDataRows(metaData, userContext);
+                   csvWriter.writeAll(dataRows);
+               } catch (NmCommunicationException e1) {
+                   log.warn("caught exception in download", e1);
+               }
+           }
+       
+       } 
+
+       return null;
     }
 
     /**
@@ -301,11 +318,13 @@ public class ComprehensiveMapController {
                                                     YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
-        //Get Pao Locations for all devices
         List<RfnDevice> devices = metaData.keySet().stream()
             .map(rfnIdentifier -> rfnDeviceCreationService.createIfNotFound(rfnIdentifier))
+            // remove devices not created or found
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
+        //Get Pao Locations for all devices
         Map<Integer, PaoLocation> locations = paoLocationDao.getLocations(devices).stream()
                 .collect(Collectors.toMap(l -> l.getPaoIdentifier().getPaoId(), l -> l));
         
