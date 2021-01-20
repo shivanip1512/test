@@ -103,7 +103,42 @@ yukon.highChart = (function () {
                 }
             });
         },
-
+        
+        redrawChart: function (dialog, ui) {
+            var heightDifference = ui.originalSize.height - ui.size.height,
+                widthDifference = ui.originalSize.width - ui.size.width,
+                newChartHeight = dialog.find('.highcharts-container').height() - heightDifference,
+                newChartWidth = dialog.find('.highcharts-container').width() - widthDifference;
+            
+            if (ui.originalSize.height > ui.size.height) {
+                newChartWidth = newChartWidth - 10;
+            } else  {
+                newChartWidth = newChartWidth + 10;
+            }
+            if (ui.originalSize.height > ui.size.height) {
+                newChartHeight = newChartHeight - 10;
+            } else  {
+                newChartHeight = newChartHeight + 10;
+            }
+            
+            dialog.find(".js-highchart-graph-container").each(function (index, chartContainer) {
+                var chosenChart,
+                    chartId = $(chartContainer).attr('id');
+                Highcharts.charts.forEach(function(chart, index) {
+                    if (chart.renderTo.id === chartId) {
+                        chosenChart = chart;
+                    }
+                });
+                if ($(chartContainer).closest(".js-trend-analysis")) {
+                    $(chartContainer).parent(".js-trend-analysis").height(newChartHeight);
+                    $(chartContainer).parent(".js-trend-analysis").width(newChartWidth);
+                }
+                chosenChart.setSize(newChartWidth, newChartHeight);
+            });
+            
+            dialog.height(dialog.parent().height()-dialog.prev('.ui-dialog-titlebar').height()-34);
+            dialog.width(dialog.prev('.ui-dialog-titlebar').width());
+        }
     };
  
     return mod;

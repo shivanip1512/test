@@ -45,7 +45,7 @@
     </c:if>
 </c:url>
 
-<div id="js-chart-container-${uniqueId}"></div>
+<div id="js-chart-container-${uniqueId}" class="js-highchart-graph-container"></div>
 
 <c:choose>
     <c:when test="${not empty reloadInterval}">
