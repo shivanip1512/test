@@ -39,7 +39,7 @@ public class TrendApiController {
     @Autowired private TrendService trendService;
     @Autowired private TrendCreateValidator trendCreateValidator;
     @Autowired private TrendValidator trendValidator;
-    @Autowired private ResetPeakValidator resetPeakValidator;
+    @Autowired private ResetPeakApiValidator resetPeakApiValidator;
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.CREATE)
@@ -94,6 +94,6 @@ public class TrendApiController {
 
     @InitBinder("resetPeakModel")
     public void setupResetPeakBinder(WebDataBinder binder) {
-        binder.addValidators(resetPeakValidator);
+        binder.addValidators(resetPeakApiValidator);
     }
 }

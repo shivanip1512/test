@@ -37,7 +37,8 @@ public enum ApiErrorDetails {
     POINT_OFFSET_NOT_AVAILABLE(ApiErrorCategory.VALIDATION_FAILED, 113, "Point offset not available", "Point offset not available."), // code : 101113
     POINT_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 114, "Point type mismatch", "Point type mismatch."), // code : 101114
     PAO_ID_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 115, "Pao id mismatch", "Pao id mismatch."), // code : 101115
-    PAO_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 116, "Pao type mismatch", "Pao type mismatch."); // code : 101116
+    PAO_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 116, "Pao type mismatch", "Pao type mismatch."), // code : 101116
+    PAST_DATE(ApiErrorCategory.VALIDATION_FAILED, 117, "Date must be in the past", "Date must be in the past."); // code : 101117
     
     private ApiErrorCategory category;
     private int code;

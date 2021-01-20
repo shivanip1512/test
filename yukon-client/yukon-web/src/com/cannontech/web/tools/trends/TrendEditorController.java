@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -212,6 +213,8 @@ public class TrendEditorController {
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 log.error("Error saving trend:{}", JsonUtils.toJson(response.getBody()));
                 flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.genericMainMessage"));
+                BindException error = new BindException(trendModel, "trendDefinition");
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 return bindAndForward(trendModel, result, redirectAttributes);
             }
 

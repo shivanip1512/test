@@ -14,15 +14,31 @@ import com.cannontech.common.util.Range;
 public class YukonValidationUtilsCommon extends ValidationUtils {
    
     public static final String BASIC_BLACKLISTED_CHAR_LIST = "[\\\\!#$%&'*();+=<>?{}\"|,/]";
+    public final static String ILLEGAL_NAME_CHARS = "[\\,|/\"\\\\]";
 
     public static  boolean checkExceedsMaxLength(String fieldValue, int max) {
         return (fieldValue != null && fieldValue.length() > max) ? true : false;
     }
-    
+
+    /**
+     * Return true if the provided String contains any characters from blacklisted characters( \\, !, #, $, %, &, ', *, (, ), ;,
+     * +, =, <, >, ?, {, }, \, ", |, / and , ).
+     */
     public static boolean checkBlacklistedCharacter(String fieldValue) {
         if (fieldValue != null) {
             Matcher hasBlacklistedChar = Pattern.compile(BASIC_BLACKLISTED_CHAR_LIST).matcher(fieldValue);
-            return (hasBlacklistedChar.find()) ? true : false ;
+            return (hasBlacklistedChar.find()) ? true : false;
+        }
+        return false;
+    }
+
+    /**
+     * Return true if the provided String contains any characters from illegal characters( \, |, /, ", \\ and , ).
+     */
+    public static boolean checkIllegalCharacter(String fieldValue) {
+        if (fieldValue != null) {
+            Matcher hasBlacklistedChar = Pattern.compile(ILLEGAL_NAME_CHARS).matcher(fieldValue);
+            return (hasBlacklistedChar.find()) ? true : false;
         }
         return false;
     }

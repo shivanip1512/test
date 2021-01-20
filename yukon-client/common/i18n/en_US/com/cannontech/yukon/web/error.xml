@@ -87,4 +87,5 @@
     <entry key="yukon.web.error.101114">Point type {0} does not match existing type {1} for id: {2}.</entry>
     <entry key="yukon.web.error.101115">PaoId {0} does not match existing paoId {1}.</entry>
     <entry key="yukon.web.error.101116">Type {0} does not match existing type {1} for id: {2}.</entry>
+    <entry key="yukon.web.error.101117">Date must be in the past.</entry>
 </properties>
