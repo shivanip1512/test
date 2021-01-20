@@ -22,7 +22,7 @@ function showTrends(title, url, id) {
             width: 600,
             height: 580,
             resizeStop: function(event, ui) {
-                yukon.highChart.redrawChart($(this), ui);
+                yukon.highChart.redrawTrendChart($(this), ui);
             }
         });
     });

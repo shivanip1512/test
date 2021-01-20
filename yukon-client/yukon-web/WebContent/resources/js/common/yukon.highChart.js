@@ -104,7 +104,7 @@ yukon.highChart = (function () {
             });
         },
         
-        redrawChart: function (dialog, ui) {
+        redrawTrendChart: function (dialog, ui) {
             var heightDifference = ui.originalSize.height - ui.size.height,
                 widthDifference = ui.originalSize.width - ui.size.width,
                 newChartHeight = dialog.find('.highcharts-container').height() - heightDifference,

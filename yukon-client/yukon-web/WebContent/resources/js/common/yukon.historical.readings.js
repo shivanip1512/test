@@ -25,7 +25,7 @@ yukon.historical.readings = (function () {
                 width : 800,
                 height : 500,
                 resizeStop: function(event, ui) {
-                    yukon.highChart.redrawChart($(this), ui);
+                    yukon.highChart.redrawTrendChart($(this), ui);
                 }
             });
         }).always(function () {

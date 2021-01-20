@@ -102,7 +102,7 @@ yukon.tools.tdc = (function () {
                         width: 780,
                         height: 380,
                         resizeStop: function(event, ui) {
-                            yukon.highChart.redrawChart($(this), ui);
+                            yukon.highChart.redrawTrendChart($(this), ui);
                         }
                     });
                 });
