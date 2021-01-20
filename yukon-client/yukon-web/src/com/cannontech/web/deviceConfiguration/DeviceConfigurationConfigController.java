@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigDouble;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidConfigurationRemovalException;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
@@ -37,6 +36,8 @@ import com.cannontech.common.pao.definition.dao.ConfigurationCategory;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.rfn.util.RfnFeatures;
+import com.cannontech.common.rfn.util.RfnFirmwareHelper;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -561,15 +562,7 @@ public class DeviceConfigurationConfigController {
         
         //Add attributes needed for RFN Metrology Configuration
         model.addAttribute("rfnMetrologyConfigurationType", CategoryType.RFN_METROLOGY_CONFIGURATION.value());
-        model.addAttribute("displayRfnMetrologyWarning", !hasRfnFirmwareSupportIn(9.4));
-    }
-    
-    private boolean hasRfnFirmwareSupportIn(double version) {
-        Double firmwareVersion = configurationSource.getDouble(MasterConfigDouble.RFN_FIRMWARE);
-        if (firmwareVersion != null && firmwareVersion >= version) {
-            return true;
-        }
-        return false;
+        model.addAttribute("displayRfnMetrologyWarning", !RfnFirmwareHelper.isSupported(RfnFeatures.METROLOGY_ENABLE_DISABLE, configurationSource));
     }
     
     private Map<String, Collection<PaoType>> collectCategoryMap(Collection<Entry<ConfigurationCategory, PaoType>> categoryTypeLists) {
