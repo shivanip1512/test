@@ -345,7 +345,10 @@
         
         <cti:msg2 key=".deviceConfig.title" var="rfnMeterDeviceConfigSimulatorTitle"/>
         <cti:tab title="${rfnMeterDeviceConfigSimulatorTitle}">
-            <c:if test="${fieldSimulatorSettings}">
+            <c:if test="${!empty fieldSimulatorError}">
+                <tags:alertBox>${fieldSimulatorError}</tags:alertBox>
+            </c:if>
+            <c:if test="${!empty fieldSimulatorSettings}">
                 <tags:sectionContainer2 nameKey="rfnMeterSimulator.deviceConfig">
                     <div class="column-12-12 clearfix">
                         <div class="column one">
