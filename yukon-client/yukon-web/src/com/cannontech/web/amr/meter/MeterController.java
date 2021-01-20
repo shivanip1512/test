@@ -251,6 +251,11 @@ public class MeterController {
         // The set of attributes in this device's definition. See paoDefinition.xml
         Set<Attribute> deviceAttributes = attributeService.getAvailableAttributes(device);
         
+        model.addAttribute("deviceId", deviceId);
+        
+        String deviceName = paoLoadingService.getDisplayablePao(device).getName();
+        model.addAttribute("deviceName", deviceName);
+        
         /** User Permissions */
         boolean commanderUser = rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_WEB_COMMANDER, user);
         boolean highBillUser = rolePropertyDao.checkProperty(YukonRoleProperty.HIGH_BILL_COMPLAINT, user);
@@ -293,7 +298,7 @@ public class MeterController {
                     MeterProgramSummaryDetail program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(deviceId, userContext);
                     deviceHasMeterProgram = program != null;
                 } catch (NotFoundException e) {
-                    //not programmed yet
+                    log.info("No meter program exists for meter " + deviceName, e);
                 }
             }
         }
@@ -311,11 +316,7 @@ public class MeterController {
                 || voltageAndTouDevice // Voltage and Tou Page
                 || (commanderUser && commanderDevice) // Web Commander Page
                 || (porterCommandsDevice && locateRouteUser); // Locate Route Page
-        
-        model.addAttribute("deviceId", deviceId);
-        
-        model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
-        
+
         // Do some hinting to speed loading
         List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
         pointFormattingService.addLitePointsToCache(litePoints);
