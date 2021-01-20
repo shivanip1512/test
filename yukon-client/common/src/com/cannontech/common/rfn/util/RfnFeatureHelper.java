@@ -3,12 +3,12 @@ package com.cannontech.common.rfn.util;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigDouble;
 
-public class RfnFirmwareHelper {
+public class RfnFeatureHelper {
     //  hide constructor
-    private RfnFirmwareHelper() {
+    private RfnFeatureHelper() {
     }
     
-    public static boolean isSupported(RfnFeatures feature, ConfigurationSource configurationSource) {
+    public static boolean isSupported(RfnFeature feature, ConfigurationSource configurationSource) {
         return feature.isSupportedIn(configurationSource.getDouble(MasterConfigDouble.RFN_FIRMWARE));
     }
 }

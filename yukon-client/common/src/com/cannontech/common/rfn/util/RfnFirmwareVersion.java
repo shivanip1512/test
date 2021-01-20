@@ -1,6 +1,9 @@
 package com.cannontech.common.rfn.util;
 
 public enum RfnFirmwareVersion {
+    FW_9_0(9, 0),
+    FW_9_1(9, 1),
+    FW_9_3(9, 3),
     FW_9_4(9, 4),
     ;
     

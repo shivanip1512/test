@@ -19,8 +19,8 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.rfn.util.RfnFeatures;
-import com.cannontech.common.rfn.util.RfnFirmwareHelper;
+import com.cannontech.common.rfn.util.RfnFeature;
+import com.cannontech.common.rfn.util.RfnFeatureHelper;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.ThriftRequestReplyReplyTemplate;
@@ -150,7 +150,7 @@ public class RfnMeterDisconnectService {
             }
         };
         
-        if (RfnFirmwareHelper.isSupported(RfnFeatures.E2E_DISCONNECT, configurationSource)) {
+        if (RfnFeatureHelper.isSupported(RfnFeature.E2E_DISCONNECT, configurationSource)) {
             e2eTemplate.send(new RfnMeterDisconnectRequest(meter.getRfnIdentifier(), action), handler);
         } else {
             legacyTemplate.send(new RfnMeterDisconnectRequest(meter.getRfnIdentifier(), action), handler);

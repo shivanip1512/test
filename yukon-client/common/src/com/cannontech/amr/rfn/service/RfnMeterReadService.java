@@ -19,8 +19,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.util.RfnFeatures;
-import com.cannontech.common.rfn.util.RfnFirmwareHelper;
+import com.cannontech.common.rfn.util.RfnFeature;
+import com.cannontech.common.rfn.util.RfnFeatureHelper;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.ThriftRequestReplyReplyTemplate;
@@ -142,7 +142,7 @@ public class RfnMeterReadService {
             }
         };
         
-        if (RfnFirmwareHelper.isSupported(RfnFeatures.E2E_READ_NOW, configurationSource)) {
+        if (RfnFeatureHelper.isSupported(RfnFeature.E2E_READ_NOW, configurationSource)) {
             e2eTemplate.send(new RfnMeterReadRequest(rfnMeter.getRfnIdentifier()), handler);
         } else {
             legacyTemplate.send(new RfnMeterReadRequest(rfnMeter.getRfnIdentifier()), handler);

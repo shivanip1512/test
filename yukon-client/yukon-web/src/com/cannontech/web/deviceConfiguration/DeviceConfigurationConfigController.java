@@ -36,8 +36,8 @@ import com.cannontech.common.pao.definition.dao.ConfigurationCategory;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.rfn.util.RfnFeatures;
-import com.cannontech.common.rfn.util.RfnFirmwareHelper;
+import com.cannontech.common.rfn.util.RfnFeature;
+import com.cannontech.common.rfn.util.RfnFeatureHelper;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -562,7 +562,7 @@ public class DeviceConfigurationConfigController {
         
         //Add attributes needed for RFN Metrology Configuration
         model.addAttribute("rfnMetrologyConfigurationType", CategoryType.RFN_METROLOGY_CONFIGURATION.value());
-        model.addAttribute("displayRfnMetrologyWarning", !RfnFirmwareHelper.isSupported(RfnFeatures.METROLOGY_ENABLE_DISABLE, configurationSource));
+        model.addAttribute("displayRfnMetrologyWarning", !RfnFeatureHelper.isSupported(RfnFeature.METROLOGY_ENABLE_DISABLE, configurationSource));
     }
     
     private Map<String, Collection<PaoType>> collectCategoryMap(Collection<Entry<ConfigurationCategory, PaoType>> categoryTypeLists) {
