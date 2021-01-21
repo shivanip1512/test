@@ -758,37 +758,49 @@ bool UnsolicitedHandler::sendOutbounds(const MillisecondTimer &timer, const unsi
 
 void UnsolicitedHandler::trySendOutbounds(device_record *dr)
 {
-    const bool timeToSend = true;    // JMOC -- filtering goes here
-
-    if ( timeToSend )
+    if (dr->xfer.getOutCount())
     {
-        if (dr->xfer.getOutCount())
+        // bail out early if we are waiting for the postCommWait to expire
+        if ( ! availableToSend( dr, _port->getDelay(POST_REMOTE_DELAY) ) )
         {
-            dr->comm_status = sendOutbound(*dr);
-
-            traceOutbound(*dr, dr->comm_status);
-        }
-        else
-        {
-            dr->comm_status = ClientErrors::None;
+            return;
         }
 
-        //  if we have data, are expecting no data, or we have an error, decode right away
-        if( ! dr->inbound.empty() || ! dr->xfer.getInCountExpected() || dr->comm_status )
-        {
-            queueToDecode(dr);
-        }
-        else
-        {
-            const CtiTime timeout = CtiTime::now() + getDeviceTimeout(*dr);
+        dr->comm_status = sendOutbound(*dr);
 
-            queueWaitingForData(dr);
-
-            //  insert because it's a multimap - we might have multiple entries for this timeout value
-            _timeouts.emplace(timeout, dr);
-            dr->timeout = timeout;
-        }
+        traceOutbound(*dr, dr->comm_status);
     }
+    else
+    {
+        dr->comm_status = ClientErrors::None;
+    }
+
+    //  if we have data, are expecting no data, or we have an error, decode right away
+    if( ! dr->inbound.empty() || ! dr->xfer.getInCountExpected() || dr->comm_status )
+    {
+        queueToDecode(dr);
+    }
+    else
+    {
+        const CtiTime timeout = CtiTime::now() + getDeviceTimeout(*dr);
+
+        queueWaitingForData(dr);
+
+        //  insert because it's a multimap - we might have multiple entries for this timeout value
+        _timeouts.emplace(timeout, dr);
+        dr->timeout = timeout;
+    }
+}
+
+
+bool UnsolicitedHandler::availableToSend( device_record *dr, ULONG postCommWait )
+{
+    if ( ! postCommWait )
+    {
+        return true;
+    }
+
+    return postCommWaitExpired( dr, postCommWait );
 }
 
 

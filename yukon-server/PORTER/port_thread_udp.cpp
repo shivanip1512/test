@@ -917,6 +917,13 @@ void UdpPortHandler::loadEncodingFilter()
     _encodingFilter = EncodingFilterFactory::getEncodingFilter(_udp_port);
 }
 
+
+bool UdpPortHandler::postCommWaitExpired(device_record *dr, ULONG postCommWait)
+{
+    return true;
+}
+
+
 }
 }
 

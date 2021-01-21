@@ -49,6 +49,8 @@ protected:
     unsigned getDeviceTimeout( const device_record &dr ) const override;
     bool collectInbounds(const Cti::Timing::MillisecondTimer & timer, const unsigned long until) override;
 
+    bool postCommWaitExpired(device_record *dr, ULONG postCommWait) override;
+
     void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices) override;
 
     void addDeviceProperties   (const CtiDeviceSingle &device) override;

@@ -220,6 +220,9 @@ protected:
     static bool isGpuffDevice(const CtiDeviceSingle &ds);
     static bool isRdsDevice (const CtiDeviceSingle &ds);
 
+    bool availableToSend(device_record *dr, ULONG postCommWait);
+    virtual bool postCommWaitExpired(device_record *dr, ULONG postCommWait) = 0;
+
 public:
 
     UnsolicitedHandler(CtiPortSPtr &port, CtiDeviceManager &deviceManager);

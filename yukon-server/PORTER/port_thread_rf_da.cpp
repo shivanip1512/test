@@ -300,6 +300,13 @@ void RfDaPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
     }
 }
 
+
+bool RfDaPortHandler::postCommWaitExpired(device_record *dr, ULONG postCommWait)
+{
+    return true;
+}
+
+
 }
 }
 
