@@ -99,12 +99,11 @@ public class HighChartServiceImpl implements HighChartService {
     }
 
     private Map<String, Object> getSeriesDetails(Graph<ChartValue<Double>> graph, GraphType graphType, GraphDetail graphDetail) {
-        boolean isTemperaturePoint = isTemperaturePoint(graph.getPointId());
         Map<String, Object> seriesDetails = Maps.newHashMap();
-        seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph, isTemperaturePoint, graphDetail));
+        seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph, graphDetail));
         seriesDetails.put(HighChartOptionKey.SHOW_IN_LEGEND.getKey(), false);
         seriesDetails.put(HighChartOptionKey.BORDER_COLOR.getKey(), ChartColorsEnum.GREEN);
-        if (isTemperaturePoint) {
+        if (isTemperaturePoint(graph.getPointId())) {
             seriesDetails.put(HighChartOptionKey.THRESHOLD.getKey(), null);
             seriesDetails.put(HighChartOptionKey.COLOR.getKey(), graph.getColor().getColorHex());
             seriesDetails.put(HighChartOptionKey.FILL_OPACITY.getKey(), "0");
@@ -126,7 +125,7 @@ public class HighChartServiceImpl implements HighChartService {
         return seriesDetails;
     }
 
-    private List<Map<String, Object>> getDataArray(Graph<ChartValue<Double>> graph, boolean isTemperaturePoint, GraphDetail graphDetail) {
+    private List<Map<String, Object>> getDataArray(Graph<ChartValue<Double>> graph, GraphDetail graphDetail) {
         List<Map<String, Object>> jsonArrayContainer = Lists.newArrayList();
         for (ChartValue<Double> chartValue : graph.getChartData()) {
             Map<String, Object> map = Maps.newHashMap();

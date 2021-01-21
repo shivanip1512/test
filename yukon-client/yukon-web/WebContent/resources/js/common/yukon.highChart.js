@@ -84,13 +84,13 @@ yukon.highChart = (function () {
                 tooltip: {
                     shared: true,
                     useHTML: true,
-                    formatter: function() {
+                    formatter: function () {
                         var tooltipHtml = '',
                             pointsArray = this.points;
                         
-                        $.each(pointsArray, function(i, point) {
-                            tooltipHtml += point.point.tooltip;
-                            if (pointsArray.length > 1 && i !== pointsArray.length-1) {
+                        $.each(pointsArray, function(index, item) {
+                            tooltipHtml += item.point.tooltip;
+                            if (pointsArray.length > 1 && index !== pointsArray.length-1) {
                                 tooltipHtml += "<br>";
                             }
                         });
