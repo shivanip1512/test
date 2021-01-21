@@ -511,7 +511,7 @@ bool TcpPortHandler::isDeviceDisconnected( const long device_id ) const
 }
 
 
-bool TcpPortHandler::postCommWaitExpired(device_record *dr, ULONG postCommWait)
+bool TcpPortHandler::isPostCommWaitComplete(device_record *dr, ULONG postCommWait)
 {
     return true;
 }

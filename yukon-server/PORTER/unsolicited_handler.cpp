@@ -761,7 +761,7 @@ void UnsolicitedHandler::trySendOutbounds(device_record *dr)
     if (dr->xfer.getOutCount())
     {
         // bail out early if we are waiting for the postCommWait to expire
-        if ( ! availableToSend( dr, _port->getDelay(POST_REMOTE_DELAY) ) )
+        if ( ! availableToSend( dr, std::max<ULONG>( dr->device->getPostDelay(), _port->getDelay(POST_REMOTE_DELAY) ) ) )
         {
             return;
         }
@@ -800,7 +800,7 @@ bool UnsolicitedHandler::availableToSend( device_record *dr, ULONG postCommWait 
         return true;
     }
 
-    return postCommWaitExpired( dr, postCommWait );
+    return isPostCommWaitComplete( dr, postCommWait );
 }
 
 

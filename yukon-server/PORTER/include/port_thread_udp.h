@@ -91,7 +91,7 @@ protected:
     virtual unsigned getDeviceTimeout( const device_record &dr ) const;
     virtual bool collectInbounds( const Cti::Timing::MillisecondTimer & timer, const unsigned long until);
 
-    bool postCommWaitExpired(device_record *dr, ULONG postCommWait) override;
+    bool isPostCommWaitComplete(device_record *dr, ULONG postCommWait) override;
 
     virtual void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices);
 

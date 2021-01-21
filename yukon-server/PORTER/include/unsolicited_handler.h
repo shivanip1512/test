@@ -93,10 +93,10 @@ private:
     enum DeviceState {
         RequestPending,
         ToGenerate,
+        WaitingToSend,
         WaitingForData,
         ToDecode,
-        RequestComplete,
-        WaitingToSend
+        RequestComplete
     };
 
     typedef std::list<device_record *> device_list;
@@ -170,10 +170,10 @@ private:
     /* While processing commands, devices are passed around these queues based on their state. */
     device_list _request_pending;
     device_list _to_generate;
+    device_list _waiting_to_send;
     device_list _waiting_for_data;
     device_list _to_decode;
     device_list _request_complete;
-    device_list _waiting_to_send;
 
     template<class Element>
     bool processQueue(std::list<Element> &queue, const char *function, void (UnsolicitedHandler::*processElement)(Element), const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
@@ -221,7 +221,7 @@ protected:
     static bool isRdsDevice (const CtiDeviceSingle &ds);
 
     bool availableToSend(device_record *dr, ULONG postCommWait);
-    virtual bool postCommWaitExpired(device_record *dr, ULONG postCommWait) = 0;
+    virtual bool isPostCommWaitComplete(device_record *dr, ULONG postCommWait) = 0;
 
 public:
 

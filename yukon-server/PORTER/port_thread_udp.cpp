@@ -918,7 +918,7 @@ void UdpPortHandler::loadEncodingFilter()
 }
 
 
-bool UdpPortHandler::postCommWaitExpired(device_record *dr, ULONG postCommWait)
+bool UdpPortHandler::isPostCommWaitComplete(device_record *dr, ULONG postCommWait)
 {
     return true;
 }
