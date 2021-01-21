@@ -30,11 +30,12 @@ get-update-delete-operation:
     summary: 'Retrieve Macro Load Group'
     description: 'API to retrieve macro load group based on passed macro load group id.'
     parameters:
-      - name: macroLoadGroupId
+      - name: id
         in: path
         schema:
           type: integer
         required: true
+        description: 'Unique identifier for macro load group.'
     responses:
       '200':
         description: OK
@@ -51,11 +52,12 @@ get-update-delete-operation:
     summary: 'Update Macro Load Group'
     description: 'API to update macro load group based on passed macro load group id.'
     parameters:
-      - name: macroLoadGroupId
+      - name: id
         in: path
         schema:
           type: integer
         required: true
+        description: 'Unique identifier for macro load group.'
     requestBody:
       content:
         application/json:
@@ -81,11 +83,12 @@ get-update-delete-operation:
     summary: 'Delete Macro Load Group'
     description: 'API to delete macro load group based on passed macro load group id.'
     parameters:
-      - name: macroLoadGroupId
+      - name: id
         in: path
         schema:
           type: integer
         required: true
+        description: 'Unique identifier for macro load group.'
     responses:
       '200':
         description: OK
@@ -96,3 +99,39 @@ get-update-delete-operation:
             examples:
               MacroLoadGroupId:
                 $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroupId'
+                
+copy-operation:
+  post:
+    tags:
+      - Macro Load Group 
+    summary: Copy Macro Load Group
+    description: 'API to copy macro load group based on passed macro load group id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for macro load group to be copied.'
+    
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroupCopy'
+             
+          examples:
+            Macro Load Group Copy:
+              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroupCopy' 
+           
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroupCopyResponse'
+            examples:
+              Macro Load Group Copy:
+                $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroupCopyResponse' 

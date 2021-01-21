@@ -28,6 +28,8 @@ paths:
     $ref: 'api/trendsApi.yaml#/post-operation'
   /trends/{id}:
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
+  /trends/{id}/resetPeak:
+    $ref: 'api/trendsApi.yaml#/resetPeak'
   
   /dr/loadGroups:
     $ref: 'api/loadGroupsApi.yaml#/post-operation'
@@ -40,6 +42,8 @@ paths:
     $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
   /dr/macroLoadGroups/{id}:
     $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
+  / dr/macroLoadGroups/{id}/copy:
+    $ref: 'api/MacroLoadGroupsApi.yaml#/copy-operation'
     
   /dr/loadPrograms:
     $ref: 'api/loadProgramsApi.yaml#/post-operation'
