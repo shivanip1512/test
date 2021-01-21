@@ -66,6 +66,7 @@ import com.cannontech.common.util.YamlParserUtils;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
@@ -73,6 +74,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.input.type.AttributeType;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
@@ -637,8 +639,8 @@ public class DataExporterFormatController {
                 result = resultWithoutName;
             }
             if (result.hasErrors()) {
-                String commaSeparateErrorMsg = logAndRetreiveValidationErrors(result, userContext);
-                flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed", commaSeparateErrorMsg));
+                List<MessageSourceResolvable> validationErrors = logAndRetreiveValidationErrors(result, userContext);
+                flashScope.setError(validationErrors, FlashScopeListType.NONE);
                 exportFormat = setExportFormatForErrorScenario();
             }
         }
@@ -646,29 +648,26 @@ public class DataExporterFormatController {
     }
 
     /**
-     * Log all field validation errors / global errors and return comma separated messages.
+     * Log all field validation errors / global errors and return all messages for UI.
      */
-    private String logAndRetreiveValidationErrors(BindingResult result, YukonUserContext userContext) {
-        String errorMessage = StringUtils.EMPTY;
-        List<String> errorMessageLst = new ArrayList<String>();
+    private List<MessageSourceResolvable> logAndRetreiveValidationErrors(BindingResult result, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        List<MessageSourceResolvable> validationErrors = new ArrayList<MessageSourceResolvable>();
+        validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed"));
         if (result.hasFieldErrors()) {
             List<FieldError> errors = result.getFieldErrors();
             for (FieldError error : errors) {
-                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                errorMessage = accessor.getMessage(error.getCode(), error.getArguments());
-                errorMessageLst.add(errorMessage);
-                log.info(error.getField() + " : " + errorMessage);
+                validationErrors.add(new WebMessageSourceResolvable(error.getCode(), error.getArguments()));
+                log.info(error.getField() + " : " + accessor.getMessage(error.getCode(), error.getArguments()));
             }
         }
         if (result.hasGlobalErrors()) {
             List<ObjectError> errors = result.getGlobalErrors();
             for (ObjectError error : errors) {
-                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                errorMessage = accessor.getMessage(error.getCode(), error.getArguments());
-                errorMessageLst.add(errorMessage);
+                validationErrors.add(new WebMessageSourceResolvable(error.getCode(), error.getArguments()));
                 log.info(accessor.getMessage(error.getCode(), error.getArguments()));
             }
         }
-        return StringUtils.join(errorMessageLst, ", ");
+        return validationErrors;
     }
 }
