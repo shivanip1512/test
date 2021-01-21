@@ -20,6 +20,7 @@ public class GraphDetail {
     private FlotLineOptions lines;
     private FlotPointOptions points;
     private ChartInterval interval;
+    private String seriesName;
 
     public GraphDetail(int pointId, String yLabelUnits, int axisIndex, String yAxisPosition, boolean isMax, ChartColorsEnum chartColors, ChartInterval interval) {
         super();
@@ -30,6 +31,18 @@ public class GraphDetail {
         this.isMin = isMax;
         this.chartColors = chartColors;
         this.interval = interval;
+    }
+    
+    public GraphDetail(int pointId, String yLabelUnits, int axisIndex, String yAxisPosition, boolean isMax, ChartColorsEnum chartColors, ChartInterval interval, String seriesName) {
+        super();
+        this.pointId = pointId;
+        this.yLabelUnits = yLabelUnits;
+        this.axisIndex = axisIndex;
+        this.yAxisPosition = yAxisPosition;
+        this.isMin = isMax;
+        this.chartColors = chartColors;
+        this.interval = interval;
+        this.seriesName = seriesName;
     }
 
     public ChartInterval getInterval() {
@@ -126,6 +139,14 @@ public class GraphDetail {
     
     public void setAxisIndex(int axisIndex) {
         this.axisIndex = axisIndex;
+    }
+
+    public String getSeriesName() {
+        return seriesName;
+    }
+
+    public void setSeriesName(String seriesName) {
+        this.seriesName = seriesName;
     }
 
 }

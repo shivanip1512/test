@@ -82,6 +82,10 @@ public class ChartValue<T> {
     public void setPointName(String pointName) {
         this.pointName = pointName;
     }
+    
+    public String getPointName() {
+        return this.pointName;
+    }
 
     /**
      * @param optionalData will be used as part of description:
@@ -103,14 +107,25 @@ public class ChartValue<T> {
      * {@code <div>units</div><div>time</div><div>pointName</div>optionalData}
      */
     public String getDescriptionWithoutFormattedVal() {
+        return "<div>" + units + "</div><div>" + getFormattedTime() + "</div><div>" + pointName + "</div>" +
+                (optionalData != null ? optionalData : "");
+    }
+    
+    public String getFormattedTime() {
         long timeStamp = time;
         timeStamp -= TimeZone.getDefault().getOffset(timeStamp);
-        return "<div>" + units + "</div><div>" + timeFormat.format(timeStamp) + "</div><div>" + pointName + "</div>" +
-                (optionalData != null ? optionalData : "");
+        return timeFormat.format(timeStamp);
     }
 
     @Override
     public String toString() {
         return "(Value:" + formattedValue + ", Time:" + new DateTime(time).toString(DateTimeFormat.mediumDateTime()) + ")";
+    }
+    
+    public String getFormattedDiscription () {
+        StringBuilder discriptionBuilder = new StringBuilder();
+        discriptionBuilder.append("<div>" + formattedValue + " " + units + "</div>");
+        discriptionBuilder.append("<div>" + getFormattedTime() + "</div>");
+        return discriptionBuilder.toString();
     }
 }

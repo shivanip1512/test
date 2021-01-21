@@ -145,15 +145,25 @@ public class ChartController {
         
         if (isTemperatureChecked && temperaturePointId != null) {
             String rightYLabelUnits = messageSourceAccessor.getMessage("yukon.common.chart.yLabel.temperature");
+            
+            /*
+             * These strings for min and max temperature are displayed in the tooltip for temperature point. 
+             * We are explicitly setting the text to 'Minimum Temperature' and 'Maximum Temperature' because the point
+             * name for both of them in 'Temperature'. Setting explicit text is help user understand is the temperature
+             * point is on Min temperature line graph or max temperature line graph.
+             * */
+            String minTemperatureTxt = messageSourceAccessor.getMessage("yukon.common.chart.label.minTemperature");
+            String maxTemperatureTxt = messageSourceAccessor.getMessage("yukon.common.chart.label.maxTemperature");
+            
             // Add graph detail for min temperature trend
             GraphDetail minTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", true,
-                    ChartColorsEnum.LIGHT_BLUE, temperatureChartInterval);
+                    ChartColorsEnum.LIGHT_BLUE, temperatureChartInterval, minTemperatureTxt);
             graphDetails.add(minTemperatureGraphDetail);
 
             if (temperatureChartInterval.getMillis() >= ChartInterval.DAY.getMillis()) {
                 // Add graph detail for max temperature trend
                 GraphDetail maxTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", false,
-                        ChartColorsEnum.LIGHT_RED, temperatureChartInterval);
+                        ChartColorsEnum.LIGHT_RED, temperatureChartInterval, maxTemperatureTxt);
                 graphDetails.add(maxTemperatureGraphDetail);
             }
         }

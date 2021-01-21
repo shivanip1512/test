@@ -82,10 +82,21 @@ yukon.highChart = (function () {
                     tickWidth: 0
                 },
                 tooltip: {
+                    shared: true,
                     useHTML: true,
-                    formatter: function () {
-                        return this.point.tooltip;
-                    }
+                    formatter: function() {
+                        var tooltipHtml = '',
+                            pointsArray = this.points;
+                        
+                        $.each(pointsArray, function(i, point) {
+                            tooltipHtml += point.point.tooltip;
+                            if (pointsArray.length > 1 && i !== pointsArray.length-1) {
+                                tooltipHtml += "<br>";
+                            }
+                        });
+
+                        return tooltipHtml;
+                    },
                 },
                 yAxis: jsonResponse.yaxis,
                 series: jsonResponse.seriesDetails,
