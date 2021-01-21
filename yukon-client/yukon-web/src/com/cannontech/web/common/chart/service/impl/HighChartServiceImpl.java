@@ -40,7 +40,7 @@ public class HighChartServiceImpl implements HighChartService {
 
         List<Map<String, Object>> seriesList = Lists.newArrayList();
         graphs.forEach(graph -> {
-            GraphDetail graphDetail = graphDetails.stream().filter(gd -> gd.getPointId() == graph.getPointId()).findFirst().orElse(null);
+            GraphDetail graphDetail = graphDetails.stream().filter(gd -> gd.getChartColors() == graph.getColor()).findFirst().orElse(null);
             seriesList.add(getSeriesDetails(graph, graphType, graphDetail));
         });
 
@@ -133,12 +133,8 @@ public class HighChartServiceImpl implements HighChartService {
             map.put(HighChartOptionKey.SERIES_X_COORDINATE.getKey(), chartValue.getId());
             map.put(HighChartOptionKey.SERIES_Y_COORDINATE.getKey(), chartValue.getValue());
             StringBuilder tootipBuilder = new StringBuilder();
-            String pointName = chartValue.getPointName();
-            if (isTemperaturePoint) {
-                pointName = graphDetail.getSeriesName();
-            }
             tootipBuilder
-                    .append("<span style='color:" + graph.getColor().getColorHex() + "'>\u25CF</span>&nbsp;" + pointName);
+                    .append("<span style='color:" + graph.getColor().getColorHex() + "'>\u25CF</span>&nbsp;" + graphDetail.getSeriesName());
             tootipBuilder.append(chartValue.getFormattedDiscription());
             map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), tootipBuilder.toString());
             jsonArrayContainer.add(map);

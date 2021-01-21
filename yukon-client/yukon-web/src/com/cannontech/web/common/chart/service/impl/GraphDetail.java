@@ -22,17 +22,6 @@ public class GraphDetail {
     private ChartInterval interval;
     private String seriesName;
 
-    public GraphDetail(int pointId, String yLabelUnits, int axisIndex, String yAxisPosition, boolean isMax, ChartColorsEnum chartColors, ChartInterval interval) {
-        super();
-        this.pointId = pointId;
-        this.yLabelUnits = yLabelUnits;
-        this.axisIndex = axisIndex;
-        this.yAxisPosition = yAxisPosition;
-        this.isMin = isMax;
-        this.chartColors = chartColors;
-        this.interval = interval;
-    }
-    
     public GraphDetail(int pointId, String yLabelUnits, int axisIndex, String yAxisPosition, boolean isMax, ChartColorsEnum chartColors, ChartInterval interval, String seriesName) {
         super();
         this.pointId = pointId;
