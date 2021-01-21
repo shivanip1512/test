@@ -81,7 +81,7 @@ const std::vector<int> allMetrics = [] {
             X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, o,o,_,_,A,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
 
         //  200                  210                  220                  230                  240                  250                  260                    270                280                  290
-            _,_,_,_,_,_,_,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,o,_,_,_,_,_,_,_, _,_,_,X,X,_,_,_,_,_, o,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
+            _,_,_,_,_,_,_,X,_,_, A,_,_,_,_,_,_,_,_,_, _,_,o,_,_,_,_,_,_,_, _,_,_,X,X,_,_,_,_,_, o,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
 
         //  300                  310                  320                  330                  340                  350
             _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, o,o,_,_,_,_,_,_,_,_, o,o,o,o,o,o,_,_,_,_, o,o,o,o,o,o
@@ -220,6 +220,7 @@ const std::vector<std::string> allDescriptions {
         "Peak kVAr (Quadrants 1 4) (180)",
         "Peak kVAr (Quadrants 2 3) (181)",
         "Sum Peak kVAr (184)",
+        "Peak kVA (Quadrants 1 2) (206)",
         "Sum Peak kVA (210)",
         "Received kVAh (Quadrants 2 3 4) (222)",
         "Average Power Factor (233)",
@@ -339,6 +340,7 @@ const std::vector<std::string> allDescriptions {
         "PF Phase B, Rate A (1163)",
         "PF Phase C, Rate A (1164)",
         "Sum Peak kVAr, Rate A (1184)",
+        "Peak kVA (Quadrants 1 2), Rate A (1206)",
         "Sum Peak kVA, Rate A (1210)",
         "Average Power Factor, Rate A (1233)",
         "Average Power Factor Frozen, Rate A (1234)",
@@ -439,6 +441,7 @@ const std::vector<std::string> allDescriptions {
         "PF Phase A, Rate B (2162)",
         "PF Phase B, Rate B (2163)",
         "PF Phase C, Rate B (2164)",
+        "Peak kVA (Quadrants 1 2), Rate B (2206)",
         "Average Power Factor, Rate B (2233)",
         "Average Power Factor Frozen, Rate B (2234)",
         "Time in Seconds, Rate B (2256)",
@@ -538,6 +541,7 @@ const std::vector<std::string> allDescriptions {
         "PF Phase A, Rate C (3162)",
         "PF Phase B, Rate C (3163)",
         "PF Phase C, Rate C (3164)",
+        "Peak kVA (Quadrants 1 2), Rate C (3206)",
         "Average Power Factor, Rate C (3233)",
         "Average Power Factor Frozen, Rate C (3234)",
         "Time in Seconds, Rate C (3256)",
@@ -637,6 +641,7 @@ const std::vector<std::string> allDescriptions {
         "PF Phase A, Rate D (4162)",
         "PF Phase B, Rate D (4163)",
         "PF Phase C, Rate D (4164)",
+        "Peak kVA (Quadrants 1 2), Rate D (4206)",
         "Average Power Factor, Rate D (4233)",
         "Average Power Factor Frozen, Rate D (4234)",
         "Time in Seconds, Rate D (4256)",
