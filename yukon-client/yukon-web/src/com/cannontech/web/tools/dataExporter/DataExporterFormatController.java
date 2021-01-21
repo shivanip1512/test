@@ -639,7 +639,7 @@ public class DataExporterFormatController {
                 result = resultWithoutName;
             }
             if (result.hasErrors()) {
-                List<MessageSourceResolvable> validationErrors = logAndRetreiveValidationErrors(result, userContext);
+                List<MessageSourceResolvable> validationErrors = retreiveValidationErrors(result, userContext);
                 flashScope.setError(validationErrors, FlashScopeListType.NONE);
                 exportFormat = setExportFormatForErrorScenario();
             }
@@ -648,26 +648,25 @@ public class DataExporterFormatController {
     }
 
     /**
-     * Log all field validation errors / global errors and return all messages for UI.
+     * Return validation errors and global errors for UI.
      */
-    private List<MessageSourceResolvable> logAndRetreiveValidationErrors(BindingResult result, YukonUserContext userContext) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+    private List<MessageSourceResolvable> retreiveValidationErrors(BindingResult result, YukonUserContext userContext) {
         List<MessageSourceResolvable> validationErrors = new ArrayList<MessageSourceResolvable>();
         validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed"));
+        validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.ul.start"));
         if (result.hasFieldErrors()) {
             List<FieldError> errors = result.getFieldErrors();
             for (FieldError error : errors) {
                 validationErrors.add(new WebMessageSourceResolvable(error.getCode(), error.getArguments()));
-                log.info(error.getField() + " : " + accessor.getMessage(error.getCode(), error.getArguments()));
             }
         }
         if (result.hasGlobalErrors()) {
             List<ObjectError> errors = result.getGlobalErrors();
             for (ObjectError error : errors) {
                 validationErrors.add(new WebMessageSourceResolvable(error.getCode(), error.getArguments()));
-                log.info(accessor.getMessage(error.getCode(), error.getArguments()));
             }
         }
+        validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.ul.end"));
         return validationErrors;
     }
 }
