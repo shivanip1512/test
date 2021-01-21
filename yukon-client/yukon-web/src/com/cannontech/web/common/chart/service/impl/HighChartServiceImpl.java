@@ -132,11 +132,11 @@ public class HighChartServiceImpl implements HighChartService {
             Map<String, Object> map = Maps.newHashMap();
             map.put(HighChartOptionKey.SERIES_X_COORDINATE.getKey(), chartValue.getId());
             map.put(HighChartOptionKey.SERIES_Y_COORDINATE.getKey(), chartValue.getValue());
-            StringBuilder tootipBuilder = new StringBuilder();
-            tootipBuilder
+            StringBuilder tooltipBuilder = new StringBuilder();
+            tooltipBuilder
                     .append("<span style='color:" + graph.getColor().getColorHex() + "'>\u25CF</span>&nbsp;" + graphDetail.getSeriesName());
-            tootipBuilder.append(chartValue.getFormattedDiscription());
-            map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), tootipBuilder.toString());
+            tooltipBuilder.append(chartValue.getFormattedDiscription());
+            map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), tooltipBuilder.toString());
             jsonArrayContainer.add(map);
         }
         return jsonArrayContainer;
