@@ -110,7 +110,7 @@ Today is <xsl:value-of select="startdate" />. Utility is extending the event whi
     <!-- First Schedule Script -->
     <xsl:template name="schedulingFirst">
 
-        <subject>First Event Schedule</subject>
+        <subject>First Curtailment Event Schedule</subject>
         <body>Utility is notifying all customers enrolled in the program of a Scheduled Curtailment Event.
 
 Today is <xsl:value-of select="today" />.  Utility is asking that you control your electric load to your contracted firm demand level beginning at <xsl:value-of select="starttime" /> and continuing until <xsl:value-of select="stoptime" />.
@@ -173,7 +173,7 @@ Today is <xsl:value-of select="today" />.  Utility is asking that you control yo
     
     <!--  Default Cancel Script -->
     <xsl:template name="cancelingDefault">
-        <subject>First Curtailment Event Cancel</subject>
+        <subject>Default Event Cancel</subject>
         <body>Utility is notifying all customers enrolled in the program of a Curtailment Event.
 
 Today is <xsl:value-of select="startdate" />. Utility has cancelled the event which was scheduled to start at <xsl:value-of select="starttime" />. You no longer need to control your load.
