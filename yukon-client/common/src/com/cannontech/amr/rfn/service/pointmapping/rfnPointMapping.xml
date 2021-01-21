@@ -4446,6 +4446,186 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
+        <point name="Delivered kVAh (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered kVAh (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered kVAh (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered kVAh (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kVAh (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kVAh (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kVAh (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kVAh (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
+        <point name="Sum kVAh (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Sum kVAh (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Sum kVAh (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Sum kVAh (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
+        <point name="Net kVAh (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Net Flow</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Net kVAh (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Net Flow</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Net kVAh (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Net Flow</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Net kVAh (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Net Flow</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
     </pointGroup>
         
     <pointGroup>

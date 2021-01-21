@@ -39,6 +39,10 @@
         <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY,MAXIMUM_VOLTAGE"/>
         <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY,MINIMUM_VOLTAGE"/>
         <pointInfo name="kVAh Lagging" attributes="DELIVERED_KVAH_LAGGING"/>
+        <pointInfo name="Delivered kVAh (Rate A kVAh)" attributes="KVAH_RATE_A"/>
+        <pointInfo name="Delivered kVAh (Rate B kVAh)" attributes="KVAH_RATE_B"/>
+        <pointInfo name="Delivered kVAh (Rate C kVAh)" attributes="KVAH_RATE_C"/>
+        <pointInfo name="Delivered kVAh (Rate D kVAh)" attributes="KVAH_RATE_D"/>
         <pointInfo name="Delivered kVArh" attributes="KVARH"/>
         <pointInfo name="Delivered kVArh (Rate A kVArh)" attributes="KVARH_RATE_A"/>
         <pointInfo name="Delivered kVArh (Rate B kVArh)" attributes="KVARH_RATE_B"/>
@@ -60,7 +64,11 @@
         <pointInfo name="Max Voltage"/>
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
         <pointInfo name="Min Voltage"/>
-        <pointInfo name="Net kVAh"/>
+        <pointInfo name="Net kVAh" attributes="NET_KVAH"/>
+        <pointInfo name="Net kVAh (Rate A kVAh)" attributes="NET_KVAH_RATE_A"/>
+        <pointInfo name="Net kVAh (Rate B kVAh)" attributes="NET_KVAH_RATE_B"/>
+        <pointInfo name="Net kVAh (Rate C kVAh)" attributes="NET_KVAH_RATE_C"/>
+        <pointInfo name="Net kVAh (Rate D kVAh)" attributes="NET_KVAH_RATE_D"/>
         <pointInfo name="Net kVArh" attributes="NET_KVARH"/>
         <pointInfo name="Net kVArh (Rate A kVArh)" attributes="NET_KVARH_RATE_A"/>
         <pointInfo name="Net kVArh (Rate B kVArh)" attributes="NET_KVARH_RATE_B"/>
@@ -98,6 +106,10 @@
         <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
         <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
         <pointInfo name="Received kVAh" attributes="RECEIVED_KVAH_Q234"/>
+        <pointInfo name="Received kVAh (Rate A kVAh)" attributes="RECEIVED_KVAH_RATE_A"/>
+        <pointInfo name="Received kVAh (Rate B kVAh)" attributes="RECEIVED_KVAH_RATE_B"/>
+        <pointInfo name="Received kVAh (Rate C kVAh)" attributes="RECEIVED_KVAH_RATE_C"/>
+        <pointInfo name="Received kVAh (Rate D kVAh)" attributes="RECEIVED_KVAH_RATE_D"/>
         <pointInfo name="Received kVArh" attributes="RECEIVED_KVARH"/>
         <pointInfo name="Received kVArh (Rate A kVArh)" attributes="RECEIVED_KVARH_RATE_A"/>
         <pointInfo name="Received kVArh (Rate B kVArh)" attributes="RECEIVED_KVARH_RATE_B"/>
@@ -118,6 +130,10 @@
         <pointInfo name="Service Disconnect Switch Sensor Error" attributes="SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR"/>
         <pointInfo name="Stuck Switch" attributes="STUCK_SWITCH"/>
         <pointInfo name="Sum kVAh" attributes="SUM_KVAH"/>
+        <pointInfo name="Sum kVAh (Rate A kVAh)" attributes="SUM_KVAH_RATE_A"/>
+        <pointInfo name="Sum kVAh (Rate B kVAh)" attributes="SUM_KVAH_RATE_B"/>
+        <pointInfo name="Sum kVAh (Rate C kVAh)" attributes="SUM_KVAH_RATE_C"/>
+        <pointInfo name="Sum kVAh (Rate D kVAh)" attributes="SUM_KVAH_RATE_D"/>
         <pointInfo name="Sum kVAr Load Profile" attributes="SUM_KVAR_LOAD_PROFILE"/>
         <pointInfo name="Sum kVArh" attributes="SUM_KVARH"/>
         <pointInfo name="Sum kVArh per Interval" attributes="SUM_KVARH_PER_INTERVAL"/>
