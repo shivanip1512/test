@@ -6,9 +6,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.validation.Errors;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeIntervals;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
+//import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
@@ -42,7 +45,7 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
                 List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
                 List<Integer> uomIds = unitMeasures.stream().map(unit -> unit.getId()).collect(Collectors.toList());
                 if (!uomIds.contains(pointUnit.getUomId())) {
-                    errors.rejectValue("pointUnit.uomId", "yukon.web.api.error.doesNotExist", new Object[] { "Uom Id" }, "");
+                    errors.rejectValue("pointUnit.uomId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { "Uom Id" }, "");
                 }
             }
 
@@ -51,25 +54,26 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
 
             if (highReasonabilityLimit != null && lowReasonabilityLimit != null) {
                 if (highReasonabilityLimit < lowReasonabilityLimit) {
-                    YukonValidationUtils.rejectValues(errors, "yukon.web.modules.tools.point.error.reasonability", "pointUnit.lowReasonabilityLimit");
+                    errors.rejectValue("lowReasonability", ApiErrorDetails.INVALID_REASONABILITY.getCodeString(),
+                            new Object[] { "Low Reasonability", "High Reasonability" }, "");
                 }
             }
 
             if (highReasonabilityLimit != null && highReasonabilityLimit != CtiUtilities.INVALID_MAX_DOUBLE) {
-                YukonValidationUtils.checkRange(errors, "pointUnit.highReasonabilityLimit", highReasonabilityLimit, -999999.999999, 999999.999999, true);
+                YukonApiValidationUtils.checkRange(errors, "pointUnit.highReasonabilityLimit", highReasonabilityLimit, -999999.999999, 999999.999999, true);
             }
 
             if (lowReasonabilityLimit != null && lowReasonabilityLimit != CtiUtilities.INVALID_MIN_DOUBLE) {
-                YukonValidationUtils.checkRange(errors, "pointUnit.lowReasonabilityLimit", lowReasonabilityLimit, -999999.999999, 999999.999999, true);
+                YukonApiValidationUtils.checkRange(errors, "pointUnit.lowReasonabilityLimit", lowReasonabilityLimit, -999999.999999, 999999.999999, true);
 
             }
 
             if (pointUnit.getDecimalPlaces() != null) {
-                YukonValidationUtils.checkRange(errors, "pointUnit.decimalPlaces", pointUnit.getDecimalPlaces(), 0, 10, true);
+                YukonApiValidationUtils.checkRange(errors, "pointUnit.decimalPlaces", pointUnit.getDecimalPlaces(), 0, 10, true);
             }
 
             if (pointUnit.getMeterDials() != null) {
-                YukonValidationUtils.checkRange(errors, "pointUnit.meterDials", pointUnit.getMeterDials(), 0, 10, true);
+                YukonApiValidationUtils.checkRange(errors, "pointUnit.meterDials", pointUnit.getMeterDials(), 0, 10, true);
             }
         }
 
@@ -82,7 +86,7 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
     private void validatePointLimit(ScalarPointModel<?> scalarPointModel, Errors errors) {
         List<PointLimitModel> pointLimits = scalarPointModel.getLimits();
         if (pointLimits.size() > 2) {
-            errors.rejectValue("limits", baseKey + ".pointLimit.invalidSize");
+            errors.rejectValue("limits", ApiErrorDetails.INVALID_SIZE.getCodeString());
         } else {
             if (CollectionUtils.isNotEmpty(pointLimits)) {
                 int limitNumber = 0;
@@ -91,33 +95,35 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
                     PointLimitModel pointLimit = pointLimits.get(i);
                     if (pointLimit != null) {
                         if ((pointLimit.getHighLimit() != null && pointLimit.getLowLimit() != null) && pointLimit.getHighLimit() < pointLimit.getLowLimit()) {
-                            errors.rejectValue("lowLimit", "yukon.web.modules.tools.point.error.limits");
+                            errors.rejectValue("lowLimit", ApiErrorDetails.INVALID_REASONABILITY.getCodeString(),
+                                    new Object[] { "Lower Limit", "Upper Limit" }, "");
                         }
 
-                        YukonValidationUtils.checkIfFieldRequired("limitNumber", errors, pointLimit.getLimitNumber(), "limitNumber");
+                        YukonApiValidationUtils.checkIfFieldRequired("limitNumber", errors, pointLimit.getLimitNumber(), "limitNumber");
                         if (!errors.hasFieldErrors("limitNumber")) {
 
                             if (!(pointLimit.getLimitNumber() == 1 || pointLimit.getLimitNumber() == 2)) {
-                                errors.rejectValue("limitNumber", baseKey + ".invalid.limitNumber");
+                                errors.rejectValue("limitNumber", ApiErrorDetails.INVALID_LIMIT_NUMBER.getCodeString());
                             }
 
                             if (!errors.hasFieldErrors("limitNumber")) {
                                 if (limitNumber == pointLimit.getLimitNumber()) {
-                                    errors.rejectValue("limitNumber", baseKey + ".duplicateLimitNumbers");
+                                    errors.rejectValue("limitNumber", ApiErrorDetails.OBJECT_ALREADY_EXISTS.getCodeString(),
+                                            new Object[] { "Limit Number" }, "");
                                 }
                             }
                             limitNumber = pointLimit.getLimitNumber();
                         }
 
                         if (pointLimit.getHighLimit() != null) {
-                            YukonValidationUtils.checkRange(errors, "highLimit", pointLimit.getHighLimit(), -99999999.0, 99999999.0, false);
+                            YukonApiValidationUtils.checkRange(errors, "highLimit", pointLimit.getHighLimit(), -99999999.0, 99999999.0, false);
                         }
 
                         if (pointLimit.getLowLimit() != null) {
-                            YukonValidationUtils.checkRange(errors, "lowLimit", pointLimit.getLowLimit(), -99999999.0, 99999999.0, false);
+                            YukonApiValidationUtils.checkRange(errors, "lowLimit", pointLimit.getLowLimit(), -99999999.0, 99999999.0, false);
                         }
                         if (pointLimit.getLimitDuration() != null) {
-                            YukonValidationUtils.checkRange(errors, "limitDuration", pointLimit.getLimitDuration(), 0, 99999999, false);
+                            YukonApiValidationUtils.checkRange(errors, "limitDuration", pointLimit.getLimitDuration(), 0, 99999999, false);
                         }
                     }
                     errors.popNestedPath();
@@ -135,10 +141,10 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
             if (target.getArchiveInterval() != null) {
                 TimeIntervals archiveInterval = TimeIntervals.fromSeconds(target.getArchiveInterval());
                 if (!TimeIntervals.getArchiveIntervals().contains(archiveInterval)) {
-                    errors.rejectValue("archiveInterval", baseKey + ".invalid", new Object[] { "Archive Interval" }, "");
+                    errors.rejectValue("archiveInterval", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Archive Interval" }, "");
                 }
             } else {
-                errors.rejectValue("archiveInterval", baseKey + ".invalid.archiveTimeInterval", new Object[] { "Archive Interval" }, "");
+                errors.rejectValue("archiveInterval", ApiErrorDetails.INVALID_ARCHIVE_TIME_INTERVAL.getCodeString(), new Object[] { "Archive Interval" }, "");
             }
         }
     }
