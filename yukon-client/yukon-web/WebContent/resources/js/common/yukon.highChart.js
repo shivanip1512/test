@@ -110,7 +110,7 @@ yukon.highChart = (function () {
                 newChartHeight = dialog.find('.highcharts-container').height() - heightDifference,
                 newChartWidth = dialog.find('.highcharts-container').width() - widthDifference;
             
-            if (ui.originalSize.height > ui.size.height) {
+            if (ui.originalSize.width > ui.size.width) {
                 newChartWidth = newChartWidth - 10;
             } else  {
                 newChartWidth = newChartWidth + 10;
@@ -127,13 +127,13 @@ yukon.highChart = (function () {
                 Highcharts.charts.forEach(function(chart, index) {
                     if (chart.renderTo.id === chartId) {
                         chosenChart = chart;
+                        chosenChart.setSize(newChartWidth, newChartHeight);
                     }
                 });
                 if ($(chartContainer).closest(".js-trend-analysis")) {
                     $(chartContainer).parent(".js-trend-analysis").height(newChartHeight);
                     $(chartContainer).parent(".js-trend-analysis").width(newChartWidth);
                 }
-                chosenChart.setSize(newChartWidth, newChartHeight);
             });
             
             dialog.height(dialog.parent().height()-dialog.prev('.ui-dialog-titlebar').height()-34);
