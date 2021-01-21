@@ -41,7 +41,7 @@ public class PortValidatorHelper {
                     false);
         }
         if (!errors.hasFieldErrors("timing.postCommWait")) {
-            Range<Integer> range = Range.inclusive(0, 999);
+            Range<Integer> range = Range.inclusive(0, 100_000);
             YukonValidationUtils.checkRange(errors, "timing.postCommWait", "Post Comm Wait", timing.getPostCommWait(), range,
                     false);
         }
