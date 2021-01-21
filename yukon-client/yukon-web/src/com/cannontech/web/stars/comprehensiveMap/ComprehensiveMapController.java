@@ -228,7 +228,7 @@ public class ComprehensiveMapController {
     }
 
     @GetMapping("downloadNetworkInfo")
-    public String downloadNetworkInfo(YukonUserContext userContext, HttpServletResponse response) throws IOException {
+    public void downloadNetworkInfo(YukonUserContext userContext, HttpServletResponse response) throws IOException {
         String[] headerRow = retrieveDownloadHeaderRow(userContext);
         
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
@@ -264,9 +264,7 @@ public class ComprehensiveMapController {
                }
            }
        
-       } 
-
-       return null;
+       }
     }
 
     /**
