@@ -40,6 +40,7 @@ import com.cannontech.common.events.loggers.EcobeeEventLogService;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.loggers.InfrastructureEventLogService;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.common.events.loggers.ItronEventLogService;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
@@ -75,6 +76,8 @@ import com.cannontech.dr.nest.model.v3.RushHourEventType;
 import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.rfn.model.PqrConfig;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
+import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.system.DREncryption;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.dev.database.objects.DevEventLog;
@@ -99,6 +102,7 @@ public class DevEventLogCreationService {
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private HardwareEventLogService hardwareEventLogService;
+    @Autowired private InfrastructureEventLogService infrastructureEventLogService;
     @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
     @Autowired private ItronEventLogService itronEventLogService;
     @Autowired private MeteringEventLogService meteringEventLogService;
@@ -1277,6 +1281,21 @@ public class DevEventLogCreationService {
                 pqrEventLogService.sendConfig(user, totalCount, config.toString());
             }
         });
+        executables.put(LogType.INFRASTRUCTURE, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                String testPaoName = "123456789";
+                String message = "Text of the warning";
+                InfrastructureWarningType warningType = InfrastructureWarningType.GATEWAY_CONNECTION_STATUS;
+                InfrastructureWarningSeverity severity = InfrastructureWarningSeverity.HIGH;
+
+                infrastructureEventLogService.warningGenerated(testPaoName,
+                                                               warningType.toString(),
+                                                               severity.toString(),
+                                                               message);
+                infrastructureEventLogService.warningCleared(testPaoName, warningType.toString());
+            }
+        });
         eventLogExecutables = ImmutableMap.copyOf(executables);
     }
 
@@ -1300,7 +1319,8 @@ public class DevEventLogCreationService {
         ENDPOINT(EndpointEventLogService.class, 11),
         GATEWAY(GatewayEventLogService.class, 9),
         HARDWARE(HardwareEventLogService.class, 23),
-        INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),  
+        INFRASTRUCTURE(InfrastructureEventLogService.class, 2),
+        INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),
         ITRON(ItronEventLogService.class, 14),
         METERING(MeteringEventLogService.class, 15),
         MULTISPEAK(MultispeakEventLogService.class, 35),
