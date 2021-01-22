@@ -346,7 +346,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Peak Demand Daily" icd="false">
+        <point name="Peak Demand Daily" icdExcludedTypes="RFN410CL,RFN410FD,RFN410FL,RFN410FX,RFN420CD,WRL420CD,RFN420CL,WRL420CL,RFN420FD,RFN420FL,RFN420FRD,RFN420FRX,RFN420FX,RFN430A3D,RFN430A3T,RFN430A3K,RFN430A3R,RFN430KV,RFN510FL,RFN530S4X,RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

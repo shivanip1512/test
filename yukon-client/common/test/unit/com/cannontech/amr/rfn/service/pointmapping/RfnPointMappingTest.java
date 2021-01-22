@@ -1294,17 +1294,13 @@ public class RfnPointMappingTest {
                 .putAll(PaoType.RFN510FL,
                         "Peak Demand Daily")
                 .putAll(PaoType.RFN520FAX,
-                        "Current Angle",
-                        "Peak Demand Daily")
+                        "Current Angle")
                 .putAll(PaoType.RFN520FAXD,
-                        "Current Angle",
-                        "Peak Demand Daily")
+                        "Current Angle")
                 .putAll(PaoType.RFN520FRX,
-                        "Current Angle",
-                        "Peak Demand Daily")
+                        "Current Angle")
                 .putAll(PaoType.RFN520FRXD,
-                        "Current Angle",
-                        "Peak Demand Daily")
+                        "Current Angle")
                 .putAll(PaoType.RFN530S4X,
                         "Received kVAh",
                         "Net kWh",
