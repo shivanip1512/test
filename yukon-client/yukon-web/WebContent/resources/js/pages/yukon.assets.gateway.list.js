@@ -135,9 +135,22 @@ yukon.assets.gateway.list = (function () {
                     }
                 });
             });
+            
+            $(document).on('click', '.js-download-network-map', function () {
+                $('.js-download-warning').removeClass('dn');
+                $(this).addClass('very-disabled-look');
+                //enable download option again after 5 minutes
+                setTimeout(mod.showDownload, 300000);
+                window.location = yukon.url('/stars/comprehensiveMap/downloadNetworkInfo');
+            });
 
             _update();
             _initialized = true;
+        },
+        
+        showDownload: function () {
+            $('.js-download-network-map').removeClass('very-disabled-look');
+            $('.js-download-warning').addClass('dn');
         }
         
     };
