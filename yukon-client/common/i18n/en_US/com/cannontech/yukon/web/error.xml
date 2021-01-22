@@ -72,7 +72,7 @@
     <!-- Api Error Detail Validation -->
     <entry key="yukon.web.error.101101">Invalid value for the field {0}.</entry>
     <entry key="yukon.web.error.101102">{0} is required.</entry>
-    <entry key="yukon.web.error.101103">Max length exceeded.</entry>
+    <entry key="yukon.web.error.101103">Max length of {0} exceeded.</entry>
     <entry key="yukon.web.error.101104">{0} must not contain any of the following characters: / \ , ' " |.</entry>
     <entry key="yukon.web.error.101105">{0} Must be between {1} and {2}.</entry>
     <entry key="yukon.web.error.101106">{0} already exists.</entry>

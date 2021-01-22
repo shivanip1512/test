@@ -13,7 +13,8 @@ public class YukonApiValidationUtils extends ValidationUtils {
 
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (YukonValidationUtilsCommon.checkExceedsMaxLength(fieldValue, max)) {
-            errors.rejectValue(field, ApiErrorDetails.MAX_LENGTH_EXCEEDED.getCodeString());
+            errors.rejectValue(field, ApiErrorDetails.MAX_LENGTH_EXCEEDED.getCodeString(), new Object[] { max },
+                    "Exceeds maximum length of " + max);
             return true;
         }
         return false;
