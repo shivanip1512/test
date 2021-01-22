@@ -69,28 +69,6 @@ public interface FlotChartService {
      * Returns a Map to be converted to json and consumed by yukon.flot.js (our implementation of FlotCharts.js)
      * The format of this object is as follows:
      * 
-     * (if the format of this is changed, please update this comment)
-     * 
-     * {
-     *      "datas": [{
-     *          "label": "unique label",
-     *          "data": some numeric value,
-     *          "tooltip": "tooltip html"
-     *      },
-     *      {
-     *          "label": "unique label",
-     *          "data": some numeric value,
-     *          "tooltip": "tooltip html"
-     *      }],
-     *      "type": "pie"
-     *  }
-     */
-     Map<String, Object> getPieGraphData(Map<String, Integer> labelValueMap);
-
-    /**
-     * Returns a Map to be converted to json and consumed by yukon.flot.js (our implementation of FlotCharts.js)
-     * The format of this object is as follows:
-     * 
      * radiusPercent is a decimal between 0 and 1.
      * 
      * (if the format of this is changed, please update this comment)

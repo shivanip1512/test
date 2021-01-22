@@ -122,10 +122,10 @@ public class ChartValue<T> {
         return "(Value:" + formattedValue + ", Time:" + new DateTime(time).toString(DateTimeFormat.mediumDateTime()) + ")";
     }
     
-    public String getFormattedDiscription () {
-        StringBuilder discriptionBuilder = new StringBuilder();
-        discriptionBuilder.append("<div>" + formattedValue + " " + units + "</div>");
-        discriptionBuilder.append("<div>" + getFormattedTime() + "</div>");
-        return discriptionBuilder.toString();
+    public String getFormattedDescription () {
+        StringBuilder descriptionBuilder = new StringBuilder();
+        descriptionBuilder.append("<div>" + formattedValue + " " + units + "</div>");
+        descriptionBuilder.append("<div>" + getFormattedTime() + "</div>");
+        return descriptionBuilder.toString();
     }
 }

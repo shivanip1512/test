@@ -22,24 +22,6 @@ import com.google.common.collect.Maps;
 
 public class FlotChartServiceImpl implements FlotChartService {
 
-    @Deprecated /* use getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap) */
-    @Override
-    public Map<String, Object> getPieGraphData(Map<String, Integer> labelValueMap) {
-        Map<String, Object> dataAndOptions = Maps.newHashMapWithExpectedSize(2);
-        List<Object> jsonDataContainer = new ArrayList<>();
-        for (Entry<String, Integer> labelValue : labelValueMap.entrySet()) {
-            Map<String, Object> dataObj = Maps.newHashMapWithExpectedSize(3);
-            dataObj.put("label", labelValue.getKey());
-            dataObj.put("data", labelValue.getValue());
-            dataObj.put("tooltip", labelValue.getKey() + ": " + labelValue.getValue());
-            jsonDataContainer.add(dataObj);
-        }
-        
-        dataAndOptions.put("datas", jsonDataContainer);
-        dataAndOptions.put("type", GraphType.PIE.getFlotType());
-        return dataAndOptions;
-    }
-
     @Override
     public Map<String, Object> getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap, boolean showLegend,
                                                         boolean showLabels, double radiusPercent) {

@@ -134,7 +134,7 @@ public class HighChartServiceImpl implements HighChartService {
             StringBuilder tooltipBuilder = new StringBuilder();
             tooltipBuilder
                     .append("<span style='color:" + graph.getColor().getColorHex() + "'>\u25CF</span>&nbsp;" + graphDetail.getSeriesName());
-            tooltipBuilder.append(chartValue.getFormattedDiscription());
+            tooltipBuilder.append(chartValue.getFormattedDescription());
             map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), tooltipBuilder.toString());
             jsonArrayContainer.add(map);
         }
