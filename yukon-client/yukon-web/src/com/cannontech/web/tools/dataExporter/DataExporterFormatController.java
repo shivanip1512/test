@@ -19,7 +19,6 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -616,33 +615,11 @@ public class DataExporterFormatController {
                 StringUtils.joinWith(sep, CtiUtilities.getDataExportTemplatesDirPath(), fileName));
         ExportFormat exportFormat = YamlParserUtils.parseToObject(inputStream, ExportFormat.class);
         exportFormatTemplateValidator.validate(exportFormat, result);
+
         if (result.hasErrors()) {
-            // When user tries to create multiple data exports from a single template, we get Name already exist validation
-            // message. This happens as we are using existing validatiors for validating fields. In current flow if there are any
-            // validation errors we are displaying empty form. To Prevent this we are filtering out the validations for formatName
-            // and resetting it to empty.
-            if (result.hasFieldErrors("formatName")) {
-                exportFormat.setFormatName(StringUtils.EMPTY);
-                BeanPropertyBindingResult resultWithoutName = new BeanPropertyBindingResult(exportFormat, result.getObjectName());
-                result.getFieldErrors()
-                        .stream()
-                        .forEach(error -> {
-                            if (!StringUtils.equals("formatName", error.getField())) {
-                                resultWithoutName.addError(error);
-                            }
-                        });
-                result.getGlobalErrors()
-                        .stream()
-                        .forEach(error -> {
-                            resultWithoutName.addError(error);
-                        });
-                result = resultWithoutName;
-            }
-            if (result.hasErrors()) {
-                List<MessageSourceResolvable> validationErrors = retreiveValidationErrors(result, userContext);
-                flashScope.setError(validationErrors, FlashScopeListType.NONE);
-                exportFormat = setExportFormatForErrorScenario();
-            }
+            List<MessageSourceResolvable> validationErrors = retreiveValidationErrors(result, userContext);
+            flashScope.setError(validationErrors, FlashScopeListType.NONE);
+            exportFormat = setExportFormatForErrorScenario();
         }
         return exportFormat;
     }
@@ -653,20 +630,20 @@ public class DataExporterFormatController {
     private List<MessageSourceResolvable> retreiveValidationErrors(BindingResult result, YukonUserContext userContext) {
         List<MessageSourceResolvable> validationErrors = new ArrayList<MessageSourceResolvable>();
         validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed"));
-        validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.ul.start"));
         if (result.hasFieldErrors()) {
             List<FieldError> errors = result.getFieldErrors();
             for (FieldError error : errors) {
                 validationErrors.add(new WebMessageSourceResolvable(error.getCode(), error.getArguments()));
+                validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.lineBreaker"));
             }
         }
         if (result.hasGlobalErrors()) {
             List<ObjectError> errors = result.getGlobalErrors();
             for (ObjectError error : errors) {
                 validationErrors.add(new WebMessageSourceResolvable(error.getCode(), error.getArguments()));
+                validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.lineBreaker"));
             }
         }
-        validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.ul.end"));
         return validationErrors;
     }
 }

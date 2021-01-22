@@ -24,9 +24,14 @@ import com.cannontech.amr.archivedValueExporter.model.PadSide;
 import com.cannontech.amr.archivedValueExporter.model.ReadingPattern;
 import com.cannontech.amr.archivedValueExporter.model.TimestampPattern;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.validator.SimpleValidator;
 import com.google.common.collect.ImmutableList;
 
-public class ExportFormatTemplateValidator extends ExportFormatValidator {
+public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat> {
+
+    public ExportFormatTemplateValidator() {
+        super(ExportFormat.class);
+    }
 
     private static final Logger log = YukonLogManager.getLogger(ExportFormatTemplateValidator.class);
     private static final String invalidKey = "yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.invalid";
@@ -53,8 +58,9 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
     private List<String> ignoredFields = new ArrayList<String>();
     private List<String> defaultedFieldNames = new ArrayList<String>();
 
-    @Autowired ExportAttributeValidator exportAttributeValidator;
-    @Autowired ExportFieldValidator exportFieldValidator;
+    @Autowired private ExportAttributeValidator exportAttributeValidator;
+    @Autowired private ExportFieldValidator exportFieldValidator;
+    @Autowired private ExportFormatValidatorHelper validatorHelper;
 
     @PostConstruct
     public void init() {
@@ -79,8 +85,9 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
      */
     @Override
     protected void doValidation(ExportFormat exportFormat, Errors errors) {
-        // Validate the fields using ExportFormatValidator class.
-        super.doValidation(exportFormat, errors);
+        // Validate the ExportFormat fields except formatName. Format Name should not be validated when user create a data export
+        // from a template.
+        validatorHelper.validateExportFormatFields(exportFormat, errors);
 
         // Validate the ExportAttribute fields if present using ExportAttributeValidator class
         for (int i = 0; i < exportFormat.getAttributes().size(); i++) {

@@ -10,28 +10,32 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.web.tools.dataExporter.DataExporterFormatController;
 
 public class ExportFormatValidator extends SimpleValidator<ExportFormat> {
-    
+
     @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
-    
+    @Autowired private ExportFormatValidatorHelper validatorHelper;
+
     public ExportFormatValidator() {
         super(ExportFormat.class);
     }
 
+    /**
+     * Validate formatName only when user clicks save button. All other field validations are in ExportFormatValidatorHelper
+     * class so that these can be reused in ExportFormatTemplateValidator. ExportFormatTemplateValidator is used to validate
+     * the yaml data i.e when user create a data export from template. Any new field validation in ExportFormat POJO should go to
+     * ExportFormatValidatorHelper class.
+     */
     @Override
     protected void doValidation(ExportFormat target, Errors errors) {
+        // Validate formatName
         YukonValidationUtils.checkIsBlank(errors, "formatName", target.getFormatName(), "Format Name", false);
         YukonValidationUtils.checkExceedsMaxLength(errors, "formatName", target.getFormatName(), 100);
-        YukonValidationUtils.checkExceedsMaxLength(errors, "delimiter", target.getDelimiter(), 20);
-        YukonValidationUtils.checkExceedsMaxLength(errors, "header", target.getHeader(), 255);
-        YukonValidationUtils.checkExceedsMaxLength(errors, "footer", target.getFooter(), 255);
-
         ExportFormat format = archiveValuesExportFormatDao.findByFormatName(target.getFormatName());
         if (format != null && format.getFormatId() != target.getFormatId()) {
             errors.rejectValue("formatName", DataExporterFormatController.BASE_KEY + "formatError.duplicateName");
         }
 
-        if (target.getFields().isEmpty()) {
-            errors.reject(DataExporterFormatController.BASE_KEY + "formatError.fieldsRequired");
-        }
+        // Validate other fields
+        validatorHelper.validateExportFormatFields(target, errors);
     }
+
 }
