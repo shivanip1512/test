@@ -12,7 +12,6 @@ import javax.jms.TemporaryQueue;
 
 import org.joda.time.Duration;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
-import org.springframework.jms.support.destination.JmsDestinationAccessor;
 
 import com.cannontech.common.config.ConfigurationSource;
 
@@ -32,9 +31,7 @@ public class RequestReplyTemplateImpl<R extends Serializable> extends RequestRep
     protected <Q extends Serializable> void doJmsWork(Session session,
             final Q requestPayload, JmsReplyHandler<R> callback) throws JMSException {
         final Duration replyTimeout =
-                jmsTemplate.getReceiveTimeout() == JmsDestinationAccessor.RECEIVE_TIMEOUT_INDEFINITE_WAIT
-                    ? configurationSource.getDuration(configurationName + "_REPLY_TIMEOUT", Duration.standardMinutes(1))
-                    : Duration.millis(jmsTemplate.getReceiveTimeout());
+                configurationSource.getDuration(configurationName + "_REPLY_TIMEOUT", Duration.standardMinutes(1));
 
         DynamicDestinationResolver resolver = new DynamicDestinationResolver();
         MessageProducer producer = session.createProducer(
