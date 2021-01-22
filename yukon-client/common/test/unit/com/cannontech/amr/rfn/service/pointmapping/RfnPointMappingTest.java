@@ -464,6 +464,22 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAX, "Sum kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN520FAX, "Sum kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN520FAX, "Sum kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN520FAX, "Delivered kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN520FAX, "Delivered kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN520FAX, "Delivered kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN520FAX, "Delivered kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN520FAX, "Received kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN520FAX, "Received kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN520FAX, "Received kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN520FAX, "Received kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN520FAX, "Net kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN520FAX, "Net kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN520FAX, "Net kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN520FAX, "Net kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN520FAX, "Sum kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN520FAX, "Sum kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN520FAX, "Sum kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN520FAX, "Sum kVAh (Rate D kVAh)");
         
         missing.put(PaoType.RFN520FAXD, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN520FAXD, "Peak kVA Lagging");
@@ -498,6 +514,22 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAXD, "Sum kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN520FAXD, "Sum kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN520FAXD, "Sum kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Received kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Received kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Received kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Received kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Net kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Net kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Net kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Net kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Sum kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Sum kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Sum kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Sum kVAh (Rate D kVAh)");
         
         missing.put(PaoType.RFN520FRX, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN520FRX, "Delivered Peak kVAr Frozen");
@@ -550,6 +582,22 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530FAX, "Sum kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN530FAX, "Sum kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN530FAX, "Sum kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530FAX, "Delivered kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530FAX, "Delivered kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530FAX, "Delivered kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530FAX, "Delivered kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530FAX, "Received kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530FAX, "Received kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530FAX, "Received kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530FAX, "Received kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530FAX, "Net kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530FAX, "Net kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530FAX, "Net kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530FAX, "Net kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530FAX, "Sum kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530FAX, "Sum kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530FAX, "Sum kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530FAX, "Sum kVAh (Rate D kVAh)");
 
         missing.put(PaoType.RFN530FRX, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN530FRX, "Delivered Peak kVAr Frozen");
