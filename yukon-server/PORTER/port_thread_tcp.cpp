@@ -331,6 +331,8 @@ YukonError_t TcpPortHandler::sendOutbound( device_record &dr )
         dr.xfer.setOutCount(bytes_sent);
 
         dr.last_outbound = CtiTime::now();
+
+        _last_endpoint_send_time[ addr ] = std::chrono::high_resolution_clock::now();
     }
     catch( TcpConnectionManager::not_connected &ex )
     {
@@ -513,8 +515,41 @@ bool TcpPortHandler::isDeviceDisconnected( const long device_id ) const
 
 bool TcpPortHandler::isPostCommWaitComplete(device_record *dr, ULONG postCommWait)
 {
+    if ( const auto optAddr = getDeviceSocketAddress( dr->device->getID() ) )
+    {
+        if ( auto tp = mapFind( _last_endpoint_send_time, *optAddr ) )
+        {
+            return std::chrono::high_resolution_clock::now() >= ( *tp + std::chrono::milliseconds( postCommWait ) );
+        }
+    }
+
     return true;
 }
 
+void TcpPortHandler::setDeviceActive(device_record *dr)
+{
+    if ( const auto optAddr = getDeviceSocketAddress( dr->device->getID() ) )
+    {
+        _last_endpoint_send_time[ *optAddr ] = std::chrono::high_resolution_clock::now();
+    }
+}
+
+bool TcpPortHandler::isDeviceActive(device_record *dr)
+{
+    if ( const auto optAddr = getDeviceSocketAddress( dr->device->getID() ) )
+    {
+        return _last_endpoint_send_time.find( *optAddr ) != _last_endpoint_send_time.end();
+    }
+
+    return false;
+}
+
+void TcpPortHandler::clearActiveDevice(device_record *dr)
+{
+    if ( const auto optAddr = getDeviceSocketAddress( dr->device->getID() ) )
+    {
+        _last_endpoint_send_time.erase( *optAddr );
+    }
+}
 
 }

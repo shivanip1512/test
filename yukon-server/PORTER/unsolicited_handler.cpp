@@ -269,7 +269,7 @@ void UnsolicitedHandler::deleteDeviceRecord(const long device_id)
         {
             purgeDeviceWork(*itr, ClientErrors::IdNotFound);
 
-            _active_devices.erase(itr);
+            setDeviceInactive(itr->first);
         }
 
         deleteDeviceProperties(*dr->device);
@@ -314,7 +314,7 @@ void UnsolicitedHandler::updateDeviceRecord(const long device_id)
                 //  erases it from _active_devices
                 purgeDeviceWork(*itr, ClientErrors::DeviceInhibited);
 
-                _active_devices.erase(itr);
+                setDeviceInactive(itr->first);
             }
         }
 
@@ -361,12 +361,11 @@ void UnsolicitedHandler::updatePort(void)
 
 void UnsolicitedHandler::purgePortWork(const YukonError_t error_code)
 {
-    for each( const device_activity_map::value_type &active_device in _active_devices )
+    while ( ! _active_devices.empty() )
     {
-        purgeDeviceWork(active_device, error_code);
+        purgeDeviceWork( *_active_devices.begin(), error_code );
+        setDeviceInactive( _active_devices.begin()->first );
     }
-
-    _active_devices.clear();
 }
 
 /*
@@ -408,6 +407,11 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
     case ToGenerate:
         CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _to_generate");
         _to_generate.remove(&dr);
+        break;
+
+    case WaitingToSend:
+        CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _waiting_to_send");
+        _waiting_to_send.remove(&dr);
         break;
 
     case WaitingForData:
@@ -647,7 +651,12 @@ bool UnsolicitedHandler::startPendingRequests(const MillisecondTimer &timer, con
 
 void UnsolicitedHandler::startPendingRequest(device_record *dr)
 {
-    if( ! dr->outbound.empty() )
+    if ( getPostCommWait( dr ) && ! isDeviceActive( dr ) )
+    {
+        return;
+    }
+
+    if (!dr->outbound.empty())
     {
         if( OUTMESS *om = dr->outbound.front() )
         {
@@ -711,13 +720,13 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
                 dr->inbound.pop();
             }
 
-            _active_devices.erase(dr);
+            setDeviceInactive(dr);
         }
     }
     else
     {
         //  no outbounds, no inbounds - this guy is done for now
-        _active_devices.erase(dr);
+        setDeviceInactive(dr);
     }
 }
 
@@ -761,7 +770,7 @@ void UnsolicitedHandler::trySendOutbounds(device_record *dr)
     if (dr->xfer.getOutCount())
     {
         // bail out early if we are waiting for the postCommWait to expire
-        if ( ! availableToSend( dr, std::max<ULONG>( dr->device->getPostDelay(), _port->getDelay(POST_REMOTE_DELAY) ) ) )
+        if ( ! availableToSend( dr ) )
         {
             return;
         }
@@ -793,14 +802,22 @@ void UnsolicitedHandler::trySendOutbounds(device_record *dr)
 }
 
 
-bool UnsolicitedHandler::availableToSend( device_record *dr, ULONG postCommWait )
+bool UnsolicitedHandler::availableToSend( device_record *dr )
 {
+    auto postCommWait = getPostCommWait( dr );
+
     if ( ! postCommWait )
     {
         return true;
     }
 
     return isPostCommWaitComplete( dr, postCommWait );
+}
+
+
+ULONG UnsolicitedHandler::getPostCommWait(device_record *dr)
+{
+    return std::max<ULONG>( dr->device->getPostDelay(), _port->getDelay(POST_REMOTE_DELAY) );
 }
 
 
@@ -811,6 +828,13 @@ string UnsolicitedHandler::describeDevice( const device_record &dr ) const
     ostr << dr.device->getName() << " (" << describeDeviceAddress(dr.device->getID()) << ")";
 
     return ostr.str();
+}
+
+
+void UnsolicitedHandler::setDeviceInactive(device_record *dr)
+{
+    _active_devices.erase( dr );
+    clearActiveDevice( dr );
 }
 
 
@@ -1379,6 +1403,8 @@ void UnsolicitedHandler::setDeviceState(device_list &queue, device_record *dr, D
 {
     queue.insert(queue.end(), dr);
     _active_devices[dr] = state;
+
+    setDeviceActive(dr);
 }
 
 void UnsolicitedMessenger::addClient(UnsolicitedHandler *client)

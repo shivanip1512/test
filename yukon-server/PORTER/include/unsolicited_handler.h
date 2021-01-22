@@ -220,8 +220,14 @@ protected:
     static bool isGpuffDevice(const CtiDeviceSingle &ds);
     static bool isRdsDevice (const CtiDeviceSingle &ds);
 
-    bool availableToSend(device_record *dr, ULONG postCommWait);
+    ULONG getPostCommWait(device_record *dr);
+    bool availableToSend(device_record *dr);
     virtual bool isPostCommWaitComplete(device_record *dr, ULONG postCommWait) = 0;
+
+    virtual void setDeviceActive(device_record *dr) = 0;
+    virtual bool isDeviceActive(device_record *dr) = 0;
+    void setDeviceInactive(device_record *dr);
+    virtual void clearActiveDevice(device_record *dr) = 0;
 
 public:
 

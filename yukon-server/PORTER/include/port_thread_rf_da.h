@@ -6,6 +6,8 @@
 #include "rfn_e2e_messenger.h"
 #include "dnpLookup.h"
 
+#include <chrono>
+
 namespace Cti::Porter {
 
 void PortRfDaThread(void *pid);
@@ -33,6 +35,9 @@ class RfDaPortHandler : public UnsolicitedHandler
     };
 
     virtual bool isPortRateLimited() const;
+
+    device_record * _active_endpoint;
+    std::chrono::high_resolution_clock::time_point  _last_endpoint_send_time;
 
 public:
 
@@ -62,6 +67,10 @@ protected:
     bool isDeviceDisconnected( const long device_id ) const override { return false; }
 
     std::string describeDeviceAddress( const long device_id ) const override;
+
+    void setDeviceActive(device_record *dr) override;
+    bool isDeviceActive(device_record *dr) override;
+    void clearActiveDevice(device_record *dr) override;
 };
 
 }

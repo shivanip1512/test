@@ -510,6 +510,8 @@ YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
         }
 
         dr.last_outbound = CtiTime::now();
+
+        _last_endpoint_send_time[ pAddrInfo ] = std::chrono::high_resolution_clock::now();
     }
     catch( const YukonErrorException& ex )
     {
@@ -920,9 +922,54 @@ void UdpPortHandler::loadEncodingFilter()
 
 bool UdpPortHandler::isPostCommWaitComplete(device_record *dr, ULONG postCommWait)
 {
+    string  device_ip   = getDeviceIp  ( dr->device->getID() );
+    u_short device_port = getDevicePort( dr->device->getID() );
+
+    if ( AddrInfo addr = Cti::makeUdpClientSocketAddress( device_ip, device_port ) )
+    {
+        if ( auto tp = mapFind( _last_endpoint_send_time, addr ) )
+        {
+            return std::chrono::high_resolution_clock::now() >= ( *tp + std::chrono::milliseconds( postCommWait ) );
+        }
+    }
+
     return true;
 }
 
+void UdpPortHandler::setDeviceActive(device_record *dr)
+{
+    string  device_ip   = getDeviceIp  ( dr->device->getID() );
+    u_short device_port = getDevicePort( dr->device->getID() );
+
+    if ( AddrInfo addr = Cti::makeUdpClientSocketAddress( device_ip, device_port ) )
+    {
+        _last_endpoint_send_time[ addr ] = std::chrono::high_resolution_clock::now();
+    }
+}
+
+bool UdpPortHandler::isDeviceActive(device_record *dr)
+{
+    string  device_ip   = getDeviceIp  ( dr->device->getID() );
+    u_short device_port = getDevicePort( dr->device->getID() );
+
+    if ( AddrInfo addr = Cti::makeUdpClientSocketAddress( device_ip, device_port ) )
+    {
+        return _last_endpoint_send_time.find( addr ) != _last_endpoint_send_time.end();
+    }
+
+    return false;
+}
+
+void UdpPortHandler::clearActiveDevice(device_record *dr)
+{
+    string  device_ip   = getDeviceIp  ( dr->device->getID() );
+    u_short device_port = getDevicePort( dr->device->getID() );
+
+    if ( AddrInfo addr = Cti::makeUdpClientSocketAddress( device_ip, device_port ) )
+    {
+        _last_endpoint_send_time.erase( addr );
+    }
+}
 
 }
 }

@@ -62,7 +62,8 @@ void PortRfDaThread(void *pid)
 
 RfDaPortHandler::RfDaPortHandler( Ports::RfDaPortSPtr &rf_da_port, CtiDeviceManager &deviceManager ) :
     UnsolicitedHandler(boost::static_pointer_cast<CtiPort>(rf_da_port), deviceManager),
-    _rf_da_port(rf_da_port)
+    _rf_da_port(rf_da_port),
+    _active_endpoint(nullptr)
 {
     Messaging::Rfn::E2eMessenger::registerDnpHandler(
             [&](const Messaging::Rfn::E2eMessenger::Indication &msg)
@@ -132,6 +133,8 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
     Messaging::Rfn::E2eMessenger::sendE2eAp_Dnp(msg, successCallback, failCallback);
 
     dr.last_outbound = CtiTime::now();
+
+    _last_endpoint_send_time = std::chrono::high_resolution_clock::now();
 
     return ClientErrors::None;
 }
@@ -303,7 +306,22 @@ void RfDaPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
 
 bool RfDaPortHandler::isPostCommWaitComplete(device_record *dr, ULONG postCommWait)
 {
-    return true;
+    return std::chrono::high_resolution_clock::now() >= ( _last_endpoint_send_time + std::chrono::milliseconds( postCommWait ) );
+}
+
+void RfDaPortHandler::setDeviceActive(device_record *dr)
+{
+    _active_endpoint = dr;
+}
+
+bool RfDaPortHandler::isDeviceActive(device_record *dr)
+{
+    return _active_endpoint == dr;
+}
+
+void RfDaPortHandler::clearActiveDevice(device_record *dr)
+{
+    _active_endpoint = nullptr;
 }
 
 

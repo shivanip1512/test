@@ -13,6 +13,7 @@
 #define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
 
 #include <boost/bimap.hpp>
+#include <chrono>
 
 namespace Cti    {
 namespace Porter {
@@ -81,6 +82,8 @@ private:
 
     OutboundDestination getDestinationForAddress(const AddrInfo& address);
 
+    std::map<AddrInfo, std::chrono::high_resolution_clock::time_point> _last_endpoint_send_time;
+
 protected:
 
     virtual std::string describePort( void ) const;
@@ -107,6 +110,10 @@ protected:
     virtual u_short     getDevicePort( const long device_id ) const;
 
     virtual std::string describeDeviceAddress( const long device_id ) const;
+
+    void setDeviceActive(device_record *dr) override;
+    bool isDeviceActive(device_record *dr) override;
+    void clearActiveDevice(device_record *dr) override;
 
 public:
 
