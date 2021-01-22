@@ -7,6 +7,7 @@ public enum PaoTypeIcon {
     WIFI_ELECTRIC_METER("icon-wifi-meter"),
     VIRTUAL_METER("icon-virtual-meter"),
     VIRTUAL_DEVICE("icon-virtual-device"),
+    VIRTUAL_GATEWAY("icon-virtual-gateway"),
     WATER_METER("icon-water-meter"),
     GAS_METER("icon-gas-meter"),
     TRANSMITTER("icon-transmitter"),

@@ -9,7 +9,7 @@
         <tag name="GATEWAY_DETAIL_DISPLAYABLE"/>
         <tag name="DATA_STREAMING"/>
         <tag name="RFN_EVENTS"/>
-        <tag name="DEVICE_ICON_TYPE" option="transmitter"/>
+        <tag name="DEVICE_ICON_TYPE" option="virtual_gateway"/>
     </tags>
     <pointInfos>
         <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
