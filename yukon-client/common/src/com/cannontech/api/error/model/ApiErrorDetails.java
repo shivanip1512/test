@@ -38,7 +38,23 @@ public enum ApiErrorDetails {
     POINT_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 114, "Point type mismatch", "Point type mismatch."), // code : 101114
     PAO_ID_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 115, "Pao id mismatch", "Pao id mismatch."), // code : 101115
     PAO_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 116, "Pao type mismatch", "Pao type mismatch."), // code : 101116
-    PAST_DATE(ApiErrorCategory.VALIDATION_FAILED, 117, "Date must be in the past", "Date must be in the past."); // code : 101117
+    PAST_DATE(ApiErrorCategory.VALIDATION_FAILED, 117, "Date must be in the past", "Date must be in the past."), // code : 101117
+    INVALID_CONTROL_TYPE(ApiErrorCategory.VALIDATION_FAILED, 118, "Invalid control type", "Invalid control type."),// code : 101118
+    INVALID_OPERATION(ApiErrorCategory.VALIDATION_FAILED, 119, "Invalid Operation", "Invalid Operation when Component Type is Operation or Constant."),// code : 101119
+    INVALID_POINT_ID(ApiErrorCategory.VALIDATION_FAILED, 120, "Invalid point id", "Invalid Point Id."),// code : 101120
+    INVALID_UPDATE_TYPE(ApiErrorCategory.VALIDATION_FAILED, 121, "Invalid update type", "Invalid update type."),// code : 101121
+    INVALID_INITIAL_STATE(ApiErrorCategory.VALIDATION_FAILED, 122, "Invalid initial state", "Invalid initial state."),// code : 101122
+    INVALID_ARCHIVE_TYPE(ApiErrorCategory.VALIDATION_FAILED, 123, "Archive type mismatch", " Archive type mismatch."), // code : 101123
+    INVALID_ARCHIVE_TIME_INTERVAL(ApiErrorCategory.VALIDATION_FAILED, 124, "Invalid archive time interval", " Invalid archive time interval."), // code : 101124
+    INVALID_REASONABILITY(ApiErrorCategory.VALIDATION_FAILED, 125, "Invalid lower limit", "Invalid lower limit."), // code : 101125
+    INVALID_UPDATE_STYLE(ApiErrorCategory.VALIDATION_FAILED, 126, "Invalid update style", " Invalid update style."), // code : 101126
+    INVALID_ARCHIVE_INTERVAL(ApiErrorCategory.VALIDATION_FAILED, 127, "Invalid archive interval", " Invalid archive interval."), // code : 101127
+    INVALID_LIMIT_NUMBER(ApiErrorCategory.VALIDATION_FAILED, 128, "Invalid limit number", " Invalid limit number."), // code : 101128
+    INVALID_TRANSLATION_PROPERTY_COUNT(ApiErrorCategory.VALIDATION_FAILED, 129, "Invalid translation property count", " Invalid translation property count."), // code : 101129
+    INVALID_TRANSLATION_PROPERTY(ApiErrorCategory.VALIDATION_FAILED, 130, "Invalid Translation property", " Invalid Translation property."), // code : 101130
+    INVALID_TRANSLATION_PROPERTY_VALUE(ApiErrorCategory.VALIDATION_FAILED, 131, "Invalid Translation property value", " Invalid Translation property value."), // code : 101131
+    INVALID_SUPPORT_DIRECTION(ApiErrorCategory.VALIDATION_FAILED, 132, "Invalid archive interval", " Invalid archive interval."), // code : 101132
+    INVALID_SIZE(ApiErrorCategory.VALIDATION_FAILED, 133, "Invalid Size", " Invalid Size."); // code : 101133
     
     private ApiErrorCategory category;
     private int code;
