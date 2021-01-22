@@ -33,7 +33,7 @@ public class ItronServiceWatcher extends ServiceStatusWatchdogImpl {
 
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private WatchdogWatcherService watcherService;
-    private static final Set<String> faultCodesToIgnore = Sets.newHashSet("group.import.error.groupEmpty");
+    private static final Set<String> faultCodesToIgnore = Sets.newHashSet("group.import.error.groupEmpty", "drm.group.not_found_with_name");
     private static final String ITRON_SERVICE_READ_GROUP = "ITRON_PING_READ_GROUP";
 
     private static final Logger log = YukonLogManager.getLogger(ItronServiceWatcher.class);
