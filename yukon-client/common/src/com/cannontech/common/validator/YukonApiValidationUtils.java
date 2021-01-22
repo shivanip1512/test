@@ -20,17 +20,33 @@ public class YukonApiValidationUtils extends ValidationUtils {
         return false;
     }
 
-    public static boolean checkBlacklistedCharacter(Errors errors, String field, String fieldValue) {
+    /**
+     * Return true if the provided fieldValue contains any characters from blacklisted characters( \\, !, #, $, %, &, ', *, (, ), ;,
+     * +, =, <, >, ?, {, }, \, ", |, / and , ).
+     */
+    public static boolean checkBlacklistedCharacter(Errors errors, String field, String fieldValue, String fieldName) {
         if (YukonValidationUtilsCommon.checkBlacklistedCharacter(fieldValue)) {
-            errors.rejectValue(field, ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString());
+            errors.rejectValue(field, ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
             return true;
         }
         return false;
     }
 
-    public static boolean checkIsBlank(Errors errors, String field, String fieldValue, boolean fieldAllowsNull) {
+    /**
+     * Return true if the provided fieldValue contains any characters from illegal characters( \, |, /, ", \\ and , ).
+     */
+    public static boolean checkIllegalCharacter(Errors errors, String field, String fieldValue, String fieldName) {
+        if (YukonValidationUtilsCommon.checkIllegalCharacter(fieldValue)) {
+            errors.rejectValue(field, ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean checkIsBlank(Errors errors, String field, String fieldValue, boolean fieldAllowsNull,
+            String fieldName) {
         if (YukonValidationUtilsCommon.checkIsBlank(fieldValue, fieldAllowsNull)) {
-            errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { fieldValue }, "");
+            errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { fieldName }, "");
             return true;
         }
         return false;
@@ -41,10 +57,10 @@ public class YukonApiValidationUtils extends ValidationUtils {
      * checkIsBlank().
      */
     public static void checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(Errors errors, String field, String fieldValue,
-            boolean fieldAllowsNull, int max) {
-        checkIsBlank(errors, field, fieldValue, fieldAllowsNull);
+            boolean fieldAllowsNull, int max, String fieldName) {
+        checkIsBlank(errors, field, fieldValue, fieldAllowsNull, fieldName);
         checkExceedsMaxLength(errors, field, fieldValue, max);
-        checkBlacklistedCharacter(errors, field, fieldValue);
+        checkBlacklistedCharacter(errors, field, fieldValue, fieldName);
     }
 
     public static void checkIsPositiveShort(Errors errors, String field, Short fieldValue) {
