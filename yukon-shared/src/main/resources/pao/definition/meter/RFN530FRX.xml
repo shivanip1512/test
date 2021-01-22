@@ -62,10 +62,10 @@
         <pointInfo name="Delivered kWh Rate B per Interval" attributes="DELIVERED_KWH_RATE_B_PER_INTERVAL"/>
         <pointInfo name="Delivered kWh Rate C per Interval" attributes="DELIVERED_KWH_RATE_C_PER_INTERVAL"/>
         <pointInfo name="Delivered kWh Rate D per Interval" attributes="DELIVERED_KWH_RATE_D_PER_INTERVAL"/>
-        <pointInfo name="Delivered Peak kVA (Rate A kVA)" attributes="PEAK_KVA_Q12_RATE_A"/>
-        <pointInfo name="Delivered Peak kVA (Rate B kVA)" attributes="PEAK_KVA_Q12_RATE_B"/>
-        <pointInfo name="Delivered Peak kVA (Rate C kVA)" attributes="PEAK_KVA_Q12_RATE_C"/>
-        <pointInfo name="Delivered Peak kVA (Rate D kVA)" attributes="PEAK_KVA_Q12_RATE_D"/>
+        <pointInfo name="Delivered Peak kVA (Quadrants 1 2) (Rate A kVA)" attributes="PEAK_KVA_Q12_RATE_A"/>
+        <pointInfo name="Delivered Peak kVA (Quadrants 1 2) (Rate B kVA)" attributes="PEAK_KVA_Q12_RATE_B"/>
+        <pointInfo name="Delivered Peak kVA (Quadrants 1 2) (Rate C kVA)" attributes="PEAK_KVA_Q12_RATE_C"/>
+        <pointInfo name="Delivered Peak kVA (Quadrants 1 2) (Rate D kVA)" attributes="PEAK_KVA_Q12_RATE_D"/>
         <pointInfo name="Delivered Peak kVAr" attributes="PEAK_KVAR"/>
         <pointInfo name="Delivered Peak kVAr (Rate A kVAr)" attributes="PEAK_KVAR_RATE_A"/>
         <pointInfo name="Delivered Peak kVAr (Rate B kVAr)" attributes="PEAK_KVAR_RATE_B"/>

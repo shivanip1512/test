@@ -4197,7 +4197,7 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVA (Rate A kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered Peak kVA (Quadrants 1 2) (Rate A kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4208,7 +4208,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVA (Rate B kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered Peak kVA (Quadrants 1 2) (Rate B kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4219,7 +4219,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVA (Rate C kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered Peak kVA (Quadrants 1 2) (Rate C kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4230,7 +4230,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVA (Rate D kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered Peak kVA (Quadrants 1 2) (Rate D kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
