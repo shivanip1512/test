@@ -8,7 +8,7 @@ Trend:
     trendName:
       type: string
       maxLength: 40
-      description: 'Name of the trend.'
+      description: 'Name for the trend.'
     trendSeries:
       $ref: '#/trendSeries'
 
@@ -90,7 +90,29 @@ id:
   properties:
     id:
       type: integer
-      description: 'Trend id'
+      description: 'Unique identifier for Trend.'
+      
+resetPeak:
+  title: resetPeak
+  required:
+    - date
+  type: object
+  properties:
+    date:
+      type: string
+      format: date-type
+      description: 'Date in MM/dd/yyyy format.'
+      
+trendId:
+  title: trendId
+  required:
+    - trendId
+  type: object
+  properties:
+    trendId:
+      type: integer
+      description: 'Unique identifier for Trend.'
+
 
 components:
   examples:
@@ -109,3 +131,11 @@ components:
     id:
       value:
         id: 11
+        
+    resetPeak:
+      value:
+        startDate: 06/30/2020
+      
+    trendId: 
+      value:
+        trendId: 10

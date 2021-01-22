@@ -9,14 +9,16 @@ TCPPORT:
     name:
       type: string
       maxLength: 60
-      description: 'Comm Channel Name'
+      description: 'Name for the comm channel.'
     type:
       type: string
-      description: 'Channel Type.'
+      description: 'Type of channel.'
+      enum:
+        - TCPPORT
     enable:
       type: boolean
       default: true
-      description: 'Enable Channel.'
+      description: 'Flag to enable channel.'
     baudRate:
       type: string
       description: 'Baud Rate.'
@@ -46,14 +48,16 @@ UDPPORT:
     name:
       type: string
       maxLength: 60
-      description: 'Comm Channel Name.'
+      description: 'Name for the comm channel.'
     type:
       type: string
-      description: 'Channel Type.'
+      description: 'Type of channel.'
+      enum:
+        - UDPPORT
     enable:
       type: boolean
       default: true
-      description: 'Enable Channel.'
+      description: 'Flag to enable channel.'
     baudRate:
       type: string
       description: 'Baud Rate.'
@@ -110,14 +114,16 @@ TSERVER_SHARED:
     name:
       type: string
       maxLength: 60
-      description: 'Comm Channel Name.'
+      description: 'Name for the comm channel.'
     type:
       type: string
-      description: 'Channel Type.'
+      description: 'Type of channel.'
+      enum:
+        - TSERVER_SHARED
     enable:
       type: boolean
       default: true
-      description: 'Enable Channel.'
+      description: 'Flag to enable channel.'
     baudRate:
       type: string
       description: 'Baud Rate.'
@@ -169,14 +175,16 @@ LOCAL_SHARED:
     name:
       type: string
       maxLength: 60
-      description: 'Comm Channel Name.'
+      description: 'Name for the comm channel.'
     type:
       type: string
-      description: 'Channel Type.'
+      description: 'Type of channel.'
+      enum:
+        - LOCAL_SHARED
     enable:
       type: boolean
       default: true
-      description: 'Enable Channel.'
+      description: 'Flag to enable channel.'
     baudRate:
       type: string
       description: 'Baud Rate.'
