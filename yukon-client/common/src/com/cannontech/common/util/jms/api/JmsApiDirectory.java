@@ -642,9 +642,9 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    public static final JmsApi<RfnMeterDisconnectRequest,RfnMeterDisconnectInitialReply,RfnMeterDisconnectConfirmationReply> RFN_METER_DISCONNECT =
+    public static final JmsApi<RfnMeterDisconnectRequest,RfnMeterDisconnectInitialReply,RfnMeterDisconnectConfirmationReply> RFN_METER_DISCONNECT_LEGACY =
             JmsApi.builder(RfnMeterDisconnectRequest.class, RfnMeterDisconnectInitialReply.class, RfnMeterDisconnectConfirmationReply.class)
-                  .name("RFN Meter Disconnect")
+                  .name("RFN Meter Disconnect (Legacy)")
                   .description("Sends a disconnect request to an RFN meter via Network Manager. The initial reply "
                           + "indicates either that the command will be sent, or that there was an error sending. The "
                           + "final response indicates the ultimate success or failure of the operation.")
@@ -659,9 +659,26 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    public static final JmsApi<RfnMeterReadRequest,RfnMeterReadReply,RfnMeterReadDataReply> RFN_METER_READ =
+    public static final JmsApi<RfnMeterDisconnectRequest,RfnMeterDisconnectInitialReply,RfnMeterDisconnectConfirmationReply> RFN_METER_DISCONNECT =
+            JmsApi.builder(RfnMeterDisconnectRequest.class, RfnMeterDisconnectInitialReply.class, RfnMeterDisconnectConfirmationReply.class)
+                  .name("RFN Meter Disconnect")
+                  .description("Sends a disconnect request to an RFN meter via E2E. The initial reply "
+                          + "indicates either that the command will be sent, or that there was an error sending. The "
+                          + "final response indicates the ultimate success or failure of the operation.")
+                  .communicationPattern(REQUEST_ACK_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.RfnMeterDisconnectRequest"))
+                  .ackQueue(JmsQueue.TEMP_QUEUE)
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(RfnMeterDisconnectRequest.class)
+                  .ackMessage(RfnMeterDisconnectInitialReply.class)
+                  .responseMessage(RfnMeterDisconnectConfirmationReply.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_PORTER)
+                  .build();
+    
+    public static final JmsApi<RfnMeterReadRequest,RfnMeterReadReply,RfnMeterReadDataReply> RFN_METER_READ_LEGACY =
             JmsApi.builder(RfnMeterReadRequest.class, RfnMeterReadReply.class, RfnMeterReadDataReply.class)
-                  .name("Rfn Meter Read")
+                  .name("Rfn Meter Read (Legacy)")
                   .description("Attempts to send a read request for an RFN meter. The first response is a status "
                           + "message indicating this is a known meter and a read will be tried, or a read is not "
                           + "possible for this meter. This response should come back within seconds. The second "
@@ -677,6 +694,26 @@ public final class JmsApiDirectory {
                   .responseMessage(RfnMeterReadDataReply.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .build();
+    
+    public static final JmsApi<RfnMeterReadRequest,RfnMeterReadReply,RfnMeterReadDataReply> RFN_METER_READ =
+            JmsApi.builder(RfnMeterReadRequest.class, RfnMeterReadReply.class, RfnMeterReadDataReply.class)
+                  .name("Rfn Meter Read")
+                  .description("Attempts to send a read request for an RFN meter via E2E. The first response is a status "
+                          + "message indicating this is a known meter and a read will be tried, or a read is not "
+                          + "possible for this meter. This response should come back within seconds. The second "
+                          + "response is the actual read data. This response is only expected if the first response "
+                          + "was OK. This response can take anywhere from seconds to minutes depending on network "
+                          + "performance.")
+                  .communicationPattern(REQUEST_ACK_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.RfnMeterReadRequest"))
+                  .ackQueue(JmsQueue.TEMP_QUEUE)
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(RfnMeterReadRequest.class)
+                  .ackMessage(RfnMeterReadReply.class)
+                  .responseMessage(RfnMeterReadDataReply.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_PORTER)
                   .build();
     
     public static final JmsApi<RfnMeterReadingArchiveRequest,?,RfnMeterReadingArchiveResponse> RFN_METER_READ_ARCHIVE = 
@@ -1325,7 +1362,9 @@ public final class JmsApiDirectory {
         addApis(jmsApis, RFN_METER, 
                 RFN_METER_DEMAND_RESET, 
                 RFN_METER_DISCONNECT,
+                RFN_METER_DISCONNECT_LEGACY,
                 RFN_METER_READ,
+                RFN_METER_READ_LEGACY,
                 RFN_METER_READ_ARCHIVE,
                 METER_PROGRAM_STATUS_ARCHIVE,
                 METER_PROGRAM_VALIDATION);
