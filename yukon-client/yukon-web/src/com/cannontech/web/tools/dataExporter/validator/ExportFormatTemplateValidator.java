@@ -60,7 +60,6 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
 
     @Autowired private ExportAttributeValidator exportAttributeValidator;
     @Autowired private ExportFieldValidator exportFieldValidator;
-    @Autowired private ExportFormatValidatorHelper validatorHelper;
 
     @PostConstruct
     public void init() {
@@ -85,9 +84,9 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
      */
     @Override
     protected void doValidation(ExportFormat exportFormat, Errors errors) {
-        // Validate the ExportFormat fields except formatName. Format Name should not be validated when user create a data export
-        // from a template.
-        validatorHelper.validateExportFormatFields(exportFormat, errors);
+        // Validate the ExportFormat fields except duplicate formatName. Duplicate format name should not be validated when user
+        // create a data export from a template.
+        ExportFormatValidatorHelper.validateExportFormatFields(exportFormat, errors);
 
         // Validate the ExportAttribute fields if present using ExportAttributeValidator class
         for (int i = 0; i < exportFormat.getAttributes().size(); i++) {
