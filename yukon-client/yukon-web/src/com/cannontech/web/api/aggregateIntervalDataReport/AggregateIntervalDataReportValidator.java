@@ -1,8 +1,8 @@
 package com.cannontech.web.api.aggregateIntervalDataReport;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.Duration;
 import org.springframework.validation.Errors;
-
 
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -31,6 +31,11 @@ public class AggregateIntervalDataReportValidator extends SimpleValidator<Aggreg
         }
         if (filter.getStartDate() != null && filter.getEndDate() != null) {
             YukonValidationUtils.checkIfEndDateGreaterThenStartDate("startDate", filter.getStartDate(), filter.getEndDate(), false, errors);
+            //Check if greater than a year apart
+            Duration dur = new Duration(filter.getStartDate(), filter.getEndDate());
+            if (dur.getStandardDays() > 365) {
+                errors.rejectValue("startDate", "yukon.web.error.date.rangeGreaterThanOneYear", new Object[] { filter.getStartDate(), filter.getEndDate() }, "");
+            }
         }
     }
 

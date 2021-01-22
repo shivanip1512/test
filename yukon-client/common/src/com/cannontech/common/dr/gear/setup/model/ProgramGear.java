@@ -129,7 +129,6 @@ public class ProgramGear implements DBPersistentConverter<LMProgramDirectGear> {
 
     @Override
     public void buildDBPersistent(LMProgramDirectGear directGear) {
-        directGear.setGearID(getGearId());
         directGear.setGearNumber(getGearNumber());
         directGear.setGearName(getGearName());
         directGear.setControlMethod(controlMethod);

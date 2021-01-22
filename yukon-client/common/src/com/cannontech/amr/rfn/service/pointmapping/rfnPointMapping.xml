@@ -2463,14 +2463,14 @@
         <paoType value="RFN530FAX"/>
         <paoType value="RFN530FRX"/>
 
-        <point name="Daily Min Volts">
+        <point name="Daily Min Volts" icdExcludedTypes="RFN520FAX,RFN520FRX,RFN520FAXD,RFN520FRXD,RFN530FAX,RFN530FRX">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Min</modifier>
             </modifiers>
         </point>
-        <point name="Daily Max Volts">
+        <point name="Daily Max Volts" icdExcludedTypes="RFN520FAX,RFN520FRX,RFN520FAXD,RFN520FRXD,RFN530FAX,RFN530FRX">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
@@ -4207,17 +4207,6 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVAr Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Max</modifier>
-                <modifier>Previous</modifier>
-            </modifiers>
-        </point>
         <point name="Sum Peak kVAr" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
             <uom>Var</uom>
             <multiplier value=".001"/>
@@ -4228,19 +4217,6 @@
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Max</modifier>
-            </modifiers>
-        </point>
-        <point name="Sum Peak kVAr Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
-                <modifier>Previous</modifier>
             </modifiers>
         </point>
         <point name="Peak kVA Lagging" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
@@ -4254,18 +4230,6 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA Lagging Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
-            <uom>VA</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
-                <modifier>Previous</modifier>
-            </modifiers>
-        </point>
         <point name="Sum Peak kVA" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
             <uom>VA</uom>
             <multiplier value=".001"/>
@@ -4276,19 +4240,6 @@
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Max</modifier>
-            </modifiers>
-        </point>
-        <point name="Sum Peak kVA Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
-            <uom>VA</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
-                <modifier>Previous</modifier>
             </modifiers>
         </point>
         
@@ -4356,14 +4307,6 @@
         </point>
         <point name="Current">
             <uom>A</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-            </modifiers>
-        </point>
-        <point name="Power Factor Degrees">
-            <uom>PF degree</uom>
-            <multiplier value="0.1"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
@@ -4519,32 +4462,6 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-        <!-- RFN530FAX and RFN530FRX types only -->
-        <point name="Power Factor Degrees Phase A" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X">
-            <uom>PF degree</uom>
-            <multiplier value="0.1"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-            </modifiers>
-        </point>
-        <point name="Power Factor Degrees Phase B" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X">
-            <uom>PF degree</uom>
-            <multiplier value="0.1"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase B</modifier>
-            </modifiers>
-        </point>
-        <point name="Power Factor Degrees Phase C" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X">
-            <uom>PF degree</uom>
-            <multiplier value="0.1"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase C</modifier>
-            </modifiers>
-        </point>
-        <!-- END RFN530FAX and RFN530FRX types only -->
     </pointGroup>
     
     <pointGroup>    
