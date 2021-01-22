@@ -490,6 +490,10 @@ INIT_ATTRIBUTE( SumkVArLoadProfile,                                 "SUM_KVAR_LO
 INIT_ATTRIBUTE( kVALoadProfile,                                     "KVA_LOAD_PROFILE" );
 
 INIT_ATTRIBUTE( NetkVArh,                                           "NET_KVARH" );
+INIT_ATTRIBUTE( NetkVArhRateA,                                      "NET_KVARH_RATE_A" );
+INIT_ATTRIBUTE( NetkVArhRateB,                                      "NET_KVARH_RATE_B" );
+INIT_ATTRIBUTE( NetkVArhRateC,                                      "NET_KVARH_RATE_C" );
+INIT_ATTRIBUTE( NetkVArhRateD,                                      "NET_KVARH_RATE_D" );
 INIT_ATTRIBUTE( NetDeliveredkVArh,                                  "NET_DELIVERED_KVARH" );
 INIT_ATTRIBUTE( NetDeliveredkVArhRateA,                             "NET_DELIVERED_KVARH_RATE_A" );
 INIT_ATTRIBUTE( NetDeliveredkVArhRateB,                             "NET_DELIVERED_KVARH_RATE_B" );

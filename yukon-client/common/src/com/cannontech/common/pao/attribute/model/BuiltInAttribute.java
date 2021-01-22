@@ -488,6 +488,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     KVA_LOAD_PROFILE("kVA Load Profile", AttributeGroup.PROFILE, false), //calculated, not readable
 
     NET_KVARH("Net kVArh", AttributeGroup.REACTIVE),
+    NET_KVARH_RATE_A("Net kVArh Rate A", AttributeGroup.REACTIVE),
+    NET_KVARH_RATE_B("Net kVArh Rate B", AttributeGroup.REACTIVE),
+    NET_KVARH_RATE_C("Net kVArh Rate C", AttributeGroup.REACTIVE),
+    NET_KVARH_RATE_D("Net kVArh Rate D", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH("Net Delivered kVArh", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH_RATE_A("Net Delivered kVArh Rate A", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH_RATE_B("Net Delivered kVArh Rate B", AttributeGroup.REACTIVE),

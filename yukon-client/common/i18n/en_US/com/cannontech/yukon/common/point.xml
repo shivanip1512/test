@@ -599,6 +599,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH_PER_INTERVAL">Reverse Inductive kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">Reverse Capacitive kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KVARH">Net kVArh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KVARH_RATE_A">Net kVArh Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KVARH_RATE_B">Net kVArh Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KVARH_RATE_C">Net kVArh Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KVARH_RATE_D">Net kVArh Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH">Net Delivered kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_A">Net Delivered kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_B">Net Delivered kVArh Rate B</entry>

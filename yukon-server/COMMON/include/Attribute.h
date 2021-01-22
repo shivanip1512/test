@@ -481,6 +481,10 @@ public:
     static const Attribute  kVALoadProfile;
 
     static const Attribute  NetkVArh;
+    static const Attribute  NetkVArhRateA;
+    static const Attribute  NetkVArhRateB;
+    static const Attribute  NetkVArhRateC;
+    static const Attribute  NetkVArhRateD;
     static const Attribute  NetDeliveredkVArh;
     static const Attribute  NetDeliveredkVArhRateA;
     static const Attribute  NetDeliveredkVArhRateB;
