@@ -18,6 +18,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -241,18 +242,20 @@ public class TrendsHomeController {
 
     private void callResetPeakApi(YukonUserContext userContext, HttpServletRequest request, ResetPeakModel resetPeakModel,
             Integer trendId, List<String> resetPeakSuccess, List<String> resetPeakFailed) {
-        boolean result;
+        boolean isSuccess;
         LiteGraphDefinition liteGraphDefinition = graphDao.getLiteGraphDefinition(trendId);
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl + "/" + trendId + "/resetPeak");
-            apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Map.class, (ResetPeakModel) resetPeakModel);
-            result = true;
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
+                    HttpMethod.POST, Map.class, (ResetPeakModel) resetPeakModel);
+
+            isSuccess = response.getStatusCode() == HttpStatus.OK;
         } catch (ApiCommunicationException | RestClientException e) {
             log.error("Error while performing reset peak for trend {}.", liteGraphDefinition.getName(), e);
-            result = false;
+            isSuccess = false;
         }
-        
-        if (result) {
+
+        if (isSuccess) {
             resetPeakSuccess.add(liteGraphDefinition.getName());
         } else {
             resetPeakFailed.add(liteGraphDefinition.getName());

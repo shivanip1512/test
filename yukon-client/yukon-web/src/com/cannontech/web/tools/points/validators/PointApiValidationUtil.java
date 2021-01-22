@@ -2,6 +2,8 @@ package com.cannontech.web.tools.points.validators;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -37,13 +39,13 @@ public class PointApiValidationUtil extends ValidationUtils {
     public void validatePointOffset(LitePointModel pointModel, String fieldName, Errors errors,
             boolean isCopyOrCreate) {
         String physicalPort = pointValidationUtilCommon.isPointOrPhyicalOffset(pointModel, fieldName, errors);
-        if (!physicalPort.isEmpty()) {
+        if (StringUtils.isNotEmpty(physicalPort)) {
             Range<Integer> range = Range.inclusive(0, 99999999);
             YukonApiValidationUtils.checkRange(errors, fieldName, physicalPort,
                     pointModel.getPointOffset(), range, true);
         }
         List<Object> arguments = pointValidationUtilCommon.isValidPointOffset(pointModel, isCopyOrCreate);
-        if (!arguments.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(arguments)) {
             errors.rejectValue(fieldName, ApiErrorDetails.POINT_OFFSET_NOT_AVAILABLE.getCodeString(),
                     arguments.toArray(), "Invalid point offset");
         }

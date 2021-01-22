@@ -4,7 +4,7 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 
 public class TrendCreateValidator extends SimpleValidator<TrendModel> {
     public TrendCreateValidator() {
@@ -14,6 +14,6 @@ public class TrendCreateValidator extends SimpleValidator<TrendModel> {
     @Override
     protected void doValidation(TrendModel trend, Errors errors) {
         // Check if name is NULL
-        YukonValidationUtils.checkIfFieldRequired("name", errors, trend.getName(), "Name");
+        YukonApiValidationUtils.checkIfFieldRequired("name", errors, trend.getName(), "Name");
     }
 }

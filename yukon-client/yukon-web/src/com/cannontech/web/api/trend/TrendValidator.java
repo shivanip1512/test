@@ -9,7 +9,7 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.stars.util.ServletUtils;
 
 public class TrendValidator extends SimpleValidator<TrendModel> {
-    @Autowired private TrendValidatorHelper trendValidatorHelper;
+    @Autowired private TrendApiValidatorHelper trendApiValidatorHelper;
 
     public TrendValidator() {
         super(TrendModel.class);
@@ -21,13 +21,13 @@ public class TrendValidator extends SimpleValidator<TrendModel> {
         if (trend.getName() != null) {
             String strTrendId = ServletUtils.getPathVariable("id");
             Integer trendId = strTrendId == null ? null : Integer.valueOf(strTrendId);
-            trendValidatorHelper.validateTrendName(errors, trend.getName(), trendId);
+            trendApiValidatorHelper.validateTrendName(errors, trend.getName(), trendId);
         }
 
         if (CollectionUtils.isNotEmpty(trend.getTrendSeries())) {
             for (int i = 0; i < trend.getTrendSeries().size(); i++) {
                 errors.pushNestedPath("trendSeries[" + i + "]");
-                trendValidatorHelper.validateTrendSeries(errors, trend.getTrendSeries().get(i));
+                trendApiValidatorHelper.validateTrendSeries(errors, trend.getTrendSeries().get(i));
                 errors.popNestedPath();
             }
         }

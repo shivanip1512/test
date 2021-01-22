@@ -58,8 +58,23 @@ public class YukonValidationUtils extends ValidationUtils {
         return false;
     }
 
+    /**
+     * Return true if the provided fieldValue contains any characters from blacklisted characters( \\, !, #, $, %, &, ', *, (, ), ;,
+     * +, =, <, >, ?, {, }, \, ", |, / and , ).
+     */
     public static boolean checkBlacklistedCharacter(Errors errors, String field, String fieldValue) {
         if (YukonValidationUtilsCommon.checkBlacklistedCharacter(fieldValue)) {
+            errors.rejectValue(field, "yukon.web.error.isBlacklistedCharacter");
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Return true if the provided fieldValue contains any characters from illegal characters( \, |, /, ", \\ and , ).
+     */
+    public static boolean checkIllegalCharacter(Errors errors, String field, String fieldValue) {
+        if (YukonValidationUtilsCommon.checkIllegalCharacter(fieldValue)) {
             errors.rejectValue(field, "yukon.web.error.isBlacklistedCharacter");
             return true;
         }
