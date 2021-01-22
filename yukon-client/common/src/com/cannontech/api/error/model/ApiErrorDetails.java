@@ -40,7 +40,7 @@ public enum ApiErrorDetails {
     PAO_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 116, "Pao type mismatch", "Pao type mismatch."), // code : 101116
     PAST_DATE(ApiErrorCategory.VALIDATION_FAILED, 117, "Date must be in the past", "Date must be in the past."), // code : 101117
     INVALID_CONTROL_TYPE(ApiErrorCategory.VALIDATION_FAILED, 118, "Invalid control type", "Invalid control type."),// code : 101118
-    INVALID_OPERATION(ApiErrorCategory.VALIDATION_FAILED, 119, "Invalid Operation", "Invalid Operation."),// code : 101119
+    INVALID_OPERATION(ApiErrorCategory.VALIDATION_FAILED, 119, "Invalid operation", "Invalid operation."),// code : 101119
     INVALID_POINT_ID(ApiErrorCategory.VALIDATION_FAILED, 120, "Invalid point id", "Invalid point Id."),// code : 101120
     INVALID_UPDATE_TYPE(ApiErrorCategory.VALIDATION_FAILED, 121, "Invalid update type", "Invalid update type."),// code : 101121
     INVALID_INITIAL_STATE(ApiErrorCategory.VALIDATION_FAILED, 122, "Invalid initial state", "Invalid initial state."),// code : 101122
