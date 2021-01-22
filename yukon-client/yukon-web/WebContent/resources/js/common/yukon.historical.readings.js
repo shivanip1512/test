@@ -23,7 +23,10 @@ yukon.historical.readings = (function () {
             $("#trend-graph_" + pointId).html(response);
             $("#duration_" + pointId).closest(".ui-widget-content").dialog({
                 width : 800,
-                height : 500
+                height : 500,
+                resizeStop: function(event, ui) {
+                    yukon.highChart.redrawTrendChart($(this), ui);
+                }
             });
         }).always(function () {
             yukon.ui.unblock($(".js-trend-container_" + pointId));
