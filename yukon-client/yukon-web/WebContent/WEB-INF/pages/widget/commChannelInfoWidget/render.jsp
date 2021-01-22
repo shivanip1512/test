@@ -129,6 +129,9 @@
                                     <cti:msg2 var="seconds" key="yukon.common.units.sec"/>
                                     <tags:input path="timing.extraTimeOut" units="${seconds}"/>
                                 </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".postCommWait">
+                                    <tags:input path="timing.postCommWait" units="${milliseconds}"/>
+                                </tags:nameValue2>
                             </tags:nameValueContainer2>
                         </tags:sectionContainer2>
                         <!--  Shared Section -->

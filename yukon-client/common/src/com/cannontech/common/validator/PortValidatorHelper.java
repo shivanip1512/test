@@ -40,6 +40,11 @@ public class PortValidatorHelper {
             YukonValidationUtils.checkRange(errors, "timing.extraTimeOut", "Additional Time Out", timing.getExtraTimeOut(), range,
                     false);
         }
+        if (!errors.hasFieldErrors("timing.postCommWait")) {
+            Range<Integer> range = Range.inclusive(0, 100_000);
+            YukonValidationUtils.checkRange(errors, "timing.postCommWait", "Post Comm Wait", timing.getPostCommWait(), range,
+                    false);
+        }
     }
     
     public static void validatePortSharingFields(Errors errors, PortSharing sharing, String fieldName) {

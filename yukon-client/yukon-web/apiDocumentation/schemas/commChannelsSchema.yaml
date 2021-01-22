@@ -252,6 +252,12 @@ timing:
       minimum: 0
       maximum: 999
       description: 'Additional Time Out.'
+    postCommWait:
+      type: integer
+      default: 0
+      minimum: 0
+      maximum: 999
+      description: 'Post Comm Wait.'
 
 sharing:
   type: object
@@ -292,6 +298,7 @@ components:
           postTxWait: 0
           receiveDataWait: 0
           extraTimeOut: 0
+          postCommWait: 0
             
     UDP Terminal Server:   
       value:
@@ -308,6 +315,7 @@ components:
           postTxWait: 89
           receiveDataWait: 76
           extraTimeOut: 98
+          postCommWait: 150
         sharing:
           sharedPortType: ACS
           sharedSocketNumber: 100
@@ -329,6 +337,7 @@ components:
           postTxWait: 89
           receiveDataWait: 76
           extraTimeOut: 98
+          postCommWait: 150
         sharing:
           sharedPortType: ACS
           sharedSocketNumber: 100
@@ -347,6 +356,7 @@ components:
           postTxWait: 89
           receiveDataWait: 76
           extraTimeOut: 98
+          postCommWait: 150
         sharing:
           sharedPortType: ACS
           sharedSocketNumber: 100
