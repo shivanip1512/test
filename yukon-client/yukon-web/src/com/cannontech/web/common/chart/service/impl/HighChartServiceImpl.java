@@ -40,7 +40,8 @@ public class HighChartServiceImpl implements HighChartService {
 
         List<Map<String, Object>> seriesList = Lists.newArrayList();
         graphs.forEach(graph -> {
-            seriesList.add(getSeriesDetails(graph, graphType));
+            GraphDetail graphDetail = graphDetails.stream().filter(gd -> gd.getChartColors() == graph.getColor()).findFirst().orElse(null);
+            seriesList.add(getSeriesDetails(graph, graphType, graphDetail));
         });
 
         boolean isTemperatureAxisDetailsAdded = false;
@@ -96,10 +97,10 @@ public class HighChartServiceImpl implements HighChartService {
 
         return dataAndOptions;
     }
-    
-    private Map<String, Object> getSeriesDetails(Graph<ChartValue<Double>> graph, GraphType graphType) {
+
+    private Map<String, Object> getSeriesDetails(Graph<ChartValue<Double>> graph, GraphType graphType, GraphDetail graphDetail) {
         Map<String, Object> seriesDetails = Maps.newHashMap();
-        seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph.getChartData()));
+        seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph, graphDetail));
         seriesDetails.put(HighChartOptionKey.SHOW_IN_LEGEND.getKey(), false);
         seriesDetails.put(HighChartOptionKey.BORDER_COLOR.getKey(), ChartColorsEnum.GREEN);
         if (isTemperaturePoint(graph.getPointId())) {
@@ -124,13 +125,17 @@ public class HighChartServiceImpl implements HighChartService {
         return seriesDetails;
     }
 
-    private List<Map<String, Object>> getDataArray(List<ChartValue<Double>> chartData) {
+    private List<Map<String, Object>> getDataArray(Graph<ChartValue<Double>> graph, GraphDetail graphDetail) {
         List<Map<String, Object>> jsonArrayContainer = Lists.newArrayList();
-        for (ChartValue<Double> chartValue : chartData) {
+        for (ChartValue<Double> chartValue : graph.getChartData()) {
             Map<String, Object> map = Maps.newHashMap();
             map.put(HighChartOptionKey.SERIES_X_COORDINATE.getKey(), chartValue.getId());
             map.put(HighChartOptionKey.SERIES_Y_COORDINATE.getKey(), chartValue.getValue());
-            map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), chartValue.getDescription());
+            StringBuilder tooltipBuilder = new StringBuilder();
+            tooltipBuilder
+                    .append("<span style='color:" + graph.getColor().getColorHex() + "'>\u25CF</span>&nbsp;" + graphDetail.getSeriesName());
+            tooltipBuilder.append(chartValue.getFormattedDescription());
+            map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), tooltipBuilder.toString());
             jsonArrayContainer.add(map);
         }
         return jsonArrayContainer;

@@ -1,52 +1,11 @@
 package com.cannontech.web.common.chart.service;
 
-import java.util.List;
 import java.util.Map;
 
-import org.joda.time.Instant;
-
-import com.cannontech.common.chart.model.GraphType;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.common.chart.model.FlotPieDatas;
-import com.cannontech.web.common.chart.service.impl.GraphDetail;
 
 public interface FlotChartService {
-    
-    /**
-     * Returns a Map to be converted to json and consumed by yukon.flot.js (our implementation of FlotCharts.js)
-     * The format of this object is as follows:
-     * 
-     * (if the format of this is changed, please update this comment)
-     * 
-     * {
-     *      "datas": [{
-     *          "data": [
-     *              [xValue1, yValue1, {"tooltip": "tooltip html"}],
-     *              [xValue2, yValue2, {"tooltip": "tooltip html"}]
-     *          ]}],
-     *      "type": "bar/line",
-     *      "options": {
-     *          "series": {
-     *              "bars": {"barWidth": somebarwidth}
-     *          },
-     *          "yaxis": {
-     *              "position":"left",
-     *              "axisLabel":"some axis label"
-     *          },
-     *          "xaxis": {
-     *              "mode": "time",
-     *              "min": min_value,
-     *              "max": max_value,
-     *              "autoscaleMargin": 0.1
-     *          }
-     *      }
-     *  }
-     *  
-     *  @return JSONObject
-     */
-    Map<String, Object> getMeterGraphData(List<GraphDetail> graphDetails, Instant start, Instant stop, Double yMin, Double yMax,
-            GraphType graphType, YukonUserContext userContext);
 
     /**
      * Returns a Map to be converted to json for IVVC SubBus and Zone charts
@@ -105,28 +64,6 @@ public interface FlotChartService {
      *  }
      */
      Map<String, Object> getIVVCGraphData(VfGraph graph, boolean includeTitles);
-
-    /**
-     * Returns a Map to be converted to json and consumed by yukon.flot.js (our implementation of FlotCharts.js)
-     * The format of this object is as follows:
-     * 
-     * (if the format of this is changed, please update this comment)
-     * 
-     * {
-     *      "datas": [{
-     *          "label": "unique label",
-     *          "data": some numeric value,
-     *          "tooltip": "tooltip html"
-     *      },
-     *      {
-     *          "label": "unique label",
-     *          "data": some numeric value,
-     *          "tooltip": "tooltip html"
-     *      }],
-     *      "type": "pie"
-     *  }
-     */
-     Map<String, Object> getPieGraphData(Map<String, Integer> labelValueMap);
 
     /**
      * Returns a Map to be converted to json and consumed by yukon.flot.js (our implementation of FlotCharts.js)
