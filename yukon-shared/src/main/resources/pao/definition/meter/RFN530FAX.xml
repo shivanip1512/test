@@ -86,6 +86,7 @@
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Over Voltage" attributes="OVER_VOLTAGE"/>
+        <pointInfo name="Peak Demand Daily" init="true" attributes="PEAK_DEMAND_DAILY"/>
         <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
         <pointInfo name="Peak kW (Rate A kW)" init="true" attributes="PEAK_DEMAND_RATE_A"/>
         <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>
