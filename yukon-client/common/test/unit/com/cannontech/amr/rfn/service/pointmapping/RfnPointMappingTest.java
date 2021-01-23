@@ -480,6 +480,14 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAX, "Sum kVAh (Rate B kVAh)");
         missing.put(PaoType.RFN520FAX, "Sum kVAh (Rate C kVAh)");
         missing.put(PaoType.RFN520FAX, "Sum kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVA (Quadrants 1 2) (Rate A kVA)");
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVA (Quadrants 1 2) (Rate B kVA)");
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVA (Quadrants 1 2) (Rate C kVA)");
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVA (Quadrants 1 2) (Rate D kVA)");
         
         missing.put(PaoType.RFN520FAXD, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN520FAXD, "Peak kVA Lagging");
@@ -530,6 +538,14 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAXD, "Sum kVAh (Rate B kVAh)");
         missing.put(PaoType.RFN520FAXD, "Sum kVAh (Rate C kVAh)");
         missing.put(PaoType.RFN520FAXD, "Sum kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVA (Quadrants 1 2) (Rate A kVA)");
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVA (Quadrants 1 2) (Rate B kVA)");
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVA (Quadrants 1 2) (Rate C kVA)");
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVA (Quadrants 1 2) (Rate D kVA)");
         
         missing.put(PaoType.RFN520FRX, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN520FRX, "Delivered Peak kVAr Frozen");
@@ -551,7 +567,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530FAX, "Delivered kVArh");
         missing.put(PaoType.RFN530FAX, "Net kVAh");
         missing.put(PaoType.RFN530FAX, "Net kVArh");
-        missing.put(PaoType.RFN530FAX, "Peak Demand Daily");
         missing.put(PaoType.RFN530FAX, "Power Factor Degrees Phase A");
         missing.put(PaoType.RFN530FAX, "Power Factor Degrees Phase B");
         missing.put(PaoType.RFN530FAX, "Power Factor Degrees Phase C");
@@ -598,10 +613,17 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530FAX, "Sum kVAh (Rate B kVAh)");
         missing.put(PaoType.RFN530FAX, "Sum kVAh (Rate C kVAh)");
         missing.put(PaoType.RFN530FAX, "Sum kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVA (Quadrants 1 2) (Rate A kVA)");
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVA (Quadrants 1 2) (Rate B kVA)");
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVA (Quadrants 1 2) (Rate C kVA)");
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVA (Quadrants 1 2) (Rate D kVA)");
 
         missing.put(PaoType.RFN530FRX, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN530FRX, "Delivered Peak kVAr Frozen");
-        missing.put(PaoType.RFN530FRX, "Peak Demand Daily");
         missing.put(PaoType.RFN530FRX, "Power Factor Degrees Phase A");
         missing.put(PaoType.RFN530FRX, "Power Factor Degrees Phase B");
         missing.put(PaoType.RFN530FRX, "Power Factor Degrees Phase C");
@@ -1270,17 +1292,13 @@ public class RfnPointMappingTest {
                 .putAll(PaoType.RFN510FL,
                         "Peak Demand Daily")
                 .putAll(PaoType.RFN520FAX,
-                        "Current Angle",
-                        "Peak Demand Daily")
+                        "Current Angle")
                 .putAll(PaoType.RFN520FAXD,
-                        "Current Angle",
-                        "Peak Demand Daily")
+                        "Current Angle")
                 .putAll(PaoType.RFN520FRX,
-                        "Current Angle",
-                        "Peak Demand Daily")
+                        "Current Angle")
                 .putAll(PaoType.RFN520FRXD,
-                        "Current Angle",
-                        "Peak Demand Daily")
+                        "Current Angle")
                 .putAll(PaoType.RFN530S4X,
                         "Received kVAh",
                         "Net kWh",
