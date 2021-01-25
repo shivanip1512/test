@@ -16,7 +16,7 @@ import com.cannontech.common.util.ExceptionHelper;
 
 public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T extends JmsBaseReplyHandler> {
     protected static final Logger log = YukonLogManager.getLogger(ThriftRequestReplyTemplateBase.class);
-    protected static final Logger rfnLogger = YukonLogManager.getRfnLogger();
+    protected final Logger commsLogger;
     
     protected ConfigurationSource configurationSource;
     protected YukonJmsTemplate jmsTemplate;
@@ -31,6 +31,7 @@ public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T e
      */
     public ThriftRequestReplyTemplateBase(String configurationName, ConfigurationSource configurationSource,
             YukonJmsTemplate jmsTemplate, boolean isInternalMessage) {
+        this.commsLogger = jmsTemplate.getCommsLogger();
         this.configurationName = configurationName;
         this.configurationSource = configurationSource;
         this.jmsTemplate = jmsTemplate;
@@ -81,10 +82,10 @@ public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T e
      * Adds an entry in rfnLogger
      */
     private void log(String text) {
-        if (!internalMessage && rfnLogger.isInfoEnabled()) {
-            rfnLogger.info(text);
-        } else if (internalMessage && rfnLogger.isDebugEnabled()) {
-            rfnLogger.debug(text);
+        if (!internalMessage && commsLogger.isInfoEnabled()) {
+            commsLogger.info(text);
+        } else if (internalMessage && commsLogger.isDebugEnabled()) {
+            commsLogger.debug(text);
         }
     }
     
