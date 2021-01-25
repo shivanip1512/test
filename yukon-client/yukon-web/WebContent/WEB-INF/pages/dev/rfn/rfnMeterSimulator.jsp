@@ -345,27 +345,32 @@
         
         <cti:msg2 key=".deviceConfig.title" var="rfnMeterDeviceConfigSimulatorTitle"/>
         <cti:tab title="${rfnMeterDeviceConfigSimulatorTitle}">
-            <tags:sectionContainer2 nameKey="rfnMeterSimulator.deviceConfig">
-                <div class="column-12-12 clearfix">
-                    <div class="column one">
-                        <form:form action="configureFieldSimulator" method="post" modelAttribute="fieldSimulatorSettings">
-                            <cti:csrfToken/>
-                            <tags:nameValueContainer2>
-                                <tags:nameValue2 nameKey=".deviceConfig.deviceGroup" nameColumnWidth="120px">
-                                    <cti:list var="group"><cti:item value="${fieldSimulatorSettings.deviceGroup}"/></cti:list>
-                                    <tags:deviceGroupPicker inputName="deviceGroup" inputValue="${group}"/>
-                                </tags:nameValue2>
-                                <tags:nameValue2 nameKey=".deviceConfig.failureRate" nameColumnWidth="120px">
-                                    <tags:input path="deviceConfigFailureRate"/>
-                                </tags:nameValue2>
-                            </tags:nameValueContainer2>
-                            <div class="page-action-area">
-                                <cti:button nameKey="configure" type="submit"/>
-                            </div>
-                        </form:form>
+            <c:if test="${!empty fieldSimulatorError}">
+                <tags:alertBox>${fieldSimulatorError}</tags:alertBox>
+            </c:if>
+            <c:if test="${!empty fieldSimulatorSettings}">
+                <tags:sectionContainer2 nameKey="rfnMeterSimulator.deviceConfig">
+                    <div class="column-12-12 clearfix">
+                        <div class="column one">
+                            <form:form action="configureFieldSimulator" method="post" modelAttribute="fieldSimulatorSettings">
+                                <cti:csrfToken/>
+                                <tags:nameValueContainer2>
+                                    <tags:nameValue2 nameKey=".deviceConfig.deviceGroup" nameColumnWidth="120px">
+                                        <cti:list var="group"><cti:item value="${fieldSimulatorSettings.deviceGroup}"/></cti:list>
+                                        <tags:deviceGroupPicker inputName="deviceGroup" inputValue="${group}"/>
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".deviceConfig.failureRate" nameColumnWidth="120px">
+                                        <tags:input path="deviceConfigFailureRate"/>
+                                    </tags:nameValue2>
+                                </tags:nameValueContainer2>
+                                <div class="page-action-area">
+                                    <cti:button nameKey="configure" type="submit"/>
+                                </div>
+                            </form:form>
+                        </div>
                     </div>
-                </div>
-            </tags:sectionContainer2>
+                </tags:sectionContainer2>
+            </c:if>
         </cti:tab>
     </cti:tabs>
     
