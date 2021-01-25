@@ -298,7 +298,7 @@ public class ExporterReportGeneratorServiceImplTest {
         Preview preview = exporterReportGeneratorService.generatePreview(basicDyanamicFormatExport, userContextOne);
 
         Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", preview.getHeader());
-        Assert.assertEquals("Meter Name,Meter Route,Usage,1234546," + dateTimeFormatter.print(Instant.now()) + ",Plain Text", preview.getBody().get(0));
+        Assert.assertEquals("Meter Name,Meter Route,Delivered kWh,1234546," + dateTimeFormatter.print(Instant.now()) + ",Plain Text", preview.getBody().get(0));
         Assert.assertEquals("End File", preview.getFooter());
     }
 

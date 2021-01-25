@@ -408,6 +408,7 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.notApplicable">{0} is not applicable for {1} type.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.required">{0} is required for {1} type.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.invalid">Invalid {0} type.</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.validationFailed">Validation errors found while parsing the template. Please check the log for details.</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.validationFailed"><![CDATA[The template is invalid, please correct the following issues:</br>]]></entry>
+     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.lineBreaker"><![CDATA[</br>]]></entry>
 
 </properties>
