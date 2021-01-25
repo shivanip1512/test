@@ -22,6 +22,15 @@
             <DirectWriteRolloverStrategy maxFiles="1"/>
         </YukonRfnRollingFile>
         
+        <!-- Custom appender for comms logger-->
+        <CommsRollingFile name="commsRollingFile">
+            <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DirectWriteRolloverStrategy maxFiles="1"/>
+        </CommsRollingFile>
+        
         <!-- Custom appender for Rest Api logger-->
         <YukonApiRollingFile name="yukonApiRollingFile">
             <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable"/>
@@ -55,6 +64,11 @@
         <!-- Controls rfn comms logging to the Yukon\Server\Log directory -->
         <Logger name="rfnCommsLogger" level="info" additivity="false">
             <appender-ref ref="yukonRfnRollingFile" />
+        </Logger>   
+        
+        <!-- Controls comms logging to the Yukon\Server\Log directory -->
+        <Logger name="commsLogger" level="info" additivity="false">
+            <appender-ref ref="commsRollingFile" />
         </Logger>
         
         <!-- Controls Rest Api logging to the Yukon\Server\Log directory -->

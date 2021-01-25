@@ -30,7 +30,6 @@ import com.cannontech.common.util.jms.api.JmsQueue;
  */
 public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMultiResponse> {
     private static final Logger log = YukonLogManager.getLogger(RequestMultiReplyTemplate.class);
-    private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     private static final Duration defaultTimeout = Duration.standardSeconds(30);
     private static final boolean pubSubDomain = false;
     
@@ -173,7 +172,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
             replyHandler.handleReply(reply);
             expectedMessages = reply.getTotalSegments();
             messagesReceived += 1;
-            logReply(request, reply.loggingString(rfnLogger.getLevel()), expectedMessages, messagesReceived);
+            logReply(request, reply.loggingString(api.getCommsLogger().getLevel()), expectedMessages, messagesReceived);
         }
     }
     
@@ -197,10 +196,11 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      * Adds an entry in rfnLogger
      */
     private void log(String text) {
-        if (rfnLogger.isInfoEnabled()) {
-            rfnLogger.info(text);
-        } else if (rfnLogger.isDebugEnabled()) {
-            rfnLogger.debug(text);
+        Logger logger = api.getCommsLogger();
+        if (logger.isInfoEnabled()) {
+            logger.info(text);
+        } else if (logger.isDebugEnabled()) {
+            logger.debug(text);
         }
     }
     
