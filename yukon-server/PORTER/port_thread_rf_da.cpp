@@ -304,7 +304,7 @@ void RfDaPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
 }
 
 
-bool RfDaPortHandler::isPostCommWaitComplete(device_record *dr, ULONG postCommWait)
+bool RfDaPortHandler::isPostCommWaitComplete(device_record &dr, ULONG postCommWait) const
 {
     return std::chrono::high_resolution_clock::now() >= ( _last_endpoint_send_time + std::chrono::milliseconds( postCommWait ) );
 }

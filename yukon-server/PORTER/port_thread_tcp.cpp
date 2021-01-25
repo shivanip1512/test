@@ -513,9 +513,9 @@ bool TcpPortHandler::isDeviceDisconnected( const long device_id ) const
 }
 
 
-bool TcpPortHandler::isPostCommWaitComplete(device_record *dr, ULONG postCommWait)
+bool TcpPortHandler::isPostCommWaitComplete(device_record &dr, ULONG postCommWait) const
 {
-    if ( const auto optAddr = getDeviceSocketAddress( dr->device->getID() ) )
+    if ( const auto optAddr = getDeviceSocketAddress( dr.device->getID() ) )
     {
         if ( auto tp = mapFind( _last_endpoint_send_time, *optAddr ) )
         {

@@ -651,12 +651,12 @@ bool UnsolicitedHandler::startPendingRequests(const MillisecondTimer &timer, con
 
 void UnsolicitedHandler::startPendingRequest(device_record *dr)
 {
-    if ( getPostCommWait( dr ) && ! isDeviceActive( dr ) )
+    if ( getPostCommWait( *dr ) && ! isDeviceActive( dr ) )
     {
         return;
     }
 
-    if (!dr->outbound.empty())
+    if ( ! dr->outbound.empty() )
     {
         if( OUTMESS *om = dr->outbound.front() )
         {
@@ -770,7 +770,7 @@ void UnsolicitedHandler::trySendOutbounds(device_record *dr)
     if (dr->xfer.getOutCount())
     {
         // bail out early if we are waiting for the postCommWait to expire
-        if ( ! availableToSend( dr ) )
+        if ( ! availableToSend( *dr ) )
         {
             return;
         }
@@ -802,7 +802,7 @@ void UnsolicitedHandler::trySendOutbounds(device_record *dr)
 }
 
 
-bool UnsolicitedHandler::availableToSend( device_record *dr )
+bool UnsolicitedHandler::availableToSend( device_record &dr ) const
 {
     auto postCommWait = getPostCommWait( dr );
 
@@ -815,9 +815,9 @@ bool UnsolicitedHandler::availableToSend( device_record *dr )
 }
 
 
-ULONG UnsolicitedHandler::getPostCommWait(device_record *dr)
+ULONG UnsolicitedHandler::getPostCommWait(device_record &dr) const
 {
-    return std::max<ULONG>( dr->device->getPostDelay(), _port->getDelay(POST_REMOTE_DELAY) );
+    return std::max<ULONG>( dr.device->getPostDelay(), _port->getDelay(POST_REMOTE_DELAY) );
 }
 
 

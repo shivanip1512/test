@@ -920,12 +920,18 @@ void UdpPortHandler::loadEncodingFilter()
 }
 
 
-bool UdpPortHandler::isPostCommWaitComplete(device_record *dr, ULONG postCommWait)
+AddrInfo UdpPortHandler::getDeviceSocketAddress(device_record &dr) const
 {
-    string  device_ip   = getDeviceIp  ( dr->device->getID() );
-    u_short device_port = getDevicePort( dr->device->getID() );
+    string  device_ip   = getDeviceIp  ( dr.device->getID() );
+    u_short device_port = getDevicePort( dr.device->getID() );
 
-    if ( AddrInfo addr = Cti::makeUdpClientSocketAddress( device_ip, device_port ) )
+    return Cti::makeUdpClientSocketAddress( device_ip, device_port );
+}
+
+
+bool UdpPortHandler::isPostCommWaitComplete(device_record &dr, ULONG postCommWait) const
+{
+    if ( AddrInfo addr = getDeviceSocketAddress( dr ) )
     {
         if ( auto tp = mapFind( _last_endpoint_send_time, addr ) )
         {
@@ -938,10 +944,7 @@ bool UdpPortHandler::isPostCommWaitComplete(device_record *dr, ULONG postCommWai
 
 void UdpPortHandler::setDeviceActive(device_record *dr)
 {
-    string  device_ip   = getDeviceIp  ( dr->device->getID() );
-    u_short device_port = getDevicePort( dr->device->getID() );
-
-    if ( AddrInfo addr = Cti::makeUdpClientSocketAddress( device_ip, device_port ) )
+    if ( AddrInfo addr = getDeviceSocketAddress( *dr ) )
     {
         _last_endpoint_send_time[ addr ] = std::chrono::high_resolution_clock::now();
     }
@@ -949,10 +952,7 @@ void UdpPortHandler::setDeviceActive(device_record *dr)
 
 bool UdpPortHandler::isDeviceActive(device_record *dr)
 {
-    string  device_ip   = getDeviceIp  ( dr->device->getID() );
-    u_short device_port = getDevicePort( dr->device->getID() );
-
-    if ( AddrInfo addr = Cti::makeUdpClientSocketAddress( device_ip, device_port ) )
+    if ( AddrInfo addr = getDeviceSocketAddress( *dr ) )
     {
         return _last_endpoint_send_time.find( addr ) != _last_endpoint_send_time.end();
     }
@@ -962,10 +962,7 @@ bool UdpPortHandler::isDeviceActive(device_record *dr)
 
 void UdpPortHandler::clearActiveDevice(device_record *dr)
 {
-    string  device_ip   = getDeviceIp  ( dr->device->getID() );
-    u_short device_port = getDevicePort( dr->device->getID() );
-
-    if ( AddrInfo addr = Cti::makeUdpClientSocketAddress( device_ip, device_port ) )
+    if ( AddrInfo addr = getDeviceSocketAddress( *dr ) )
     {
         _last_endpoint_send_time.erase( addr );
     }
