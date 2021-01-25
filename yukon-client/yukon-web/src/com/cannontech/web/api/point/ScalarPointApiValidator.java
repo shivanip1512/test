@@ -108,7 +108,7 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
 
                             if (!errors.hasFieldErrors("limitNumber")) {
                                 if (limitNumber == pointLimit.getLimitNumber()) {
-                                    errors.rejectValue("limitNumber", ApiErrorDetails.OBJECT_ALREADY_EXISTS.getCodeString(),
+                                    errors.rejectValue("limitNumber", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
                                             new Object[] { "Limit Number" }, "");
                                 }
                             }

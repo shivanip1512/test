@@ -273,7 +273,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                         }
                         
                         if (usedTypes.contains(fdrTranslation)) {
-                            errors.rejectValue("interfaceType", ApiErrorDetails.OBJECT_ALREADY_EXISTS.getCodeString(), new Object[] { "FDR translation entry" }, "");
+                            errors.rejectValue("interfaceType", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { "FDR translation entry" }, "");
                         }
                         usedTypes.add(fdrTranslation);
 
