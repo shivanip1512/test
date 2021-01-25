@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.api.error.model.ApiErrorDetails;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteBaseline;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
@@ -37,29 +38,32 @@ public class CalcPointValidationHelper {
                 errors.pushNestedPath("calcComponents[" + i + "]");
                 CalculationComponent calcComponent = calcComponents.get(i);
                 if (calcComponent != null) {
-                    YukonValidationUtils.checkIfFieldRequired("componentType", errors, calcComponent.getComponentType(), "componentType");
-                    YukonValidationUtils.checkIfFieldRequired("operation", errors, calcComponent.getOperation(), "operation");
+                    YukonApiValidationUtils.checkIfFieldRequired("componentType", errors, calcComponent.getComponentType(), "componentType");
+                    YukonApiValidationUtils.checkIfFieldRequired("operation", errors, calcComponent.getOperation(), "operation");
                     if (!errors.hasFieldErrors("operation")) {
-                        if (calcComponent.getComponentType() == CalcCompType.OPERATION || calcComponent.getComponentType() == CalcCompType.CONSTANT) {
+                        if (calcComponent.getComponentType() == CalcCompType.OPERATION
+                                || calcComponent.getComponentType() == CalcCompType.CONSTANT) {
                             Set<CalcOperation> calcOperations = CalcOperation.getCalcOperationsByCompType(CalcCompType.OPERATION);
                             if (!calcOperations.contains(calcComponent.getOperation())) {
-                                errors.rejectValue("operation", baseKey + ".invalidOperation");
+                                errors.rejectValue("operation", ApiErrorDetails.INVALID_OPERATION.getCodeString(),
+                                        new Object[] { "Operation", "Operation or Constant" }, "");
                             }
                         }
                         if (calcComponent.getComponentType() == CalcCompType.FUNCTION) {
                             Set<CalcOperation> calcFunctions = CalcOperation.getCalcOperationsByCompType(CalcCompType.FUNCTION);
                             if (!calcFunctions.contains(calcComponent.getOperation())) {
-                                errors.rejectValue("operation", baseKey + ".invalidFunction");
+                                errors.rejectValue("operation", ApiErrorDetails.INVALID_OPERATION.getCodeString(),
+                                        new Object[] { "Operation(Function) value", "Function" }, "");
                             }
                         }
                     }
-                    YukonValidationUtils.checkIfFieldRequired("operand", errors, calcComponent.getOperand(), "operand");
+                    YukonApiValidationUtils.checkIfFieldRequired("operand", errors, calcComponent.getOperand(), "operand");
                     if (!errors.hasFieldErrors("operand")) {
                         if (calcComponent.getComponentType() == CalcCompType.OPERATION || calcComponent.getComponentType() == CalcCompType.FUNCTION) {
                             try {
                                 pointDao.getPointName(calcComponent.getOperand().intValue());
                             } catch (IncorrectResultSizeDataAccessException ee) {
-                                errors.rejectValue("operand", baseKey + ".invalidPointId", new Object[] { calcComponent.getOperand() }, "");
+                                errors.rejectValue("operand",   ApiErrorDetails.INVALID_POINT_ID.getCodeString(), new Object[] { calcComponent.getOperand() }, "");
                             }
                         }
                     }
@@ -77,13 +81,13 @@ public class CalcPointValidationHelper {
                                                    && 
                                                    component.getOperation() != null && component.getOperation().getCalcOperation().equals(CalcComponentTypes.BASELINE_FUNCTION));
         if (isBaselineAssigned) {
-            YukonValidationUtils.checkIfFieldRequired("baselineId", errors, baselineId, "baselineId");
+            YukonApiValidationUtils.checkIfFieldRequired("baselineId", errors, baselineId, "baselineId");
             if (!errors.hasFieldErrors("baselineId")) {
                 List<Integer> baseLineIds = cache.getAllBaselines().stream()
                                                                    .map(LiteBaseline::getBaselineID)
                                                                    .collect(Collectors.toList());
                 if (!baseLineIds.contains(baselineId)) {
-                    errors.rejectValue("baselineId", baseKey + ".doesNotExist", new Object[] { "baselineId" }, "");
+                    errors.rejectValue("baselineId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { "baselineId" }, "");
                 }
             }
         }

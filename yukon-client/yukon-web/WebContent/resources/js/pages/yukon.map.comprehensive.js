@@ -283,7 +283,7 @@ yukon.map.comprehensive = (function () {
             });
             
             $(document).on('dialogopen', '#js-pao-notes-popup', function() {
-            	$('#device-info').hide();
+                $('#device-info').hide();
             });
             
             /** Change mouse cursor when over marker.  There HAS to be a css way to do this! */

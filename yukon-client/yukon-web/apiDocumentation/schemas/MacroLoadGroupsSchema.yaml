@@ -54,6 +54,30 @@ id:
       type: integer
       description: 'Unique identifier of the macro load group.'
 
+MacroLoadGroupCopy:
+  title: Macro load group copy
+  required:
+    - LOAD_GROUP_COPY
+  type: object
+  properties:
+    LOAD_GROUP_COPY:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name for the macro load group.'
+ 
+MacroLoadGroupCopyResponse:
+  title: Macro Load Group Copy Response
+  type: object
+  properties:
+    paoId:
+      type: integer
+      description: 'Unique identifier of the copied macro load group.' 
+                       
 components:
   examples:
     MacroLoadGroup:
@@ -70,3 +94,12 @@ components:
     MacroLoadGroupId:
       value:
         id: 11
+        
+    MacroLoadGroupCopy:
+      value:
+        LOAD_GROUP_COPY:
+          name: Macro Load Group copy
+    MacroLoadGroupCopyResponse:
+      value:
+        paoId: 21456
+        

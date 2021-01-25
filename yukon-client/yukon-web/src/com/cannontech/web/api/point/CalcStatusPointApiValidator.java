@@ -2,6 +2,7 @@ package com.cannontech.web.api.point;
 
 import org.springframework.validation.Errors;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.web.tools.points.model.CalcStatusPointModel;
@@ -35,7 +36,7 @@ public class CalcStatusPointApiValidator extends StatusPointApiValidator<CalcSta
             if (calculationBase.getUpdateType() != null) {
 
                 if (calculationBase.getUpdateType() == CalcUpdateType.CONSTANT) {
-                    errors.rejectValue("calculationBase.updateType", baseKey + ".invalidUpdateType");
+                    errors.rejectValue("calculationBase.updateType", ApiErrorDetails.INVALID_UPDATE_TYPE.getCodeString());
                 }
 
                 if (calculationBase.getUpdateType() == CalcUpdateType.ON_TIMER || calculationBase.getUpdateType() == CalcUpdateType.ON_TIMER_AND_CHANGE) {
@@ -43,7 +44,7 @@ public class CalcStatusPointApiValidator extends StatusPointApiValidator<CalcSta
                     if (!errors.hasFieldErrors("calculationBase.periodicRate")) {
                         TimeIntervals periodicRate = TimeIntervals.fromSeconds(calculationBase.getPeriodicRate());
                         if (!TimeIntervals.getUpdateAndScanRate().contains(periodicRate)) {
-                            errors.rejectValue("calculationBase.periodicRate", baseKey + ".invalid", new Object[] { calculationBase.getPeriodicRate() }, "");
+                            errors.rejectValue("calculationBase.periodicRate", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { calculationBase.getPeriodicRate() }, "");
                         }
                     }
                 }

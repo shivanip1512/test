@@ -28,12 +28,13 @@ get-update-delete-operation:
     tags:
      - Trend
     summary: 'Retrieve Trend'
-    description: 'API to retrieve trend based on passed trendId.'
+    description: 'API to retrieve trend based on passed id.'
     parameters:
-      - name: trendId
+      - name: id
         in: path
         schema:
           type: integer
+        description: 'Unique identifier for trend.'
         required: true
     responses:
       '200':
@@ -49,12 +50,13 @@ get-update-delete-operation:
     tags:
      - Trend
     summary: 'Update Trend'
-    description: 'API to update trend based on passed trendId.'
+    description: 'API to update trend based on passed id.'
     parameters:
-      - name: trendId
+      - name: id
         in: path
         schema:
           type: integer
+        description: 'Unique identifier for trend.'
         required: true
     requestBody:
       content:
@@ -79,12 +81,13 @@ get-update-delete-operation:
     tags:
      - Trend
     summary: 'Delete Trend'
-    description: 'API to delete trend based on passed trendId.'
+    description: 'API to delete trend based on passed id.'
     parameters:
-      - name: trendId
+      - name: id
         in: path
         schema:
           type: integer
+        description: 'Unique identifier for trend.'
         required: true
     responses:
       '200':
@@ -97,3 +100,37 @@ get-update-delete-operation:
               TrendId:
                 $ref: '../schemas/trendsSchema.yaml#/components/examples/id'
             
+resetPeak:
+  post:
+    tags:
+     - Trend
+    summary: 'Create Reset Peak'
+    description: 'API to create reset peak based on passed id.'
+    
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'Unique identifier for trend.'
+        required: true
+        
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/trendsSchema.yaml#/resetPeak'
+          examples:
+            Reset Peak:
+              $ref: '../schemas/trendsSchema.yaml#/components/examples/resetPeak'
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/trendsSchema.yaml#/trendId'
+            examples:
+              Reset Peak:
+                $ref: '../schemas/trendsSchema.yaml#/components/examples/trendId'

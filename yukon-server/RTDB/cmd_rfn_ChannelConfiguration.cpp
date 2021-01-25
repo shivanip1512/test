@@ -151,6 +151,7 @@ const MetricInfo metricInfos[] = {
         { 201,  TouRates,  "Var"                                   },
         { 202,  TouRates,  "VA"                                    },
 
+        { 206,  TouRates,  "Peak kVA (Quadrants 1 2)"              },
         { 210,  TouRates,  "Sum Peak kVA"                          },
         { 222,  None,      "Received kVAh (Quadrants 2 3 4)"       },
         { 233,  TouRates,  "Average Power Factor"                  },

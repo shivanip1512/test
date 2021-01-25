@@ -346,7 +346,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Peak Demand Daily" icd="false">
+        <point name="Peak Demand Daily" icdExcludedTypes="RFN410CL,RFN410FD,RFN410FL,RFN410FX,RFN420CD,WRL420CD,RFN420CL,WRL420CL,RFN420FD,RFN420FL,RFN420FRD,RFN420FRX,RFN420FX,RFN430A3D,RFN430A3T,RFN430A3K,RFN430A3R,RFN430KV,RFN510FL,RFN530S4X,RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4197,6 +4197,50 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
+        <point name="Delivered Peak kVA (Quadrants 1 2) (Rate A kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Peak kVA (Quadrants 1 2) (Rate B kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Peak kVA (Quadrants 1 2) (Rate C kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Peak kVA (Quadrants 1 2) (Rate D kVA)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
         <point name="Delivered Peak kVAr" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
             <uom>Var</uom>
             <multiplier value=".001"/>
@@ -4205,6 +4249,50 @@
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 2</modifier>
                 <modifier>Max</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Peak kVAr (Rate A kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Peak kVAr (Rate B kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Peak kVAr (Rate C kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Peak kVAr (Rate D kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
         <point name="Sum Peak kVAr" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">

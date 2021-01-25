@@ -59,6 +59,9 @@ public:
 
     static const InboundQueue FieldSimulatorStatusRequest;
     static const InboundQueue FieldSimulatorModifyConfiguration;
+
+    static const InboundQueue RfnMeterDisconnectRequest;
+    static const InboundQueue RfnMeterReadRequest;
 };
 
 }

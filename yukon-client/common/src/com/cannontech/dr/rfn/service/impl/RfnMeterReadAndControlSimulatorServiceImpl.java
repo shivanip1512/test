@@ -69,9 +69,9 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
 
     @PostConstruct
     public void init() {
-        rfnMeterReadJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ, incomingMessageWait);
+        rfnMeterReadJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_LEGACY, incomingMessageWait);
         rfnMeterReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_ARCHIVE);
-        rfnMeterDisconnectJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT,
+        rfnMeterDisconnectJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT_LEGACY,
                 incomingMessageWait);
         rfnStatusArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_STATUS_ARCHIVE);
     }

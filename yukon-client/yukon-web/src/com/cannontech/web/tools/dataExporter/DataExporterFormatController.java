@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,7 @@ import com.cannontech.common.util.YamlParserUtils;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
@@ -71,6 +73,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.input.type.AttributeType;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
@@ -126,8 +129,10 @@ public class DataExporterFormatController {
         model.addAttribute("mode", PageEditMode.VIEW);
         try {
             exportFormat = parseAndValidateTemplate(fileName, flashScope, result, userContext);
-        } catch (Exception e) {
-            exportFormat = setExportFormatForErrorScenario(flashScope, e);
+        } catch (IOException e) {
+            log.error("Error occurred while parsing the template file", e);
+            flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.error"));
+            exportFormat = setExportFormatForErrorScenario();
         }
         model.addAttribute("showAttributeSection",
                 exportFormat.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
@@ -163,8 +168,10 @@ public class DataExporterFormatController {
         if (useTemplate) {
             try {
                 exportFormat = parseAndValidateTemplate(fileName, flashScope, result, userContext);
-            } catch (Exception e) {
-                exportFormat = setExportFormatForErrorScenario(flashScope, e);
+            } catch (IOException e) {
+                log.error("Error occurred while parsing the template file", e);
+                flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.error"));
+                exportFormat = setExportFormatForErrorScenario();
                 model.addAttribute("showAttributeSection",
                         exportFormat.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
             }
@@ -177,13 +184,11 @@ public class DataExporterFormatController {
         return "data-exporter/format/format.jsp";
     }
     
-    private ExportFormat setExportFormatForErrorScenario(FlashScope flashScope, Exception exception) {
-        log.error(exception);
+    private ExportFormat setExportFormatForErrorScenario() {
         ExportFormat format = new ExportFormat();
         format.setFormatType(ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
         format.setDelimiter(null);
         format.setDateTimeZoneFormat(null);
-        flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.error"));
         return format;
     }
 
@@ -610,31 +615,35 @@ public class DataExporterFormatController {
                 StringUtils.joinWith(sep, CtiUtilities.getDataExportTemplatesDirPath(), fileName));
         ExportFormat exportFormat = YamlParserUtils.parseToObject(inputStream, ExportFormat.class);
         exportFormatTemplateValidator.validate(exportFormat, result);
+
         if (result.hasErrors()) {
-            logValidationErrors(result, userContext);
-            flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed"));
+            List<MessageSourceResolvable> validationErrors = retreiveValidationErrors(result, userContext);
+            flashScope.setError(validationErrors, FlashScopeListType.NONE);
+            exportFormat = setExportFormatForErrorScenario();
         }
         return exportFormat;
     }
 
     /**
-     * Log all field validation errors and global errors.
+     * Return validation errors and global errors for UI.
      */
-    private void logValidationErrors(BindingResult result, YukonUserContext userContext) {
+    private List<MessageSourceResolvable> retreiveValidationErrors(BindingResult result, YukonUserContext userContext) {
+        List<MessageSourceResolvable> validationErrors = new ArrayList<MessageSourceResolvable>();
+        validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed"));
         if (result.hasFieldErrors()) {
             List<FieldError> errors = result.getFieldErrors();
             for (FieldError error : errors) {
-                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                log.info(error.getField() + " : " + accessor.getMessage(error.getCode(), error.getArguments()));
+                validationErrors.add(new WebMessageSourceResolvable(error.getCode(), error.getArguments()));
+                validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.lineBreaker"));
             }
         }
         if (result.hasGlobalErrors()) {
             List<ObjectError> errors = result.getGlobalErrors();
             for (ObjectError error : errors) {
-                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                log.info(accessor.getMessage(error.getCode(), error.getArguments()));
+                validationErrors.add(new WebMessageSourceResolvable(error.getCode(), error.getArguments()));
+                validationErrors.add(new WebMessageSourceResolvable(BASE_KEY + "parseTemplate.lineBreaker"));
             }
         }
-
+        return validationErrors;
     }
 }
