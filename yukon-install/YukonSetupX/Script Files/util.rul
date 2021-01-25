@@ -1182,16 +1182,16 @@ begin
     szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\historicData.bat";
     nResult = Is (FILE_EXISTS, szDir);
     if (nResult = TRUE) then
-        DeleteFile (shortcutDir);
+        DeleteFile (szDir);
     endif;
     szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\locationData.bat";
     nResult = Is (FILE_EXISTS, szDir);
     if (nResult = TRUE) then
-        DeleteFile (shortcutDir);
+        DeleteFile (szDir);
     endif;
     szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\ReadMe.txt";
     nResult = Is (FILE_EXISTS, szDir);
     if (nResult = TRUE) then
-        DeleteFile (shortcutDir);
+        DeleteFile (szDir);
     endif;
 end;
