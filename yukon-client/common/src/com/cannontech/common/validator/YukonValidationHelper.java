@@ -18,12 +18,11 @@ public class YukonValidationHelper {
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private YukonValidationHelperCommon yukonValidationHelperCommon;
-    private final static String key = "yukon.web.error.";
     
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoId) {
         if (StringUtils.hasText(paoName)) {
             String paoNameWithoutSpace = paoName.trim();
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoNameWithoutSpace, 60);
+            YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", paoNameWithoutSpace, 60);
             if (!PaoUtils.isValidPaoName(paoNameWithoutSpace)) {
                 errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
             }
