@@ -8,8 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.util.Range;
-import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.web.tools.points.model.LitePointModel;
@@ -24,16 +25,17 @@ public class PointValidationUtil extends ValidationUtils {
     public void validatePointName(LitePointModel pointModel, String fieldName, Errors errors, boolean isCopyOrCreate) {
         validateName(fieldName, errors, pointModel.getPointName());
         if (!pointValidationUtilCommon.validatePointName(pointModel, isCopyOrCreate)) {
-            errors.rejectValue(fieldName, "yukon.web.error.nameConflict");
+            errors.rejectValue(fieldName, ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                    new Object[] { pointModel.getPointName() }, "");
         }
     }
 
     public void validateName(String fieldName, Errors errors, String pointName) {
 
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
-        YukonValidationUtils.checkExceedsMaxLength(errors, fieldName, pointName, 60);
+        YukonApiValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
+        YukonApiValidationUtils.checkExceedsMaxLength(errors, fieldName, pointName, 60);
         if (!pointValidationUtilCommon.validatePaoName(pointName)) {
-            errors.rejectValue(fieldName, "yukon.web.error.paoName.containsIllegalChars");
+            YukonApiValidationUtils.checkIllegalCharacter(errors, fieldName, pointName, "Name");
         }
     }
 
@@ -42,12 +44,12 @@ public class PointValidationUtil extends ValidationUtils {
         String physicalPort = pointValidationUtilCommon.isPointOrPhyicalOffset(pointModel, fieldName, errors);
         if (StringUtils.isNotEmpty(physicalPort)) {
             Range<Integer> range = Range.inclusive(0, 99999999);
-            YukonValidationUtils.checkRange(errors, fieldName, physicalPort,
+            YukonApiValidationUtils.checkRange(errors, fieldName, physicalPort,
                     pointModel.getPointOffset(), range, true);
         }
         List<Object> arguments = pointValidationUtilCommon.isValidPointOffset(pointModel, isCopyOrCreate);
         if (CollectionUtils.isNotEmpty(arguments)) {
-            errors.rejectValue(fieldName, baseKey + ".pointOffset", arguments.toArray(),
+            errors.rejectValue(fieldName, ApiErrorDetails.POINT_OFFSET_NOT_AVAILABLE.getCodeString(), arguments.toArray(),
                     "Invalid point offset");
         }
     }
@@ -58,7 +60,7 @@ public class PointValidationUtil extends ValidationUtils {
     public void checkIfPointTypeChanged(Errors errors, LitePointModel litePointModel, boolean isCreationOperation) {
         if (!pointValidationUtilCommon.checkIfPointTypeChanged(litePointModel, isCreationOperation)) {
             PointBase pointBase = pointDao.get(litePointModel.getPointId());
-            errors.rejectValue("pointType", "yukon.web.api.error.pointTypeMismatch",
+            errors.rejectValue("pointType", ApiErrorDetails.POINT_TYPE_MISMATCH.getCodeString(),
                     new Object[] { litePointModel.getPointType(), pointBase.getPoint().getPointType(),
                             litePointModel.getPointId() },
                     "");
@@ -71,7 +73,7 @@ public class PointValidationUtil extends ValidationUtils {
     public void checkIfPaoIdChanged(Errors errors, LitePointModel litePointModel, boolean isCreationOperation) {
         if (!pointValidationUtilCommon.checkIfPaoIdMatch(litePointModel, isCreationOperation)) {
             PointBase pointBase = pointDao.get(litePointModel.getPointId());
-            errors.rejectValue("paoId", "yukon.web.api.error.paoIdMismatch",
+            errors.rejectValue("paoId", ApiErrorDetails.PAO_ID_MISMATCH.getCodeString(),
                     new Object[] { litePointModel.getPaoId(), pointBase.getPoint().getPaoID() }, "");
         }
     }
@@ -81,7 +83,7 @@ public class PointValidationUtil extends ValidationUtils {
      */
     public void validatePointId(Errors errors, String field, Integer pointId, String fieldName) {
         if (!pointValidationUtilCommon.validatePointId(pointId)) {
-            errors.rejectValue(field, "yukon.web.modules.dr.setup.error.pointId.doesNotExist", new Object[] { fieldName }, "");
+            errors.rejectValue(field, ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { fieldName }, "");
         }
     }
 }
