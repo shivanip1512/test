@@ -647,7 +647,7 @@ public class NmIntegrationController {
         if (rfnMeterFieldSimulatorResponse != null) {
             model.addAttribute("fieldSimulatorSettings", rfnMeterFieldSimulatorResponse.getSettings());
         } else {
-            model.addAttribute("fieldSimulatorError", "Field Simulator is required to be running to use the RFN Meter Device Config Simulator.");
+            model.addAttribute("fieldSimulatorError", "Field Simulator must be running to use the RFN Meter Device Config Simulator.");
         }
         
         model.addAttribute("currentSettings", rfnMeterResponse.getSettings());
