@@ -142,7 +142,7 @@ public class RfnMeterReadService {
             }
         };
         
-        if (RfnFeatureHelper.isSupported(RfnFeature.E2E_READ_NOW, configurationSource)) {
+        if (false/* TODO RfnFeatureHelper.isSupported(RfnFeature.E2E_READ_NOW, configurationSource)*/) {
             e2eTemplate.send(new RfnMeterReadRequest(rfnMeter.getRfnIdentifier()), handler);
         } else {
             legacyTemplate.send(new RfnMeterReadRequest(rfnMeter.getRfnIdentifier()), handler);
