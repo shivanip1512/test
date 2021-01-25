@@ -35,8 +35,7 @@ public class PointValidationUtil extends ValidationUtils {
         YukonApiValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
         YukonApiValidationUtils.checkExceedsMaxLength(errors, fieldName, pointName, 60);
         if (!pointValidationUtilCommon.validatePaoName(pointName)) {
-            errors.rejectValue(fieldName, ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(),
-                    new Object[] { pointName }, "");
+            YukonApiValidationUtils.checkIllegalCharacter(errors, fieldName, pointName, "Name");
         }
     }
 

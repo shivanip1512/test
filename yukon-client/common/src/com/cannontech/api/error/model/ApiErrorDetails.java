@@ -53,7 +53,7 @@ public enum ApiErrorDetails {
     INVALID_TRANSLATION_PROPERTY_COUNT(ApiErrorCategory.VALIDATION_FAILED, 129, "Invalid translation property count", " Invalid translation property count."), // code : 101129
     INVALID_TRANSLATION_PROPERTY(ApiErrorCategory.VALIDATION_FAILED, 130, "Invalid translation property", " Invalid translation property."), // code : 101130
     INVALID_TRANSLATION_PROPERTY_VALUE(ApiErrorCategory.VALIDATION_FAILED, 131, "Invalid translation property value", " Invalid translation property value."), // code : 101131
-    INVALID_SUPPORT_DIRECTION(ApiErrorCategory.VALIDATION_FAILED, 132, "Invalid archive interval", " Invalid archive interval."), // code : 101132
+    INVALID_SUPPORT_DIRECTION(ApiErrorCategory.VALIDATION_FAILED, 132, "Invalid support direction", " Invalid support direction."), // code : 101132
     INVALID_SIZE(ApiErrorCategory.VALIDATION_FAILED, 133, "Invalid Size", " Invalid Size."); // code : 101133
     
     private ApiErrorCategory category;

@@ -164,7 +164,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                                     new Object[] { "Condition" }, "");
                         }
                         if (!errors.hasFieldErrors("condition") && alarmStateEntries.contains(entry.getCondition())) {
-                            errors.rejectValue("condition", ApiErrorDetails.OBJECT_ALREADY_EXISTS.getCodeString(),
+                            errors.rejectValue("condition", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
                                     new Object[] { "Condition" }, "");
                         }
 
