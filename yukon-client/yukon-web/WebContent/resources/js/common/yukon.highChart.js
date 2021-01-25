@@ -49,11 +49,6 @@ yukon.highChart = (function () {
                 yaxesOptions = [];
             
             chartContainer.highcharts({
-                plotOptions: {
-                    series: {
-                        animation: false
-                    }
-                },
                 credits: yg.highcharts_options.disable_credits,
                 chart: $.extend({}, yg.highcharts_options.chart_options, chartOptionsJSON),
                 title: {
@@ -102,6 +97,7 @@ yukon.highChart = (function () {
                 series: jsonResponse.seriesDetails,
                 plotOptions: {
                     series: {
+                        animation: false,
                         states: {
                             inactive: {
                                 opacity: 1
