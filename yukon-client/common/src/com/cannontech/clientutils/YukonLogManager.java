@@ -162,7 +162,7 @@ public class YukonLogManager {
     }
     
     /**
-     * Returns yukonCommsLogger, used for logging communications to and from Yukon Services.
+     * Returns commsLogger, used for logging communications to and from Yukon Services.
      */
     public static Logger getCommsLogger() {
         return getLogger("commsLogger");
