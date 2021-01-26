@@ -174,7 +174,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
             replyHandler.handleReply(reply);
             expectedMessages = reply.getTotalSegments();
             messagesReceived += 1;
-            logReply(request, reply.loggingString(api.getCommsLogger().getLevel()), expectedMessages, messagesReceived);
+            logReply(request, reply.loggingString(commsLogger.getLevel()), expectedMessages, messagesReceived);
         }
     }
     
