@@ -14,7 +14,7 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
@@ -37,6 +37,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
     private final JmsApi<R,?,Q> api;
     private final Duration timeout;
     private final ExecutorService executor;
+    private final Logger commsLogger;
     
     /**
      * Create a new template, automatically using the default timeout and assuming external messaging 
@@ -65,6 +66,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
         this.jmsTemplate = jmsTemplate;
         this.api = api;
         this.timeout = timeout;
+        this.commsLogger = api.getCommsLogger();
         // Default to 50 if worker queue size is not specified
         int queueSize = workerQueueSize == null ? 50 : workerQueueSize;
         
@@ -196,11 +198,10 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      * Adds an entry in rfnLogger
      */
     private void log(String text) {
-        Logger logger = api.getCommsLogger();
-        if (logger.isInfoEnabled()) {
-            logger.info(text);
-        } else if (logger.isDebugEnabled()) {
-            logger.debug(text);
+        if (commsLogger.isInfoEnabled()) {
+            commsLogger.info(text);
+        } else if (commsLogger.isDebugEnabled()) {
+            commsLogger.debug(text);
         }
     }
     
