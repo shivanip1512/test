@@ -4573,18 +4573,18 @@ Network Manager :
     jira : none
     notes : NM-1642 - do not update this jar with Tomcat upgrade, avoid incompatibility issue with Jakata Struts page redirect.
 
-  - filename : jasperreports-3.6.0.jar
+  - filename : jasperreports-6.16.0.jar
     yukon group : Jaspersoft
     project : JasperReports
-    version : 3.6.0
+    version : 6.16.0
     project URL : "https://community.jaspersoft.com/project/jasperreports-library"
     license : LGPL
-    license URLs : "https://github.com/TIBCOSoftware/jasperreports/blob/jr-3-6-0/jasperreports/license.txt"
-    maven URL : "https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports/3.6.0"
-    md5 : be640676303f99e6f482ed1e988eda04
-    sha1 : 60c2053de08177d215444bfa960024980f1e78b2
-    updated : 2009-10-28
-    jira : none
+    license URLs : "https://github.com/TIBCOSoftware/jasperreports/blob/master/LICENSE/license.txt"
+    maven URL : "https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports/6.16.0"
+    md5 : d5bde0b39f552db5da42ce964d4f64fe
+    sha1 : 182198ea2133fddca2f0c9c977669f758ce3b91f
+    updated : 2021-01-26
+    jira : NM-1555
     notes : 
 
   - filename : jaspic-api.jar
