@@ -12,6 +12,7 @@
 <entry key="yukon.web.widgetClasses.RfnDeviceMetadataWidget.refresh.labelBusy">Refreshing</entry>
 
 <!-- Metadata types -->
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.BOOT_LOADER_VERSION">Boot Loader Version</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.COMM_STATUS">Comm Status</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.COMM_STATUS_TIMESTAMP">Comm Status Obtained At</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.GROUPS">Groups</entry>
