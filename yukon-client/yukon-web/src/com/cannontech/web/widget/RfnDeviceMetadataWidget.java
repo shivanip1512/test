@@ -129,6 +129,7 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                         data.getNodeSerialNumber());
                 metadataPairs.add(pair);
                 csrMetadataPairs.add(pair);
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "BOOT_LOADER_VERSION"), data.getBootLoaderVersion()));
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HARDWARE_VERSION"), data.getHardwareVersion()));
                 String dateTime = dateFormattingService.format(data.getInNetworkTimestamp(), DateFormatEnum.DATEHM, context);
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IN_NETWORK_TIMESTAMP"), dateTime));

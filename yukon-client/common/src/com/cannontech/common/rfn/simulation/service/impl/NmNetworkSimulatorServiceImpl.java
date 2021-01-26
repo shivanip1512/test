@@ -385,6 +385,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         NodeData node = new NodeData();
         node.setFirmwareVersion("R2.1.5Wp");
         node.setHardwareVersion("1.1.1 (Sim)");
+        node.setBootLoaderVersion((long)2);
         node.setInNetworkTimestamp(1517588257267L);
         node.setMacAddress("11:22:33:44:91:11");
         node.setNetworkAddress("00C36E09081400");
