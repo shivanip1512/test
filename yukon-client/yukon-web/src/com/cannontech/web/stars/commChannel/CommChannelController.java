@@ -208,7 +208,7 @@ public class CommChannelController {
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(commChannel, "commChannel");
-                result = helper.populateBindingError(result, error, response);
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 if (result.hasErrors()) {
                     setupErrorFields(resp, commChannel, model, userContext, result);
                     return "/commChannel/create.jsp";

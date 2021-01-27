@@ -146,7 +146,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
     }
 
     public static void ipHostNameValidator(Errors errors, String field, String fieldValue) {
-        errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "IP Address" }, "IP Address");
+        checkIsBlank(errors, field, fieldValue, false, "IP Address");
         if (YukonValidationUtilsCommon.ipHostNameValidator(errors, field, fieldValue)) {
             errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "IP Address" },
                     "IP Address");
