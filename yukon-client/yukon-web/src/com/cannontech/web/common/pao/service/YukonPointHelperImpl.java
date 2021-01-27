@@ -79,28 +79,33 @@ public class YukonPointHelperImpl implements YukonPointHelper {
             PaoPointIdentifier paoPointIdent = new PaoPointIdentifier(pao.getPaoIdentifier(),
                     new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()));
             
-            Set<BuiltInAttribute> buildInAttributes = paoDefinitionDao
+            Set<BuiltInAttribute> builtInAttributes = paoDefinitionDao
                     .findAttributeForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
             List<CustomAttribute> customAttributes = attributeService
                     .findCustomAttributesForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
-             
-            //combine all attributes      
-            List<Attribute> attributes = new ArrayList<>();
-            attributes.addAll(buildInAttributes);
-            attributes.addAll(customAttributes);
-            //sort in alphabetical order
-            attributes.sort((Attribute a1, Attribute a2) -> accessor.getMessage(a1).compareToIgnoreCase(
-                    accessor.getMessage(a2)));
-            Attribute attribute = getFirstAttribute(pao.getPaoIdentifier().getPaoType(),
-                                                    accessor,
-                                                    buildInAttributes,
-                                                    customAttributes,
-                                                    attributes);
+            
+            List<Attribute> attributes = getSortedAttributes(builtInAttributes, customAttributes, accessor); 
+
+            Attribute attribute = getFirstAttribute(pao.getPaoIdentifier().getPaoType(), accessor,
+                                                    builtInAttributes, customAttributes, attributes);
             return LiteYukonPoint.of(paoPointIdent, attribute, attributes, point.getPointName(), point.getLiteID());
         }).collect(Collectors.toList());
     }
+    
+    @Override
+    public List<Attribute> getSortedAttributes(Set<BuiltInAttribute> builtInAttributes, List<CustomAttribute> customAttributes,
+                                               MessageSourceAccessor accessor) {
+        List<Attribute> attributes = new ArrayList<>();
+        attributes.addAll(builtInAttributes);
+        attributes.addAll(customAttributes);
+        //sort in alphabetical order
+        attributes.sort((Attribute a1, Attribute a2) -> accessor.getMessage(a1).compareToIgnoreCase(
+                accessor.getMessage(a2)));
+        return attributes;
+    }
 
-    private Attribute getFirstAttribute(PaoType paoType, MessageSourceAccessor accessor,
+    @Override
+    public Attribute getFirstAttribute(PaoType paoType, MessageSourceAccessor accessor,
             Set<BuiltInAttribute> buildInAttributes, List<CustomAttribute> customAttributes, List<Attribute> attributes) {
         Attribute attribute = null;
         if (attributes.size() == 1) {   // exactly one attribute
