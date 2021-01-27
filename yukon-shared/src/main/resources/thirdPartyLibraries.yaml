@@ -3957,6 +3957,20 @@ Network Manager :
     jira : none
     notes : YAJSW
 
+  - filename : commons-collections4-4.4.jar
+    yukon group : Apache Commons
+    project : Apache Commons Collections 4
+    version : 4.4
+    project URL : "https://commons.apache.org/proper/commons-collections/"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-collections4/4.4"
+    md5 : 4a37023740719b391f10030362c86be6
+    sha1 : 62ebe7544cb7164d87e0637a2a6a2bdc981395e8
+    updated : 2021-01-27
+    jira : NM-1555
+    notes : 
+
   - filename : commons-configuration2-2.3.jar
     yukon group : Apache Commons
     project : Apache Commons Configuration 2
