@@ -168,12 +168,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KWH"/>
         <decimalplaces value="3"/>
     </point>
-    <point offset="37" type="Analog">
-        <name>Net kWh (Rate E kWh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
     <point offset="50" type="Analog">
         <name>Delivered kVArh</name>
         <multiplier value="1"/>
@@ -342,18 +336,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="VOLTS"/>
         <decimalplaces value="1"/>
     </point>
-    <point offset="118" type="Analog">
-        <name>Peak kW (Rate E kW)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="119" type="Analog">
-        <name>Rate E kWh</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
     <point offset="120" type="Analog">
         <name>Sum kWh (Rate A kWh)</name>
         <multiplier value="1"/>
@@ -398,12 +380,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="128" type="Analog">
         <name>Received kWh (Rate D kWh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="129" type="Analog">
-        <name>Received kWh (Rate E kWh)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
         <decimalplaces value="3"/>

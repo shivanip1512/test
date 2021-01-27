@@ -413,7 +413,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RECEIVED_KWH_RATE_B("Received kWh Rate B", AttributeGroup.USAGE),
     RECEIVED_KWH_RATE_C("Received kWh Rate C", AttributeGroup.USAGE),
     RECEIVED_KWH_RATE_D("Received kWh Rate D", AttributeGroup.USAGE),
-    RECEIVED_KWH_RATE_E("Received kWh Rate E", AttributeGroup.USAGE),
     RECEIVED_KVAH("Received kVAh", AttributeGroup.USAGE),
     RECEIVED_KVAH_Q234("Received kVAh (Quadrants 2 3 4)", AttributeGroup.USAGE),
 
@@ -422,7 +421,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     NET_KWH_RATE_B("Net kWh Rate B", AttributeGroup.USAGE),
     NET_KWH_RATE_C("Net kWh Rate C", AttributeGroup.USAGE),
     NET_KWH_RATE_D("Net kWh Rate D", AttributeGroup.USAGE),
-    NET_KWH_RATE_E("Net kWh Rate E", AttributeGroup.USAGE),
 
     SUM_KWH("Sum kWh", AttributeGroup.USAGE),
     SUM_KWH_RATE_A("Sum kWh Rate A", AttributeGroup.USAGE),

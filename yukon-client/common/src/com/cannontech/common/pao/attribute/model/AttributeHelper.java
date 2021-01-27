@@ -71,9 +71,7 @@ public class AttributeHelper {
                            BuiltInAttribute.NET_RECEIVED_KVARH_RATE_D,
                            
                            BuiltInAttribute.USAGE_RATE_E,
-                           BuiltInAttribute.PEAK_DEMAND_RATE_E,
-                           BuiltInAttribute.RECEIVED_KWH_RATE_E,
-                           BuiltInAttribute.NET_KWH_RATE_E
+                           BuiltInAttribute.PEAK_DEMAND_RATE_E
                            ).build();
     }
     
