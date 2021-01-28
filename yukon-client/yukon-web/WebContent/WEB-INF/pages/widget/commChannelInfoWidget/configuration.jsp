@@ -39,10 +39,10 @@
         <tags:input path="rfnAddress.serialNumber" maxlength="30"/>
     </tags:nameValue2>
     <tags:nameValue2 nameKey="yukon.common.manufacturer">
-        <tags:input path="rfnAddress.manufacturer" maxlength="80"/>
+        <tags:input path="rfnAddress.manufacturer" maxlength="60"/>
     </tags:nameValue2>
     <tags:nameValue2 nameKey="yukon.common.model">
-        <tags:input path="rfnAddress.model" maxlength="80"/>  
+        <tags:input path="rfnAddress.model" maxlength="60"/>  
     </tags:nameValue2>
     <tags:nameValue2 nameKey=".postCommWait">
         <tags:input path="timing.postCommWait" units="${milliseconds}"/>
