@@ -191,6 +191,7 @@
 <entry key="yukon.common.mailEncryptionType.NONE">None</entry>
 <entry key="yukon.common.mailEncryptionType.SSL">SSL</entry>
 <entry key="yukon.common.mailEncryptionType.TLS">TLS</entry>
+<entry key="yukon.common.manufacturer">Manufacturer</entry>
 <entry key="yukon.common.mapDevices">Map Devices</entry>
 <entry key="yukon.common.max">Max</entry>
 <entry key="yukon.common.meterGroups.MCT">MCT</entry>
@@ -201,6 +202,7 @@
 <entry key="yukon.common.min">Min</entry>
 <entry key="yukon.common.minuteAbbreviation">{0} min</entry>
 <entry key="yukon.common.minutes">Minutes</entry>
+<entry key="yukon.common.model">Model</entry>
 <entry key="yukon.common.month">Month</entry>
 <entry key="yukon.common.more">more</entry>
 <entry key="yukon.common.moreInfoSuffix">…</entry>
