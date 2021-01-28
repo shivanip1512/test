@@ -4447,18 +4447,18 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : iText-2.1.4.jar
+  - filename : iText-4.2.1.jar
     yukon group : jfreereport
     project : iText
-    version : 2.1.4
+    version : 4.2.1
     project URL : "https://www.lowagie.com/iText/"
-    license : MPL 1.1
-    license URLs : "https://www.mozilla.org/en-US/MPL/1.1/"
-    maven URL : "https://mvnrepository.com/artifact/com.lowagie/itext/2.1.4"
-    md5 : d4b11882f19019cd87e8fa5f04cd2fe4
-    sha1 : a948ff4027c6c79961acce0a0d9bd750cc3a0224
-    updated : 2009-03-02
-    jira : none
+    license : MPL 2.1,LGPL 3.0
+    license URLs : "https://www.mozilla.org/media/MPL/2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.lowagie/itext/4.2.1"
+    md5 : bc4f5050d36e8a4a9cad9910ec02e3af
+    sha1 : 75e27a6ba30093d9bfd2da99da1cbb25536a4d19
+    updated : 2021-01-28
+    jira : NM-1669
     notes : 
 
   - filename : izevent.jar
