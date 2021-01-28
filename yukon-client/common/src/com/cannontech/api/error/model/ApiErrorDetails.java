@@ -56,8 +56,8 @@ public enum ApiErrorDetails {
     INVALID_SUPPORT_DIRECTION(ApiErrorCategory.VALIDATION_FAILED, 132, "Invalid support direction", " Invalid support direction."), // code : 101132
     INVALID_SIZE(ApiErrorCategory.VALIDATION_FAILED, 133, "Invalid Size", " Invalid Size."), // code : 101133
 
-    COMBINATION_ERROR(ApiErrorCategory.VALIDATION_FAILED, 134, "Combination must be unique", "Combination must be unique."), // code : 101134
-    UNIQUE_ERROR(ApiErrorCategory.VALIDATION_FAILED, 135, "Must be unique", "Must be unique."), // code : 101135
+    COMBINATION_NOT_UNIQUE(ApiErrorCategory.VALIDATION_FAILED, 134, "Combination of the fields must be unique", "Combination must be unique."), // code : 101134
+    NOT_UNIQUE(ApiErrorCategory.VALIDATION_FAILED, 135, "Value must be unique", "Must be unique."), // code : 101135
     INVALID_HEX_FORMAT(ApiErrorCategory.VALIDATION_FAILED, 136, "Key must be in hex format", "Key must be in hex format and 16 bytes long."), // code : 101136
     INVALID_HEX_LENGTH(ApiErrorCategory.VALIDATION_FAILED, 137, "Key must be 16 bytes long", "Key must be 16 bytes long."), // code : 101137
     INVALID_SOCKET_NUMBER(ApiErrorCategory.VALIDATION_FAILED, 138, "Invalid socket number", "Socket number must be 1025 when port type is not shared."); // code : 101138

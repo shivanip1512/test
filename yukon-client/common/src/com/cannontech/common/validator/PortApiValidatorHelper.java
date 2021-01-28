@@ -64,12 +64,12 @@ public class PortApiValidatorHelper {
 
         if (existingPortId != null && !(existingPortId.equals(portId))) {
             if (PaoType.TSERVER_SHARED == portType) {
-                errors.rejectValue("portNumber", ApiErrorDetails.COMBINATION_ERROR.getCodeString(),
+                errors.rejectValue("portNumber", ApiErrorDetails.COMBINATION_NOT_UNIQUE.getCodeString(),
                         new Object[] { "IP Address", ipAddress, "Port Number", portNumber.toString() }, "");
-                errors.rejectValue("ipAddress", ApiErrorDetails.COMBINATION_ERROR.getCodeString(),
+                errors.rejectValue("ipAddress", ApiErrorDetails.COMBINATION_NOT_UNIQUE.getCodeString(),
                         new Object[] { "IP Address", ipAddress, "Port Number", portNumber.toString() }, "");
             } else {
-                errors.rejectValue("portNumber", ApiErrorDetails.UNIQUE_ERROR.getCodeString(),
+                errors.rejectValue("portNumber", ApiErrorDetails.NOT_UNIQUE.getCodeString(),
                         new Object[] { "Port Number", portNumber.toString() }, "");
             }
         }
