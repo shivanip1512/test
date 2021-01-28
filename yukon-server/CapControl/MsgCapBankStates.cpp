@@ -35,8 +35,8 @@ CtiCCCapBankStatesMsg::~CtiCCCapBankStatesMsg()
             delete_container(*_ccCapBankStates);
             _ccCapBankStates->clear();
             delete _ccCapBankStates;
+            _ccCapBankStates = NULL;
         }
-
 }
 
 CtiMessage* CtiCCCapBankStatesMsg::replicateMessage() const
