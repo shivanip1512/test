@@ -45,7 +45,7 @@ fields:
     pattern: '1'
   - field:
       type: PLAIN_TEXT
-    pattern: '100'
+    pattern: '0'
   - field:
       type: PLAIN_TEXT
     pattern: '1'
