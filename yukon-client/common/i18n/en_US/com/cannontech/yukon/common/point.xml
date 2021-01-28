@@ -471,12 +471,14 @@
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_RATE_B">Received kWh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_RATE_C">Received kWh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_RATE_D">Received kWh Rate D</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_RATE_E">Received kWh Rate E</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_FROZEN">Received kWh Frozen</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH">Net kWh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_A">Net kWh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_B">Net kWh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_C">Net kWh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_D">Net kWh Rate D</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_E">Net kWh Rate E</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH">Sum kWh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_A">Sum kWh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_B">Sum kWh Rate B</entry>

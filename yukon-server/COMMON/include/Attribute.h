@@ -407,6 +407,7 @@ public:
     static const Attribute  ReceivedkWhRateB;
     static const Attribute  ReceivedkWhRateC;
     static const Attribute  ReceivedkWhRateD;
+    static const Attribute  ReceivedkWhRateE;
     static const Attribute  ReceivedkVAh;
 
     static const Attribute  NetkWh;
@@ -414,6 +415,7 @@ public:
     static const Attribute  NetkWhRateB;
     static const Attribute  NetkWhRateC;
     static const Attribute  NetkWhRateD;
+    static const Attribute  NetkWhRateE;
 
     static const Attribute  SumkWh;
     static const Attribute  SumkWhRateA;

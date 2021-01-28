@@ -416,6 +416,7 @@ INIT_ATTRIBUTE( ReceivedkWhRateA,                                   "RECEIVED_KW
 INIT_ATTRIBUTE( ReceivedkWhRateB,                                   "RECEIVED_KWH_RATE_B" );
 INIT_ATTRIBUTE( ReceivedkWhRateC,                                   "RECEIVED_KWH_RATE_C" );
 INIT_ATTRIBUTE( ReceivedkWhRateD,                                   "RECEIVED_KWH_RATE_D" );
+INIT_ATTRIBUTE( ReceivedkWhRateE,                                   "RECEIVED_KWH_RATE_E" );
 INIT_ATTRIBUTE( ReceivedkVAh,                                       "RECEIVED_KVAH" );
 
 INIT_ATTRIBUTE( NetkWh,                                             "NET_KWH" );
@@ -423,6 +424,7 @@ INIT_ATTRIBUTE( NetkWhRateA,                                        "NET_KWH_RAT
 INIT_ATTRIBUTE( NetkWhRateB,                                        "NET_KWH_RATE_B" );
 INIT_ATTRIBUTE( NetkWhRateC,                                        "NET_KWH_RATE_C" );
 INIT_ATTRIBUTE( NetkWhRateD,                                        "NET_KWH_RATE_D" );
+INIT_ATTRIBUTE( NetkWhRateE,                                        "NET_KWH_RATE_E" );
 
 INIT_ATTRIBUTE( SumkWh,                                             "SUM_KWH" );
 INIT_ATTRIBUTE( SumkWhRateA,                                        "SUM_KWH_RATE_A" );
