@@ -5035,20 +5035,6 @@ Network Manager :
     jira : NM-708
     notes : ojdbc10 for Java 6+
 
-  - filename : poi-3.2.jar
-    yukon group : jfreereport
-    project : Apache POI - Java API To Access Microsoft Format Files
-    version : 3.2
-    project URL : "https://poi.apache.org/"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.poi/poi/3.2-FINAL"
-    md5 : 08df3e79b2274f87da7e49360de5a217
-    sha1 : ada979caecb2d99043a58cf3e1eaa6ec3de73f6f
-    updated : 2009-09-16
-    jira : none
-    notes : 
-
   - filename : powermock-easymock-1.7.1-full.jar
     yukon group : PowerMock
     project : PowerMock
