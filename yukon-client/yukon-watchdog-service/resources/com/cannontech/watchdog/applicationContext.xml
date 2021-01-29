@@ -34,7 +34,7 @@
        <bean class="com.cannontech.watchdogs.impl.ServiceManagerWatcher"/>
        <bean class="com.cannontech.watchdogs.impl.WebServerWatcher"/>
        <bean class="com.cannontech.watchdogs.impl.YukonMessageBrokerWatcher"/>
-       <bean class="com.cannontech.watchdogs.impl.NetworkManagerWatcher"/>
+       <bean id="networkManagerWatcher" class="com.cannontech.watchdogs.impl.NetworkManagerWatcher"/>
        
        <bean class="com.cannontech.watchdogs.impl.DispatchServiceWatcher"/>
        <bean class="com.cannontech.watchdogs.impl.LoadManagementServiceWatcher"/>
@@ -54,5 +54,13 @@
        <bean class="com.cannontech.watchdogs.util.WatchdogMACSConnection"/>
        
        <bean class="com.cannontech.watchdog.notification.WatchdogNotificationServiceImpl"/>
+       
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="destinationName" value="com.eaton.eas.yukon.networkmanager.NetworkTreeUpdateTimeResponse"/>
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageListener" ref="networkManagerWatcher"/>
+    </bean>
        
 </beans>

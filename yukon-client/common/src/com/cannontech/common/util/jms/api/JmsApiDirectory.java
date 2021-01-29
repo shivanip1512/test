@@ -385,6 +385,7 @@ public final class JmsApiDirectory {
                   .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.NetworkTreeUpdateTimeRequest"))
                   .requestMessage(NetworkTreeUpdateTimeRequest.class)
                   .sender(YUKON_WEBSERVER)
+                  .sender(YUKON_WATCHDOG)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
                   .build();
@@ -399,6 +400,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_SIMULATORS)
                   .receiver(YUKON_WEBSERVER)
+                  .receiver(YUKON_WATCHDOG)
                   .build();
     
     public static final JmsApi<GatewayCreateRequest,?,GatewayUpdateResponse> RF_GATEWAY_CREATE =
@@ -584,7 +586,6 @@ public final class JmsApiDirectory {
                   .responseMessage(GatewayDataResponse.class)
                   .sender(YUKON_WEBSERVER)
                   .sender(YUKON_SERVICE_MANAGER)
-                  .sender(YUKON_WATCHDOG)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
                   .build();
