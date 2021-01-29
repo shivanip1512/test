@@ -5556,10 +5556,10 @@ JavaScript :
     license : MIT
     license URLs : "https://github.com/harvesthq/chosen/blob/f093b3930e83f2fd656fe63d6cdb35cac52a74dc/LICENSE.md"
     npm URL : "https://www.npmjs.com/package/chosen-js"
-    md5 : 53d0855f4d28d272589e9022a529228d
-    sha1 : 31c805cfc2b2e82e5daa05b5c65be45bd3c79fde
-    jira : YUK-21528
-    updated : 2020-03-13
+    md5 : 1fe2fac90a788be613188116e4ea308c
+    sha1 : 9b2bfd52cb4676f095210d73894f16dcc3ca8d5f
+    jira : YUK-23370
+    updated : 2021-01-29
     notes : This library is used to render a chosen drop-down. This is a multiselect dropdown. Eg. DR -> Setup -> FilterBy Load Program -> the dropdown for load program types.
 
   - project : cookie
