@@ -4452,8 +4452,8 @@ Network Manager :
     project : iText
     version : 4.2.1
     project URL : "https://www.lowagie.com/iText/"
-    license : MPL 2.1,LGPL 3.0
-    license URLs : "https://www.mozilla.org/media/MPL/2.0"
+    license : MPL 2.0, LGPL 3.0
+    license URLs : "http://www.mozilla.org/MPL/2.0/, http://www.gnu.org/licenses/lgpl-3.0.html"
     maven URL : "https://mvnrepository.com/artifact/com.lowagie/itext/4.2.1"
     md5 : bc4f5050d36e8a4a9cad9910ec02e3af
     sha1 : 75e27a6ba30093d9bfd2da99da1cbb25536a4d19
