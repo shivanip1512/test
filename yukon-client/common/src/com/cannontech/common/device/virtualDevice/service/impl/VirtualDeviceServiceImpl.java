@@ -40,8 +40,8 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     @Override
     public VirtualDeviceBaseModel<? extends VirtualBase> retrieve(int virtualDeviceId) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(virtualDeviceId);
-        if (pao == null || isVirtualType(pao.getPaoType())) {
-            throw new NotFoundException("Virtual device ID not found");
+        if (pao == null || !PaoType.isVirtualDevice(pao.getPaoType())) {
+            throw new NotFoundException("ID not found " + virtualDeviceId);
         }
         VirtualBase virtualDevice = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
         VirtualDeviceBaseModel virtualDeviceBase = (VirtualDeviceBaseModel) PaoModelFactory.getModel(virtualDevice.getPaoType());
@@ -52,7 +52,7 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     @Override
     public VirtualDeviceBaseModel<? extends VirtualBase> update(int virtualDeviceId, VirtualDeviceBaseModel virtualDevice) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(virtualDeviceId);
-        if (pao == null || isVirtualType(pao.getPaoType())) {
+        if (pao == null || !PaoType.isVirtualDevice(pao.getPaoType())) {
             throw new NotFoundException("ID not found " + virtualDeviceId);
         }
         VirtualBase virtualDeviceRecord = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
@@ -65,7 +65,7 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     @Override
     public int delete(int id) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
-        if (pao == null || !isVirtualType(pao.getPaoType())) {
+        if (pao == null || !PaoType.isVirtualDevice(pao.getPaoType())) {
             throw new NotFoundException("ID not found " + id);
         }
         VirtualBase virtualDeviceRecord = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
@@ -73,12 +73,7 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
         return virtualDeviceRecord.getPAObjectID();
     }
 
-    /**
-     * Return true if provided PAO type is either VIRTUAL_SYSTEM or VIRTUAL_METER
-     **/
-    private boolean isVirtualType(PaoType type) {
-        return type == PaoType.VIRTUAL_SYSTEM || type == PaoType.VIRTUAL_METER;
-    }
+
 
     @Override
     public PaginatedResponse<VirtualDeviceBaseModel> getPage(VirtualDeviceSortableField sortBy, Direction direction, Integer page, Integer itemsPerPage) {
