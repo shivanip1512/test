@@ -131,7 +131,7 @@ public class PortApiValidatorHelper {
             }
             if (!errors.hasFieldErrors("keyInHex")) {
                 if (keyInHex.length() != 32) {
-                    errors.rejectValue("keyInHex", ApiErrorDetails.INVALID_HEX_LENGTH.getCodeString());
+                    errors.rejectValue("keyInHex", ApiErrorDetails.INVALID_FIELD_LENGTH.getCodeString(), new Object[] { "keyInHex", "16 bytes", keyInHex }, "");
                 }
             }
         }
