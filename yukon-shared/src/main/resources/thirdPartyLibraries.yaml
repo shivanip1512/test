@@ -251,7 +251,7 @@ Java :
     version : 5.0.4
     project URL : "https://asm.ow2.io/"
     license : BSD
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0"
+    license URLs : "https://asm.ow2.io/license.html"
     maven URL : "https://mvnrepository.com/artifact/org.ow2.asm/asm/5.0.4"
     md5 : c8a73cdfdf802ab0220c860d590d0f84
     sha1 : 0da08b8cce7bbf903602a25a3a163ae252435795
