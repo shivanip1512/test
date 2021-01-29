@@ -57,6 +57,7 @@ CtiCCCapBankStatesMsg& CtiCCCapBankStatesMsg::operator=(const CtiCCCapBankStates
             delete_container(*_ccCapBankStates);
             _ccCapBankStates->clear();
             delete _ccCapBankStates;
+            _ccCapBankStates = NULL;
         }
 
         int y = (right.getCCCapBankStates())->size();
