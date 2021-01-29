@@ -134,6 +134,8 @@ public class DataExporterFormatController {
             flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.error"));
             exportFormat = setExportFormatForErrorScenario();
         }
+        Preview preview = exportReportGeneratorService.generatePreview(exportFormat, userContext);
+        model.addAttribute("preview", preview);
         model.addAttribute("showAttributeSection",
                 exportFormat.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
         model.addAttribute("format", exportFormat);
