@@ -616,6 +616,10 @@ public class DataExporterFormatController {
         FileInputStream inputStream = new FileInputStream(
                 StringUtils.joinWith(sep, CtiUtilities.getDataExportTemplatesDirPath(), fileName));
         ExportFormat exportFormat = YamlParserUtils.parseToObject(inputStream, ExportFormat.class);
+        // Ignore formatId if set in template file
+        if (exportFormat.getFormatId() != 0) {
+            exportFormat.setFormatId(0);
+        }
         exportFormatTemplateValidator.validate(exportFormat, result);
 
         if (result.hasErrors()) {
