@@ -40,7 +40,7 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     @Override
     public VirtualDeviceBaseModel<? extends VirtualBase> retrieve(int virtualDeviceId) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(virtualDeviceId);
-        if (pao == null || !PaoType.isVirtualDevice(pao.getPaoType())) {
+        if (pao == null || pao.getPaoType().isVirtualDevice()) {
             throw new NotFoundException("ID not found " + virtualDeviceId);
         }
         VirtualBase virtualDevice = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
@@ -52,7 +52,7 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     @Override
     public VirtualDeviceBaseModel<? extends VirtualBase> update(int virtualDeviceId, VirtualDeviceBaseModel virtualDevice) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(virtualDeviceId);
-        if (pao == null || !PaoType.isVirtualDevice(pao.getPaoType())) {
+        if (pao == null || pao.getPaoType().isVirtualDevice()) {
             throw new NotFoundException("ID not found " + virtualDeviceId);
         }
         VirtualBase virtualDeviceRecord = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
@@ -65,7 +65,7 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     @Override
     public int delete(int id) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
-        if (pao == null || !PaoType.isVirtualDevice(pao.getPaoType())) {
+        if (pao == null || pao.getPaoType().isVirtualDevice()) {
             throw new NotFoundException("ID not found " + id);
         }
         VirtualBase virtualDeviceRecord = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
