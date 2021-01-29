@@ -3372,15 +3372,15 @@ Network Manager :
   - filename : annotations-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-annotations-api/9.0.37"
-    md5 : 4231050ba3a1554c53f5a1c7cfb42e6b
-    sha1 : 888a1285ad5f3ac4055b2273f31d96e130e170a8
-    updated : 2020-09-02
-    jira : NM-1732
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-annotations-api/9.0.41"
+    md5 : eb37e193fde67946d992e31939ce2073
+    sha1 : d1c2d6ee82af84a22f10a47e023b36e0136e8729
+    updated : 2021-01-30
+    jira : NM-1873
     notes : 
 
   - filename : ant.jar
