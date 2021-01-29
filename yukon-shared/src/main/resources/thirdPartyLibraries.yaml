@@ -4447,18 +4447,18 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : iText-2.1.4.jar
+  - filename : iText-4.2.1.jar
     yukon group : jfreereport
     project : iText
-    version : 2.1.4
+    version : 4.2.1
     project URL : "https://www.lowagie.com/iText/"
-    license : MPL 1.1
-    license URLs : "https://www.mozilla.org/en-US/MPL/1.1/"
-    maven URL : "https://mvnrepository.com/artifact/com.lowagie/itext/2.1.4"
-    md5 : d4b11882f19019cd87e8fa5f04cd2fe4
-    sha1 : a948ff4027c6c79961acce0a0d9bd750cc3a0224
-    updated : 2009-03-02
-    jira : none
+    license : MPL 2.1,LGPL 3.0
+    license URLs : "https://www.mozilla.org/media/MPL/2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.lowagie/itext/4.2.1"
+    md5 : bc4f5050d36e8a4a9cad9910ec02e3af
+    sha1 : 75e27a6ba30093d9bfd2da99da1cbb25536a4d19
+    updated : 2021-01-28
+    jira : NM-1669
     notes : 
 
   - filename : izevent.jar
@@ -5034,20 +5034,6 @@ Network Manager :
     updated : 2020-06-19
     jira : NM-708
     notes : ojdbc10 for Java 6+
-
-  - filename : poi-3.2.jar
-    yukon group : jfreereport
-    project : Apache POI - Java API To Access Microsoft Format Files
-    version : 3.2
-    project URL : "https://poi.apache.org/"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.poi/poi/3.2-FINAL"
-    md5 : 08df3e79b2274f87da7e49360de5a217
-    sha1 : ada979caecb2d99043a58cf3e1eaa6ec3de73f6f
-    updated : 2009-09-16
-    jira : none
-    notes : 
 
   - filename : powermock-easymock-1.7.1-full.jar
     yukon group : PowerMock
