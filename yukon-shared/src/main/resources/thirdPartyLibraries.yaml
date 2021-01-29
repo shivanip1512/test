@@ -2326,7 +2326,7 @@ Java :
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.quartz-scheduler/quartz/2.3.2"
     md5 : d7299dbaec0e0ed7af281b07cc40c8c1
-    sha1 : c22b720ab9a92367424cda3d628fea758dd7e4cf
+    sha1 : 18a6d6b5a40b77bd060b34cb9f2acadc4bae7c8a
     updated : 2020-07-23
     jira : YUK-23598
     notes : 
