@@ -410,6 +410,7 @@
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##IDS_FEATURE_DISPLAY_NAME18##</td><td>##ID_STRING10##</td><td>25</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Calc Logic</td></row>
 		<row><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td><td>{37AA5718-AAED-4365-BC7A-BF934E7C0DDE}</td><td>##IDS_FEATURE_DISPLAY_NAME25##</td><td>##ID_STRING24##</td><td>19</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Prophecy IVR Examples</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td/><td>##IDS_FEATURE_DISPLAY_NAME4##</td><td>##ID_STRING2##</td><td>9</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Server</td></row>
+		<row><td>{4A41C0E2-AF2C-4A87-B62C-9C6F3E3AAB6C}</td><td/><td>##ID_STRING91##</td><td>##ID_STRING92##</td><td>27</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Tools</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##IDS_FEATURE_DISPLAY_NAME15##</td><td>##ID_STRING7##</td><td>19</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>MAC Scheduler</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##IDS_FEATURE_DISPLAY_NAME20##</td><td>##ID_STRING12##</td><td>35</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Web Server</td></row>
 		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td/><td>##ID_STRING3##</td><td>##ID_STRING1##</td><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Runtime (Java)</td></row>
@@ -439,6 +440,7 @@
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Master Config Example</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Server Base</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Shortcut Holder</td></row>
+		<row><td>{4A41C0E2-AF2C-4A87-B62C-9C6F3E3AAB6C}</td><td>Tools</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>MACS</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Client Base</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Log Config Files</td></row>
@@ -641,6 +643,7 @@
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td/><td>CalcLogic_Installed</td><td>CalcLogic_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING32##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING44##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING68##</td><td>36</td><td/><td/><td/></row>
+		<row><td>{4A41C0E2-AF2C-4A87-B62C-9C6F3E3AAB6C}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING93##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td/><td>MACScheduler_Installed</td><td>MACScheduler_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING29##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat_Installing</td><td>Tomcat_Installed</td><td>Tomcat_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING34##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING25##</td><td>36</td><td/><td/><td/></row>
@@ -1117,6 +1120,7 @@
 		<row><td>Complete</td><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td></row>
 		<row><td>Complete</td><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td></row>
 		<row><td>Complete</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td></row>
+		<row><td>Complete</td><td>{4A41C0E2-AF2C-4A87-B62C-9C6F3E3AAB6C}</td></row>
 		<row><td>Complete</td><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td></row>
 		<row><td>Complete</td><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td></row>
 		<row><td>Complete</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
@@ -1137,6 +1141,7 @@
 		<row><td>Custom</td><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td></row>
 		<row><td>Custom</td><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td></row>
 		<row><td>Custom</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td></row>
+		<row><td>Custom</td><td>{4A41C0E2-AF2C-4A87-B62C-9C6F3E3AAB6C}</td></row>
 		<row><td>Custom</td><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td></row>
 		<row><td>Custom</td><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td></row>
 		<row><td>Custom</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
@@ -1393,6 +1398,9 @@
 		<row><td>ID_STRING88</td><td>1033</td><td>Start Yukon</td><td>0</td><td/><td>-1171875060</td></row>
 		<row><td>ID_STRING89</td><td>1033</td><td>Stop Yukon</td><td>0</td><td/><td>-1171868916</td></row>
 		<row><td>ID_STRING9</td><td>1033</td><td>Transmits and receives real-time data to and from other systems outside of Yukon.</td><td>0</td><td/><td>-1516413078</td></row>
+		<row><td>ID_STRING91</td><td>1033</td><td>Tools</td><td>0</td><td/><td>-123131753</td></row>
+		<row><td>ID_STRING92</td><td>1033</td><td>Needs to keep RFN network data scripts in Yukon.</td><td>0</td><td/><td>-123117385</td></row>
+		<row><td>ID_STRING93</td><td>1033</td><td>Tools</td><td>0</td><td/><td>-123094857</td></row>
 		<row><td>NEW_STRING1</td><td>1033</td><td>Checkbox</td><td>0</td><td/><td>-979530865</td></row>
 		<row><td>NEW_STRING10</td><td>1033</td><td>Checkbox</td><td>0</td><td/><td>-979543089</td></row>
 		<row><td>NEW_STRING11</td><td>1033</td><td>Checkbox</td><td>0</td><td/><td>-979536945</td></row>
@@ -1826,7 +1834,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>Dialog</td><td>Dialog</td><td>N</td><td/><td/><td/><td/><td>Identifier</td><td/><td>Name of the dialog.</td></row>
 		<row><td>Dialog</td><td>HCentering</td><td>N</td><td>0</td><td>100</td><td/><td/><td/><td/><td>Horizontal position of the dialog on a 0-100 scale. 0 means left end, 100 means right end of the screen, 50 center.</td></row>
 		<row><td>Dialog</td><td>Height</td><td>N</td><td>0</td><td>32767</td><td/><td/><td/><td/><td>Height of the bounding rectangle of the dialog.</td></row>
-		<row><td>Dialog</td><td>ISComments</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Authorâ€™s comments for this dialog.</td></row>
+		<row><td>Dialog</td><td>ISComments</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Author’s comments for this dialog.</td></row>
 		<row><td>Dialog</td><td>ISResourceId</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>A Number the Specifies the Dialog ID to be used in Dialog Export</td></row>
 		<row><td>Dialog</td><td>ISWindowStyle</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>A 32-bit word that specifies non-MSI window styles to be applied to this control. This is only used in Script Based Setups.</td></row>
 		<row><td>Dialog</td><td>TextStyle_</td><td>Y</td><td/><td/><td/><td/><td>Identifier</td><td/><td>Foreign Key into TextStyle table, only used in Script Based Projects.</td></row>

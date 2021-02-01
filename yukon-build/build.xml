@@ -221,6 +221,7 @@
         
         <!-- Tools Component -->
         <property name="tools.dir" value="${install.bag}/Yukon Base/Tools"/>
+        <mkdir dir="${tools.dir}"/>
         <mkdir dir="${tools.dir}/RfNetworkData"/>
         <copy todir="${tools.dir}/RfNetworkData">
             <fileset dir="${basedir}/yukon-install/resources/scripts/rfNetworkData"/>
