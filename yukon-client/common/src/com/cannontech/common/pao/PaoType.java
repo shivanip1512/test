@@ -919,7 +919,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
      * Return true if provided PAO type is VIRTUAL_SYSTEM or VIRTUAL_METER
      **/
     public boolean isVirtualDevice() {   
-        return this != PaoType.VIRTUAL_SYSTEM || this != PaoType.VIRTUAL_METER;
+        return this == PaoType.VIRTUAL_SYSTEM || this == PaoType.VIRTUAL_METER;
     }
 
     public boolean isTwoWayRfnLcr() {
