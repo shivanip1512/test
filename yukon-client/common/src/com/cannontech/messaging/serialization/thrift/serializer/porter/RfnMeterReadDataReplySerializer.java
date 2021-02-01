@@ -69,9 +69,18 @@ public class RfnMeterReadDataReplySerializer extends RfnSerializationHelper impl
     private static void translateChannelData(com.cannontech.messaging.serialization.thrift.generated.ChannelData tdata, ChannelData data) {
         data.setChannelNumber(tdata.getChannelNumber());
         data.setStatus(statusHelper.toJava(tdata.getStatus()));
-        data.setUnitOfMeasure(tdata.getUnitOfMeasure());
+        data.setUnitOfMeasure(translateUom(tdata.getUnitOfMeasure()));
         data.setUnitOfMeasureModifiers(tdata.getUnitOfMeasureModifiers());
         data.setValue(tdata.getValue());
+    }
+
+    private static String translateUom(String unitOfMeasure) {
+        //  Remap the degree character, since it is outside of the ASCII range and doesn't map 
+        //    between C++ and Java without explicit encoding 
+        if (unitOfMeasure.equals("deg C")) {
+            return "°C";
+        }
+        return unitOfMeasure;
     }
 
     private static ChannelData channelDataConverter(com.cannontech.messaging.serialization.thrift.generated.ChannelData tdata) {
