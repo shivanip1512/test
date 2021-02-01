@@ -54,6 +54,7 @@ CtiFDRClientServerConnection::CtiFDRClientServerConnection(const string& connect
 CtiFDRClientServerConnection::~CtiFDRClientServerConnection( )
 {
     _parentInterface->logEvent(_linkName + ": connection destroyed", "", true);
+    CloseHandle(_stillAliveEvent);
 }
 
 bool CtiFDRClientServerConnection::isRegistered ()
