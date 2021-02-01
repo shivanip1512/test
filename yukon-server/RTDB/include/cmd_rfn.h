@@ -34,6 +34,7 @@ class RfnTouHolidayConfigurationCommand;
 class RfnMeterProgrammingGetConfigurationCommand;
 class RfnMeterProgrammingSetConfigurationCommand;
 class RfnMeterProgrammingGetFileCommand;
+class RfnMeterReadCommand;
 class RfnGetOvUvAlarmConfigurationCommand;
 class RfnSetOvUvAlarmProcessingStateCommand;
 class RfnSetOvUvAlarmRepeatCountCommand;
@@ -99,6 +100,7 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnMeterProgrammingGetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnMeterProgrammingSetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnMeterProgrammingGetFileCommand &)                   {}
+        virtual void handleCommandResult(const RfnMeterReadCommand &)                                 {}
         virtual void handleCommandResult(const RfnGetOvUvAlarmConfigurationCommand &)                 {}
         virtual void handleCommandResult(const RfnSetOvUvAlarmProcessingStateCommand &)               {}
         virtual void handleCommandResult(const RfnSetOvUvAlarmRepeatCountCommand &)                   {}
