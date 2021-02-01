@@ -65,6 +65,8 @@ import com.cannontech.common.device.data.collection.message.RecalculationRequest
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
+import com.cannontech.common.nmHeartbeat.message.NetworkManagerHeartbeatRequest;
+import com.cannontech.common.nmHeartbeat.message.NetworkManagerHeartbeatResponse;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.message.alarm.AlarmArchiveRequest;
 import com.cannontech.common.rfn.message.alarm.AlarmArchiveResponse;
@@ -385,7 +387,6 @@ public final class JmsApiDirectory {
                   .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.NetworkTreeUpdateTimeRequest"))
                   .requestMessage(NetworkTreeUpdateTimeRequest.class)
                   .sender(YUKON_WEBSERVER)
-                  .sender(YUKON_WATCHDOG)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
                   .build();
@@ -1312,6 +1313,20 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .build();
+
+    public static final JmsApi<NetworkManagerHeartbeatRequest,?,NetworkManagerHeartbeatResponse> NM_HEARTBEAT =
+            JmsApi.builder(NetworkManagerHeartbeatRequest.class, NetworkManagerHeartbeatResponse.class)
+                  .name("Network Manager heartbeat")
+                  .description("Sends a heartbeat message and collects response from Network Manager to confirm "
+                          + "its communication with sender.")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.heartbeat"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(NetworkManagerHeartbeatRequest.class)
+                  .responseMessage(NetworkManagerHeartbeatResponse.class)
+                  .sender(YUKON_WATCHDOG)
+                  .receiver(NETWORK_MANAGER)
+                  .build();
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1346,6 +1361,7 @@ public final class JmsApiDirectory {
                 LM_EATON_CLOUD_SCHEDULED_CYCLE_COMMAND,
                 LM_EATON_CLOUD_STOP_COMMAND,
                 LOCATION,
+                NM_HEARTBEAT,
                 PORTER_DYNAMIC_PAOINFO,
                 PX_MW_AUTH_TOKEN,
                 RF_SUPPORT_BUNDLE,
