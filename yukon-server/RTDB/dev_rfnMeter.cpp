@@ -11,6 +11,7 @@
 #include "cmd_rfn_ChannelConfiguration.h"
 #include "cmd_rfn_DataStreamingConfiguration.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_MeterRead.h"
 #include "cmd_rfn_Metrology.h"
 
 #include "Attribute.h"
@@ -468,11 +469,23 @@ YukonError_t RfnMeterDevice::executeGetValueVoltageProfile(CtiRequestMsg *pReq, 
     return ClientErrors::NoMethod;
 }
 
+YukonError_t RfnMeterDevice::executeGetValueMeterRead(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    rfnRequests.emplace_back(
+        std::make_unique<Commands::RfnMeterReadCommand>(pReq->UserMessageId()));
+
+    return ClientErrors::None;
+}
+
 YukonError_t RfnMeterDevice::executeGetValue(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if( parse.isKeyValid("voltage_profile") )
     {
         return executeGetValueVoltageProfile(pReq, parse, returnMsgs, rfnRequests);
+    }
+    if( parse.isKeyValid("meter_read") )
+    {
+        return executeGetValueMeterRead(pReq, parse, returnMsgs, rfnRequests);
     }
 
     return ClientErrors::NoMethod;
