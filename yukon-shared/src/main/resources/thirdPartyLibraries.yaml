@@ -1089,7 +1089,7 @@ Java :
     yukon group : Jackson
     project : Jackson
     version : 2.12.1
-    project URL : "http://github.com/FasterXML/jackson"
+    project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.12.1"
@@ -1103,7 +1103,7 @@ Java :
     yukon group : Jackson
     project : Jackson
     version : 2.12.1
-    project URL : "http://github.com/FasterXML/jackson"
+    project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.12.1"
@@ -1117,7 +1117,7 @@ Java :
     yukon group : Jackson
     project : Jackson
     version : 2.12.1
-    project URL : "http://github.com/FasterXML/jackson"
+    project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.12.1"
