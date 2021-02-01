@@ -3,7 +3,7 @@
 #include "RfnMeterDisconnectMsg.h"
 #include "Thrift/RfnMeterDisconnectRequest_types.h"
 
-#include "amq_connection.cpp"
+#include "amq_connection.h"
 #include "message_serialization_util.h"
 
 namespace Cti::Messaging::Serialization {
