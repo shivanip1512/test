@@ -66,7 +66,7 @@
             <appender-ref ref="yukonRfnRollingFile" />
         </Logger>   
         
-        <!-- Controls comms logging to the Yukon\Server\Log directory -->
+        <!-- Controls non-rfn comms logging to the Yukon\Server\Log directory -->
         <Logger name="commsLogger" level="info" additivity="false">
             <appender-ref ref="commsRollingFile" />
         </Logger>

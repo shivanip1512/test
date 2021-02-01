@@ -22,7 +22,7 @@ public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T e
     protected YukonJmsTemplate jmsTemplate;
     protected ExecutorService readRequestThreadPool;
     protected String configurationName;
-    protected boolean internalMessage = false;
+    protected boolean isDebugLog = false;
     
     /**
      * @param isInternalMessage : if true, specifies that messages are being sent internally between Yukon
@@ -35,7 +35,7 @@ public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T e
         this.configurationName = configurationName;
         this.configurationSource = configurationSource;
         this.jmsTemplate = jmsTemplate;
-        this.internalMessage = isInternalMessage;
+        this.isDebugLog = isInternalMessage;
         
         int queueSize = configurationSource.getInteger("REQUEST_REPLY_WORKER_QUEUE_SIZE", 50);
         
@@ -82,9 +82,9 @@ public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T e
      * Adds an entry in rfnLogger
      */
     private void log(String text) {
-        if (!internalMessage && commsLogger.isInfoEnabled()) {
+        if (!isDebugLog && commsLogger.isInfoEnabled()) {
             commsLogger.info(text);
-        } else if (internalMessage && commsLogger.isDebugEnabled()) {
+        } else if (isDebugLog && commsLogger.isDebugEnabled()) {
             commsLogger.debug(text);
         }
     }
