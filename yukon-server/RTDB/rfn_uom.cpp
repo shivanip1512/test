@@ -36,7 +36,7 @@ UomModifier1::UomModifier1(unsigned short uomm1) :
 
 UomModifier1 UomModifier1::of(unsigned char hi, unsigned char lo)
 {
-    return static_cast<unsigned short>( hi << 8 | lo );
+    return static_cast<unsigned short>( (hi << 8) | lo );
 }
 
 bool UomModifier1::getExtensionBit() const
@@ -95,12 +95,17 @@ UomModifier2::UomModifier2(unsigned short uomm2) :
 
 UomModifier2 UomModifier2::of(unsigned char hi, unsigned char lo)
 {
-    return static_cast<unsigned short>( hi << 8 | lo );
+    return static_cast<unsigned short>( (hi << 8) | lo );
 }
 
 bool UomModifier2::getExtensionBit() const
 {
     return _mod2.extension_bit;
+}
+
+unsigned UomModifier2::getCoincidentOffset() const
+{
+    return _mod2.coincident_value;
 }
 
 double UomModifier2::getScalingFactor() const
@@ -153,7 +158,8 @@ std::set<std::string> UomModifier2::getModifierStrings() const
             "tenths",
             "micro",
             "milli" });
-    addValue<7>(modifierStrings,
+    //  Do not include the Coincident modifiers.  They are accessed with getCoincidentOffset().
+    /*addValue<7>(modifierStrings,
         _mod2.coincident_value, {
             "Coincident Value 1",
             "Coincident Value 2",
@@ -161,7 +167,7 @@ std::set<std::string> UomModifier2::getModifierStrings() const
             "Coincident Value 4",
             "Coincident Value 5",
             "Coincident Value 6",
-            "Coincident Value 7" });
+            "Coincident Value 7" });*/
     addValue<1>(modifierStrings,
         _mod2.cumulative, {
             "Cumulative" });
