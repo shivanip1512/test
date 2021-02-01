@@ -101,6 +101,16 @@ public class PortValidatorHelper {
             YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", ipAddress);
         }
     }
+    
+    /**
+     * Validate Rfn Address field
+     */
+    public static void validateRfnAddressField(Errors errors, String path, String fieldValue, String fieldName, boolean isRequired, int maxLength) {
+        YukonValidationUtils.checkIsBlank(errors, path, fieldValue, fieldName, isRequired);
+        if (!errors.hasFieldErrors(path)) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, path, fieldValue, maxLength);
+        }
+    }
 
     /**
      * Validate Carrier Detect Wait

@@ -37,8 +37,9 @@
             <c:otherwise>
                 <c:choose>
                     <c:when test="${detail.displayFailurePopup}">
-                        <div class="dn js-failure-${deviceId}" data-dialog data-cancel-omit="true" data-title="<cti:msg2 key=".failure"/>"
-                            data-width="600" data-url="<cti:url value="/deviceConfiguration/summary/${detail.errorCode}/displayError"/>"></div>
+                        <div class="dn js-failure-${deviceId}" data-dialog data-destroy-dialog-on-close data-cancel-omit="true" 
+                            data-title="<cti:msg2 key=".failure"/>" data-width="600" 
+                            data-url="<cti:url value="/deviceConfiguration/summary/${detail.errorCode}/displayError"/>"></div>
                         <a href="javascript:void(0);" data-popup=".js-failure-${deviceId}"><i:inline key=".statusType.${detail.status}"/></a>
                     </c:when>
                     <c:otherwise>
@@ -60,7 +61,7 @@
             <c:otherwise>
                 <c:choose>
                     <c:when test="${detail.displayOutOfSyncPopup}">
-                        <div class="dn js-outofsync-${deviceId}" data-dialog data-cancel-omit="true"
+                        <div class="dn js-outofsync-${deviceId}" data-dialog data-destroy-dialog-on-close data-cancel-omit="true" 
                             data-title="<cti:msg2 key=".outOfSync"/>" data-width="600"
                             data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/outOfSync"/>"></div>
                         <a href="javascript:void(0);" data-popup=".js-outofsync-${deviceId}"><i:inline key="${detail.state.formatKey}"/></a>
@@ -77,8 +78,8 @@
     <td>
         <cm:dropdown icon="icon-cog">
             <cti:msg2 var="historyTitle" key=".viewHistory.title" argument="${detail.device.name}"/>
-            <div class="dn js-view-history-${deviceId}" data-dialog data-cancel-omit="true" data-title="${historyTitle}" data-width="600"
-                data-height="400" data-load-event="yukon:config:viewHistory"
+            <div class="dn js-view-history-${deviceId}" data-dialog data-destroy-dialog-on-close data-cancel-omit="true" 
+                data-title="${historyTitle}" data-width="600" data-height="400" data-load-event="yukon:config:viewHistory"
                 data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/viewHistory"/>"></div>
             <cm:dropdownOption key=".viewHistory" data-popup=".js-view-history-${deviceId}" icon="icon-application-view-columns"/>
             <cti:checkRolesAndProperties value="SEND_READ_CONFIG">

@@ -35,6 +35,7 @@ public enum LibraryLicenseType {
     LGPL("LGPL", Attribution.REQUIRED),
     LGPL_2_0("LGPL 2.0", Attribution.REQUIRED),
     LGPL_2_1("LGPL 2.1", Attribution.REQUIRED),
+    LGPL_3_0("LGPL 3.0", Attribution.REQUIRED),
     MICROSOFT("Microsoft indemnification", Attribution.NONE),
     MIT("MIT", Attribution.REQUIRED),
     MIT_LIKE("MIT-like", Attribution.REQUIRED),
