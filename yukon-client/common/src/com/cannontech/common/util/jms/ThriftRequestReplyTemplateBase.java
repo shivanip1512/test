@@ -30,12 +30,12 @@ public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T e
      *        log.
      */
     public ThriftRequestReplyTemplateBase(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate, boolean isInternalMessage) {
+            YukonJmsTemplate jmsTemplate, boolean isDebugLog) {
         this.commsLogger = jmsTemplate.getCommsLogger();
         this.configurationName = configurationName;
         this.configurationSource = configurationSource;
         this.jmsTemplate = jmsTemplate;
-        this.isDebugLog = isInternalMessage;
+        this.isDebugLog = isDebugLog;
         
         int queueSize = configurationSource.getInteger("REQUEST_REPLY_WORKER_QUEUE_SIZE", 50);
         
