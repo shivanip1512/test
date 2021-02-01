@@ -123,7 +123,6 @@ import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReply;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRequest;
-import com.cannontech.loadcontrol.messages.LMEatonCloudCycleCommand;
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
 import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
 import com.cannontech.message.porter.message.DynamicPaoInfoRequest;
@@ -1264,23 +1263,12 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    public static final JmsApi<LMEatonCloudCycleCommand, ?, ?> LM_EATON_CLOUD_CYCLE_COMMAND = 
-            JmsApi.builder(LMEatonCloudCycleCommand.class)
-                  .name("Eaton Cloud Cycle Command")
-                  .description("Send an Eaton Cloud cycle command to Yukon")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("com.eaton.eas.yukon.loadmanagement.eatonCloudCycleCommand"))
-                  .requestMessage(LMEatonCloudCycleCommand.class)
-                  .sender(YUKON_LOAD_MANAGEMENT)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-    
     public static final JmsApi<LMEatonCloudScheduledCycleCommand, ?, ?> LM_EATON_CLOUD_SCHEDULED_CYCLE_COMMAND = 
             JmsApi.builder(LMEatonCloudScheduledCycleCommand.class)
                   .name("Eaton Cloud Scheduled Cycle Command")
                   .description("Send an Eaton Cloud cycle command to Yukon")
                   .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("com.eaton.eas.yukon.loadmanagement.eatonCloudScheduledCycleCommand"))
+                  .queue(new JmsQueue("yukon.notif.stream.dr.EatonCloudScheduledCyclingRequest"))
                   .requestMessage(LMEatonCloudScheduledCycleCommand.class)
                   .sender(YUKON_LOAD_MANAGEMENT)
                   .receiver(YUKON_SERVICE_MANAGER)
@@ -1291,7 +1279,7 @@ public final class JmsApiDirectory {
                   .name("Eaton Cloud Stop Command)")
                   .description("Send an Eaton Cloud Stop Command")
                   .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("com.eaton.eas.yukon.loadmanagement.eatonCloudStopCommand"))
+                  .queue(new JmsQueue("yukon.notif.stream.dr.EatonCloudStopRequest"))
                   .requestMessage(LMEatonCloudStopCommand.class)
                   .sender(YUKON_LOAD_MANAGEMENT)
                   .receiver(YUKON_SERVICE_MANAGER)
@@ -1341,7 +1329,6 @@ public final class JmsApiDirectory {
                 CLOUD_DATA_CONFIGURATIONS,
                 ECOBEE_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
-                LM_EATON_CLOUD_CYCLE_COMMAND,
                 LM_EATON_CLOUD_SCHEDULED_CYCLE_COMMAND,
                 LM_EATON_CLOUD_STOP_COMMAND,
                 LOCATION,

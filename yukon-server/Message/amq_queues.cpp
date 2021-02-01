@@ -50,8 +50,8 @@ const IM_EX_MSG OutboundQueue
     OutboundQueue::MeterDisconnectRestore
     {"yukon.notif.stream.dr.MeterDisconnectRestoreMessage"};
 const IM_EX_MSG OutboundQueue
-    OutboundQueue::EatonCloudCyclingRequest
-    {"yukon.notif.stream.dr.EatonCloudCyclingRequest"};
+    OutboundQueue::EatonCloudScheduledCyclingRequest
+    {"yukon.notif.stream.dr.EatonCloudScheduledCyclingRequest"};
 const IM_EX_MSG OutboundQueue
     OutboundQueue::EatonCloudStopRequest
     {"yukon.notif.stream.dr.EatonCloudStopRequest"};

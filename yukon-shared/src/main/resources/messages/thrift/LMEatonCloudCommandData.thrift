@@ -9,18 +9,6 @@ enum LMEatonCloudCycleType {
     SMART_CYCLE = 0x02,
 }
 
-struct LMEatonCloudCycleCommand {
-    1: required     i32                             _groupId;
-    2: required     i32                             _controlSeconds;
-    3: required     bool                            _isRampIn;
-    4: required     bool                            _isRampOut;
-    5: required     LMEatonCloudCycleType           _cyclingOption;
-    6: required     i32                             _dutyCyclePercentage;
-    7: required     i32                             _dutyCyclePeriod;
-    8: required     i32                             _criticality;
-    9: required     Types.Timestamp                 _currentDateTime;
-}
-
 struct LMEatonCloudScheduledCycleCommand {
     1: required     i32                             _groupId;
     2: required     Types.Timestamp                 _controlStartDateTime;
