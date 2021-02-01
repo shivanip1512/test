@@ -1,6 +1,7 @@
 package com.cannontech.common.validator;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.validation.Errors;
@@ -235,11 +236,13 @@ public class YukonApiValidationUtils extends ValidationUtils {
     public static void checkIfEndDateGreaterThenStartDate(String startField, Instant startDate, Instant endDate,
             boolean includeEqualTo, Errors errors) {
         if (YukonValidationUtilsCommon.checkIfEndDateGreaterThenStartDate(startDate, endDate, includeEqualTo)) {
-            errors.rejectValue(startField, ApiErrorDetails.START_DATE_BEFORE_END_DATE.getCodeString(), new Object[] { "" },
-                    "");
+            if (includeEqualTo) {
+                errors.rejectValue(startField, ApiErrorDetails.START_DATE_BEFORE_END_DATE.getCodeString(), new Object[] { "" },
+                        "");
+            }
+            errors.rejectValue(startField, ApiErrorDetails.START_DATE_BEFORE_END_DATE.getCodeString(),
+                    new Object[] { "or equal to" }, "");
         }
-        errors.rejectValue(startField, ApiErrorDetails.START_DATE_BEFORE_END_DATE.getCodeString(),
-                new Object[] { "or equal to" }, "");
     }
 
 }

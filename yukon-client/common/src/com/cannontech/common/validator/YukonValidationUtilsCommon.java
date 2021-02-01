@@ -126,16 +126,13 @@ public class YukonValidationUtilsCommon extends ValidationUtils {
 
     /**
      * Check if startDate <= endDate
-     * 
+     * Return true when check fails.
      * @param startDate      - Instant value of startDate
      * @param endDate        - Instant value of endDate
      * @param includeEqualTo - Can startDate = endDate
      */
     public static boolean checkIfEndDateGreaterThenStartDate(Instant startDate, Instant endDate,
             boolean includeEqualTo) {
-        if ((startDate.isEqual(endDate) && !includeEqualTo) || endDate.isBefore(startDate)) {
-            return (includeEqualTo) ? true : false;
-        }
-        return false;
+        return ((startDate.isEqual(endDate) && !includeEqualTo) || endDate.isBefore(startDate));
     }
 }

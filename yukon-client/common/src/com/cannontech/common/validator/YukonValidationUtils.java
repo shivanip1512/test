@@ -378,11 +378,14 @@ public class YukonValidationUtils extends ValidationUtils {
      */
     public static void checkIfEndDateGreaterThenStartDate(String startField, Instant startDate, Instant endDate,
             boolean includeEqualTo, Errors errors) {
-        String errorMessage = "yukon.web.error.date.startDateBeforeEndDate";
+
         if (YukonValidationUtilsCommon.checkIfEndDateGreaterThenStartDate(startDate, endDate, includeEqualTo)) {
-            errorMessage = "yukon.web.error.date.startDateBeforeOrEqualEndDate";
+            String errorMessage = "yukon.web.error.date.startDateBeforeEndDate";
+            if (includeEqualTo) {
+                errorMessage = "yukon.web.error.date.startDateBeforeOrEqualEndDate";
+            }
+            errors.rejectValue(startField, errorMessage, new Object[] { startDate, endDate }, "");
         }
-        errors.rejectValue(startField, errorMessage, new Object[] { startDate, endDate }, "");
     }
 }
 
