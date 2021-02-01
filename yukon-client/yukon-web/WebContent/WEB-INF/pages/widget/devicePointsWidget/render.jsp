@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -27,4 +28,8 @@
     <%@ include file="pointsTable.jsp" %>
 </div>
 
+<dt:pickerIncludes/>
+<tags:simplePopup id="manual-entry-popup" title=""/>
+
+<cti:includeScript link="/resources/js/pages/yukon.points.js"/>
 <cti:includeScript link="/resources/js/widgets/yukon.widget.devicePoints.js"/>
