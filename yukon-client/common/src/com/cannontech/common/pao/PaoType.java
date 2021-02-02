@@ -915,6 +915,13 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return paoClass == PaoClass.VIRTUAL;
     }
 
+    /**
+     * Return true if provided PAO type is VIRTUAL_SYSTEM or VIRTUAL_METER
+     **/
+    public boolean isVirtualDevice() {   
+        return this == PaoType.VIRTUAL_SYSTEM || this == PaoType.VIRTUAL_METER;
+    }
+
     public boolean isTwoWayRfnLcr() {
         return twoWayLcrTypes.contains(this) 
                 && isRfn();

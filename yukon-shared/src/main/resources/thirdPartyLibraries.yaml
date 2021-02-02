@@ -1085,46 +1085,46 @@ Java :
     jira : none
     notes : Discontinued in 2012, should no longer to be used for legal reasons
   
-  - filename : jackson-annotations-2.10.1.jar
+  - filename : jackson-annotations-2.12.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.10.1
+    version : 2.12.1
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.10.1"
-    md5 : 49683a3cf8e92c00c24262e8fac64ee5
-    sha1 : 54d72475c0d6819f2d0e9a09d25c3ed876a4972f
-    updated : 2018-06-22
-    jira : YUK-18346
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.12.1"
+    md5 : ac96cb6fdf09ba1e2c41f461047f1eb4
+    sha1 : aa079f822ddce5548018286d19ccb15c2fc202d7
+    updated : 2021-01-29
+    jira : YUK-23599
     notes : Jackson Annotations
   
-  - filename : jackson-core-2.10.1.jar
+  - filename : jackson-core-2.12.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.10.1
+    version : 2.12.1
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.10.1"
-    md5 : 5bc20efba282bb641e3b42de153e45bc
-    sha1 : 2c8b5e26ba40e5f91eb37a24075a2028b402c5f9
-    updated : 2019-03-25
-    jira : YUK-21106
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.12.1"
+    md5 : 6a65df7a5e62df2754726857b4ab0257
+    sha1 : 7c5493930e439be6fcec80a9afd6516b8e5e8760
+    updated : 2021-01-29
+    jira : YUK-23599
     notes : Jackson Core
   
-  - filename : jackson-databind-2.10.1.jar
+  - filename : jackson-databind-2.12.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.10.1
+    version : 2.12.1
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.10.1"
-    md5 : 5be002ede268ddc0a2ea1b9bc5baceb8
-    sha1 : 18eee15ffc662d27538d5b6ee84e4c92c0a9d03e
-    updated : 2019-12-22
-    jira : YUK-21106
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.12.1"
+    md5 : 1925b6e2feac7e63e164f57e6fb42c9d
+    sha1 : 8a97e00e429c42f74757b0a8cd1d39dddd41524f
+    updated : 2021-01-29
+    jira : YUK-23599
     notes : Jackson Databind
   
   - filename : jackson-dataformat-csv-2.9.6.jar
@@ -2317,18 +2317,18 @@ Java :
     jira : YUK-22559
     notes : 
   
-  - filename : quartz-2.3.0-SNAPSHOT.jar
+  - filename : quartz-2.3.2.jar
     yukon group : Scheduling
     project : Quartz
-    version : 2.3.0
-    project URL : "https://www.quartz-scheduler.org/"
+    version : 2.3.2
+    project URL : "http://www.quartz-scheduler.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.quartz-scheduler/quartz"
-    md5 : 11a382ed1dad917951c40c82d8ed92e1
-    sha1 : bba0794b3e979a04e39527a77950cef7d54d1677
+    maven URL : "https://mvnrepository.com/artifact/org.quartz-scheduler/quartz/2.3.2"
+    md5 : d7299dbaec0e0ed7af281b07cc40c8c1
+    sha1 : 18a6d6b5a40b77bd060b34cb9f2acadc4bae7c8a
     updated : 2020-07-23
-    jira : YUK-22484
+    jira : YUK-23598
     notes : 
   
   - filename : reactive-streams-1.0.3.jar

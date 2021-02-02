@@ -482,6 +482,7 @@
     <ClCompile Include="test_pt_base.cpp">
     </ClCompile>
     <ClCompile Include="test_pt_status.cpp" />
+    <ClCompile Include="test_rfn_uom.cpp" />
     <ClCompile Include="test_rte_ccu.cpp">
     </ClCompile>
     <ClCompile Include="test_slctdev.cpp">

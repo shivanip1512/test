@@ -182,7 +182,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
             LiteYukonPAObject pao = dbCache.getAllPaosMap().get(lmprogram.getLmProgramDeviceID());
             controlArea.getProgramAssignment()
                     .forEach(program -> {
-                        if (program.getProgramId() == lmprogram.getLmProgramDeviceID()) {
+                        if (program.getProgramId().equals(lmprogram.getLmProgramDeviceID())) {
                             program.setProgramName(pao.getPaoName());
                         }
                     });
