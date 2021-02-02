@@ -794,7 +794,7 @@
 		<row><td>PATH_TO_SERVER_BIN_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Yukon Base\Server\bin</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Tomcat</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT_XML_CONFIG</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;\conf</td><td/><td>2</td></row>
-		<row><td>PATH_TO_RF_NETWORK_DATA_SCRIPTS</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Yukon Base\Tools\RfNetworkData</td><td/><td>2</td></row>
+		<row><td>PATH_TO_RF_NETWORK_DATA_SCRIPTS</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Yukon Base\Tools</td><td/><td>2</td></row>
 		<row><td>PATH_TO_WEBSTARTJRE_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\WebStartJRE</td><td/><td>2</td></row>
 		<row><td>PATH_TO_WEB_DEP_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Yukon Web Deployment</td><td/><td>2</td></row>
 		<row><td>PATH_TO_WRAPPER_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Wrapper</td><td/><td>2</td></row>
