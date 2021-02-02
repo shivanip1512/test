@@ -22,7 +22,7 @@ del Query_NetworkStatus.csv
 
 echo =======================================  >> .\query_log.txt 
 echo Query  >> .\query_log.txt 
-bcp "select    n.nodeAddress	, rfn.SerialNumber    , n.nodeSN	, n.nodeHWRev	, n.nodeSWRev	, n.inNetwork	, n.inNetworkTS	, n.nodeProductNumber	, loc.Latitude	, loc.Longitude	, y.Type    from    yukon.dbo.YukonPAObject y    left join yukon.dbo.RfnAddress rfn on rfn.DeviceId = y.PAObjectID    left join yukon.dbo.PaoLocation loc on loc.PAObjectId = y.PAObjectID    left join ekadb.ekadb.SENSOR_SN sn on rfn.SerialNumber = sn.sensorSN    left join ekadb.ekadb.node n on n.nodeID = sn.nodeID    where    y.Type <> 'RFN Relay'    and y.Type <> 'RF Gateway'    and y.Type <> 'GWY-800'" queryout .\Query_MeterLocationsInYukon.csv -S%1 -U %2 -P %3 -c -t, >> .\query_log.txt 
+bcp "select    n.nodeAddress	, rfn.SerialNumber    , n.nodeSN	, n.nodeHWRev	, n.nodeSWRev	, n.inNetwork	, n.inNetworkTS	, n.nodeProductNumber	, loc.Latitude	, loc.Longitude	, y.Type    from    yukon.dbo.YukonPAObject y    left join yukon.dbo.RfnAddress rfn on rfn.DeviceId = y.PAObjectID    left join yukon.dbo.PaoLocation loc on loc.PAObjectId = y.PAObjectID    left join ekadb.ekadb.SENSOR_SN sn on rfn.SerialNumber = sn.sensorSN    left join ekadb.ekadb.node n on n.nodeID = sn.nodeID    where    y.Type <> 'RFN Relay'    and y.Type <> 'RF Gateway'    and y.Type <> 'GWY-800'    and y.Type <> 'GWY-801'" queryout .\Query_MeterLocationsInYukon.csv -S%1 -U %2 -P %3 -c -t, >> .\query_log.txt 
 copy /b /y Query_MeterLocationsInYukon.csv  MeterLocationsInYukon.csv  
 del Query_MeterLocationsInYukon.csv  
 

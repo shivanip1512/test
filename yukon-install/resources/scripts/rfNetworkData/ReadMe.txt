@@ -2,15 +2,15 @@
 *** Data is queried directly from the Yukon and Network Manager databases.
 *** These queries may be performance intensive, so consideration shall be taken regarding potential impact/slowness to running systems.
 *** Batch files can be run from command line (Windows).
-*** From command line, navigate to C:\Yukon\Tools\ 
+*** From command line, navigate to C:\Yukon\Tools\RfNetworkData\
 
 
 
-*** daysData.bat
+*** historicData.bat
 -    Output: Generates a collection of csv files covering the last 14 days of data.
              Requires a database user with read access for Network Manager.
--    Usage Syntax: daysData.bat <Server Name> <user_name> <password>
--    Example:      daysData.bat EAS0001111 username password
+-    Usage Syntax: historicData.bat <Server Name> <user_name> <password>
+-    Example:      historicData.bat EAS0001111 username password
 
 
 
