@@ -586,20 +586,21 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
 
             boost::optional<PaoMetricIds> paoMidnightMetrics = findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics );
 
-            bool is_mismatched = false;
-            const bool metric_mismatch = cfgMidnightMetrics != paoMidnightMetrics,
-                       cfg_is_filtered = ! cfgMidnightMetrics.empty();
+            const bool is_mismatched = [ &, this ]
+            {
+                const bool metric_mismatch = cfgMidnightMetrics != paoMidnightMetrics;
 
-            if ( const auto is_filtered = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered ) )
-            {
-                is_mismatched = ( *is_filtered )
-                    ? metric_mismatch || ! cfg_is_filtered
-                    : cfg_is_filtered;
-            }
-            else
-            {
-                is_mismatched = metric_mismatch;
-            }
+                if ( const auto is_filtered = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered ) )
+                {
+                    const bool cfg_is_filtered = ! cfgMidnightMetrics.empty();
+
+                    return ( *is_filtered )
+                        ? metric_mismatch || ! cfg_is_filtered
+                        : cfg_is_filtered;
+                }
+
+                return metric_mismatch;
+            }();
 
             if( is_mismatched || parse.isKeyValid("force") )
             {
@@ -629,20 +630,21 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
             const boost::optional<unsigned>     paoRecordingIntervalSeconds = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds );
             const boost::optional<unsigned>     paoReportingIntervalSeconds = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds );
 
-            bool is_mismatched = false;
-            const bool metric_mismatch = cfgIntervalMetrics != paoIntervalMetrics,
-                       cfg_is_filtered = ! cfgIntervalMetrics.empty();
+            const bool is_mismatched = [ &, this ]
+            {
+                const bool metric_mismatch = cfgIntervalMetrics != paoIntervalMetrics;
 
-            if ( const auto is_filtered = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered ) )
-            {
-                is_mismatched = ( *is_filtered )
-                    ? metric_mismatch || ! cfg_is_filtered
-                    : cfg_is_filtered;
-            }
-            else
-            {
-                is_mismatched = metric_mismatch;
-            }
+                if ( const auto is_filtered = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered ) )
+                {
+                    const bool cfg_is_filtered = ! cfgIntervalMetrics.empty();
+
+                    return ( *is_filtered )
+                        ? metric_mismatch || ! cfg_is_filtered
+                        : cfg_is_filtered;
+                }
+
+                return metric_mismatch;
+            }();
 
             if( is_mismatched ||
                 cfgRecordingIntervalSeconds != paoRecordingIntervalSeconds ||
