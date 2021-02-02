@@ -60,6 +60,7 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveResponse;
 import com.cannontech.broker.message.request.BrokerSystemMetricsRequest;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.data.collection.message.CollectionRequest;
 import com.cannontech.common.device.data.collection.message.RecalculationRequest;
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest;
@@ -267,6 +268,7 @@ public final class JmsApiDirectory {
                   .responseMessage(RfnExpressComUnicastDataReply.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnExpressComUnicastRequest,?,RfnExpressComUnicastReply> RFN_EXPRESSCOM_UNICAST = 
@@ -283,6 +285,7 @@ public final class JmsApiDirectory {
                   .responseMessage(RfnExpressComUnicastReply.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnExpressComUnicastRequest,RfnExpressComUnicastReply,RfnExpressComUnicastDataReply> RFN_EXPRESSCOM_UNICAST_BULK =
@@ -304,6 +307,7 @@ public final class JmsApiDirectory {
                   .responseMessage(RfnExpressComUnicastDataReply.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
                   
     public static final JmsApi<RfnExpressComBroadcastRequest,?,?> RFN_EXPRESSCOM_BROADCAST =
@@ -316,6 +320,7 @@ public final class JmsApiDirectory {
                   .requestMessage(RfnExpressComBroadcastRequest.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<DeviceDataStreamingConfigRequest,?,DeviceDataStreamingConfigResponse> DATA_STREAMING_CONFIG =
@@ -334,6 +339,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<DrAttributeDataJmsMessage,?,?> DATA_NOTIFICATION = 
@@ -372,6 +378,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
         
     public static final JmsApi<NetworkTreeUpdateTimeRequest,?,?> NETWORK_TREE_UPDATE_REQUEST =
@@ -386,6 +393,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<NetworkTreeUpdateTimeResponse,?,?> NETWORK_TREE_UPDATE_RESPONSE =
@@ -398,6 +406,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_SIMULATORS)
                   .receiver(YUKON_WEBSERVER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<GatewayCreateRequest,?,GatewayUpdateResponse> RF_GATEWAY_CREATE =
@@ -413,6 +422,7 @@ public final class JmsApiDirectory {
               .sender(YUKON_WEBSERVER)
               .receiver(NETWORK_MANAGER)
               .receiver(YUKON_SIMULATORS)
+              .logger(YukonLogManager.getRfnLogger())
               .build();
     
     public static final JmsApi<GatewayEditRequest,?,GatewayUpdateResponse> RF_GATEWAY_EDIT =
@@ -428,6 +438,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<GatewayDeleteRequest,?,GatewayUpdateResponse> RF_GATEWAY_DELETE =
@@ -443,6 +454,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<GatewayDeleteRequest,?,?> RF_GATEWAY_DELETE_FROM_NM =
@@ -456,6 +468,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_SIMULATORS)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<GatewayScheduleDeleteRequest,?,GatewayActionResponse> RF_GATEWAY_SCHEDULE_DELETE =
@@ -469,6 +482,7 @@ public final class JmsApiDirectory {
                   .responseMessage(GatewayActionResponse.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<GatewayCollectionRequest,?,GatewayActionResponse> RF_GATEWAY_COLLECTION =
@@ -482,6 +496,7 @@ public final class JmsApiDirectory {
                   .responseMessage(GatewayActionResponse.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<GatewayConnectRequest,?,GatewayActionResponse> RF_GATEWAY_CONNECT =
@@ -495,6 +510,7 @@ public final class JmsApiDirectory {
                   .responseMessage(GatewayActionResponse.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<GatewayScheduleRequest,?,GatewayActionResponse> RF_GATEWAY_SCHEDULE_REQUEST =
@@ -508,6 +524,7 @@ public final class JmsApiDirectory {
                   .responseMessage(GatewayActionResponse.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<GatewayConnectionTestRequest,?,GatewayConnectionTestResponse> RF_GATEWAY_CONNECTION_TEST =
@@ -521,6 +538,7 @@ public final class JmsApiDirectory {
                   .responseMessage(GatewayConnectionTestResponse.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnUpdateServerAvailableVersionRequest,?,RfnUpdateServerAvailableVersionResponse> RF_UPDATE_SERVER_AVAILABLE_VERSION =
@@ -536,6 +554,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnGatewayFirmwareUpdateRequest,?,RfnGatewayFirmwareUpdateResponse> RF_GATEWAY_FIRMWARE_UPGRADE =
@@ -552,6 +571,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnGatewayUpgradeRequest,RfnGatewayUpgradeRequestAck,RfnGatewayUpgradeResponse> RF_GATEWAY_CERTIFICATE_UPDATE =
@@ -570,6 +590,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .sender(YUKON_SIMULATORS)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<GatewayDataRequest,?,GatewayDataResponse> RF_GATEWAY_DATA =
@@ -586,6 +607,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WATCHDOG)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<Serializable,?,?> RF_GATEWAY_DATA_INTERNAL =
@@ -613,6 +635,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_SIMULATORS)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<GatewayArchiveRequest,?,?> RF_GATEWAY_ARCHIVE = 
@@ -625,6 +648,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_SIMULATORS)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnMeterDemandResetRequest,?,RfnMeterDemandResetReply> RFN_METER_DEMAND_RESET =
@@ -639,6 +663,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .sender(YUKON_EIM)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnMeterDisconnectRequest,RfnMeterDisconnectInitialReply,RfnMeterDisconnectConfirmationReply> RFN_METER_DISCONNECT_LEGACY =
@@ -656,6 +681,7 @@ public final class JmsApiDirectory {
                   .responseMessage(RfnMeterDisconnectConfirmationReply.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnMeterDisconnectRequest,RfnMeterDisconnectInitialReply,RfnMeterDisconnectConfirmationReply> RFN_METER_DISCONNECT =
@@ -673,6 +699,7 @@ public final class JmsApiDirectory {
                   .responseMessage(RfnMeterDisconnectConfirmationReply.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_PORTER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnMeterReadRequest,RfnMeterReadReply,RfnMeterReadDataReply> RFN_METER_READ_LEGACY =
@@ -693,6 +720,7 @@ public final class JmsApiDirectory {
                   .responseMessage(RfnMeterReadDataReply.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnMeterReadRequest,RfnMeterReadReply,RfnMeterReadDataReply> RFN_METER_READ =
@@ -713,6 +741,7 @@ public final class JmsApiDirectory {
                   .responseMessage(RfnMeterReadDataReply.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_PORTER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnMeterReadingArchiveRequest,?,RfnMeterReadingArchiveResponse> RFN_METER_READ_ARCHIVE = 
@@ -727,6 +756,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnLcrReadingArchiveRequest,?,RfnLcrReadingArchiveResponse> RFN_LCR_READ_ARCHIVE = 
@@ -742,6 +772,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .sender(YUKON_SIMULATORS)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnLcrArchiveRequest,?,RfnLcrArchiveResponse> RFN_LCR_ARCHIVE =
@@ -756,6 +787,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
         
     public static final JmsApi<RfnAlarmArchiveRequest,?,RfnAlarmArchiveResponse> RF_ALARM_ARCHIVE =
@@ -770,6 +802,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnEventArchiveRequest,?,RfnEventArchiveResponse> RF_EVENT_ARCHIVE =
@@ -784,6 +817,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<LocationResponse,?,LocationResponseAck> LOCATION = 
@@ -798,6 +832,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<CollectionRequest,?,?> DATA_COLLECTION =
@@ -915,6 +950,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<SmartNotificationEvent,?,?> SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT =
@@ -1017,6 +1053,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnMetadataMultiRequest,?,RfnMetadataMultiResponse> RF_METADATA_MULTI =
@@ -1031,6 +1068,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnDeviceDataRequest,?,RfnDeviceDataResponse> DYNAMIC_RFN_DEVICE_DATA_COLLECTION =
@@ -1071,6 +1109,7 @@ public final class JmsApiDirectory {
             .responseMessage(AlarmArchiveResponse.class)
             .sender(NETWORK_MANAGER)
             .receiver(YUKON_SERVICE_MANAGER)
+            .logger(YukonLogManager.getRfnLogger())
             .build();
     
     public static final JmsApi<Serializable,?,?> RFN_DEVICE_CREATION_ALERT =
@@ -1097,6 +1136,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<RfnStatusArchiveRequest,?,RfnStatusArchiveResponse> RFN_STATUS_ARCHIVE =
@@ -1111,6 +1151,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     
     public static final JmsApi<MeterProgramStatusArchiveRequest,?,?> METER_PROGRAM_STATUS_ARCHIVE =
@@ -1147,6 +1188,7 @@ public final class JmsApiDirectory {
                   .responseMessage(RfnNodeWiFiCommArchiveResponse.class)
                   .sender(NETWORK_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
 
     public static final JmsApi<DrProgramStatusJmsMessage,?,?> PROGRAM_STATUS_NOTIFICATION = 
@@ -1195,6 +1237,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
 
     public static final JmsApi<DynamicPaoInfoRequest,?,DynamicPaoInfoResponse> PORTER_DYNAMIC_PAOINFO =
@@ -1298,6 +1341,7 @@ public final class JmsApiDirectory {
                   .responseMessage(RfnSupportBundleResponse.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!

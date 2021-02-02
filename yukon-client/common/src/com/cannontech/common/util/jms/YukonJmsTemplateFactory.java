@@ -25,6 +25,7 @@ public class YukonJmsTemplateFactory {
         jmsTemplate.setDefaultDestinationName(jmsApi.getQueueName());
         jmsTemplate.setPubSubDomain(jmsApi.isTopic());
         jmsTemplate.setTimeToLive(jmsApi.getTimeToLive().getMillis());
+        jmsTemplate.setCommsLogger(jmsApi.getCommsLogger());
         return jmsTemplate;
     }
 
@@ -57,6 +58,7 @@ public class YukonJmsTemplateFactory {
         jmsTemplate.setDefaultDestinationName(jmsApi.getResponseQueueName());
         jmsTemplate.setPubSubDomain(jmsApi.isTopic());
         jmsTemplate.setTimeToLive(jmsApi.getTimeToLive().getMillis());
+        jmsTemplate.setCommsLogger(jmsApi.getCommsLogger());
         return jmsTemplate;
     }
 
