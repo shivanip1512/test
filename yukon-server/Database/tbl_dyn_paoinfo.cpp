@@ -351,6 +351,8 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
         (Dpi::Key_RFN_MeterProgrammingConfigID,         "rfn meter programming configuration id")
 
         (Dpi::Key_RFN_MetrologyLibraryEnabled,          "rfn metrology library enabled")
+
+        (Dpi::Key_RFN_ChannelConfigFiltered,          "rfn channel config filtered")
         ;
 
 typedef CtiTableDynamicPaoInfoIndexed DpiIndexed;

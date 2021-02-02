@@ -44,8 +44,7 @@ protected:
 /**
  * Channel Selection Configuration Command
  */
-class IM_EX_DEVDB RfnChannelSelectionCommand : public RfnChannelConfigurationCommand,
-       InvokerFor<RfnChannelSelectionCommand>
+class IM_EX_DEVDB RfnChannelSelectionCommand : public RfnChannelConfigurationCommand
 {
     enum
     {
@@ -88,7 +87,8 @@ public:
 /**
  * Set Channel Selection Configuration Command
  */
-class IM_EX_DEVDB RfnSetChannelSelectionCommand : public RfnChannelSelectionCommand
+class IM_EX_DEVDB RfnSetChannelSelectionCommand : public RfnChannelSelectionCommand,
+       InvokerFor<RfnSetChannelSelectionCommand>
 {
     Bytes _setChannelSelectionTlvPayload;
 
@@ -105,7 +105,8 @@ public:
 /**
  * Get Channel Selection Configuration Command
  */
-class IM_EX_DEVDB RfnGetChannelSelectionCommand : public RfnChannelSelectionCommand
+class IM_EX_DEVDB RfnGetChannelSelectionCommand : public RfnChannelSelectionCommand,
+       InvokerFor<RfnGetChannelSelectionCommand>
 {
     unsigned char getOperation() const;
 
@@ -115,7 +116,8 @@ class IM_EX_DEVDB RfnGetChannelSelectionCommand : public RfnChannelSelectionComm
 /**
  * Get Full Channel Registration Description Command
  */
-class IM_EX_DEVDB RfnGetChannelSelectionFullDescriptionCommand : public RfnChannelSelectionCommand
+class IM_EX_DEVDB RfnGetChannelSelectionFullDescriptionCommand : public RfnChannelSelectionCommand,
+       InvokerFor<RfnGetChannelSelectionFullDescriptionCommand>
 {
     unsigned char getOperation() const;
 

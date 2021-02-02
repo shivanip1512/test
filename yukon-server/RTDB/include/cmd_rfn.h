@@ -43,7 +43,9 @@ class RfnSetOvUvSetOverVoltageThresholdCommand;
 class RfnSetOvUvSetUnderVoltageThresholdCommand;
 class RfnRemoteDisconnectGetConfigurationCommand;
 class RfnRemoteDisconnectSetConfigurationCommand;
-class RfnChannelSelectionCommand;
+class RfnSetChannelSelectionCommand;
+class RfnGetChannelSelectionCommand;
+class RfnGetChannelSelectionFullDescriptionCommand;
 namespace RfnChannelIntervalRecording {
 class GetConfigurationCommand;
 class GetActiveConfigurationCommand;
@@ -108,7 +110,9 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnSetOvUvSetUnderVoltageThresholdCommand &)           {}
         virtual void handleCommandResult(const RfnRemoteDisconnectGetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnRemoteDisconnectSetConfigurationCommand &)          {}
-        virtual void handleCommandResult(const RfnChannelSelectionCommand &)                          {}
+        virtual void handleCommandResult(const RfnSetChannelSelectionCommand &)                       {}
+        virtual void handleCommandResult(const RfnGetChannelSelectionCommand &)                       {}
+        virtual void handleCommandResult(const RfnGetChannelSelectionFullDescriptionCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::SetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetActiveConfigurationCommand &)  {}
