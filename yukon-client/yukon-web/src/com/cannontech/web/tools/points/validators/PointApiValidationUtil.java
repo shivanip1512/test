@@ -57,9 +57,8 @@ public class PointApiValidationUtil extends ValidationUtils {
     public void checkIfPointTypeChanged(Errors errors, LitePointModel litePointModel, boolean isCreationOperation) {
         if (!pointValidationUtilCommon.checkIfPointTypeChanged(litePointModel, isCreationOperation)) {
             PointBase pointBase = pointDao.get(litePointModel.getPointId());
-            errors.rejectValue("pointType", ApiErrorDetails.POINT_TYPE_MISMATCH.getCodeString(),
-                    new Object[] { litePointModel.getPointType(), pointBase.getPoint().getPointType(),
-                            litePointModel.getPointId() },
+            errors.rejectValue("pointType", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
+                    new Object[] { litePointModel.getPointType(), pointBase.getPoint().getPointType() },
                     "");
         }
     }
@@ -70,7 +69,7 @@ public class PointApiValidationUtil extends ValidationUtils {
     public void checkIfPaoIdChanged(Errors errors, LitePointModel litePointModel, boolean isCreationOperation) {
         if (!pointValidationUtilCommon.checkIfPaoIdMatch(litePointModel, isCreationOperation)) {
             PointBase pointBase = pointDao.get(litePointModel.getPointId());
-            errors.rejectValue("paoId", ApiErrorDetails.PAO_ID_MISMATCH.getCodeString(),
+            errors.rejectValue("paoId", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
                     new Object[] { litePointModel.getPaoId(), pointBase.getPoint().getPaoID() }, "");
         }
     }

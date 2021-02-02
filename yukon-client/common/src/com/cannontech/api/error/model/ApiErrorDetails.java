@@ -35,14 +35,8 @@ public enum ApiErrorDetails {
     IS_NOT_POSITIVE(ApiErrorCategory.VALIDATION_FAILED, 111, "Must be a positive number", "Must be a positive number."), // code : 101111
     PAST_DATE(ApiErrorCategory.VALIDATION_FAILED, 112, "Date must be in the past", "Date must be in the past."), // code : 101112
     
-    POINT_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 113, "Point type mismatch", "Point type mismatch."), // code : 101113
-    PAO_ID_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 114, "Pao id mismatch", "Pao id mismatch."), // code : 101114
-    PAO_TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 115, "Pao type mismatch", "Pao type mismatch."), // code : 101115
-    INVALID_ARCHIVE_TYPE(ApiErrorCategory.VALIDATION_FAILED, 116, "Archive type mismatch", " Archive type mismatch."), // code : 101116
-    INVALID_ARCHIVE_TIME_INTERVAL(ApiErrorCategory.VALIDATION_FAILED, 117, "Invalid archive time interval", " Invalid archive time interval."), // code : 101117
-    INVALID_UPDATE_STYLE(ApiErrorCategory.VALIDATION_FAILED, 118, "Invalid update style", " Invalid update style."), // code : 101118
-
-    INVALID_FIELD_LENGTH(ApiErrorCategory.VALIDATION_FAILED, 119, "Field length must be valid", "Field length must be valid."); // code : 101119
+    TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 113, "Type mismatch", "Type mismatch."), // code : 101113
+    INVALID_FIELD_LENGTH(ApiErrorCategory.VALIDATION_FAILED, 119, "Field length must be valid", "Field length must be valid."); // code : 101114
 
     private ApiErrorCategory category;
     private int code;

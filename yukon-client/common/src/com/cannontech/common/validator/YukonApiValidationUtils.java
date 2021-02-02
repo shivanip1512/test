@@ -175,7 +175,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
     public static void checkExactLength(String field, Errors errors, String fieldValue, String fieldName,
             int stringLength) {
         if (!YukonValidationUtilsCommon.checkExactLength(fieldValue, stringLength)) {
-            errors.rejectValue(field, ApiErrorDetails.INVALID_FIELD_LENGTH.getCodeString(), new Object[] { fieldName }, "");
+            errors.rejectValue(field, ApiErrorDetails.INVALID_FIELD_LENGTH.getCodeString(), new Object[] { fieldName , stringLength, fieldValue }, "");
         }
     }
 

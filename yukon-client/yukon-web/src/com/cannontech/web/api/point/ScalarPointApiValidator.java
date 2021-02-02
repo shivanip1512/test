@@ -156,7 +156,7 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
                     errors.rejectValue("archiveInterval", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Archive Interval" }, "");
                 }
             } else {
-                errors.rejectValue("archiveInterval", ApiErrorDetails.INVALID_ARCHIVE_TIME_INTERVAL.getCodeString(), new Object[] { "Archive Interval" }, "");
+                errors.rejectValue("archiveInterval", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Archive Interval" }, "");
             }
         }
     }
