@@ -3,24 +3,36 @@ package com.cannontech.web.api.point;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.YukonApiValidationUtils;
-import com.cannontech.common.validator.YukonValidationUtils;
-//import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.points.model.PointLimitModel;
 import com.cannontech.web.tools.points.model.PointUnit;
 import com.cannontech.web.tools.points.model.ScalarPointModel;
 
 public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends PointApiValidator<T> {
 
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    private final static String pointBaseKey = "yukon.web.modules.tools.bulk.pointImport.column.";
+    private MessageSourceAccessor accessor;
+
+    @PostConstruct
+    public void init() {
+        accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+    }
     public ScalarPointApiValidator() {
         super();
     }
@@ -39,7 +51,7 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
      */
 
     private void validatePointUnit(PointUnit pointUnit, Errors errors) {
-
+        String lowReasonabilityI18nText = accessor.getMessage(pointBaseKey + "lowReasonability");
         if (pointUnit != null) {
             if (pointUnit.getUomId() != null) {
                 List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
@@ -54,8 +66,8 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
 
             if (highReasonabilityLimit != null && lowReasonabilityLimit != null) {
                 if (highReasonabilityLimit < lowReasonabilityLimit) {
-                    errors.rejectValue("lowReasonability", ApiErrorDetails.INVALID_REASONABILITY.getCodeString(),
-                            new Object[] { "Low Reasonability", "High Reasonability" }, "");
+                    errors.rejectValue("lowReasonability", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                            new Object[] { lowReasonabilityI18nText }, "");
                 }
             }
 
@@ -86,7 +98,7 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
     private void validatePointLimit(ScalarPointModel<?> scalarPointModel, Errors errors) {
         List<PointLimitModel> pointLimits = scalarPointModel.getLimits();
         if (pointLimits.size() > 2) {
-            errors.rejectValue("limits", ApiErrorDetails.INVALID_SIZE.getCodeString());
+            errors.rejectValue("limits", ApiErrorDetails.VALUE_OUTSIDE_VALID_RANGE.getCodeString(), new Object[] { "Limits", 0, 2 }, "");
         } else {
             if (CollectionUtils.isNotEmpty(pointLimits)) {
                 int limitNumber = 0;
@@ -95,15 +107,15 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
                     PointLimitModel pointLimit = pointLimits.get(i);
                     if (pointLimit != null) {
                         if ((pointLimit.getHighLimit() != null && pointLimit.getLowLimit() != null) && pointLimit.getHighLimit() < pointLimit.getLowLimit()) {
-                            errors.rejectValue("lowLimit", ApiErrorDetails.INVALID_REASONABILITY.getCodeString(),
-                                    new Object[] { "Lower Limit", "Upper Limit" }, "");
+                            errors.rejectValue("lowLimit", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                    new Object[] { "Lower limit" }, "");
                         }
 
                         YukonApiValidationUtils.checkIfFieldRequired("limitNumber", errors, pointLimit.getLimitNumber(), "limitNumber");
                         if (!errors.hasFieldErrors("limitNumber")) {
 
                             if (!(pointLimit.getLimitNumber() == 1 || pointLimit.getLimitNumber() == 2)) {
-                                errors.rejectValue("limitNumber", ApiErrorDetails.INVALID_LIMIT_NUMBER.getCodeString());
+                                errors.rejectValue("limitNumber", ApiErrorDetails.INVALID_VALUE.getCodeString(),  new Object[] { "Limit Number" }, "");
                             }
 
                             if (!errors.hasFieldErrors("limitNumber")) {

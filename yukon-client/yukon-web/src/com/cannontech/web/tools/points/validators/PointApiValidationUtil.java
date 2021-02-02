@@ -46,7 +46,7 @@ public class PointApiValidationUtil extends ValidationUtils {
         }
         List<Object> arguments = pointValidationUtilCommon.isValidPointOffset(pointModel, isCopyOrCreate);
         if (CollectionUtils.isNotEmpty(arguments)) {
-            errors.rejectValue(fieldName, ApiErrorDetails.POINT_OFFSET_NOT_AVAILABLE.getCodeString(),
+            errors.rejectValue(fieldName, ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
                     arguments.toArray(), "Invalid point offset");
         }
     }

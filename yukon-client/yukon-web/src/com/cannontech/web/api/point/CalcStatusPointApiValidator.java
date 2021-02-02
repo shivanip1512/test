@@ -36,7 +36,7 @@ public class CalcStatusPointApiValidator extends StatusPointApiValidator<CalcSta
             if (calculationBase.getUpdateType() != null) {
 
                 if (calculationBase.getUpdateType() == CalcUpdateType.CONSTANT) {
-                    errors.rejectValue("calculationBase.updateType", ApiErrorDetails.INVALID_UPDATE_TYPE.getCodeString());
+                    errors.rejectValue("calculationBase.updateType", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Update type" }, "");
                 }
 
                 if (calculationBase.getUpdateType() == CalcUpdateType.ON_TIMER || calculationBase.getUpdateType() == CalcUpdateType.ON_TIMER_AND_CHANGE) {

@@ -1,19 +1,33 @@
 package com.cannontech.common.validator;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.device.port.PortSharing;
 import com.cannontech.common.device.port.PortTiming;
 import com.cannontech.common.device.port.SharedPortType;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.Range;
 import com.cannontech.database.db.port.CommPort;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.Validator;
 
 public class PortApiValidatorHelper {
 
+    @Autowired private static YukonUserContextMessageSourceResolver messageResolver;
+    private static MessageSourceAccessor accessor;
+    private final static String infoWidgetBaseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
+
+    @PostConstruct
+    public void init() {
+        accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+    }
     public static void validatePortTimingFields(Errors errors, PortTiming timing) {
         if (!errors.hasFieldErrors("timing.preTxWait")) {
             Range<Integer> range = Range.inclusive(0, 10000000);
@@ -50,7 +64,9 @@ public class PortApiValidatorHelper {
         if (sharing.getSharedSocketNumber() != null) {
             if ((sharing.getSharedPortType() == null || sharing.getSharedPortType() == SharedPortType.NONE)
                     && sharing.getSharedSocketNumber() != CommPort.DEFAULT_SHARED_SOCKET_NUMBER) {
-                errors.rejectValue("sharing.sharedSocketNumber", ApiErrorDetails.INVALID_SOCKET_NUMBER.getCodeString());
+                String socketI18n = accessor.getMessage(infoWidgetBaseKey + "socketNumber");
+                errors.rejectValue("sharing.sharedSocketNumber", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { socketI18n }, "");
             }
         }
     }
@@ -60,17 +76,19 @@ public class PortApiValidatorHelper {
      */
     public static void validateDuplicateSocket(Errors errors, String ipAddress, Integer portNumber, Integer existingPortId,
             String portIdString, PaoType portType) {
+        String portNumberI18n = accessor.getMessage(infoWidgetBaseKey + "portNumber");
+        
         Integer portId = portIdString != null ? Integer.valueOf(portIdString) : null;
 
         if (existingPortId != null && !(existingPortId.equals(portId))) {
             if (PaoType.TSERVER_SHARED == portType) {
-                errors.rejectValue("portNumber", ApiErrorDetails.COMBINATION_NOT_UNIQUE.getCodeString(),
-                        new Object[] { "IP Address", ipAddress, "Port Number", portNumber.toString() }, "");
-                errors.rejectValue("ipAddress", ApiErrorDetails.COMBINATION_NOT_UNIQUE.getCodeString(),
-                        new Object[] { "IP Address", ipAddress, "Port Number", portNumber.toString() }, "");
+                errors.rejectValue("portNumber", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                        new Object[] { "IP address and Port number" }, "");
+                errors.rejectValue("ipAddress", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                        new Object[] { "IP address and Port number" }, "");
             } else {
-                errors.rejectValue("portNumber", ApiErrorDetails.NOT_UNIQUE.getCodeString(),
-                        new Object[] { "Port Number", portNumber.toString() }, "");
+                errors.rejectValue("portNumber", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                        new Object[] { portNumberI18n }, "");
             }
         }
     }
@@ -127,7 +145,8 @@ public class PortApiValidatorHelper {
     public static void validateEncryptionKey(Errors errors, String keyInHex) {
         if (StringUtils.isNotEmpty(keyInHex)) {
             if (!Validator.isHex(keyInHex)) {
-                errors.rejectValue("keyInHex", ApiErrorDetails.INVALID_HEX_FORMAT.getCodeString());
+                String encryptionKeyI18n = accessor.getMessage(infoWidgetBaseKey + "encryptionKey");
+                errors.rejectValue("keyInHex", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { encryptionKeyI18n }, "");
             }
             if (!errors.hasFieldErrors("keyInHex")) {
                 if (keyInHex.length() != 32) {

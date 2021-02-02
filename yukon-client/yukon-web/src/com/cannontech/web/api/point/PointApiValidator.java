@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import com.cannontech.common.fdr.FdrInterfaceOption;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrOptionType;
 import com.cannontech.common.fdr.FdrTranslation;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
@@ -35,6 +38,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.notification.NotificationGroup;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.PointAlarming;
@@ -48,8 +53,16 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
     @Autowired protected StateGroupDao stateGroupDao;
     @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private PointDao pointDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     protected static final String baseKey = "yukon.web.api.error";
+    private final static String pointBaseKey = "yukon.web.modules.tools.point.";
     public static final int maxFdrInterfaceTranslations = 5;
+    private MessageSourceAccessor accessor;
+
+    @PostConstruct
+    public void init() {
+        accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+    }
 
     @SuppressWarnings("unchecked")
     public PointApiValidator() {
@@ -160,8 +173,9 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
                     if (!errors.hasFieldErrors("condition")) {
                         if (!alarmStates.contains(entry.getCondition())) {
+                            String conditionI18nText = accessor.getMessage(pointBaseKey + "alarm.condition");
                             errors.rejectValue("condition", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                                    new Object[] { "Condition" }, "");
+                                    new Object[] { conditionI18nText }, "");
                         }
                         if (!errors.hasFieldErrors("condition") && alarmStateEntries.contains(entry.getCondition())) {
                             errors.rejectValue("condition", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
@@ -174,8 +188,9 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                                                                               .filter(e -> e.getCategoryName().equals(entry.getCategory()))
                                                                               .findFirst();
                             if (catagory.isEmpty()) {
+                                String categoryI18nText = accessor.getMessage(pointBaseKey + "alarm.category");
                                 errors.rejectValue("category", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                                        new Object[] { "Category" }, "");
+                                        new Object[] { categoryI18nText }, "");
                             }
                         }
                         alarmStateEntries.add(entry.getCondition());
@@ -194,7 +209,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
         if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.NONE || target.getArchiveType() == PointArchiveType.ON_CHANGE || target.getArchiveType() == PointArchiveType.ON_UPDATE)) {
             if (target.getArchiveInterval() != null && target.getArchiveInterval() != 0) {
-                errors.rejectValue("archiveInterval", ApiErrorDetails.INVALID_ARCHIVE_INTERVAL.getCodeString());
+                errors.rejectValue("archiveInterval", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Archive interval" }, "");
             }
         }
     }
@@ -227,7 +242,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             }
             if (staleData.getUpdateStyle() != null) {
                 if (!(staleData.getUpdateStyle() == 1 || staleData.getUpdateStyle() == 0)) {
-                    errors.rejectValue( "staleData.updateStyle", ApiErrorDetails.INVALID_UPDATE_STYLE.getCodeString());
+                    errors.rejectValue( "staleData.updateStyle", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Update Style" }, "");
                 }
             }
         }
@@ -238,7 +253,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
      */
 
     private void validateFdrTranslation(List<FdrTranslation> fdrList, Errors errors) {
-
+        String translationI18nText = accessor.getMessage(pointBaseKey + "fdr.translation");
         if (CollectionUtils.isNotEmpty(fdrList)) {
             Set<FdrTranslation> usedTypes = new HashSet<>();
             for (int i = 0; i < fdrList.size(); i++) {
@@ -254,10 +269,9 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                     FdrInterfaceType fdrInterfaceType = fdrTranslation.getFdrInterfaceType();
                     FdrDirection fdrDirection = fdrTranslation.getDirection();
                     List<FdrDirection> supportedDirections = fdrInterfaceType.getSupportedDirectionsList();
-                    String supportedDirectionsInString  = supportedDirections.stream().map(direction -> direction.name()).collect(Collectors.joining(", "));
-
                     if (fdrDirection == null || !supportedDirections.contains(fdrDirection)) {
-                        errors.rejectValue("direction", ApiErrorDetails.INVALID_SUPPORT_DIRECTION.getCodeString(), new Object[] { supportedDirectionsInString, fdrInterfaceType }, "");
+                        String directionI18nText = accessor.getMessage(pointBaseKey + "fdr.direction");
+                        errors.rejectValue("direction", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { directionI18nText }, "");
                     }
 
                     Map<FdrInterfaceOption, String> parameterMap = new HashMap<>();
@@ -269,7 +283,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
 
                         if (parameterMap.size() > maxFdrInterfaceTranslations) {
-                            errors.reject(ApiErrorDetails.INVALID_TRANSLATION_PROPERTY_COUNT.getCodeString(), new Object[] { maxFdrInterfaceTranslations }, "");
+                            errors.reject(ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "FDR translation" }, "");
                         }
                         
                         if (usedTypes.contains(fdrTranslation)) {
@@ -294,20 +308,20 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                                     if (!(parameterMap.containsKey(fdrInterfaceOption))) {
                                         parameterMap.put(fdrInterfaceOption, fieldValue);
                                     } else {
-                                        errors.rejectValue("translation", ApiErrorDetails.INVALID_TRANSLATION_PROPERTY.getCodeString(),
-                                                new Object[] { fdrInterfaceOption.getOptionLabel(),"Duplict", fdrInterfaceType }, "");
+                                        errors.rejectValue("translation", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                                new Object[] { translationI18nText }, "");
                                     }
 
                                     FdrOptionType optionType = fdrInterfaceOption.getOptionType();
 
                                     if (!(optionType == FdrOptionType.TEXT && fieldValue.equals(CtiUtilities.STRING_NONE))
                                             && !(fdrInterfaceOption.isValid(fieldValue))) {
-                                        errors.rejectValue("translation", ApiErrorDetails.INVALID_TRANSLATION_PROPERTY_VALUE.getCodeString(),
-                                                new Object[] { fieldValue, fdrInterfaceOption.getOptionLabel(), fdrInterfaceType }, "");
+                                        errors.rejectValue("translation", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                                new Object[] { translationI18nText }, "");
                                     }
                                 } else {
-                                    errors.rejectValue("translation", ApiErrorDetails.INVALID_TRANSLATION_PROPERTY.getCodeString(),
-                                                       new Object[] { option, "is not valid ", fdrInterfaceType }, "");
+                                    errors.rejectValue("translation", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                                       new Object[] { translationI18nText }, "");
                                 }
 
                             }
@@ -319,8 +333,8 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                                                                        .collect(Collectors.joining(", "));
 
                     if (StringUtils.isNotBlank(missedFdrInterfaceOptions)) {
-                        errors.rejectValue("translation", ApiErrorDetails.INVALID_TRANSLATION_PROPERTY.getCodeString(),
-                                           new Object[] { missedFdrInterfaceOptions, "Missing", fdrInterfaceType }, "");
+                        errors.rejectValue("translation", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                           new Object[] { translationI18nText }, "");
                     }
 
                 }

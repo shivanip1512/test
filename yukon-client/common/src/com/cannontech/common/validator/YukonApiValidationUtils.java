@@ -87,7 +87,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
 
     public static boolean checkIsValidDouble(Errors errors, String field, Double fieldValue) {
         if (!YukonValidationUtilsCommon.checkIsValidDouble(fieldValue)) {
-            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { fieldValue }, "");
+            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { field }, "");
             return false;
         }
         return true;
@@ -175,7 +175,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
     public static void checkExactLength(String field, Errors errors, String fieldValue, String fieldName,
             int stringLength) {
         if (!YukonValidationUtilsCommon.checkExactLength(fieldValue, stringLength)) {
-            errors.rejectValue(field, ApiErrorDetails.INVALID_STRING_LENGTH.getCodeString(), new Object[] { fieldName }, "");
+            errors.rejectValue(field, ApiErrorDetails.INVALID_FIELD_LENGTH.getCodeString(), new Object[] { fieldName }, "");
         }
     }
 
