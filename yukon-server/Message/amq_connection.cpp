@@ -111,6 +111,7 @@ bool ActiveMQConnectionManager::MessagingTasks::empty() const
 {
     return newCallbacks    .empty()
         && outgoingMessages.empty()
+        && outgoingReplies .empty()
         && tempQueueReplies.empty()
         && sessionReplies  .empty()
         && incomingMessages.empty();
@@ -178,6 +179,7 @@ void ActiveMQConnectionManager::processTasks(MessagingTasks tasks)
 {
     updateCallbacks         (std::move(tasks.newCallbacks));
     sendOutgoingMessages    (std::move(tasks.outgoingMessages));
+    sendOutgoingReplies     (std::move(tasks.outgoingReplies));
     dispatchTempQueueReplies(std::move(tasks.tempQueueReplies));
     dispatchSessionReplies  (std::move(tasks.sessionReplies));
     dispatchIncomingMessages(std::move(tasks.incomingMessages));
@@ -349,9 +351,33 @@ void ActiveMQConnectionManager::sendOutgoingMessages(EnvelopeQueue messages)
 }
 
 
+void ActiveMQConnectionManager::sendOutgoingReplies(ReplyQueue replies)
+{
+    while( ! replies.empty() )
+    {
+        const auto& reply = replies.front();
+
+        auto replyProducer = ActiveMQ::createDestinationProducer(*_producerSession, reply.dest.get());
+
+        if( debugActivityInfo() )
+        {
+            CTILOG_DEBUG(dout, "Sending outgoing reply to destination " << replyProducer->getDestPhysicalName());
+        }
+
+        std::unique_ptr<cms::BytesMessage> bytesMessage { _producerSession->createBytesMessage() };
+
+        bytesMessage->writeBytes(reply.message);
+
+        replyProducer->send(bytesMessage.get());
+
+        replies.pop();
+    }
+}
+
+
 const cms::Destination* ActiveMQConnectionManager::makeDestinationForReturnAddress(ReturnAddress returnAddress)
 {
-    if( auto callback = boost::get<TimedCallback>(&returnAddress) )
+    if( auto callback = std::get_if<TimedCallback>(&returnAddress) )
     {
         auto tempConsumer = std::make_unique<TempQueueConsumerWithCallback>();
 
@@ -391,7 +417,7 @@ const cms::Destination* ActiveMQConnectionManager::makeDestinationForReturnAddre
 
         return destination;
     }
-    else if( auto callback = boost::get<SessionCallback>(&returnAddress) )
+    else if( auto callback = std::get_if<SessionCallback>(&returnAddress) )
     {
         if( auto existingDestination = mapFind(_sessionConsumerDestinations, *callback) )
         {
@@ -755,6 +781,21 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
 }
 
 
+void ActiveMQConnectionManager::enqueueOutgoingReply(
+    std::shared_ptr<cms::Destination> dest,
+    const SerializedMessage& message)
+{
+    if( debugActivityInfo() )
+    {
+        CTILOG_DEBUG(dout, "Enqueuing outbound reply" << std::endl << message);
+    }
+
+    emplaceTask(_newTasks.outgoingReplies, Reply { message, std::move(dest) });
+
+    kickstart();
+}
+
+
 ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Session &session, const std::string &queueName)
 {
     if( const auto existingProducer = mapFindRef(_producers, queueName) )
@@ -782,6 +823,12 @@ void ActiveMQConnectionManager::registerHandler(const ActiveMQ::Queues::InboundQ
 
 
 void ActiveMQConnectionManager::registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback)
+{
+    gActiveMQConnection->addNewCallback(queue, callback);
+}
+
+
+void ActiveMQConnectionManager::registerReplyHandler(const ActiveMQ::Queues::InboundQueue& queue, MessageCallbackWithReplies callback)
 {
     gActiveMQConnection->addNewCallback(queue, callback);
 }
@@ -825,6 +872,28 @@ void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQu
 
                 tempQueueProducer->send(bytesMessage.release());
         });
+
+    emplaceTask(_newTasks.newCallbacks, &queue, std::move(wrappedCallback));
+
+    kickstart();
+}
+
+
+void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue& queue, MessageCallbackWithReplies callback)
+{
+    auto wrappedCallback =
+        std::make_unique<SimpleMessageCallback>(
+            [this, callback, &queue](const MessageDescriptor& md) {
+                std::shared_ptr<cms::Destination> replyTo { 
+                    md.replyTo 
+                        ? md.replyTo->clone()
+                        : nullptr };
+                callback(
+                    md,
+                    [this, replyTo](SerializedMessage message) {
+                        enqueueOutgoingReply(replyTo, message);
+                    });
+            });
 
     emplaceTask(_newTasks.newCallbacks, &queue, std::move(wrappedCallback));
 

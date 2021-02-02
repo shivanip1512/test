@@ -18,10 +18,10 @@
 #include "rf_data_streaming_processor.h"
 
 #include <boost/thread.hpp>
-#include <boost/ptr_container/ptr_deque.hpp>
 
 #include <functional>
 #include <iostream>
+#include <mutex>
 #include <set>
 
 namespace Cti::Pil {
@@ -49,6 +49,11 @@ class IM_EX_CTIPIL PilServer : public CtiServer
 
    RfnRequestManager    _rfnRequestManager;
    unsigned long        _rfnRequestId;
+
+   using amq_cm = Messaging::ActiveMQConnectionManager;
+
+   std::map<long, amq_cm::ReplyCallback> _replyCallbacks;
+   std::mutex _replyCallbackMux;
 
    RfDataStreamingProcessor _rfDataStreamingProcessor;
 
@@ -82,6 +87,9 @@ protected:
    void handleInMessageResult(const INMESS &InMessage);
    void handleRfnDeviceResult(RfnDeviceResult result);
    void handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport report);
+
+   void handleRfnDisconnectRequest(const amq_cm::MessageDescriptor&, amq_cm::ReplyCallback);
+   void handleRfnMeterReadRequest (const amq_cm::MessageDescriptor&, amq_cm::ReplyCallback);
 
    void analyzeWhiteRabbits(const CtiRequestMsg& pReq, CtiCommandParser &parse, RequestQueue& execList, RequestQueue& groupRequests, std::list< CtiMessage* > & retList);
    int  analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RequestQueue& execList, std::list< CtiMessage* > & retList);

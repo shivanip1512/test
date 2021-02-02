@@ -38,9 +38,12 @@
 #include "PorterResponseMessage.h"
 #include "DeviceCreation.h"
 #include "RfnDataStreamingUpdate.h"
+#include "RfnMeterDisconnectMsg.h"
+#include "RfnMeterReadMsg.h"
 
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_MeterRead.h"
 
 #include "debug_timer.h"
 #include "millisecond_timer.h"
@@ -50,6 +53,7 @@
 #include "desolvers.h"
 #include "MessageCounter.h"
 #include "message_factory.h"
+#include "random_generator.h"
 
 #include <boost/regex.hpp>
 #include <boost/algorithm/cxx11/any_of.hpp>
@@ -58,7 +62,8 @@
 #include <boost/range/algorithm/count.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/algorithm_ext/insert.hpp>
-#include <boost/ptr_container/ptr_deque.hpp>
+
+#include <gsl/gsl_util>
 
 #include <iomanip>
 #include <iostream>
@@ -78,6 +83,7 @@ DLLEXPORT Cti::StreamLocalConnection<OUTMESS, INMESS> PilToPorter; //Pil handles
 DLLEXPORT CtiFIFOQueue< CtiMessage >                  PorterSystemMessageQueue;
 
 using Cti::Timing::Chrono;
+using amq_cm = Cti::Messaging::ActiveMQConnectionManager;
 
 namespace Cti::Pil {
 
@@ -89,6 +95,8 @@ static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice
 static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
 
 namespace { // anonymous namespace
+
+RandomGenerator<long> PilUserMessageIdGenerator;
 
 /**
  * checks if a connection is non-viable
@@ -146,6 +154,8 @@ int PilServer::execute()
 
     if(!bServerClosing)
     {
+        using in_q = Messaging::ActiveMQ::Queues::InboundQueue;
+
         _mainThread = boost::thread(&PilServer::mainThread, this);
         _connThread = boost::thread(&PilServer::connectionThread, this);
 
@@ -158,6 +168,17 @@ int PilServer::execute()
         Messaging::Rfn::gE2eMessenger->start();
         _rfnRequestManager.start();
         _rfDataStreamingProcessor.start();
+
+        amq_cm::registerReplyHandler(
+            in_q::RfnMeterDisconnectRequest,
+            [this](const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback) {
+                return handleRfnDisconnectRequest(md, callback);
+            });
+        amq_cm::registerReplyHandler(
+            in_q::RfnMeterReadRequest,
+            [this](const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback) {
+                return handleRfnMeterReadRequest(md, callback);
+            });
 
         _periodicActionThread.start();
     }
@@ -736,11 +757,12 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
 }
 
 
-struct RfnDeviceResultProcessor : Devices::DeviceHandler
+struct RfnDeviceResultProcessor : Devices::DeviceHandler, Devices::Commands::RfnCommand::ResultHandler
 {
     CtiDeviceBase::CtiMessageList &vgList;
     CtiDeviceBase::CtiMessageList &retList;
     const RfnDeviceResult result;
+    std::map<long, amq_cm::SerializedMessage> serviceReplies;
 
     RfnDeviceResultProcessor(RfnDeviceResult result_, CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_) :
         result(std::move(result_)),
@@ -749,11 +771,24 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
     {
     }
 
-    YukonError_t execute(CtiDeviceBase &dev)
+    YukonError_t execute(CtiDeviceBase &dev) override
     {
         CTILOG_ERROR(dout, "RfnDeviceResultProcessor called on non-RFN device: "<< dev.getName() <<" / "<< dev.getID());
 
         return ClientErrors::NoMethod;
+    }
+
+    void handleCommandResult(const Devices::Commands::RfnMeterReadCommand& command) override
+    {
+        if( auto resultMsg = command.getResponseMessage() )
+        {
+            //  The command doesn't have this internally, so assign it out at this level
+            resultMsg->data.rfnIdentifier = result.request.parameters.rfnIdentifier;
+
+            serviceReplies.emplace(
+                command.getUserMessageId(),
+                Messaging::Serialization::serialize(*resultMsg));
+        }
     }
 
     YukonError_t execute(Devices::RfnDevice &dev)
@@ -856,6 +891,8 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
         {
             dev.extractCommandResult(*result.request.command);
         }
+        //  Invoke our command-specific handler, if any
+        result.request.command->invokeResultHandler(*this);
 
         return ClientErrors::None;
     }
@@ -872,6 +909,10 @@ void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
 
     const auto priority         = result.request.parameters.priority;
     const auto connectionHandle = result.request.parameters.connectionHandle;
+
+    auto at_exit = gsl::finally([=, &vgList, &retList] {
+        sendResults(vgList, retList, priority, connectionHandle);
+    });
 
     if( ! DeviceRecord )
     {
@@ -896,27 +937,51 @@ void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
         idnf_msg->setUserMessageId (result.request.parameters.userMessageId);
 
         retList.push_back(idnf_msg.release());
+
+        return;
     }
-    else
+
+    if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
     {
-        if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
-        {
-            CTILOG_DEBUG(dout, "Pilserver resultThread received an RfnDeviceResult for "<< DeviceRecord->getName() <<" at priority "<< result.request.parameters.priority);
-        }
-
-        try
-        {
-            RfnDeviceResultProcessor rp(std::move(result), vgList, retList);
-
-            DeviceRecord->invokeDeviceHandler(rp);
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Process Result FAILED "<< DeviceRecord->getName());
-        }
+        CTILOG_DEBUG(dout, "Pilserver resultThread received an RfnDeviceResult for "<< DeviceRecord->getName() <<" at priority "<< result.request.parameters.priority);
     }
 
-    sendResults(vgList, retList, priority, connectionHandle);
+    try
+    {
+        RfnDeviceResultProcessor rp(std::move(result), vgList, retList);
+
+        DeviceRecord->invokeDeviceHandler(rp);
+
+        //  Was this an internal request?
+        if( ! connectionHandle )
+        {
+            const auto lg = std::lock_guard { _replyCallbackMux };
+
+            for( const auto& [userMessageId, serializedMessage] : rp.serviceReplies )
+            {
+                auto itr = _replyCallbacks.find(userMessageId);
+
+                if( itr != _replyCallbacks.end() )
+                {
+                    (itr->second)(serializedMessage);
+
+                    _replyCallbacks.erase(itr);
+                }
+                else
+                {
+                    CTILOG_WARN(dout, "Message generate service response, but no callback was found" << FormattedList::of(
+                        "Device ID", result.request.parameters.deviceId,
+                        "RFN address", result.request.parameters.rfnIdentifier,
+                        "User message ID", result.request.parameters.userMessageId,
+                        "Command", result.request.command->getCommandName()));
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Process Result FAILED "<< DeviceRecord->getName());
+    }
 }
 
 
@@ -1032,6 +1097,97 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
 
         invokeCommand(*rfnDevice, *report.command);
     }
+}
+
+void PilServer::handleRfnDisconnectRequest(const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback)
+{
+/*
+    using namespace Messaging::Rfn;
+    using Messaging::Serialization::MessageSerializer;
+
+    auto req = MessageSerializer<RfnMeterDisconnectRequestMsg>::deserialize(md.msg);
+
+    if( ! req )
+    {
+        return;
+    }
+
+    RfnMeterDisconnectInitialReplyMsg rsp1;
+
+    if( ! DeviceManager.getDeviceByRfnIdentifier(req->rfnIdentifier) )
+    {
+        rsp1.replyType = RfnMeterDisconnectInitialReplyType::NO_NODE;
+    }
+    else
+    {
+        Devices::Commands::RfnMeterReadCommand
+
+        //_rfnRequestManager.submitRequests();
+        auto command = [callback]() {
+            RfnMeterDisconnectConfirmationReplyMsg rsp2;
+
+            rsp2.replyType = RfnMeterDisconnectConfirmationReplyType::FAILURE;
+            rsp2.state = RfnMeterDisconnectState::UNKNOWN;
+
+            auto serialized = Messaging::Serialization::serialize(rsp2);
+            callback(serialized);
+        };
+    }
+
+    auto serializedRsp1 = Messaging::Serialization::serialize(rsp1);
+
+    if( serializedRsp1.empty() )
+    {
+        return;
+    }
+
+    callback(std::move(serializedRsp1));
+*/
+}
+
+void PilServer::handleRfnMeterReadRequest(const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback)
+{
+    using namespace Messaging::Rfn;
+    using Messaging::Serialization::MessageSerializer;
+
+    auto req = MessageSerializer<RfnMeterReadRequestMsg>::deserialize(md.msg);
+
+    if( ! req )
+    {
+        return;
+    }
+
+    RfnMeterReadReplyMsg rsp1 {};
+
+    auto dev = DeviceManager.getDeviceByRfnIdentifier(req->rfnIdentifier);
+
+    if( ! dev )
+    {
+        rsp1.replyType = RfnMeterReadingReplyType::NO_NODE;
+    }
+    else
+    {
+        auto verifyRequest = std::make_unique<CtiRequestMsg>(dev->getID(), "getvalue meter_read");
+
+        verifyRequest->setUserMessageId(PilUserMessageIdGenerator());
+        //verifyRequest->setConnectionHandle(connectionHandle);  //  Leave the connectionHandle null as our indication this is internal
+
+        {
+            const auto lg = std::lock_guard { _replyCallbackMux };
+            _replyCallbacks[verifyRequest->UserMessageId()] = callback;
+        }
+
+        MainQueue_.putQueue(verifyRequest.release());
+    }
+
+    auto serializedRsp1 = Messaging::Serialization::serialize(rsp1);
+
+    if( serializedRsp1.empty() )
+    {
+        return;
+    }
+
+    callback(std::move(serializedRsp1));
 }
 
 void PilServer::submitOutMessages(CtiDeviceBase::OutMessageList& outList)
