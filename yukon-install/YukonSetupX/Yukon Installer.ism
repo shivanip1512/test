@@ -130,6 +130,7 @@
 		<row><td>Shortcut Holder</td><td>{F16F4E5C-A04A-4772-8309-98AEE3EF0456}</td><td>TARGETDIR</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tomcat</td><td>{0340C09C-1CA8-4C44-BA53-53138D1F8DD1}</td><td>WEB</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tomcat XML Config</td><td>{6F55A1F8-D6A1-46D4-9B10-F0CE4ABD4633}</td><td>CONF</td><td>16</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Tools</td><td>{5CA33C8A-1757-4367-96AF-4E90A6E1AFBF}</td><td>TOOLS</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Watchdog</td><td>{A11E02B2-037D-43A2-A5FE-EA6AE98E171E}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Web Deployment</td><td>{4DEA3DA8-40AC-43FF-90FF-EB6B8649160F}</td><td>WEBAPPS</td><td>0</td><td/><td/><td>529</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
@@ -376,6 +377,7 @@
 		<row><td>StartMenuFolder</td><td/><td>Start Menu</td><td/><td>3</td><td/></row>
 		<row><td>StartupFolder</td><td/><td>Startup</td><td/><td>3</td><td/></row>
 		<row><td>TARGETDIR</td><td/><td>Application Target Folder</td><td/><td>0</td><td/></row>
+		<row><td>TOOLS</td><td>TARGETDIR</td><td>Tools</td><td/><td>0</td><td/></row>
 		<row><td>USERPROFILE</td><td>TARGETDIR</td><td>.:USERPR~1|UserProfile</td><td/><td>0</td><td/></row>
 		<row><td>WEB</td><td>SERVER</td><td>web</td><td/><td>0</td><td/></row>
 		<row><td>WEBAPPS</td><td>WEB</td><td>webapps</td><td/><td>0</td><td/></row>
@@ -408,6 +410,7 @@
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##IDS_FEATURE_DISPLAY_NAME18##</td><td>##ID_STRING10##</td><td>25</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Calc Logic</td></row>
 		<row><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td><td>{37AA5718-AAED-4365-BC7A-BF934E7C0DDE}</td><td>##IDS_FEATURE_DISPLAY_NAME25##</td><td>##ID_STRING24##</td><td>19</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Prophecy IVR Examples</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td/><td>##IDS_FEATURE_DISPLAY_NAME4##</td><td>##ID_STRING2##</td><td>9</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Server</td></row>
+		<row><td>{4A41C0E2-AF2C-4A87-B62C-9C6F3E3AAB6C}</td><td/><td>##ID_STRING91##</td><td>##ID_STRING92##</td><td>27</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Tools</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##IDS_FEATURE_DISPLAY_NAME15##</td><td>##ID_STRING7##</td><td>19</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>MAC Scheduler</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##IDS_FEATURE_DISPLAY_NAME20##</td><td>##ID_STRING12##</td><td>35</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Web Server</td></row>
 		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td/><td>##ID_STRING3##</td><td>##ID_STRING1##</td><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Runtime (Java)</td></row>
@@ -437,6 +440,7 @@
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Master Config Example</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Server Base</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Shortcut Holder</td></row>
+		<row><td>{4A41C0E2-AF2C-4A87-B62C-9C6F3E3AAB6C}</td><td>Tools</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>MACS</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Client Base</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Log Config Files</td></row>
@@ -535,6 +539,7 @@
 		<row><td>Shortcut Holder</td><td/><td/><td>_1E90F88F_F141_41CA_A5F1_288EDD750C3E_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Tomcat</td><td/><td/><td>_DD4EA8E8_B253_4179_9C64_7142B2CF7172_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Tomcat XML Config</td><td/><td/><td>_B72B45A4_7E51_4635_A54E_2F559776381D_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Tools</td><td/><td/><td>_86DAC055_2E3F_4120_941D_75F5128BF055_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Watchdog</td><td/><td/><td>_13A7F99A_C8F5_481E_B049_4713177A4F1B_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Web Deployment</td><td/><td/><td>_39776812_3316_4905_B00F_4B78AFE83EAF_FILTER</td><td/><td/><td/><td/></row>
 	</table>
@@ -610,6 +615,7 @@
 		<row><td>Service Manager</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>appserver.conf</td><td/><td>0</td></row>
 		<row><td>Tomcat XML Config</td><td>&lt;PATH_TO_TOMCAT_XML_CONFIG&gt;</td><td>1</td><td>web.xml; server.xml</td><td/><td>2</td></row>
 		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;</td><td>1</td><td>*.*</td><td>web.xml; server.xml</td><td>2</td></row>
+		<row><td>Tools</td><td>&lt;PATH_TO_RF_NETWORK_DATA_SCRIPTS&gt;</td><td>1</td><td>*.*</td><td/><td>0</td></row>
 		<row><td>Watchdog</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>watchdog.conf</td><td/><td>0</td></row>
 		<row><td>Web Deployment</td><td>&lt;PATH_TO_WEB_DEP_FILES&gt;</td><td>1</td><td>*.*</td><td>sublist.html; sublist.jlx;</td><td>2</td></row>
 	</table>
@@ -637,6 +643,7 @@
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td/><td>CalcLogic_Installed</td><td>CalcLogic_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING32##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING44##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING68##</td><td>36</td><td/><td/><td/></row>
+		<row><td>{4A41C0E2-AF2C-4A87-B62C-9C6F3E3AAB6C}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING93##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td/><td>MACScheduler_Installed</td><td>MACScheduler_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING29##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat_Installing</td><td>Tomcat_Installed</td><td>Tomcat_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING34##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING25##</td><td>36</td><td/><td/><td/></row>
@@ -787,6 +794,7 @@
 		<row><td>PATH_TO_SERVER_BIN_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Yukon Base\Server\bin</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Tomcat</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT_XML_CONFIG</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;\conf</td><td/><td>2</td></row>
+		<row><td>PATH_TO_RF_NETWORK_DATA_SCRIPTS</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Yukon Base\Tools\RfNetworkData</td><td/><td>2</td></row>
 		<row><td>PATH_TO_WEBSTARTJRE_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\WebStartJRE</td><td/><td>2</td></row>
 		<row><td>PATH_TO_WEB_DEP_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Yukon Web Deployment</td><td/><td>2</td></row>
 		<row><td>PATH_TO_WRAPPER_FILES</td><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\build\Wrapper</td><td/><td>2</td></row>
@@ -1112,6 +1120,7 @@
 		<row><td>Complete</td><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td></row>
 		<row><td>Complete</td><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td></row>
 		<row><td>Complete</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td></row>
+		<row><td>Complete</td><td>{4A41C0E2-AF2C-4A87-B62C-9C6F3E3AAB6C}</td></row>
 		<row><td>Complete</td><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td></row>
 		<row><td>Complete</td><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td></row>
 		<row><td>Complete</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
@@ -1132,6 +1141,7 @@
 		<row><td>Custom</td><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td></row>
 		<row><td>Custom</td><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td></row>
 		<row><td>Custom</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td></row>
+		<row><td>Custom</td><td>{4A41C0E2-AF2C-4A87-B62C-9C6F3E3AAB6C}</td></row>
 		<row><td>Custom</td><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td></row>
 		<row><td>Custom</td><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td></row>
 		<row><td>Custom</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
@@ -1388,6 +1398,9 @@
 		<row><td>ID_STRING88</td><td>1033</td><td>Start Yukon</td><td>0</td><td/><td>-1171875060</td></row>
 		<row><td>ID_STRING89</td><td>1033</td><td>Stop Yukon</td><td>0</td><td/><td>-1171868916</td></row>
 		<row><td>ID_STRING9</td><td>1033</td><td>Transmits and receives real-time data to and from other systems outside of Yukon.</td><td>0</td><td/><td>-1516413078</td></row>
+		<row><td>ID_STRING91</td><td>1033</td><td>Tools</td><td>0</td><td/><td>-123131753</td></row>
+		<row><td>ID_STRING92</td><td>1033</td><td>Needs to keep RFN network data scripts in Yukon.</td><td>0</td><td/><td>-123117385</td></row>
+		<row><td>ID_STRING93</td><td>1033</td><td>Tools</td><td>0</td><td/><td>-123094857</td></row>
 		<row><td>NEW_STRING1</td><td>1033</td><td>Checkbox</td><td>0</td><td/><td>-979530865</td></row>
 		<row><td>NEW_STRING10</td><td>1033</td><td>Checkbox</td><td>0</td><td/><td>-979543089</td></row>
 		<row><td>NEW_STRING11</td><td>1033</td><td>Checkbox</td><td>0</td><td/><td>-979536945</td></row>
