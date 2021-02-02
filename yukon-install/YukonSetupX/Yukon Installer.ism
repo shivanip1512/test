@@ -130,7 +130,7 @@
 		<row><td>Shortcut Holder</td><td>{F16F4E5C-A04A-4772-8309-98AEE3EF0456}</td><td>TARGETDIR</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tomcat</td><td>{0340C09C-1CA8-4C44-BA53-53138D1F8DD1}</td><td>WEB</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tomcat XML Config</td><td>{6F55A1F8-D6A1-46D4-9B10-F0CE4ABD4633}</td><td>CONF</td><td>16</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Tools</td><td>{5CA33C8A-1757-4367-96AF-4E90A6E1AFBF}</td><td>TOOLS</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Tools</td><td>{5CA33C8A-1757-4367-96AF-4E90A6E1AFBF}</td><td>RFNETWORKDATA</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Watchdog</td><td>{A11E02B2-037D-43A2-A5FE-EA6AE98E171E}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Web Deployment</td><td>{4DEA3DA8-40AC-43FF-90FF-EB6B8649160F}</td><td>WEBAPPS</td><td>0</td><td/><td/><td>529</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
@@ -369,6 +369,7 @@
 		<row><td>PROPHECY_EXAMPLES</td><td>EXTRAS</td><td>Prophecy Examples</td><td/><td>0</td><td/></row>
 		<row><td>PROPHECY_EXAMPLES1</td><td>EXTRAS1</td><td>Prophecy Examples</td><td/><td>0</td><td/></row>
 		<row><td>ProgramMenuFolder</td><td/><td>Programs</td><td/><td>3</td><td/></row>
+		<row><td>RFNETWORKDATA</td><td>TOOLS</td><td>RfNetworkData</td><td/><td>0</td><td/></row>
 		<row><td>ROOT</td><td>WEBAPPS</td><td>ROOT</td><td/><td>0</td><td/></row>
 		<row><td>RUNTIME</td><td>TARGETDIR</td><td>Runtime</td><td/><td>0</td><td/></row>
 		<row><td>SERVER</td><td>TARGETDIR</td><td>Server</td><td/><td>0</td><td/></row>
@@ -1834,7 +1835,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>Dialog</td><td>Dialog</td><td>N</td><td/><td/><td/><td/><td>Identifier</td><td/><td>Name of the dialog.</td></row>
 		<row><td>Dialog</td><td>HCentering</td><td>N</td><td>0</td><td>100</td><td/><td/><td/><td/><td>Horizontal position of the dialog on a 0-100 scale. 0 means left end, 100 means right end of the screen, 50 center.</td></row>
 		<row><td>Dialog</td><td>Height</td><td>N</td><td>0</td><td>32767</td><td/><td/><td/><td/><td>Height of the bounding rectangle of the dialog.</td></row>
-		<row><td>Dialog</td><td>ISComments</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Authorâ€™s comments for this dialog.</td></row>
+		<row><td>Dialog</td><td>ISComments</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Author’s comments for this dialog.</td></row>
 		<row><td>Dialog</td><td>ISResourceId</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>A Number the Specifies the Dialog ID to be used in Dialog Export</td></row>
 		<row><td>Dialog</td><td>ISWindowStyle</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>A 32-bit word that specifies non-MSI window styles to be applied to this control. This is only used in Script Based Setups.</td></row>
 		<row><td>Dialog</td><td>TextStyle_</td><td>Y</td><td/><td/><td/><td/><td>Identifier</td><td/><td>Foreign Key into TextStyle table, only used in Script Based Projects.</td></row>
