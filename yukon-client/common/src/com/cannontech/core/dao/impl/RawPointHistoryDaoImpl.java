@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,6 +50,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.SimplePointValueQuality;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -81,8 +83,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
     @Autowired private DeviceGroupService deviceGroupService;
     
-    YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>> rphYukonRowMapper =
-        new YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>>() {
+    private static final YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>> rphYukonRowMapper =
+        new YukonRowMapper<>() {
             final LiteRPHQualityRowMapper liteRPHQualityRowMapper = new LiteRPHQualityRowMapper();
 
             @Override
@@ -94,6 +96,32 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             }
         };
 
+    /**
+     * RowMapper for mapping summed values with a pre-specified report date, point type and quality.
+     */
+    private static class SummedValueRowMapper implements YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>> {
+        private final Date reportTimestamp;
+        private final PointType pointType;
+        private final PointQuality pointQuality;
+        
+        public SummedValueRowMapper(Date reportTimestamp, PointType pointType, PointQuality pointQuality) {
+            this.reportTimestamp = reportTimestamp;
+            this.pointType = pointType;
+            this.pointQuality = pointQuality;
+        }
+        
+        @Override
+        public Map.Entry<Integer, PointValueQualityHolder> mapRow(YukonResultSet rs) throws SQLException {
+            int paObjectId = rs.getInt("PAObjectID");
+            int pointId = rs.getInt("PointId");
+            double value = rs.getDouble("SummedValue");
+            PointValueQualityHolder pointValueQualityHolder = 
+                    new SimplePointValueQuality(pointId, reportTimestamp, pointType, pointQuality, value);
+            
+            return Maps.immutableEntry(paObjectId, pointValueQualityHolder);
+        }
+    };
+    
     private SqlFragmentSource buildSql(Range<Instant> range, Iterable<Integer> pointIds, Order order, boolean excludeDisabledPaos) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
@@ -267,7 +295,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     public List<PointValueHolder> getPointData(Set<Integer> pointIds, final ReadableRange<Instant> range,
                                                final boolean excludeDisabledPaos, final Order order) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonTemplate);
-        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<>() {
 
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -315,7 +343,63 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
         return Maps.transformValues(limitedStuff.asMap(), Iterables::getOnlyElement);
     }
-
+    
+    @Override
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getSummedAttributeData(
+            Iterable<? extends YukonPao> paos, 
+            Attribute attribute, 
+            ReadableRange<Instant> dateRange, 
+            boolean excludeDisabledPaos, 
+            Set<PointQuality> excludeQualities) {
+        
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
+        SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            @Override
+            public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
+                return subList -> {
+                    SqlStatementBuilder sql = new SqlStatementBuilder();
+                    
+                    sql.append("SELECT yp.PaObjectId, rph.PointId, SUM(rph.Value) AS SummedValue");
+                    sql.append("FROM RawPointHistory rph");
+                    sql.append("JOIN Point p ON rph.PointId = p.PointId");
+                    sql.append("JOIN YukonPaobject yp ON p.PaObjectId = yp.PaObjectId");
+                    sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
+                    sql.append("AND p.PointType").eq_k(pointIdentifier.getPointType());
+                    sql.append("AND yp.PAObjectID").in(subList);
+                    
+                    appendTimeStampClause(sql, dateRange);
+                    
+                    if (excludeQualities != null && !excludeQualities.isEmpty()) {
+                        sql.append("AND rph.Quality").notIn(excludeQualities);
+                    }
+                    
+                    if (excludeDisabledPaos) {
+                        sql.append("AND yp.DisableFlag").eq(YNBoolean.NO);
+                    }
+                    
+                    sql.append("GROUP BY rph.PointId, yp.PaObjectId");
+                    
+                    return sql;
+                };
+            }
+        };
+        
+        Optional<Date> reportDate = Optional.of(dateRange.getMax().toDate());
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> values = loadValuesForGeneratorFactory(reportDate, factory, paos, attribute, 1);
+        
+        stopwatch.stop();
+        String logMessage = "getSummedAttributeData() - " + Iterables.size(paos) + " paos. Attribute: " + attribute.getKey();
+        if (dateRange != null) {
+            logMessage += ". Date range: " + (dateRange.getMin() == null ? null : dateRange.getMin().toString()); 
+            logMessage += " to " + (dateRange.getMax() == null ? null : dateRange.getMax().toString());
+        }
+        logMessage +=  ".  Elapsed time: " + stopwatch.toString();
+        log.info(logMessage);
+        
+        return values;
+    }
+    
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(
             Iterable<? extends YukonPao> displayableDevices,
@@ -336,7 +420,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
-                return new SqlFragmentGenerator<Integer>() {
+                return new SqlFragmentGenerator<>() {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
                         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -379,8 +463,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 };
             }
         };
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> values = loadValuesForGeneratorFactory(factory,
-                displayableDevices, attribute, maxRows);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> values = loadValuesForGeneratorFactory(Optional.empty(), 
+                factory, displayableDevices, attribute, maxRows);
 
         if (log.isInfoEnabled()){
             stopwatch.stop();
@@ -437,7 +521,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
-                return new SqlFragmentGenerator<Integer>() {
+                return new SqlFragmentGenerator<>() {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
                         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -450,7 +534,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             }
         };
 
-        return loadValuesForGeneratorFactory(factory, paos, attribute, 20);
+        return loadValuesForGeneratorFactory(Optional.empty(), factory, paos, attribute, 20);
     }
     
     @Override
@@ -462,7 +546,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
-                return new SqlFragmentGenerator<Integer>() {
+                return new SqlFragmentGenerator<>() {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
                         
@@ -491,7 +575,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             }
         };
 
-        return loadValuesForGeneratorFactory(factory, paos, attribute, 20);
+        return loadValuesForGeneratorFactory(Optional.empty(), factory, paos, attribute, 20);
     }
 
     private void appendAttributeDataSql(SqlStatementBuilder sql, List<Integer> subList,
@@ -536,7 +620,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
-                return new SqlFragmentGenerator<Integer>() {
+                return new SqlFragmentGenerator<>() {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
                         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -560,14 +644,14 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             }
         };
 
-        return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, 20);
+        return loadValuesForGeneratorFactory(Optional.empty(), factory, displayableDevices, attribute, 20);
     }
 
 
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByPointName(Iterable<PaoIdentifier> paos,
         final String pointName, final ReadableRange<Instant> dateRange, final ReadableRange<Long> changeIdRange, final Order order) {
-        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -598,7 +682,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByPointName(Iterable<PaoIdentifier> paos,
         final String pointName, final ReadableRange<Instant> dateRange, final ReadableRange<Long> changeIdRange, final int maxRows,
         final Order order) {
-        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -640,7 +724,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
-                return new SqlFragmentGenerator<Integer>() {
+                return new SqlFragmentGenerator<>() {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
                         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -680,7 +764,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
-                return new SqlFragmentGenerator<Integer>() {
+                return new SqlFragmentGenerator<>() {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
                         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -728,7 +812,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
-                return new SqlFragmentGenerator<Integer>() {
+                return new SqlFragmentGenerator<>() {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
                         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -810,7 +894,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> loadValuesForGeneratorFactory(
-            SqlFragmentGeneratorFactory sqlGeneratorFactory,
+            Optional<Date> optionalReportTimestamp, SqlFragmentGeneratorFactory sqlGeneratorFactory, 
             Iterable<? extends YukonPao> paos, Attribute attribute, int valuePerPaoHint) {
         /*
          * The general idea here is that input PAOs will probably be of a mix of PaoTypes. Any of those
@@ -908,11 +992,22 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
         for (final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()) {
             ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonTemplate);
-
+            
+            YukonRowMapper<Entry<Integer, PointValueQualityHolder>> rowMapper;
+            
+            // If report timestamp is included, we're processing summed values and need a different row mapper
+            if (optionalReportTimestamp.isPresent()) {
+                rowMapper = new SummedValueRowMapper(optionalReportTimestamp.get(), 
+                                                     pointIdentifier.getPointType(), 
+                                                     PointQuality.Estimated);
+            } else {
+                rowMapper = rphYukonRowMapper;
+            }
+            
             ListMultimap<PaoIdentifier, PointValueQualityHolder> rows =
                 template.multimappedQuery(sqlGeneratorFactory.create(pointIdentifier),
                                           paoPointIdentifiersMap.get(pointIdentifier),
-                                          rphYukonRowMapper,
+                                          rowMapper,
                                           PaoUtils.getPaoIdFunction());
 
             for (PaoIdentifier pao : rows.keySet()) {
@@ -943,7 +1038,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     /**
      * Helper class which maps a result set row into a PointValueHolder
      */
-    private class LiteRphRowMapper implements YukonRowMapper<PointValueHolder> {
+    private static class LiteRphRowMapper implements YukonRowMapper<PointValueHolder> {
         @Override
         public PointValueQualityHolder mapRow(YukonResultSet rs) throws SQLException {
             PointValueBuilder builder = PointValueBuilder.create();
@@ -953,7 +1048,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         }
     }
 
-    private class LiteRPHQualityRowMapper implements YukonRowMapper<PointValueQualityHolder> {
+    private static class LiteRPHQualityRowMapper implements YukonRowMapper<PointValueQualityHolder> {
         @Override
         public PointValueQualityHolder mapRow(YukonResultSet rs) throws SQLException {
             PointValueBuilder builder = PointValueBuilder.create();
@@ -1114,7 +1209,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
-                return new SqlFragmentGenerator<Integer>() {
+                return new SqlFragmentGenerator<>() {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
                         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -1147,7 +1242,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 };
             }
         };
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> values = loadValuesForGeneratorFactory(factory, displayableDevices, attribute, 1);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> values = loadValuesForGeneratorFactory(Optional.empty(), factory, displayableDevices, attribute, 1);
 
         if (log.isDebugEnabled()) {
             stopwatch.stop();
