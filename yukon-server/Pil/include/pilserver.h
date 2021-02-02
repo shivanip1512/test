@@ -21,7 +21,6 @@
 
 #include <functional>
 #include <iostream>
-#include <mutex>
 #include <set>
 
 namespace Cti::Pil {
