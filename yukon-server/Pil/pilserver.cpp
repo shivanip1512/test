@@ -955,17 +955,17 @@ void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
         //  Was this an internal request?
         if( ! connectionHandle )
         {
-            const auto lg = std::lock_guard { _replyCallbackMux };
+            const auto lg = _replyCallbacks.synchronize();
 
             for( const auto& [userMessageId, serializedMessage] : rp.serviceReplies )
             {
-                auto itr = _replyCallbacks.find(userMessageId);
+                const auto itr = _replyCallbacks->find(userMessageId);
 
-                if( itr != _replyCallbacks.end() )
+                if( itr != _replyCallbacks->end() )
                 {
                     (itr->second)(serializedMessage);
 
-                    _replyCallbacks.erase(itr);
+                    _replyCallbacks->erase(itr);
                 }
                 else
                 {
@@ -1154,28 +1154,33 @@ void PilServer::handleRfnMeterReadRequest(const amq_cm::MessageDescriptor& md, a
 
     if( ! req )
     {
+        CTILOG_WARN(dout, "Could not deserialize message");
         return;
     }
 
     RfnMeterReadReplyMsg rsp1 {};
 
     auto dev = DeviceManager.getDeviceByRfnIdentifier(req->rfnIdentifier);
+    const auto userMessageId = PilUserMessageIdGenerator();
 
     if( ! dev )
     {
         rsp1.replyType = RfnMeterReadingReplyType::NO_NODE;
     }
+    else if( ! _replyCallbacks->try_emplace(userMessageId, callback).second )
+    {
+        CTILOG_WARN(dout, "Could not insert callback" << FormattedList::of(
+            "RFN address", req->rfnIdentifier,
+            "Reply type", static_cast<int>(rsp1.replyType)));
+
+        rsp1.replyType = RfnMeterReadingReplyType::FAILURE;
+    }
     else
     {
         auto verifyRequest = std::make_unique<CtiRequestMsg>(dev->getID(), "getvalue meter_read");
 
-        verifyRequest->setUserMessageId(PilUserMessageIdGenerator());
+        verifyRequest->setUserMessageId(userMessageId);
         //verifyRequest->setConnectionHandle(connectionHandle);  //  Leave the connectionHandle null as our indication this is internal
-
-        {
-            const auto lg = std::lock_guard { _replyCallbackMux };
-            _replyCallbacks[verifyRequest->UserMessageId()] = callback;
-        }
 
         MainQueue_.putQueue(verifyRequest.release());
     }
@@ -1184,6 +1189,9 @@ void PilServer::handleRfnMeterReadRequest(const amq_cm::MessageDescriptor& md, a
 
     if( serializedRsp1.empty() )
     {
+        CTILOG_WARN(dout, "Could not serialize response message" << FormattedList::of(
+            "RFN address", req->rfnIdentifier,
+            "Reply type", static_cast<int>(rsp1.replyType)));
         return;
     }
 

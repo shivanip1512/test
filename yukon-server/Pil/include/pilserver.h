@@ -17,7 +17,7 @@
 #include "cmd_rfn_ConfigNotification.h"
 #include "rf_data_streaming_processor.h"
 
-#include <boost/thread.hpp>
+#include <boost/thread/synchronized_value.hpp>
 
 #include <functional>
 #include <iostream>
@@ -52,8 +52,8 @@ class IM_EX_CTIPIL PilServer : public CtiServer
 
    using amq_cm = Messaging::ActiveMQConnectionManager;
 
-   std::map<long, amq_cm::ReplyCallback> _replyCallbacks;
-   std::mutex _replyCallbackMux;
+   using ReplyCallbacks = std::map<long, amq_cm::ReplyCallback>;
+   boost::synchronized_value<ReplyCallbacks> _replyCallbacks;
 
    RfDataStreamingProcessor _rfDataStreamingProcessor;
 

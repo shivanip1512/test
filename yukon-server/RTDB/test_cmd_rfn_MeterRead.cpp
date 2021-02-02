@@ -365,8 +365,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
         BOOST_CHECK_EQUAL_RANGES(channelData.unitOfMeasureModifiers, expectedModifiers);
         BOOST_CHECK_EQUAL(channelData.value, 42);
 
-        const auto expectedTimestamp = CtiTime(CtiDate(29, 1, 2021), 12, 15, 56);
-        BOOST_CHECK_EQUAL(datedChannelData.timeStamp, expectedTimestamp);
+        BOOST_CHECK_EQUAL(datedChannelData.timeStamp, CtiTime(0x60146cfc));
 
         BOOST_CHECK_EQUAL(datedChannelData.baseChannelData.has_value(), false);
     }
@@ -448,8 +447,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_coincident)
         BOOST_CHECK_EQUAL_RANGES(channelData.unitOfMeasureModifiers, expectedModifiers);
         BOOST_CHECK_EQUAL(channelData.value, 42);
 
-        const auto expectedTimestamp = CtiTime(CtiDate(29, 1, 2021), 12, 15, 56);
-        BOOST_CHECK_EQUAL(datedChannelData.timeStamp, expectedTimestamp);
+        BOOST_CHECK_EQUAL(datedChannelData.timeStamp, CtiTime(0x60146cfc));
 
         const auto& baseChannelData = datedChannelData.baseChannelData;
         BOOST_CHECK_EQUAL(baseChannelData.has_value(), false);
@@ -465,8 +463,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_coincident)
         BOOST_CHECK_EQUAL_RANGES(channelData.unitOfMeasureModifiers, expectedModifiers);
         BOOST_CHECK_EQUAL(channelData.value, 42);
 
-        const auto expectedTimestamp = CtiTime(CtiDate(29, 1, 2021), 12, 15, 56);
-        BOOST_CHECK_EQUAL(datedChannelData.timeStamp, expectedTimestamp);
+        BOOST_CHECK_EQUAL(datedChannelData.timeStamp, CtiTime(0x60146cfc));
 
         const auto& baseChannelData = datedChannelData.baseChannelData;
         BOOST_REQUIRE(baseChannelData);

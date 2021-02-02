@@ -169,6 +169,8 @@ try
 
     std::vector<RawChannel> rawChannels;
 
+    //  Collect the channels into a raw representation - no correlation for timestamps or coincidents.
+    //    That correlation will be done below in correlateRawChannels().
     for( auto channel = 0; channel < channelCount; ++channel )
     {
         RawChannel rc;
@@ -234,12 +236,17 @@ namespace {
 using namespace Cti;
 using namespace Cti::Messaging::Rfn;
     
+std::map<std::uint8_t, ChannelDataStatus> StatusLookup {
+    { 0, ChannelDataStatus::OK },
+    { 1, ChannelDataStatus::LONG }}; //  Replicating NM behavior
+
+//  Helper methods for creating the messaging objects
 ChannelData makeChannelData(const RawChannel& rawChannel)
 {
     ChannelData cd;
 
     cd.channelNumber = rawChannel.channelNumber;
-    cd.status = ChannelDataStatus { rawChannel.status };
+    cd.status = mapFindOrDefault(StatusLookup, rawChannel.status, ChannelDataStatus::FAILURE);
     cd.unitOfMeasure = mapFindOrDefault(UomStrings, rawChannel.unitOfMeasure, "");
     cd.value = rawChannel.value;
 
@@ -271,6 +278,7 @@ DatedChannelData makeCoincidentChannel(const DatedChannelData& referenceChannel,
         referenceChannel.channelData };
 }
 
+//  Correlation helper to associate channels with their timestamp and coincident channels.
 RfnMeterReadDataReplyMsg correlateRawChannels(const CtiTime now, const std::vector<RawChannel> rawChannels)
 {
     RfnMeterReadDataReplyMsg response;
@@ -290,13 +298,15 @@ RfnMeterReadDataReplyMsg correlateRawChannels(const CtiTime now, const std::vect
 
     std::map<unsigned, CorrelatedChannel> correlated;
 
+    //  Correlate the channels:
     for( auto& channel : rawChannels )
     {
+        //  Is this a timestamp channel?
         if( channel.unitOfMeasure == static_cast<std::uint8_t>(Cti::Devices::Rfn::UnitOfMeasure::Time) )
         {
-            //  Try to apply this timestamp to its base channel
-            const auto timestamp = CtiTime(channel.value);
+            //  Timestamp channels immediately follow their base channel
             const auto baseOffset = channel.channelNumber - 1;
+            const auto timestamp = CtiTime(channel.value);
 
             if( auto existing = mapFindRef(correlated, baseOffset);
                 ! existing )
@@ -317,8 +327,10 @@ RfnMeterReadDataReplyMsg correlateRawChannels(const CtiTime now, const std::vect
                 existing->timestamp = timestamp;
             }
         }
+        //  Is this a coincident channel?
         else if( channel.modifier2 && channel.modifier2->getCoincidentOffset() )
         {
+            //  Get the reference channel number from the coincident channel number minus its coincident offset
             const auto baseOffset = channel.channelNumber - channel.modifier2->getCoincidentOffset();
 
             std::set<std::string> modifiers;
@@ -348,12 +360,15 @@ RfnMeterReadDataReplyMsg correlateRawChannels(const CtiTime now, const std::vect
                 base->coincidents.push_back(channel);
             }
         }
+        //  This is not a timestamp or a coincident, so it is a base channel.
+        //    It might get a timestamp and coincidents added to it later.
         else
         {
             correlated.emplace(channel.channelNumber, CorrelatedChannel { channel });
         }
     }
 
+    //  Form up the message components from the correlated channels
     for( const auto& [channelNumber, channel] : correlated )
     {
         if( channel.timestamp )
