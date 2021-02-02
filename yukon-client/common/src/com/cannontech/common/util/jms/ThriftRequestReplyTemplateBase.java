@@ -25,9 +25,7 @@ public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T e
     protected boolean isDebugLog = false;
     
     /**
-     * @param isInternalMessage : if true, specifies that messages are being sent internally between Yukon
-     *        services (not Network Manager). This prevents message details from be logged to the RFN comms
-     *        log.
+     * @param isDebugLog : if true, logs as debug otherwise logs as info
      */
     public ThriftRequestReplyTemplateBase(String configurationName, ConfigurationSource configurationSource,
             YukonJmsTemplate jmsTemplate, boolean isDebugLog) {

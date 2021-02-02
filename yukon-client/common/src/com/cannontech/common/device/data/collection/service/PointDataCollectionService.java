@@ -53,10 +53,12 @@ public class PointDataCollectionService implements MessageListener {
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private static final Logger log = YukonLogManager.getLogger(PointDataCollectionService.class);
     private boolean collectingData = false;
+    private Logger commsLogger;
 
     @PostConstruct
     public void init() {
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DATA_COLLECTION_RECALCULATION);
+        commsLogger = jmsTemplate.getCommsLogger();
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             try {
                 collect(false);
@@ -125,9 +127,9 @@ public class PointDataCollectionService implements MessageListener {
                     if (forceRecalculation || lastCalculationTime == null
                         || now().isAfter(lastCalculationTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_CALCULATION))) {
                         if (forceRecalculation) {
-                            log.debug("No new data to collect, user requested data collection, sending message to WS to start recalculation.");
+                            commsLogger.info("<<< Sent RecalculationRequest. No new data to collect, user requested data collection, sending message to WS to start recalculation.");
                         } else {
-                            log.debug("No new data to collect and 60 minutes have past, sending message to WS to start recalculation.");
+                            commsLogger.info("<<< Sent RecalculationRequest. No new data to collect and 60 minutes have past, sending message to WS to start recalculation.");
                         }
                         jmsTemplate.convertAndSend(new RecalculationRequest());
                     }
@@ -136,6 +138,7 @@ public class PointDataCollectionService implements MessageListener {
                     recentPointValueDao.collectData(recentValues);
                     persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_LAST_CHANGE_ID,
                         changeIdRange.getMax());
+                    commsLogger.info("<<< Sent RecalculationRequest. Data collection finished. Sending message to WS to start recalculation.");
                     jmsTemplate.convertAndSend(new RecalculationRequest());
                 }
             }
