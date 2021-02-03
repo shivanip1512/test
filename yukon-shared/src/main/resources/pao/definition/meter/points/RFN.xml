@@ -2027,54 +2027,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="PF"/>
         <decimalplaces value="3"/>
     </point>
-    <point offset="412" type="Analog">
-        <name>Average Power Factor Rate A</name>
-        <multiplier value="1.0"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="413" type="Analog">
-        <name>Average Power Factor Frozen Rate A</name>
-        <multiplier value="1.0"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="414" type="Analog">
-        <name>Average Power Factor Rate B</name>
-        <multiplier value="1.0"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="415" type="Analog">
-        <name>Average Power Factor Frozen Rate B</name>
-        <multiplier value="1.0"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="416" type="Analog">
-        <name>Average Power Factor Rate C</name>
-        <multiplier value="1.0"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="417" type="Analog">
-        <name>Average Power Factor Frozen Rate C</name>
-        <multiplier value="1.0"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="418" type="Analog">
-        <name>Average Power Factor Rate D</name>
-        <multiplier value="1.0"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="419" type="Analog">
-        <name>Average Power Factor Frozen Rate D</name>
-        <multiplier value="1.0"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
     <point offset="420" type="Analog">
         <name>Coincident Power Factor at Delivered Peak kVA</name>
         <multiplier value="1"/>
