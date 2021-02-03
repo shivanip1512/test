@@ -1801,7 +1801,7 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_metlib)
 {
     test_RfnResidentialDevice dut;
 
-    dut.setDeviceType(TYPE_RFN410FX);
+    dut.setDeviceType(TYPE_RFN520FAX);
 
     Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
