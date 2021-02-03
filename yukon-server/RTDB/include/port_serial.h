@@ -33,8 +33,8 @@ public:
     virtual INT getParity() const;
     virtual ULONG getCDWait() const;
 
-    virtual ULONG getDelay(int Offset) const;
-    virtual CtiPort& setDelay(int Offset, int D);
+    ULONG getDelay(int Offset) const override;
+    CtiPort& setDelay(int Offset, int D) override;
 
 };
 
