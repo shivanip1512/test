@@ -78,7 +78,8 @@ public class RfnMeterReadDataReplySerializer extends RfnSerializationHelper impl
         //  Remap the degree character, since it is outside of the ASCII range and doesn't map 
         //    between C++ and Java without explicit encoding 
         if (unitOfMeasure.equals("deg C")) {
-            return "°C";
+            final char degree = 0xB0;
+            return Character.toString(degree) + "C";
         }
         return unitOfMeasure;
     }
