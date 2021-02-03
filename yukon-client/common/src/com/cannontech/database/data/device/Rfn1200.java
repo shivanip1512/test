@@ -6,9 +6,10 @@ import java.sql.SQLException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.db.port.CommPort;
 
-public class Rfn1200 extends RfnBase {
+public class Rfn1200 extends DirectPort {
 
     private CommPort commPort = null;
     

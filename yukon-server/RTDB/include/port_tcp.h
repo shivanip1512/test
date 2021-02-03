@@ -20,7 +20,7 @@ public:
                " YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag,"
                " CP.alarminhibit, CP.commonprotocol, CP.performancealarm, CP.performthreshold, CP.sharedporttype, CP.sharedsocketnumber,"
                " PST.baudrate, PST.cdwait, PST.linesettings,"
-               " TMG.pretxwait, TMG.rtstotxwait, TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout"
+               " TMG.pretxwait, TMG.rtstotxwait, TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout, TMG.PostCommWait"
            " FROM"
                " YukonPAObject YP"
                " JOIN CommPort CP on YP.paobjectid = CP.portid"
