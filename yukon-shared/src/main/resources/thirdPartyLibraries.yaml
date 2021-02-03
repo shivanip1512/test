@@ -4965,6 +4965,20 @@ Network Manager :
     jira : none
     notes : 
 
+  - filename : netty-all-4.1.25.Final.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : Netty
+    version : 4.1.25
+    project URL : "https://github.com/netty"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-all/4.1.25.Final"
+    md5 : d1912410fe536c1cc35da23c4fb103c8
+    sha1 : d0626cd3108294d1d58c05859add27b4ef21f83b
+    updated : 2018-06-25
+    jira : NM-909
+    notes : 
+
   - filename : netty-all-4.1.53.Final.jar
     yukon group : Yet Another Java Service Wrapper
     project : Netty
@@ -4977,20 +4991,6 @@ Network Manager :
     sha1 : fe61db8de0babb6ac5b87a8dd9ba017658f2f10d
     updated : 2021-02-02
     jira : NM-1854
-    notes : 
-
-  - filename : netty-all-4.1.36.Final.jar
-    yukon group : Yet Another Java Service Wrapper
-    project : Netty
-    version : 4.1.36
-    project URL : "https://github.com/netty"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-all/4.1.36.Final"
-    md5 : 6076f17339a583be6990a6e1fef70bda
-    sha1 : 722e6b1b3ceead8fbe3c5d0218e083f757155451
-    updated : 2019-04-30
-    jira : NM-1421
     notes : YAJSW
 
   - filename : nimbus.jar
