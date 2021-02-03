@@ -1,7 +1,7 @@
 package com.cannontech.development.service.impl;
 
-import static com.cannontech.common.stream.StreamUtils.not;
-import static java.util.stream.Collectors.toList;
+import static com.cannontech.common.stream.StreamUtils.*;
+import static java.util.stream.Collectors.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -179,6 +179,20 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_530FRXD,
             RfnManufacturerModel.RFN_530FRXT,
             RfnManufacturerModel.RFN_530FRXR,
+            RfnManufacturerModel.RFN_530FAXD_SD,
+            RfnManufacturerModel.RFN_530FAXT_SD,
+            RfnManufacturerModel.RFN_530FAXR_SD,
+            RfnManufacturerModel.RFN_530FRXD_SD,
+            RfnManufacturerModel.RFN_530FRXT_SD,
+            RfnManufacturerModel.RFN_530FRXR_SD,
+            /*
+    RfnManufacturerModel.RFN_530FAXD_SD,(PaoType.RFN520FAXD, "LGYR", "FocusAXD-SD-530"),
+    RfnManufacturerModel.RFN_530FAXT_SD,(PaoType.RFN520FAXD, "LGYR", "FocusAXT-SD-530"),
+    RfnManufacturerModel.RFN_530FAXR_SD,(PaoType.RFN520FAXD, "LGYR", "FocusAXR-SD-530"),
+    RfnManufacturerModel.RFN_530FRXD_SD,(PaoType.RFN520FRXD, "LGYR", "FocusRXD-SD-530"),
+    RfnManufacturerModel.RFN_530FRXT_SD,(PaoType.RFN520FRXD, "LGYR", "FocusRXT-SD-530"),
+    RfnManufacturerModel.RFN_530FRXR_SD,(PaoType.RFN520FRXD, "LGYR", "FocusRXR-SD-530"),
+             */
             RfnManufacturerModel.RFN_530S4X,
             RfnManufacturerModel.RFN_530S4AD,
             RfnManufacturerModel.RFN_530S4AT,
