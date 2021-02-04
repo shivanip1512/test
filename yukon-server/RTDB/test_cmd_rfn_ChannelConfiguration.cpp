@@ -81,7 +81,7 @@ const std::vector<int> allMetrics = [] {
             X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, o,o,_,_,A,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
 
         //  200                  210                  220                  230                  240                  250                  260                    270                280                  290
-            _,_,_,_,_,_,X,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,o,_,_,_,_,_,_,_, _,_,_,X,X,_,_,_,_,_, o,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
+            _,_,_,_,_,_,X,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,o,_,_,_,_,_,_,_, _,_,_,o,o,_,_,_,_,_, o,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
 
         //  300                  310                  320                  330                  340                  350
             _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, o,o,_,_,_,_,_,_,_,_, o,o,o,o,o,o,_,_,_,_, o,o,o,o,o,o
@@ -342,8 +342,6 @@ const std::vector<std::string> allDescriptions {
         "Sum Peak kVAr, Rate A (1184)",
         "Peak kVA (Quadrants 1 2), Rate A (1206)",
         "Sum Peak kVA, Rate A (1210)",
-        "Average Power Factor, Rate A (1233)",
-        "Average Power Factor Frozen, Rate A (1234)",
         "Time in Seconds, Rate A (1256)",
         "Watt hour delivered, Rate B (2001)",
         "Watt hour received, Rate B (2002)",
@@ -442,8 +440,6 @@ const std::vector<std::string> allDescriptions {
         "PF Phase B, Rate B (2163)",
         "PF Phase C, Rate B (2164)",
         "Peak kVA (Quadrants 1 2), Rate B (2206)",
-        "Average Power Factor, Rate B (2233)",
-        "Average Power Factor Frozen, Rate B (2234)",
         "Time in Seconds, Rate B (2256)",
         "Watt hour delivered, Rate C (3001)",
         "Watt hour received, Rate C (3002)",
@@ -542,8 +538,6 @@ const std::vector<std::string> allDescriptions {
         "PF Phase B, Rate C (3163)",
         "PF Phase C, Rate C (3164)",
         "Peak kVA (Quadrants 1 2), Rate C (3206)",
-        "Average Power Factor, Rate C (3233)",
-        "Average Power Factor Frozen, Rate C (3234)",
         "Time in Seconds, Rate C (3256)",
         "Watt hour delivered, Rate D (4001)",
         "Watt hour received, Rate D (4002)",
@@ -642,8 +636,6 @@ const std::vector<std::string> allDescriptions {
         "PF Phase B, Rate D (4163)",
         "PF Phase C, Rate D (4164)",
         "Peak kVA (Quadrants 1 2), Rate D (4206)",
-        "Average Power Factor, Rate D (4233)",
-        "Average Power Factor Frozen, Rate D (4234)",
         "Time in Seconds, Rate D (4256)",
  };
 
