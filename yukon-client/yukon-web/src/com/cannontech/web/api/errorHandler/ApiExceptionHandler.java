@@ -539,10 +539,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             ApiErrorDetails errorDetails = ApiErrorDetails.getError(bindingResult.getGlobalErrors().get(0).getCode());
             return buildGlobalErrors(errorDetails, uniqueKey, request);
         }
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         bindingResult.getFieldErrors().stream().forEach(
                 fieldError -> {
                     ApiErrorDetails childError = ApiErrorDetails.getError(fieldError.getCode());
-                    ApiFieldErrorModel error = new ApiFieldErrorModel(childError, fieldError);
+                    String i18nMessage = messageSourceAccessor.getMessage("yukon.web.error." + childError.getCode(),
+                            fieldError.getArguments());
+                    ApiFieldErrorModel error = new ApiFieldErrorModel(childError, fieldError, i18nMessage);
                     errors.add(error);
                 });
         ApiErrorDetails childError = ApiErrorDetails.getError(bindingResult.getFieldErrors().get(0).getCode());

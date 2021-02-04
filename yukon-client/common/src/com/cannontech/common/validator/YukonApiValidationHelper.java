@@ -23,7 +23,7 @@ public class YukonApiValidationHelper {
                 errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { "Name" }, "");
             }
             if (!errors.hasFieldErrors("name") && yukonValidationHelperCommon.isPaoNameConflict(paoName, type, errors, paoId)) {
-                errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { fieldName },
+                errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { paoName },
                         "");
             }
         } else {

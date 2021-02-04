@@ -87,7 +87,8 @@ public class YukonApiValidationUtils extends ValidationUtils {
 
     public static boolean checkIsValidDouble(Errors errors, String field, Double fieldValue) {
         if (!YukonValidationUtilsCommon.checkIsValidDouble(fieldValue)) {
-            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { field }, "");
+            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                    new Object[] { Double.MIN_VALUE + " - " + Double.MAX_VALUE }, "");
             return false;
         }
         return true;
@@ -95,7 +96,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
 
     public static void checkIsValidNumber(Errors errors, String field, Number fieldValue) {
         if (fieldValue == null) {
-            errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { fieldValue }, "");
+            errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { field }, "");
         } else if (fieldValue instanceof Double && !YukonValidationUtilsCommon.checkIsNumberPositiveDouble(fieldValue)) {
             errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "" },
                     "must be a positive number.");
@@ -116,7 +117,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
             boolean required) {
         if (fieldValue == null) {
             if (required) {
-                errors.rejectValue(field, Integer.toString(ApiErrorDetails.FIELD_REQUIRED.getCode()), new Object[] { fieldValue },
+                errors.rejectValue(field, Integer.toString(ApiErrorDetails.FIELD_REQUIRED.getCode()), new Object[] { field },
                         "");
             }
             return;
@@ -149,8 +150,8 @@ public class YukonApiValidationUtils extends ValidationUtils {
     public static void ipHostNameValidator(Errors errors, String field, String fieldValue) {
         checkIsBlank(errors, field, fieldValue, false, "IP Address");
         if (YukonValidationUtilsCommon.ipHostNameValidator(errors, field, fieldValue)) {
-            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "IP Address" },
-                    "IP Address");
+            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "valid IP/Host Name" },
+                    "");
         }
     }
 

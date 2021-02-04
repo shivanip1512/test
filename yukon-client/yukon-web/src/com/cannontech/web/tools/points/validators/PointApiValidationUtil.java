@@ -23,7 +23,8 @@ public class PointApiValidationUtil extends ValidationUtils {
     public void validatePointName(LitePointModel pointModel, String fieldName, Errors errors, boolean isCopyOrCreate) {
         validateName(fieldName, errors, pointModel.getPointName());
         if (!pointValidationUtilCommon.validatePointName(pointModel, isCopyOrCreate)) {
-            errors.rejectValue(fieldName, ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { fieldName }, "");
+            errors.rejectValue(fieldName, ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                    new Object[] { pointModel.getPointName() }, "");
         }
     }
 
@@ -79,7 +80,7 @@ public class PointApiValidationUtil extends ValidationUtils {
      */
     public void validatePointId(Errors errors, String field, Integer pointId, String fieldName) {
         if (!pointValidationUtilCommon.validatePointId(pointId)) {
-            errors.rejectValue(field, ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { fieldName }, "");
+            errors.rejectValue(field, ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { pointId }, "");
         }
     }
 }
