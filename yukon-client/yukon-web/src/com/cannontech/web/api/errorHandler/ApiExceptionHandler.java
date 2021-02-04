@@ -100,7 +100,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         notSupportingUris.add(ApiURL.drControlAreaUrl);
         notSupportingUris.add(ApiURL.drControlScenarioUrl);
         notSupportingUris.add(ApiURL.commChannelUrl);
-        notSupportingUris.add(ApiURL.virtualDeviceUrl);
+        notSupportingUris.add(ApiURL.attributeUrl);
+        notSupportingUris.add(ApiURL.attributeAssignmentsUrl);
         notSupportingUris.add(ApiURL.aggregateDataReportUrl);
     }
 
