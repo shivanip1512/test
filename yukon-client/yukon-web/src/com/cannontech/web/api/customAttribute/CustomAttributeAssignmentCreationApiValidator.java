@@ -7,9 +7,9 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.database.data.point.PointType;
 
-public class CustomAttributeAssignmentCreationValidator extends SimpleValidator<Assignment> {
+public class CustomAttributeAssignmentCreationApiValidator extends SimpleValidator<Assignment> {
 
-    public CustomAttributeAssignmentCreationValidator() {
+    public CustomAttributeAssignmentCreationApiValidator() {
         super(Assignment.class);
     }
 

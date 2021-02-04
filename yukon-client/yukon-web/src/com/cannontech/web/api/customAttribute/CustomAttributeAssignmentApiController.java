@@ -48,8 +48,8 @@ public class CustomAttributeAssignmentApiController {
     @Autowired private CustomAttributeDao customAttributeDao;
     @Autowired private CustomAttributeService customAttributeService;
     @Autowired private SystemEventLogService systemEventLogService;
-    @Autowired private CustomAttributeAssignmentCreationValidator customAttributeAssignmentCreationValidator;
-    @Autowired private CustomAttributeAssignmentValidator customAttributeAssignmentValidator;
+    @Autowired private CustomAttributeAssignmentCreationApiValidator customAttributeAssignmentCreationApiValidator;
+    @Autowired private CustomAttributeAssignmentApiValidator customAttributeAssignmentApiValidator;
 
 
 
@@ -104,11 +104,11 @@ public class CustomAttributeAssignmentApiController {
 
     @InitBinder("assignment")
     public void setupBinderDelete(WebDataBinder binder) {
-        binder.setValidator(customAttributeAssignmentValidator);
+        binder.setValidator(customAttributeAssignmentApiValidator);
 
         String attributeAssignmentId = ServletUtils.getPathVariable("attributeAssignmentId");
         if (attributeAssignmentId == null) {
-            binder.setValidator(customAttributeAssignmentCreationValidator);
+            binder.setValidator(customAttributeAssignmentCreationApiValidator);
         }
     }
 

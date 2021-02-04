@@ -9,9 +9,9 @@ import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.stars.util.ServletUtils;
 
 @Service
-public class CustomAttributeAssignmentValidator extends SimpleValidator<Assignment> {
+public class CustomAttributeAssignmentApiValidator extends SimpleValidator<Assignment> {
 
-    public CustomAttributeAssignmentValidator() {
+    public CustomAttributeAssignmentApiValidator() {
         super(Assignment.class);
     }
 
