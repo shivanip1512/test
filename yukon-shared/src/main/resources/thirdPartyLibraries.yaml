@@ -3358,16 +3358,16 @@ Network Manager :
   - filename : ahessian.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.14
+    version : 12.15
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/ahessian/11.11"
-    md5 : e022eaf0e1c2876fa77efae09b922694
-    sha1 : 78e68dceb471f4b927286ee1962af30b4036e596
-    updated : 2019-06-23
-    jira : NM-1421
-    notes : YAJSW - Asynchronous Hessian.  Maven version is 11.11, not 12.14
+    md5 : fdd01e8005a439af3c1b4922d01d7b79
+    sha1 : 50ab91cbc6f6ae50cd5ec8a96ec7fb3a47300260
+    updated : 2021-02-02
+    jira : NM-1854
+    notes : YAJSW - Asynchronous Hessian.  Maven version is 11.11, not 12.15
 
   - filename : annotations-api.jar
     yukon group : Tomcat
@@ -3971,18 +3971,18 @@ Network Manager :
     jira : NM-1555
     notes : 
 
-  - filename : commons-configuration2-2.3.jar
+  - filename : commons-configuration2-2.7.jar
     yukon group : Apache Commons
     project : Apache Commons Configuration 2
-    version : 2.3
+    version : 2.7
     project URL : "https://commons.apache.org/proper/commons-configuration/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2/2.3"
-    md5 : 6abd3f30ee9ce059d32d32cb0e172508
-    sha1 : 97dcb24a1624e93d7ef2a434d3c1707ceba9d01b
-    updated : 2018-08-04
-    jira : NM-1421
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2/2.7"
+    md5 : 3307f404282a5040f14fd8cb8e0783ca
+    sha1 : 593326399e5fb5e1f986607f06f63c1250ab36b4
+    updated : 2021-02-02
+    jira : NM-1854
     notes : YAJSW
 
   - filename : commons-dbcp-1.2.2.jar
@@ -4153,18 +4153,18 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : commons-text-1.6.jar
+  - filename : commons-text-1.9.jar
     yukon group : Apache Commons
     project : Apache Commons text
-    version : 1.6
+    version : 1.9
     project URL : "http://commons.apache.org/proper/commons-text"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-text/1.6"
-    md5 : a1fb840c3963ed43c78291b5e61d55ac
-    sha1 : ba72cf0c40cf701e972fe7720ae844629f4ecca2
-    updated : 2018-10-13
-    jira : NM-1421
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-text/1.9"
+    md5 : c1c130c369aa86bfe4f7a7a920bc0223
+    sha1 : ba6ac8c2807490944a0a27f6f8e68fb5ed2e80e2
+    updated : 2021-02-02
+    jira : NM-1854
     notes : YAJSW
 
   - filename : commons-validator-1.6.jar
@@ -4979,18 +4979,18 @@ Network Manager :
     jira : NM-909
     notes : 
 
-  - filename : netty-all-4.1.36.Final.jar
+  - filename : netty-all-4.1.53.Final.jar
     yukon group : Yet Another Java Service Wrapper
     project : Netty
-    version : 4.1.36
+    version : 4.1.53
     project URL : "https://github.com/netty"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-all/4.1.36.Final"
-    md5 : 6076f17339a583be6990a6e1fef70bda
-    sha1 : 722e6b1b3ceead8fbe3c5d0218e083f757155451
-    updated : 2019-04-30
-    jira : NM-1421
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-all/4.1.53.Final"
+    md5 : da7460591b1e37a90393ab435f305a36
+    sha1 : fe61db8de0babb6ac5b87a8dd9ba017658f2f10d
+    updated : 2021-02-02
+    jira : NM-1854
     notes : YAJSW
 
   - filename : nimbus.jar
@@ -5472,30 +5472,30 @@ Network Manager :
   - filename : wrapper.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.14
+    version : 12.15
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapper/11.11"
-    md5 : 6fb600ae33969268c945c685d2fce5e6
-    sha1 : dc50e3847ebf20dc526b5e0ebdfe3c90b3338f12
-    updated : 2019-06-23
-    jira : NM-1421
-    notes : YAJSW Wrapper.  Maven version is 11.11, not 12.14.  
+    md5 : 593e33f29cfc57a73fdece620a826f16
+    sha1 : 1b6b85fea00360e9e95f7ced5157a141fc80542c
+    updated : 2021-02-02
+    jira : NM-1854
+    notes : YAJSW Wrapper.  Maven version is 11.11, not 12.15.
 
   - filename : wrapperApp.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.14
+    version : 12.15
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
-    md5 : 3eeb07054c6e7bb1b0a15986685b2616
-    sha1 : 4f71fb4c987a97ac3ad1d0ff8fd2c9d62f10390c
-    updated : 2019-06-23
-    jira : NM-1421
-    notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.14.
+    md5 : cf9f8dbfc234f4a46fa7552cf29db70e
+    sha1 : 90f6003543f184a8fd8de08fca66311b43946129
+    updated : 2021-02-02
+    jira : NM-1854
+    notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.15.
 
   - filename : xstream.jar
     yukon group : Launch4j
