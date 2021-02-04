@@ -1189,6 +1189,11 @@ begin
     if (nResult = TRUE) then
         DeleteFile (szDir);
     endif;
+    szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\networkSnapshot.bat";
+    nResult = Is (FILE_EXISTS, szDir);
+    if (nResult = TRUE) then
+        DeleteFile (szDir);
+    endif;
     szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\ReadMe.txt";
     nResult = Is (FILE_EXISTS, szDir);
     if (nResult = TRUE) then

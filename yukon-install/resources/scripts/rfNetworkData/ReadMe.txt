@@ -5,7 +5,6 @@
 *** From command line, navigate to C:\Yukon\Tools\RfNetworkData\
 
 
-
 *** historicData.bat
 -    Output: Generates a collection of csv files covering the last 14 days of data.
              Requires a database user with read access for Network Manager.
@@ -28,4 +27,14 @@
              - RelayLocationsInYukon.csv
 -    Usage Syntax: locationData.bat <Server Name> <user_name> <password>
 -    Example:      locationData.bat EAS0001111 username password
-	
+
+
+*** networkSnapshot.bat
+-    Output: Generates a collection of csv files of network snapshot.
+             Requires a database user with read access for Network Manager.
+             After running the scripts you will get few csv files listed below
+             - descData.csv
+             - nmData.csv
+             - yukonData.csv
+-    Usage Syntax: networkSnapshot.bat <Server Name> <user_name> <password>
+-    Example:      networkSnapshot.bat EAS0001111 username password
