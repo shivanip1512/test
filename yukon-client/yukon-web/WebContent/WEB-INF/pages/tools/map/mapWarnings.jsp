@@ -5,10 +5,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.operator.comprehensiveMap">
-    <tags:alertBox classes="dn js-no-location-message" type="warning" includeCloseButton="true">
-        <i:inline key=".missingLocations"/>
-    </tags:alertBox>
-    <tags:alertBox classes="dn js-no-descendants-message" type="warning" includeCloseButton="true">
-        <i:inline key=".descendants.noDevicesReturned"/>
-    </tags:alertBox>
+    <div>
+        <tags:alertBox classes="dn js-no-location-message" type="warning" includeCloseButton="true">
+            <i:inline key=".missingLocations" />
+        </tags:alertBox>
+        <tags:alertBox classes="dn js-no-descendants-message" type="warning" includeCloseButton="true">
+            <i:inline key=".descendants.noDevicesReturned" />
+        </tags:alertBox>
+    </div>
+
 </cti:msgScope>

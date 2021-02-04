@@ -114,7 +114,7 @@ bool LMGroupEatonCloud::sendShedControl( long controlMinutes )
     }
 
     ActiveMQConnectionManager::enqueueMessage(
-        OutboundQueue::EatonCloudCyclingRequest,
+        OutboundQueue::EatonCloudScheduledCyclingRequest,
         serializedMessage );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -181,7 +181,7 @@ bool LMGroupEatonCloud::sendCycleControl( CycleControlParameters parameters )
     }
 
     ActiveMQConnectionManager::enqueueMessage(
-        OutboundQueue::EatonCloudCyclingRequest,
+        OutboundQueue::EatonCloudScheduledCyclingRequest,
         serializedMessage );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )

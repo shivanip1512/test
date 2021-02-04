@@ -74,284 +74,6 @@ std::string to_string(const LMEatonCloudStopType::type& val) {
 }
 
 
-LMEatonCloudCycleCommand::~LMEatonCloudCycleCommand() noexcept {
-}
-
-
-void LMEatonCloudCycleCommand::__set__groupId(const int32_t val) {
-  this->_groupId = val;
-}
-
-void LMEatonCloudCycleCommand::__set__controlSeconds(const int32_t val) {
-  this->_controlSeconds = val;
-}
-
-void LMEatonCloudCycleCommand::__set__isRampIn(const bool val) {
-  this->_isRampIn = val;
-}
-
-void LMEatonCloudCycleCommand::__set__isRampOut(const bool val) {
-  this->_isRampOut = val;
-}
-
-void LMEatonCloudCycleCommand::__set__cyclingOption(const LMEatonCloudCycleType::type val) {
-  this->_cyclingOption = val;
-}
-
-void LMEatonCloudCycleCommand::__set__dutyCyclePercentage(const int32_t val) {
-  this->_dutyCyclePercentage = val;
-}
-
-void LMEatonCloudCycleCommand::__set__dutyCyclePeriod(const int32_t val) {
-  this->_dutyCyclePeriod = val;
-}
-
-void LMEatonCloudCycleCommand::__set__criticality(const int32_t val) {
-  this->_criticality = val;
-}
-
-void LMEatonCloudCycleCommand::__set__currentDateTime(const  ::Cti::Messaging::Serialization::Thrift::Timestamp val) {
-  this->_currentDateTime = val;
-}
-std::ostream& operator<<(std::ostream& out, const LMEatonCloudCycleCommand& obj)
-{
-  obj.printTo(out);
-  return out;
-}
-
-
-uint32_t LMEatonCloudCycleCommand::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-  bool isset__groupId = false;
-  bool isset__controlSeconds = false;
-  bool isset__isRampIn = false;
-  bool isset__isRampOut = false;
-  bool isset__cyclingOption = false;
-  bool isset__dutyCyclePercentage = false;
-  bool isset__dutyCyclePeriod = false;
-  bool isset__criticality = false;
-  bool isset__currentDateTime = false;
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->_groupId);
-          isset__groupId = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->_controlSeconds);
-          isset__controlSeconds = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->_isRampIn);
-          isset__isRampIn = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 4:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->_isRampOut);
-          isset__isRampOut = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 5:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast0;
-          xfer += iprot->readI32(ecast0);
-          this->_cyclingOption = (LMEatonCloudCycleType::type)ecast0;
-          isset__cyclingOption = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 6:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->_dutyCyclePercentage);
-          isset__dutyCyclePercentage = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 7:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->_dutyCyclePeriod);
-          isset__dutyCyclePeriod = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 8:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->_criticality);
-          isset__criticality = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 9:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->_currentDateTime);
-          isset__currentDateTime = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  if (!isset__groupId)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset__controlSeconds)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset__isRampIn)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset__isRampOut)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset__cyclingOption)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset__dutyCyclePercentage)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset__dutyCyclePeriod)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset__criticality)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset__currentDateTime)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  return xfer;
-}
-
-uint32_t LMEatonCloudCycleCommand::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("LMEatonCloudCycleCommand");
-
-  xfer += oprot->writeFieldBegin("_groupId", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->_groupId);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("_controlSeconds", ::apache::thrift::protocol::T_I32, 2);
-  xfer += oprot->writeI32(this->_controlSeconds);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("_isRampIn", ::apache::thrift::protocol::T_BOOL, 3);
-  xfer += oprot->writeBool(this->_isRampIn);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("_isRampOut", ::apache::thrift::protocol::T_BOOL, 4);
-  xfer += oprot->writeBool(this->_isRampOut);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("_cyclingOption", ::apache::thrift::protocol::T_I32, 5);
-  xfer += oprot->writeI32((int32_t)this->_cyclingOption);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("_dutyCyclePercentage", ::apache::thrift::protocol::T_I32, 6);
-  xfer += oprot->writeI32(this->_dutyCyclePercentage);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("_dutyCyclePeriod", ::apache::thrift::protocol::T_I32, 7);
-  xfer += oprot->writeI32(this->_dutyCyclePeriod);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("_criticality", ::apache::thrift::protocol::T_I32, 8);
-  xfer += oprot->writeI32(this->_criticality);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("_currentDateTime", ::apache::thrift::protocol::T_I64, 9);
-  xfer += oprot->writeI64(this->_currentDateTime);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-void swap(LMEatonCloudCycleCommand &a, LMEatonCloudCycleCommand &b) {
-  using ::std::swap;
-  swap(a._groupId, b._groupId);
-  swap(a._controlSeconds, b._controlSeconds);
-  swap(a._isRampIn, b._isRampIn);
-  swap(a._isRampOut, b._isRampOut);
-  swap(a._cyclingOption, b._cyclingOption);
-  swap(a._dutyCyclePercentage, b._dutyCyclePercentage);
-  swap(a._dutyCyclePeriod, b._dutyCyclePeriod);
-  swap(a._criticality, b._criticality);
-  swap(a._currentDateTime, b._currentDateTime);
-}
-
-LMEatonCloudCycleCommand::LMEatonCloudCycleCommand(const LMEatonCloudCycleCommand& other1) {
-  _groupId = other1._groupId;
-  _controlSeconds = other1._controlSeconds;
-  _isRampIn = other1._isRampIn;
-  _isRampOut = other1._isRampOut;
-  _cyclingOption = other1._cyclingOption;
-  _dutyCyclePercentage = other1._dutyCyclePercentage;
-  _dutyCyclePeriod = other1._dutyCyclePeriod;
-  _criticality = other1._criticality;
-  _currentDateTime = other1._currentDateTime;
-}
-LMEatonCloudCycleCommand& LMEatonCloudCycleCommand::operator=(const LMEatonCloudCycleCommand& other2) {
-  _groupId = other2._groupId;
-  _controlSeconds = other2._controlSeconds;
-  _isRampIn = other2._isRampIn;
-  _isRampOut = other2._isRampOut;
-  _cyclingOption = other2._cyclingOption;
-  _dutyCyclePercentage = other2._dutyCyclePercentage;
-  _dutyCyclePeriod = other2._dutyCyclePeriod;
-  _criticality = other2._criticality;
-  _currentDateTime = other2._currentDateTime;
-  return *this;
-}
-void LMEatonCloudCycleCommand::printTo(std::ostream& out) const {
-  using ::apache::thrift::to_string;
-  out << "LMEatonCloudCycleCommand(";
-  out << "_groupId=" << to_string(_groupId);
-  out << ", " << "_controlSeconds=" << to_string(_controlSeconds);
-  out << ", " << "_isRampIn=" << to_string(_isRampIn);
-  out << ", " << "_isRampOut=" << to_string(_isRampOut);
-  out << ", " << "_cyclingOption=" << to_string(_cyclingOption);
-  out << ", " << "_dutyCyclePercentage=" << to_string(_dutyCyclePercentage);
-  out << ", " << "_dutyCyclePeriod=" << to_string(_dutyCyclePeriod);
-  out << ", " << "_criticality=" << to_string(_criticality);
-  out << ", " << "_currentDateTime=" << to_string(_currentDateTime);
-  out << ")";
-}
-
-
 LMEatonCloudScheduledCycleCommand::~LMEatonCloudScheduledCycleCommand() noexcept {
 }
 
@@ -470,9 +192,9 @@ uint32_t LMEatonCloudScheduledCycleCommand::read(::apache::thrift::protocol::TPr
         break;
       case 6:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast3;
-          xfer += iprot->readI32(ecast3);
-          this->_cyclingOption = (LMEatonCloudCycleType::type)ecast3;
+          int32_t ecast0;
+          xfer += iprot->readI32(ecast0);
+          this->_cyclingOption = (LMEatonCloudCycleType::type)ecast0;
           isset__cyclingOption = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -591,27 +313,27 @@ void swap(LMEatonCloudScheduledCycleCommand &a, LMEatonCloudScheduledCycleComman
   swap(a._criticality, b._criticality);
 }
 
-LMEatonCloudScheduledCycleCommand::LMEatonCloudScheduledCycleCommand(const LMEatonCloudScheduledCycleCommand& other4) {
-  _groupId = other4._groupId;
-  _controlStartDateTime = other4._controlStartDateTime;
-  _controlEndDateTime = other4._controlEndDateTime;
-  _isRampIn = other4._isRampIn;
-  _isRampOut = other4._isRampOut;
-  _cyclingOption = other4._cyclingOption;
-  _dutyCyclePercentage = other4._dutyCyclePercentage;
-  _dutyCyclePeriod = other4._dutyCyclePeriod;
-  _criticality = other4._criticality;
+LMEatonCloudScheduledCycleCommand::LMEatonCloudScheduledCycleCommand(const LMEatonCloudScheduledCycleCommand& other1) {
+  _groupId = other1._groupId;
+  _controlStartDateTime = other1._controlStartDateTime;
+  _controlEndDateTime = other1._controlEndDateTime;
+  _isRampIn = other1._isRampIn;
+  _isRampOut = other1._isRampOut;
+  _cyclingOption = other1._cyclingOption;
+  _dutyCyclePercentage = other1._dutyCyclePercentage;
+  _dutyCyclePeriod = other1._dutyCyclePeriod;
+  _criticality = other1._criticality;
 }
-LMEatonCloudScheduledCycleCommand& LMEatonCloudScheduledCycleCommand::operator=(const LMEatonCloudScheduledCycleCommand& other5) {
-  _groupId = other5._groupId;
-  _controlStartDateTime = other5._controlStartDateTime;
-  _controlEndDateTime = other5._controlEndDateTime;
-  _isRampIn = other5._isRampIn;
-  _isRampOut = other5._isRampOut;
-  _cyclingOption = other5._cyclingOption;
-  _dutyCyclePercentage = other5._dutyCyclePercentage;
-  _dutyCyclePeriod = other5._dutyCyclePeriod;
-  _criticality = other5._criticality;
+LMEatonCloudScheduledCycleCommand& LMEatonCloudScheduledCycleCommand::operator=(const LMEatonCloudScheduledCycleCommand& other2) {
+  _groupId = other2._groupId;
+  _controlStartDateTime = other2._controlStartDateTime;
+  _controlEndDateTime = other2._controlEndDateTime;
+  _isRampIn = other2._isRampIn;
+  _isRampOut = other2._isRampOut;
+  _cyclingOption = other2._cyclingOption;
+  _dutyCyclePercentage = other2._dutyCyclePercentage;
+  _dutyCyclePeriod = other2._dutyCyclePeriod;
+  _criticality = other2._criticality;
   return *this;
 }
 void LMEatonCloudScheduledCycleCommand::printTo(std::ostream& out) const {
@@ -694,9 +416,9 @@ uint32_t LMEatonCloudStopCommand::read(::apache::thrift::protocol::TProtocol* ip
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast6;
-          xfer += iprot->readI32(ecast6);
-          this->_stopType = (LMEatonCloudStopType::type)ecast6;
+          int32_t ecast3;
+          xfer += iprot->readI32(ecast3);
+          this->_stopType = (LMEatonCloudStopType::type)ecast3;
           isset__stopType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -749,15 +471,15 @@ void swap(LMEatonCloudStopCommand &a, LMEatonCloudStopCommand &b) {
   swap(a._stopType, b._stopType);
 }
 
-LMEatonCloudStopCommand::LMEatonCloudStopCommand(const LMEatonCloudStopCommand& other7) {
-  _groupId = other7._groupId;
-  _restoreTime = other7._restoreTime;
-  _stopType = other7._stopType;
+LMEatonCloudStopCommand::LMEatonCloudStopCommand(const LMEatonCloudStopCommand& other4) {
+  _groupId = other4._groupId;
+  _restoreTime = other4._restoreTime;
+  _stopType = other4._stopType;
 }
-LMEatonCloudStopCommand& LMEatonCloudStopCommand::operator=(const LMEatonCloudStopCommand& other8) {
-  _groupId = other8._groupId;
-  _restoreTime = other8._restoreTime;
-  _stopType = other8._stopType;
+LMEatonCloudStopCommand& LMEatonCloudStopCommand::operator=(const LMEatonCloudStopCommand& other5) {
+  _groupId = other5._groupId;
+  _restoreTime = other5._restoreTime;
+  _stopType = other5._stopType;
   return *this;
 }
 void LMEatonCloudStopCommand::printTo(std::ostream& out) const {

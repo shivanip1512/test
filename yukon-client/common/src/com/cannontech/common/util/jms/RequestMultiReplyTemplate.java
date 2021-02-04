@@ -14,7 +14,7 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
@@ -30,7 +30,6 @@ import com.cannontech.common.util.jms.api.JmsQueue;
  */
 public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMultiResponse> {
     private static final Logger log = YukonLogManager.getLogger(RequestMultiReplyTemplate.class);
-    private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     private static final Duration defaultTimeout = Duration.standardSeconds(30);
     private static final boolean pubSubDomain = false;
     
@@ -38,6 +37,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
     private final JmsApi<R,?,Q> api;
     private final Duration timeout;
     private final ExecutorService executor;
+    private final Logger commsLogger;
     
     /**
      * Create a new template, automatically using the default timeout and assuming external messaging 
@@ -66,6 +66,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
         this.jmsTemplate = jmsTemplate;
         this.api = api;
         this.timeout = timeout;
+        this.commsLogger = api.getCommsLogger();
         // Default to 50 if worker queue size is not specified
         int queueSize = workerQueueSize == null ? 50 : workerQueueSize;
         
@@ -173,7 +174,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
             replyHandler.handleReply(reply);
             expectedMessages = reply.getTotalSegments();
             messagesReceived += 1;
-            logReply(request, reply.loggingString(rfnLogger.getLevel()), expectedMessages, messagesReceived);
+            logReply(request, reply.loggingString(commsLogger.getLevel()), expectedMessages, messagesReceived);
         }
     }
     
@@ -197,10 +198,10 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      * Adds an entry in rfnLogger
      */
     private void log(String text) {
-        if (rfnLogger.isInfoEnabled()) {
-            rfnLogger.info(text);
-        } else if (rfnLogger.isDebugEnabled()) {
-            rfnLogger.debug(text);
+        if (commsLogger.isInfoEnabled()) {
+            commsLogger.info(text);
+        } else if (commsLogger.isDebugEnabled()) {
+            commsLogger.debug(text);
         }
     }
     

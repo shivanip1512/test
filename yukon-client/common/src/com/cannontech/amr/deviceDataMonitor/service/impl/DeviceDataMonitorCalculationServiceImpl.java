@@ -137,7 +137,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                     Iterator<DeviceDataMonitor> iterator = pending.values().iterator();
                     while (iterator.hasNext()) {
                         DeviceDataMonitor ddm = iterator.next();
-                        if (ddm.getId() == monitor.getId()) {
+                        if (ddm.getId().equals(monitor.getId())) {
                             iterator.remove();
                             break;
                         }

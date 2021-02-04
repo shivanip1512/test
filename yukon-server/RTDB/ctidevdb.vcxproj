@@ -627,6 +627,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="mgr_route.cpp">
     </ClCompile>
+    <ClCompile Include="rfn_uom.cpp" />
     <ClCompile Include="rte_ccu.cpp">
     </ClCompile>
     <ClCompile Include="rte_expresscom.cpp">
@@ -825,6 +826,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\pt_dyn_dispatch.h" />
     <ClInclude Include="include\pt_numeric.h" />
     <ClInclude Include="include\pt_status.h" />
+    <ClInclude Include="include\rfn_uom.h" />
     <ClInclude Include="include\rtdb_test_helpers.h" />
     <ClInclude Include="include\rte_base.h" />
     <ClInclude Include="include\rte_ccu.h" />
