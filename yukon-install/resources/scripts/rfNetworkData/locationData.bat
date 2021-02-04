@@ -46,6 +46,6 @@ del Query_NetworkData.csv
 
 GOTO end
 :endprase
-echo "Usage: db.queries <serverip> <username> <password>"
+echo "Usage: locationData.bat <serverip> <username> <password>"
 :end
 
