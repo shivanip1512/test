@@ -13,10 +13,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -90,7 +90,6 @@ import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.dr.setup.ControlAreaTrigger;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.TimeUtil;
@@ -134,8 +133,9 @@ public class CcHomeController {
     private static Logger log = YukonLogManager.getLogger(CcHomeController.class);
     private static String eventHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_";
     private static String companyHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.";
-    private Cache<String, CiInitEventModel> ciInitEventModelCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
-    
+    private Cache<String, CiInitEventModel> ciInitEventModelCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS)
+            .build();
+
     @Autowired private AccountingEventDao accountingEventDao;
     @Autowired private BaseEventDao baseEventDao;
     @Autowired private CcTrendHelper trendHelper;
@@ -417,14 +417,15 @@ public class CcHomeController {
         
         return customerNotifs;
     }
-    
-    @RequestMapping("/cc/program/{programId}/confirmation")
-    public String confirmation(ModelMap model,
-                               @ModelAttribute("event") CiInitEventModel event,
-                               BindingResult bindingResult,
-                               @PathVariable int programId,
-                               YukonUserContext userContext) {
-        
+
+    @RequestMapping(value = { "/cc/program/{programId}/{cachedKey}/confirmation", "/cc/program/{programId}/confirmation" })
+    public String confirmation(ModelMap model, @ModelAttribute("event") CiInitEventModel event, BindingResult bindingResult,
+            @PathVariable int programId, @PathVariable(required = false) String cachedKey, YukonUserContext userContext) {
+        // Retrieve the event information from cache in case of error(when clicked ok from confirm).
+        if (cachedKey != null) {
+            event = ciInitEventModelCache.asMap().get(cachedKey);
+        }
+
         CiInitEventModelValidator validator = eventModelValidator.getAfterCustomerVerificationValidator();
         validator.doValidation(event, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -433,42 +434,30 @@ public class CcHomeController {
             setUpCustomerVerificationModel(model, event, userContext);
             return "dr/cc/customerVerification.jsp";
         }
+
         final String key = UUID.randomUUID().toString().replace("-", "");
         ciInitEventModelCache.put(key, event);
         model.addAttribute("key", key);
-        setUpConfirmationPopupModel(model, event, programId, userContext);
-      //  setUpConfirmationModel(model, event, programId);
-        
+        model.addAttribute("event", event);
+        setUpConfirmationModel(model, event, programId);
         return "dr/cc/confirmation.jsp";
     }
-    
+
     @GetMapping("/cc/program/{programId}/confirmation/render-confirm/{key}")
     public String renderConfirmationPopup(@PathVariable int programId, @PathVariable String key, ModelMap model,
             YukonUserContext userContext) {
         CiInitEventModel event = ciInitEventModelCache.asMap().get(key);
-          setUpConfirmationPopupModel(model, event, programId, userContext);
-    //    setUpConfirmationModel(model, event, programId);
+        setUpConfirmationModel(model, event, programId);
         model.addAttribute("event", event);
         model.addAttribute("stopTime", event.getStopTime());
+        model.addAttribute("key", key);
         return "dr/cc/confirmationPopup.jsp";
     }
+
     private void setUpConfirmationModel(ModelMap model, CiInitEventModel event, int programId) {
         Program program = programService.getProgramById(programId);
         model.addAttribute("program", program);
         
-        List<GroupCustomerNotif> customerNotifs = groupCustomerNotifDao.getByIds(event.getSelectedCustomerIds());
-        model.addAttribute("customerNotifs", customerNotifs);
-        
-        if (event.getEventType().isEconomic()) {
-            List<DateTime> windowTimes = getWindowTimes(event);
-            model.addAttribute("windowTimes", windowTimes);
-        }
-    }
-    
-    private void setUpConfirmationPopupModel(ModelMap model, CiInitEventModel event, int programId, YukonUserContext userContext) {
-        Program program = programService.getProgramById(programId);
-        model.addAttribute("program", program);
-       
         List<GroupCustomerNotif> customerNotifs = groupCustomerNotifDao.getByIds(event.getSelectedCustomerIds());
         model.addAttribute("customerNotifs", customerNotifs);
         
@@ -487,38 +476,32 @@ public class CcHomeController {
         }
         return windowTimes;
     }
-    
-    @RequestMapping("/cc/program/{programId}/createEvent")
-    public String createEvent(ModelMap model,
-                              @ModelAttribute("event") CiInitEventModel event,
-                              BindingResult bindingResult,
-                              @PathVariable int programId,
-                              HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException {
-        
+
+    @RequestMapping("/cc/program/{programId}/createEvent/{key}")
+    public String createEvent(ModelMap model, @ModelAttribute("event") CiInitEventModel event, BindingResult bindingResult,
+            @PathVariable int programId, @PathVariable String key, HttpServletResponse response, FlashScope flashScope)
+            throws JsonGenerationException, JsonMappingException, IOException {
+
         CiInitEventModelValidator validator = eventModelValidator.getPreCreateValidator();
         validator.doValidation(event, bindingResult);
         if (bindingResult.hasErrors()) {
             setUpConfirmationModel(model, event, programId);
             return "dr/cc/confirmation.jsp";
         }
-        
+        Map<String, String> json = new HashMap<>();
+        json.put("programId", Integer.toString(programId));
+        json.put("key", key);
         try {
             int eventId = ciEventCreationService.createEvent(event);
-            Map<String, String> json = new HashMap<>();
-            json.put("programId", Integer.toString(programId));
             json.put("eventId", Integer.toString(eventId));
-            response.setContentType("application/json");
-            JsonUtils.getWriter().writeValue(response.getOutputStream(), json);
-            return null;
         } catch (EventCreationException e) {
-            bindingResult.reject("yukon.web.modules.dr.cc.init.error.noAdvancedBuyThrough");
-            setUpConfirmationModel(model, event, programId);
-            return "dr/cc/confirmation.jsp";
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.init.error.noAdvancedBuyThrough"));
         } catch (ConnectionException e) {
-            bindingResult.reject("yukon.web.modules.dr.cc.init.error.noConnection");
-            setUpConfirmationModel(model, event, programId);
-            return "dr/cc/confirmation.jsp";
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.init.error.noConnection"));
         }
+        response.setContentType("application/json");
+        JsonUtils.getWriter().writeValue(response.getOutputStream(), json);
+        return null;
     }
     
     @RequestMapping("/cc/program/{programId}/history")

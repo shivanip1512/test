@@ -95,6 +95,17 @@
     </c:forEach>
 </ul>
 
+<div class="page-action-area">
+    <cti:button classes="action primary" nameKey="confirm"  id="copy-option" data-popup="#confirm-popup"/>
+    <cti:msg2 var="confirmationTitle" key="yukon.web.modules.dr.cc.init.confirmationPopup.title"/>
+    <cti:url var="renderConfirmationUrl" value="/dr/cc/program/${event.programId}/confirmation/render-confirm/${key}"/>
+    <cti:msg2 var="confirmText" key="yukon.web.components.button.ok.label"/>
+    <div class="dn" id="confirm-popup" data-title="${confirmationTitle}" data-dialog data-ok-text="${confirmText}" 
+         data-event="yukon:event:confirm" data-url="${renderConfirmationUrl}"></div>
+    <cti:url var="cancelUrl" value="/dr/cc/home"/>
+    <cti:button href="${cancelUrl}" nameKey="cancel"/>
+</div>
+
 <cti:url var="url" value="/dr/cc/program/${event.programId}/createEvent"/>
 <form:form modelAttribute="event">
     <cti:csrfToken/>
@@ -110,18 +121,6 @@
     <form:hidden path="selectedGroupIds"/>
     <form:hidden path="selectedCustomerIds"/>
     <form:hidden path="initialEventId"/>
-    
-    <div class="page-action-area">
-        <cti:button classes="action primary" nameKey="confirm"  id="copy-option" data-popup="#confirm-popup"/>
-        <cti:msg2 var="confirmationTitle" key="yukon.web.modules.dr.cc.init.confirmationPopup.title"/>
-        <cti:url var="renderConfirmationUrl" value="/dr/cc/program/${event.programId}/confirmation/render-confirm/${key}"/>
-        <cti:msg2 var="confirmText" key="components.button.confirm.label"/>
-        <div class="dn" id="confirm-popup" data-title="${confirmationTitle}" data-dialog data-ok-text="${confirmText}" 
-             data-event="yukon:event:confirm" data-url="${renderConfirmationUrl}"></div>
-
-        <cti:url var="cancelUrl" value="/dr/cc/home"/>
-        <cti:button href="${cancelUrl}" nameKey="cancel"/>
-    </div>
 </form:form>
 <cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js" />
 </cti:standardPage>
