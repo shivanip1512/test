@@ -1,18 +1,18 @@
 #include "precompiled.h"
 
 #include "RfnMeterReadMsg.h"
-
-#include "message_serialization_util.h"
-
 #include "Thrift/RfnMeterReadRequest_types.h"
+
+#include "amq_connection.h"
+#include "message_serialization_util.h"
 
 #include <boost/optional.hpp>
 
 namespace Cti::Messaging::Serialization {
 
-using RmrReqMsg = Pil::RfnMeterReadRequestMsg;
-using RmrRepMsg = Pil::RfnMeterReadReplyMsg;
-using RmrDatMsg = Pil::RfnMeterReadDataReplyMsg;
+using RmrReqMsg = Rfn::RfnMeterReadRequestMsg;
+using RmrRepMsg = Rfn::RfnMeterReadReplyMsg;
+using RmrDatMsg = Rfn::RfnMeterReadDataReplyMsg;
 
 template<>
 boost::optional<RmrReqMsg> MessageSerializer<RmrReqMsg>::deserialize(const ActiveMQConnectionManager::SerializedMessage& msg)
@@ -34,16 +34,16 @@ boost::optional<RmrReqMsg> MessageSerializer<RmrReqMsg>::deserialize(const Activ
 template<>
 ActiveMQConnectionManager::SerializedMessage MessageSerializer<RmrRepMsg>::serialize(const RmrRepMsg& msg)
 {
-    static const std::map<Pil::RfnMeterReadingReplyType, Thrift::RfnMeterReadingReplyType::type> initialReplyTypes {
-        { Pil::RfnMeterReadingReplyType::FAILURE,
+    static const std::map<Rfn::RfnMeterReadingReplyType, Thrift::RfnMeterReadingReplyType::type> initialReplyTypes {
+        { Rfn::RfnMeterReadingReplyType::FAILURE,
             Thrift::RfnMeterReadingReplyType::FAILURE },
-        { Pil::RfnMeterReadingReplyType::NO_GATEWAY,
+        { Rfn::RfnMeterReadingReplyType::NO_GATEWAY,
             Thrift::RfnMeterReadingReplyType::NO_GATEWAY },
-        { Pil::RfnMeterReadingReplyType::NO_NODE,
+        { Rfn::RfnMeterReadingReplyType::NO_NODE,
             Thrift::RfnMeterReadingReplyType::NO_NODE },
-        { Pil::RfnMeterReadingReplyType::OK,
+        { Rfn::RfnMeterReadingReplyType::OK,
             Thrift::RfnMeterReadingReplyType::OK },
-        { Pil::RfnMeterReadingReplyType::TIMEOUT,
+        { Rfn::RfnMeterReadingReplyType::TIMEOUT,
             Thrift::RfnMeterReadingReplyType::TIMEOUT }
     };
 
@@ -71,19 +71,19 @@ ActiveMQConnectionManager::SerializedMessage MessageSerializer<RmrRepMsg>::seria
     return{};
 }
 
-Thrift::RfnMeterReadingData toThrift(const Pil::RfnMeterReadingData& data)
+Thrift::RfnMeterReadingData toThrift(const Rfn::RfnMeterReadingData& data)
 {
     Thrift::RfnMeterReadingData tdata;
 
-    static const auto channelDataToThrift = [](const Pil::ChannelData& cd) {
-        static const std::map<Pil::ChannelDataStatus, Thrift::ChannelDataStatus::type> statuses {
-            { Pil::ChannelDataStatus::FAILURE, 
+    static const auto channelDataToThrift = [](const Rfn::ChannelData& cd) {
+        static const std::map<Rfn::ChannelDataStatus, Thrift::ChannelDataStatus::type> statuses {
+            { Rfn::ChannelDataStatus::FAILURE, 
                 Thrift::ChannelDataStatus::FAILURE },
-            { Pil::ChannelDataStatus::LONG,
+            { Rfn::ChannelDataStatus::LONG,
                 Thrift::ChannelDataStatus::LONG },
-            { Pil::ChannelDataStatus::OK,
+            { Rfn::ChannelDataStatus::OK,
                 Thrift::ChannelDataStatus::OK },
-            { Pil::ChannelDataStatus::TIMEOUT, 
+            { Rfn::ChannelDataStatus::TIMEOUT, 
                 Thrift::ChannelDataStatus::TIMEOUT } };
         Thrift::ChannelData tcd;
         tcd.__set_channelNumber(cd.channelNumber);
@@ -103,7 +103,7 @@ Thrift::RfnMeterReadingData toThrift(const Pil::RfnMeterReadingData& data)
 
         return tcd;
     };
-    static const auto datedChannelDataToThrift = [](const Pil::DatedChannelData& dcd) {
+    static const auto datedChannelDataToThrift = [](const Rfn::DatedChannelData& dcd) {
         Thrift::DatedChannelData tdcd;
 
         tdcd.__set_channelData(channelDataToThrift(dcd.channelData));
@@ -133,14 +133,14 @@ Thrift::RfnMeterReadingData toThrift(const Pil::RfnMeterReadingData& data)
 template<>
 ActiveMQConnectionManager::SerializedMessage MessageSerializer<RmrDatMsg>::serialize(const RmrDatMsg& msg)
 {
-    static const std::map<Pil::RfnMeterReadingDataReplyType, Thrift::RfnMeterReadingDataReplyType::type> replyTypes {
-        { Pil::RfnMeterReadingDataReplyType::FAILURE,
+    static const std::map<Rfn::RfnMeterReadingDataReplyType, Thrift::RfnMeterReadingDataReplyType::type> replyTypes {
+        { Rfn::RfnMeterReadingDataReplyType::FAILURE,
             Thrift::RfnMeterReadingDataReplyType::FAILURE },
-        { Pil::RfnMeterReadingDataReplyType::NETWORK_TIMEOUT,
+        { Rfn::RfnMeterReadingDataReplyType::NETWORK_TIMEOUT,
             Thrift::RfnMeterReadingDataReplyType::NETWORK_TIMEOUT },
-        { Pil::RfnMeterReadingDataReplyType::OK,
+        { Rfn::RfnMeterReadingDataReplyType::OK,
             Thrift::RfnMeterReadingDataReplyType::OK },
-        { Pil::RfnMeterReadingDataReplyType::TIMEOUT,
+        { Rfn::RfnMeterReadingDataReplyType::TIMEOUT,
             Thrift::RfnMeterReadingDataReplyType::TIMEOUT }
     };
 

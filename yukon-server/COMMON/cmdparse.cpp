@@ -507,6 +507,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             flag |= CMD_FLAG_GV_USAGE;
         }
+        else if( containsString(CmdStr, " meter_read") )
+        {
+            _cmd["meter_read"] = true;
+        }
         else if(containsString(CmdStr, " lp "))
         {
             if(!(token = matchRegex(CmdStr, re_lp)).empty())

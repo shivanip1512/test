@@ -254,6 +254,27 @@ inline std::ostream &operator<<(std::ostream &logger, const std::set<long> &long
     return logger << "}";
 }
 
+inline std::ostream& operator<<(std::ostream& logger, const std::set<std::string>& str_set)
+{
+    logger << "{";
+    if( str_set.empty() )
+    {
+        logger << "<empty>";
+    }
+    else
+    {
+        auto itr = str_set.begin();
+
+        logger << *itr;
+
+        while( ++itr != str_set.end() )
+        {
+            logger << "," << *itr;
+        }
+    }
+    return logger << "}";
+}
+
 }
     
 namespace Map {

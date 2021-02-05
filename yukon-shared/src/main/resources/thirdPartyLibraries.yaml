@@ -3747,6 +3747,20 @@ Network Manager :
     jira : none
     notes : 
 
+  - filename : bc-fips-1.0.2.jar
+    yukon group : Bouncy Castle
+    project : Bouncy Castle FIPS
+    version : 1.0.2
+    project URL : "https://www.bouncycastle.org/fips-java/"
+    license : MIT-like
+    license URLs : "https://www.bouncycastle.org/license.html"
+    maven URL : n/a
+    md5 : 1555941e5e9aa10abcb15e4c8777498c
+    sha1 : 4fb5db5f03d00f6a94e43b78d097978190e4abb2
+    updated : 2020-01-06
+    jira : NM-1922
+    notes : Open source, but supported via donation or purchase
+
   - filename : bsf.jar
     yukon group : IzPack
     project : IzPack
