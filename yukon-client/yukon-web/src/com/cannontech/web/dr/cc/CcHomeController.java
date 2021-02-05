@@ -1,5 +1,6 @@
 package com.cannontech.web.dr.cc;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -12,13 +13,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -33,6 +37,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,7 +90,9 @@ import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.dr.setup.ControlAreaTrigger;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotificationGroupDao;
@@ -115,6 +122,10 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 //TODO JAVA 8 - Replace Filters and Functions with lambdas
 @Controller
@@ -123,6 +134,7 @@ public class CcHomeController {
     private static Logger log = YukonLogManager.getLogger(CcHomeController.class);
     private static String eventHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_";
     private static String companyHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.";
+    private Cache<String, CiInitEventModel> ciInitEventModelCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
     
     @Autowired private AccountingEventDao accountingEventDao;
     @Autowired private BaseEventDao baseEventDao;
@@ -421,16 +433,42 @@ public class CcHomeController {
             setUpCustomerVerificationModel(model, event, userContext);
             return "dr/cc/customerVerification.jsp";
         }
-        
-        setUpConfirmationModel(model, event, programId);
+        final String key = UUID.randomUUID().toString().replace("-", "");
+        ciInitEventModelCache.put(key, event);
+        model.addAttribute("key", key);
+        setUpConfirmationPopupModel(model, event, programId, userContext);
+      //  setUpConfirmationModel(model, event, programId);
         
         return "dr/cc/confirmation.jsp";
     }
     
+    @GetMapping("/cc/program/{programId}/confirmation/render-confirm/{key}")
+    public String renderConfirmationPopup(@PathVariable int programId, @PathVariable String key, ModelMap model,
+            YukonUserContext userContext) {
+        CiInitEventModel event = ciInitEventModelCache.asMap().get(key);
+          setUpConfirmationPopupModel(model, event, programId, userContext);
+    //    setUpConfirmationModel(model, event, programId);
+        model.addAttribute("event", event);
+        model.addAttribute("stopTime", event.getStopTime());
+        return "dr/cc/confirmationPopup.jsp";
+    }
     private void setUpConfirmationModel(ModelMap model, CiInitEventModel event, int programId) {
         Program program = programService.getProgramById(programId);
         model.addAttribute("program", program);
         
+        List<GroupCustomerNotif> customerNotifs = groupCustomerNotifDao.getByIds(event.getSelectedCustomerIds());
+        model.addAttribute("customerNotifs", customerNotifs);
+        
+        if (event.getEventType().isEconomic()) {
+            List<DateTime> windowTimes = getWindowTimes(event);
+            model.addAttribute("windowTimes", windowTimes);
+        }
+    }
+    
+    private void setUpConfirmationPopupModel(ModelMap model, CiInitEventModel event, int programId, YukonUserContext userContext) {
+        Program program = programService.getProgramById(programId);
+        model.addAttribute("program", program);
+       
         List<GroupCustomerNotif> customerNotifs = groupCustomerNotifDao.getByIds(event.getSelectedCustomerIds());
         model.addAttribute("customerNotifs", customerNotifs);
         
@@ -454,7 +492,8 @@ public class CcHomeController {
     public String createEvent(ModelMap model,
                               @ModelAttribute("event") CiInitEventModel event,
                               BindingResult bindingResult,
-                              @PathVariable int programId) {
+                              @PathVariable int programId,
+                              HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException {
         
         CiInitEventModelValidator validator = eventModelValidator.getPreCreateValidator();
         validator.doValidation(event, bindingResult);
@@ -465,7 +504,12 @@ public class CcHomeController {
         
         try {
             int eventId = ciEventCreationService.createEvent(event);
-            return "redirect:/dr/cc/program/" + programId + "/event/" + eventId + "/detail";
+            Map<String, String> json = new HashMap<>();
+            json.put("programId", Integer.toString(programId));
+            json.put("eventId", Integer.toString(eventId));
+            response.setContentType("application/json");
+            JsonUtils.getWriter().writeValue(response.getOutputStream(), json);
+            return null;
         } catch (EventCreationException e) {
             bindingResult.reject("yukon.web.modules.dr.cc.init.error.noAdvancedBuyThrough");
             setUpConfirmationModel(model, event, programId);

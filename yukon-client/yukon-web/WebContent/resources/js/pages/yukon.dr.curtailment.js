@@ -241,6 +241,18 @@ yukon.dr.curtailment = (function () {
                 _enableDisableActionsMenu();
             });
 
+            $(document).on("yukon:event:confirm", function () {
+                $('#confirm-popup-form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        window.location.href=yukon.url('/dr/cc/program/' + data.programId + '/event/' + data.eventId + '/detail');
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#confirm-popup').html(xhr.responseText);
+                        yukon.ui.initContent('#confirm-popup');
+                        yukon.ui.unblockPage();
+                    }
+                });
+            });
             $(function () {
                 _enableDisableActionsMenu();
                 $(document).on('click', '#assigned-groups', function (ev) {

@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -95,7 +96,7 @@
 </ul>
 
 <cti:url var="url" value="/dr/cc/program/${event.programId}/createEvent"/>
-<form:form modelAttribute="event" action="${url}">
+<form:form modelAttribute="event">
     <cti:csrfToken/>
     
     <form:hidden path="eventType"/>
@@ -111,10 +112,16 @@
     <form:hidden path="initialEventId"/>
     
     <div class="page-action-area">
-        <cti:button type="submit" classes="action primary" nameKey="confirm"/>
-        
+        <cti:button classes="action primary" nameKey="confirm"  id="copy-option" data-popup="#confirm-popup"/>
+        <cti:msg2 var="confirmationTitle" key="yukon.web.modules.dr.cc.init.confirmationPopup.title"/>
+        <cti:url var="renderConfirmationUrl" value="/dr/cc/program/${event.programId}/confirmation/render-confirm/${key}"/>
+        <cti:msg2 var="confirmText" key="components.button.confirm.label"/>
+        <div class="dn" id="confirm-popup" data-title="${confirmationTitle}" data-dialog data-ok-text="${confirmText}" 
+             data-event="yukon:event:confirm" data-url="${renderConfirmationUrl}"></div>
+
         <cti:url var="cancelUrl" value="/dr/cc/home"/>
         <cti:button href="${cancelUrl}" nameKey="cancel"/>
-</div>
+    </div>
 </form:form>
+<cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js" />
 </cti:standardPage>
