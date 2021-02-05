@@ -12,8 +12,11 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.JsonUtils;
+import com.cannontech.web.api.error.model.ApiErrorModel;
 import com.cannontech.web.api.errorHandler.model.ApiError;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 /**
  * This custom error handler is to handle Exception from API calls.
@@ -42,16 +45,28 @@ public class CustomDefaultResponseErrorHandler implements ResponseErrorHandler {
         log.error("Received error response for request. " + status.value() + " " + status.name());
         String body = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
         try {
-            // Try to parse an error object from JSON in the response body.
-            ApiError error = parseErrorMessage(body);
-            throw new RestClientException(error.getMessage());
+            // Try to retrieve error massage from JSON in the response body.
+            String errorMessage = parseErrorMessage(body);
+            throw new RestClientException(errorMessage);
         } catch (IOException e) {
             log.debug("No error message found in response body, or message was in an unrecognized format.", e);
             log.error("Error Response Body: " + body);
         }
     }
 
-    private static ApiError parseErrorMessage(String errorMessageString) throws IOException {
-        return JsonUtils.fromJson(errorMessageString, ApiError.class);
+    /**
+     * Parse the JSON String with FAIL_ON_UNKNOWN_PROPERTIES. First try to convert the JSON String to ApiError object, and if it
+     * fails convert it to ApiErrorModel.
+     */
+    private String parseErrorMessage(String errorMessageString) throws IOException {
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        try {
+            ApiError error = mapper.readValue(errorMessageString, ApiError.class);
+            return error.getMessage();
+        } catch (UnrecognizedPropertyException e) {
+            // Only catch UnrecognizedPropertyException.
+            ApiErrorModel error = mapper.readValue(errorMessageString, ApiErrorModel.class);
+            return error.getDetail();
+        }
     }
 }

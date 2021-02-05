@@ -275,7 +275,11 @@ public class AttributesController {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl);
             for (PaoType type : deviceTypes) {
                 assignment.setPaoType(type);
-                callCreateAssignment(assignment, successDeviceTypes, failedDeviceTypes, attributeName, userContext, request, url, result);
+                callCreateAssignment(assignment, successDeviceTypes, failedDeviceTypes, attributeName, userContext, request, url,
+                        result);
+                if (result.hasErrors()) {
+                    break;
+                }
             }
         }
         
