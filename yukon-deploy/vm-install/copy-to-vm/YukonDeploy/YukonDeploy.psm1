@@ -105,11 +105,12 @@ Function StopAllServices () {
 #>
 Function Update-YukonDatabase () {
     Write-Host "Database Update Beginning"
+    $currentDate = Get-Date -format "yyyyMMdd"
 
-    Remove-Item -Path "C:\yukon\server\log\DBUpdater.log" -ErrorAction SilentlyContinue
+    Remove-Item -Path "C:\yukon\server\log\DBUpdater_$currentDate.log" -ErrorAction SilentlyContinue
     $p = Start-Process C:\Yukon\Runtime\bin\java.exe -ArgumentList "-cp C:/Yukon/Client/bin/tools.jar com.cannontech.dbtools.updater.DBUpdater -Dverbose=false -DignoreError=true" -Wait -PassThru -NoNewWindow
     Write-Host "Database Update Log"
-    Get-Content c:\yukon\server\log\dbupdater.log | foreach {Write-Output $_}
+    Get-Content C:\yukon\server\log\DBUpdater_$currentDate.log | foreach {Write-Output $_}
 
     if ($p.ExitCode -ne 0) {
         Write-Error "Database Update NOT Successful error code $($p.ExitCode)"
