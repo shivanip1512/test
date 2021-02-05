@@ -31,12 +31,11 @@ ULONG  CtiTablePortTimings::getDelay(int Offset) const
 
 void CtiTablePortTimings::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-   ULONG    uTemp;
-
    rdr["pretxwait"]        >> _delays[PRE_RTS_DELAY];
    rdr["rtstotxwait"]      >> _delays[RTS_TO_DATA_OUT_DELAY];
    rdr["posttxwait"]       >> _delays[DATA_OUT_TO_RTS_DOWN_DELAY];
    rdr["receivedatawait"]  >> _delays[DATA_OUT_TO_INBUFFER_FLUSH_DELAY];
+   rdr["PostCommWait"]     >> _delays[POST_REMOTE_DELAY];
    rdr["extratimeout"]     >> _delays[EXTRA_DELAY];
 
    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -47,6 +46,7 @@ void CtiTablePortTimings::DecodeDatabaseReader(Cti::RowReader &rdr)
        itemList.add("rts_to_data_out_dly")  << _delays[RTS_TO_DATA_OUT_DELAY];
        itemList.add("data_out_to_rts_dwn")  << _delays[DATA_OUT_TO_RTS_DOWN_DELAY];
        itemList.add("data_out_inflush_dly") << _delays[DATA_OUT_TO_INBUFFER_FLUSH_DELAY];
+       itemList.add("post_comm_wait")       << _delays[POST_REMOTE_DELAY];
        itemList.add("extra_delay")          << _delays[EXTRA_DELAY];
 
        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName() <<

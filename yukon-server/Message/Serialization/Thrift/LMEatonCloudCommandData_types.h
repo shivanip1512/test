@@ -49,87 +49,9 @@ std::ostream& operator<<(std::ostream& out, const LMEatonCloudStopType::type& va
 
 std::string to_string(const LMEatonCloudStopType::type& val);
 
-class LMEatonCloudCycleCommand;
-
 class LMEatonCloudScheduledCycleCommand;
 
 class LMEatonCloudStopCommand;
-
-
-class LMEatonCloudCycleCommand : public virtual ::apache::thrift::TBase {
- public:
-
-  LMEatonCloudCycleCommand(const LMEatonCloudCycleCommand&);
-  LMEatonCloudCycleCommand& operator=(const LMEatonCloudCycleCommand&);
-  LMEatonCloudCycleCommand() : _groupId(0), _controlSeconds(0), _isRampIn(0), _isRampOut(0), _cyclingOption((LMEatonCloudCycleType::type)0), _dutyCyclePercentage(0), _dutyCyclePeriod(0), _criticality(0), _currentDateTime(0) {
-  }
-
-  virtual ~LMEatonCloudCycleCommand() noexcept;
-  int32_t _groupId;
-  int32_t _controlSeconds;
-  bool _isRampIn;
-  bool _isRampOut;
-  LMEatonCloudCycleType::type _cyclingOption;
-  int32_t _dutyCyclePercentage;
-  int32_t _dutyCyclePeriod;
-  int32_t _criticality;
-   ::Cti::Messaging::Serialization::Thrift::Timestamp _currentDateTime;
-
-  void __set__groupId(const int32_t val);
-
-  void __set__controlSeconds(const int32_t val);
-
-  void __set__isRampIn(const bool val);
-
-  void __set__isRampOut(const bool val);
-
-  void __set__cyclingOption(const LMEatonCloudCycleType::type val);
-
-  void __set__dutyCyclePercentage(const int32_t val);
-
-  void __set__dutyCyclePeriod(const int32_t val);
-
-  void __set__criticality(const int32_t val);
-
-  void __set__currentDateTime(const  ::Cti::Messaging::Serialization::Thrift::Timestamp val);
-
-  bool operator == (const LMEatonCloudCycleCommand & rhs) const
-  {
-    if (!(_groupId == rhs._groupId))
-      return false;
-    if (!(_controlSeconds == rhs._controlSeconds))
-      return false;
-    if (!(_isRampIn == rhs._isRampIn))
-      return false;
-    if (!(_isRampOut == rhs._isRampOut))
-      return false;
-    if (!(_cyclingOption == rhs._cyclingOption))
-      return false;
-    if (!(_dutyCyclePercentage == rhs._dutyCyclePercentage))
-      return false;
-    if (!(_dutyCyclePeriod == rhs._dutyCyclePeriod))
-      return false;
-    if (!(_criticality == rhs._criticality))
-      return false;
-    if (!(_currentDateTime == rhs._currentDateTime))
-      return false;
-    return true;
-  }
-  bool operator != (const LMEatonCloudCycleCommand &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const LMEatonCloudCycleCommand & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  virtual void printTo(std::ostream& out) const;
-};
-
-void swap(LMEatonCloudCycleCommand &a, LMEatonCloudCycleCommand &b);
-
-std::ostream& operator<<(std::ostream& out, const LMEatonCloudCycleCommand& obj);
 
 
 class LMEatonCloudScheduledCycleCommand : public virtual ::apache::thrift::TBase {

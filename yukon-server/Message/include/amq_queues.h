@@ -26,7 +26,7 @@ public:
     static const OutboundQueue ItronRestore;
     static const OutboundQueue MeterDisconnectControl;
     static const OutboundQueue MeterDisconnectRestore;
-    static const OutboundQueue EatonCloudCyclingRequest;
+    static const OutboundQueue EatonCloudScheduledCyclingRequest;
     static const OutboundQueue EatonCloudStopRequest;
     static const OutboundQueue HistoryRowAssociationResponse;
     static const OutboundQueue IvvcAnalysisMessage;

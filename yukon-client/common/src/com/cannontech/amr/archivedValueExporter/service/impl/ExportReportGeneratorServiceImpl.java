@@ -588,30 +588,35 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         Order order = null;
         OrderBy orderBy = null;
 
+        Set<PointQuality> excludeQualities = format.isExcludeAbnormal() ? excludedQualities : null;
+        
         switch (attribute.getDataSelection()) {
-        case EARLIEST:
-            order = Order.FORWARD;
-            orderBy = OrderBy.TIMESTAMP;
-            break;
-        case MIN:
-            order = Order.FORWARD;
-            orderBy = OrderBy.VALUE;
-            break;
-        case MAX:
-            order = Order.REVERSE;
-            orderBy = OrderBy.VALUE;
-            break;
-        case LATEST:
-            order = Order.REVERSE;
-            orderBy = OrderBy.TIMESTAMP;
-            break;
+            // SUM is a special case with its own query that adds all the values in the range together, per device.
+            case SUM:
+                return rawPointHistoryDao.getSummedAttributeData(paos, attribute.getAttribute(), dateRange, false, 
+                                                                 excludeQualities);
+            
+            // All other cases use the same query to find one particular attribute data point per device
+            case EARLIEST:
+                order = Order.FORWARD;
+                orderBy = OrderBy.TIMESTAMP;
+                break;
+            case MIN:
+                order = Order.FORWARD;
+                orderBy = OrderBy.VALUE;
+                break;
+            case MAX:
+                order = Order.REVERSE;
+                orderBy = OrderBy.VALUE;
+                break;
+            case LATEST:
+                order = Order.REVERSE;
+                orderBy = OrderBy.TIMESTAMP;
+                break;
         }
 
-        Set<PointQuality> excludeQualities = format.isExcludeAbnormal() ? excludedQualities : null;
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues = rawPointHistoryDao.getLimitedAttributeData(
-                paos, attribute.getAttribute(), dateRange, null, 1, false, order, orderBy,
-                excludeQualities);
-        return attributeDataValues;
+        return rawPointHistoryDao.getLimitedAttributeData(paos, attribute.getAttribute(), dateRange, null, 1, false, 
+                                                          order, orderBy,excludeQualities);
     }
 
     /**

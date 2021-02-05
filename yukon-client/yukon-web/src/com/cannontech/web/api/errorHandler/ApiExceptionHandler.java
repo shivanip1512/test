@@ -76,7 +76,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = YukonLogManager.getLogger(ApiExceptionHandler.class);
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private List<String> notSupportingUris = new ArrayList<String>();
+    private static List<String> notSupportingUris = new ArrayList<String>();
 
     /**
      * Here, we are adding those URLs which old API Error model returned.
@@ -100,16 +100,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         notSupportingUris.add(ApiURL.drControlAreaUrl);
         notSupportingUris.add(ApiURL.drControlScenarioUrl);
         notSupportingUris.add(ApiURL.commChannelUrl);
-        notSupportingUris.add(ApiURL.virtualDeviceUrl);
-        notSupportingUris.add(ApiURL.attributeUrl);
-        notSupportingUris.add(ApiURL.attributeAssignmentsUrl);
         notSupportingUris.add(ApiURL.aggregateDataReportUrl);
     }
 
     /**
      * This method will return true in case of new API Error response otherwise false.
      */
-    private boolean isNewApiErrorSupported(WebRequest request) {
+    private static boolean isNewApiErrorSupported(WebRequest request) {
         String url = ServletUtil.getFullURL(((ServletWebRequest) request).getRequest());
         return notSupportingUris.stream()
                              .filter(s -> url.contains(s))
@@ -459,13 +456,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         String url = ServletUtil.getFullURL(request);
         log.error(uniqueKey + " No mapping for " + request.getMethod() + " " + url);
-        
-        String message = String.format("Could not find the %s method for URL %s", request.getMethod(), url);
-        
-        final ApiErrorModel apiError = new ApiErrorModel(ApiErrorDetails.NO_HANDLER_FOUND, message,
-                ServletUtil.getFullURL(request), uniqueKey);
-        parseToJson(response, apiError, HttpStatus.NOT_FOUND);
 
+        String message = String.format("Could not find the %s method for URL %s", request.getMethod(), url);
+        if (isNewApiErrorSupported(new ServletWebRequest(request))) {
+            final ApiErrorModel apiError = new ApiErrorModel(ApiErrorDetails.NO_HANDLER_FOUND, message,
+                    ServletUtil.getFullURL(request), uniqueKey);
+            parseToJson(response, apiError, HttpStatus.NOT_FOUND);
+        } else {
+            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND.value(),
+                    String.format("Could not find the %s method for URL %s", request.getMethod(), url), uniqueKey);
+            parseToJson(response, apiError, HttpStatus.NOT_FOUND);
+        }
     }
     
     /**
@@ -482,10 +483,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         builder.append(" method is not supported for this request. Supported methods are ");
         ex.getSupportedHttpMethods().forEach(t -> builder.append(t + " "));
 
-        final ApiErrorModel apiError = new ApiErrorModel(ApiErrorDetails.HTTP_REQUEST_METHOD_NOT_SUPPORTED, builder.toString(),
-                ServletUtil.getFullURL(request), uniqueKey);
-        parseToJson(response, apiError, HttpStatus.METHOD_NOT_ALLOWED);
-
+        if (isNewApiErrorSupported(new ServletWebRequest(request))) {
+            final ApiErrorModel apiError = new ApiErrorModel(ApiErrorDetails.HTTP_REQUEST_METHOD_NOT_SUPPORTED,
+                    builder.toString(),
+                    ServletUtil.getFullURL(request), uniqueKey);
+            parseToJson(response, apiError, HttpStatus.METHOD_NOT_ALLOWED);
+        } else {
+            final ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED.value(), builder.toString(), uniqueKey);
+            parseToJson(response, apiError, HttpStatus.METHOD_NOT_ALLOWED);
+        }
     }
     
     /**
@@ -493,12 +499,19 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
      */
     public static void authorizationRequired(HttpServletRequest request, HttpServletResponse response, String uniqueKey)
             throws IOException {
-        final ApiErrorModel apiError = new ApiErrorModel(ApiErrorDetails.AUTHENTICATION_REQUIRED, ServletUtil.getFullURL(request),
-                uniqueKey);
-        parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
+        String message = String.format("Authorization token not found");
+        if (isNewApiErrorSupported(new ServletWebRequest(request))) {
+            final ApiErrorModel apiError = new ApiErrorModel(ApiErrorDetails.AUTHENTICATION_REQUIRED,
+                    ServletUtil.getFullURL(request),
+                    uniqueKey);
+            parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
+        } else {
+            final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), message, uniqueKey);
+            parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
+        }
     }
 
-    public static void parseToJson(HttpServletResponse response, ApiErrorModel apiError, HttpStatus httpStatus)
+    private static void parseToJson(HttpServletResponse response, Object apiError, HttpStatus httpStatus)
             throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(httpStatus.value());

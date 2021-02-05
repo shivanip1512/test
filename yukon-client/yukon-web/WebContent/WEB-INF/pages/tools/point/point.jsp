@@ -62,7 +62,7 @@
                         <tags:input path="pointBase.point.pointName"/>
                     </tags:nameValue2>
 
-                    <tags:nameValue2 excludeColon="${true}">
+                    <tags:nameValue2 nameKey=".status">
                         <tags:switchButton path="pointBase.point.outOfService"  offClasses="M0"
                             offNameKey=".disabled.label" onNameKey=".enabled.label" inverse="${true}" />
                     </tags:nameValue2>

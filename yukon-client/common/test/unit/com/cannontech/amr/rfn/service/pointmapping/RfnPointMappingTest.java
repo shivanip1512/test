@@ -764,14 +764,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAX, "kVArh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4EAX, "Average Power Factor");
         missing.put(PaoType.RFN530S4EAX, "Average Power Factor Frozen");
-        missing.put(PaoType.RFN530S4EAX, "Average Power Factor Frozen Rate A");
-        missing.put(PaoType.RFN530S4EAX, "Average Power Factor Frozen Rate B");
-        missing.put(PaoType.RFN530S4EAX, "Average Power Factor Frozen Rate C");
-        missing.put(PaoType.RFN530S4EAX, "Average Power Factor Frozen Rate D");
-        missing.put(PaoType.RFN530S4EAX, "Average Power Factor Rate A");
-        missing.put(PaoType.RFN530S4EAX, "Average Power Factor Rate B");
-        missing.put(PaoType.RFN530S4EAX, "Average Power Factor Rate C");
-        missing.put(PaoType.RFN530S4EAX, "Average Power Factor Rate D");
         
         missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase A");
         missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase B");
@@ -884,14 +876,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAXR, "kVArh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4EAXR, "Average Power Factor");
         missing.put(PaoType.RFN530S4EAXR, "Average Power Factor Frozen");
-        missing.put(PaoType.RFN530S4EAXR, "Average Power Factor Frozen Rate A");
-        missing.put(PaoType.RFN530S4EAXR, "Average Power Factor Frozen Rate B");
-        missing.put(PaoType.RFN530S4EAXR, "Average Power Factor Frozen Rate C");
-        missing.put(PaoType.RFN530S4EAXR, "Average Power Factor Frozen Rate D");
-        missing.put(PaoType.RFN530S4EAXR, "Average Power Factor Rate A");
-        missing.put(PaoType.RFN530S4EAXR, "Average Power Factor Rate B");
-        missing.put(PaoType.RFN530S4EAXR, "Average Power Factor Rate C");
-        missing.put(PaoType.RFN530S4EAXR, "Average Power Factor Rate D");
         
         missing.put(PaoType.RFN530S4ERX, "Avg Voltage Phase A");
         missing.put(PaoType.RFN530S4ERX, "Avg Voltage Phase B");
@@ -1018,14 +1002,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERX, "Sum kWh (Rate D kWh)");
         missing.put(PaoType.RFN530S4ERX, "kVAh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4ERX, "kVArh Leading (Q1 + Q3)");
-        missing.put(PaoType.RFN530S4ERX, "Average Power Factor Frozen Rate A");
-        missing.put(PaoType.RFN530S4ERX, "Average Power Factor Frozen Rate B");
-        missing.put(PaoType.RFN530S4ERX, "Average Power Factor Frozen Rate C");
-        missing.put(PaoType.RFN530S4ERX, "Average Power Factor Frozen Rate D");
-        missing.put(PaoType.RFN530S4ERX, "Average Power Factor Rate A");
-        missing.put(PaoType.RFN530S4ERX, "Average Power Factor Rate B");
-        missing.put(PaoType.RFN530S4ERX, "Average Power Factor Rate C");
-        missing.put(PaoType.RFN530S4ERX, "Average Power Factor Rate D");
         
         missing.put(PaoType.RFN530S4ERXR, "Avg Voltage Phase A");
         missing.put(PaoType.RFN530S4ERXR, "Avg Voltage Phase B");
@@ -1140,14 +1116,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4X, "kVAr (Quadrants 2 4)");
         missing.put(PaoType.RFN530S4X, "kVArh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4X, "Average Power Factor Frozen");
-        missing.put(PaoType.RFN530S4X, "Average Power Factor Frozen Rate A");
-        missing.put(PaoType.RFN530S4X, "Average Power Factor Frozen Rate B");
-        missing.put(PaoType.RFN530S4X, "Average Power Factor Frozen Rate C");
-        missing.put(PaoType.RFN530S4X, "Average Power Factor Frozen Rate D");
-        missing.put(PaoType.RFN530S4X, "Average Power Factor Rate A");
-        missing.put(PaoType.RFN530S4X, "Average Power Factor Rate B");
-        missing.put(PaoType.RFN530S4X, "Average Power Factor Rate C");
-        missing.put(PaoType.RFN530S4X, "Average Power Factor Rate D");
         
         return missing;
     }

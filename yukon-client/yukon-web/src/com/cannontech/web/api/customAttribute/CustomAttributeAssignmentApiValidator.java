@@ -1,0 +1,25 @@
+package com.cannontech.web.api.customAttribute;
+
+import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
+
+import com.cannontech.common.pao.attribute.model.Assignment;
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonApiValidationUtils;
+import com.cannontech.stars.util.ServletUtils;
+
+@Service
+public class CustomAttributeAssignmentApiValidator extends SimpleValidator<Assignment> {
+
+    public CustomAttributeAssignmentApiValidator() {
+        super(Assignment.class);
+    }
+
+    @Override
+    protected void doValidation(Assignment assignment, Errors errors) {
+        Integer attributeAssignmentId = Integer.valueOf(ServletUtils.getPathVariable("attributeAssignmentId"));
+
+        YukonApiValidationUtils.checkIsPositiveInt(errors, "attributeAssignmentId", attributeAssignmentId);
+    }
+
+}

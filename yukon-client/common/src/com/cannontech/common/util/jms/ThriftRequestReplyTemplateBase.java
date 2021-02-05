@@ -16,13 +16,13 @@ import com.cannontech.common.util.ExceptionHelper;
 
 public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T extends JmsBaseReplyHandler> {
     protected static final Logger log = YukonLogManager.getLogger(ThriftRequestReplyTemplateBase.class);
-    protected static final Logger rfnLogger = YukonLogManager.getRfnLogger();
+    protected final Logger commsLogger;
     
     protected ConfigurationSource configurationSource;
     protected YukonJmsTemplate jmsTemplate;
     protected ExecutorService readRequestThreadPool;
     protected String configurationName;
-    protected boolean internalMessage = false;
+    protected boolean isDebugLog = false;
     
     /**
      * @param isInternalMessage : if true, specifies that messages are being sent internally between Yukon
@@ -30,11 +30,12 @@ public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T e
      *        log.
      */
     public ThriftRequestReplyTemplateBase(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate, boolean isInternalMessage) {
+            YukonJmsTemplate jmsTemplate, boolean isDebugLog) {
+        this.commsLogger = jmsTemplate.getCommsLogger();
         this.configurationName = configurationName;
         this.configurationSource = configurationSource;
         this.jmsTemplate = jmsTemplate;
-        this.internalMessage = isInternalMessage;
+        this.isDebugLog = isDebugLog;
         
         int queueSize = configurationSource.getInteger("REQUEST_REPLY_WORKER_QUEUE_SIZE", 50);
         
@@ -81,10 +82,10 @@ public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T e
      * Adds an entry in rfnLogger
      */
     private void log(String text) {
-        if (!internalMessage && rfnLogger.isInfoEnabled()) {
-            rfnLogger.info(text);
-        } else if (internalMessage && rfnLogger.isDebugEnabled()) {
-            rfnLogger.debug(text);
+        if (!isDebugLog && commsLogger.isInfoEnabled()) {
+            commsLogger.info(text);
+        } else if (isDebugLog && commsLogger.isDebugEnabled()) {
+            commsLogger.debug(text);
         }
     }
     

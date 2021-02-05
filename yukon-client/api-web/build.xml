@@ -60,9 +60,9 @@
         <include name="guava-18.0.jar"/>
         <include name="hawtbuf-1.11.jar"/>
         <include name="i18n-en_US.jar"/>
-        <include name="jackson-annotations-2.10.1.jar"/>
-        <include name="jackson-core-2.10.1.jar"/>
-        <include name="jackson-databind-2.10.1.jar"/>
+        <include name="jackson-annotations-2.12.1.jar"/>
+        <include name="jackson-core-2.12.1.jar"/>
+        <include name="jackson-databind-2.12.1.jar"/>
     	<include name="jackson-dataformat-csv-2.9.6.jar"/>
         <include name="snakeyaml-1.18.2.jar"/>
         <include name="jasypt-1.9.2.jar"/>
@@ -91,7 +91,7 @@
         <include name="smtp-1.5.1.jar"/>
         <include name="notification.jar"/>
         <include name="org.osgi.core-4.1.0.jar"/>
-        <include name="quartz-2.3.0-SNAPSHOT.jar"/>
+        <include name="quartz-2.3.2.jar"/>
         <include name="saaj.jar"/>
         <include name="slf4j-api-1.7.25.jar"/>
         <include name="slf4j-api-1.8.0-alpha2.jar"/>

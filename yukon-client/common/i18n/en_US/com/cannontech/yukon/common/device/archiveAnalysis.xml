@@ -326,6 +326,7 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataSelection.MAX">Max</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataSelection.MIN">Min</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataSelection.EARLIEST">Earliest</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataSelection.SUM">Sum</entry>
 
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.LATITUDE">Latitude</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.LONGITUDE">Longitude</entry>

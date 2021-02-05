@@ -583,8 +583,8 @@
             Requires Firmware version 9.4 or higher.
         ]]>
     </entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.metrologyLibraryEnabled">Metrology Library Enabled</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.metrologyLibraryEnabled.description">When true, the metrology library is enabled for the RFN device. Else, it is disabled.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.metrologyLibraryEnabled">Advanced Metrology Preferred</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.metrologyLibraryEnabled.description">When true, measurements, including TOU and demand, are determined by the AMI module instead of the meter.</entry>
 
     <!-- help text used by all categories using attribute mapping inputs -->
     <entry key="yukon.web.modules.tools.configs.category.attributeMapping.helpText">The name of the point that will be associated with the specified attribute.  Overrides existing device attribute assignments.</entry>

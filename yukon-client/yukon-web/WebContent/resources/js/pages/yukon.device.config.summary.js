@@ -33,6 +33,8 @@ yukon.deviceConfig.summary = (function () {
                         //refresh row
                         $.ajax(yukon.url('/deviceConfiguration/summary/' + deviceId + '/refreshDeviceRow'))
                         .done(function (rowData) {
+                            //remove any existing view history dialogs
+                            $('.js-view-history-' + deviceId).remove();
                             var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
                             deviceRow.html(rowData).flash();
                         });
