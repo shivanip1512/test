@@ -3,7 +3,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <cti:msgScope paths="modules.dr.cc.init">
     <cti:flashScopeMessages />
@@ -27,11 +26,12 @@
                 <cti:formatDate type="FULL" value="${event.stopTime}"/>
             </tags:nameValue2>
             <c:if test="${event.eventType.accounting or event.eventType.notification}">
-            <tags:nameValue2 nameKey=".confirmation.duration">
-            <cti:formatDuration type="DHMS_REDUCED" value="${event.duration * 60 * 1000}"/>
-        </tags:nameValue2>
-        </c:if>
+                <tags:nameValue2 nameKey=".confirmation.duration">
+                    <cti:formatDuration type="DHMS_REDUCED" value="${event.duration * 60 * 1000}"/>
+                </tags:nameValue2>
+            </c:if>
         </tags:nameValueContainer2>
+
         <form:hidden path="eventType"/>
         <form:hidden path="programId"/>
         <form:hidden path="notificationTime"/>
