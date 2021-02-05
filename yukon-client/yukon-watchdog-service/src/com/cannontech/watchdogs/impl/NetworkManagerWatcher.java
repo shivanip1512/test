@@ -61,6 +61,7 @@ public class NetworkManagerWatcher extends ServiceStatusWatchdogImpl {
                 new BlockingJmsReplyHandler<>(NetworkManagerHeartbeatResponse.class);
             try {
                 NetworkManagerHeartbeatRequest request = new NetworkManagerHeartbeatRequest();
+                log.debug("Sending NM watchdog heartbeat message.");
                 request.setMessageId(NM_WATCHDOG_HEARTBEAT_MESSAGEID);
                 requestTemplate.send(request, replyHandler);
                 replyHandler.waitForCompletion();
