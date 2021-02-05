@@ -6,11 +6,11 @@
 #include "connection_base.h"
 
 #include <boost/optional.hpp>
-#include <boost/variant.hpp>
 
 #include <chrono>
 #include <queue>
 #include <condition_variable>
+#include <variant>
 
 namespace cms {
 class Connection;
@@ -74,6 +74,8 @@ public:
     };
 
     using MessageCallbackWithReply = std::function<std::unique_ptr<SerializedMessage>(const MessageDescriptor &)>;
+    using ReplyCallback = std::function<void(SerializedMessage)>;
+    using MessageCallbackWithReplies = std::function<void(const MessageDescriptor&, ReplyCallback)>;
     using TimeoutCallback = std::function<void()>;
 
     template<class Msg>
@@ -140,6 +142,7 @@ public:
 
     static void registerHandler     (const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::type callback);
     static void registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
+    static void registerReplyHandler(const ActiveMQ::Queues::InboundQueue& queue, MessageCallbackWithReplies callback);
     static auto registerSessionCallback(const MessageCallback::type callback) -> SessionCallback;
 
     virtual void close();
@@ -153,7 +156,7 @@ protected:
         TimeoutCallback timeoutCallback;
     };
 
-    using ReturnAddress = boost::variant<TimedCallback, SessionCallback>;
+    using ReturnAddress = std::variant<TimedCallback, SessionCallback>;
 
     using ReturnLabel = std::unique_ptr<ReturnAddress>;
 
@@ -169,7 +172,14 @@ protected:
         virtual ~Envelope() = default;
     };
 
+    struct Reply
+    {
+        SerializedMessage message;
+        std::shared_ptr<cms::Destination> dest;
+    };
+
     using EnvelopeQueue        = std::queue<std::unique_ptr<Envelope>>;
+    using ReplyQueue           = std::queue<Reply>;
     using IncomingPerQueue     = std::map<const ActiveMQ::Queues::InboundQueue *, std::queue<std::unique_ptr<MessageDescriptor>>>;
     using CallbacksPerQueue    = std::multimap<const ActiveMQ::Queues::InboundQueue *, MessageCallback::Ptr>;
     using RepliesByDestination = std::multimap<std::string, std::unique_ptr<MessageDescriptor>>;
@@ -177,6 +187,7 @@ protected:
     struct MessagingTasks
     {
         EnvelopeQueue        outgoingMessages;
+        ReplyQueue           outgoingReplies;
         IncomingPerQueue     incomingMessages;
         CallbacksPerQueue    newCallbacks;
         RepliesByDestination tempQueueReplies;
@@ -203,9 +214,13 @@ protected:
             const std::string &queueName,
             const SerializedMessage &message,
             ReturnLabel returnAddress);
+    virtual void enqueueOutgoingReply(
+            std::shared_ptr<cms::Destination> dest,
+            const SerializedMessage& message);
 
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr callback);
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
+    void addNewCallback(const ActiveMQ::Queues::InboundQueue& queue, MessageCallbackWithReplies callback);
         
     virtual void emplaceNamedMessage(const ActiveMQ::Queues::InboundQueue* queue, const std::string type, std::vector<unsigned char> payload, cms::Destination* replyTo);
 
@@ -289,6 +304,7 @@ private:
     auto createSessionConsumer(const SessionCallback callback) -> const cms::Destination*;
 
     void sendOutgoingMessages(EnvelopeQueue messages);
+    void sendOutgoingReplies (ReplyQueue replies);
     ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
 
     void dispatchIncomingMessages(IncomingPerQueue incomingMessages);

@@ -5,7 +5,6 @@
 #include "rfn_identifier.h"
 #include "cmd_rfn_Individual.h"
 
-#include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/container/flat_map.hpp>
 
 namespace Cti::Devices {

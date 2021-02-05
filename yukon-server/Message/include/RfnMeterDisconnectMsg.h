@@ -2,10 +2,7 @@
 
 #include "rfn_identifier.h"
 
-#include "message_factory.h"
-#include "amq_connection.h"
-
-namespace Cti::Messaging::Pil {
+namespace Cti::Messaging::Rfn {
 
 enum class RfnMeterDisconnectCmdType 
 {
@@ -67,17 +64,3 @@ struct RfnMeterDisconnectConfirmationReplyMsg
 };
 
 }
-/*
-namespace Cti::Messaging::Serialization {
-    
-template<>
-boost::optional<Porter::RfnMeterDisconnectRequestMsg> MessageSerializer<Porter::RfnMeterDisconnectRequestMsg>::deserialize(const ActiveMQConnectionManager::SerializedMessage& msg);
-
-template<>
-ActiveMQConnectionManager::SerializedMessage MessageSerializer<Porter::RfnMeterDisconnectInitialReplyMsg>::serialize(const Porter::RfnMeterDisconnectInitialReplyMsg& msg);
-
-template<>
-ActiveMQConnectionManager::SerializedMessage MessageSerializer<Porter::RfnMeterDisconnectConfirmationReplyMsg>::serialize(const Porter::RfnMeterDisconnectConfirmationReplyMsg& msg);
-
-}
-*/

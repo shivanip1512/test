@@ -86,6 +86,8 @@ public:
 
     bool getExtensionBit() const;
 
+    unsigned getCoincidentOffset() const;
+
     double getScalingFactor() const;
 
     std::set<std::string> getModifierStrings() const;
