@@ -256,7 +256,7 @@ timing:
       type: integer
       default: 0
       minimum: 0
-      maximum: 999
+      maximum: 100000
       description: 'Post Comm Wait.'
 
 sharing:
