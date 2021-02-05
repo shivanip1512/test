@@ -101,6 +101,13 @@ public enum RfnManufacturerModel {
     RFN_530FRXD(PaoType.RFN530FRX, "LGYR", "FocusRXD-530"),
     RFN_530FRXT(PaoType.RFN530FRX, "LGYR", "FocusRXT-530"),
     RFN_530FRXR(PaoType.RFN530FRX, "LGYR", "FocusRXR-530"),
+    // These are purposely 520 paoTypes for 530 model values - See YUK-22166
+    RFN_530FAXD_SD(PaoType.RFN520FAXD, "LGYR", "FocusAXD-SD-530"),
+    RFN_530FAXT_SD(PaoType.RFN520FAXD, "LGYR", "FocusAXT-SD-530"),
+    RFN_530FAXR_SD(PaoType.RFN520FAXD, "LGYR", "FocusAXR-SD-530"),
+    RFN_530FRXD_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXD-SD-530"),
+    RFN_530FRXT_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXT-SD-530"),
+    RFN_530FRXR_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXR-SD-530"),
     
     RFN_530S4X(PaoType.RFN530S4X, "LGYR", "E650"),
     RFN_530S4AD(PaoType.RFN530S4EAX, "LGYR", "S4-AD"),
