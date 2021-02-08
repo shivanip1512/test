@@ -13,7 +13,6 @@
 
 
 
-
 *** locationData.bat
 -    Output: Generates a collection of csv files containing location, network, and gateway data for Meters, Relays and Gateways.
              Requires a database user with read access for both Yukon and Network Manager.
