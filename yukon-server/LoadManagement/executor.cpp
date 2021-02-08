@@ -1585,7 +1585,8 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr
 
         // If start time is set to something > now then it is scheduled (notification may have gone out) but it has not started
         // so we may need a cancel message.
-        if ( lmProgramDirect->getDirectStartTime() > CtiTime::now() ) {
+        if( lmProgramDirect->getDirectStartTime() > CtiTime::now() ) 
+        {
             lmProgramDirect->notifyGroupsOfCancelIfScheduled();
         }
 
