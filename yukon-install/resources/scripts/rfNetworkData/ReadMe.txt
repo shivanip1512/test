@@ -31,7 +31,7 @@
 
 *** networkSnapshot.bat
 -    Output: Generates a collection of csv files of network snapshot.
-             Requires a database user with read access for Network Manager.
+             Requires a database user with read access for both Yukon and Network Manager.
              After running the scripts you will get few csv files listed below
              - descData.csv
              - nmData.csv
