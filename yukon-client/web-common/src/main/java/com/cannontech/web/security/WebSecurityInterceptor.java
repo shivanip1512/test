@@ -56,7 +56,7 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
                     session.invalidate();
                     return false;
                 } else {
-                    log.warn("Invalid CSRF token received for /updater/update:", se);
+                    log.warn("Invalid CSRF token received for /updater/update:", se.getMessage());
                     return true;
                 }
                 
