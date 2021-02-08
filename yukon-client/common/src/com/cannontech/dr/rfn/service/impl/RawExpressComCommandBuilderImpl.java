@@ -76,6 +76,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
 
         // 0x00 indicates command selects by device serial number.
         outputBuffer.put((byte) 0x00);
+        
         // Write serial number as a 4-byte Integer. 
         outputBuffer.putInt(serialNumber);
         
