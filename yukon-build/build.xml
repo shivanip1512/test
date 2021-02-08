@@ -511,6 +511,7 @@
                 </group>
             </structure>
             <html destdir="${basedir}/yukon-client/jacocoReport"/>
+            <xml destfile="C:/CodeCoverage/junitCoverage.xml"/>
         </jacoco:report>
    </target>
 
