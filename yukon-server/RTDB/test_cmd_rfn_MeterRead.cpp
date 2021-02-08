@@ -84,7 +84,12 @@ BOOST_AUTO_TEST_CASE(test_read_fmt1_channel_error)
     RfnCommandResult result = command.decodeCommand(execute_time, response);
 
     BOOST_CHECK_EQUAL(result.description, 
-        "\nChannel count : 1");
+        "Results:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\n# Channel data  : 0"
+        "\n# Dated data    : 0"
+        "\nTimestamp       : 02/17/2010 10:00:00");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 }
@@ -111,7 +116,12 @@ BOOST_AUTO_TEST_CASE(test_read_fmt1_ok)
     RfnCommandResult result = command.decodeCommand(execute_time, response);
 
     BOOST_CHECK_EQUAL(result.description,
-        "\nChannel count : 1");
+        "Results:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\n# Channel data  : 0"
+        "\n# Dated data    : 0"
+        "\nTimestamp       : 02/17/2010 10:00:00");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 }
@@ -144,7 +154,12 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_channel_error)
     RfnCommandResult result = command.decodeCommand(execute_time, response);
 
     BOOST_CHECK_EQUAL(result.description,
-        "\nChannel count : 1");
+        "Results:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\n# Channel data  : 1"
+        "\n# Dated data    : 0"
+        "\nTimestamp       : 02/17/2010 10:00:00");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 }
@@ -208,7 +223,12 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_single_channel)
     RfnCommandResult result = command.decodeCommand(execute_time, response);
 
     BOOST_CHECK_EQUAL(result.description,
-        "\nChannel count : 1");
+        "Results:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\n# Channel data  : 1"
+        "\n# Dated data    : 0"
+        "\nTimestamp       : 02/17/2010 10:00:00");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 }
@@ -244,7 +264,12 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels)
     RfnCommandResult result = command.decodeCommand(execute_time, response);
 
     BOOST_CHECK_EQUAL(result.description,
-        "\nChannel count : 2");
+        "Results:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\n# Channel data  : 2"
+        "\n# Dated data    : 0"
+        "\nTimestamp       : 02/17/2010 10:00:00");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 }
@@ -301,7 +326,12 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
     RfnCommandResult result = command.decodeCommand(execute_time, response);
 
     BOOST_CHECK_EQUAL(result.description,
-        "\nChannel count : 5");
+        "Results:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\n# Channel data  : 3"
+        "\n# Dated data    : 1"
+        "\nTimestamp       : 02/17/2010 10:00:00");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -408,7 +438,12 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_coincident)
     RfnCommandResult result = command.decodeCommand(execute_time, response);
     
     BOOST_CHECK_EQUAL(result.description,
-        "\nChannel count : 3");
+        "Results:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\n# Channel data  : 0"
+        "\n# Dated data    : 2"
+        "\nTimestamp       : 02/17/2010 10:00:00");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 

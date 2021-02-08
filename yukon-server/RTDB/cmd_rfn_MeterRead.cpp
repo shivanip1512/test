@@ -142,10 +142,10 @@ try
 
     const auto responseType = response[0];
 
-    validate(Condition(responseType == 0x02 || responseType == 0x03, ClientErrors::InvalidData)
+    validate(Condition(responseType == Response_fmt1 || responseType == Response_fmt23, ClientErrors::InvalidData)
         << "RFN meter read response type is unknown: " << static_cast<int>(responseType));
 
-    const bool includesModifiers = (responseType == 0x03);
+    const bool includesModifiers = (responseType == Response_fmt23);
 
     const auto readStatus = response[1];
     validate(Condition(readStatus == 0, ClientErrors::InvalidData)
@@ -217,10 +217,20 @@ try
         rawChannels.emplace_back(std::move(rc));
     }
 
-    _response = correlateRawChannels(now, std::move(rawChannels));
+    if( _response = correlateRawChannels(now, std::move(rawChannels)) )
+    {
+        return "Results:" + FormattedList::of(
+                "User message ID", _userMessageId,
+                "Reply type", static_cast<int>(_response->replyType),
+                "# Channel data", _response->data.channelDataList.size(),
+                "# Dated data", _response->data.datedChannelDataList.size(),
+                "Timestamp", _response->data.timeStamp);
 
-    return FormattedList::of(
-        "Channel count", channelCount);
+    }
+
+    return "No message generated" + FormattedList::of(
+            "User message ID", _userMessageId,
+            "Channels", channelCount);
 }
 catch( const YukonErrorException& ex )
 {

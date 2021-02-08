@@ -39,7 +39,8 @@ private:
     enum Command
     {
         Request = 0x01,
-        Response = 0x03
+        Response_fmt1  = 0x02,
+        Response_fmt23 = 0x03
     };
 
     Bytes getCommandHeader() override;

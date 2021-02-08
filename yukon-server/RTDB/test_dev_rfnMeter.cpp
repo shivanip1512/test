@@ -66,9 +66,13 @@ BOOST_AUTO_TEST_CASE(test_getvalue_meter_read)
 {
     test_RfnMeterDevice dut;
 
+    Cti::Test::Override_CtiTime_Now newNow { execute_time };
+
     dut.setDeviceType(TYPE_RFN410FX);
 
     CtiCommandParser parse("getvalue meter_read");
+
+    request->setUserMessageId(11235);
 
     BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
     BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
@@ -119,11 +123,19 @@ BOOST_AUTO_TEST_CASE(test_getvalue_meter_read)
                 0x00, //  Status (OK)
         };
 
-    command->handleResponse(CtiTime::now(), response);
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
 
-    //  Successful decode will not throw
-
-    dut.extractCommandResult(*command);
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Read:"
+        "\nResults:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\n# Channel data  : 0"
+        "\n# Dated data    : 2"
+        "\nTimestamp       : 08/27/2013 15:00:00");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
 }
 
 
