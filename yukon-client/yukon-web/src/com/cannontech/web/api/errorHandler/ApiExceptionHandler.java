@@ -99,8 +99,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         notSupportingUris.add(ApiURL.drSeasonScheduleUrl);
         notSupportingUris.add(ApiURL.drControlAreaUrl);
         notSupportingUris.add(ApiURL.drControlScenarioUrl);
-        notSupportingUris.add(ApiURL.attributeUrl);
-        notSupportingUris.add(ApiURL.attributeAssignmentsUrl);
+        notSupportingUris.add(ApiURL.commChannelUrl);
         notSupportingUris.add(ApiURL.aggregateDataReportUrl);
     }
 
@@ -539,13 +538,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             ApiErrorDetails errorDetails = ApiErrorDetails.getError(bindingResult.getGlobalErrors().get(0).getCode());
             return buildGlobalErrors(errorDetails, uniqueKey, request);
         }
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         bindingResult.getFieldErrors().stream().forEach(
                 fieldError -> {
                     ApiErrorDetails childError = ApiErrorDetails.getError(fieldError.getCode());
-                    String i18nMessage = messageSourceAccessor.getMessage("yukon.web.error." + childError.getCode(),
-                            fieldError.getArguments());
-                    ApiFieldErrorModel error = new ApiFieldErrorModel(childError, fieldError, i18nMessage);
+                    ApiFieldErrorModel error = new ApiFieldErrorModel(childError, fieldError);
                     errors.add(error);
                 });
         ApiErrorDetails childError = ApiErrorDetails.getError(bindingResult.getFieldErrors().get(0).getCode());
