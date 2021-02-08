@@ -477,6 +477,9 @@
     <ClCompile Include="cmd_rfn_MeterRead.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cmd_rfn_MeterDisconnect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cmd_device.h">
@@ -1065,6 +1068,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\cmd_rfn_MeterRead.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cmd_rfn_MeterDisconnect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
