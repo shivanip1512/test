@@ -374,7 +374,10 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
         /* Do the extra delay if the message is a completing type */
         if( Xfer.isMessageComplete() )
         {
-            if(Dev->getPostDelay()) CTISleep((ULONG)Dev->getPostDelay());
+            if ( auto postCommWaitDelay = std::max<ULONG>( Dev->getPostDelay(), getDelay( POST_REMOTE_DELAY ) ) )
+            {
+                CTISleep( postCommWaitDelay );
+            }
         }
 
         if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), Xfer.getInCountActual()))    // CRC check failed.
@@ -614,7 +617,7 @@ YukonError_t CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiM
 
                 if(Dev->getAddress() == RTUGLOBAL || Dev->getAddress() == CCUGLOBAL)
                 {
-                    CTISleep (Dev->getPostDelay());
+                    CTISleep( std::max<ULONG>( Dev->getPostDelay(), getDelay( POST_REMOTE_DELAY ) ) );
                 }
             }
         }
@@ -688,7 +691,7 @@ string CtiPortDirect::getSQLCoreStatement()
                                    "YP.disableflag, CP.alarminhibit, CP.commonprotocol, CP.performancealarm, "
                                    "CP.performthreshold, CP.sharedporttype, CP.sharedsocketnumber, "
                                    "PST.baudrate, PST.cdwait, PST.linesettings, TMG.pretxwait, TMG.rtstotxwait, "
-                                   "TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout, PLS.physicalport "
+                                   "TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout, TMG.PostCommWait, PLS.physicalport "
                                "FROM YukonPAObject YP, CommPort CP, PortSettings PST, PortTiming TMG, "
                                    "PortLocalSerial PLS "
                                "WHERE YP.paobjectid = CP.portid AND YP.paobjectid = PST.portid AND "

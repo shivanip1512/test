@@ -1179,16 +1179,6 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
 
     try
     {
-        /* Load the post remote delay */
-        if(Port->isDialup())
-        {
-            Port->setDelay(POST_REMOTE_DELAY, 0);
-        }
-        else
-        {
-            Port->setDelay(POST_REMOTE_DELAY, Device->getPostDelay());
-        }
-
         trx.setTraceMask(TraceFlag, TraceErrorsOnly, TracePort == Port->getPortID(), TraceRemote);
 
         const int protocolType = GetPreferredProtocolWrap(Port, Device);

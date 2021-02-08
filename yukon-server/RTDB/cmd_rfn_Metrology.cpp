@@ -41,18 +41,6 @@ static const std::map<unsigned char, States>  stateDecoder
 
 static const std::set<DeviceTypes>  supportedDeviceTypes
 {
-    TYPE_RFN410FD,
-    TYPE_RFN410FL,
-    TYPE_RFN410FX,
-
-    TYPE_RFN420FD,
-    TYPE_RFN420FL,
-    TYPE_RFN420FRD,
-    TYPE_RFN420FRX,
-    TYPE_RFN420FX,
-
-    TYPE_RFN510FL,
-
     TYPE_RFN520FAX,
     TYPE_RFN520FAXD,
     TYPE_RFN520FRX,

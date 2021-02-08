@@ -26,7 +26,6 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.admin.AttributeValidator;
 import com.cannontech.web.admin.service.impl.CustomAttributeService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
@@ -38,7 +37,7 @@ public class CustomAttributeApiController {
     @Autowired private AttributeDao attributeDao;
     @Autowired private AttributeService attributeService;
     @Autowired private CustomAttributeService customAttributeService;
-    @Autowired private AttributeValidator customAttributeValidator;
+    @Autowired private CustomAttributeApiValidator customAttributeApiValidator;
 
     @PostMapping("")
     public ResponseEntity<Object> create(@Valid @RequestBody CustomAttribute customAttribute, YukonUserContext userContext) {
@@ -72,6 +71,6 @@ public class CustomAttributeApiController {
 
     @InitBinder("customAttribute")
     public void setBinder(WebDataBinder binder) {
-        binder.addValidators(customAttributeValidator);
+        binder.addValidators(customAttributeApiValidator);
     }
 }

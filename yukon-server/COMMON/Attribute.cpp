@@ -264,14 +264,6 @@ INIT_ATTRIBUTE( PowerFactorAvgQ234,                                 "AVERAGE_POW
 INIT_ATTRIBUTE( PowerFactorAvgQ1234,                                "AVERAGE_POWER_FACTOR_Q1234" );
 INIT_ATTRIBUTE( PowerFactorAverage,                                 "AVERAGE_POWER_FACTOR" );
 INIT_ATTRIBUTE( PowerFactorAverageFrozen,                           "AVERAGE_POWER_FACTOR_FROZEN" );
-INIT_ATTRIBUTE( PowerFactorAverageRateA,                            "AVERAGE_POWER_FACTOR_RATE_A" );
-INIT_ATTRIBUTE( PowerFactorAverageFrozenRateA,                      "AVERAGE_POWER_FACTOR_FROZEN_RATE_A" );
-INIT_ATTRIBUTE( PowerFactorAverageRateB,                            "AVERAGE_POWER_FACTOR_RATE_B" );
-INIT_ATTRIBUTE( PowerFactorAverageFrozenRateB,                      "AVERAGE_POWER_FACTOR_FROZEN_RATE_B" );
-INIT_ATTRIBUTE( PowerFactorAverageRateC,                            "AVERAGE_POWER_FACTOR_RATE_C" );
-INIT_ATTRIBUTE( PowerFactorAverageFrozenRateC,                      "AVERAGE_POWER_FACTOR_FROZEN_RATE_C" );
-INIT_ATTRIBUTE( PowerFactorAverageRateD,                            "AVERAGE_POWER_FACTOR_RATE_D" );
-INIT_ATTRIBUTE( PowerFactorAverageFrozenRateD,                      "AVERAGE_POWER_FACTOR_FROZEN_RATE_D" );
 INIT_ATTRIBUTE( PowerFactorAnglePhaseA,                             "POWER_FACTOR_ANGLE_PHASE_A" );
 INIT_ATTRIBUTE( PowerFactorAnglePhaseB,                             "POWER_FACTOR_ANGLE_PHASE_B" );
 INIT_ATTRIBUTE( PowerFactorAnglePhaseC,                             "POWER_FACTOR_ANGLE_PHASE_C" );

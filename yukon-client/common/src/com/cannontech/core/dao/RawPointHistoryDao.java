@@ -395,8 +395,7 @@ public interface RawPointHistoryDao {
      * This method returns RawPointHistory data for a list of PAOs, a given Attribute and value
      * and converting the Multimap into a Map (because there will only be one value per key).
      */
-    
-    public Map<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
+    Map<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
             Iterable<? extends YukonPao> paos, Attribute attribute, boolean excludeDisabledPaos, int value,
             Set<PointQuality> excludeQualities);
 
@@ -407,7 +406,13 @@ public interface RawPointHistoryDao {
      * @param paoType - Set of PAO Types applicable for device Group
      * @return DataCompletenessSummary
      */
+    DataCompletenessSummary getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange, ImmutableSet<PaoType> paoType);
 
-    public DataCompletenessSummary getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange, ImmutableSet<PaoType> paoType);
-
+    /**
+     * Similar to getLimitedAttributeData, but used for "summed" data, where multiple values over the range are summed 
+     * together per pao.
+     */
+    ListMultimap<PaoIdentifier, PointValueQualityHolder> getSummedAttributeData(Iterable<? extends YukonPao> paos, 
+            Attribute attribute, ReadableRange<Instant> dateRange, boolean excludeDisabledPaos, 
+            Set<PointQuality> excludeQualities);
 }

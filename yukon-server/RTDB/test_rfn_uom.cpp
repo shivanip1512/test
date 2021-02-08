@@ -16,11 +16,22 @@ BOOST_AUTO_TEST_SUITE(test_rfn_uom)
 
 BOOST_AUTO_TEST_CASE(test_mod1_extension_bits)
 {
-    UomModifier1 mod1_unset { 0x7fff };
+    const UomModifier1 mod1_unset { 0x7fff };
 
     BOOST_CHECK_EQUAL(false, mod1_unset.getExtensionBit());
 
-    UomModifier1 mod1_set { 0x8000 };
+    const UomModifier1 mod1_set { 0x8000 };
+
+    BOOST_CHECK_EQUAL(true, mod1_set.getExtensionBit());
+}
+
+BOOST_AUTO_TEST_CASE(test_mod1_of)
+{
+    const auto mod1_unset = UomModifier1::of( 0x7f, 0xff );
+
+    BOOST_CHECK_EQUAL(false, mod1_unset.getExtensionBit());
+
+    const auto mod1_set = UomModifier1::of( 0x80, 00 );
 
     BOOST_CHECK_EQUAL(true, mod1_set.getExtensionBit());
 }
@@ -135,13 +146,39 @@ BOOST_AUTO_TEST_CASE(test_mod1_strings_range)
 
 BOOST_AUTO_TEST_CASE(test_mod2_extension_bits)
 {
-    UomModifier2 mod2_unset{ 0x7fff };
+    const UomModifier2 mod2_unset{ 0x7fff };
 
     BOOST_CHECK_EQUAL(false, mod2_unset.getExtensionBit());
 
-    UomModifier2 mod2_set{ 0x8000 };
+    const UomModifier2 mod2_set{ 0x8000 };
 
     BOOST_CHECK_EQUAL(true, mod2_set.getExtensionBit());
+}
+
+BOOST_AUTO_TEST_CASE(test_mod2_of)
+{
+    const auto mod2_unset = UomModifier2::of( 0x7f, 0xff );
+
+    BOOST_CHECK_EQUAL(false, mod2_unset.getExtensionBit());
+
+    const auto mod2_set = UomModifier2::of( 0x80, 0x00 );
+
+    BOOST_CHECK_EQUAL(true, mod2_set.getExtensionBit());
+}
+
+BOOST_AUTO_TEST_CASE(test_mod2_coincident)
+{
+    const UomModifier2 mod2_unset { 0b0'1'1'1'000'111'111'111 };
+
+    BOOST_CHECK_EQUAL(0, mod2_unset.getCoincidentOffset());
+
+    const UomModifier2 mod2_coin1 { 0b0'1'1'1'001'111'111'111 };
+
+    BOOST_CHECK_EQUAL(1, mod2_coin1.getCoincidentOffset());
+
+    const UomModifier2 mod2_coin7 { 0b0'1'1'1'111'111'111'111 };
+
+    BOOST_CHECK_EQUAL(7, mod2_coin7.getCoincidentOffset());
 }
 
 BOOST_AUTO_TEST_CASE(test_mod2_strings_empty)
@@ -149,6 +186,7 @@ BOOST_AUTO_TEST_CASE(test_mod2_strings_empty)
     const UomModifier2 mod2_all_clear { 0 };
 
     BOOST_CHECK(mod2_all_clear.getModifierStrings().empty());
+    BOOST_CHECK_EQUAL(0, mod2_all_clear.getCoincidentOffset());
 }
 
 BOOST_AUTO_TEST_CASE(test_mod2_strings_each_category)
@@ -157,27 +195,29 @@ BOOST_AUTO_TEST_CASE(test_mod2_strings_each_category)
     constexpr unsigned short raw = 0b0'1'1'1'001'001'001'001;
 
     const auto expected = {
-        "Coincident Value 1", "Continuous Cumulative", "Cumulative", "Kilo", "Phase A->B", "Previous", "TOU Rate A"
+        "Continuous Cumulative", "Cumulative", "Kilo", "Phase A->B", "Previous", "TOU Rate A"
     };
 
     const UomModifier2 mod { raw };
     BOOST_CHECK_EQUAL_RANGES(expected, mod.getModifierStrings());
+    BOOST_CHECK_EQUAL(1, mod.getCoincidentOffset());
 }
 
 BOOST_AUTO_TEST_CASE(test_mod2_strings_3bit_values)
 {
     //  Segmentation, rate, and coincident value are all 3 bits, so test them all together.
+    //    Note that coincident does not show up as a string, but as getCoincidentOffset(), so it is not represented here.
     constexpr unsigned short increment = 0b0'0'0'0'001'000'001'001;
 
     const string_lists<8> expected { {
         { },  //  empty
-        { "Coincident Value 1", "Phase A->B",            "TOU Rate A" },
-        { "Coincident Value 2", "Phase B->C",            "TOU Rate B" },
-        { "Coincident Value 3", "Phase C->A",            "TOU Rate C" },
-        { "Coincident Value 4", "Phase Neutral->Ground", "TOU Rate D" },
-        { "Coincident Value 5", "Phase A->Neutral",      "TOU Rate E" },
-        { "Coincident Value 6", "Phase B->Neutral",      "TOU Rate F" },
-        { "Coincident Value 7", "Phase C->Neutral",      "TOU Rate G" },
+        { "Phase A->B",            "TOU Rate A" },
+        { "Phase B->C",            "TOU Rate B" },
+        { "Phase C->A",            "TOU Rate C" },
+        { "Phase Neutral->Ground", "TOU Rate D" },
+        { "Phase A->Neutral",      "TOU Rate E" },
+        { "Phase B->Neutral",      "TOU Rate F" },
+        { "Phase C->Neutral",      "TOU Rate G" },
     } };
 
     for( const auto iv : expected | boost::adaptors::indexed() )
@@ -222,11 +262,11 @@ BOOST_AUTO_TEST_CASE(test_mod2_scaling_factor)
 
     for( const auto iv : expected | boost::adaptors::indexed() )
     {
-        unsigned short raw = iv.index() * increment;
+        const unsigned short raw = iv.index() * increment;
 
         BOOST_TEST_CONTEXT(iv.index())
         {
-            UomModifier2 mod { static_cast<unsigned short>(iv.index() * increment) };
+            const UomModifier2 mod { static_cast<unsigned short>(iv.index() * increment) };
             BOOST_CHECK_CLOSE(iv.value(), mod.getScalingFactor(), 0.01);
         }
     }

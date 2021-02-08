@@ -11,6 +11,7 @@
 #include "cmd_rfn_ChannelConfiguration.h"
 #include "cmd_rfn_DataStreamingConfiguration.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_MeterRead.h"
 #include "cmd_rfn_Metrology.h"
 
 #include "Attribute.h"
@@ -468,11 +469,23 @@ YukonError_t RfnMeterDevice::executeGetValueVoltageProfile(CtiRequestMsg *pReq, 
     return ClientErrors::NoMethod;
 }
 
+YukonError_t RfnMeterDevice::executeGetValueMeterRead(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    rfnRequests.emplace_back(
+        std::make_unique<Commands::RfnMeterReadCommand>(pReq->UserMessageId()));
+
+    return ClientErrors::None;
+}
+
 YukonError_t RfnMeterDevice::executeGetValue(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if( parse.isKeyValid("voltage_profile") )
     {
         return executeGetValueVoltageProfile(pReq, parse, returnMsgs, rfnRequests);
+    }
+    if( parse.isKeyValid("meter_read") )
+    {
+        return executeGetValueMeterRead(pReq, parse, returnMsgs, rfnRequests);
     }
 
     return ClientErrors::NoMethod;
@@ -586,15 +599,27 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
 
             boost::optional<PaoMetricIds> paoMidnightMetrics = findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics );
 
-            if( cfgMidnightMetrics != paoMidnightMetrics || parse.isKeyValid("force") )
+            const bool is_mismatched = [ &, this ]
+            {
+                const bool metric_mismatch = cfgMidnightMetrics != paoMidnightMetrics;
+
+                if ( const auto is_filtered = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered ) )
+                {
+                    const bool cfg_is_filtered = ! cfgMidnightMetrics.empty();
+
+                    return ( *is_filtered )
+                        ? metric_mismatch || ! cfg_is_filtered
+                        : cfg_is_filtered;
+                }
+
+                return metric_mismatch;
+            }();
+
+            if( is_mismatched || parse.isKeyValid("force") )
             {
                 if( parse.isKeyValid( "verify" ) )
                 {
-                    //  This is a workaround to allow an empty (no-channels) config to verify successfully, even though we don't know if the channels match.
-                    if( ! cfgMidnightMetrics.empty() )
-                    {
-                        ret = compareChannels(pReq, parse, returnMsgs, "Midnight", cfgMidnightMetrics, paoMidnightMetrics);
-                    }
+                    ret = compareChannels(pReq, parse, returnMsgs, "Midnight", cfgMidnightMetrics, paoMidnightMetrics);
                 }
                 else
                 {
@@ -618,18 +643,30 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
             const boost::optional<unsigned>     paoRecordingIntervalSeconds = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds );
             const boost::optional<unsigned>     paoReportingIntervalSeconds = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds );
 
-            if( cfgIntervalMetrics != paoIntervalMetrics ||
+            const bool is_mismatched = [ &, this ]
+            {
+                const bool metric_mismatch = cfgIntervalMetrics != paoIntervalMetrics;
+
+                if ( const auto is_filtered = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered ) )
+                {
+                    const bool cfg_is_filtered = ! cfgIntervalMetrics.empty();
+
+                    return ( *is_filtered )
+                        ? metric_mismatch || ! cfg_is_filtered
+                        : cfg_is_filtered;
+                }
+
+                return metric_mismatch;
+            }();
+
+            if( is_mismatched ||
                 cfgRecordingIntervalSeconds != paoRecordingIntervalSeconds ||
                 cfgReportingIntervalSeconds != paoReportingIntervalSeconds ||
                 parse.isKeyValid("force") )
             {
                 if( parse.isKeyValid( "verify" ) )
                 {
-                    //  This is a workaround to allow an empty (no-channels) config to verify successfully, even though we don't know if the channels match.
-                    if( ! cfgIntervalMetrics.empty() )
-                    {
-                        ret = compareChannels(pReq, parse, returnMsgs, "Interval", cfgIntervalMetrics, paoIntervalMetrics);
-                    }
+                    ret = compareChannels(pReq, parse, returnMsgs, "Interval", cfgIntervalMetrics, paoIntervalMetrics);
 
                     if (cfgReportingIntervalSeconds != paoReportingIntervalSeconds)
                     {
@@ -917,7 +954,21 @@ void RfnMeterDevice::storeTemperatureConfig( const Commands::RfnTemperatureAlarm
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold, configuration.alarmHighTempThreshold );
 }
 
-void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelSelectionCommand & cmd )
+void RfnMeterDevice::handleCommandResult( const Commands::RfnSetChannelSelectionCommand & cmd )
+{
+    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
+
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, ! paoMetrics.empty() );
+
+    storeChannelSelections( cmd.getMetricsReceived() );
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnGetChannelSelectionCommand & cmd )
+{
+    storeChannelSelections( cmd.getMetricsReceived() );
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnGetChannelSelectionFullDescriptionCommand & cmd )
 {
     storeChannelSelections( cmd.getMetricsReceived() );
 }
