@@ -90,21 +90,9 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
             Pair<String, MultiSpeakVersion> keyPair =
                 MultispeakVendor.buildMapKey(MultispeakDefines.OA_Server_STR, MultiSpeakVersion.V3);
             if (mspVendor.getMspInterfaceMap().get(keyPair) != null) {
-                String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.OA_Server_STR);
-                try {
-                    GetMethods getMethods = objectFactory.createGetMethods();
-                    GetMethodsResponse getMethodsResponse = oaClient.getMethods(mspVendor, endpointUrl, getMethods);
-                    ArrayOfString arrayOfMethods = getMethodsResponse.getGetMethodsResult();
-                    List<String> mspMethodNames = arrayOfMethods.getString();
-                    // not sure where a static variable containing this method exists.. doing this for now
-                    if (mspMethodNames.stream().anyMatch("ODEventNotification"::equalsIgnoreCase)) {
-                        supportsOutage.add(mspVendor);
-                        log.info("Added OMS vendor to receive Status Point Monitor messages: "
-                            + mspVendor.getCompanyName());
-                    }
-                } catch (MultispeakWebServiceClientException e) {
-                    log.warn("caught exception in initialize", e);
-                }
+                supportsOutage.add(mspVendor);
+                log.info("Added OMS vendor to receive Status Point Monitor messages: "
+                    + mspVendor.getCompanyName());
             }
         }
         
