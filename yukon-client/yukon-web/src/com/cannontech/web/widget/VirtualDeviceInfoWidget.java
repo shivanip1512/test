@@ -181,7 +181,7 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(virtualDevice, "virtualDevice");
-                result = helper.populateBindingError(result, error, response);
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 if (result.hasErrors()) {
                     resp.setStatus(HttpStatus.BAD_REQUEST.value());
                     return "virtualDeviceInfoWidget/render.jsp";

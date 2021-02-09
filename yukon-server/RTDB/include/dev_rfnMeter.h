@@ -3,7 +3,6 @@
 #include "dev_rfn.h"
 #include "cmd_rfn_ChannelConfiguration.h"
 #include "cmd_rfn_TemperatureAlarm.h"
-#include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/container/flat_map.hpp>
 
 namespace Cti::Devices {
@@ -64,6 +63,8 @@ protected:
     virtual YukonError_t executePutConfigVoltageProfile (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
     virtual YukonError_t executeGetValueVoltageProfile  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
+    virtual YukonError_t executeGetValueMeterRead   (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
+
     virtual YukonError_t executePutConfigDisconnect (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
     virtual YukonError_t executeGetConfigDisconnect (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
@@ -78,7 +79,9 @@ protected:
 
     void handleCommandResult( const Commands::RfnConfigNotificationCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnTemperatureAlarmCommand   & cmd ) override;
-    void handleCommandResult( const Commands::RfnChannelSelectionCommand   & cmd ) override;
+    void handleCommandResult( const Commands::RfnSetChannelSelectionCommand   & cmd ) override;
+    void handleCommandResult( const Commands::RfnGetChannelSelectionCommand   & cmd ) override;
+    void handleCommandResult( const Commands::RfnGetChannelSelectionFullDescriptionCommand   & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetConfigurationCommand       & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::SetConfigurationCommand       & cmd ) override;

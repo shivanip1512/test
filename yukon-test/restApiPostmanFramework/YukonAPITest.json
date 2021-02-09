@@ -3719,13 +3719,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevices/{device-id}",
+							"raw": "{{api-url}}/api/devices/virtualDevices/{device-id}",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
+								"devices",
 								"virtualDevices",
 								"{device-id}"
 							]
@@ -3743,7 +3743,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Postman Virtual Device Test\",\r\n    \"enable\": \"false\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Postman Virtual Device Test\",\r\n    \"type\": \"VIRTUAL_SYSTEM\",\r\n    \"enable\": \"false\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3751,13 +3751,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevices",
+							"raw": "{{api-url}}/api/devices/virtualDevices",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
+								"devices",
 								"virtualDevices"
 							]
 						}
@@ -3779,13 +3779,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevices/{device-id}",
+							"raw": "{{api-url}}/api/devices/virtualDevices/{device-id}",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
+								"devices",
 								"virtualDevices",
 								"{device-id}"
 							]
@@ -3799,13 +3799,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevices/{device-id}",
+							"raw": "{{api-url}}/api/devices/virtualDevices/{device-id}",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
+								"devices",
 								"virtualDevices",
 								"{device-id}"
 							]
@@ -3819,13 +3819,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevices?sort=PAO_NAME&direction=asc&page=1&itemsPerPage=250",
+							"raw": "{{api-url}}/api/devices/virtualDevices?sort=PAO_NAME&direction=asc&page=1&itemsPerPage=250",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
+								"devices",
 								"virtualDevices"
 							],
 							"query": [

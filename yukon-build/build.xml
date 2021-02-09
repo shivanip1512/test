@@ -74,6 +74,15 @@
         <ant dir="${basedir}/yukon-client/build" >
             <target name="createDatabaseSnapshots"/>
         </ant>
+    
+        <!-- Restore files which got modifies and present in "Changes not staged for commit" Unstaged section -->
+        <exec executable="git" dir='${basedir}'>
+            <arg line="restore yukon-database/"/>
+        </exec>
+        <!-- Clean newly created untracked files -->
+        <exec executable="git" dir='${basedir}'>
+            <arg line="clean -f"/>
+        </exec>
     </target>
     
     <target name="build-client">

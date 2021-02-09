@@ -276,6 +276,7 @@
     <entry key="yukon.web.modules.tools.point.tab.calculation">Calculation</entry>
     <entry key="yukon.web.modules.tools.point.name">Name</entry>
     <entry key="yukon.web.modules.tools.point.parent">Parent</entry>
+    <entry key="yukon.web.modules.tools.point.status">Status</entry>
     <entry key="yukon.web.modules.tools.point.timingGroup">Timing Group</entry>
     <entry key="yukon.web.modules.tools.point.settings">Settings</entry>
     <entry key="yukon.web.modules.tools.point.archive">Archive Data</entry>

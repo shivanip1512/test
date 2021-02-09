@@ -1,16 +1,16 @@
 #include "precompiled.h"
 
 #include "RfnMeterDisconnectMsg.h"
-
 #include "Thrift/RfnMeterDisconnectRequest_types.h"
 
+#include "amq_connection.h"
 #include "message_serialization_util.h"
 
 namespace Cti::Messaging::Serialization {
 
-using RmdReqMsg = Pil::RfnMeterDisconnectRequestMsg;
-using RmdRepMsg = Pil::RfnMeterDisconnectInitialReplyMsg;
-using RmdConMsg = Pil::RfnMeterDisconnectConfirmationReplyMsg;
+using RmdReqMsg = Rfn::RfnMeterDisconnectRequestMsg;
+using RmdRepMsg = Rfn::RfnMeterDisconnectInitialReplyMsg;
+using RmdConMsg = Rfn::RfnMeterDisconnectConfirmationReplyMsg;
 
 template<>
 boost::optional<RmdReqMsg> MessageSerializer<RmdReqMsg>::deserialize(const ActiveMQConnectionManager::SerializedMessage& msg)
@@ -32,16 +32,16 @@ boost::optional<RmdReqMsg> MessageSerializer<RmdReqMsg>::deserialize(const Activ
 template<>
 ActiveMQConnectionManager::SerializedMessage MessageSerializer<RmdRepMsg>::serialize(const RmdRepMsg& msg)
 {
-    static const std::map<Pil::RfnMeterDisconnectInitialReplyType, Thrift::RfnMeterDisconnectInitialReplyType::type> initialReplyTypes {
-        { Pil::RfnMeterDisconnectInitialReplyType::FAILURE,
+    static const std::map<Rfn::RfnMeterDisconnectInitialReplyType, Thrift::RfnMeterDisconnectInitialReplyType::type> initialReplyTypes {
+        { Rfn::RfnMeterDisconnectInitialReplyType::FAILURE,
             Thrift::RfnMeterDisconnectInitialReplyType::FAILURE },
-        { Pil::RfnMeterDisconnectInitialReplyType::NO_GATEWAY,
+        { Rfn::RfnMeterDisconnectInitialReplyType::NO_GATEWAY,
             Thrift::RfnMeterDisconnectInitialReplyType::NO_GATEWAY },
-        { Pil::RfnMeterDisconnectInitialReplyType::NO_NODE,
+        { Rfn::RfnMeterDisconnectInitialReplyType::NO_NODE,
             Thrift::RfnMeterDisconnectInitialReplyType::NO_NODE },
-        { Pil::RfnMeterDisconnectInitialReplyType::OK,
+        { Rfn::RfnMeterDisconnectInitialReplyType::OK,
             Thrift::RfnMeterDisconnectInitialReplyType::OK },
-        { Pil::RfnMeterDisconnectInitialReplyType::TIMEOUT,
+        { Rfn::RfnMeterDisconnectInitialReplyType::TIMEOUT,
             Thrift::RfnMeterDisconnectInitialReplyType::TIMEOUT }
     };
 
@@ -72,43 +72,43 @@ ActiveMQConnectionManager::SerializedMessage MessageSerializer<RmdRepMsg>::seria
 template<>
 ActiveMQConnectionManager::SerializedMessage MessageSerializer<RmdConMsg>::serialize(const RmdConMsg& msg)
 {
-    static const std::map<Pil::RfnMeterDisconnectConfirmationReplyType, Thrift::RfnMeterDisconnectConfirmationReplyType::type> confirmReplyTypes {
-        { Pil::RfnMeterDisconnectConfirmationReplyType::SUCCESS,
+    static const std::map<Rfn::RfnMeterDisconnectConfirmationReplyType, Thrift::RfnMeterDisconnectConfirmationReplyType::type> confirmReplyTypes {
+        { Rfn::RfnMeterDisconnectConfirmationReplyType::SUCCESS,
             Thrift::RfnMeterDisconnectConfirmationReplyType::SUCCESS },
-        { Pil::RfnMeterDisconnectConfirmationReplyType::FAILURE,
+        { Rfn::RfnMeterDisconnectConfirmationReplyType::FAILURE,
             Thrift::RfnMeterDisconnectConfirmationReplyType::FAILURE },
-        { Pil::RfnMeterDisconnectConfirmationReplyType::FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD,
+        { Rfn::RfnMeterDisconnectConfirmationReplyType::FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD,
             Thrift::RfnMeterDisconnectConfirmationReplyType::FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD },
-        { Pil::RfnMeterDisconnectConfirmationReplyType::FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT,
+        { Rfn::RfnMeterDisconnectConfirmationReplyType::FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT,
             Thrift::RfnMeterDisconnectConfirmationReplyType::FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT },
-        { Pil::RfnMeterDisconnectConfirmationReplyType::FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT,
+        { Rfn::RfnMeterDisconnectConfirmationReplyType::FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT,
             Thrift::RfnMeterDisconnectConfirmationReplyType::FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT },
-        { Pil::RfnMeterDisconnectConfirmationReplyType::FAILED_UNEXPECTED_STATUS,
+        { Rfn::RfnMeterDisconnectConfirmationReplyType::FAILED_UNEXPECTED_STATUS,
             Thrift::RfnMeterDisconnectConfirmationReplyType::FAILED_UNEXPECTED_STATUS },
-        { Pil::RfnMeterDisconnectConfirmationReplyType::NOT_SUPPORTED,
+        { Rfn::RfnMeterDisconnectConfirmationReplyType::NOT_SUPPORTED,
             Thrift::RfnMeterDisconnectConfirmationReplyType::NOT_SUPPORTED },
-        { Pil::RfnMeterDisconnectConfirmationReplyType::NETWORK_TIMEOUT,
+        { Rfn::RfnMeterDisconnectConfirmationReplyType::NETWORK_TIMEOUT,
             Thrift::RfnMeterDisconnectConfirmationReplyType::NETWORK_TIMEOUT },
-        { Pil::RfnMeterDisconnectConfirmationReplyType::TIMEOUT,
+        { Rfn::RfnMeterDisconnectConfirmationReplyType::TIMEOUT,
             Thrift::RfnMeterDisconnectConfirmationReplyType::TIMEOUT }
     };
 
-    static const std::map<Pil::RfnMeterDisconnectState, Thrift::RfnMeterDisconnectState::type> states {
-        { Pil::RfnMeterDisconnectState::UNKNOWN,
+    static const std::map<Rfn::RfnMeterDisconnectState, Thrift::RfnMeterDisconnectState::type> states {
+        { Rfn::RfnMeterDisconnectState::UNKNOWN,
             Thrift::RfnMeterDisconnectState::UNKNOWN },
-        { Pil::RfnMeterDisconnectState::CONNECTED,
+        { Rfn::RfnMeterDisconnectState::CONNECTED,
             Thrift::RfnMeterDisconnectState::CONNECTED },
-        { Pil::RfnMeterDisconnectState::DISCONNECTED,
+        { Rfn::RfnMeterDisconnectState::DISCONNECTED,
             Thrift::RfnMeterDisconnectState::DISCONNECTED },
-        { Pil::RfnMeterDisconnectState::ARMED,
+        { Rfn::RfnMeterDisconnectState::ARMED,
             Thrift::RfnMeterDisconnectState::ARMED },
-        { Pil::RfnMeterDisconnectState::DISCONNECTED_DEMAND_THRESHOLD_ACTIVE,
+        { Rfn::RfnMeterDisconnectState::DISCONNECTED_DEMAND_THRESHOLD_ACTIVE,
             Thrift::RfnMeterDisconnectState::DISCONNECTED_DEMAND_THRESHOLD_ACTIVE },
-        { Pil::RfnMeterDisconnectState::CONNECTED_DEMAND_THRESHOLD_ACTIVE,
+        { Rfn::RfnMeterDisconnectState::CONNECTED_DEMAND_THRESHOLD_ACTIVE,
             Thrift::RfnMeterDisconnectState::CONNECTED_DEMAND_THRESHOLD_ACTIVE },
-        { Pil::RfnMeterDisconnectState::DISCONNECTED_CYCLING_ACTIVE,
+        { Rfn::RfnMeterDisconnectState::DISCONNECTED_CYCLING_ACTIVE,
             Thrift::RfnMeterDisconnectState::DISCONNECTED_CYCLING_ACTIVE },
-        { Pil::RfnMeterDisconnectState::CONNECTED_CYCLING_ACTIVE,
+        { Rfn::RfnMeterDisconnectState::CONNECTED_CYCLING_ACTIVE,
             Thrift::RfnMeterDisconnectState::CONNECTED_CYCLING_ACTIVE },
     };
 

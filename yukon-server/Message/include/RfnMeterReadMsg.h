@@ -3,10 +3,7 @@
 #include "rfn_identifier.h"
 #include "ctitime.h"
 
-#include "message_factory.h"
-#include "amq_connection.h"
-
-namespace Cti::Messaging::Pil {
+namespace Cti::Messaging::Rfn {
 
 struct RfnMeterReadRequestMsg 
 {
@@ -75,17 +72,3 @@ struct RfnMeterReadDataReplyMsg
 };
 
 }
-/*
-namespace Cti::Messaging::Serialization {
-
-template<>
-boost::optional<Porter::RfnMeterReadRequestMsg> MessageSerializer<Porter::RfnMeterReadRequestMsg>::deserialize(const ActiveMQConnectionManager::SerializedMessage& msg);
-
-template<>
-ActiveMQConnectionManager::SerializedMessage MessageSerializer<Porter::RfnMeterReadReplyMsg>::serialize(const Porter::RfnMeterReadReplyMsg& msg);
-
-template<>
-ActiveMQConnectionManager::SerializedMessage MessageSerializer<Porter::RfnMeterReadDataReplyMsg>::serialize(const Porter::RfnMeterReadDataReplyMsg& msg);
-
-}
-*/

@@ -5,22 +5,21 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.pao.attribute.model.Assignment;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.stars.util.ServletUtils;
 
 @Service
-public class CustomAttributeAssignmentValidator extends SimpleValidator<Assignment>{
+public class CustomAttributeAssignmentApiValidator extends SimpleValidator<Assignment> {
 
-    public CustomAttributeAssignmentValidator() {
+    public CustomAttributeAssignmentApiValidator() {
         super(Assignment.class);
     }
-
 
     @Override
     protected void doValidation(Assignment assignment, Errors errors) {
         Integer attributeAssignmentId = Integer.valueOf(ServletUtils.getPathVariable("attributeAssignmentId"));
 
-        YukonValidationUtils.checkIsPositiveInt(errors, "attributeAssignmentId", attributeAssignmentId);
+        YukonApiValidationUtils.checkIsPositiveInt(errors, "attributeAssignmentId", attributeAssignmentId);
     }
 
 }

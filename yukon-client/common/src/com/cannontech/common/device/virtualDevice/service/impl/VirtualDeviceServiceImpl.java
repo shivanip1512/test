@@ -40,8 +40,8 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     @Override
     public VirtualDeviceBaseModel<? extends VirtualBase> retrieve(int virtualDeviceId) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(virtualDeviceId);
-        if (pao == null) {
-            throw new NotFoundException("Virtual device ID not found");
+        if (pao == null || !pao.getPaoType().isVirtualDevice()) {
+            throw new NotFoundException("ID not found " + virtualDeviceId);
         }
         VirtualBase virtualDevice = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
         VirtualDeviceBaseModel virtualDeviceBase = (VirtualDeviceBaseModel) PaoModelFactory.getModel(virtualDevice.getPaoType());
@@ -52,7 +52,7 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     @Override
     public VirtualDeviceBaseModel<? extends VirtualBase> update(int virtualDeviceId, VirtualDeviceBaseModel virtualDevice) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(virtualDeviceId);
-        if (pao == null) {
+        if (pao == null || !pao.getPaoType().isVirtualDevice()) {
             throw new NotFoundException("ID not found " + virtualDeviceId);
         }
         VirtualBase virtualDeviceRecord = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
@@ -65,13 +65,15 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     @Override
     public int delete(int id) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
-        if (pao == null) {
+        if (pao == null || !pao.getPaoType().isVirtualDevice()) {
             throw new NotFoundException("ID not found " + id);
         }
         VirtualBase virtualDeviceRecord = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
         dBPersistentDao.performDBChange(virtualDeviceRecord, TransactionType.DELETE);
         return virtualDeviceRecord.getPAObjectID();
     }
+
+
 
     @Override
     public PaginatedResponse<VirtualDeviceBaseModel> getPage(VirtualDeviceSortableField sortBy, Direction direction, Integer page, Integer itemsPerPage) {

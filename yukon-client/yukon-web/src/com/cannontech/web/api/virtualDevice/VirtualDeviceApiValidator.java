@@ -6,13 +6,13 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationHelper;
+import com.cannontech.common.validator.YukonApiValidationHelper;
 import com.cannontech.stars.util.ServletUtils;
 
 @Service
 public class VirtualDeviceApiValidator <T extends VirtualDeviceBaseModel> extends SimpleValidator<T> {
 
-    @Autowired private YukonValidationHelper yukonValidationHelper;
+    @Autowired private YukonApiValidationHelper yukonApiValidationHelper;
 
     public VirtualDeviceApiValidator() {
         super((Class<T>) VirtualDeviceBaseModel.class);
@@ -22,7 +22,7 @@ public class VirtualDeviceApiValidator <T extends VirtualDeviceBaseModel> extend
     protected void doValidation(VirtualDeviceBaseModel virtualDevice, Errors errors) {
         String virtualDeviceId = ServletUtils.getPathVariable("id");
         if (virtualDevice.getName() != null) {
-            yukonValidationHelper.validatePaoName(virtualDevice.getName(), virtualDevice.getType(), errors, "Name", virtualDeviceId);
+            yukonApiValidationHelper.validatePaoName(virtualDevice.getName(), virtualDevice.getType(), errors, "Name", virtualDeviceId);
         }
     }
 }
