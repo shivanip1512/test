@@ -242,24 +242,9 @@ yukon.dr.curtailment = (function () {
             });
 
             $(document).on("yukon:event:confirm", function () {
-                yukon.ui.blockPage();
-                $('#confirm-popup-form').ajaxSubmit({
-                    success: function (data, status, error, $form) {
-                        $('#confirm-popup').dialog('close');
-                        if(data.programId != undefined && data.eventId != undefined) {
-                            window.location.href=yukon.url('/dr/cc/program/' + data.programId + '/event/' + data.eventId + '/detail');
-                        } 
-                        else {
-                            yukon.ui.unblockPage();
-                            window.location.href=yukon.url('/dr/cc/program/' + data.programId +'/'+ data.key +'/confirmation' );
-                        }
-                    },
-                    error: function (xhr, status, error, $form) {
-                        yukon.ui.unblockPage();
-                        window.location.href=yukon.url('/dr/cc/program/' + data.programId +'/'+ data.key +'/confirmation' );
-                    }
-                });
+                $('#confirm-form').submit();
             });
+
             $(function () {
                 _enableDisableActionsMenu();
                 $(document).on('click', '#assigned-groups', function (ev) {
