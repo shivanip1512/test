@@ -38,11 +38,11 @@ import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.PointAlarming;
 import com.cannontech.web.tools.points.model.PointBaseModel;
-import com.cannontech.web.tools.points.validators.PointValidationUtil;
+import com.cannontech.web.tools.points.validators.PointApiValidationUtil;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValidator<T> {
-    @Autowired private PointValidationUtil pointValidationUtil;
+    @Autowired private PointApiValidationUtil pointApiValidationUtil;
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired protected StateGroupDao stateGroupDao;
     @Autowired private AlarmCatDao alarmCatDao;
@@ -74,19 +74,19 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             }
 
             if (!errors.hasFieldErrors("paoId")) {
-                pointValidationUtil.checkIfPaoIdChanged(errors,target, isCreationOperation);
+                pointApiValidationUtil.checkIfPaoIdChanged(errors,target, isCreationOperation);
             }
             
             if (!errors.hasFieldErrors("paoId")) {
 
                 if (!errors.hasFieldErrors("pointName") && target.getPointName() != null) {
-                    pointValidationUtil.validatePointName(target, "pointName", errors, isCreationOperation);
+                    pointApiValidationUtil.validatePointName(target, "pointName", errors, isCreationOperation);
                 }
 
                 if (target.getPointOffset() != null) {
                     YukonApiValidationUtils.checkRange(errors, "pointOffset", target.getPointOffset(), 0, 99999999, true);
                     if (!errors.hasFieldErrors("pointOffset")) {
-                        pointValidationUtil.validatePointOffset(target, "pointOffset", errors, isCreationOperation);
+                        pointApiValidationUtil.validatePointOffset(target, "pointOffset", errors, isCreationOperation);
                     }
                 }
 
@@ -94,7 +94,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         }
 
         if(!errors.hasFieldErrors("pointType") && target.getPointType() != null) {
-            pointValidationUtil.checkIfPointTypeChanged(errors, target, isCreationOperation);
+            pointApiValidationUtil.checkIfPointTypeChanged(errors, target, isCreationOperation);
         }
 
         validateArchiveSettings(target, pointType, errors);
