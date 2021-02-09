@@ -62,8 +62,6 @@ MICROSOFT_VCP_DLL = msvcp140.dll
 MICROSOFT_RT_DLL  = vcruntime140.dll
 !ENDIF
 
-MICROSOFT_SQL_DLL = ntwdblib.dll
-
 OPENSSL_BIN     = $(OPENSSL)\$(CONFIGURATION)\bin
 OPENSSL_DLL_1   = libcrypto-1_1.dll
 OPENSSL_DLL_2   = libssl-1_1.dll
@@ -101,7 +99,6 @@ ALL: $(BIN) $(LIB) $(PDB) \
   $(BIN)\$(DBGHELP_DLL) \
   $(BIN)\$(LOG4CXX_DLL) \
   $(BIN)\$(MICROSOFT_RT_DLL) \
-  $(BIN)\$(MICROSOFT_SQL_DLL) \
   $(BIN)\$(MICROSOFT_VCP_DLL) \
   $(BIN)\$(OPENSSL_DLL_1) \
   $(BIN)\$(OPENSSL_DLL_2) \
@@ -135,7 +132,6 @@ $(BIN)\$(LOG4CXX_DLL):$(LOG4CXX_BIN)\$(LOG4CXX_DLL); copy $? $@
 
 $(BIN)\$(MICROSOFT_VCP_DLL):$(MICROSOFT_VC)\$(MICROSOFT_VCP_DLL); copy $? $@
 $(BIN)\$(MICROSOFT_RT_DLL):$(MICROSOFT_VC)\$(MICROSOFT_RT_DLL);  copy $? $@
-$(BIN)\$(MICROSOFT_SQL_DLL):$(MICROSOFT_SQL)\$(MICROSOFT_SQL_DLL); copy $? $@
 
 $(BIN)\$(OPENSSL_DLL_1):$(OPENSSL_BIN)\$(OPENSSL_DLL_1); copy $? $@
 $(BIN)\$(OPENSSL_DLL_2):$(OPENSSL_BIN)\$(OPENSSL_DLL_2); copy $? $@
