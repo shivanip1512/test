@@ -91,7 +91,7 @@ public class NodeWiFiComm implements Serializable{
             return false;
         if (nodeWiFiCommStatus != other.nodeWiFiCommStatus)
             return false;
-        if (rssi != other.rssi)
+        if (rssi.equals(other.rssi))
             return false;
         if (wiFiCommStatusTimestamp != other.wiFiCommStatusTimestamp)
             return false;
