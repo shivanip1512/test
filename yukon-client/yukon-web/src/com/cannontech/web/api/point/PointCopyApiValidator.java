@@ -13,12 +13,12 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointCopy;
-import com.cannontech.web.tools.points.validators.PointValidationUtil;
+import com.cannontech.web.tools.points.validators.PointApiValidationUtil;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class PointCopyApiValidator extends SimpleValidator<PointCopy> {
 
-    @Autowired private PointValidationUtil pointValidationUtil;
+    @Autowired private PointApiValidationUtil pointApiValidationUtil;
     @Autowired private IDatabaseCache serverDatabaseCache;
     protected static final String baseKey = "yukon.web.api.error";
     @Autowired private PointDao pointDao;
@@ -69,7 +69,7 @@ public class PointCopyApiValidator extends SimpleValidator<PointCopy> {
                 pointModel.setPointType(paoPointIdentifier.getPointIdentifier().getPointType());
               
                 if (!errors.hasFieldErrors("pointName")) {
-                    pointValidationUtil.validatePointName(pointModel, "pointName", errors, true);
+                    pointApiValidationUtil.validatePointName(pointModel, "pointName", errors, true);
                 }
                 
                 // Check pointOffset range
@@ -78,7 +78,7 @@ public class PointCopyApiValidator extends SimpleValidator<PointCopy> {
                     pointModel.setPointOffset(copyPoint.getPointOffset());
                     boolean physicalPointOffset = pointModel.getPointOffset() > 0 ? true : false;
                     pointModel.setPhysicalOffset(physicalPointOffset);
-                    pointValidationUtil.validatePointOffset(pointModel, "pointOffset", errors, true);
+                    pointApiValidationUtil.validatePointOffset(pointModel, "pointOffset", errors, true);
                 }
             }
         }

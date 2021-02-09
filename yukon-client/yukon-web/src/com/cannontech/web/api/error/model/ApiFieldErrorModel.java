@@ -19,11 +19,11 @@ public class ApiFieldErrorModel {
     public ApiFieldErrorModel() {
     }
 
-    public ApiFieldErrorModel(ApiErrorDetails errorDetails, FieldError fieldError) {
+    public ApiFieldErrorModel(ApiErrorDetails errorDetails, FieldError fieldError, String detail) {
         this.title = errorDetails.getTitle();
         this.type = errorDetails.getType();
         this.code = errorDetails.getCode();
-        this.detail = errorDetails.getDefaultMessage();
+        this.detail = detail;
         this.field = fieldError.getField();
         this.rejectedValue = String.valueOf(fieldError.getRejectedValue());
         this.parameters = fieldError.getArguments();

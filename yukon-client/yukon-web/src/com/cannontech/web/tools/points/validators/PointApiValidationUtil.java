@@ -23,7 +23,8 @@ public class PointApiValidationUtil extends ValidationUtils {
     public void validatePointName(LitePointModel pointModel, String fieldName, Errors errors, boolean isCopyOrCreate) {
         validateName(fieldName, errors, pointModel.getPointName());
         if (!pointValidationUtilCommon.validatePointName(pointModel, isCopyOrCreate)) {
-            errors.rejectValue(fieldName, ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { fieldName }, "");
+            errors.rejectValue(fieldName, ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                    new Object[] { pointModel.getPointName() }, "");
         }
     }
 
@@ -46,7 +47,7 @@ public class PointApiValidationUtil extends ValidationUtils {
         }
         List<Object> arguments = pointValidationUtilCommon.isValidPointOffset(pointModel, isCopyOrCreate);
         if (CollectionUtils.isNotEmpty(arguments)) {
-            errors.rejectValue(fieldName, ApiErrorDetails.POINT_OFFSET_NOT_AVAILABLE.getCodeString(),
+            errors.rejectValue(fieldName, ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
                     arguments.toArray(), "Invalid point offset");
         }
     }
@@ -57,9 +58,8 @@ public class PointApiValidationUtil extends ValidationUtils {
     public void checkIfPointTypeChanged(Errors errors, LitePointModel litePointModel, boolean isCreationOperation) {
         if (!pointValidationUtilCommon.checkIfPointTypeChanged(litePointModel, isCreationOperation)) {
             PointBase pointBase = pointDao.get(litePointModel.getPointId());
-            errors.rejectValue("pointType", ApiErrorDetails.POINT_TYPE_MISMATCH.getCodeString(),
-                    new Object[] { litePointModel.getPointType(), pointBase.getPoint().getPointType(),
-                            litePointModel.getPointId() },
+            errors.rejectValue("pointType", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
+                    new Object[] { litePointModel.getPointType(), pointBase.getPoint().getPointType() },
                     "");
         }
     }
@@ -70,7 +70,7 @@ public class PointApiValidationUtil extends ValidationUtils {
     public void checkIfPaoIdChanged(Errors errors, LitePointModel litePointModel, boolean isCreationOperation) {
         if (!pointValidationUtilCommon.checkIfPaoIdMatch(litePointModel, isCreationOperation)) {
             PointBase pointBase = pointDao.get(litePointModel.getPointId());
-            errors.rejectValue("paoId", ApiErrorDetails.PAO_ID_MISMATCH.getCodeString(),
+            errors.rejectValue("paoId", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
                     new Object[] { litePointModel.getPaoId(), pointBase.getPoint().getPaoID() }, "");
         }
     }
@@ -80,7 +80,7 @@ public class PointApiValidationUtil extends ValidationUtils {
      */
     public void validatePointId(Errors errors, String field, Integer pointId, String fieldName) {
         if (!pointValidationUtilCommon.validatePointId(pointId)) {
-            errors.rejectValue(field, ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { fieldName }, "");
+            errors.rejectValue(field, ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { pointId }, "");
         }
     }
 }
