@@ -430,6 +430,9 @@ begin
         DeleteFile ( TARGETDIR ^ "\\Server\\bin\\logic.dll");
     endif;
 
+    // Delete Old Rfn Network data scripts
+    RemoveOldRfnNetworkDataScripts();
+
 	//set installer to update all features that are currently installed
 	FeatureReinstall();
 	
