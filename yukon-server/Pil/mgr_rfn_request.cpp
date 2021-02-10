@@ -48,8 +48,8 @@ enum
     E2EDT_RETRANSMIT_PRIORITY  = 15,  //  If the first one got out, we need the retransmits to get out as well
 };
 
-    constexpr auto E2EDT_RMP_INITIAL_TIMEOUT = 2h;  //  Node should request its first block within 2 hours of us sending the E2E request
-    constexpr auto E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT = 60min;  //  Node should request each subsequent block within 1 hour of the last block request
+    constexpr auto E2EDT_RMP_INITIAL_TIMEOUT = 24h;  //  Node should request its first block within 24 hours of us sending the E2E request
+    constexpr auto E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT = 24h;  //  Node should request each subsequent block within 24 hours of the last block request
 
     constexpr auto E2EDT_DEFAULT_BLOCK_SIZE = RfnRequestManager::BlockSize::ofSize<1024>();
 }
@@ -288,7 +288,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             if( auto request = mapFindRef(_meterProgrammingRequests, rfnIdentifier) )
             {
-                const auto timeout = std::chrono::system_clock::now() + E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT;
+                const auto timeout = std::chrono::system_clock::now() + gConfigParms.getValueAsDuration("E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT", E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT);
 
                 CTILOG_DEBUG(dout, "Updating Meter Programming expiration for " << rfnIdentifier << FormattedList::of(
                     "GUID", guid,
@@ -528,7 +528,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
 
                 if( auto command = dynamic_cast<const RmpSetCommand*>(activeRequest.request.command.get()) )
                 {
-                    const auto timeout = std::chrono::system_clock::now() + E2EDT_RMP_INITIAL_TIMEOUT;
+                    const auto timeout = std::chrono::system_clock::now() + gConfigParms.getValueAsDuration("E2EDT_RMP_INITIAL_TIMEOUT", E2EDT_RMP_INITIAL_TIMEOUT);
 
                     _awaitingMeterProgrammingRequest.emplace(
                         timeout, RfnRequestIdentifier{ confirm.rfnIdentifier, activeRequest.request.rfnRequestId });
@@ -1081,7 +1081,7 @@ void RfnRequestManager::sendMeterProgrammingBlock(
     msg.rfnIdentifier = rfnIdentifier;
     msg.payload = dataMessage;
     msg.priority = E2EDT_ACK_PRIORITY;
-    msg.expiration = CtiTime::now().addMinutes(E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT.count());
+    msg.expiration = CtiTime::now() + gConfigParms.getValueAsDuration("E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT", E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT);
 
     //  ignore the confirm and timeout callbacks - let the existing Meter Programming timeout handle the expiration
     E2eMessenger::sendE2eDt(msg, asid,

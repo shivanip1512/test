@@ -98,6 +98,9 @@ public:
     friend CtiTime IM_EX_CTIBASE operator + (const CtiTime& t, const unsigned long s);
     friend CtiTime IM_EX_CTIBASE operator - (const CtiTime& t, const unsigned long s);
 
+    friend CtiTime IM_EX_CTIBASE operator + (const CtiTime& t, const std::chrono::seconds s);
+    friend CtiTime IM_EX_CTIBASE operator - (const CtiTime& t, const std::chrono::seconds s);
+
     friend bool IM_EX_CTIBASE operator < (const CtiTime& t1, const CtiTime& t2);
     friend bool IM_EX_CTIBASE operator <= (const CtiTime& t1, const CtiTime& t2);
     friend bool IM_EX_CTIBASE operator > (const CtiTime& t1, const CtiTime& t2);

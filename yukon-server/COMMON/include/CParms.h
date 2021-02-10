@@ -123,7 +123,7 @@ public:
    void              Dump();
    void              HeadAndTail(char *source, char *dest, size_t len);
 
-   using Duration = std::chrono::duration<double>;
+   using Duration = std::chrono::seconds;
 
    std::optional<int> findValueAsInt(const std::string& key);
 
@@ -133,7 +133,7 @@ public:
    unsigned          getValueAsUnsigned(const std::string& key, unsigned defaultval = 0);
    double            getValueAsDouble  (const std::string& key, double defaultval = 0.0) ;
    ULONG             getValueAsULong   (const std::string& key, ULONG defaultval = 0L, int base = 10);
-   Duration          getValueAsDuration(const std::string& key, Duration defaultval = Duration { 0.0 });
+   Duration          getValueAsDuration(const std::string& key, Duration defaultval);
 };
 
 
