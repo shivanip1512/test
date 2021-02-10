@@ -512,6 +512,8 @@ SET PowerShellScriptPath=%~dp0%Zip.ps1
 SET srcPath=%currentDir%%resultDir%
 SET destPath=%currentDir%%resultDir%.zip
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '%PowerShellScriptPath%' '%srcPath%' '%destPath%'"
+
+rmdir /s /q %srcPath%
 cd ..\
 
 GOTO end
