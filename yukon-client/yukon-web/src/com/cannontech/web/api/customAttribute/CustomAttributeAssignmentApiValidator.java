@@ -17,7 +17,9 @@ public class CustomAttributeAssignmentApiValidator extends SimpleValidator<Assig
 
     @Override
     protected void doValidation(Assignment assignment, Errors errors) {
-        Integer attributeAssignmentId = Integer.valueOf(ServletUtils.getPathVariable("attributeAssignmentId"));
+
+        String strattributeAssignmentId = ServletUtils.getPathVariable("attributeAssignmentId");
+        Integer attributeAssignmentId = strattributeAssignmentId == null ? null : Integer.valueOf(strattributeAssignmentId);
 
         YukonApiValidationUtils.checkIsPositiveInt(errors, "attributeAssignmentId", attributeAssignmentId);
     }

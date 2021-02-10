@@ -49,7 +49,7 @@ public class TrendApiValidatorHelper {
                     .findAny()
                     .ifPresent(liteGraphDefinition -> {
                         if (trendId == null || liteGraphDefinition.getGraphDefinitionID() != trendId) {
-                            errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { nameI18nText }, "");
+                            errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { trendName }, "");
                         }
                     });
         }

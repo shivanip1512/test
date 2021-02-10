@@ -3631,6 +3631,36 @@ bool CtiLMProgramDirect::notifyGroupsOfSchedule(const CtiTime &start, const CtiT
     }
 }
 
+/*----------------------------------------------------------------------------
+notifyGroupsOfCancelIfScheduled
+
+Let the notification groups know when we have canceled a program IF the program is configured to send a scheduled notification
+Returns true if a notifcation was sent.
+----------------------------------------------------------------------------*/
+bool CtiLMProgramDirect::notifyGroupsOfCancelIfScheduled()
+{
+    if ( shouldNotifyWhenScheduled() ) 
+    {
+        if ( _LM_DEBUG & LM_DEBUG_STANDARD )
+        {
+            CTILOG_DEBUG(dout, "sending notification of scheduled program canceling before start. Program: " << getPAOName());
+        }
+
+        auto multiNotifMsg = std::make_unique<CtiMultiMsg>();
+        auto notif_msg = std::make_unique<CtiNotifLMControlMsg>(_notificationgroupids, CtiNotifLMControlMsg::CANCELATION, getPAOId(), getDirectStartTime(), getDirectStopTime());
+        multiNotifMsg->insert(notif_msg.release());
+
+        CtiLoadManager::getInstance()->sendMessageToNotification(std::move(multiNotifMsg));
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
 BOOL  CtiLMProgramDirect::wasControlActivatedByStatusTrigger()
 {
     return _controlActivatedByStatusTrigger;

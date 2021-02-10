@@ -69,13 +69,13 @@ public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPoint
             // if for accepting non-default values, need to specify control type in request otherwise it would accept only default values.
             if (pointAnalogControl.getControlType() == null || pointAnalogControl.getControlType() == AnalogControlType.NONE) {
                 if (pointAnalogControl.getControlOffset() != null && pointAnalogControl.getControlOffset() != 0) {
-                    errors.rejectValue("pointAnalogControl.controlOffset", ApiErrorDetails.INVALID_CONTROL_TYPE.getCodeString(),
-                            new Object[] { "Control Offset", "0" }, "");
+                    errors.rejectValue("pointAnalogControl.controlOffset", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                            new Object[] { "0 when Control Type is None" }, "");
                 }
 
                 if (pointAnalogControl.getControlInhibited() != null && pointAnalogControl.getControlInhibited().equals(true)) {
-                    errors.rejectValue("pointAnalogControl.controlInhibited", ApiErrorDetails.INVALID_CONTROL_TYPE.getCodeString(),
-                            new Object[] { "Control Inhibited", "false" }, "");
+                    errors.rejectValue("pointAnalogControl.controlInhibited", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                            new Object[] { "false when Control type is None" }, "");
                 }
             }
         }

@@ -128,7 +128,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                     HttpMethod.PATCH, Object.class, commChannel);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(commChannel, "commChannel");
-                result = helper.populateBindingError(result, error, response);
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 if (result.hasErrors()) {
                     setupErrorFields(resp, commChannel, model, result, userContext);
                     return "commChannelInfoWidget/render.jsp";

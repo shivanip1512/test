@@ -119,12 +119,9 @@ public class ApiControllerHelper {
                     error.rejectValue(field, errorCode);
                 }
             }
-
-            List<ObjectError> mvcErrors = (List<ObjectError>) result.getAllErrors();
-            result = new BindException(error.getTarget(), error.getObjectName());
             result.addAllErrors(error);
 
-            for (ObjectError objectError : mvcErrors) {
+            for (ObjectError objectError : error.getAllErrors()) {
                 FieldError mvcError = (FieldError) objectError;
                 String fieldName = mvcError.getField();
                 if (result.getFieldError(fieldName) == null) {

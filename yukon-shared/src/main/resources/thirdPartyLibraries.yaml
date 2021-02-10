@@ -5174,20 +5174,6 @@ Network Manager :
     updated : 2009-04-30
     jira : none
     notes : 
-
-  - filename : snakeyaml-1.18.2.jar
-    yukon group : Jackson
-    project : SnakeYAML
-    version : 1.18.2
-    project URL : "https://github.com/DroidsOnRoids/snakeyaml"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/pl.droidsonroids.yaml/snakeyaml/1.18.2"
-    md5 : 3041218f98b3798eee443b317d91e28f
-    sha1 : aacf63abc979a710ddc0172509f7857cb69ff241
-    updated : 2020-10-19
-    jira : NM-1770
-    notes :
     
   - filename : tomcat-api.jar
     yukon group : Tomcat
@@ -6045,20 +6031,6 @@ C++ :
     updated : 2020-10-19  
     jira : YUK-22841
     notes : 
-    
-  - project : Microsoft SQL Server Client
-    path : MICROSOFT_SQL
-    version : 2000.80.194.0
-    project URL : "https://social.msdn.microsoft.com/Forums/sqlserver/en-US/534f6983-6326-423b-9285-391d4fef42ff/ntwdblibdll-for-sql-2012?forum=sqlgetstarted"
-    license : Microsoft indemnification
-    license URLs : "n/a"
-    md5 : 4a76e50c4921ca9a35c5bb3c010b0cf8
-    sha1 : 1a2d0225fe73eb5c42d282d90c5c3b38b7637720 
-    fileCount : 1
-    totalSize : 274489
-    updated : 2018-05-17  
-    jira : YUK-18201
-    notes : "Deprecated, probably unnecessary now since SQLAPI uses ODBC, not DB-Library.  See https://social.msdn.microsoft.com/Forums/sqlserver/en-US/28a2a5df-c33b-45f3-99d3-16e4567f5a03/ntwdblibdll-not-found?forum=sqlgetstarted"
     
   - project : OpenSSL
     path : OPENSSL

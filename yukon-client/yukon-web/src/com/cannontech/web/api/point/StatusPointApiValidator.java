@@ -3,6 +3,7 @@ package com.cannontech.web.api.point;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
@@ -36,8 +37,8 @@ public class StatusPointApiValidator<T extends StatusPointModel<?>> extends Poin
                                                 .map(state -> state.getStateRawState())
                                                 .collect(Collectors.toList());
             if (!rawStates.contains(statusPoint.getInitialState())) {
-                errors.rejectValue("initialState", ApiErrorDetails.INVALID_INITIAL_STATE.getCodeString(),
-                        new Object[] { statusPoint.getInitialState(), statusPoint.getStateGroupId() }, "");
+                errors.rejectValue("initialState", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { StringUtils.join(rawStates, ", ") }, "");
             }
         }
 
@@ -71,40 +72,40 @@ public class StatusPointApiValidator<T extends StatusPointModel<?>> extends Poin
         // if for accepting non-default values, need to specify control type in request otherwise it would accept only default values.
         if (pointStatusControl.getControlType() == null || pointStatusControl.getControlType() == StatusControlType.NONE) {
             if (pointStatusControl.getControlOffset() != null && pointStatusControl.getControlOffset() != 0) {
-                errors.rejectValue("pointStatusControl.controlOffset", ApiErrorDetails.INVALID_CONTROL_TYPE.getCodeString(),
-                        new Object[] { "Control Offset", "0" }, "");
+                errors.rejectValue("pointStatusControl.controlOffset", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { "0 when Control Type is None" }, "");
             }
 
             if (pointStatusControl.getControlInhibited() != null && pointStatusControl.getControlInhibited().equals(true)) {
-                errors.rejectValue("pointStatusControl.controlInhibited", ApiErrorDetails.INVALID_CONTROL_TYPE.getCodeString(),
-                        new Object[] { "Control Inhibited", "false" }, "");
+                errors.rejectValue("pointStatusControl.controlInhibited", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { "false when Control type is None" }, "");
             }
 
             if (pointStatusControl.getCloseTime1() != null && pointStatusControl.getCloseTime1() != 0) {
-                errors.rejectValue("pointStatusControl.closeTime1", ApiErrorDetails.INVALID_CONTROL_TYPE.getCodeString(),
-                        new Object[] { "Close Time1", "0" }, "");
+                errors.rejectValue("pointStatusControl.closeTime1", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { "0 when Control Type is None" }, "");
             }
 
             if (pointStatusControl.getCloseTime2() != null && pointStatusControl.getCloseTime2() != 0) {
-                errors.rejectValue("pointStatusControl.closeTime2", ApiErrorDetails.INVALID_CONTROL_TYPE.getCodeString(),
-                        new Object[] { "Close Time2", "0" }, "");
+                errors.rejectValue("pointStatusControl.closeTime2", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { "0 when Control Type is None" }, "");
             }
 
             if (pointStatusControl.getCommandTimeOut() != null && pointStatusControl.getCommandTimeOut() != 0) {
-                errors.rejectValue("pointStatusControl.commandTimeOut", ApiErrorDetails.INVALID_CONTROL_TYPE.getCodeString(),
-                        new Object[] { "Command Timeout", "0" }, "");
+                errors.rejectValue("pointStatusControl.commandTimeOut", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { "0 when Control Type is None" }, "");
             }
 
             if (pointStatusControl.getCloseCommand() != null
                     && !(pointStatusControl.getCloseCommand().equals(ControlStateType.CLOSE.getControlCommand()))) {
-                errors.rejectValue("pointStatusControl.closeCommand", ApiErrorDetails.INVALID_CONTROL_TYPE.getCodeString(),
-                        new Object[] { "Close Command", ControlStateType.CLOSE.getControlCommand() }, "");
+                errors.rejectValue("pointStatusControl.closeCommand", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { ControlStateType.CLOSE.getControlCommand() + " when Control Type is None" }, "");
             }
 
             if (pointStatusControl.getOpenCommand() != null
                     && !(pointStatusControl.getOpenCommand().equals(ControlStateType.OPEN.getControlCommand()))) {
-                errors.rejectValue("pointStatusControl.openCommand", ApiErrorDetails.INVALID_CONTROL_TYPE.getCodeString(),
-                        new Object[] { "Open Command", ControlStateType.OPEN.getControlCommand() }, "");
+                errors.rejectValue("pointStatusControl.openCommand", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { ControlStateType.OPEN.getControlCommand() + " when Control Type is None" }, "");
             }
         }
 
@@ -115,7 +116,8 @@ public class StatusPointApiValidator<T extends StatusPointModel<?>> extends Poin
         super.validateArchiveSettings(target, pointType, errors);
 
         if (target.getArchiveType() != PointArchiveType.NONE && target.getArchiveType() != PointArchiveType.ON_CHANGE) {
-            errors.rejectValue("archiveType", ApiErrorDetails.INVALID_ARCHIVE_TYPE.getCodeString(), new Object[] { target.getArchiveType(), pointType}, "");
+            errors.rejectValue("archiveType", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                    new Object[] { PointArchiveType.NONE + ", " + PointArchiveType.ON_CHANGE }, "");
         }
     }
 }
