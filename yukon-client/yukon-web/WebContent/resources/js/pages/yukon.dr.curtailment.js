@@ -241,6 +241,10 @@ yukon.dr.curtailment = (function () {
                 _enableDisableActionsMenu();
             });
 
+            $(document).on("yukon:event:confirm", function () {
+                $('#confirm-form').submit();
+            });
+
             $(function () {
                 _enableDisableActionsMenu();
                 $(document).on('click', '#assigned-groups', function (ev) {
