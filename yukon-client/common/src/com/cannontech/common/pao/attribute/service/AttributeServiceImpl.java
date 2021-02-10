@@ -191,6 +191,9 @@ public class AttributeServiceImpl implements AttributeService {
     
     @Override
     public CustomAttribute getCustomAttribute(int attributeId) {
+        if (!isValidAttributeId(attributeId)) {
+            throw new NotFoundException("Attribute id:" + attributeId + " is not in the database.");
+        }
         return customAttributes.getIfPresent(attributeId);
     }
     
