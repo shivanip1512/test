@@ -996,7 +996,7 @@ components:
         LM_GROUP_ECOBEE:
           name: Ecobee LoadGroup Test
           type: LM_GROUP_ECOBEE
-          kWCapacity: '23'
+          kWCapacity: 23
           disableGroup: false
           disableControl: false
     
@@ -1005,7 +1005,7 @@ components:
         LM_GROUP_EMETCON:
           name: Emetcon LoadGroup Group3
           type: LM_GROUP_EMETCON
-          kWCapacity: '4'
+          kWCapacity: 4
           disableGroup: false
           disableControl: false
           routeId: 1
@@ -1019,7 +1019,7 @@ components:
         LM_GROUP_METER_DISCONNECT:
           name: MeterDisconnect LoadGroup Test
           type: LM_GROUP_METER_DISCONNECT
-          kWCapacity: '23'
+          kWCapacity: 23
           disableGroup: false
           disableControl: false
     
@@ -1028,17 +1028,17 @@ components:
         LM_GROUP_ITRON:
           name: Itron LoadGroup Test
           type: LM_GROUP_ITRON
-          kWCapacity: '23'
+          kWCapacity: 23
           disableGroup: false
           disableControl: false
           virtualRelayId: 5
     
-    HoneyWell Group:
+    Honeywell Group:
       value:     
         LM_GROUP_HONEYWELL:
-          name: HoneyWell LoadGroup Test
+          name: Honeywell LoadGroup Test
           type: LM_GROUP_HONEYWELL
-          kWCapacity: '78.26'
+          kWCapacity: 78.26
           disableGroup: true
           disableControl: false
    
@@ -1086,7 +1086,7 @@ components:
         LM_GROUP_NEST:
           name: Nest LoadGroup Test
           type: LM_GROUP_NEST
-          kWCapacity: '78.26'
+          kWCapacity: 78.26
           disableGroup: true
           disableControl: false
         
@@ -1169,7 +1169,7 @@ components:
         LM_GROUP_EATON_CLOUD:
           name: Eaton Cloud LoadGroup Test
           type: LM_GROUP_EATON_CLOUD
-          kWCapacity: '23'
+          kWCapacity: 23
           disableGroup: false
           disableControl: false
           relayUsage:

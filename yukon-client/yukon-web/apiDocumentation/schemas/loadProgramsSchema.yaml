@@ -2461,7 +2461,7 @@ components:
             - notificationGrpID: 2
               notificationGrpName: Jess Notification
 
-    HoneyWell Program:
+    Honeywell Program:
       value:     
         name: Honeywell Program001
         type: LM_HONEYWELL_PROGRAM

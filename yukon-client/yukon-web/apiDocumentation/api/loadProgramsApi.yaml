@@ -56,8 +56,8 @@ post-operation:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
             ecobee Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
-            HoneyWell Program:
-              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/HoneyWell Program' 
+            Honeywell Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Honeywell Program' 
             Itron Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Itron Program'
             Meter Disconnect Program:
@@ -111,8 +111,8 @@ post-operation:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
                 ecobee Program:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
-                HoneyWell Program:
-                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/HoneyWell Program' 
+                Honeywell Program:
+                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Honeywell Program' 
                 Itron Program:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Itron Program'
                 Meter Disconnect Program:
@@ -189,8 +189,8 @@ get-update-delete-operation:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
               ecobee Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
-              HoneyWell Program:
-                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/HoneyWell Program' 
+              Honeywell Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Honeywell Program' 
               Itron Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Itron Program'
               Meter Disconnect Program:
@@ -264,8 +264,8 @@ get-update-delete-operation:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
             ecobee Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
-            HoneyWell Program:
-              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/HoneyWell Program' 
+            Honeywell Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Honeywell Program' 
             Itron Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Itron Program'
             Meter Disconnect Program:
@@ -318,8 +318,8 @@ get-update-delete-operation:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
               ecobee Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
-              HoneyWell Program:
-                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/HoneyWell Program' 
+              Honeywell Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Honeywell Program' 
               Itron Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Itron Program'
               Meter Disconnect Program:

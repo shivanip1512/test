@@ -53,8 +53,8 @@ post-operation:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group' 
             Itron Group:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group'
-            HoneyWell Group:
-              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/HoneyWell Group' 
+            Honeywell Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Honeywell Group' 
             Nest Group:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group' 
             MCT Group:
@@ -105,8 +105,8 @@ post-operation:
                   $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group' 
                 Itron Group:
                   $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group'
-                HoneyWell Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/HoneyWell Group' 
+                Honeywell Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Honeywell Group' 
                 Nest Group:
                   $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group' 
                 MCT Group:
@@ -185,8 +185,8 @@ get-update-delete-operation:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group' 
               Itron Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group'
-              HoneyWell Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/HoneyWell Group' 
+              Honeywell Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Honeywell Group' 
               Nest Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group' 
               MCT Group:
@@ -262,8 +262,8 @@ get-update-delete-operation:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group' 
             Itron Group:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group'
-            HoneyWell Group:
-              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/HoneyWell Group' 
+            Honeywell Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Honeywell Group' 
             Nest Group:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group' 
             MCT Group:
@@ -313,8 +313,8 @@ get-update-delete-operation:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group' 
               Itron Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group'
-              HoneyWell Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/HoneyWell Group' 
+              Honeywell Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Honeywell Group' 
               Nest Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group' 
               MCT Group:
