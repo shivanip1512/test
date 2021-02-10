@@ -9,21 +9,15 @@
 
 using namespace Cti::Devices::Commands;
 
+namespace Cti {
+    std::ostream& operator<<(std::ostream& os, const RfnIdentifier rfnId);
+}
 namespace Cti::Messaging::Rfn {
     std::ostream& operator<<(std::ostream& os, const RfnMeterReadingDataReplyType type) {
         return os << "[RfnMeterReadingDataReplyType " << static_cast<int>(type) << "]";
     }
-}
-
-namespace Cti::Messaging::Rfn {
     std::ostream& operator<<(std::ostream& os, const ChannelDataStatus cds) {
         return os << "[ChannelDataStatus " << static_cast<int>(cds) << "]";
-    }
-}
-
-namespace Cti {
-    std::ostream& operator<<(std::ostream& os, const RfnIdentifier rfnId) {
-        return os << rfnId.toString();
     }
 }
 

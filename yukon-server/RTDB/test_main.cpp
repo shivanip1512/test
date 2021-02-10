@@ -2,6 +2,7 @@
 
 #include "dev_mct.h"
 #include "cmd_rfn.h"
+#include "rfn_identifier.h"
 
 #include <boost/tuple/tuple.hpp>
 
@@ -22,6 +23,10 @@ namespace Cti {
 std::ostream& operator<<(std::ostream& o, const ConnectionHandle& ch)
 {
     return o << ch.toString();
+}
+
+std::ostream& operator<<(std::ostream& os, const RfnIdentifier rfnId) {
+    return os << rfnId.toString();
 }
 
 }

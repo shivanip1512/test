@@ -95,8 +95,6 @@ RfnCommandResult RfnMeterDisconnectCommand::error(const CtiTime now, const Yukon
 
 [[nodiscard]] auto makeSuccessResponse(const std::uint8_t status)
 {
-    RfnMeterDisconnectConfirmationReplyMsg response;
-
     static const std::map<std::uint8_t, RfnMeterDisconnectState> states {
         { 0x01, RfnMeterDisconnectState::DISCONNECTED },
         { 0x02, RfnMeterDisconnectState::ARMED },
@@ -108,16 +106,15 @@ RfnCommandResult RfnMeterDisconnectCommand::error(const CtiTime now, const Yukon
 
     if( const auto state = mapFind(states, status) )
     {
+        RfnMeterDisconnectConfirmationReplyMsg response;
+
         response.replyType = RfnMeterDisconnectConfirmationReplyType::SUCCESS;
         response.state = *state;
-    }
-    else
-    {
-        response.replyType = RfnMeterDisconnectConfirmationReplyType::FAILED_UNEXPECTED_STATUS;
-        response.state = RfnMeterDisconnectState::UNKNOWN;
+
+        return response;
     }
 
-    return response;
+    return makeFailureResponse(RfnMeterDisconnectConfirmationReplyType::FAILED_UNEXPECTED_STATUS);
 }
 
 
@@ -127,9 +124,11 @@ try
     validate(Condition(response.size() >= 3, ClientErrors::DataMissing)
         << "RFN meter disconnect response does not include response command, command type and status");
 
-    validate(Condition(response[0] == static_cast<std::uint8_t>(Response), ClientErrors::InvalidData)
+    const auto responseType = response[0];
+    
+    validate(Condition(responseType == static_cast<std::uint8_t>(Response), ClientErrors::InvalidData)
         << "RFN meter disconnect response type does not match command: " << FormattedList::of(
-            "Response type", static_cast<int>(response[0]),
+            "Response type", static_cast<int>(responseType),
             "Expected", Response));
 
     const auto commandType = response[1];
@@ -139,9 +138,9 @@ try
             "Request type", static_cast<int>(_action),
             "Response type", commandType));
 
-    const auto responseType = response[2];
+    const auto commandStatus = response[2];
 
-    switch( responseType )
+    switch( commandStatus )
     {
         case 0x00:
         {
@@ -213,7 +212,7 @@ try
         }
         default:
         {
-            CTILOG_WARN(dout, "Unknown response type " << static_cast<int>(responseType));
+            CTILOG_WARN(dout, "Unknown command status " << static_cast<int>(commandStatus));
 
             _response = makeFailureResponse(RfnMeterDisconnectConfirmationReplyType::FAILURE);
 
