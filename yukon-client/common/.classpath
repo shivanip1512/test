@@ -655,6 +655,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/commons-vfs2-2.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/commons-text-1.9.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-text-1.9.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
