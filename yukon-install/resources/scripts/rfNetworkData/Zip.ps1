@@ -1,5 +1,7 @@
-$src=$args[0]
-$dest=$args[1]
+param (
+    [string]$src,
+    [string]$dest
+)
 
 Add-Type -Assembly System.IO.Compression.FileSystem
 $compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
