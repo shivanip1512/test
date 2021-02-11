@@ -9,6 +9,12 @@ public class RfnFeatureHelper {
     }
     
     public static boolean isSupported(RfnFeature feature, ConfigurationSource configurationSource) {
+        var disableSwitch = feature.getDisableSwitch();
+        if (disableSwitch != null) {
+            if (configurationSource.getBoolean(disableSwitch)) {
+                return false;
+            }
+        }
         return feature.isSupportedIn(configurationSource.getDouble(MasterConfigDouble.RFN_FIRMWARE));
     }
 }

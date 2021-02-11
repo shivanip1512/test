@@ -150,7 +150,7 @@ public class RfnMeterDisconnectService {
             }
         };
         
-        if (false/* TODO RfnFeatureHelper.isSupported(RfnFeature.E2E_DISCONNECT, configurationSource)*/) {
+        if (RfnFeatureHelper.isSupported(RfnFeature.E2E_DISCONNECT, configurationSource)) {
             e2eTemplate.send(new RfnMeterDisconnectRequest(meter.getRfnIdentifier(), action), handler);
         } else {
             legacyTemplate.send(new RfnMeterDisconnectRequest(meter.getRfnIdentifier(), action), handler);
