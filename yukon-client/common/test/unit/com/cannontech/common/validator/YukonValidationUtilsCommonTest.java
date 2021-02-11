@@ -2,15 +2,11 @@ package com.cannontech.common.validator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.joda.time.Instant;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
-
-import com.cannontech.common.user.User;
 import com.cannontech.common.util.Range;
 
 public class YukonValidationUtilsCommonTest {
