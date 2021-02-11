@@ -742,6 +742,16 @@ CtiTime operator - (const CtiTime& t, const unsigned long s)
     _t.addSeconds(-1*s);
     return _t;
 }
+
+CtiTime operator + (const CtiTime& t, const std::chrono::seconds s)
+{
+    return CtiTime{ t }.addSeconds(s.count());
+}
+CtiTime operator - (const CtiTime& t, const std::chrono::seconds s)
+{
+    return CtiTime{ t }.addSeconds(-1 * s.count());
+}
+
 std::ostream& operator<< (std::ostream& s, const CtiTime& t)
 {
     s << t.asString();
