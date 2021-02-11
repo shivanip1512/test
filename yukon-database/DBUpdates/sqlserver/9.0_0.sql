@@ -255,6 +255,15 @@ AND PaObjectId IN (
 INSERT INTO DBUpdates VALUES ('YUK-23532', '9.0.0', GETDATE());
 /* @end YUK-23532 */
 
+/* @start YUK-22912 */
+CREATE INDEX INDX_CREUns_ExecId_DevId ON CommandRequestUnsupported (
+CommandRequestExecId ASC,
+DeviceId ASC
+)
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-22912', '9.0.0', GETDATE());
+/* @end YUK-22912 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

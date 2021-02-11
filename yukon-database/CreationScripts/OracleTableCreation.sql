@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/15/2021 3:56:25 PM                         */
+/* Created on:     2/10/2021 1:09:33 AM                         */
 /*==============================================================*/
 
 
@@ -1899,6 +1899,14 @@ create table CommandRequestUnsupported  (
 /*==============================================================*/
 create index Indx_CommandReqUnsupport_Type on CommandRequestUnsupported (
    Type ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CREUns_ExecId_DevId                              */
+/*==============================================================*/
+create index INDX_CREUns_ExecId_DevId on CommandRequestUnsupported (
+   CommandRequestExecId ASC,
+   DeviceId ASC
 );
 
 /*==============================================================*/
