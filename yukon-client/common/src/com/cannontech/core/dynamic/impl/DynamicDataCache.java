@@ -89,7 +89,7 @@ import com.cannontech.yukon.IServerConnection;
             pointData.put(pd.getId(), LitePointData.of(pd));
         } else { 
             if (cachedPointData.getPointQuality() == PointQuality.Uninitialized
-                || pd.getPointDataTimeStamp().after(cachedPointData.getPointDataTimeStamp())) {
+                || !pd.getPointDataTimeStamp().before(cachedPointData.getPointDataTimeStamp())) {
                 pointData.put(pd.getId(), LitePointData.of(pd));
             }
         }

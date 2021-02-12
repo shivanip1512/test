@@ -136,16 +136,30 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         
         SqlBuilder sqla = builder.buildForAllMsDatabases();
         sqla.append("SELECT DISTINCT TOP " + maxRows);
-        sqla.append(  "rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
+        sqla.append(  "rph.changeid, rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
         appendFromAndWhereClause(sqla, Collections.singleton(pointId), instantRange, excludeDisabledPaos);
         appendOrderByClause(sqla, order, orderBy);
+        if (orderBy == OrderBy.TIMESTAMP) {
+            sqla.append(",");
+            sqla.append("rph.changeid");
+            if(order == Order.REVERSE) {
+                sqla.append("DESC");
+            }
+        }
         
         SqlBuilder sqlb = builder.buildOther();
         sqlb.append("select * from (");
-        sqlb.append(  "SELECT DISTINCT rph.pointid, rph.timestamp,");
+        sqlb.append(  "SELECT DISTINCT rph.changeid, rph.pointid, rph.timestamp,");
         sqlb.append(    "rph.value, rph.quality, p.pointtype,");
         sqlb.append(    "ROW_NUMBER() over (");
         appendOrderByClause(sqlb, order, orderBy);
+        if (orderBy == OrderBy.TIMESTAMP) {
+            sqlb.append(",");
+            sqlb.append("rph.changeid");
+            if(order == Order.REVERSE) {
+                sqlb.append("DESC");
+            }
+        }
         sqlb.append(    ") rn");
         appendFromAndWhereClause(sqlb, Collections.singleton(pointId), instantRange, excludeDisabledPaos);
         sqlb.append(") numberedRows");
