@@ -473,6 +473,8 @@ LM_GROUP_RIPPLE:
         - control
         - restore
         - shedTime
+        - group
+        - areaCode
       type: object
       properties:
         name:
@@ -509,6 +511,12 @@ LM_GROUP_RIPPLE:
         shedTime:
           type: integer
           description: 'Number of minutes a relay controls when a control command is sent. A shed time of Continuous Latch controls until a restore command is sent.'
+        group:
+          type: string
+          description: 'group'
+        areaCode:
+          type: string
+          description: 'Area Code. Applicable in case of special ripple.'
   
 LM_GROUP_EXPRESSCOMM:
   title: LM_GROUP_EXPRESSCOMM
@@ -1102,6 +1110,8 @@ components:
           restore: '00000000000000000000000011111110111010101010101010'
           shedTime: 450
           kWCapacity: 4
+          group: FOUR_02
+          areaCode: ROSEAU_ELECTRIC
     
     Expresscomm Group:
       value:  
