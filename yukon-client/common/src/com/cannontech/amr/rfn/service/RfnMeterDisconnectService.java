@@ -33,6 +33,9 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterDisconnectConfirmationReplySerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterDisconnectInitialReplySerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterDisconnectRequestSerializer;
 
 public class RfnMeterDisconnectService {
 
@@ -181,7 +184,10 @@ public class RfnMeterDisconnectService {
     @PostConstruct
     public void initialize() {
         YukonJmsTemplate e2eJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT);
-        e2eTemplate = new ThriftRequestReplyReplyTemplate<>(cparm, configurationSource, e2eJmsTemplate);
+        e2eTemplate = new ThriftRequestReplyReplyTemplate<>(cparm, configurationSource, e2eJmsTemplate, false, 
+                new RfnMeterDisconnectRequestSerializer(), 
+                new RfnMeterDisconnectInitialReplySerializer(), 
+                new RfnMeterDisconnectConfirmationReplySerializer());
 
         YukonJmsTemplate legacyJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT_LEGACY);
         legacyTemplate = new RequestReplyReplyTemplate<>(cparm, configurationSource, legacyJmsTemplate);

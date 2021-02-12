@@ -29,6 +29,9 @@ import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadDataReplySerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadReplySerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadRequestSerializer;
 import com.google.common.collect.Lists;
 
 public class RfnMeterReadService {
@@ -152,7 +155,10 @@ public class RfnMeterReadService {
     @PostConstruct
     public void initialize() {
         YukonJmsTemplate e2eJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ);
-        e2eTemplate = new ThriftRequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, e2eJmsTemplate);
+        e2eTemplate = new ThriftRequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, e2eJmsTemplate, false,
+                new RfnMeterReadRequestSerializer(),
+                new RfnMeterReadReplySerializer(),
+                new RfnMeterReadDataReplySerializer());
 
         YukonJmsTemplate legacyJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_LEGACY);
         legacyTemplate = new RequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, legacyJmsTemplate);
