@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +20,7 @@ import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,13 +33,17 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueBuilder;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -61,7 +65,6 @@ import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.service.CachedPointDataCorrelationService;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCorrelationService {
@@ -82,6 +85,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private EmailService emailService;
     @Autowired private ConfigurationSource configSource;
+    @Autowired private RawPointHistoryDao rawPointHistoryDao;
     private ScheduledFuture<?> futureSchedule;
 
     @PostConstruct
@@ -154,17 +158,8 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         
         List<LitePoint> points = pointDao.getLitePointsByDeviceIds(deviceIds);
         Map<Integer, LitePoint> pointIdsToPoint = Maps.uniqueIndex(points, LitePoint::getLiteID);
-        Map<Integer, List<PointValueQualityHolder>> history = getMostRecentValues(pointIdsToPoint.keySet(), 2)
-                .stream().collect(Collectors.groupingBy(value -> value.getId()));
         
-        if(history.isEmpty()) {
-            log.info("Device data correlation complete. No mismatches found.");
-            return false;
-        }
-        
-        Set<Integer> pointIds = history.keySet();
-        
-        // if there is no history we can't correlate, skipping points without history
+        Set<Integer> pointIds = pointIdsToPoint.keySet();
         Map<Integer, PointValueQualityHolder> dispatchValues = Maps
                 .uniqueIndex(getDynamicPointDispatchValues(pointIds), PointValueQualityHolder::getId);
         
@@ -177,15 +172,18 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         log.info("Got asyncDataSourceValues cached values {}", asyncDataSourceValues.size());
 
         pointIds.forEach(pointId -> {
-            //2 latest RPH values
-            List<PointValueQualityHolder> historicalValues = history.get(pointId);
-            LitePoint point = pointIdsToPoint.get(pointId);
-            PointValueQualityHolder pointUpdateBackingServiceCachedValue = pointUpdateBackingServiceCachedValues.get(pointId);
-            PointValueQualityHolder asyncDataSourceValue = asyncDataSourceValues.get(pointId);
-            CorrelationSummary result = checkForMatch(point, userContext, pointUpdateBackingServiceCachedValue, historicalValues,
-                    asyncDataSourceValue, dispatchValues.get(pointId));
-            if (result != null) {
-                summary.add(result);
+            // 2 latest RPH values
+            List<PointValueHolder> historicalValues = getMostRecentValues(pointId, userContext);
+            if (!historicalValues.isEmpty()) {
+                LitePoint point = pointIdsToPoint.get(pointId);
+                PointValueHolder pointUpdateBackingServiceCachedValue = pointUpdateBackingServiceCachedValues.get(pointId);
+                PointValueHolder asyncDataSourceValue = asyncDataSourceValues.get(pointId);
+                CorrelationSummary result = checkForMatch(point, userContext, pointUpdateBackingServiceCachedValue,
+                        historicalValues,
+                        asyncDataSourceValue, dispatchValues.get(pointId));
+                if (result != null) {
+                    summary.add(result);
+                }
             }
         });
         if(summary.isEmpty()) {
@@ -247,9 +245,16 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
      * Logs cache and historical values. if problem found returns summary
      */
     private CorrelationSummary correlate(LitePoint point, YukonUserContext userContext) {
-        List<PointValueQualityHolder> historicalValues = getMostRecentValues(Sets.newHashSet(point.getPointID()), 2);
+        List<PointValueHolder> historicalValues = getMostRecentValues(point.getPointID(), userContext);
         if(historicalValues.isEmpty()) {
             return null;
+        }
+        
+        if(log.isDebugEnabled()){
+            historicalValues.forEach(value -> {
+                log.debug("{}", pointFormattingService.getValueString(value, Format.SHORT, userContext) + " "
+                        + pointFormattingService.getValueString(value, Format.DATE, userContext));
+            });
         }
         List<PointValueQualityHolder> dispatchValues = getDynamicPointDispatchValues(Sets.newHashSet(point.getPointID()));
         PointValueQualityHolder dispatchValue = dispatchValues.size() > 0 ? dispatchValues.get(0) : null;
@@ -270,16 +275,17 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
     }
 
     private CorrelationSummary checkForMatch(LitePoint point, YukonUserContext userContext,
-            PointValueQualityHolder pointUpdateBackingServiceCachedValue, 
-            List<PointValueQualityHolder> historicalValues,
-            PointValueQualityHolder asyncDataSourceValue, 
-            PointValueQualityHolder dispatchValue) {
+            PointValueHolder pointUpdateBackingServiceCachedValue, 
+            List<PointValueHolder> historicalValues,
+            PointValueHolder asyncDataSourceValue, 
+            PointValueHolder dispatchValue) {
         
-      /*  if (true) {
+      /* if (true) {
             // test file creation without mismatches
             CorrelationSummary summary = new CorrelationSummary(userContext, point, pointUpdateBackingServiceCachedValue,
                     historicalValues,
                     asyncDataSourceValue, dispatchValue);
+            summary.logMismatch();
             return summary;
         }*/
         
@@ -300,17 +306,17 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
 
     private class CorrelationSummary {
         private LitePoint point;
-        private PointValueQualityHolder pointUpdateBackingServiceCachedValue;
-        private List<PointValueQualityHolder> historicalValues;
-        private PointValueQualityHolder asyncDataSourceValue;
-        private PointValueQualityHolder dispatchValue;
+        private PointValueHolder pointUpdateBackingServiceCachedValue;
+        private List<PointValueHolder> historicalValues;
+        private PointValueHolder asyncDataSourceValue;
+        private PointValueHolder dispatchValue;
         private YukonUserContext userContext;
 
         public CorrelationSummary(YukonUserContext userContext, LitePoint point,
-                PointValueQualityHolder pointUpdateBackingServiceCachedValue,
-                List<PointValueQualityHolder> historicalValues,
-                PointValueQualityHolder asyncDataSourceValue,
-                PointValueQualityHolder dispatchValue) {
+                PointValueHolder pointUpdateBackingServiceCachedValue,
+                List<PointValueHolder> historicalValues,
+                PointValueHolder asyncDataSourceValue,
+                PointValueHolder dispatchValue) {
             this.userContext = userContext;
             this.point = point;
             this.pointUpdateBackingServiceCachedValue = pointUpdateBackingServiceCachedValue;
@@ -356,14 +362,14 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
             log.info(buffer.toString());
         }
 
-        private String getLogString(PointValueQualityHolder value, String description) {
+        private String getLogString(PointValueHolder value, String description) {
             if (value != null) {
                 return " [" + description + ": " + formatValue(value) + "]";
             }
             return "";
         }
 
-        private String formatValue(PointValueQualityHolder value) {
+        private String formatValue(PointValueHolder value) {
             if (value == null) {
                 return "";
             }
@@ -379,14 +385,10 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
     /**
      * Returns true if cached values match historical values.
      */
-    boolean isMatched(PointValueQualityHolder historyValue,
-            PointValueQualityHolder pointUpdateBackingServiceCachedValue,
-            PointValueQualityHolder asyncDataSourceValue,
+    boolean isMatched(PointValueHolder historyValue,
+            PointValueHolder pointUpdateBackingServiceCachedValue,
+            PointValueHolder asyncDataSourceValue,
             YukonUserContext userContext) {
-        if (historyValue.getPointDataTimeStamp().getTime() < pointUpdateBackingServiceCachedValue.getPointDataTimeStamp().getTime()) {
-            log.debug("Historical values haven't been written to RPH yet");
-            return true;
-        }
         
         log.debug(
                 "Comparing values: [historicalValue {} {}] [pointUpdateBackingServiceCachedValue {} {}] [asyncDataSourceValue {} {}]",
@@ -397,6 +399,11 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
                 asyncDataSourceValue.getValue(),
                 pointFormattingService.getValueString(asyncDataSourceValue, Format.DATE, userContext)
                 );
+        
+        if (historyValue.getPointDataTimeStamp().getTime() < pointUpdateBackingServiceCachedValue.getPointDataTimeStamp().getTime()) {
+            log.debug("Historical values haven't been written to RPH yet");
+            return true;
+        }
 
         boolean matchedByValue = historyValue.getValue() == pointUpdateBackingServiceCachedValue.getValue()
             && pointUpdateBackingServiceCachedValue.getValue() == asyncDataSourceValue.getValue();
@@ -419,35 +426,17 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         dispatch.queue(command);
     }
     
-    public List<PointValueQualityHolder> getMostRecentValues(Set<Integer> pointIds, int rows) {        
-      List<PointValueQualityHolder> values = new ArrayList<>();
-      List<List<Integer>> lists = Lists.partition(Lists.newArrayList(pointIds), ChunkingSqlTemplate.DEFAULT_SIZE);
-        AtomicInteger proccessed = new AtomicInteger(0);
-        AtomicInteger unproccessed = new AtomicInteger(0);
-        lists.forEach(list -> {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("WITH TopRows AS (");
-            sql.append("SELECT ROW_NUMBER() OVER ( PARTITION BY rph.pointId ORDER BY Timestamp DESC, Changeid DESC) as rowNumber, rph.pointId, rph.timestamp, rph.value, rph.quality, p.pointtype");
-            sql.append("FROM RawPointHistory rph");
-            sql.append("JOIN Point p ON rph.pointId = p.pointId");
-            sql.append("WHERE rph.pointId").in(list);
-            sql.append(")");
-            sql.append("SELECT pointId, timestamp, value, quality, pointtype FROM TopRows");
-            sql.append("WHERE rowNumber").lte(rows);
-            try {
-                values.addAll(jdbcTemplate.query(sql, new LiteRPHQualityRowMapper()));
-                proccessed.addAndGet(list.size());
-                log.debug("Proccessed rows:{}", list.size());
-            } catch (Exception e) {
-                log.error("Unable to proccess rows:{}", list.size(), e);
-                unproccessed.addAndGet(list.size());
-            }
-        });
+    public List<PointValueHolder> getMostRecentValues(Integer pointId, YukonUserContext userContext) {        
+      DateTime startOfMonth =
+          new DateTime(userContext.getJodaTimeZone()).dayOfMonth().withMinimumValue().withTimeAtStartOfDay();
+      DateTime endDate = new DateTime(userContext.getJodaTimeZone()).plusDays(1).withTimeAtStartOfDay();
+      DateTime startDate = startOfMonth.minusMonths(1);
+      Range<Date> dateRange = new Range<>(startDate.toDate(), true, endDate.toDate(), false);
 
-        log.info("RPH: Points:{} Success:{} Failure:{} RPH rows returned:{}", pointIds.size(),
-                proccessed.get(), unproccessed.get(),
-                values.size());
-        return values;
+      List<PointValueHolder> data =
+          rawPointHistoryDao.getLimitedPointData(pointId, dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), false,
+                  Order.REVERSE, 2);
+        return data;
     }
     
     private class LiteRPHQualityRowMapper implements YukonRowMapper<PointValueQualityHolder> {
