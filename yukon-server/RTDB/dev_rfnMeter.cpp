@@ -86,6 +86,7 @@ YukonError_t RfnMeterDevice::executeControl(CtiRequestMsg* pReq, CtiCommandParse
         }
         return executeControlConnect(pReq, parse, returnMsgs, rfnRequests);
     }
+    return RfnDevice::executeControl(pReq, parse, returnMsgs, requestMsgs, rfnRequests);
 }
 
 YukonError_t RfnMeterDevice::executeControlArm(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests)
