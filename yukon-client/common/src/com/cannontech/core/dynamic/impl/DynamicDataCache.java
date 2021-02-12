@@ -81,7 +81,7 @@ import com.cannontech.yukon.IServerConnection;
     }
 
     /**
-     * Add pd to pointData if it is not already in cache OR is _after_ the already cached entry
+     * Add pd to pointData if it is not already in cache OR is after or equals the already cached entry's time stamp
      */
     private void handlePointData(PointData pd) {
         LitePointData cachedPointData = getPointData(pd.getId());
