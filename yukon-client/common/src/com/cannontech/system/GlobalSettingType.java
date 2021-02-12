@@ -230,7 +230,14 @@ public enum GlobalSettingType implements DisplayableEnum {
     static {
         final Builder<GlobalSettingSubCategory, GlobalSettingType> b = ImmutableSetMultimap.builder();
         for (GlobalSettingType globalSettingType : values()) {
-            b.put(globalSettingType.getCategory(), globalSettingType);
+            // Remove ADMIN -> CONFIG -> DR PXMW entries for YUK-23498
+            if (!globalSettingType.equals(GlobalSettingType.PX_MIDDLEWARE_PASSWORD) &&
+                    !globalSettingType.equals(GlobalSettingType.PX_MIDDLEWARE_SITE_GUID) &&
+                    !globalSettingType.equals(GlobalSettingType.PX_MIDDLEWARE_URL) &&
+                    !globalSettingType.equals(GlobalSettingType.PX_MIDDLEWARE_USERNAME) &&
+                    globalSettingType != GlobalSettingType.PX_MIDDLEWARE_PASSWORD) {
+                b.put(globalSettingType.getCategory(), globalSettingType);
+            }
         }
         categoryMapping = b.build();
         
@@ -254,9 +261,10 @@ public enum GlobalSettingType implements DisplayableEnum {
             ITRON_SFTP_PASSWORD,
             ITRON_SFTP_PRIVATE_KEY_PASSWORD,
             NETWORK_MANAGER_DB_PASSWORD,
-            CLOUD_IOT_HUB_CONNECTION_STRING,
-            PX_MIDDLEWARE_USERNAME,
-            PX_MIDDLEWARE_PASSWORD);
+            CLOUD_IOT_HUB_CONNECTION_STRING
+//            PX_MIDDLEWARE_USERNAME,
+//            PX_MIDDLEWARE_PASSWORD
+            );
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {
