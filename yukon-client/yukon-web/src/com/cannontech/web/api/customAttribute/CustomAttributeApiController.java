@@ -46,7 +46,7 @@ public class CustomAttributeApiController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable Integer id) {
-        CustomAttribute attribute = customAttributeService.getCustomAttributeById(id);
+        CustomAttribute attribute = attributeService.getCustomAttributeById(id);
         return new ResponseEntity<>(attribute, HttpStatus.OK);
     }
 

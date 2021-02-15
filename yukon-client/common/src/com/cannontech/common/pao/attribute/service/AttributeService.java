@@ -26,6 +26,7 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Multimap;
 
@@ -311,4 +312,12 @@ public interface AttributeService {
      * Returns true if the assignment is cached 
      */
     boolean isValidAssignmentId(Integer assignmentId);
+    
+    /**
+     * Get attribute
+     * 
+     * @return CustomAttribute
+     * @throws NotFoundException
+     */
+    CustomAttribute getCustomAttributeById(int attributeId);
 }

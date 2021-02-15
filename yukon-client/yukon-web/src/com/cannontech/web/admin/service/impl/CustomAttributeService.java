@@ -51,12 +51,4 @@ public interface CustomAttributeService {
      * @throws NotFoundException, DuplicateException
      */
     CustomAttribute updateCustomAttribute(CustomAttribute attribute, YukonUserContext userContext);
-    
-    /**
-     * Get attribute
-     * 
-     * @return CustomAttribute
-     * @throws NotFoundException
-     */
-    CustomAttribute getCustomAttributeById(int attributeId);
 }

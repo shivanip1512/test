@@ -15,8 +15,6 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.dao.CustomAttributeDao;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 public class CustomAttributeServiceImpl implements CustomAttributeService {
     
@@ -25,7 +23,6 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
     @Autowired private AttributeDao attributeDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private SystemEventLogService systemEventLogService;
-    private Cache<Integer, CustomAttribute> customAttributes = CacheBuilder.newBuilder().build();
 
     @Override
     public AttributeAssignment createAttributeAssignment(Assignment assignment, YukonUserContext userContext) {
@@ -48,14 +45,6 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
                 createdAttribute.getCustomAttributeId());
         systemEventLogService.attributeCreated(userContext.getYukonUser(), createdAttribute.getCustomAttributeId(), createdAttribute.getName());
         return createdAttribute;
-    }
-    
-    @Override
-    public CustomAttribute getCustomAttributeById(int attributeId) {
-        if (! attributeService.isValidAttributeId(attributeId)) {
-            throw new NotFoundException("Attribute id:" + attributeId + " is not in the database.");
-        }
-        return customAttributes.getIfPresent(attributeId);
     }
 
     @Override

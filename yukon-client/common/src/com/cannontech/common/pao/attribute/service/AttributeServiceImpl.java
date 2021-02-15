@@ -166,6 +166,14 @@ public class AttributeServiceImpl implements AttributeService {
                 .forEach(assignment -> customAttributeAssignments.put(assignment.getAttributeAssignmentId(), assignment));
     }
     
+    @Override
+    public CustomAttribute getCustomAttributeById(int attributeId) {
+        if (! isValidAttributeId(attributeId)) {
+            throw new NotFoundException("Attribute id:" + attributeId + " is not in the database.");
+        }
+        return customAttributes.getIfPresent(attributeId);
+    }
+
     private PaoType getPaoTypeByAttributeId(int attributeId) {
         return customAttributeAssignments.asMap().values().stream()
                 .filter(assignment -> assignment.getAttributeId() == attributeId)
