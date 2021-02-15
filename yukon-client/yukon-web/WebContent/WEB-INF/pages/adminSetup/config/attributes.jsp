@@ -9,7 +9,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="adminSetup" page="config.attributes">
-    <cti:msgScope paths="yukon.common,common.paoNote,modules.adminSetup.config.attributes">
+    <cti:msgScope paths="yukon.common,modules.adminSetup.config.attributes">
 
         <div class="box clear dashboard">
             <div class="clearfix box">
@@ -71,8 +71,8 @@
                                                 <form:input path="name" maxlength="60" size="60" cssClass="${errorClass}"/>
                                             </spring:bind>
                                             <div class="button-group">
-                                                <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
-                                                <cti:msg2 var="saveText" key="yukon.common.save"/>
+                                                <cti:msg2 var="cancelText" key=".cancelChanges"/>
+                                                <cti:msg2 var="saveText" key=".save"/>
                                                 <cti:button renderMode="buttonImage" icon="icon-disk" type="submit"
                                                     data-attribute-id="${attributeId}" title="${saveText}"/>
                                                 <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel-edit-attribute" 
