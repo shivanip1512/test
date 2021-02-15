@@ -55,8 +55,8 @@ public class PointValidator extends SimpleValidator<PointModel> {
     
     @PostConstruct
     public void init() {
-        YukonSelectionList caclCompList = listDao.getYukonSelectionList(CalcComponentTypes.CALC_FUNCTION_LIST_ID);
-        yukonListEntryList = caclCompList.getYukonListEntries();
+        YukonSelectionList calcCompList = listDao.getYukonSelectionList(CalcComponentTypes.CALC_FUNCTION_LIST_ID);
+        yukonListEntryList = calcCompList.getYukonListEntries();
         calcOperatorsList = Arrays.asList(CalcComponentTypes.CALC_OPERATIONS);
 
     }
