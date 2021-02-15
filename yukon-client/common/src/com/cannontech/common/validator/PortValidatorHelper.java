@@ -14,8 +14,7 @@ import com.cannontech.util.Validator;
 public class PortValidatorHelper {
     
     private final static String key = "yukon.web.api.error.";
-    private static final String baseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
-    
+
     public static void validatePortTimingFields(Errors errors, PortTiming timing) {
         if (!errors.hasFieldErrors("timing.preTxWait")) {
             Range<Integer> range = Range.inclusive(0, 10000000);

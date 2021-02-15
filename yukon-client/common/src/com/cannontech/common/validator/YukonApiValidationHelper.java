@@ -23,7 +23,7 @@ public class YukonApiValidationHelper {
                 errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { "Name" }, "");
             }
             if (!errors.hasFieldErrors("name") && yukonValidationHelperCommon.isPaoNameConflict(paoName, type, errors, paoId)) {
-                errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { fieldName },
+                errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { paoName },
                         "");
             }
         } else {
@@ -37,8 +37,8 @@ public class YukonApiValidationHelper {
     public void checkIfPaoTypeChanged(Errors errors, PaoType paoType, int paoId) {
         LiteYukonPAObject litePao = serverDatabaseCache.getAllPaosMap().get(paoId);
         if (yukonValidationHelperCommon.checkIfPaoTypeChanged(paoType, paoId)) {
-            errors.rejectValue("type", ApiErrorDetails.PAO_TYPE_MISMATCH.getCodeString(),
-                    new Object[] { paoType, litePao.getPaoType(), String.valueOf(paoId) }, "");
+            errors.rejectValue("type", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
+                    new Object[] { paoType, litePao.getPaoType() }, "");
         }
     }
 }

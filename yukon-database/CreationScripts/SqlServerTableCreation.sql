@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/15/2021 3:57:44 PM                         */
+/* Created on:     2/10/2021 1:08:21 AM                         */
 /*==============================================================*/
 
 
@@ -2030,6 +2030,15 @@ go
 /*==============================================================*/
 create index Indx_CommandReqUnsupport_Type on CommandRequestUnsupported (
 Type ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_CREUns_ExecId_DevId                              */
+/*==============================================================*/
+create index INDX_CREUns_ExecId_DevId on CommandRequestUnsupported (
+CommandRequestExecId ASC,
+DeviceId ASC
 )
 go
 

@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.validation.Errors;
@@ -23,16 +24,13 @@ public class CalcPointValidationHelper {
 
     @Autowired private static IDatabaseCache cache;
     @Autowired private static PointDao pointDao;
-    protected static final String baseKey = "yukon.web.api.error";
 
-    @Autowired
     public CalcPointValidationHelper(IDatabaseCache cache, PointDao pointDao) {
         CalcPointValidationHelper.cache = cache;
         CalcPointValidationHelper.pointDao = pointDao;
     }
 
     public static void ValidateCalcComponent(List<CalculationComponent> calcComponents, Errors errors) {
-
         if (CollectionUtils.isNotEmpty(calcComponents)) {
             for (int i = 0; i < calcComponents.size(); i++) {
                 errors.pushNestedPath("calcComponents[" + i + "]");
@@ -45,15 +43,15 @@ public class CalcPointValidationHelper {
                                 || calcComponent.getComponentType() == CalcCompType.CONSTANT) {
                             Set<CalcOperation> calcOperations = CalcOperation.getCalcOperationsByCompType(CalcCompType.OPERATION);
                             if (!calcOperations.contains(calcComponent.getOperation())) {
-                                errors.rejectValue("operation", ApiErrorDetails.INVALID_OPERATION.getCodeString(),
-                                        new Object[] { "Operation", "Operation or Constant" }, "");
+                                errors.rejectValue("operation", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                        new Object[] { StringUtils.join(calcOperations, ", ") }, "");
                             }
                         }
                         if (calcComponent.getComponentType() == CalcCompType.FUNCTION) {
                             Set<CalcOperation> calcFunctions = CalcOperation.getCalcOperationsByCompType(CalcCompType.FUNCTION);
                             if (!calcFunctions.contains(calcComponent.getOperation())) {
-                                errors.rejectValue("operation", ApiErrorDetails.INVALID_OPERATION.getCodeString(),
-                                        new Object[] { "Operation(Function) value", "Function" }, "");
+                                errors.rejectValue("operation", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                        new Object[] { StringUtils.join(calcFunctions, ", ") }, "");
                             }
                         }
                     }
@@ -63,7 +61,7 @@ public class CalcPointValidationHelper {
                             try {
                                 pointDao.getPointName(calcComponent.getOperand().intValue());
                             } catch (IncorrectResultSizeDataAccessException ee) {
-                                errors.rejectValue("operand",   ApiErrorDetails.INVALID_POINT_ID.getCodeString(), new Object[] { calcComponent.getOperand() }, "");
+                                errors.rejectValue("operand", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "valid Point ID" }, "");
                             }
                         }
                     }
@@ -87,7 +85,7 @@ public class CalcPointValidationHelper {
                                                                    .map(LiteBaseline::getBaselineID)
                                                                    .collect(Collectors.toList());
                 if (!baseLineIds.contains(baselineId)) {
-                    errors.rejectValue("baselineId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { "baselineId" }, "");
+                    errors.rejectValue("baselineId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { baselineId }, "");
                 }
             }
         }

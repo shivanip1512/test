@@ -87,7 +87,8 @@ public class YukonApiValidationUtils extends ValidationUtils {
 
     public static boolean checkIsValidDouble(Errors errors, String field, Double fieldValue) {
         if (!YukonValidationUtilsCommon.checkIsValidDouble(fieldValue)) {
-            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { fieldValue }, "");
+            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                    new Object[] { Double.MIN_VALUE + " - " + Double.MAX_VALUE }, "");
             return false;
         }
         return true;
@@ -95,7 +96,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
 
     public static void checkIsValidNumber(Errors errors, String field, Number fieldValue) {
         if (fieldValue == null) {
-            errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { fieldValue }, "");
+            errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { field }, "");
         } else if (fieldValue instanceof Double && !YukonValidationUtilsCommon.checkIsNumberPositiveDouble(fieldValue)) {
             errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "" },
                     "must be a positive number.");
@@ -116,7 +117,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
             boolean required) {
         if (fieldValue == null) {
             if (required) {
-                errors.rejectValue(field, Integer.toString(ApiErrorDetails.FIELD_REQUIRED.getCode()), new Object[] { fieldValue },
+                errors.rejectValue(field, Integer.toString(ApiErrorDetails.FIELD_REQUIRED.getCode()), new Object[] { field },
                         "");
             }
             return;
@@ -147,10 +148,10 @@ public class YukonApiValidationUtils extends ValidationUtils {
     }
 
     public static void ipHostNameValidator(Errors errors, String field, String fieldValue) {
-        errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "IP Address" }, "IP Address");
+        checkIsBlank(errors, field, fieldValue, false, "IP Address");
         if (YukonValidationUtilsCommon.ipHostNameValidator(errors, field, fieldValue)) {
-            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "IP Address" },
-                    "IP Address");
+            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "valid IP/Host Name" },
+                    "");
         }
     }
 
@@ -175,7 +176,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
     public static void checkExactLength(String field, Errors errors, String fieldValue, String fieldName,
             int stringLength) {
         if (!YukonValidationUtilsCommon.checkExactLength(fieldValue, stringLength)) {
-            errors.rejectValue(field, ApiErrorDetails.INVALID_STRING_LENGTH.getCodeString(), new Object[] { fieldName }, "");
+            errors.rejectValue(field, ApiErrorDetails.INVALID_FIELD_LENGTH.getCodeString(), new Object[] { fieldName , stringLength, fieldValue }, "");
         }
     }
 

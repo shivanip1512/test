@@ -4489,46 +4489,46 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : jackson-annotations-2.11.1.jar
+  - filename : jackson-annotations-2.12.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.11.1
+    version : 2.12.1
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.11.1"
-    md5 : ae29476ef47b802516535a8fbd964ec2
-    sha1 : f083c4ac0fb8b3c6b8d5b62cd54122228ef62cee
-    updated : 2020-07-22
-    jira : NM-1554
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.12.1"
+    md5 : ac96cb6fdf09ba1e2c41f461047f1eb4
+    sha1 : aa079f822ddce5548018286d19ccb15c2fc202d7
+    updated : 2021-02-10
+    jira : NM-1908
     notes : Jackson Annotations
-
-  - filename : jackson-core-2.11.1.jar
+  
+  - filename : jackson-core-2.12.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.11.1
-    project URL : "https://github.com/FasterXML/jackson-core"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.11.1"
-    md5 : 178171dcc707f3aa1b5d53717530a589
-    sha1 : 8b02908d53183fdf9758e7e20f2fdee87613a962
-    updated : 2020-07-22
-    jira : NM-1554
-    notes : Jackson Core
-
-  - filename : jackson-databind-2.11.1.jar
-    yukon group : Jackson
-    project : Jackson
-    version : 2.11.1
+    version : 2.12.1
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.11.1"
-    md5 : 5dc6f0ba9a79ffb5440b9561a55806ed
-    sha1 : f5d24a1dcf46000316d40c8c61196c48dd5677c5
-    updated : 2020-07-22
-    jira : NM-1554
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.12.1"
+    md5 : 6a65df7a5e62df2754726857b4ab0257
+    sha1 : 7c5493930e439be6fcec80a9afd6516b8e5e8760
+    updated : 2021-02-10
+    jira : NM-1908
+    notes : Jackson Core
+  
+  - filename : jackson-databind-2.12.1.jar
+    yukon group : Jackson
+    project : Jackson
+    version : 2.12.1
+    project URL : "https://github.com/FasterXML/jackson"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.12.1"
+    md5 : 1925b6e2feac7e63e164f57e6fb42c9d
+    sha1 : 8a97e00e429c42f74757b0a8cd1d39dddd41524f
+    updated : 2021-02-10
+    jira : NM-1908
     notes : Jackson Databind
 
   - filename : jakarta-regexp-1.3.jar
@@ -5174,20 +5174,6 @@ Network Manager :
     updated : 2009-04-30
     jira : none
     notes : 
-
-  - filename : snakeyaml-1.18.2.jar
-    yukon group : Jackson
-    project : SnakeYAML
-    version : 1.18.2
-    project URL : "https://github.com/DroidsOnRoids/snakeyaml"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/pl.droidsonroids.yaml/snakeyaml/1.18.2"
-    md5 : 3041218f98b3798eee443b317d91e28f
-    sha1 : aacf63abc979a710ddc0172509f7857cb69ff241
-    updated : 2020-10-19
-    jira : NM-1770
-    notes :
     
   - filename : tomcat-api.jar
     yukon group : Tomcat
@@ -6045,20 +6031,6 @@ C++ :
     updated : 2020-10-19  
     jira : YUK-22841
     notes : 
-    
-  - project : Microsoft SQL Server Client
-    path : MICROSOFT_SQL
-    version : 2000.80.194.0
-    project URL : "https://social.msdn.microsoft.com/Forums/sqlserver/en-US/534f6983-6326-423b-9285-391d4fef42ff/ntwdblibdll-for-sql-2012?forum=sqlgetstarted"
-    license : Microsoft indemnification
-    license URLs : "n/a"
-    md5 : 4a76e50c4921ca9a35c5bb3c010b0cf8
-    sha1 : 1a2d0225fe73eb5c42d282d90c5c3b38b7637720 
-    fileCount : 1
-    totalSize : 274489
-    updated : 2018-05-17  
-    jira : YUK-18201
-    notes : "Deprecated, probably unnecessary now since SQLAPI uses ODBC, not DB-Library.  See https://social.msdn.microsoft.com/Forums/sqlserver/en-US/28a2a5df-c33b-45f3-99d3-16e4567f5a03/ntwdblibdll-not-found?forum=sqlgetstarted"
     
   - project : OpenSSL
     path : OPENSSL
