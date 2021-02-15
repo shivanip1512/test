@@ -3,6 +3,8 @@ package com.cannontech.web.api.client.errorHandler;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
@@ -16,6 +18,7 @@ import com.cannontech.web.api.error.model.ApiErrorModel;
 import com.cannontech.web.api.errorHandler.model.ApiError;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 /**
@@ -28,6 +31,13 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 public class CustomDefaultResponseErrorHandler implements ResponseErrorHandler {
     private static final Logger log = YukonLogManager.getLogger(CustomDefaultResponseErrorHandler.class);
     private ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler();
+    private ObjectReader reader;
+
+    @PostConstruct
+    public void init() {
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        reader = mapper.reader();
+    }
 
     @Override
     public boolean hasError(ClientHttpResponse response) throws IOException {
@@ -59,13 +69,12 @@ public class CustomDefaultResponseErrorHandler implements ResponseErrorHandler {
      * fails convert it to ApiErrorModel.
      */
     private String parseErrorMessage(String errorMessageString) throws IOException {
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
         try {
-            ApiError error = mapper.readValue(errorMessageString, ApiError.class);
+            ApiError error = reader.withType(ApiError.class).readValue(errorMessageString, ApiError.class);
             return error.getMessage();
         } catch (UnrecognizedPropertyException e) {
             // Only catch UnrecognizedPropertyException.
-            ApiErrorModel error = mapper.readValue(errorMessageString, ApiErrorModel.class);
+            ApiErrorModel error = reader.withType(ApiErrorModel.class).readValue(errorMessageString, ApiErrorModel.class);
             return error.getDetail();
         }
     }
