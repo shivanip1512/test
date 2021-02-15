@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
-import com.cannontech.dr.JsonSerializers.FROM_DATE_HONEYWELL;
-import com.cannontech.dr.JsonSerializers.FROM_PHASE;
-import com.cannontech.dr.JsonSerializers.TO_DATE_HONEYWELL;
-import com.cannontech.dr.JsonSerializers.TO_PHASE;
+import com.cannontech.common.util.JsonSerializers.FROM_DATE_HONEYWELL;
+import com.cannontech.common.util.JsonSerializers.FROM_PHASE;
+import com.cannontech.common.util.JsonSerializers.TO_DATE_HONEYWELL;
+import com.cannontech.common.util.JsonSerializers.TO_PHASE;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

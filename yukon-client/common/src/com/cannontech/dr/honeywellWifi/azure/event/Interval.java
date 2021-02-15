@@ -2,8 +2,8 @@ package com.cannontech.dr.honeywellWifi.azure.event;
 
 import org.joda.time.Duration;
 
-import com.cannontech.dr.JsonSerializers.FROM_DURATION;
-import com.cannontech.dr.JsonSerializers.TO_DURATION;
+import com.cannontech.common.util.JsonSerializers.FROM_DURATION;
+import com.cannontech.common.util.JsonSerializers.TO_DURATION;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

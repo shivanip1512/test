@@ -1,5 +1,6 @@
 package com.cannontech.web.api.errorHandler.model;
 
+import com.cannontech.common.util.JsonSerializers.REJECT_VALUE_DELEGATING_SERIALIZER;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,7 +13,7 @@ public class ApiFieldError {
     private String field;
     private String code;
     @JsonInclude(Include.NON_NULL)
-    @JsonSerialize(using = RejectValueDelegatingSerializer.class)
+    @JsonSerialize(using = REJECT_VALUE_DELEGATING_SERIALIZER.class)
     private Object rejectedValue;
     
     public ApiFieldError(String field, String code, Object rejectedValue) {

@@ -6,10 +6,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 
-import com.cannontech.amr.archivedValueExporter.model.AttributeDeserializer;
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.util.JsonSerializers.FROM_ATTIBUTE;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -72,7 +72,7 @@ public interface AggregateIntervalReportService {
         private String missingIntervalDataValue;
         private Operation operation;
 
-        @JsonDeserialize(using = AttributeDeserializer.class)
+        @JsonDeserialize(using = FROM_ATTIBUTE.class)
         public Attribute getAttribute() {
             return attribute;
         }

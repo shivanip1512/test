@@ -1,7 +1,7 @@
 package com.cannontech.dr.ecobee.message;
 
-import com.cannontech.dr.JsonSerializers.FROM_JOB_STATUS;
-import com.cannontech.dr.JsonSerializers.TO_JOB_STATUS;
+import com.cannontech.common.util.JsonSerializers.FROM_JOB_STATUS;
+import com.cannontech.common.util.JsonSerializers.TO_JOB_STATUS;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableMap;
