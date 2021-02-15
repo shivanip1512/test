@@ -3,6 +3,8 @@ package com.cannontech.common.trend.model;
 import org.joda.time.DateTime;
 
 import com.cannontech.common.trend.model.TrendType.GraphType;
+import com.cannontech.common.util.JsonSerializers.TO_MMDDYYYY_FORMAT;
+import com.cannontech.common.util.JsonSerializers.FROM_MMDDYYYY_FORMAT;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -84,8 +86,8 @@ public class TrendSeries {
         this.style = style;
     }
 
-    @JsonSerialize(using=DateSerializer.class)
-    @JsonDeserialize(using=DateDeserializer.class)
+    @JsonSerialize(using = TO_MMDDYYYY_FORMAT.class)
+    @JsonDeserialize(using = FROM_MMDDYYYY_FORMAT.class)
     public DateTime getDate() {
         return date;
     }
