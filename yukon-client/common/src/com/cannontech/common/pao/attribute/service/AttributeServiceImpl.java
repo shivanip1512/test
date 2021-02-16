@@ -167,7 +167,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public CustomAttribute getCustomAttributeById(int attributeId) {
+    public CustomAttribute getCustomAttribute(int attributeId) {
         if (! isValidAttributeId(attributeId)) {
             throw new NotFoundException("Attribute id:" + attributeId + " is not in the database.");
         }
@@ -198,7 +198,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public CustomAttribute getCustomAttribute(int attributeId) {
+    public CustomAttribute findCustomAttribute(int attributeId) {
         return customAttributes.getIfPresent(attributeId);
     }
     
@@ -339,7 +339,7 @@ public class AttributeServiceImpl implements AttributeService {
         try {
             return BuiltInAttribute.valueOf(name);
         } catch (IllegalArgumentException e) {
-            return getCustomAttribute(Integer.valueOf(name));
+            return findCustomAttribute(Integer.valueOf(name));
         }
     }
 
@@ -846,7 +846,7 @@ public class AttributeServiceImpl implements AttributeService {
         try {
             return BuiltInAttribute.valueOf(attribute);
         } catch (IllegalArgumentException e) {
-            return getCustomAttribute(Integer.valueOf(attribute));
+            return findCustomAttribute(Integer.valueOf(attribute));
         }
     }
 }

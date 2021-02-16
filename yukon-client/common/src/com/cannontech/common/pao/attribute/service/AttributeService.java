@@ -296,7 +296,7 @@ public interface AttributeService {
     /**
      * Returns Custom Attribute for id, null if doesn't exist
      */
-    CustomAttribute getCustomAttribute(int attributeId);
+    CustomAttribute findCustomAttribute(int attributeId);
 
     /**
      * Returns List of attributes for identifier
@@ -319,5 +319,5 @@ public interface AttributeService {
      * @return CustomAttribute
      * @throws NotFoundException
      */
-    CustomAttribute getCustomAttributeById(int attributeId);
+    CustomAttribute getCustomAttribute(int attributeId);
 }
