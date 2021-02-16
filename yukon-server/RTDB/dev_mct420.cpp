@@ -279,21 +279,24 @@ const Mct420Device::FunctionReadValueMappings *Mct420Device::getReadValueMaps(vo
 
 Mct420Device::ConfigPartsList Mct420Device::getPartsList()
 {
-    if( ! isSupported(Feature_Disconnect) )
+    ConfigPartsList partsList;
+
+    if( isSupported(Feature_Display) )
     {
-        return {
-            PutConfigPart_display,
-            PutConfigPart_meter_parameters,
-            PutConfigPart_freeze_day,
-            PutConfigPart_timezone };
+        partsList.push_back(PutConfigPart_display);
     }
 
-    return {
-        PutConfigPart_display,
-        PutConfigPart_meter_parameters,
-        PutConfigPart_disconnect,
-        PutConfigPart_freeze_day,
-        PutConfigPart_timezone };
+    partsList.push_back(PutConfigPart_meter_parameters);
+
+    if( isSupported(Feature_Disconnect) )
+    {
+        partsList.push_back(PutConfigPart_disconnect);
+    }
+
+    partsList.push_back(PutConfigPart_freeze_day);
+    partsList.push_back(PutConfigPart_timezone);
+
+    return partsList;
 }
 
 
@@ -1075,6 +1078,21 @@ bool Mct420Device::isSupported(const Mct420Device::Features feature) const
         case Feature_LcdDisplayDigitConfiguration:
         {
             return sspecAtLeast(SspecRev_LcdDisplayDigitConfiguration);
+        }
+        case Feature_Display:
+        {
+            switch( getType() )
+            {
+                case TYPEMCT420CD:
+                case TYPEMCT420CL:
+                {
+                    return true;
+                }
+                default:
+                {
+                    return false;
+                }
+            }
         }
     }
 
