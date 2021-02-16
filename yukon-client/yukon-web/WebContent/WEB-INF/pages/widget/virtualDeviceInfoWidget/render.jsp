@@ -33,7 +33,7 @@
             </tags:nameValue2>
             <c:if test="${virtualDevice.type == virtualMeterType}">
                 <tags:nameValue2 nameKey=".meterNumber">
-                    <tags:input path="meterNumber"/>
+                    <tags:input path="meterNumber" maxlength="50" inputClass="w300 wrbw dib"/>
                 </tags:nameValue2>
             </c:if>
             <tags:nameValue2 nameKey=".status">

@@ -29,12 +29,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
-import com.cannontech.common.device.virtualDevice.VirtualMeterModel;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
-import com.cannontech.common.validator.YukonValidationHelper;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -47,6 +44,7 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.stars.virtualDevice.VirtualDeviceValidator;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -60,7 +58,7 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private YukonValidationHelper yukonValidationHelper;
+    @Autowired private VirtualDeviceValidator virtualDeviceValidator;
     private static final Logger log = YukonLogManager.getLogger(VirtualDeviceInfoWidget.class);
 
     @Autowired
@@ -154,16 +152,8 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         prepareModel(model);
         try {
-            String paoId = null;
-            if (virtualDevice.getId() != null) {
-                paoId = Integer.toString(virtualDevice.getId());
-            }
-            String nameLabel = accessor.getMessage("yukon.common.name");
-            yukonValidationHelper.validatePaoName(virtualDevice.getName(), virtualDevice.getType(), result, nameLabel, paoId);
-            if (virtualDevice instanceof VirtualMeterModel) {
-                String meterNumberLabel = accessor.getMessage("yukon.common.meterNumber");
-                YukonValidationUtils.checkIsBlank(result, "meterNumber", ((VirtualMeterModel) virtualDevice).getMeterNumber(), meterNumberLabel, false);
-            }
+            virtualDeviceValidator.setMessageAccessor(accessor);
+            virtualDeviceValidator.validate(virtualDevice, result);
             if (result.hasErrors()) {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 return "virtualDeviceInfoWidget/render.jsp";
