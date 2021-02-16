@@ -39,6 +39,12 @@ public class PortApiValidatorHelper {
                     range,
                     false);
         }
+        if (!errors.hasFieldErrors("timing.postCommWait")) {
+            Range<Integer> range = Range.inclusive(0, 100_000);
+            YukonApiValidationUtils.checkRange(errors, "timing.postCommWait", "Post Comm Wait", timing.getPostCommWait(),
+                    range,
+                    false);
+        }
     }
 
     public static void validatePortSharingFields(Errors errors, PortSharing sharing, String fieldName) {
