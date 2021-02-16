@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
 public class YukonJdbcTemplate extends JdbcTemplate {
     private static final Logger log = YukonLogManager.getLogger(YukonJdbcTemplate.class);
     
-    private static final int defaultBatchSize = 1000;
+    private static final int defaultBatchSize = 50000;
 
     public YukonJdbcTemplate(DataSource dataSource) {
         super(dataSource);
