@@ -187,7 +187,7 @@ public class ListController {
             listDefinitions.remove(YukonDefinition.DEV_TYPE_LCR_6200C);
             //Used to remove the LCR-6600C from the Admin EC > Lists > Device Type YUK-23498
             listDefinitions.remove(YukonDefinition.DEV_TYPE_LCR_6600C);
-            //Used to remove the LCR-6600C from the Admin EC > Lists > Device Type YUK-23498
+            //Used to remove the LCR_DISCONNECT_C from the Admin EC > Lists > Device Type YUK-23498
             listDefinitions.remove(YukonDefinition.DEV_TYPE_LCR_DISCONNECT_C);
         }
         

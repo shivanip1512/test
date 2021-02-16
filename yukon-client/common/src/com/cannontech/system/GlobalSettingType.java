@@ -2,6 +2,7 @@ package com.cannontech.system;
 
 import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
@@ -23,6 +24,7 @@ import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSetMultimap.Builder;
+import com.google.common.collect.Multimaps;
 
 public enum GlobalSettingType implements DisplayableEnum {
 
@@ -228,18 +230,14 @@ public enum GlobalSettingType implements DisplayableEnum {
     private final static ImmutableList<GlobalSettingType> sensitiveSettings;
 
     static {
-        final Builder<GlobalSettingSubCategory, GlobalSettingType> b = ImmutableSetMultimap.builder();
-        for (GlobalSettingType globalSettingType : values()) {
-            // Remove ADMIN -> CONFIG -> DR PXMW entries for YUK-23498
-            if (!globalSettingType.equals(GlobalSettingType.PX_MIDDLEWARE_PASSWORD) &&
-                    !globalSettingType.equals(GlobalSettingType.PX_MIDDLEWARE_SITE_GUID) &&
-                    !globalSettingType.equals(GlobalSettingType.PX_MIDDLEWARE_URL) &&
-                    !globalSettingType.equals(GlobalSettingType.PX_MIDDLEWARE_USERNAME) &&
-                    globalSettingType != GlobalSettingType.PX_MIDDLEWARE_PASSWORD) {
-                b.put(globalSettingType.getCategory(), globalSettingType);
-            }
-        }
-        categoryMapping = b.build();
+        // Remove ADMIN -> CONFIG -> DR PXMW entries for YUK-23498
+        var excluded = EnumSet.of(
+                GlobalSettingType.PX_MIDDLEWARE_PASSWORD,
+                GlobalSettingType.PX_MIDDLEWARE_SITE_GUID,
+                GlobalSettingType.PX_MIDDLEWARE_URL,
+                GlobalSettingType.PX_MIDDLEWARE_USERNAME);
+        categoryMapping = ImmutableSetMultimap
+                .copyOf(Multimaps.index(EnumSet.complementOf(excluded), GlobalSettingType::getCategory));
         
         sensitiveSettings = ImmutableList.of(
             ECOBEE_PASSWORD,
