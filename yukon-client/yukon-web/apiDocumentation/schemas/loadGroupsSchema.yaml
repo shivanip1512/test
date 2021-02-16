@@ -513,7 +513,7 @@ LM_GROUP_RIPPLE:
           description: 'Number of minutes a relay controls when a control command is sent. A shed time of Continuous Latch controls until a restore command is sent.'
         group:
           type: string
-          description: 'group'
+          description: 'Group for the selected Ripple load group. Group is required only when a special Ripple is enabled.'
           enum:
             - TST
             - ONE_00
@@ -538,7 +538,7 @@ LM_GROUP_RIPPLE:
             - SIX_06
         areaCode:
           type: string
-          description: 'Area Code. Applicable in case of special ripple.'
+          description: 'Area code for the selected Ripple load group. Area code is required only when a special Ripple is enabled.'
           enum:
             - UNIVERSAL
             - MINNKOTA
