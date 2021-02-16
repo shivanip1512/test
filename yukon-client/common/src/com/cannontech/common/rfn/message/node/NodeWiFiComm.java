@@ -58,7 +58,7 @@ public class NodeWiFiComm implements Serializable{
         this.rssi = rssi;
     }
 
-	@Override
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
