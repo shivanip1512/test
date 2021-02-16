@@ -514,9 +514,47 @@ LM_GROUP_RIPPLE:
         group:
           type: string
           description: 'group'
+          enum:
+            - TST
+            - ONE_00
+            - ONE_01
+            - ONE_02
+            - TWO_00
+            - TWO_01
+            - TWO_02
+            - TWO_03
+            - TWO_04
+            - THREE_00
+            - THREE_01
+            - THREE_06
+            - THREE_07
+            - THREE_09
+            - THREE_01_AND_THREE_09
+            - FOUR_00
+            - FOUR_01
+            - FOUR_02
+            - SIX_00
+            - SIX_01
+            - SIX_06
         areaCode:
           type: string
           description: 'Area Code. Applicable in case of special ripple.'
+          enum:
+            - UNIVERSAL
+            - MINNKOTA
+            - BELTRAMI
+            - CASS_COUNTY
+            - CAVALIER_RURAL
+            - CLEARWATER_POLK
+            - NODAK_RURAL
+            - NORTH_STAR
+            - PKM_ELECTRIC
+            - RED_LAKE
+            - RED_RIVER_VALLEY
+            - ROSEAU_ELECTRIC
+            - SHEYENNE_VALLEY
+            - WILD_RICE
+            - NMPA
   
 LM_GROUP_EXPRESSCOMM:
   title: LM_GROUP_EXPRESSCOMM
