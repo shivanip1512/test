@@ -63,7 +63,7 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
 
         // Gather information for logging
         Assignment originalAssignment = attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
-        String originalAttributeName = attributeService.getCustomAttribute(originalAssignment.getAttributeId()).getName();
+        String originalAttributeName = attributeService.findCustomAttribute(originalAssignment.getAttributeId()).getName();
 
         AttributeAssignment updatedAssignment = customAttributeDao.updateAttributeAssignment(assignment);
         dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.ATTRIBUTE_ASSIGNMENT,
@@ -83,7 +83,7 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
         if (!attributeService.isValidAttributeId(attribute.getCustomAttributeId())) {
             throw new NotFoundException("Attribute id:" + attribute.getCustomAttributeId() + " is not in the database.");
         }
-        String originalAttributeName = attributeService.getCustomAttribute(attribute.getCustomAttributeId()).getName();
+        String originalAttributeName = attributeService.findCustomAttribute(attribute.getCustomAttributeId()).getName();
         CustomAttribute updatedAttribute = customAttributeDao.updateCustomAttribute(attribute);
         dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.ATTRIBUTE, attribute.getCustomAttributeId());
         systemEventLogService.attributeUpdated(userContext.getYukonUser(), originalAttributeName, attribute.getName());
@@ -95,7 +95,7 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
         if (!attributeService.isValidAttributeId(attributeId)) {
             throw new NotFoundException("Attribute id:" + attributeId + " is not in the database.");
         }
-        String attributeName = attributeService.getCustomAttribute(attributeId).getName();
+        String attributeName = attributeService.findCustomAttribute(attributeId).getName();
         customAttributeDao.deleteCustomAttribute(attributeId);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.ATTRIBUTE, attributeId);
         systemEventLogService.attributeDeleted(userContext.getYukonUser(), attributeName);
