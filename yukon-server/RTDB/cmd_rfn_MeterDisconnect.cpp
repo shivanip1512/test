@@ -17,7 +17,7 @@ RfnMeterDisconnectCommand::RfnMeterDisconnectCommand(CommandType action, long us
 
 auto RfnMeterDisconnectCommand::getApplicationServiceId() const -> ASID
 {
-    return ASID::HubMeterCommandSet;
+    return ASID::ChannelManager;
 }
 
 std::string RfnMeterDisconnectCommand::getCommandName() const

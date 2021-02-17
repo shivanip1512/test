@@ -73,7 +73,7 @@ RfnMeterReadCommand::RfnMeterReadCommand(long userMessageId) :
 
 auto RfnMeterReadCommand::getApplicationServiceId() const -> ASID
 {
-    return ASID::HubMeterCommandSet;
+    return ASID::ChannelManager;
 }
 
 std::string RfnMeterReadCommand::getCommandName() const
