@@ -21,7 +21,16 @@ namespace Cti::Messaging::Rfn {
     }
 }
 
-BOOST_AUTO_TEST_SUITE(test_cmd_rfn_MeterRead)
+namespace {
+    struct test_state {
+        const decltype(Cti::Test::set_to_central_timezone()) overrideTimezone = Cti::Test::set_to_central_timezone();
+
+        const CtiTime execute_time = CtiTime(CtiDate(17, 2, 2010), 15);
+        const CtiTime decode_time  = CtiTime(CtiDate(17, 2, 2010), 16);
+    };
+}
+
+BOOST_FIXTURE_TEST_SUITE(test_cmd_rfn_MeterRead, test_state)
 
 const CtiTime execute_time(CtiDate(17, 2, 2010), 10);
 
@@ -45,7 +54,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt1_fail)
             0xff  //  Response status (nonzero is unknown/fail)
         };
 
-        RfnCommandResult result = command.decodeCommand(execute_time, response);
+        RfnCommandResult result = command.decodeCommand(decode_time, response);
 
         BOOST_FAIL("Did not throw");
     }
@@ -75,15 +84,14 @@ BOOST_AUTO_TEST_CASE(test_read_fmt1_channel_error)
             0x02  //  Status (Busy)
     };
 
-    RfnCommandResult result = command.decodeCommand(execute_time, response);
+    RfnCommandResult result = command.decodeCommand(decode_time, response);
 
     BOOST_CHECK_EQUAL(result.description, 
-        "Results:"
-        "\nUser message ID : 11235"
+        "User message ID : 11235"
         "\nReply type      : 0"
+        "\nTimestamp       : 02/17/2010 16:00:00"
         "\n# Channel data  : 0"
-        "\n# Dated data    : 0"
-        "\nTimestamp       : 02/17/2010 10:00:00");
+        "\n# Dated data    : 0");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 }
@@ -107,15 +115,14 @@ BOOST_AUTO_TEST_CASE(test_read_fmt1_ok)
             0x00  //  Status (OK)
     };
 
-    RfnCommandResult result = command.decodeCommand(execute_time, response);
+    RfnCommandResult result = command.decodeCommand(decode_time, response);
 
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
+        "User message ID : 11235"
         "\nReply type      : 0"
+        "\nTimestamp       : 02/17/2010 16:00:00"
         "\n# Channel data  : 0"
-        "\n# Dated data    : 0"
-        "\nTimestamp       : 02/17/2010 10:00:00");
+        "\n# Dated data    : 0");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 }
@@ -145,15 +152,19 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_channel_error)
             0x02  //  Status (Busy)
     };
 
-    RfnCommandResult result = command.decodeCommand(execute_time, response);
+    RfnCommandResult result = command.decodeCommand(decode_time, response);
 
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
+        "User message ID : 11235"
         "\nReply type      : 0"
+        "\nTimestamp       : 02/17/2010 16:00:00"
         "\n# Channel data  : 1"
-        "\n# Dated data    : 0"
-        "\nTimestamp       : 02/17/2010 10:00:00");
+        "\nChannel data 0  : Channel number : 23"
+        "\n                  Status         : 2"
+        "\n                  UOM            : Wh"
+        "\n                  Modifiers      : {<empty>}"
+        "\n                  Value          : 42"
+        "\n# Dated data    : 0");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 }
@@ -182,7 +193,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_excess_modifier)
                 0x00  //  Status (OK)
         };
 
-        RfnCommandResult result = command.decodeCommand(execute_time, response);
+        RfnCommandResult result = command.decodeCommand(decode_time, response);
 
         BOOST_FAIL("Did not throw");
     }
@@ -214,15 +225,19 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_single_channel)
             0x00  //  Status (OK)
     };
 
-    RfnCommandResult result = command.decodeCommand(execute_time, response);
+    RfnCommandResult result = command.decodeCommand(decode_time, response);
 
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
+        "User message ID : 11235"
         "\nReply type      : 0"
+        "\nTimestamp       : 02/17/2010 16:00:00"
         "\n# Channel data  : 1"
-        "\n# Dated data    : 0"
-        "\nTimestamp       : 02/17/2010 10:00:00");
+        "\nChannel data 0  : Channel number : 23"
+        "\n                  Status         : 0"
+        "\n                  UOM            : Wh"
+        "\n                  Modifiers      : {<empty>}"
+        "\n                  Value          : 42"
+        "\n# Dated data    : 0");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 }
@@ -255,15 +270,24 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels)
             0x00  //  Status (OK)
     };
 
-    RfnCommandResult result = command.decodeCommand(execute_time, response);
+    RfnCommandResult result = command.decodeCommand(decode_time, response);
 
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
+        "User message ID : 11235"
         "\nReply type      : 0"
+        "\nTimestamp       : 02/17/2010 16:00:00"
         "\n# Channel data  : 2"
-        "\n# Dated data    : 0"
-        "\nTimestamp       : 02/17/2010 10:00:00");
+        "\nChannel data 0  : Channel number : 23"
+        "\n                  Status         : 0"
+        "\n                  UOM            : Wh"
+        "\n                  Modifiers      : {<empty>}"
+        "\n                  Value          : 42"
+        "\nChannel data 1  : Channel number : 24"
+        "\n                  Status         : 0"
+        "\n                  UOM            : Varh"
+        "\n                  Modifiers      : {<empty>}"
+        "\n                  Value          : 21"
+        "\n# Dated data    : 0");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 }
@@ -317,15 +341,36 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
             0x00, //  Status (OK)
     };
 
-    RfnCommandResult result = command.decodeCommand(execute_time, response);
+    RfnCommandResult result = command.decodeCommand(decode_time, response);
 
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
+        "User message ID : 11235"
         "\nReply type      : 0"
+        "\nTimestamp       : 02/17/2010 16:00:00"
         "\n# Channel data  : 3"
+        "\nChannel data 0  : Channel number : 23"
+        "\n                  Status         : 0"
+        "\n                  UOM            : Wh"
+        "\n                  Modifiers      : {<empty>}"
+        "\n                  Value          : 42"
+        "\nChannel data 1  : Channel number : 24"
+        "\n                  Status         : 0"
+        "\n                  UOM            : Varh"
+        "\n                  Modifiers      : {<empty>}"
+        "\n                  Value          : 21"
+        "\nChannel data 2  : Channel number : 26"
+        "\n                  Status         : 0"
+        "\n                  UOM            : PF"
+        "\n                  Modifiers      : {Max}"
+        "\n                  Value          : 42"
         "\n# Dated data    : 1"
-        "\nTimestamp       : 02/17/2010 10:00:00");
+        "\nDated data 0    : Channel number : 25"
+        "\n                  Status         : 0"
+        "\n                  Timestamp      : 01/29/2021 14:15:56"
+        "\n                  UOM            : W"
+        "\n                  Modifiers      : {Max}"
+        "\n                  Value          : 42"
+        "\n                  Base channel   : (none)");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -339,7 +384,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
 
     const auto& data = responseMsg->data;
 
-    BOOST_CHECK_EQUAL(data.timeStamp, execute_time);
+    BOOST_CHECK_EQUAL(data.timeStamp, decode_time);
     BOOST_CHECK_EQUAL(data.rfnIdentifier, Cti::RfnIdentifier());
     BOOST_CHECK_EQUAL(data.recordInterval, 0);
 
@@ -429,15 +474,32 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_coincident)
             0x00, //  Status (OK)
     };
 
-    RfnCommandResult result = command.decodeCommand(execute_time, response);
+    RfnCommandResult result = command.decodeCommand(decode_time, response);
     
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
+        "User message ID : 11235"
         "\nReply type      : 0"
+        "\nTimestamp       : 02/17/2010 16:00:00"
         "\n# Channel data  : 0"
         "\n# Dated data    : 2"
-        "\nTimestamp       : 02/17/2010 10:00:00");
+        "\nDated data 0    : Channel number : 25"
+        "\n                  Status         : 0"
+        "\n                  Timestamp      : 01/29/2021 14:15:56"
+        "\n                  UOM            : W"
+        "\n                  Modifiers      : {Max}"
+        "\n                  Value          : 42"
+        "\n                  Base channel   : (none)"
+        "\nDated data 1    : Channel number : 26"
+        "\n                  Status         : 0"
+        "\n                  Timestamp      : 01/29/2021 14:15:56"
+        "\n                  UOM            : PF"
+        "\n                  Modifiers      : {Quadrant 1,Quadrant 4}"
+        "\n                  Value          : 42"
+        "\n                  Base channel   : Channel number : 25"
+        "\n                                   Status         : 0"
+        "\n                                   UOM            : W"
+        "\n                                   Modifiers      : {Max}"
+        "\n                                   Value          : 42");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -451,7 +513,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_coincident)
     
     const auto& data = responseMsg->data;
 
-    BOOST_CHECK_EQUAL(data.timeStamp, execute_time);
+    BOOST_CHECK_EQUAL(data.timeStamp, decode_time);
     BOOST_CHECK_EQUAL(data.rfnIdentifier, Cti::RfnIdentifier());
     BOOST_CHECK_EQUAL(data.recordInterval, 0);
     
