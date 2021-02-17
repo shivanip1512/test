@@ -1173,6 +1173,8 @@ void PilServer::handleRfnDisconnectRequest(const amq_cm::MessageDescriptor& md, 
         //disconnectRequest->setConnectionHandle(connectionHandle);  //  Leave the connectionHandle null as our indication this is internal
 
         MainQueue_.putQueue(disconnectRequest.release());
+
+        rsp1.replyType = RfnMeterDisconnectInitialReplyType::OK;
     }
 
     auto serializedRsp1 = Messaging::Serialization::serialize(rsp1);
