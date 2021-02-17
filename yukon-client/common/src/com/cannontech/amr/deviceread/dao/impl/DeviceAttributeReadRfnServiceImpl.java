@@ -32,6 +32,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -44,6 +45,8 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.util.RfnFeature;
+import com.cannontech.common.rfn.util.RfnFeatureHelper;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
@@ -66,6 +69,7 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
     private final static Logger log = YukonLogManager.getLogger(DeviceAttributeReadRfnServiceImpl.class);
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private RfnMeterReadService rfnMeterReadService;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired private AttributeService attributeService;
@@ -200,7 +204,9 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
 
             @Override
             public void receivedData(Iterable<PointData> values) {
-                asyncDynamicDataSource.putValues(values);
+                if (RfnFeatureHelper.isSupported(RfnFeature.E2E_READ_NOW, configurationSource)) {
+                    asyncDynamicDataSource.putValues(values);
+                }
                 values.forEach(value -> 
                     delegateCallback.receivedValue(device.getPaoIdentifier(), value));
             }
