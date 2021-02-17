@@ -69,7 +69,7 @@
                                     </div>
                                 </td>
                                 <td class="vam js-popup-note-actions dn">
-                                    <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
+                                    <cti:msg2 var="cancelText" key="yukon.common.cancelChanges"/>
                                     <cti:msg2 var="saveText" key="yukon.common.save"/>
                                     <div id="js-save-popup-note-group-${noteId}" class="button-group dn">
                                         <cti:button id="js-save-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-disk" 
