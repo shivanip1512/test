@@ -1158,7 +1158,7 @@ auto GetMeterRead(const Bytes& payload, const RfnIdentifier& rfnId) -> std::opti
 
         " 17"   //  Channel number
         " 01"       //  Unit of measure (Watth)
-        " 80 00"    //  Modifier 1, has extension bit set
+        " 80 90"    //  Modifier 1, Quadrant 1, Quadrant 4, has extension bit set
         " 00 00"    //  Modifier 2, no extension bit
         " 00 00 00 2a" //  Data
         " 00"       //  Status (OK)
