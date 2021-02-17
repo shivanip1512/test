@@ -1081,7 +1081,7 @@ bool Mct420Device::isSupported(const Mct420Device::Features feature) const
         }
         case Feature_Display:
         {
-            switch( getType() )
+            switch( getDeviceType() )
             {
                 case TYPEMCT420CD:
                 case TYPEMCT420CL:
