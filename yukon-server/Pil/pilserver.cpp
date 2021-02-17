@@ -966,17 +966,17 @@ void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
         //  Was this an internal request?
         if( ! connectionHandle )
         {
-            const auto lg = _replyCallbacks.synchronize();
+            auto replyCallbacks = _replyCallbacks.synchronize();
 
             for( const auto& [userMessageId, serializedMessage] : rp.serviceReplies )
             {
-                const auto itr = _replyCallbacks->find(userMessageId);
+                const auto itr = replyCallbacks->find(userMessageId);
 
-                if( itr != _replyCallbacks->end() )
+                if( itr != replyCallbacks->end() )
                 {
                     (itr->second)(serializedMessage);
 
-                    _replyCallbacks->erase(itr);
+                    replyCallbacks->erase(itr);
                 }
                 else
                 {
