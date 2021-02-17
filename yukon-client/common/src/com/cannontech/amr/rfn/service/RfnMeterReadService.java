@@ -27,8 +27,8 @@ import com.cannontech.common.util.jms.ThriftRequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
-import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadDataReplySerializer;
 import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadReplySerializer;
 import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadRequestSerializer;
@@ -65,7 +65,7 @@ public class RfnMeterReadService {
      * @param rfnMeter The meter to read.
      * @param callback The callback to use for updating status, errors and read data.
      */
-    public void send(final RfnMeter rfnMeter, final RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> callback) {
+    public void send(final RfnMeter rfnMeter, final RfnMeterReadCompletionCallback callback) {
         JmsReplyReplyHandler<RfnMeterReadReply, RfnMeterReadDataReply> handler = new JmsReplyReplyHandler<>() {
 
             @Override
@@ -125,11 +125,11 @@ public class RfnMeterReadService {
                     return;
                 }
                 /* Data response successful, process point data */
-                List<PointValueHolder> pointDatas = Lists.newArrayList();
+                List<PointData> pointDatas = Lists.newArrayList();
                 RfnDevice rfnDevice = new RfnDevice(rfnMeter.getName(), rfnMeter.getPaoIdentifier(), rfnMeter.getRfnIdentifier());
                 rfnChannelDataConverter.convert(new RfnMeterPlusReadingData(rfnDevice, dataReplyMessage.getData()), pointDatas, null);
 
-                pointDatas.forEach(callback::receivedData);
+                callback.receivedData(pointDatas);
            }
 
             @Override

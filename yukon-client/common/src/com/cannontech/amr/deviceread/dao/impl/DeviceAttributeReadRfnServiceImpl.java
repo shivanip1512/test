@@ -26,6 +26,7 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
+import com.cannontech.amr.rfn.service.RfnMeterReadCompletionCallback;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
@@ -43,7 +44,6 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.util.IterableUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
@@ -55,6 +55,7 @@ import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
 import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -165,7 +166,7 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
     private void sendMeterRequests(List<RfnMeter> meters, final DeviceAttributeReadCallback delegateCallback) {
         final AtomicInteger pendingRequests = new AtomicInteger(meters.size());
         for (final RfnMeter meter : meters) {
-            RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> meterCallback = getCallback(meter, delegateCallback, pendingRequests);
+            var meterCallback = getMeterReadCallback(meter, delegateCallback, pendingRequests);
             rfnMeterReadService.send(meter, meterCallback);
         }
     }
@@ -194,12 +195,14 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
     }
     
     //Use for RFN meters
-    private RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> getCallback(final YukonDevice device, final DeviceAttributeReadCallback delegateCallback, final AtomicInteger pendingRequests) {
-        RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> callback = new RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType>() {
+    private RfnMeterReadCompletionCallback getMeterReadCallback(final YukonDevice device, final DeviceAttributeReadCallback delegateCallback, final AtomicInteger pendingRequests) {
+        return new RfnMeterReadCompletionCallback() {
 
             @Override
-            public void receivedData(PointValueHolder value) {
-                delegateCallback.receivedValue(device.getPaoIdentifier(), value);
+            public void receivedData(Iterable<PointData> values) {
+                asyncDynamicDataSource.putValues(values);
+                values.forEach(value -> 
+                    delegateCallback.receivedValue(device.getPaoIdentifier(), value));
             }
             
             @Override
@@ -235,8 +238,6 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
                 }
             }
         };
-        
-        return callback;
     }
     
     //Use for RFN disconnect statuses
