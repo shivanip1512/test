@@ -61,7 +61,9 @@
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="CREATE">
                         <form:hidden path="parentId"/>
-                        <c:set var="regulator" value="${parentZone.regulator}"/>
+                        <c:if test="${parentZone.zoneType == singlePhase}">
+                            <c:set var="regulator" value="${parentZone.regulator}"/>
+                        </c:if>
                         <%@ include file="zoneNameDisplay.jsp" %>
                     </cti:displayForPageEditModes>
                 </c:otherwise>

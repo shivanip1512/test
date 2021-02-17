@@ -1530,5 +1530,7 @@
     <bean class="com.cannontech.web.api.aggregateIntervalDataReport.AggregateIntervalDataReportValidator"/>
     
     <bean class="com.cannontech.web.bulk.service.impl.DeviceConfigAssignServiceImpl"/>
-
+    
+    <bean class="com.cannontech.web.stars.virtualDevice.VirtualDeviceValidator"/>
+    
 </beans>

@@ -42,6 +42,7 @@ VIRTUAL_METER:
       description: 'Flag to enable virtual device.'
     meterNumber:
       type: string
+      maxLength: 50
       description: 'Name of the meter Number for virtual meter type.'
 
 id:

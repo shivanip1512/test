@@ -30,6 +30,7 @@ public class VirtualDeviceApiValidator <T extends VirtualDeviceBaseModel> extend
         {
             VirtualMeterModel meter = (VirtualMeterModel) virtualDevice;
             YukonApiValidationUtils.checkIsBlank(errors, "meterNumber", meter.getMeterNumber(), "Meter Number", true);
+            YukonApiValidationUtils.checkExceedsMaxLength(errors, "meterNumber", meter.getMeterNumber(), 50);
         }
     }
 }

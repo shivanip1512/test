@@ -71,10 +71,12 @@
                                                 <form:input path="name" maxlength="60" size="60" cssClass="${errorClass}"/>
                                             </spring:bind>
                                             <div class="button-group">
+                                                <cti:msg2 var="cancelText" key=".cancelChanges"/>
+                                                <cti:msg2 var="saveText" key=".save"/>
                                                 <cti:button renderMode="buttonImage" icon="icon-disk" type="submit"
-                                                    data-attribute-id="${attributeId}"/>
+                                                    data-attribute-id="${attributeId}" title="${saveText}"/>
                                                 <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel-edit-attribute" 
-                                                    data-attribute-id="${attributeId}"/>
+                                                    data-attribute-id="${attributeId}" title="${cancelText}"/>
                                             </div>
                                             <spring:bind path="name">
                                                 <c:if test="${status.error}"><br><form:errors path="name" cssClass="error" /></c:if>
