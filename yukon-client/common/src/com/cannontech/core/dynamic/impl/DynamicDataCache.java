@@ -85,14 +85,12 @@ import com.cannontech.yukon.IServerConnection;
      */
     private void handlePointData(PointData pd) {
         LitePointData cachedPointData = getPointData(pd.getId());
-        if (cachedPointData == null) {
-            pointData.put(pd.getId(), LitePointData.of(pd));
-        } else { 
-            if (cachedPointData.getPointQuality() == PointQuality.Uninitialized
-                || !pd.getPointDataTimeStamp().before(cachedPointData.getPointDataTimeStamp())) {
-                pointData.put(pd.getId(), LitePointData.of(pd));
-            }
+        if (cachedPointData != null
+            && cachedPointData.getPointQuality() != PointQuality.Uninitialized
+            && cachedPointData.getPointDataTimeStamp().after(pd.getPointDataTimeStamp())) {
+            return;
         }
+        pointData.put(pd.getId(), LitePointData.of(pd));
     }
 
     public void handleSignals(Set<Signal> signals, int pointId) {
