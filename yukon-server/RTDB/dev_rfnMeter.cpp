@@ -72,6 +72,43 @@ const std::string RfnMeterDevice::ConfigPart::demand           = "demand";
 const std::string RfnMeterDevice::ConfigPart::metlib           = "metlib";
 
 
+YukonError_t RfnMeterDevice::executeControl(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
+{
+    if( parse.getFlags() & CMD_FLAG_CTL_DISCONNECT )
+    {
+        return executeControlDisconnect(pReq, parse, returnMsgs, rfnRequests);
+    }
+    if( parse.getFlags() & CMD_FLAG_CTL_CONNECT )
+    {
+        if( parse.isKeyValid("arm") )
+        {
+            return executeControlArm(pReq, parse, returnMsgs, rfnRequests);
+        }
+        return executeControlConnect(pReq, parse, returnMsgs, rfnRequests);
+    }
+    return RfnDevice::executeControl(pReq, parse, returnMsgs, requestMsgs, rfnRequests);
+}
+
+YukonError_t RfnMeterDevice::executeControlArm(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests)
+{
+    return ClientErrors::NoMethod;
+}
+
+YukonError_t RfnMeterDevice::executeControlConnect(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests)
+{
+    return ClientErrors::NoMethod;
+}
+
+YukonError_t RfnMeterDevice::executeControlDisconnect(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests)
+{
+    return ClientErrors::NoMethod;
+}
+
+YukonError_t RfnMeterDevice::executeGetStatusDisconnect(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests)
+{
+    return ClientErrors::NoMethod;
+}
+
 YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if( parse.isKeyValid("install") )
@@ -388,6 +425,10 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg* pReq, CtiComman
 
 YukonError_t RfnMeterDevice::executeGetStatus(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
+    if( parse.getFlags() & CMD_FLAG_GS_DISCONNECT )
+    {
+        return executeGetStatusDisconnect(pReq, parse, returnMsgs, rfnRequests);
+    }
     if( parse.getFlags() & CMD_FLAG_GS_TOU )
     {
         return executeGetStatusTou(pReq, parse, returnMsgs, rfnRequests);

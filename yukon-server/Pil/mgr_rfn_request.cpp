@@ -316,13 +316,14 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 {
                     if( itr->second.token == *message.token )
                     {
-                        _meterProgrammingRequests.erase(itr);
                         CTILOG_INFO(dout, "Received Meter Programming Set Response for " << rfnIdentifier << FormattedList::of(
                             "Token",           itr->second.token,
                             "Active GUID",     itr->second.guid,
                             "Active timeout",  itr->second.timeout,
                             "Received ID",     command->getMeterConfigurationID(),
                             "Received status", command->getStatusCode()));
+
+                        _meterProgrammingRequests.erase(itr);
                     }
                     else
                     {

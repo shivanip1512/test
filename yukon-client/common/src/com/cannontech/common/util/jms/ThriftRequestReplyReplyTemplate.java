@@ -25,17 +25,12 @@ public class ThriftRequestReplyReplyTemplate<Q extends Serializable, R1 extends 
     private ThriftByteDeserializer<R2> reply2Deserializer;
 
     public ThriftRequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate, ThriftByteSerializer<Q> requestSerializer, ThriftByteDeserializer<R1> reply1Deserializer, 
-            ThriftByteDeserializer<R2> reply2Deserializer, boolean isInternalMessage) {
+            YukonJmsTemplate jmsTemplate, boolean isInternalMessage, ThriftByteSerializer<Q> requestSerializer, 
+            ThriftByteDeserializer<R1> reply1Deserializer, ThriftByteDeserializer<R2> reply2Deserializer) {
         super(configurationName, configurationSource, jmsTemplate, isInternalMessage);
         this.requestSerializer = requestSerializer;
         this.reply1Deserializer = reply1Deserializer;
         this.reply2Deserializer = reply2Deserializer;
-    }
-
-    public ThriftRequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate) {
-        super(configurationName, configurationSource, jmsTemplate, false);
     }
 
     @Override

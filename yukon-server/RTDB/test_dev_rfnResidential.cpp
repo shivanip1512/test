@@ -159,6 +159,223 @@ BOOST_AUTO_TEST_CASE( test_isDisconnectType )
 }
 
 
+BOOST_AUTO_TEST_CASE(test_control_connect_arm)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control connect arm");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Arm for resume");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp {
+            0x80, 0x02 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector< unsigned char > response {
+            0x81, //  Response 
+            0x02, //  Command type
+            0x00, //  Success
+            0x02, //  Status (Armed)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Arm for resume:"
+        "\nResults:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\nStatus          : 3");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_control_connect)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control connect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Resume immediately");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x80, 0x03 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector<unsigned char> response {
+            0x81, //  Response 
+            0x03, //  Command type
+            0x00, //  Success
+            0x03, //  Status (Resumed)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Resume immediately:"
+        "\nResults:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\nStatus          : 1");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_control_disconnect)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control disconnect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Terminate service");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp {
+            0x80, 0x01 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector<unsigned char> response {
+            0x81, //  Response 
+            0x01, //  Command type
+            0x00, //  Success
+            0x01, //  Status (Terminated)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Terminate service:"
+        "\nResults:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\nStatus          : 2");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_getstatus_disconnect)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("getstatus disconnect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Query");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x80, 0x04 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector< unsigned char > response{
+            0x81, //  Response 
+            0x04, //  Command type
+            0x00, //  Success
+            0x07, //  Status (Cycling Disconnect Active Resumed)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Query:"
+        "\nResults:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\nStatus          : 7");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+
 BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule )
 {
     test_RfnResidentialDevice dut;
@@ -1829,13 +2046,13 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_metlib)
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
 
-            std::vector<unsigned char> exp = boost::assign::list_of
-            (0x57)(0x00)(0x00);
+            std::vector<unsigned char> exp {
+                0x57, 0x00, 0x00 };
 
             BOOST_CHECK_EQUAL(rcv, exp);
 
-            std::vector<unsigned char> response = boost::assign::list_of
-            (0x58)(0x00)(0x00)(0x00);
+            std::vector<unsigned char> response {
+                0x58, 0x00, 0x00, 0x00 };
 
             command->handleResponse(CtiTime::now(), response);
 
@@ -1843,7 +2060,7 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_metlib)
 
             BOOST_CHECK(dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
 
-            BOOST_CHECK_EQUAL(true, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+            BOOST_CHECK_EQUAL(static_cast<long>(true), dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
         }
     }
 
@@ -1872,13 +2089,13 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_metlib)
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
 
-            std::vector<unsigned char> exp = boost::assign::list_of
-            (0x57)(0x00)(0x01);
+            std::vector<unsigned char> exp {
+                0x57, 0x00, 0x01 };
 
             BOOST_CHECK_EQUAL(rcv, exp);
 
-            std::vector<unsigned char> response = boost::assign::list_of
-            (0x58)(0x00)(0x00)(0x01);
+            std::vector<unsigned char> response {
+                0x58, 0x00, 0x00, 0x01 };
 
             command->handleResponse(CtiTime::now(), response);
 
@@ -1886,7 +2103,7 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_metlib)
 
             BOOST_CHECK(dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
 
-            BOOST_CHECK_EQUAL(false, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+            BOOST_CHECK_EQUAL(static_cast<long>(false), dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
         }
     }
 }

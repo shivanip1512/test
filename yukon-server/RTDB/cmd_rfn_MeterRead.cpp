@@ -8,6 +8,7 @@
 #include "rfn_uom.h"
 
 #include <boost/range/algorithm/set_algorithm.hpp>
+#include <boost/range/adaptor/indexed.hpp>
 
 using namespace Cti::Logging::Set;
 
@@ -72,7 +73,7 @@ RfnMeterReadCommand::RfnMeterReadCommand(long userMessageId) :
 
 auto RfnMeterReadCommand::getApplicationServiceId() const -> ASID
 {
-    return ASID::HubMeterCommandSet;
+    return ASID::ChannelManager;
 }
 
 std::string RfnMeterReadCommand::getCommandName() const
@@ -142,10 +143,10 @@ try
 
     const auto responseType = response[0];
 
-    validate(Condition(responseType == 0x02 || responseType == 0x03, ClientErrors::InvalidData)
+    validate(Condition(responseType == Response_fmt1 || responseType == Response_fmt23, ClientErrors::InvalidData)
         << "RFN meter read response type is unknown: " << static_cast<int>(responseType));
 
-    const bool includesModifiers = (responseType == 0x03);
+    const bool includesModifiers = (responseType == Response_fmt23);
 
     const auto readStatus = response[1];
     validate(Condition(readStatus == 0, ClientErrors::InvalidData)
@@ -217,10 +218,87 @@ try
         rawChannels.emplace_back(std::move(rc));
     }
 
-    _response = correlateRawChannels(now, std::move(rawChannels));
+    if( _response = correlateRawChannels(now, std::move(rawChannels)) )
+    {
+        FormattedList resultList;
 
-    return FormattedList::of(
-        "Channel count", channelCount);
+        resultList.add("User message ID") 
+            << _userMessageId;
+        resultList.add("Reply type") 
+            << static_cast<int>(_response->replyType);
+        resultList.add("Timestamp")
+            << _response->data.timeStamp.asString();
+        
+        resultList.add("# Channel data")
+            << _response->data.channelDataList.size();
+        
+        for( const auto& indexedChannelData : _response->data.channelDataList | boost::adaptors::indexed() )
+        {
+            const auto& channelData = indexedChannelData.value();
+
+            resultList.add("Channel data " + std::to_string(indexedChannelData.index())) 
+                << FormattedList::of(
+                    "Channel number", 
+                        channelData.channelNumber,
+                    "Status",
+                        static_cast<int>(channelData.status),
+                    "UOM",
+                        channelData.unitOfMeasure,
+                    "Modifiers",
+                        channelData.unitOfMeasureModifiers,
+                    "Value",
+                        channelData.value)
+                    .substr(1);  //  Lop off the leading newline
+        }
+        
+        resultList.add("# Dated data")
+            << _response->data.datedChannelDataList.size();
+
+        for( const auto& indexedDatedChannelData : _response->data.datedChannelDataList | boost::adaptors::indexed() )
+        {
+            const auto& datedChannelData = indexedDatedChannelData.value();
+
+            const auto baseChannelDescription =
+                datedChannelData.baseChannelData
+                    ? FormattedList::of(
+                        "Channel number",
+                            datedChannelData.baseChannelData->channelNumber,
+                        "Status",
+                        static_cast<int>(datedChannelData.baseChannelData->status),
+                        "UOM",
+                            datedChannelData.baseChannelData->unitOfMeasure,
+                        "Modifiers",
+                            datedChannelData.baseChannelData->unitOfMeasureModifiers,
+                        "Value",
+                            datedChannelData.baseChannelData->value)
+                        .substr(1)  //  Lop off the leading newline
+                    : "(none)";
+
+            resultList.add("Dated data " + std::to_string(indexedDatedChannelData.index()))
+                << FormattedList::of(
+                    "Channel number",
+                        datedChannelData.channelData.channelNumber,
+                    "Status",
+                        static_cast<int>(datedChannelData.channelData.status),
+                    "Timestamp",
+                        datedChannelData.timeStamp,
+                    "UOM",
+                        datedChannelData.channelData.unitOfMeasure,
+                    "Modifiers",
+                        datedChannelData.channelData.unitOfMeasureModifiers,
+                    "Value",
+                        datedChannelData.channelData.value,
+                    "Base channel",
+                        baseChannelDescription)
+                    .substr(1);  //  Lop off the leading newline
+        }
+
+        return resultList.toString().substr(1);  //  Lop off the leading newline
+    }
+
+    return "No message generated" + FormattedList::of(
+            "User message ID", _userMessageId,
+            "Channels", channelCount);
 }
 catch( const YukonErrorException& ex )
 {

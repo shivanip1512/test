@@ -27,8 +27,11 @@ import com.cannontech.common.util.jms.ThriftRequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
-import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadDataReplySerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadReplySerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadRequestSerializer;
 import com.google.common.collect.Lists;
 
 public class RfnMeterReadService {
@@ -62,7 +65,7 @@ public class RfnMeterReadService {
      * @param rfnMeter The meter to read.
      * @param callback The callback to use for updating status, errors and read data.
      */
-    public void send(final RfnMeter rfnMeter, final RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> callback) {
+    public void send(final RfnMeter rfnMeter, final RfnMeterReadCompletionCallback callback) {
         JmsReplyReplyHandler<RfnMeterReadReply, RfnMeterReadDataReply> handler = new JmsReplyReplyHandler<>() {
 
             @Override
@@ -122,11 +125,11 @@ public class RfnMeterReadService {
                     return;
                 }
                 /* Data response successful, process point data */
-                List<PointValueHolder> pointDatas = Lists.newArrayList();
+                List<PointData> pointDatas = Lists.newArrayList();
                 RfnDevice rfnDevice = new RfnDevice(rfnMeter.getName(), rfnMeter.getPaoIdentifier(), rfnMeter.getRfnIdentifier());
                 rfnChannelDataConverter.convert(new RfnMeterPlusReadingData(rfnDevice, dataReplyMessage.getData()), pointDatas, null);
 
-                pointDatas.forEach(callback::receivedData);
+                callback.receivedData(pointDatas);
            }
 
             @Override
@@ -142,7 +145,7 @@ public class RfnMeterReadService {
             }
         };
         
-        if (false/* TODO RfnFeatureHelper.isSupported(RfnFeature.E2E_READ_NOW, configurationSource)*/) {
+        if (RfnFeatureHelper.isSupported(RfnFeature.E2E_READ_NOW, configurationSource)) {
             e2eTemplate.send(new RfnMeterReadRequest(rfnMeter.getRfnIdentifier()), handler);
         } else {
             legacyTemplate.send(new RfnMeterReadRequest(rfnMeter.getRfnIdentifier()), handler);
@@ -152,7 +155,10 @@ public class RfnMeterReadService {
     @PostConstruct
     public void initialize() {
         YukonJmsTemplate e2eJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ);
-        e2eTemplate = new ThriftRequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, e2eJmsTemplate);
+        e2eTemplate = new ThriftRequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, e2eJmsTemplate, false,
+                new RfnMeterReadRequestSerializer(),
+                new RfnMeterReadReplySerializer(),
+                new RfnMeterReadDataReplySerializer());
 
         YukonJmsTemplate legacyJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_LEGACY);
         legacyTemplate = new RequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, legacyJmsTemplate);
