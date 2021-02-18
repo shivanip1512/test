@@ -8,33 +8,52 @@
 
 namespace Cti::Devices::Rfn {
 
-enum class UnitOfMeasure : unsigned char
+class IM_EX_DEVDB UnitOfMeasure
 {
-    Reserved = 0x00,
-    WattHour = 0x01,
-    VarHour = 0x02,
-    QHour = 0x03,
-    VaHour = 0x04,
-    Time = 0x05,
-    Volts = 0x10,
-    Current = 0x11,
-    VoltageAngle = 0x12,
-    CurrentAngle = 0x13,
-    PowerFactorAngle = 0x16,
-    PowerFactor = 0x18,
-    PoundHour = 0x20,
-    Gallon = 0x21,
-    Pulse = 0x3f,
-    NoUnits = 0x40,
-    Watt = 0x41,
-    Var = 0x42,
-    Q = 0x43,
-    Va = 0x44,
-    OutageCount = 0x50,
-    RestoreCount = 0x51,
-    OutageBlinkCount = 0x52,
-    RestoreBlinkCount = 0x53,
-    Unknown = 0x7f
+    union {
+        unsigned char raw;
+        struct {
+            unsigned char uom : 7;
+            unsigned char ext : 1;
+        };
+    } _uom;
+
+public:
+
+    UnitOfMeasure() = default;
+    explicit UnitOfMeasure(unsigned char raw);
+
+    bool getExtensionBit() const;
+    std::string getName() const;
+    bool isTime() const;
+
+    enum {
+        Reserved = 0x00,
+        WattHour = 0x01,
+        VarHour = 0x02,
+        QHour = 0x03,
+        VaHour = 0x04,
+        Time = 0x05,
+        Volts = 0x10,
+        Current = 0x11,
+        VoltageAngle = 0x12,
+        CurrentAngle = 0x13,
+        PowerFactorAngle = 0x16,
+        PowerFactor = 0x18,
+        PoundHour = 0x20,
+        Gallon = 0x21,
+        Pulse = 0x3f,
+        NoUnits = 0x40,
+        Watt = 0x41,
+        Var = 0x42,
+        Q = 0x43,
+        Va = 0x44,
+        OutageCount = 0x50,
+        RestoreCount = 0x51,
+        OutageBlinkCount = 0x52,
+        RestoreBlinkCount = 0x53,
+        Unknown = 0x7f
+    };
 };
 
 class IM_EX_DEVDB UomModifier1

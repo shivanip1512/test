@@ -600,8 +600,8 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointsReportHeader( RfnCommandRe
 
     const unsigned uom = lpPointDescriptor[pos++];
 
-    validate( Condition( uom == static_cast<unsigned>(Rfn::UnitOfMeasure::Volts), ClientErrors::InvalidData )
-            << "Incorrect UOM returned (" << uom << " != " << static_cast<unsigned>(Rfn::UnitOfMeasure::Volts) << ")" );
+    validate( Condition( uom == Rfn::UnitOfMeasure::Volts, ClientErrors::InvalidData )
+            << "Incorrect UOM returned (" << uom << " != " << Rfn::UnitOfMeasure::Volts << ")" );
 
     // Uom modifier 1
 

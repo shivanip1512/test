@@ -368,6 +368,8 @@ void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt
 
 Bytes DataStreamingRead (const Bytes& request, const RfnIdentifier & rfnId);
 Bytes DataStreamingWrite(const Bytes& request, const RfnIdentifier & rfnId);
+auto GetMeterRead   (const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
+auto MeterDisconnect(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
 
 void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& request, const RfnIdentifier rfnIdentifier)
 {
@@ -377,6 +379,25 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
         return;
     }
 
+    using RequestFunction = std::add_pointer_t<decltype(GetMeterRead)>;
+
+    static const std::map<unsigned char, RequestFunction> requestFunctions{
+        { 0x01, &GetMeterRead },
+        { 0x80, &MeterDisconnect } };
+    
+    if( const auto func = mapFindPtr(requestFunctions, request[0]) )
+    {
+        if( const auto reply = (*func)(request, rfnIdentifier) )
+        {
+            sendReply(*reply);
+        }
+        else
+        {
+            sendReply(Coap::ResponseCode::BadRequest);
+        }
+        return;
+    }
+        
     switch( request[0] )
     {
         default:
@@ -656,6 +677,49 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
     }
 }
 
+auto GetMeterRead(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>
+{
+    return asBytes(
+        "03"    //  Response type 3" contains one or more modifiers
+        " 00"   //  Response status (OK)
+        " 02"   //  Number of channels in response
+
+        " 17"   //  Channel number
+        " 81"       //  Unit of measure (Watth)
+        " 80 90"    //  Modifier 1, Quadrant 1, Quadrant 4, has extension bit set
+        " 00 00"    //  Modifier 2, no extension bit
+        " 00 00 00 2a" //  Data
+        " 00"       //  Status (OK)
+
+        " 18"   //  Channel number
+        " 82"       //  Unit of measure (Varh)
+        " 80 00"    //  Modifier 1, has extension bit set
+        " 00 00"    //  Modifier 2, no extension bit
+        " 00 00 00 15" //  Data
+        " 00"       //  Status (OK)
+    );
+}
+
+auto MeterDisconnect(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>
+{
+    if( payload.size() >= 2 )
+    {
+        switch( payload[1] )
+        {
+            case 0x01:
+            case 0x02:
+            case 0x03:
+                return Bytes { 0x81, payload[1], 0x00, payload[1] };  //  Echo the action
+
+            case 0x04:
+                return Bytes { 0x81, payload[1], 0x00, 0x03 };  //  Resume
+        }
+    }
+
+    return std::nullopt;
+}
+
+
 Bytes processAggregateRequests(const Bytes& request, const RfnIdentifier rfnIdentifier);
 
 void doBulkMessageRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier)
@@ -799,6 +863,8 @@ Bytes processAggregateRequests(const Bytes& payload, const RfnIdentifier rfnIden
     return result;
 }
 
+auto GetConfigNotification(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
+
 void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier)
 {
     if( request.empty() )
@@ -885,10 +951,6 @@ void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, co
     }
 }
 
-auto GetConfigNotification(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
-auto GetMeterRead         (const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
-auto MeterDisconnect      (const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
-
 void doHubMeterRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier)
 {
     if( request.empty() )
@@ -897,23 +959,26 @@ void doHubMeterRequest(const ReplySender sendReply, const Bytes& request, const 
         return;
     }
 
-    using RequestFunction = std::add_pointer_t<decltype(GetMeterRead)>;
-
-    static const std::map<unsigned char, RequestFunction> requestFunctions {
-        { 0x01, &GetMeterRead },
-        { 0x1d, &GetConfigNotification },
-        { 0x80, &MeterDisconnect } };
-
-    if( const auto func = mapFindPtr(requestFunctions, request[0]) )
+    switch( request[0] )
     {
-        if( auto reply = (*func)(request, rfnIdentifier) )
+        default:
+        {
+            sendReply(Coap::ResponseCode::BadRequest);
+            return;
+        }
+        case 0x1d:
+        {
+        if( auto reply = GetConfigNotification(request, rfnIdentifier) )
         {
             sendReply(*reply);
+            }
+            else
+            {
+                sendReply(Coap::ResponseCode::BadRequest);
+            }
             return;
         }
     }
-
-    sendReply(Coap::ResponseCode::BadRequest);
 }
 
 Bytes asBytes(const char* hex_string)
@@ -1148,49 +1213,6 @@ auto GetConfigNotification(const Bytes& payload, const RfnIdentifier& rfnId) -> 
     }
     return std::nullopt;
 }
-
-auto GetMeterRead(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>
-{
-    return asBytes(
-        "03"    //  Response type 3" contains one or more modifiers
-        " 00"   //  Response status (OK)
-        " 02"   //  Number of channels in response
-
-        " 17"   //  Channel number
-        " 01"       //  Unit of measure (Watth)
-        " 80 90"    //  Modifier 1, Quadrant 1, Quadrant 4, has extension bit set
-        " 00 00"    //  Modifier 2, no extension bit
-        " 00 00 00 2a" //  Data
-        " 00"       //  Status (OK)
-
-        " 18"   //  Channel number
-        " 02"       //  Unit of measure (Varh)
-        " 80 00"    //  Modifier 1, has extension bit set
-        " 00 00"    //  Modifier 2, no extension bit
-        " 00 00 00 15" //  Data
-        " 00"       //  Status (OK)
-    );
-}
-
-auto MeterDisconnect(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>
-{
-    if( payload.size() >= 2 )
-    {
-        switch( payload[1] )
-        {
-            case 0x01:
-            case 0x02:
-            case 0x03:
-                return Bytes { 0x81, payload[1], 0x00, payload[1] };  //  Echo the action
-
-            case 0x04:
-                return Bytes { 0x81, payload[1], 0x00, 0x03 };  //  Resume
-        }
-    }
-
-    return std::nullopt;
-}
-
 
 auto ParseSetMeterProgram(const Bytes& payload, const RfnIdentifier & rfnId) -> std::optional<std::tuple<std::string, unsigned>>;
 
