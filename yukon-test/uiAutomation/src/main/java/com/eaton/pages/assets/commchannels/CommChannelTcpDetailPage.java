@@ -2,7 +2,6 @@ package com.eaton.pages.assets.commchannels;
 
 import java.util.Optional;
 
-import com.eaton.elements.Section;
 import com.eaton.elements.modals.commchannel.EditTcpCommChannelModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -13,23 +12,16 @@ public class CommChannelTcpDetailPage extends CommChannelDetailPage {
     public CommChannelTcpDetailPage(DriverExtensions driverExt, int id) {
         super(driverExt);
 
-    requiresLogin = true;
-    pageUrl = Urls.Assets.COMM_CHANNEL_DETAIL + id;
+        requiresLogin = true;
+        pageUrl = Urls.Assets.COMM_CHANNEL_DETAIL + id;
     }
 
-    public Section getGeneralSection() {
-        return new Section(this.driverExt, "General");
-    }
+    public EditTcpCommChannelModal showTcpCommChannelEditModal() {
+        String describedBy = "js-edit-comm-channel-popup";
+        getEditBtn().getButton().click();
 
-    public Section getSharedSection() {
-        return new Section(this.driverExt, "Shared");
-    }
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy(describedBy);
 
-    public EditTcpCommChannelModal showTcpCommChannelEditModal(String modalTitle) {
-        getCommChannelInfoPanel().getEdit().click();
-
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-edit-comm-channel-popup");
-
-        return new EditTcpCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
+        return new EditTcpCommChannelModal(this.driverExt, Optional.empty(), Optional.of(describedBy));
     }
 }

@@ -7,7 +7,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockApiError;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
@@ -17,6 +16,7 @@ import io.restassured.response.ExtractableResponse;
 
 public class MeterDisconnectLoadGroupApiTest {
     MockLoadGroupBase loadGroup = null;
+    private static final String contextGroupId = "LM_GROUP_METER_DISCONNECT.id";
 
     @BeforeClass
     public void setUp() {
@@ -27,11 +27,11 @@ public class MeterDisconnectLoadGroupApiTest {
     public void loadGroupMeterDisconnect_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupMeterDisconnect_01_Create");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
-        String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
+        Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
 
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Group Id should not be Null", groupId != null);
 
         Log.endTestCase("loadGroupMeterDisconnect_01_Create");
@@ -44,7 +44,7 @@ public class MeterDisconnectLoadGroupApiTest {
 
         Log.info("Group Id of LmGroupMeterDisconnect created is : " + groupId);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup", groupId);
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         MockLoadGroupBase meterDisconnectGroup = getResponse.as(MockLoadGroupBase.class);
@@ -73,11 +73,11 @@ public class MeterDisconnectLoadGroupApiTest {
 
         Log.info("Updated Load Group is :" + loadGroup.toString());
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup", loadGroup, groupId);
+        ExtractableResponse<?> getResponse = ApiCallHelper.put("loadGroups", loadGroup, "/" + groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         context.setAttribute("MR_GrpName", loadGroup.getName());
-        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("getloadgroup", groupId);
+        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
 
         MockLoadGroupBase updatedMeterDisconnectGroup = getUpdatedResponse.as(MockLoadGroupBase.class);
         assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(updatedMeterDisconnectGroup.getName()));
@@ -99,10 +99,10 @@ public class MeterDisconnectLoadGroupApiTest {
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_METER_DISCONNECT))
                 .build();
 
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
                 loadGroupCopy,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
-        String copyGroupId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
+        Integer copyGroupId = copyResponse.jsonPath().getInt(LoadGroupHelper.CONTEXT_GROUP_ID);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
         assertTrue("Group Id should not be Null", copyGroupId != null);
         context.setAttribute("MR_CopyGrpId", copyGroupId);
@@ -117,27 +117,20 @@ public class MeterDisconnectLoadGroupApiTest {
     public void loadGroupMeterDisconnect_05_Delete(ITestContext context) {
         Log.startTestCase("loadGroupMeterDisconnect_05_Delete");
         String expectedMessage = "Id not found";
-        String grpToDelete = "MR_GrpName";
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute(grpToDelete).toString()).build();
-
-        Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadGroups",
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("loadGroups",
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 400", getDeletedResponse.statusCode() == 400);
         MockApiError error = getDeletedResponse.as(MockApiError.class);
         assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
 
         // Delete copy Load group
-        lmDeleteObject = MockLMDto.builder().name(context.getAttribute("MR_CopyGrpName").toString()).build();
-        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                context.getAttribute("MR_CopyGrpId").toString());
+        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("loadGroups",
+               "/" + context.getAttribute("MR_CopyGrpId").toString());
         assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
 
         Log.startTestCase("loadGroupMeterDisconnect_05_Delete");

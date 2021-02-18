@@ -1,19 +1,25 @@
 package com.cannontech.web.tools.points.validators;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
@@ -24,10 +30,10 @@ import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.calculation.CalcComponent;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.tools.points.model.CalcCompType;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointModel;
 
@@ -36,13 +42,24 @@ public class PointValidator extends SimpleValidator<PointModel> {
 
     @Autowired private PointValidationUtil pointValidationUtil; 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private YukonListDao listDao;
     
     private static final String baseKey = "yukon.web.modules.tools.point.error";
+    private List<YukonListEntry> yukonListEntryList;
+    private List<String> calcOperatorsList;
 
     public PointValidator() {
         super(PointModel.class);
     }
 
+    
+    @PostConstruct
+    public void init() {
+        YukonSelectionList calcCompList = listDao.getYukonSelectionList(CalcComponentTypes.CALC_FUNCTION_LIST_ID);
+        yukonListEntryList = calcCompList.getYukonListEntries();
+        calcOperatorsList = Arrays.asList(CalcComponentTypes.CALC_OPERATIONS);
+
+    }
     private static class FdrUniquenessKey {
 
         private final FdrInterfaceType fdrInterfaceType;
@@ -279,17 +296,22 @@ public class PointValidator extends SimpleValidator<PointModel> {
                         errors.rejectValue("pointBase.calcComponents[" + index + "].constant", "yukon.web.error.isBlank");
                     }
                 }
-                MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
-                String operand = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.calculation.operand");
-                if (calcComponent.getComponentType().equals(CalcCompType.OPERATION.getCalcCompType())
-                        || calcComponent.getComponentType().equals(CalcCompType.FUNCTION.getCalcCompType())) {
-                    if (!errors.hasFieldErrors("pointBase.calcComponents[" + index + "].componentPointID")) {
-                        YukonValidationUtils.checkIfFieldRequired("pointBase.calcComponents[" + index + "].componentPointID",
-                                errors, calcComponent.getComponentPointID(), operand);
-                    }
-                }
+                validateSupportedOperation(calcComponent, errors, index);
                 index++;
             }
+        }
+    }
+
+    private void validateSupportedOperation(CalcComponent calcComponent, Errors errors, int index) {
+        if (!calcComponent.getFunctionName().isEmpty() && !calcComponent.getFunctionName().equals("(none)")) {
+            if (!yukonListEntryList.toString().contains(calcComponent.getFunctionName().toString()))
+                errors.rejectValue("pointBase.calcComponents[" + index + "].functionName", "yukon.web.error.notSupported",
+                        new Object[] { "Operation" }, "");
+        }
+        if (!calcComponent.getOperation().isEmpty() && !calcComponent.getOperation().equals("(none)")) {
+            if (!calcOperatorsList.toString().contains(calcComponent.getOperation()))
+                errors.rejectValue("pointBase.calcComponents[" + index + "].operation", "yukon.web.error.notSupported",
+                        new Object[] { "Operation" }, "");
         }
     }
 }

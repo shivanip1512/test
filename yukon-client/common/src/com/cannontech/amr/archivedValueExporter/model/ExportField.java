@@ -27,6 +27,7 @@ public class ExportField implements Displayable {
     private MissingAttribute missingAttribute;
     private String missingAttributeValue;
     private String pattern;
+    private FieldValue fieldValue;
     
     public int getFieldId() {
         return fieldId;
@@ -76,6 +77,11 @@ public class ExportField implements Displayable {
     }
 
     public void setReadingPattern(ReadingPattern readingPattern) {
+        // In yaml file, either readingPattern or pattern is mandatory. If it contains anything except CUSTOM, set pattern.
+        // If it contains CUSTOM, yaml should contain a valid pattern.
+        if (isValue() && readingPattern != ReadingPattern.CUSTOM) {
+            this.pattern = readingPattern.getPattern();
+        }
         this.readingPattern = readingPattern;
     }
 
@@ -95,6 +101,11 @@ public class ExportField implements Displayable {
     }
 
     public void setTimestampPattern(TimestampPattern timestampPattern) {
+        // In yaml file, either timestampPattern or pattern is mandatory. If it contains anything except CUSTOM, set the pattern.
+        // If it contains CUSTOM, yaml should contain a valid pattern.
+        if (isTimestamp() && timestampPattern != TimestampPattern.CUSTOM) {
+            this.pattern = timestampPattern.getPattern();
+        }
         this.timestampPattern = timestampPattern;
     }
 
@@ -152,6 +163,29 @@ public class ExportField implements Displayable {
 
     public void setPattern(String pattern) {
         this.pattern = pattern;
+    }
+
+    public FieldValue getFieldValue() {
+        boolean patternFound = false;
+        if (field.isAttributeName()) {
+            for (FieldValue value : FieldValue.values()) {
+                if (value.name().equals(pattern)) {
+                    fieldValue = value;
+                    patternFound = true;
+                    break;
+                }
+            }
+            if (!patternFound)
+                fieldValue = FieldValue.DEFAULT;
+        }
+        return fieldValue;
+    }
+
+    public void setFieldValue(FieldValue fieldValue) {
+        if (field.isAttributeName()) {
+            this.pattern = fieldValue.name();
+        }
+        this.fieldValue = fieldValue;
     }
 
     public boolean isValue() {

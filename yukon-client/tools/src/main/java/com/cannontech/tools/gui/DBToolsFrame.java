@@ -895,6 +895,9 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
 
             aConverterFrame.setVisible(true);
         } catch (Throwable exception) {
+            JFrame frame = new JFrame("Error");
+            frame.setAlwaysOnTop(true);
+            JOptionPane.showMessageDialog(frame, "Error while starting DBToolsFrame : "+ exception.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             System.err.println("Exception occurred in main() of DBToolsFrame");
             CTILogger.error(exception.getMessage(), exception);
         }

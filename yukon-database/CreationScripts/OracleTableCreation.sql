@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/3/2020 5:42:50 AM                          */
+/* Created on:     2/10/2021 1:09:33 AM                         */
 /*==============================================================*/
 
 
@@ -1902,6 +1902,14 @@ create index Indx_CommandReqUnsupport_Type on CommandRequestUnsupported (
 );
 
 /*==============================================================*/
+/* Index: INDX_CREUns_ExecId_DevId                              */
+/*==============================================================*/
+create index INDX_CREUns_ExecId_DevId on CommandRequestUnsupported (
+   CommandRequestExecId ASC,
+   DeviceId ASC
+);
+
+/*==============================================================*/
 /* Table: CommandSchedule                                       */
 /*==============================================================*/
 create table CommandSchedule  (
@@ -3247,8 +3255,8 @@ create table DeviceGroupComposed  (
    constraint PK_DevGroupComp primary key (DeviceGroupComposedId)
 );
 
-INSERT INTO DeviceGroupComposed VALUES (1, 58, 'UNION');
-INSERT INTO DeviceGroupComposed VALUES (2, 59, 'UNION');
+INSERT INTO DeviceGroupComposed VALUES (1, 58, 'INTERSECTION');
+INSERT INTO DeviceGroupComposed VALUES (2, 59, 'INTERSECTION');
 
 /*==============================================================*/
 /* Table: DeviceGroupComposedGroup                              */
@@ -3267,6 +3275,18 @@ INSERT INTO DeviceGroupComposedGroup VALUES (3, 1, '/System/Meters/Disabled', 'Y
 INSERT INTO DeviceGroupComposedGroup VALUES (4, 2, '/System/Meters/All Meters/All RFN Meters/All RFW Meters', 'N');
 INSERT INTO DeviceGroupComposedGroup VALUES (5, 2, '/Meters/Billing', 'N');
 INSERT INTO DeviceGroupComposedGroup VALUES (6, 2, '/System/Meters/Disabled', 'Y');
+
+/*==============================================================*/
+/* Table: DeviceGuid                                            */
+/*==============================================================*/
+create table DeviceGuid  (
+   DeviceId             NUMBER                          not null,
+   Guid                 CHAR(36)                        not null,
+   constraint PK_DeviceGuid primary key (DeviceId)
+);
+
+alter table DeviceGuid
+   add constraint AK_DeviceGuid_Guid unique (Guid);
 
 /*==============================================================*/
 /* Table: DeviceMCT400Series                                    */
@@ -6187,6 +6207,15 @@ create table LMCONTROLAREAPROGRAM  (
 );
 
 /*==============================================================*/
+/* Table: LMConfigurableCycleGear                               */
+/*==============================================================*/
+create table LMConfigurableCycleGear  (
+   GearId               NUMBER                          not null,
+   CycleOption          NVARCHAR2(20)                   not null,
+   constraint PK_LMCONFIGURABLECYCLEGEAR primary key (GearId)
+);
+
+/*==============================================================*/
 /* Table: LMConfigurationBase                                   */
 /*==============================================================*/
 create table LMConfigurationBase  (
@@ -6523,6 +6552,15 @@ create table LMGroup  (
 insert into lmgroup values( 0, 0 );
 
 /*==============================================================*/
+/* Table: LMGroupEatonCloud                                     */
+/*==============================================================*/
+create table LMGroupEatonCloud  (
+   YukonGroupId         NUMBER                          not null,
+   RelayUsage           VARCHAR2(15)                    not null,
+   constraint PK_LMGROUPEATONCLOUD primary key (YukonGroupId)
+);
+
+/*==============================================================*/
 /* Table: LMGroupEmetcon                                        */
 /*==============================================================*/
 create table LMGroupEmetcon  (
@@ -6808,15 +6846,6 @@ create table LMHardwareToMeterMapping  (
    LMHardwareInventoryID NUMBER                          not null,
    MeterInventoryID     NUMBER                          not null,
    constraint PK_LMHARDWARETOMETERMAPPING primary key (LMHardwareInventoryID, MeterInventoryID)
-);
-
-/*==============================================================*/
-/* Table: LMItronCycleGear                                      */
-/*==============================================================*/
-create table LMItronCycleGear  (
-   GearId               NUMBER                          not null,
-   CycleOption          NVARCHAR2(20)                   not null,
-   constraint PK_LMItronCycleGear primary key (GearId)
 );
 
 /*==============================================================*/
@@ -8085,6 +8114,7 @@ create table PortTiming  (
    POSTTXWAIT           NUMBER                          not null,
    RECEIVEDATAWAIT      NUMBER                          not null,
    EXTRATIMEOUT         NUMBER                          not null,
+   PostCommWait         NUMBER                          not null,
    constraint PK_PORTTIMING primary key (PORTID)
 );
 
@@ -8680,6 +8710,10 @@ create table State  (
    constraint PK_STATE primary key (StateGroupId, RawState)
 );
 
+INSERT INTO State VALUES(-30, 0, 'Received and Waiting', 7, 6, 0);
+INSERT INTO State VALUES(-30, 1, 'Nothing Pending', 9, 6, 0);
+INSERT INTO State VALUES(-30, 2, 'Success', 0, 6, 0);
+INSERT INTO State VALUES(-30, 3, 'Failed', 1, 6, 0);
 INSERT INTO State VALUES(-29, 0, 'Success', 0, 6, 0);
 INSERT INTO State VALUES(-29, 1, 'Failure', 1, 6, 0);
 INSERT INTO State VALUES(-28, 0, 'Heat', 1, 6, 0);
@@ -8862,6 +8896,7 @@ create table StateGroup  (
    constraint PK_StateGroup primary key (StateGroupId)
 );
 
+INSERT INTO StateGroup VALUES(-30, 'LCR Firmware Update Status', 'Status');
 INSERT INTO StateGroup VALUES(-29, 'Meter Programming', 'Status');
 INSERT INTO StateGroup VALUES(-28, 'RelayState', 'Status');
 INSERT INTO StateGroup VALUES(-27, 'NoYes', 'Status');
@@ -10170,6 +10205,10 @@ INSERT INTO YukonListEntry VALUES (2035, 1005, 0, 'Nest', 1338);
 INSERT INTO YukonListEntry VALUES (2036, 1005, 0, 'LCR-6601S', 1339);
 INSERT INTO YukonListEntry VALUES (2037, 1005, 0, 'LCR-6600S', 1340);
 
+INSERT INTO YukonListEntry VALUES (2038, 1005, 0, 'LCR-6200C', 1342);
+INSERT INTO YukonListEntry VALUES (2039, 1005, 0, 'LCR-6600C', 1343);
+INSERT INTO YukonListEntry VALUES (2040, 1005, 0, 'LCR-DisconnectC', 1344);
+
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
 insert into yukonlistentry values (10103, 1067, 0, 'WorkOrder', 0);
@@ -10486,7 +10525,7 @@ INSERT INTO YukonRoleProperty VALUES(-20216,-202,'Validation Engine','false','Co
 INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');
 INSERT INTO YukonRoleProperty VALUES(-20218,-202,'Porter Response Monitor','false','Controls access to the Porter Response Monitor');
 INSERT INTO YukonRoleProperty VALUES(-20219,-202,'Meter Events','false','Controls access to Meter Events.');
-INSERT INTO YukonRoleProperty VALUES(-20220,-202,'Allow Disconnect Control','true','Controls access to Disconnect, Connect, and Arm operations.');
+INSERT INTO YukonRoleProperty VALUES(-20220,-202,'Allow Disconnect Control','NO_ACCESS','Controls access to Disconnect, Connect, and Arm operations.');
 INSERT INTO YukonRoleProperty VALUES(-20221,-202,'Device Data Monitor','false','Controls access to the Device Data Monitor.');
 INSERT INTO YukonRoleProperty VALUES(-20222,-202,'Water Leak Report','true','Controls access to the Water Leak Report.');
 INSERT INTO YukonRoleProperty VALUES(-20223,-202,'Usage Threshold Report','true','Controls access to the Usage Threshold Report.');
@@ -12368,6 +12407,11 @@ alter table DeviceGroupComposedGroup
       references DeviceGroupComposed (DeviceGroupComposedId)
       on delete cascade;
 
+alter table DeviceGuid
+   add constraint FK_DeviceGuid_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+
 alter table DeviceMCT400Series
    add constraint FK_Dev4_DevC foreign key (DeviceID)
       references DEVICECARRIERSETTINGS (DEVICEID);
@@ -12962,6 +13006,11 @@ alter table LMCONTROLAREAPROGRAM
    add constraint FK_LMPrg_LMCntlArProg foreign key (LMPROGRAMDEVICEID)
       references LMPROGRAM (DeviceID);
 
+alter table LMConfigurableCycleGear
+   add constraint FK_LMConfigurableCycleGear_LMPDirGear foreign key (GearId)
+      references LMProgramDirectGear (GearID)
+      on delete cascade;
+
 alter table LMConfigurationExpressCom
    add constraint FK_LMCfgXcom_LMCfg foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID);
@@ -13086,6 +13135,11 @@ alter table LMEnergyExchangeProgramOffer
 alter table LMGroup
    add constraint FK_Device_LMGrpBase2 foreign key (DeviceID)
       references DEVICE (DEVICEID);
+
+alter table LMGroupEatonCloud
+   add constraint FK_LMGroupEatonCloud_LMGroup foreign key (YukonGroupId)
+      references LMGroup (DeviceID)
+      on delete cascade;
 
 alter table LMGroupEmetcon
    add constraint FK_LmGroupEmetcon_LMGroup foreign key (DEVICEID)
@@ -13250,11 +13304,6 @@ alter table LMHardwareToMeterMapping
 alter table LMHardwareToMeterMapping
    add constraint FK_LMMETMAP_METERHARDBASE foreign key (MeterInventoryID)
       references MeterHardwareBase (InventoryID);
-
-alter table LMItronCycleGear
-   add constraint FK_LMItronCycleGear_LMPDirGear foreign key (GearId)
-      references LMProgramDirectGear (GearID)
-      on delete cascade;
 
 alter table LMMacsScheduleCustomerList
    add constraint FK_McSchCstLst_MCSched foreign key (ScheduleID)

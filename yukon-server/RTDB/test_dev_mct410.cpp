@@ -17,6 +17,7 @@
 
 using namespace Cti::Protocols;
 using Cti::Test::isSentOnRouteMsg;
+using Cti::Test::makeInmessReply;
 using std::string;
 using std::list;
 using std::vector;
@@ -560,7 +561,7 @@ BOOST_AUTO_TEST_SUITE_END()
 
 struct mctExecute_helper : executeRequest_helper
 {
-    const Cti::ConnectionHandle testConnHandle{ 999 };
+    const Cti::ConnectionHandle connHandle{ 999 };
     CtiRequestMsg request;
     OUTMESS *om;
 
@@ -572,7 +573,7 @@ struct mctExecute_helper : executeRequest_helper
         overrideConfigManager(fixtureConfig)
     {
         om = new OUTMESS;
-        request.setConnectionHandle(testConnHandle);
+        request.setConnectionHandle(connHandle);
     }
     ~mctExecute_helper()
     {
@@ -582,7 +583,7 @@ struct mctExecute_helper : executeRequest_helper
 
 struct mctExecute_noConfig_helper : executeRequest_helper
 {
-    const Cti::ConnectionHandle testConnHandle{ 999 };
+    const Cti::ConnectionHandle connHandle{ 999 };
     CtiRequestMsg request;
     OUTMESS *om;
 
@@ -592,7 +593,7 @@ struct mctExecute_noConfig_helper : executeRequest_helper
         overrideConfigManager(Cti::Config::DeviceConfigSPtr())
     {
         om = new OUTMESS;
-        request.setConnectionHandle(testConnHandle);
+        request.setConnectionHandle(connHandle);
     }
     ~mctExecute_noConfig_helper()
     {
@@ -866,7 +867,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_outage_old)
     {
-        Cti::Test::set_to_central_timezone();
+        const auto tz_override = Cti::Test::set_to_central_timezone();
 
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         1029);
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 7);     //  set the device to SSPEC revision 0.7
@@ -946,7 +947,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_outage)
     {
-        Cti::Test::set_to_central_timezone();
+        const auto tz_override = Cti::Test::set_to_central_timezone();
 
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         1029);
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 17);  //  set the device to SSPEC revision 1.7
@@ -1025,6 +1026,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_peak_frozen_scheduled_freeze)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         CtiTime configTime(CtiDate(1, 10, 2009), 1, 2, 3);
         CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
 
@@ -3038,6 +3041,29 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK(writeMsgPriority > readMsgPriority);
     }
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_freezeday_verify)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay, "32");
+
+        Cti::Test::test_DeviceConfig& config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+        config.insertValue("demandFreezeDay", "0");
+
+        CtiCommandParser parse("putconfig install freezeday verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK(vgList.empty());
+        BOOST_CHECK(outList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList.front());
+
+        BOOST_CHECK_EQUAL(retMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config freezeday is NOT current.");
+    }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_disconnect_demand_threshold)
     {
         test_Mct410IconDevice mct410;
@@ -3337,16 +3363,126 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 4 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 3 );
 
-        auto retList_itr = retList.cbegin();
-        const auto verifyMsg = dynamic_cast<const CtiRequestMsg*>( *retList_itr++ );
-        BOOST_REQUIRE( verifyMsg );
-        BOOST_CHECK_EQUAL( verifyMsg->CommandString(), "putconfig install all verify" );
-        BOOST_CHECK_EQUAL( verifyMsg->getConnectionHandle(), testConnHandle );
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+    }
 
-        BOOST_CHECK( std::all_of( retList_itr, retList.cend(), isSentOnRouteMsg ) );
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all_mct410_expectMore)
+    {
+        test_Mct410IconDevice mct410;
+        mct410.setDisconnectAddress(1234567);
+
+        constexpr int UserMessageId = 11235;
+
+        request.setCommandString("getconfig install all");
+        request.setUserMessageId(UserMessageId);
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(3, retList.size());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(3, outList.size());
+
+        BOOST_CHECK_EQUAL(mct410.getGroupMessageCount(UserMessageId, connHandle), 3);
+
+        {
+            BOOST_CHECK(boost::algorithm::all_of(retList, isSentOnRouteMsg));
+            delete_container(retList);
+            retList.clear();
+        }
+
+        auto outList_itr = outList.cbegin();
+
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xfe);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xfe);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct410.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct410.getGroupMessageCount(UserMessageId, connHandle), 2);
+        }
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x4f);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x4f);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct410.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct410.getGroupMessageCount(UserMessageId, connHandle), 1);
+        }
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x3f);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x3f);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct410.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct410.getGroupMessageCount(UserMessageId, connHandle), 0);
+        }
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 3);
+
+        {
+            auto retList_itr = retList.cbegin();
+
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Test MCT-410iL / "
+                    "\nConfig data received: 00 00 00 00 00 00 00 00 00 00 00 00 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Test MCT-410iL / Scheduled day of freeze: (disabled)\n");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+        }
     }
 
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_resume)
@@ -3681,6 +3817,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_aligned_read)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         test_Mct410IconDevice mct410;
 
         //  set the expected period of interest
@@ -3750,6 +3888,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_single_interval)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         test_Mct410IconDevice mct410;
         const CtiTime timeBegin(CtiDate(18, 3, 2011), 12, 34, 56);
 
@@ -4029,6 +4169,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_single_day)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         test_Mct410IconDevice mct410;
         mct410.test_loadProfileInterval = 3600;  //  so it only takes 4 requests to get the whole day
 
@@ -4804,6 +4946,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_single_retry)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         test_Mct410IconDevice mct410;
         const CtiTime timeBegin(CtiDate(18, 3, 2011), 12, 34, 56);
 
@@ -5141,6 +5285,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_failure)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         test_Mct410IconDevice mct410;
         const CtiTime timeBegin(CtiDate(18, 3, 2011), 12, 34, 56);
 
@@ -5657,8 +5803,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
-    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_overlap)
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_no_overlap)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         Cti::Test::Override_CtiDate_Now overrideDate(CtiDate(17, 3, 2014));
 
         const CtiTime timeBegin(CtiDate(18, 3, 2014), 12, 34, 56);
@@ -5736,8 +5884,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     results_begin, results_end);
         }
     }
-    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_no_overlap)
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_overlap)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         const CtiDate dateBegin { 4, 4, 2016 };
         const CtiTime timeBegin { dateBegin, 17, 24, 36 };
 

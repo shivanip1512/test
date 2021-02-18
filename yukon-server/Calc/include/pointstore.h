@@ -26,15 +26,16 @@
 #define CALC_DEBUG_BASELINE                         0x00001000
 #define CALC_DEBUG_RELOAD                           0x00002000
 
-enum PointUpdateType
+enum class CalcUpdateType
 {
-    undefined,
-    periodic,
-    allUpdate,
-    anyUpdate,
-    historical,
-    periodicPlusUpdate,
-    constant
+    Undefined,
+    Periodic,
+    AllUpdate,
+    AnyUpdate,
+    Historical,
+    BackfillingHistorical,
+    PeriodicPlusUpdate,
+    Constant
 };
 
 class CtiPointStoreElement
@@ -234,7 +235,7 @@ class CtiPointStore
 {
 public:
     static CtiPointStoreElement *find(long pointId);
-    static CtiPointStoreElement *insert(long pointId, long dependentId, enum PointUpdateType updateType);
+    static CtiPointStoreElement *insert(long pointId, long dependentId, CalcUpdateType updateType);
     static void remove(long pointId);
 
     static std::set<long> getPointIds();

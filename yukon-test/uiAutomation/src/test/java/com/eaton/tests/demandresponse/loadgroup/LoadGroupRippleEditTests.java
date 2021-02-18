@@ -4,11 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.Optional;
-import java.util.Random;
 
 import org.javatuples.Pair;
 import org.json.JSONObject;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -17,32 +15,30 @@ import com.eaton.builders.drsetup.loadgroup.LoadGroupRippleCreateBuilder.Builder
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupRippleEditPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupRippleEditPage;
+import com.github.javafaker.Faker;
 
 public class LoadGroupRippleEditTests extends SeleniumTestSetup {
 
     private LoadGroupRippleEditPage editPage;
-    WebDriver driver;
     private DriverExtensions driverExt;
-    private Random randomNum;
-    Builder builder;
-    private Integer id;
+    private Builder builder;
+    private Faker faker;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpRippleEdit_AllFields_Successfully() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpRippleEdit_AllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Ripple " + timeStamp;
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        double capacity = faker.number().randomDouble(2, 1, 9999);
 
         builder = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup();
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -50,22 +46,24 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         Pair<JSONObject, JSONObject> pair = builder
                 .create();
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
+        Integer id = response.getInt("id");
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupRippleEditPage(driverExt, id);
-        
-        editPage.getName().setInputValue(editName);
-        editPage.getCommunicationRoute().selectItemByText("a_RTC");
 
-        editPage.getShedTime().selectItemByText("30 minutes");
-        editPage.getGroup().selectItemByText("2.01");
-        editPage.getAreaCode().selectItemByText("Minnkota");
+        editPage.getName().setInputValue(editName);
+        String commRoute = TestDbDataType.CommunicationRouteData.ARTC.getId().toString();
+        editPage.getCommunicationRoute().selectItemByValue(commRoute);
+        // 1800 = 30 minutes
+        editPage.getShedTime().selectItemByValue("1800");
+        // TWO_01 = 2.01
+        editPage.getGroup().selectItemByValue("TWO_01");
+        editPage.getAreaCode().selectItemByValue("MINNKOTA");
         editPage.getControlSwitchElement().setTrueFalseByBitNo(10, true);
         editPage.getRestoreSwitchElement().setTrueFalseByBitNo(18, true);
         editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        editPage.getDisableGroup().setValue(true);
-        editPage.getDisableControl().setValue(false);
+        editPage.getDisableGroup().selectValue("Yes");
+        editPage.getDisableControl().selectValue("No");
 
         editPage.getSaveBtn().click();
 

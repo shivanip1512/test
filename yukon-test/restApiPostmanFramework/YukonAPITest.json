@@ -50,7 +50,7 @@
 						{
 							"name": "Update",
 							"request": {
-								"method": "POST",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -61,19 +61,17 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n   \"name\":\"LM Constraint\",\r\n   \"seasonSchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"maxActivateSeconds\":12,\r\n   \"maxDailyOpsSeconds\":13,\r\n   \"minActivateSeconds\":14,\r\n   \"minRestartSeconds\":15,\r\n   \"daySelection\":[\r\n      \"SUNDAY\"\r\n   ],\r\n   \"holidaySchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"holidayUsage\":\"FORCE\",\r\n   \"maxHoursDaily\":1,\r\n   \"maxHoursMonthly\":2,\r\n   \"maxHoursAnnually\":4,\r\n   \"maxHoursSeasonal\":3\r\n}"
+									"raw": "{\r\n   \"name\":\"LM Constraint\",\r\n   \"seasonSchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"maxActivateSeconds\":12,\r\n   \"maxDailyOps\":13,\r\n   \"minActivateSeconds\":14,\r\n   \"minRestartSeconds\":15,\r\n   \"daySelection\":[\r\n      \"SUNDAY\"\r\n   ],\r\n   \"holidaySchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"holidayUsage\":\"EXCLUDE\",\r\n   \"maxHoursDaily\":1,\r\n   \"maxHoursMonthly\":2,\r\n   \"maxHoursAnnually\":4,\r\n   \"maxHoursSeasonal\":3\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/update/{constraintId}",
+									"raw": "{{api-url}}/api/dr/constraints/{constraintId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
-										"update",
+										"constraints",
 										"{constraintId}"
 									]
 								}
@@ -86,15 +84,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/{constraintId}",
+									"raw": "{{api-url}}/api/dr/constraints/{constraintId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
+										"constraints",
 										"{constraintId}"
 									]
 								}
@@ -105,29 +102,16 @@
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "\r\n{\r\n\t\"name\": \"LM Constraint\"\r\n\t\r\n}"
-								},
+								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/delete/{constraintId}",
+									"raw": "{{api-url}}/api/dr/constraints/{constraintId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
-										"delete",
+										"constraints",
 										"{constraintId}"
 									]
 								}
@@ -140,16 +124,15 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/getSeasonSchedules",
+									"raw": "{{api-url}}/api/dr/constraints/seasonSchedules",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
-										"getSeasonSchedules"
+										"constraints",
+										"seasonSchedules"
 									]
 								}
 							},
@@ -161,16 +144,15 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/getHolidaySchedules",
+									"raw": "{{api-url}}/api/dr/constraints/holidaySchedules",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
-										"getHolidaySchedules"
+										"constraints",
+										"holidaySchedules"
 									]
 								}
 							},
@@ -190,19 +172,17 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n   \"name\":\"LM Constraint\",\r\n   \"seasonSchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"maxActivateSeconds\":12,\r\n   \"maxDailyOpsSeconds\":13,\r\n   \"minActivateSeconds\":14,\r\n   \"minRestartSeconds\":15,\r\n   \"daySelection\":[\r\n      \"SUNDAY\"\r\n   ],\r\n   \"holidaySchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"holidayUsage\":\"EXCLUDE\",\r\n   \"maxHoursDaily\":1,\r\n   \"maxHoursMonthly\":2,\r\n   \"maxHoursAnnually\":4,\r\n   \"maxHoursSeasonal\":3\r\n}"
+									"raw": "{\r\n   \"name\":\"LM Constraint\",\r\n   \"seasonSchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"maxActivateSeconds\":12,\r\n   \"maxDailyOps\":13,\r\n   \"minActivateSeconds\":14,\r\n   \"minRestartSeconds\":15,\r\n   \"daySelection\":[\r\n      \"SUNDAY\"\r\n   ],\r\n   \"holidaySchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"holidayUsage\":\"EXCLUDE\",\r\n   \"maxHoursDaily\":1,\r\n   \"maxHoursMonthly\":2,\r\n   \"maxHoursAnnually\":4,\r\n   \"maxHoursSeasonal\":3\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/create",
+									"raw": "{{api-url}}/api/dr/constraints",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
-										"create"
+										"constraints"
 									]
 								}
 							},
@@ -219,32 +199,16 @@
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{  \r\n\t\"name\": \"Macro Load group\"\r\n}"
-								},
+								"header": [],
 								"url": {
-									"raw": "http://localhost:8086/yukon/api/dr/setup/macroLoadGroup/delete/{Id}",
-									"protocol": "http",
+									"raw": "{{api-url}}/api/dr/macroLoadGroups/{Id}",
 									"host": [
-										"localhost"
+										"{{api-url}}"
 									],
-									"port": "8086",
 									"path": [
-										"yukon",
 										"api",
 										"dr",
-										"setup",
-										"macroLoadGroup",
-										"delete",
+										"macroLoadGroups",
 										"{Id}"
 									]
 								}
@@ -268,17 +232,16 @@
 									"raw": "{\r\n   \"LOAD_GROUP_COPY\":{\r\n      \"name\":\"Macro Load Group 1\"\r\n   }\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/macroLoadGroup/copy/{Id}",
+									"raw": "{{api-url}}/api/dr/macroLoadGroups/{Id}/copy",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"macroLoadGroup",
-										"copy",
-										"{Id}"
+										"macroLoadGroups",
+										"{Id}",
+										"copy"
 									]
 								}
 							},
@@ -290,15 +253,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/macroLoadGroup/{Id}",
+									"raw": "{{api-url}}/api/dr/macroLoadGroups/{Id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"macroLoadGroup",
+										"macroLoadGroups",
 										"{Id}"
 									]
 								}
@@ -308,7 +270,7 @@
 						{
 							"name": "Update",
 							"request": {
-								"method": "POST",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -322,16 +284,14 @@
 									"raw": "{\r\n   \"name\":\"Macro Load group\",\r\n   \"type\":\"MACRO_GROUP\",\r\n   \"assignedLoadGroups\":[\r\n      {\r\n         \"id\":4957\r\n      },\r\n      {\r\n         \"id\":4446\r\n      },\r\n      {\r\n         \"id\":4356\r\n      }\r\n   ]\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/macroLoadGroup/update/{Id}",
+									"raw": "{{api-url}}/api/dr/macroLoadGroups/{Id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"macroLoadGroup",
-										"update",
+										"macroLoadGroups",
 										"{Id}"
 									]
 								}
@@ -355,16 +315,14 @@
 									"raw": "{\r\n   \"name\":\"Macro Load group\",\r\n   \"type\":\"MACRO_GROUP\",\r\n   \"assignedLoadGroups\":[\r\n      {\r\n         \"id\":4957\r\n      },\r\n      {\r\n         \"id\":4446\r\n      },\r\n      {\r\n         \"id\":4356\r\n      }\r\n   ]\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/macroLoadGroup/create",
+									"raw": "{{api-url}}/api/dr/macroLoadGroups",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"macroLoadGroup",
-										"create"
+										"macroLoadGroups"
 									]
 								}
 							},
@@ -378,60 +336,20 @@
 					"name": "ControlScenario",
 					"item": [
 						{
-							"name": "GetAllPrograms",
+							"name": "Delete",
 							"request": {
-								"method": "GET",
+								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/loadProgram/availablePrograms",
+									"raw": "{{api-url}}/api/dr/controlScenarios/{Id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"loadProgram",
-										"availablePrograms"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Delete",
-							"request": {
-								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n   \"name\" : \"s16\"\r\n}"
-								},
-								"url": {
-									"raw": "http://127.0.0.1:8080/yukon/api/dr/setup/controlScenario/delete/37269",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8080",
-									"path": [
-										"yukon",
-										"api",
-										"dr",
-										"setup",
-										"controlScenario",
-										"delete",
-										"37269"
+										"controlScenarios",
+										"{Id}"
 									]
 								}
 							},
@@ -443,16 +361,15 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlScenario/37419",
+									"raw": "{{api-url}}/api/dr/controlScenarios/{id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlScenario",
-										"37419"
+										"controlScenarios",
+										"{id}"
 									]
 								}
 							},
@@ -461,7 +378,7 @@
 						{
 							"name": "Update",
 							"request": {
-								"method": "POST",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -475,16 +392,14 @@
 									"raw": "{\r\n   \"name\":\"s17\",\r\n   \"allPrograms\":[\r\n      {\r\n         \"programId\":56,\r\n         \"startOffsetInMinutes\":143,\r\n         \"stopOffsetInMinutes\":14,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":1\r\n            }\r\n         ]\r\n      },\r\n      {\r\n         \"programId\":11583,\r\n         \"startOffsetInMinutes\":12,\r\n         \"stopOffsetInMinutes\":1,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":7\r\n            }\r\n         ]\r\n      }\r\n   ]\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlScenario/update/{id}",
+									"raw": "{{api-url}}/api/dr/controlScenarios/{id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlScenario",
-										"update",
+										"controlScenarios",
 										"{id}"
 									]
 								}
@@ -508,16 +423,14 @@
 									"raw": "{\r\n   \"name\":\"s26\",\r\n   \"allPrograms\":[\r\n      {\r\n         \"programId\":56,\r\n         \"startOffsetInMinutes\":36,\r\n         \"stopOffsetInMinutes\":2,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":1\r\n            }\r\n         ]\r\n      }\r\n   ]\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlScenario/create",
+									"raw": "{{api-url}}/api/dr/controlScenarios",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlScenario",
-										"create"
+										"controlScenarios"
 									]
 								}
 							},
@@ -536,16 +449,15 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlArea/38139",
+									"raw": "{{api-url}}/api/dr/controlAreas/{id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlArea",
-										"38139"
+										"controlAreas",
+										"{id}"
 									]
 								}
 							},
@@ -568,16 +480,14 @@
 									"raw": "{\n    \"name\": \"Area00991\",\n    \"controlInterval\": 0,\n    \"minResponseTime\": 0,\n    \"dailyDefaultState\": \"None\",\n    \"allTriggersActiveFlag\": false,\n    \"triggers\": [\n        {\n            \"triggerId\": 5,\n            \"triggerNumber\": 1,\n            \"triggerType\": \"THRESHOLD_POINT\",\n            \"triggerPointId\": 299981,\n            \"minRestoreOffset\": 0,\n            \"thresholdPointId\": 299981\n        }\n    ]\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlArea/create",
+									"raw": "{{api-url}}/api/dr/controlAreas",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlArea",
-										"create"
+										"controlAreas"
 									]
 								}
 							},
@@ -586,7 +496,7 @@
 						{
 							"name": "Update",
 							"request": {
-								"method": "POST",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -600,17 +510,15 @@
 									"raw": "{\n    \"name\": \"Area0099178\",\n    \"controlInterval\": 0,\n    \"minResponseTime\": 0,\n    \"dailyDefaultState\": \"None\",\n    \"allTriggersActiveFlag\": false,\n    \"triggers\": [\n        {\n            \"triggerId\": 6,\n            \"triggerNumber\": 1,\n            \"triggerType\": \"THRESHOLD_POINT\",\n            \"triggerPointId\": 299981,\n            \"minRestoreOffset\": 0,\n            \"thresholdPointId\": 299981\n        }\n    ]\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlArea/update/127476",
+									"raw": "{{api-url}}/api/dr/controlAreas/{id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlArea",
-										"update",
-										"127476"
+										"controlAreas",
+										"{id}"
 									]
 								}
 							},
@@ -620,50 +528,16 @@
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n\t\"name\" : \"Area0099178\"\n}"
-								},
+								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlArea/delete/127476",
+									"raw": "{{api-url}}/api/dr/controlAreas/{id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlArea",
-										"delete",
-										"127476"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "GetNormalState",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{api-url}}/dr/setup/controlArea/normalState/{id}",
-									"host": [
-										"{{api-url}}"
-									],
-									"path": [
-										"dr",
-										"setup",
-										"controlArea",
-										"normalState",
+										"controlAreas",
 										"{id}"
 									]
 								}
@@ -709,16 +583,14 @@
 											"raw": "{ \r\n\t\"LM_GROUP_METER_DISCONNECT\": \r\n\t{\r\n        \"name\": \"LoadGroupBase00141\",\r\n        \"type\": \"LM_GROUP_METER_DISCONNECT\",\r\n        \"kWCapacity\": \"23\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -738,19 +610,17 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \r\n\t\"LM_GROUP_ECOBEE\": \r\n\t{\r\n        \"name\": \"LoadGroupBase25\",\r\n        \"type\": \"LM_GROUP_ECOBEE\",\r\n        \"kWCapacity\": \"23\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false\r\n    }\r\n}"
+											"raw": "{ \r\n\t\"LM_GROUP_ECOBEE\": \r\n\t{\r\n        \"name\": \"LoadGroupEcobee\",\r\n        \"type\": \"LM_GROUP_ECOBEE\",\r\n        \"kWCapacity\": \"23\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										},
 										"description": "Create ecobee load group."
@@ -774,16 +644,14 @@
 											"raw": "{ \"LM_GROUP_EMETCON\": {\r\n \"name\": \"EmetCeronGroup3\",\r\n \"type\": \"LM_GROUP_EMETCON\",\r\n \"kWCapacity\": \"4\",\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 3611,\r\n \"addressUsage\": \"GOLD\",\r\n \"relayUsage\": \"RELAY_C\",\r\n \"goldAddress\": 4,\r\n \"silverAddress\": 4\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -806,16 +674,14 @@
 											"raw": "\r\n{ \"LM_GROUP_DIGI_SEP\": { \"name\": \"digisepui12\",\r\n \"type\": \"LM_GROUP_DIGI_SEP\",\r\n \"kWCapacity\": 23.0,\r\n \"disableGroup\": false,\r\n \"disableControl\": true,\r\n \"utilityEnrollmentGroup\": 12,\r\n \"deviceClassSet\": [\r\n \"BASEBOARD_HEAT\"\r\n ],\r\n \"rampInMinutes\": 30,\r\n \"rampOutMinutes\": 30\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -838,16 +704,14 @@
 											"raw": "{\r\n \"LM_GROUP_VERSACOM\": {\r\n \"id\": null,\r\n \"name\": \"VersacomABC\",\r\n \"type\": \"LM_GROUP_VERSACOM\",\r\n \"kWCapacity\": 0,\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 37,\r\n \"utilityAddress\": 25,\r\n \"sectionAddress\": 27,\r\n \"classAddress\": \"0000000000000001\",\r\n \"divisionAddress\": \"0000000000000001\",\r\n \"serialAddress\": \"0\",\r\n \"addressUsage\": [\"UTILITY\", \"SECTION\", \"CLASS\", \"DIVISION\"],\r\n \"relayUsage\": [\"RELAY_1\" , \"RELAY_2\", \"RELAY_3\", \"RELAY_4\"]\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -870,16 +734,14 @@
 											"raw": "{ \"LM_GROUP_ITRON\": {\r\n \"name\": \"TeesDiereoup\",\r\n \"type\": \"LM_GROUP_ITRON\",\r\n \"kWCapacity\": \"23\",\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"virtualRelayId\": 5\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -902,16 +764,14 @@
 											"raw": "{\r\n  \"LM_GROUP_EXPRESSCOMM\": {\r\n    \"name\": \"Express2001\",\r\n    \"type\": \"LM_GROUP_EXPRESSCOMM\",\r\n    \"kWCapacity\": 0.0,\r\n    \"disableGroup\": false,\r\n    \"disableControl\": false,\r\n    \"routeId\": 123636,\r\n    \"routeName\": \"* CCU 711 CART\",\r\n    \"serviceProvider\": 1,\r\n    \"geo\": 2,\r\n    \"substation\": 3,\r\n    \"feeder\": \"1000000000100100\",\r\n    \"zip\": 5,\r\n    \"user\": 6,\r\n    \"program\": 12,\r\n    \"splinter\": 23,\r\n    \"serialNumber\": 1245,\r\n    \"addressUsage\": [\r\n      \"GEO\",\r\n      \"SUBSTATION\",\r\n      \"FEEDER\",\r\n      \"ZIP\",\r\n      \"USER\",\r\n      \"LOAD\",\r\n      \"PROGRAM\",\r\n      \"SPLINTER\"\r\n    ],\r\n    \"relayUsage\": [\r\n      \"Load_1\"\r\n    ],\r\n    \"protocolPriority\": \"DEFAULT\"\r\n  }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -934,16 +794,14 @@
 											"raw": "{ \r\n   \"LM_GROUP_HONEYWELL\":{ \r\n      \"name\":\"LmGroup_HoneyWell_Test\",\r\n      \"type\":\"LM_GROUP_HONEYWELL\",\r\n      \"kWCapacity\":\"78.26\",\r\n      \"disableGroup\":true,\r\n      \"disableControl\":false\r\n   }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -966,16 +824,14 @@
 											"raw": "{ \r\n   \"LM_GROUP_NEST\":{ \r\n      \"name\":\"LmGroup_Nest_Test\",\r\n      \"type\":\"LM_GROUP_NEST\",\r\n      \"kWCapacity\":\"78.26\",\r\n      \"disableGroup\":true,\r\n      \"disableControl\":false\r\n   }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -998,16 +854,14 @@
 											"raw": "{ \r\n   \"LM_GROUP_MCT\":{ \r\n      \"name\":\"LmGroup_MCT_Test\",\r\n      \"type\":\"LM_GROUP_MCT\",\r\n      \"kWCapacity\":\"78.26\",\r\n      \"disableGroup\":true,\r\n      \"disableControl\":false,\r\n      \"routeId\":123,\r\n      \"level\":\"BRONZE\",\r\n      \"address\":12536,\r\n      \"mctDeviceId\":2135,\r\n      \"relayUsage\":[\"RELAY_1\"]\r\n   }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -1027,19 +881,17 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \r\n        \"name\": \"pointGrp_3\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.0,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 2\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 1234\r\n        },\r\n        \"startControlRawState\": {\r\n            \"rawState\": 0\r\n        }\r\n    }\r\n}"
+											"raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \"name\": \"Point Load Group\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.8,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 11735,\r\n            \"name\": \"CBC 1\"\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 113706,\r\n            \"name\": \"Manual Control Mode\"\r\n        },\r\n        \"startControlRawState\": {\r\n            \"id\": 1,\r\n            \"name\": \"True\"\r\n        }\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -1067,16 +919,44 @@
 											}
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "RFNExpresscom",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"LM_GROUP_RFN_EXPRESSCOMM\": {\r\n    \"name\": \"RfnExpresscomTest123\",\r\n    \"type\": \"LM_GROUP_RFN_EXPRESSCOMM\",\r\n    \"kWCapacity\": 0.0,\r\n    \"disableGroup\": false,\r\n    \"disableControl\": false,\r\n    \"serialNumber\": \"\",\r\n    \"serviceProvider\": 1,\r\n    \"substation\": 4,\r\n    \"feeder\": \"\",\r\n    \"addressUsage\": [\r\n      \"SUBSTATION\",\r\n      \"LOAD\"\r\n    ],\r\n    \"relayUsage\": [\r\n      \"Load_8\"\r\n    ],\r\n    \"protocolPriority\": \"DEFAULT\"\r\n  }\r\n}"
+										},
+										"url": {
+											"raw": "{{api-url}}/api/dr/loadGroups",
+											"host": [
+												"{{api-url}}"
+											],
+											"path": [
+												"api",
+												"dr",
+												"loadGroups"
 											]
 										}
 									},
@@ -1096,16 +976,15 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/38829",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"38829"
+												"loadGroups",
+												"{Id}"
 											]
 										},
 										"description": "Retrieve a load group."
@@ -1123,7 +1002,7 @@
 								{
 									"name": "Meter Disconnect",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1137,17 +1016,15 @@
 											"raw": "{ \r\n\t\"LM_GROUP_METER_DISCONNECT\": \r\n\t{\r\n        \"name\": \"LoadGroupBase001\",\r\n        \"type\": \"LM_GROUP_METER_DISCONNECT\",\r\n        \"kWCapacity\": \"23\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1156,7 +1033,7 @@
 								{
 									"name": "DigiSep",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1170,17 +1047,16 @@
 											"raw": "\r\n{ \"LM_GROUP_DIGI_SEP\": { \"name\": \"digisepui12\",\r\n \"type\": \"LM_GROUP_DIGI_SEP\",\r\n \"kWCapacity\": 23.0,\r\n \"disableGroup\": false,\r\n \"disableControl\": true,\r\n \"utilityEnrollmentGroup\": 12,\r\n \"deviceClassSet\": [\r\n \"BASEBOARD_HEAT\"\r\n ],\r\n \"rampInMinutes\": 30,\r\n \"rampOutMinutes\": 30\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr//loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"",
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1189,7 +1065,7 @@
 								{
 									"name": "Ecobee",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1203,17 +1079,15 @@
 											"raw": "{ \r\n\t\"LM_GROUP_ECOBEE\": {\r\n        \"name\": \"LoadGroupBase1234\",\r\n        \"type\": \"LM_GROUP_ECOBEE\",\r\n        \"kWCapacity\": \"23\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										},
 										"description": "Update any created load group."
@@ -1223,7 +1097,7 @@
 								{
 									"name": "Itron",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1237,17 +1111,15 @@
 											"raw": "{ \"LM_GROUP_ITRON\": {\r\n \"name\": \"TeesDiereoup\",\r\n \"type\": \"LM_GROUP_ITRON\",\r\n \"kWCapacity\": \"23\",\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"virtualRelayId\": 5\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1256,7 +1128,7 @@
 								{
 									"name": "Emetcon",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1267,20 +1139,18 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \"LM_GROUP_EMETCON\": {\r\n \"name\": \"EmetCeronGroup3\",\r\n \"type\": \"LM_GROUP_EMETCON\",\r\n \"kWCapacity\": \"4\",\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 3611,\r\n \"addressUsage\": \"GOLD\",\r\n \"relayUsage\": \"RELAY_C\",\r\n \"goldAddress\": 4,\r\n \"silverAddress\": 4\r\n }\r\n}"
+											"raw": "{ \"LM_GROUP_EMETCON\": {\r\n \"name\": \"EmetCeronGroup3\",\r\n \"type\": \"LM_GROUP_EMETCON\",\r\n \"kWCapacity\": \"4\",\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 1,\r\n \"addressUsage\": \"GOLD\",\r\n \"relayUsage\": \"RELAY_C\",\r\n \"goldAddress\": 4,\r\n \"silverAddress\": 4\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1289,7 +1159,7 @@
 								{
 									"name": "ExpressCom",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1300,20 +1170,18 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"LM_GROUP_EXPRESSCOMM\": {\r\n    \"name\": \"Express2001\",\r\n    \"type\": \"LM_GROUP_EXPRESSCOMM\",\r\n    \"kWCapacity\": 0.0,\r\n    \"disableGroup\": false,\r\n    \"disableControl\": false,\r\n    \"routeId\": 123636,\r\n    \"routeName\": \"* CCU 711 CART\",\r\n    \"serviceProvider\": 1,\r\n    \"geo\": 2,\r\n    \"substation\": 3,\r\n    \"feeder\": \"1000000000100100\",\r\n    \"zip\": 5,\r\n    \"user\": 6,\r\n    \"program\": 12,\r\n    \"splinter\": 23,\r\n    \"serialNumber\": 1245,\r\n    \"addressUsage\": [\r\n      \"GEO\",\r\n      \"SUBSTATION\",\r\n      \"FEEDER\",\r\n      \"ZIP\",\r\n      \"USER\",\r\n      \"LOAD\",\r\n      \"PROGRAM\",\r\n      \"SPLINTER\"\r\n    ],\r\n    \"relayUsage\": [\r\n      \"Load_1\"\r\n    ],\r\n    \"protocolPriority\": \"DEFAULT\"\r\n  }\r\n}"
+											"raw": "{\r\n  \"LM_GROUP_EXPRESSCOMM\": {\r\n    \"name\": \"Express2001\",\r\n    \"type\": \"LM_GROUP_EXPRESSCOMM\",\r\n    \"kWCapacity\": 0.0,\r\n    \"disableGroup\": false,\r\n    \"disableControl\": false,\r\n    \"routeId\": 1,\r\n    \"routeName\": \"* CCU 711 CART\",\r\n    \"serviceProvider\": 1,\r\n    \"geo\": 2,\r\n    \"substation\": 3,\r\n    \"feeder\": \"1000000000100100\",\r\n    \"zip\": 5,\r\n    \"user\": 6,\r\n    \"program\": 12,\r\n    \"splinter\": 23,\r\n    \"serialNumber\": 1245,\r\n    \"addressUsage\": [\r\n      \"GEO\",\r\n      \"SUBSTATION\",\r\n      \"FEEDER\",\r\n      \"ZIP\",\r\n      \"USER\",\r\n      \"LOAD\",\r\n      \"PROGRAM\",\r\n      \"SPLINTER\"\r\n    ],\r\n    \"relayUsage\": [\r\n      \"Load_1\"\r\n    ],\r\n    \"protocolPriority\": \"DEFAULT\"\r\n  }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1322,7 +1190,7 @@
 								{
 									"name": "Honeywell",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1336,17 +1204,15 @@
 											"raw": "{ \r\n   \"LM_GROUP_HONEYWELL\":{ \r\n      \"name\":\"LmGroup_HoneyWell_Test\",\r\n      \"type\":\"LM_GROUP_HONEYWELL\",\r\n      \"kWCapacity\":\"78.26\",\r\n      \"disableGroup\":true,\r\n      \"disableControl\":false\r\n   }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1355,7 +1221,7 @@
 								{
 									"name": "Versacom",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1366,20 +1232,18 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n \"LM_GROUP_VERSACOM\": {\r\n \"id\": null,\r\n \"name\": \"VersacomABC\",\r\n \"type\": \"LM_GROUP_VERSACOM\",\r\n \"kWCapacity\": 0,\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 37,\r\n \"utilityAddress\": 25,\r\n \"sectionAddress\": 27,\r\n \"classAddress\": \"0000000000000001\",\r\n \"divisionAddress\": \"0000000000000001\",\r\n \"serialAddress\": \"0\",\r\n \"addressUsage\": [\"UTILITY\", \"SECTION\", \"CLASS\", \"DIVISION\"],\r\n \"relayUsage\": [\"RELAY_1\" , \"RELAY_2\", \"RELAY_3\", \"RELAY_4\"]\r\n }\r\n}"
+											"raw": "{\r\n \"LM_GROUP_VERSACOM\": {\r\n \"id\": null,\r\n \"name\": \"VersacomABC\",\r\n \"type\": \"LM_GROUP_VERSACOM\",\r\n \"kWCapacity\": 0,\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 1,\r\n \"utilityAddress\": 25,\r\n \"sectionAddress\": 27,\r\n \"classAddress\": \"0000000000000001\",\r\n \"divisionAddress\": \"0000000000000001\",\r\n \"serialAddress\": \"0\",\r\n \"addressUsage\": [\"UTILITY\", \"SECTION\", \"CLASS\", \"DIVISION\"],\r\n \"relayUsage\": [\"RELAY_1\" , \"RELAY_2\", \"RELAY_3\", \"RELAY_4\"]\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1388,7 +1252,7 @@
 								{
 									"name": "MCT",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1399,20 +1263,18 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"LM_GROUP_MCT\": {\n        \"name\": \"LmGroup_MCT_Test\",\n        \"type\": \"LM_GROUP_MCT\",\n        \"kWCapacity\": 78.32,\n        \"disableGroup\": true,\n        \"disableControl\": false,\n        \"routeId\": 730,\n        \"routeName\": \"CCU Parkwood\",\n        \"level\": \"BRONZE\",\n        \"address\": 12536,\n        \"mctDeviceId\": 0,\n        \"relayUsage\": [\n            \"RELAY_1\", \"RELAY_3\"\n        ]\n    }\n}"
+											"raw": "{\n    \"LM_GROUP_MCT\": {\n        \"name\": \"LmGroup_MCT_Test\",\n        \"type\": \"LM_GROUP_MCT\",\n        \"kWCapacity\": 78.32,\n        \"disableGroup\": true,\n        \"disableControl\": false,\n        \"routeId\": 1,\n        \"routeName\": \"CCU Parkwood\",\n        \"level\": \"BRONZE\",\n        \"address\": 12536,\n        \"mctDeviceId\": 0,\n        \"relayUsage\": [\n            \"RELAY_1\", \"RELAY_3\"\n        ]\n    }\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"151386"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1421,7 +1283,7 @@
 								{
 									"name": "Point",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1432,20 +1294,18 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \r\n        \"name\": \"pointGrp_3\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.0,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 2\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 1234\r\n        },\r\n        \"startControlRawState\": {\r\n            \"rawState\": 0\r\n        }\r\n    }\r\n}"
+											"raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \"name\": \"Ppoint LG test\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.8,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 11735,\r\n            \"name\": \"CBC 1\"\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 113706,\r\n            \"name\": \"Manual Control Mode\"\r\n        },\r\n        \"startControlRawState\": {\r\n            \"id\": 1,\r\n            \"name\": \"True\"\r\n        }\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"151386"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1454,7 +1314,7 @@
 								{
 									"name": "Ripple",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1465,7 +1325,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"LM_GROUP_RIPPLE\": {\r\n        \"name\": \"TestRippleLoadGroupUpdate\",\r\n        \"type\": \"LM_GROUP_RIPPLE\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"routeId\": 3611,\r\n        \"control\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"restore\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"shedTime\": 455,\r\n        \"kWCapacity\": 4.0\r\n    }\r\n}",
+											"raw": "{\r\n    \"LM_GROUP_RIPPLE\": {\r\n        \"name\": \"TestRippleLoadGroupUpdate\",\r\n        \"type\": \"LM_GROUP_RIPPLE\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"routeId\": 1,\r\n        \"control\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"restore\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"shedTime\": 450,\r\n        \"kWCapacity\": 4.0\r\n    }\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1473,17 +1333,46 @@
 											}
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"151386"
+												"loadGroups",
+												"{Id}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "RFNExpresscom",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"LM_GROUP_RFN_EXPRESSCOMM\": {\r\n    \"name\": \"RfnExpresscomTest123\",\r\n    \"type\": \"LM_GROUP_RFN_EXPRESSCOMM\",\r\n    \"kWCapacity\": 0.0,\r\n    \"disableGroup\": false,\r\n    \"disableControl\": false,\r\n    \"serialNumber\": \"\",\r\n    \"serviceProvider\": 1,\r\n    \"substation\": 4,\r\n    \"feeder\": \"\",\r\n    \"addressUsage\": [\r\n      \"SUBSTATION\",\r\n      \"LOAD\"\r\n    ],\r\n    \"relayUsage\": [\r\n      \"Load_8\"\r\n    ],\r\n    \"protocolPriority\": \"DEFAULT\"\r\n  }\r\n}"
+										},
+										"url": {
+											"raw": "{{api-url}}/api/dr/loadGroups/{groupId}",
+											"host": [
+												"{{api-url}}"
+											],
+											"path": [
+												"api",
+												"dr",
+												"loadGroups",
+												"{groupId}"
 											]
 										}
 									},
@@ -1511,20 +1400,19 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestExp0005copy\",\r\n      \"routeId\": 3611\r\n    }\r\n}"
+											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestExp0005copy\",\r\n      \"routeId\": 1\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10087",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10087"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1544,20 +1432,19 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestExp0005copy\",\r\n      \"routeId\": 3611\r\n    }\r\n}"
+											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestExp0006copy\",\r\n      \"routeId\": 1\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10087",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10087"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1577,20 +1464,19 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestExp0005copy\",\r\n      \"routeId\": 3611\r\n    }\r\n}"
+											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestVersacom0005copy\",\r\n      \"routeId\": 1\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10087",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10087"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1613,17 +1499,16 @@
 											"raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"MeterDisconnectcopy\"\r\n     }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10055",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10055"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1646,20 +1531,16 @@
 											"raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"Itroncopy\"\r\n     }\r\n}"
 										},
 										"url": {
-											"raw": "http://localhost:8080/yukon/api/dr/setup/loadGroup/copy/10055",
-											"protocol": "http",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
-												"localhost"
+												"{{api-url}}"
 											],
-											"port": "8080",
 											"path": [
-												"yukon",
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10055"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1682,17 +1563,16 @@
 											"raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"DigiSepcopy\"\r\n     }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10055",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10055"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1715,17 +1595,16 @@
 											"raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"MCTcopy\"\r\n     }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"151386"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1748,17 +1627,16 @@
 											"raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"Pointcopy\"\r\n     }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"151386"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1786,17 +1664,76 @@
 											}
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"151386"
+												"loadGroups",
+												"{Id}",
+												"copy"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Ecobee",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"LMCopy\": {\r\n    \"name\": \"Copy of EcobeeLG\"\r\n  }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
+											"host": [
+												"{{api-url}}"
+											],
+											"path": [
+												"api",
+												"dr",
+												"loadGroups",
+												"{Id}",
+												"copy"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Honeywell",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"LMCopy\": {\r\n    \"name\": \"Copy of HoneywellLG\"\r\n  }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
+											"host": [
+												"{{api-url}}"
+											],
+											"path": [
+												"api",
+												"dr",
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1824,20 +1761,18 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \r\n\t\"name\": \"AnyName\"\r\n}"
+											"raw": ""
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/delete/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"delete",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										},
 										"description": "Delete any load group based on passed loadGroupId."
@@ -1848,28 +1783,6 @@
 							"description": "Delete an existing load group.",
 							"protocolProfileBehavior": {},
 							"_postman_isSubFolder": true
-						},
-						{
-							"name": "getPointGroupStartState",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{api-url}}/api/dr/setup/loadGroup/getPointGroupStartState/1234",
-									"host": [
-										"{{api-url}}"
-									],
-									"path": [
-										"api",
-										"dr",
-										"setup",
-										"loadGroup",
-										"getPointGroupStartState",
-										"1234"
-									]
-								}
-							},
-							"response": []
 						}
 					],
 					"event": [
@@ -1920,16 +1833,14 @@
 											"raw": "{\n    \"name\": \"LMDirectTest001\",\n    \"type\": \"LM_DIRECT_PROGRAM\",\n    \"operationalState\": \"Automatic\",\n    \"constraint\": {\n        \"constraintId\": 2,\n        \"constraintName\": \"123444\"\n    },\n    \"triggerOffset\": 12,\n    \"restoreOffset\": 21,\n    \"gears\": [\n        {\n            \"gearName\": \"GearTimeRefresh\",\n            \"gearNumber\": 1,\n            \"controlMethod\": \"TimeRefresh\",\n            \"fields\": {\n                \"refreshShedTime\": \"FixedShedTime\",\n                \"shedTime\": 3600,\n                \"numberOfGroups\": 0,\n                \"sendRate\": 1800,\n                \"groupSelectionMethod\": \"LastControlled\",\n                \"howToStopControl\": \"TimeIn\",\n                \"stopCommandRepeat\": 0,\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearSmartCycle\",\n            \"gearNumber\": 2,\n            \"controlMethod\": \"SmartCycle\",\n            \"fields\": {\n                \"noRamp\": false,\n                \"controlPercent\": 50,\n                \"cyclePeriodInMinutes\": 30,\n                \"cycleCountSendType\": \"FixedCount\",\n                \"maxCycleCount\": 0,\n                \"startingPeriodCount\": 8,\n                \"sendRate\": 3600,\n                \"stopCommandRepeat\": 0,\n                \"howToStopControl\": \"StopCycle\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearMasterCycle\",\n            \"gearNumber\": 3,\n            \"controlMethod\": \"MasterCycle\",\n            \"fields\": {\n                \"controlPercent\": 50,\n                \"cyclePeriodInMinutes\": 30,\n                \"groupSelectionMethod\": \"LastControlled\",\n                \"howToStopControl\": \"TimeIn\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearRotation\",\n            \"gearNumber\": 4,\n            \"controlMethod\": \"Rotation\",\n            \"fields\": {\n                \"shedTime\": 300,\n                \"numberOfGroups\": 0,\n                \"sendRate\": 1800,\n                \"groupSelectionMethod\": \"LastControlled\",\n                \"howToStopControl\": \"TimeIn\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearTrueCycle\",\n            \"gearNumber\": 5,\n            \"controlMethod\": \"TrueCycle\",\n            \"fields\": {\n                \"noRamp\": false,\n                \"controlPercent\": 50,\n                \"cyclePeriodInMinutes\": 30,\n                \"cycleCountSendType\": \"FixedCount\",\n                \"maxCycleCount\": 0,\n                \"startingPeriodCount\": 8,\n                \"sendRate\": 3600,\n                \"stopCommandRepeat\": 0,\n                \"howToStopControl\": \"StopCycle\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearMagnitude\",\n            \"gearNumber\": 6,\n            \"controlMethod\": \"MagnitudeCycle\",\n            \"fields\": {\n                \"noRamp\": false,\n                \"controlPercent\": 50,\n                \"cyclePeriodInMinutes\": 30,\n                \"cycleCountSendType\": \"FixedCount\",\n                \"maxCycleCount\": 0,\n                \"startingPeriodCount\": 8,\n                \"sendRate\": 3600,\n                \"stopCommandRepeat\": 0,\n                \"howToStopControl\": \"StopCycle\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearTargetCycle\",\n            \"gearNumber\": 7,\n            \"controlMethod\": \"TargetCycle\",\n            \"fields\": {\n                \"noRamp\": false,\n                \"controlPercent\": 50,\n                \"cycleCountSendType\": \"FixedCount\",\n                \"maxCycleCount\": 0,\n                \"startingPeriodCount\": 8,\n                \"sendRate\": 3600,\n                \"stopCommandRepeat\": 0,\n                \"howToStopControl\": \"StopCycle\",\n                \"capacityReduction\": 100,\n                \"kWReduction\": 0,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                },\n                \"cyclePeriodInMinutes\": 30\n            }\n        },\n        {\n            \"gearName\": \"GearSimpleThermo\",\n            \"gearNumber\": 9,\n            \"controlMethod\": \"SimpleThermostatRamping\",\n            \"fields\": {\n                \"mode\": \"COOL\",\n                \"randomStartTimeInMinutes\": 60,\n                \"preOpTemp\": 4,\n                \"preOpTimeInMinutes\": 120,\n                \"preOpHoldInMinutes\": 120,\n                \"rampPerHour\": 0.4,\n                \"max\": 4,\n                \"rampOutTimeInMinutes\": 120,\n                \"maxRuntimeInMinutes\": 480,\n                \"howToStopControl\": \"TimeIn\",\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearBeatThePeak\",\n            \"gearNumber\": 10,\n            \"controlMethod\": \"BeatThePeak\",\n            \"fields\": {\n                \"indicator\": \"Yellow\",\n                \"timeoutInMinutes\": 0,\n                \"resendInMinutes\": 0,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearNoControl\",\n            \"gearNumber\": 11,\n            \"controlMethod\": \"NoControl\",\n            \"fields\": {\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        }\n    ],\n    \"assignedGroups\": [\n        {\n            \"groupId\": 11705,\n            \"groupName\": \"E1\",\n            \"type\": \"LM_GROUP_EMETCON\"\n        }\n    ],\n    \"notification\": {\n        \"programStartInMinutes\": 34,\n        \"programStopInMinutes\": 56,\n        \"notifyOnAdjust\": true,\n        \"enableOnSchedule\": true,\n        \"assignedNotificationGroups\": [\n            {\n                \"notificationGrpID\": 2,\n                \"notificationGrpName\": \"Jess Notification\"\n            }\n        ]\n    }\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/create",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"create"
+												"loadPrograms"
 											]
 										}
 									},
@@ -1952,16 +1863,14 @@
 											"raw": "{\n    \"programId\": 55,\n    \"name\": \"SEP Program\",\n    \"type\": \"LM_SEP_PROGRAM\",\n    \"operationalState\": \"Automatic\",\n    \"constraint\": {\n        \"constraintId\": 0,\n        \"constraintName\": \"Default Constraint\"\n    },\n    \"triggerOffset\": 0,\n    \"restoreOffset\": 0,\n    \"gears\": [\n        {\n            \"gearId\": 0,\n            \"gearName\": \"SEP Cycle\",\n            \"gearNumber\": 1,\n            \"controlMethod\": \"SepCycle\",\n            \"fields\": {\n                \"rampIn\": true,\n                \"rampOut\": true,\n                \"trueCycle\": true,\n                \"controlPercent\": 50,\n                \"criticality\": 6,\n                \"howToStopControl\": \"TimeIn\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearId\": 204,\n            \"gearName\": \"SEPTempOffset\",\n            \"gearNumber\": 2,\n            \"controlMethod\": \"SepTemperatureOffset\",\n            \"fields\": {\n                \"rampIn\": true,\n                \"rampOut\": true,\n                \"celsiusOrFahrenheit\": \"FAHRENHEIT\",\n                \"mode\": \"HEAT\",\n                \"offset\": 1,\n                \"criticality\": 6,\n                \"howToStopControl\": \"TimeIn\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearId\": 205,\n            \"gearName\": \"NoControl\",\n            \"gearNumber\": 3,\n            \"controlMethod\": \"NoControl\",\n            \"fields\": {\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        }\n    ],\n    \"assignedGroups\": [\n        {\n            \"groupId\": 54,\n            \"groupName\": \"DigiSEP\",\n            \"groupOrder\": 1,\n            \"type\": \"LM_GROUP_DIGI_SEP\"\n        }\n    ]\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/create",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"create"
+												"loadPrograms"
 											]
 										}
 									},
@@ -1984,16 +1893,14 @@
 											"raw": "{\r\n    \"name\": \"TestEcobeeSetpoint\",\r\n    \"type\": \"LM_ECOBEE_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0\r\n    },\r\n    \"triggerOffset\": 1.0,\r\n    \"restoreOffset\": 2.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearName\": \"EcobeeSetpoint Gear1\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"EcobeeSetpoint\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"setpointOffset\": -9,\r\n                \"mode\": \"HEAT\",\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearName\": \"EcobeeSetpoint Gear2\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"EcobeeSetpoint\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"setpointOffset\": 7,\r\n                \"mode\": \"HEAT\",\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n        \r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 120,\r\n            \"availableStopTimeInMinutes\": 300\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 214777,\r\n            \"groupName\": \"ecobeeLoadGroup\",\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        }\r\n    ],\r\n    \"notification\": {\r\n        \"notifyOnAdjust\": false,\r\n        \"enableOnSchedule\": false,\r\n        \"assignedNotificationGroups\": [\r\n            {\r\n                \"notificationGrpID\": 2,\r\n                \"notificationGrpName\": \"Jess Notification\"\r\n            }\r\n        ]\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/create",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"create"
+												"loadPrograms"
 											]
 										}
 									},
@@ -2016,16 +1923,14 @@
 											"raw": "{\r\n    \"name\": \"Honeywell Program001\",\r\n    \"type\": \"LM_HONEYWELL_PROGRAM\",\r\n    \"operationalState\": \"Timed\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearName\": \"HW Cycle\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"HoneywellCycle\",\r\n            \"fields\": {\r\n                \"rampInOut\": true,\r\n                \"controlPercent\": 50,\r\n                \"cyclePeriodInMinutes\": 30,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearName\": \"HW Setpoint\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"HoneywellSetpoint\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"setpointOffset\": 3,\r\n                \"mode\": \"COOL\",\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 540,\r\n            \"availableStopTimeInMinutes\": 360\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 660,\r\n            \"availableStopTimeInMinutes\": 22\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15851,\r\n            \"groupName\": \"LM_GROUP_HONEYWELL_Name\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_HONEYWELL\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/create",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"create"
+												"loadPrograms"
 											]
 										}
 									},
@@ -2048,16 +1953,14 @@
 											"raw": "{\r\n    \"name\": \"Meter Disconnect Program001\",\r\n    \"type\": \"LM_METER_DISCONNECT_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n    \"constraint\": {\r\n        \"constraintId\": 2,\r\n        \"constraintName\": \"constraint1\"\r\n    },\r\n    \"triggerOffset\": 11.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearName\": \"gear001\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"MeterDisconnect\"\r\n        }\r\n    ],\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15006,\r\n            \"groupName\": \"testmd01\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_METER_DISCONNECT\"\r\n        },\r\n        {\r\n            \"groupId\": 14949,\r\n            \"groupName\": \"testmd02\",\r\n            \"groupOrder\": 2,\r\n            \"type\": \"LM_GROUP_METER_DISCONNECT\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/create",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"create"
+												"loadPrograms"
 											]
 										}
 									},
@@ -2080,16 +1983,14 @@
 											"raw": "{\r\n    \"name\": \"LM_DIRECT_PROGRAM_TEST1\",\r\n    \"type\": \"LM_DIRECT_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n     \"constraint\": {\r\n        \"constraintId\": 2,\r\n        \"constraintName\": \"123444\"\r\n    },\r\n    \"triggerOffset\": 67,\r\n    \"restoreOffset\": 77,\r\n    \"gears\": [\r\n        {\r\n           \r\n            \"gearName\": \"GearSmartCycle\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"SmartCycle\",\r\n            \"fields\": {\r\n                \"noRamp\": false,\r\n                \"controlPercent\": 50,\r\n                \"cyclePeriodInMinutes\": 30,\r\n                \"cycleCountSendType\": \"FixedCount\",\r\n                \"maxCycleCount\": 0,\r\n                \"startingPeriodCount\": 8,\r\n                \"sendRate\": 3600,\r\n                \"stopCommandRepeat\": 0,\r\n                \"howToStopControl\": \"StopCycle\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 186,\r\n            \"availableStopTimeInMinutes\": 366\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 425,\r\n            \"availableStopTimeInMinutes\": 546\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 36099,\r\n            \"groupName\": \"abc\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_METER_DISCONNECT\"\r\n        }\r\n    ],\r\n    \"notification\": {\r\n        \"programStartInMinutes\": 44,\r\n        \"programStopInMinutes\": 45,\r\n        \"notifyOnAdjust\": true,\r\n        \"enableOnSchedule\": true,\r\n        \"assignedNotificationGroups\": [\r\n            {\r\n                \"notificationGrpID\": 2,\r\n                \"notificationGrpName\": \"Jess Notification\"\r\n            }\r\n        ]\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/create",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"create"
+												"loadPrograms"
 											]
 										}
 									},
@@ -2108,15 +2009,14 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/38830",
+											"raw": "{{api-url}}/api/dr/loadPrograms/38830",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
+												"loadPrograms",
 												"38830"
 											]
 										}
@@ -2134,7 +2034,7 @@
 								{
 									"name": "Sep",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -2148,16 +2048,14 @@
 											"raw": "{\r\n    \"programId\": 16519,\r\n    \"name\": \"LMSEPProgram002\",\r\n    \"type\": \"LM_SEP_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n    \"constraint\": {\r\n        \"constraintId\": 2,\r\n        \"constraintName\": \"constraint1\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 38,\r\n            \"gearName\": \"NoControlGear001\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"NoControl\",\r\n            \"fields\": {\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"Duration\",\r\n                    \"changeDurationInMinutes\": 100\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 39,\r\n            \"gearName\": \"NoControlGear002\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"NoControl\",\r\n            \"fields\": {\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15547,\r\n            \"groupName\": \"ControlDep\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_DIGI_SEP\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/update/16519",
+											"raw": "{{api-url}}/api/dr/loadPrograms/16519",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"update",
+												"loadPrograms",
 												"16519"
 											]
 										}
@@ -2167,7 +2065,7 @@
 								{
 									"name": "Ecobee",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -2181,16 +2079,14 @@
 											"raw": "{\r\n    \"programId\": 16611,\r\n    \"name\": \"Ecobeeprogram0002\",\r\n    \"type\": \"LM_ECOBEE_PROGRAM\",\r\n    \"operationalState\": \"Timed\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 71,\r\n            \"gearName\": \"ecobeegear\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"EcobeeCycle\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"rampIn\": true,\r\n                \"rampOut\": true,\r\n                \"controlPercent\": 5,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 1,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"TriggerOffset\",\r\n                    \"triggerNumber\": 1,\r\n                    \"triggerOffset\": 0.0\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 72,\r\n            \"gearName\": \"ecobeegear\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"EcobeeCycle\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"rampIn\": true,\r\n                \"rampOut\": true,\r\n                \"controlPercent\": 5,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 1,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 73,\r\n            \"gearName\": \"ecobeegear\",\r\n            \"gearNumber\": 3,\r\n            \"controlMethod\": \"EcobeeCycle\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"rampIn\": true,\r\n                \"rampOut\": true,\r\n                \"controlPercent\": 50,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 1,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 0,\r\n            \"availableStopTimeInMinutes\": 16\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 0,\r\n            \"availableStopTimeInMinutes\": 420\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15549,\r\n            \"groupName\": \"dd\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 16359,\r\n            \"groupName\": \"dddd\",\r\n            \"groupOrder\": 2,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15764,\r\n            \"groupName\": \"ds\",\r\n            \"groupOrder\": 3,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15876,\r\n            \"groupName\": \"LM_GROUP_ECOBEE_Name\",\r\n            \"groupOrder\": 4,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15852,\r\n            \"groupName\": \"LM_GROUP_ECOBEE_Name_Update\",\r\n            \"groupOrder\": 5,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 12996,\r\n            \"groupName\": \"test ecobee group\",\r\n            \"groupOrder\": 6,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15284,\r\n            \"groupName\": \"Test_Ecobee234\",\r\n            \"groupOrder\": 7,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/update/16611",
+											"raw": "{{api-url}}/api/dr/loadPrograms/16611",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"update",
+												"loadPrograms",
 												"16611"
 											]
 										}
@@ -2200,7 +2096,7 @@
 								{
 									"name": "Honeywell",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -2214,16 +2110,14 @@
 											"raw": "{\r\n    \"programId\": 1234,\r\n    \"name\": \"Honeywell Program001\",\r\n    \"type\": \"LM_ECOBEE_PROGRAM\",\r\n    \"operationalState\": \"Timed\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 11,\r\n            \"gearName\": \"HW Cycle\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"HoneywellCycle\",\r\n            \"fields\": {\r\n                \"rampInOut\": true,\r\n                \"controlPercent\": 50,\r\n                \"cyclePeriodInMinutes\": 30,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 22,\r\n            \"gearName\": \"HW Setpoint\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"HoneywellSetpoint\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"setpointOffset\": 3,\r\n                \"mode\": \"COOL\",\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 540,\r\n            \"availableStopTimeInMinutes\": 360\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 660,\r\n            \"availableStopTimeInMinutes\": 22\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15851,\r\n            \"groupName\": \"LM_GROUP_HONEYWELL_Name\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_HONEYWELL\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/update/16611",
+											"raw": "{{api-url}}/api/dr/loadPrograms/16611",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"update",
+												"loadPrograms",
 												"16611"
 											]
 										}
@@ -2233,7 +2127,7 @@
 								{
 									"name": "Direct",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -2247,16 +2141,14 @@
 											"raw": "{\r\n    \"programId\": 57,\r\n    \"name\": \"Air Conditioning001\",\r\n    \"type\": \"LM_DIRECT_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 69,\r\n            \"gearName\": \"New Gear\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"TimeRefresh\",\r\n            \"fields\": {\r\n                \"refreshShedTime\": \"FixedShedTime\",\r\n                \"shedTime\": 3600,\r\n                \"numberOfGroups\": 0,\r\n                \"sendRate\": 1800,\r\n                \"groupSelectionMethod\": \"LastControlled\",\r\n                \"howToStopControl\": \"TimeIn\",\r\n                \"stopCommandRepeat\": 5,\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"Duration\",\r\n                    \"changeDurationInMinutes\": 5\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 43,\r\n            \"gearName\": \"N\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"MasterCycle\",\r\n            \"fields\": {\r\n                \"controlPercent\": 50,\r\n                \"cyclePeriodInMinutes\": 30,\r\n                \"groupSelectionMethod\": \"LastControlled\",\r\n                \"rampInPercent\": 12,\r\n                \"rampInIntervalInSeconds\": 154,\r\n                \"howToStopControl\": \"TimeIn\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 243,\r\n            \"gearName\": \"ert\",\r\n            \"gearNumber\": 3,\r\n            \"controlMethod\": \"TimeRefresh\",\r\n            \"fields\": {\r\n                \"refreshShedTime\": \"FixedShedTime\",\r\n                \"shedTime\": 3600,\r\n                \"numberOfGroups\": 0,\r\n                \"sendRate\": 1800,\r\n                \"groupSelectionMethod\": \"LastControlled\",\r\n                \"howToStopControl\": \"TimeIn\",\r\n                \"stopCommandRepeat\": 0,\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 244,\r\n            \"gearName\": \"ts\",\r\n            \"gearNumber\": 4,\r\n            \"controlMethod\": \"TargetCycle\",\r\n            \"fields\": {\r\n                \"noRamp\": false,\r\n                \"controlPercent\": 50,\r\n                \"cycleCountSendType\": \"FixedCount\",\r\n                \"maxCycleCount\": 0,\r\n                \"startingPeriodCount\": 8,\r\n                \"sendRate\": 3600,\r\n                \"stopCommandRepeat\": 0,\r\n                \"howToStopControl\": \"StopCycle\",\r\n                \"capacityReduction\": 100,\r\n                \"kWReduction\": 0.0,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                },\r\n                \"cyclePeriodInMinutes\": 30\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 0,\r\n            \"availableStopTimeInMinutes\": 0\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 0,\r\n            \"availableStopTimeInMinutes\": 0\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 51,\r\n            \"groupName\": \"Emetcon\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_EMETCON\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/update/57",
+											"raw": "{{api-url}}/api/dr/loadPrograms/57",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"update",
+												"loadPrograms",
 												"57"
 											]
 										}
@@ -2266,7 +2158,7 @@
 								{
 									"name": "MeterDisconnect",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -2280,16 +2172,14 @@
 											"raw": "{\r\n    \"programId\": 17288,\r\n    \"name\": \"Meter Disconnect Program002\",\r\n    \"type\": \"LM_METER_DISCONNECT_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n    \"constraint\": {\r\n        \"constraintId\": 2,\r\n        \"constraintName\": \"constraint1\"\r\n    },\r\n    \"triggerOffset\": 11.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 256,\r\n            \"gearName\": \"aaa\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"MeterDisconnect\"\r\n        }\r\n    ],\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15006,\r\n            \"groupName\": \"abc1\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_METER_DISCONNECT\"\r\n        },\r\n        {\r\n            \"groupId\": 14949,\r\n            \"groupName\": \"ABC\",\r\n            \"groupOrder\": 2,\r\n            \"type\": \"LM_GROUP_METER_DISCONNECT\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/update/17288",
+											"raw": "{{api-url}}/api/dr/loadPrograms/17288",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"update",
+												"loadPrograms",
 												"17288"
 											]
 										}
@@ -2299,7 +2189,7 @@
 								{
 									"name": "Itron",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -2313,16 +2203,14 @@
 											"raw": "{\r\n    \"programId\": 16506,\r\n    \"name\": \"LMProgramItron002\",\r\n    \"type\": \"LM_ITRON_PROGRAM\",\r\n    \"operationalState\": \"ManualOnly\",\r\n    \"constraint\": {\r\n        \"constraintId\": 2,\r\n        \"constraintName\": \"constraint1\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 258,\r\n            \"gearName\": \"GearItron\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"ItronCycle\",\r\n            \"fields\": {\r\n                \"cycleType\": \"STANDARD\",\r\n                \"rampIn\": true,\r\n                \"rampOut\": true,\r\n                \"dutyCyclePercent\": 50,\r\n                \"dutyCyclePeriodInMinutes\": 30,\r\n                \"criticality\": 100,\r\n                \"capacityReduction\": 100,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15157,\r\n            \"groupName\": \"A008\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_ITRON\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/update/16506",
+											"raw": "{{api-url}}/api/dr/loadPrograms/16506",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"update",
+												"loadPrograms",
 												"16506"
 											]
 										}
@@ -2363,17 +2251,16 @@
 											"raw": "{  \r\n   \"name\":\"TestCopy\",\r\n   \"constraint\":{  \r\n      \"constraintId\":16\r\n   },\r\n   \"operationalState\":\"Timed\"\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/copy/36516",
+											"raw": "{{api-url}}/api/dr/loadPrograms/36516/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"copy",
-												"36516"
+												"loadPrograms",
+												"36516",
+												"copy"
 											]
 										}
 									},
@@ -2402,16 +2289,15 @@
 										"method": "DELETE",
 										"header": [],
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/36509",
+											"raw": "{{api-url}}/api/dr/loadPrograms/{id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
-												"36509"
+												"loadPrograms",
+												"{id}"
 											]
 										}
 									},
@@ -3656,6 +3542,38 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "RetrievePointStates",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}/states",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}",
+										"states"
+									]
+								}
+							},
+							"response": []
 						}
 					],
 					"protocolProfileBehavior": {},
@@ -3674,7 +3592,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"axis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/06/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"raw": "{\r\n\t\"trendName\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"axis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/06/2020\"\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3720,7 +3638,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\":\"Trend Test Update\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"PEAK_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"axis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"raw": "{\r\n\t\"trendName\":\"Trend Test Update\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"PEAK_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"axis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3776,14 +3694,14 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{api-url}}/api/trends/{id)",
+							"raw": "{{api-url}}/api/trends/{id}",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
 								"trends",
-								"{id)"
+								"{id}"
 							]
 						}
 					},
@@ -3801,13 +3719,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevices/{device-id}",
+							"raw": "{{api-url}}/api/devices/virtualDevices/{device-id}",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
+								"devices",
 								"virtualDevices",
 								"{device-id}"
 							]
@@ -3825,7 +3743,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Postman Virtual Device Test\",\r\n    \"enable\": \"false\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Postman Virtual Device Test\",\r\n    \"type\": \"VIRTUAL_SYSTEM\",\r\n    \"enable\": \"false\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3833,13 +3751,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevices",
+							"raw": "{{api-url}}/api/devices/virtualDevices",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
+								"devices",
 								"virtualDevices"
 							]
 						}
@@ -3861,13 +3779,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevices/{device-id}",
+							"raw": "{{api-url}}/api/devices/virtualDevices/{device-id}",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
+								"devices",
 								"virtualDevices",
 								"{device-id}"
 							]
@@ -3881,13 +3799,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevices/{device-id}",
+							"raw": "{{api-url}}/api/devices/virtualDevices/{device-id}",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
+								"devices",
 								"virtualDevices",
 								"{device-id}"
 							]
@@ -3901,13 +3819,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevices?sort=PAO_NAME&direction=asc&page=1&itemsPerPage=250",
+							"raw": "{{api-url}}/api/devices/virtualDevices?sort=PAO_NAME&direction=asc&page=1&itemsPerPage=250",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
+								"devices",
 								"virtualDevices"
 							],
 							"query": [

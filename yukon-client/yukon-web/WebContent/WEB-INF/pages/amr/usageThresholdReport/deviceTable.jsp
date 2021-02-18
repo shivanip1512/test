@@ -90,7 +90,16 @@
                     <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${fn:escapeXml(device.deviceName)}</cti:paoDetailUrl></td>
                     <td>${fn:escapeXml(device.meterNumber)}</td>
                     <td>${fn:escapeXml(device.paoIdentifier.paoType.paoTypeName)}</td>
-                    <td><cti:paoDetailUrl yukonPao="${device.gatewayPaoIdentifier}" newTab="true">${fn:escapeXml(device.gatewayName)}</cti:paoDetailUrl></td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${!empty device.gatewayPaoIdentifier}">
+                                <cti:paoDetailUrl yukonPao="${device.gatewayPaoIdentifier}" newTab="true">${fn:escapeXml(device.gatewayName)}</cti:paoDetailUrl>
+                            </c:when>
+                            <c:when test="${device.paoIdentifier.paoType.isRfn()}">
+                                <i:inline key="yukon.common.unknown"/>
+                            </c:when>
+                        </c:choose>
+                    </td>
                     <td class="wsnw">
                         <fmt:formatNumber pattern="###.#" value="${device.delta}"/>
                          <c:if test="${device.earliestReading != null}">

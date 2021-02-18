@@ -705,6 +705,13 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
     //Actual Command Work
     subBus->setBusUpdatedFlag(true);
 
+    // If the bank is a 1-way device, we want to set the UI flag as a best guess indicator to the user.
+    //  If it is a 2-way device, we wait for the results of a scan to appropriately set it instead.
+    if ( ! capBank->isControlDeviceTwoWay() )
+    {
+        capBank->setOvUvDisabledFlag( false );
+    }
+
     PorterRequest reqMsg;
     if (cbc702)
     {
@@ -785,6 +792,13 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
 
     //Actual Command
     subBus->setBusUpdatedFlag(true);
+
+    // If the bank is a 1-way device, we want to set the UI flag as a best guess indicator to the user.
+    //  If it is a 2-way device, we wait for the results of a scan to appropriately set it instead.
+    if ( ! capBank->isControlDeviceTwoWay() )
+    {
+        capBank->setOvUvDisabledFlag( true );
+    }
 
     PorterRequest reqMsg;
     if (cbc702)

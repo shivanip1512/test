@@ -1,5 +1,6 @@
 package com.eaton.elements;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,5 +74,21 @@ public class DropDownSearchElement {
     
     private WebElement getDropDownSearchElement() {
         return this.searchDropDown;
+    }
+    
+    public List<String> getDropDownItems() {
+        WebElement dropDown = getDropDownSearchElement();
+        
+        dropDown.click();
+        
+        WebElement results = dropDown.findElement(By.cssSelector(".chosen-results"));
+        
+        List<WebElement> filteredResults = results.findElements(By.cssSelector(".active-result"));
+        List<String> dropDownItems = new LinkedList<String>();
+        for (WebElement result : filteredResults) {
+        	dropDownItems.add(result.getText());
+        }
+        
+        return dropDownItems;
     }
 }

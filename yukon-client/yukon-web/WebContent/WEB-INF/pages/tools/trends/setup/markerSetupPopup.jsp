@@ -6,7 +6,8 @@
 
 <cti:msgScope paths="yukon.common,modules.tools.trend">
     <c:forEach items="${colors}" var="color">
-        <input type="hidden" class="js-color-item" value="${color}" />
+        <cti:msg var="colorName" key="${color.formatKey}"/>
+        <input type="hidden" class="js-color-item" value="${color.hexValue}" data-color-name="${colorName}"/>
     </c:forEach>
 
     <cti:url var="addMarkerUrl" value="/tools/trend/addPointOrMarker" />
@@ -18,11 +19,6 @@
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".valueTxt" nameClass="vam">
                 <tags:input path="multiplier" />
-                <cti:icon icon="icon-help" data-popup=".js-marker-value-help-dialog" classes="fn vatb cp" />
-                <cti:msg2 var="markerValueHelpTitle" key=".markerValueHelp.title" />
-                <div data-title="${markerValueHelpTitle}" class="dn js-marker-value-help-dialog" data-width="400" data-height="200">
-                    <i:inline key=".markerValueHelpTxt" />
-                </div>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".label" nameClass="vam">
                 <tags:input path="label" maxlength="40" />

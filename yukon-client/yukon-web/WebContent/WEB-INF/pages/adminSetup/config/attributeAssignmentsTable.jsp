@@ -15,13 +15,15 @@
     <tags:alertBox type="success" classes="js-success-msg ${successClass}" includeCloseButton="true">${fn:escapeXml(successMessage)}</tags:alertBox>
 
     <table class="compact-results-table row-highlighting has-actions">
-        <tr>
-            <tags:sort column="${attributeName}"/>
-            <tags:sort column="${deviceType}"/>
-            <tags:sort column="${pointType}"/>
-            <tags:sort column="${pointOffset}"/>
-            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
-        </tr>
+        <thead>
+            <tr>
+                <tags:sort column="${attributeName}"/>
+                <tags:sort column="${deviceType}"/>
+                <tags:sort column="${pointType}"/>
+                <tags:sort column="${pointOffset}"/>
+                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
+            </tr>
+        </thead>
         <tbody>
             <c:forEach var="assignment" items="${assignments}">
                 <tr>

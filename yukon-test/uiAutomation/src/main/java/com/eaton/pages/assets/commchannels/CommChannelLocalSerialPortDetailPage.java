@@ -8,28 +8,35 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 
-public class CommChannelLocalSerialPortDetailPage extends CommChannelDetailPage{
+public class CommChannelLocalSerialPortDetailPage extends CommChannelDetailPage {
+    
+    private Section generalSection;
+    private Section sharedSection;
 
     public CommChannelLocalSerialPortDetailPage(DriverExtensions driverExt, int id) {
         super(driverExt);
+        
+        generalSection = new Section(this.driverExt, "General");
+        sharedSection = new Section(this.driverExt, "Shared");
 
         requiresLogin = true;
         pageUrl = Urls.Assets.COMM_CHANNEL_DETAIL + id;
     }
     
     public Section getGeneralSection() {
-        return new Section(this.driverExt, "General");
+        return generalSection;
     }
 
     public Section getSharedSection() {
-        return new Section(this.driverExt, "Shared");
+        return sharedSection;
     }
 
-    public EditLocalSerialPortCommChannelModal showLocalSerialPortCommChannelEditModal(String modalTitle) {
-        getCommChannelInfoPanel().getEdit().click();
+    public EditLocalSerialPortCommChannelModal showLocalSerialPortCommChannelEditModal() {
+        String describedBy = "js-edit-comm-channel-popup";
+        getEditBtn().getButton().click();
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-edit-comm-channel-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy(describedBy);
 
-        return new EditLocalSerialPortCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
+        return new EditLocalSerialPortCommChannelModal(this.driverExt, Optional.empty(), Optional.of(describedBy));
     }
 }

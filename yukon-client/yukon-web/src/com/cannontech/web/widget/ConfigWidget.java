@@ -44,6 +44,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.bulk.service.DeviceConfigAssignService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao;
 import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDetail;
@@ -64,6 +65,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
     @Autowired private MeterProgrammingSummaryDao meterProgrammingSummaryDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private DeviceConfigAssignService deviceConfigAssignService;
 
     private ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -180,7 +182,12 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         jsonResponse.put("isInProgress", isInProgress);
         jsonResponse.put("isInSync", isInSync);
         jsonResponse.put("isOutOfSync", isOutOfSync);
-
+        
+        if (configState != null && configState.getLastActionStatus() == LastActionStatus.FAILURE
+                && configState.getCreId() != null) {
+            Integer errorCode = deviceConfigurationDao.getErrorCodeByDeviceId(deviceId);
+            jsonResponse.put("errorCode", errorCode);
+        }
         return jsonResponse;
 
     }
@@ -193,15 +200,16 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceConfigState currentConfigState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
-        if (currentConfigState != null &&  currentConfigState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
+        if (currentConfigState != null && currentConfigState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
             jsonResponse.put("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
             if (configuration > -1) {
                 DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(configuration);
-                DeviceConfigState configState = deviceConfigService.assignConfigToDevice(device, deviceConfig,
-                        userContext.getYukonUser());
+                deviceConfigAssignService.assign(configuration, device, userContext);
+                DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
                 
-                if (configState != null && configState.getCurrentState() == ConfigState.OUT_OF_SYNC) {
+                if (configState != null && 
+                        (configState.getCurrentState() == ConfigState.OUT_OF_SYNC || configState.getCurrentState() == ConfigState.UNREAD)) {
                     //check for upload permission
                     if (rolePropertyDao.checkProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser())) {
                         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getDeviceId());
@@ -211,7 +219,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
                     }
                 }
             } else {
-                deviceConfigService.unassignConfig(device, userContext.getYukonUser());
+                deviceConfigAssignService.unassign(device, userContext);
             }
         }
 
@@ -228,7 +236,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
-            deviceConfigService.unassignConfig(device, userContext.getYukonUser());
+            deviceConfigAssignService.unassign(device, userContext);
         }
         getConfigModelAndView(model, deviceId, userContext);
         return "configWidget/render.jsp";

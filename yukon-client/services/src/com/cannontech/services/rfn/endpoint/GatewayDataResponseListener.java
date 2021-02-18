@@ -114,12 +114,12 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
         public Optional<String> processData(RfnDevice rfnDevice, RfnIdentifyingMessage message) {
             try {
                 //This publishes the data to a topic, where the web server will receive and cache it
-                log.debug("Publishing gateway data on internal topic: " + message);
+                log.debug("Publishing gateway data on internal topic {} ", message);
                 jmsTemplate.convertAndSend(message);
                 
                 //Update service manager cache
-                log.debug("Updating gateway data in service manager cache.");
                 if (message instanceof GatewayDataResponse) {
+                    log.debug("Received GatewayDataResponse from NM, forwarded to WS to update gateway cache. Message: {}", message);
                     GatewayDataResponse gatewayDataMessage = (GatewayDataResponse) message;
                     handleDataMessage(gatewayDataMessage);
                     if (StringUtils.isEmpty(gatewayDataMessage.getUpdateServerUrl())) {
@@ -139,7 +139,6 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
             try {
                 RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
                 nmSyncService.syncGatewayName(rfnDevice, message.getName());
-                log.debug("Handling gateway data message: " + message);
                 RfnGatewayData data = new RfnGatewayData(message, rfnDevice.getName());
                 gatewayCache.put(rfnDevice.getPaoIdentifier(), data);
             } catch (NotFoundException e) {

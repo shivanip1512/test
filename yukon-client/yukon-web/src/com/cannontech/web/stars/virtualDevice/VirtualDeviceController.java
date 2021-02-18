@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceSortableField;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -27,7 +28,8 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.LiteYukonPaoSortableField;
+
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -60,6 +62,7 @@ public class VirtualDeviceController {
                                  @DefaultItemsPerPage(value=250) PagingParameters paging, YukonUserContext userContext, 
                                  HttpServletRequest request, FlashScope flash) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        model.addAttribute("virtualMeterType", PaoType.VIRTUAL_METER);
         
         VirtualSortBy sortBy = VirtualSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
@@ -79,9 +82,9 @@ public class VirtualDeviceController {
             ub.addParameter("page", Integer.toString(paging.getPage()));
 
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(), 
-                                                                                        HttpMethod.GET, DeviceBaseModel.class, Object.class);
+                                                                                        HttpMethod.GET, VirtualDeviceBaseModel.class, Object.class);
             if (response.getStatusCode() == HttpStatus.OK) {
-                PaginatedResponse<DeviceBaseModel> pageResponse = (PaginatedResponse) response.getBody();
+                PaginatedResponse<VirtualDeviceBaseModel> pageResponse = (PaginatedResponse) response.getBody();
                 model.addAttribute("virtualDevices", pageResponse);
             }
                         
@@ -135,12 +138,13 @@ public class VirtualDeviceController {
     
     public enum VirtualSortBy implements DisplayableEnum {
 
-        name(LiteYukonPaoSortableField.PAO_NAME),
-        status(LiteYukonPaoSortableField.DISABLE_FLAG);
+        name(VirtualDeviceSortableField.PAO_NAME),
+        meterNumber(VirtualDeviceSortableField.METER_NUMBER),
+        status(VirtualDeviceSortableField.DISABLE_FLAG);
         
-        private final LiteYukonPaoSortableField value;
+        private final VirtualDeviceSortableField value;
         
-        private VirtualSortBy(LiteYukonPaoSortableField value) {
+        private VirtualSortBy(VirtualDeviceSortableField value) {
             this.value = value;
         }
 
@@ -149,7 +153,7 @@ public class VirtualDeviceController {
             return "yukon.common." + name();
         }
 
-        public LiteYukonPaoSortableField getValue() {
+        public VirtualDeviceSortableField getValue() {
             return value;
         }
     }

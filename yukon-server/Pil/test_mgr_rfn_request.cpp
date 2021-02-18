@@ -61,15 +61,15 @@ struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
     {
         return e2e.handleIndication(payload, endpointId);
     }
-    Bytes createE2eDtRequest(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const unsigned long token) override
+    Bytes createE2eDtRequest(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const Token token) override
     {
         return e2e.createRequest(payload, endpointId, token);
     }
-    Bytes createE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const Cti::RfnIdentifier endpointId, const unsigned long token) override
+    Bytes createE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const Cti::RfnIdentifier endpointId, const Token token) override
     {
         return e2e.createBlockContinuation(blockSize, blockNum, endpointId, token);
     }
-    Bytes createE2eDtPost(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const unsigned long token) override
+    Bytes createE2eDtPost(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const Token token) override
     {
         return e2e.createPost(payload, endpointId, token);
     }
@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
 
 BOOST_AUTO_TEST_CASE(test_cmd_rfn_blockContinuation)
 {
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     //  a handle for our reference
     test_E2eMessenger *e2e = new test_E2eMessenger;

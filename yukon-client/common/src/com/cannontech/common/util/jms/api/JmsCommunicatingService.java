@@ -14,6 +14,7 @@ public enum JmsCommunicatingService {
     YUKON_WEBSERVER_DEV_PAGES("Yukon Web Server Dev Pages"),
     YUKON_MESSAGE_BROKER("Yukon Message Broker"),
     YUKON_WATCHDOG("Yukon Watchdog"),
+    YUKON_LOAD_MANAGEMENT("Yukon Load Management"),
     ;
     
     private final String niceString;

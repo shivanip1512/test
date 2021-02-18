@@ -376,15 +376,6 @@ public interface RawPointHistoryDao {
         BlockingQueue<PointValueHolder> queue, AtomicBoolean isCompleted);
 
     /**
-     * Returns recent values. This method shouldn't be used it will be removed in the future.
-     * 
-     * @param pointId
-     * @param rows - number of values to return
-     */
-    @Deprecated
-    List<PointValueQualityHolder> getMostRecentValues(int pointId, int rows);
-
-    /**
      * Method to get a list of point values for a given point and time period (it includes the point values for disabled paos).
      * StartDate is always exclusive, stopDate is inclusive.
      * Ordering is always timestamp asc, changeid asc
@@ -404,8 +395,7 @@ public interface RawPointHistoryDao {
      * This method returns RawPointHistory data for a list of PAOs, a given Attribute and value
      * and converting the Multimap into a Map (because there will only be one value per key).
      */
-    
-    public Map<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
+    Map<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
             Iterable<? extends YukonPao> paos, Attribute attribute, boolean excludeDisabledPaos, int value,
             Set<PointQuality> excludeQualities);
 
@@ -416,7 +406,13 @@ public interface RawPointHistoryDao {
      * @param paoType - Set of PAO Types applicable for device Group
      * @return DataCompletenessSummary
      */
+    DataCompletenessSummary getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange, ImmutableSet<PaoType> paoType);
 
-    public DataCompletenessSummary getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange, ImmutableSet<PaoType> paoType);
-
+    /**
+     * Similar to getLimitedAttributeData, but used for "summed" data, where multiple values over the range are summed 
+     * together per pao.
+     */
+    ListMultimap<PaoIdentifier, PointValueQualityHolder> getSummedAttributeData(Iterable<? extends YukonPao> paos, 
+            Attribute attribute, ReadableRange<Instant> dateRange, boolean excludeDisabledPaos, 
+            Set<PointQuality> excludeQualities);
 }

@@ -1,12 +1,9 @@
+ @import (less) "classpath:com/cannontech/colors.less";
+ 
 /* VARIABLES */
 @primary-color: #06c;
 @font-color: #555;
 @visited-color: #04a;
-
-@red: #d14836;
-@green: #2ca618;
-@blue: #0088f2;
-@orange: #e99012;
 
 @primary-button-color: #777;
 @primary-button-color-border: #666;
@@ -216,7 +213,48 @@ span.dynatree-folder a {
 .tree-controls .open-all { background-image: url('../../../resources/js/lib/dynatree/skin/tree/expand.png'); }
 .tree-controls .close-all { background-image: url('../../../resources/js/lib/dynatree/skin/tree/collapse.png'); }
 
+/* FancyTree Overrides */
+ul.fancytree-container {
+    font-family: helvetica, sans-serif;
+    font-size: 13px;
+    border: none;
+}
 
+.fancytree-container .fancytree-title:hover {
+    text-decoration: none;
+    background-color: @gray_light;
+    border-color: @gray;
+}
+
+span.fancytree-node {
+    margin-top: 0;
+}
+
+.fancytree-node.found .fancytree-title {
+    border-color: @primary-color;
+}
+
+.inline-tree .fancytree-controls { margin-bottom: 3px; }
+
+.fancytree-controls .fancytree-search { 
+    margin-left: 4px;
+    width: 50%;
+}
+
+.fancytree-controls .fancytree-open-all, 
+.fancytree-controls .fancytree-close-all {
+    float: left;
+    overflow: hidden;
+    width: 16px;
+    height: 1px;
+    margin: 5px 4px 0 0;
+    padding-top: 15px;
+    background-position: left top;
+    background-color: transparent;
+}
+
+.fancytree-controls .fancytree-open-all { background-image: url('../../../resources/js/lib/fancytree/tree/expand.png'); }
+.fancytree-controls .fancytree-close-all { background-image: url('../../../resources/js/lib/fancytree/tree/collapse.png'); }
 
 /* jQuery UI Overrides */
 .ui-autocomplete { z-index: 1000 !important; }

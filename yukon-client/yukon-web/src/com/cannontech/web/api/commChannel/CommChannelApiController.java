@@ -26,6 +26,7 @@ import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
@@ -40,8 +41,8 @@ public class CommChannelApiController {
     //Create port
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> create(@Valid @RequestBody PortBase<?> port) {
-        return new ResponseEntity<>(portService.create(port), HttpStatus.CREATED);
+    public ResponseEntity<Object> create(@Valid @RequestBody PortBase<?> port, YukonUserContext userContext) {
+        return new ResponseEntity<>(portService.create(port, userContext.getYukonUser()), HttpStatus.CREATED);
     }
 
     //Get port
@@ -53,15 +54,16 @@ public class CommChannelApiController {
     //Update port
     @PatchMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> update(@Valid @RequestBody PortBase<?> port, @PathVariable("id") int portId) {
-        return new ResponseEntity<>(portService.update(portId, port), HttpStatus.OK);
+    public ResponseEntity<Object> update(@PathVariable("id") int portId, @Valid @RequestBody PortBase<?> port,
+            YukonUserContext userContext) {
+        return new ResponseEntity<>(portService.update(portId, port, userContext.getYukonUser()), HttpStatus.OK);
     }
 
     //Delete port
     @DeleteMapping("/{portId}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<Object> delete(@PathVariable int portId) {
-        int id = portService.delete(portId);
+    public ResponseEntity<Object> delete(@PathVariable int portId, YukonUserContext userContext) {
+        int id = portService.delete(portId, userContext.getYukonUser());
         HashMap<String, Integer> portIdMap = new HashMap<>();
         portIdMap.put("id", id);
         return new ResponseEntity<>(portIdMap, HttpStatus.OK);

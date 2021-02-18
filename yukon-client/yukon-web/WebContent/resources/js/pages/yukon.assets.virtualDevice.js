@@ -35,12 +35,30 @@ yukon.assets.virtualDevice = (function () {
                     data: form.serialize()
                 }).done(function (data) {
                     if (data.id) {
-                        window.location.href = yukon.url('/stars/virtualDevice/' + data.id);
+                        var parentPathName = window.parent.location.pathname;
+                        if(parentPathName.indexOf('/meter/') != -1){
+                            window.location.href = yukon.url('/meter/home?deviceId=' + data.id);
+                         } else {
+                            window.location.href = yukon.url('/stars/virtualDevice/' + data.id);
+                        }
                     }
                 }).fail(function (xhr, status, error){
                     dialog.html(xhr.responseText);
                     yukon.ui.unblockPage();
                 });
+            });
+            
+            $(document).on('change', '.js-type', function () {
+                var type = $(this).children('option:selected').val(),
+                    popup = $(this).closest('.ui-dialog-content'),
+                    name = popup.find('#name').val();
+                $.ajax({
+                    url: yukon.url('/widget/virtualDeviceInfoWidget/create/' + type),
+                    type: 'get',
+                    data: {name: name}
+                }).done(function(data) {
+                     popup.html(data);
+               });
             });
             
             _initialized = true;

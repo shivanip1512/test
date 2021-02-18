@@ -1,10 +1,10 @@
 package com.eaton.tests.admin.energycompany;
 
 import static org.assertj.core.api.Assertions.*;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -24,16 +24,24 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
-        WebDriver driver = getDriver();        
         driverExt = getDriverExt();
         
-        driver.get(getBaseUrl() + Urls.Admin.CREATE_ENERGY_COMPANY);
-
+        setRefreshPage(false);
+        navigate(Urls.Admin.CREATE_ENERGY_COMPANY);
         createPage = new EnergyCompanyCreatePage(driverExt);
     }
+    
+    @AfterMethod(alwaysRun=true)
+    public void afterMethod() {
+        if (getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        
+        setRefreshPage(false);
+    }
 
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyCreate_PageTitleCorrect() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void energyCompanyCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Energy Company";
         
         String actualPageTitle = createPage.getPageTitle();
@@ -41,8 +49,9 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyCreate_requiredFieldsOnlySuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void energyCompanyCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String companyName = "AT Energy Company " + timeStamp;
         
@@ -54,12 +63,12 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
         createPage.getPassword().setInputValue("atec1!");
         createPage.getConfirmPassword().setInputValue("atec1!");
         
-        SelectUserGroupModal userGroupModal = this.createPage.showAndWaitUserGroupModal();
+        SelectUserGroupModal userGroupModal = createPage.showAndWaitUserGroupModal();
         userGroupModal.selectUserGroup("AT User Group for Create EC");
         
         createPage.getSaveBtn().click();
         
-        waitForPageToLoad(companyName, Optional.empty());
+        waitForPageToLoad(companyName, Optional.of(0));
         
         EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(driverExt);
         
@@ -67,9 +76,4 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
         
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }    
-    
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
-        refreshPage(createPage);
-    }
 }

@@ -215,7 +215,10 @@ public class MapController {
         YukonPao pao = databaseCache.getAllPaosMap().get(id);
         PaoType type = pao.getPaoIdentifier().getPaoType();
         DisplayablePao displayable = paoLoadingService.getDisplayablePao(pao);
+        //only display map device if rf device or plc meter or 2 way plc lcr
+        boolean showMapDevice = false;
         if (displayable instanceof DisplayableMeter) {
+            showMapDevice = true;
             DisplayableMeter meter = (DisplayableMeter) displayable;
             if (StringUtils.isNotBlank(meter.getMeter().getRoute())) {
                 model.addAttribute("showRoute", true);
@@ -230,6 +233,7 @@ public class MapController {
             }
         }
         if (type.isRfn()) {
+            showMapDevice = true;
             RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(id);
             model.addAttribute("sensorSN", rfnDevice.getRfnIdentifier().getSensorSerialNumber());
 
@@ -321,9 +325,12 @@ public class MapController {
                     log.error("Failed to find RFN Device for " + id, e);           
                 }
             }
+        } else if (type.isTwoWayPlcLcr()) {
+            showMapDevice = true;
         }
 
         model.addAttribute("pao", displayable);
+        model.addAttribute("showMapDevice", showMapDevice);
         
         model.addAttribute("hasNotes", paoNotesService.hasNotes(id));
         

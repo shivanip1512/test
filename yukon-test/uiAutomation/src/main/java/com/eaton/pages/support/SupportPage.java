@@ -1,6 +1,7 @@
 package com.eaton.pages.support;
 
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
@@ -134,7 +135,11 @@ public class SupportPage extends PageBase {
     
     public String getDatabaseValidationText() {
       WebElement databaseInfo = getDatabaseInfoSection().getSection();
+      
       WebElement databaseValidation = databaseInfo.findElement(By.cssSelector("a"));
+      
+      SeleniumTestSetup.scrollToElement(databaseValidation);
+      
       return databaseValidation.getText();
     }
     

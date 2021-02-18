@@ -590,8 +590,8 @@ public class SmartNotificationsController {
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
 
-        PropertyEditor fullDateTimeEditor = datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATEHM, userContext);
+        PropertyEditor fullDateTimeEditor = datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.LONG_DATE_TIME, userContext);
 
-        binder.registerCustomEditor(Date.class, fullDateTimeEditor);
+        binder.registerCustomEditor(DateTime.class, fullDateTimeEditor);
     }
 }

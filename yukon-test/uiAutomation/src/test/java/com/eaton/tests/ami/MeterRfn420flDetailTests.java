@@ -11,6 +11,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.MeterDetailsPage;
@@ -24,13 +25,15 @@ public class MeterRfn420flDetailTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
-    public void meterRfn420flDetail_deleteSuccess() {
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
+    public void meterRfn420flDetail_Delete_Success() {
+        String deleteRfn420FlId = TestDbDataType.MeterData.RFN_420FL_DELETE_ID.getId().toString();
+        
         final String EXPECTED_MSG = "Meter AT Delete RFN-420fL deleted successfully.";
 
-        navigate(Urls.Ami.METER_DETAIL + "584");
+        navigate(Urls.Ami.METER_DETAIL + deleteRfn420FlId);
 
-        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, 584);
+        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, Integer.parseInt(deleteRfn420FlId));
 
         ConfirmModal modal = meterDetailsPage.showAndWaitConfirmDeleteModal();
 

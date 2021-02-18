@@ -1,7 +1,6 @@
 package com.eaton.tests.admin.energycompany;
 
 import static org.assertj.core.api.Assertions.*;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -18,16 +17,13 @@ public class EnergyCompanyListTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
-        WebDriver driver = getDriver();        
         driverExt = getDriverExt();
-        
-        driver.get(getBaseUrl() + Urls.Admin.ENERGY_COMPANY_LIST);
-
+        navigate(Urls.Admin.ENERGY_COMPANY_LIST);
         page = new EnergyCompanyListPage(driverExt);
     }
 
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyList_pageTitleCorrect() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void energyCompanyList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Energy Companies";
         
         String actualPageTitle = page.getPageTitle();

@@ -6,11 +6,6 @@
 <cti:flashScopeMessages/>
 <cti:uniqueIdentifier var="uniqueId"/>
 <cti:msgScope paths="yukon.common,modules.tools.trend">
-    <span class="fr">
-        <cti:button renderMode="image" icon="icon-help" classes="fr js-reset-peak-help-icon" />
-    </span>
-    <br />
-    <tags:alertBox type="info" key=".resetPeak.helpTxt" classes="dn js-help-text-message" includeCloseButton="true" style="width: 500px; height: 220px;" />
 
     <input class="js-enum-val-today" type="hidden" value="${todayEnumVal}" />
     <input class="js-enum-val-first-day-of-month" type="hidden" value="${firstDayOfMonthEnumVal}" />

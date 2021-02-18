@@ -54,6 +54,9 @@ public class Hardware {
     /* ZigBee/Itron/Honeywell fields */
     private String macAddress;
     
+    /* Eaton Cloud*/
+    private String guid;
+    
     /* Honeywell field */
     private Integer deviceVendorUserId;
     
@@ -357,4 +360,11 @@ public class Hardware {
         this.secondaryMacAddress = secondaryMacAddress;
     }
 
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
 }

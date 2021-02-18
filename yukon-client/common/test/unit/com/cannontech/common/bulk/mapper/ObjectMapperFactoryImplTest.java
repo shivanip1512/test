@@ -556,5 +556,30 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public List<PaoMacAddress> findAllDevicesWithNoSecondaryMacAddress() {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
+        @Override
+        public boolean isGuidExists(String guid) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public String getGuid(int deviceId) throws NotFoundException {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public void updateGuid(int deviceId, String guid) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public void insertGuid(int deviceId, String guid) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public List<SimpleDevice> getDisabledDevices(Iterable<Integer> ids) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
     }
 }

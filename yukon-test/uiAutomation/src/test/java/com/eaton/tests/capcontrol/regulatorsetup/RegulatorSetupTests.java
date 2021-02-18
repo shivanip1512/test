@@ -2,7 +2,6 @@ package com.eaton.tests.capcontrol.regulatorsetup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -18,17 +17,13 @@ public class RegulatorSetupTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.CapControl.REGULATOR_SETUP);
-
+        navigate(Urls.CapControl.REGULATOR_SETUP);
         regulatorSetupPage = new RegulatorSetupPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void regulatorSetup_pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VOLT_VAR })
+    public void regulatorSetup_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Regulator Setup";
 
         String actualPageTitle = regulatorSetupPage.getPageTitle();

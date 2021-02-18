@@ -12,7 +12,7 @@ public class AssetsCreateRequestAPI {
 
         String pathParam = APIs.CommChannel.CREATE_COMM_CHANNEL;
         ExtractableResponse<?> createResponse = ApiCallHelper.post(pathParam, body);
-        assertThat(createResponse.statusCode()).isEqualTo(200);
+        assertThat(createResponse.statusCode()).isEqualTo(201);
         return createResponse;
     }
 }

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -24,17 +23,23 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
+        setRefreshPage(false);
 
-        driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_BUS_CREATE);
-
+        navigate(Urls.CapControl.SUBSTATION_BUS_CREATE);
         createPage = new SubstationBusCreatePage(driverExt);
     }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
+    }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationBusCreate_pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
+    public void substationBusCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Bus";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -42,8 +47,9 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationBusCreate_requiredFieldsOnlySuccess() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
+    public void substationBusCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(false);
         final String EXPECTED_MSG = "Bus was saved successfully.";
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -60,10 +66,5 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         String userMsg = detailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(createPage);
     }
 }

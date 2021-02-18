@@ -3,7 +3,7 @@ package com.eaton.tests.capcontrol;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.eaton.framework.DriverExtensions;
@@ -14,24 +14,28 @@ import com.eaton.pages.capcontrol.CapBankListPage;
 
 public class CapBankListTests extends SeleniumTestSetup {
 
+    private DriverExtensions driverExt;
     private CapBankListPage listPage;
-    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
-        DriverExtensions driverExt = getDriverExt();
-
-        softly = new SoftAssertions();
-
-        driver.get(getBaseUrl() + Urls.CapControl.CAP_BANK_LIST);
-
+        driverExt = getDriverExt();
+        setRefreshPage(false);
+        navigate(Urls.CapControl.CAP_BANK_LIST);
         listPage = new CapBankListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void capBankList_columnHeadersCorrect() {
+    @AfterMethod()
+    public void afterMethod() {
+        if(getRefreshPage()) {
+            refreshPage(listPage);    
+        }
+        setRefreshPage(false);
+    }
+    
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VOLT_VAR })
+    public void capBankList_ColumnHeaders_Correct() {
+        SoftAssertions softly = new SoftAssertions();
         final int EXPECTED_COUNT = 3;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();

@@ -24,12 +24,13 @@ public class CommChannelUdpDetailPage extends CommChannelDetailPage {
     public Section getSharedSection() {
         return new Section(this.driverExt, "Shared");
     }
+    
+    public EditUdpCommChannelModal showUdpCommChannelEditModal() {
+        String describedBy = "js-edit-comm-channel-popup";
+        getEditBtn().getButton().click();
 
-    public EditUdpCommChannelModal showUdpCommChannelEditModal(String modalTitle) {
-        getCommChannelInfoPanel().getEdit().click();
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy(describedBy);
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-edit-comm-channel-popup");
-
-        return new EditUdpCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
+        return new EditUdpCommChannelModal(this.driverExt, Optional.empty(), Optional.of(describedBy));
     }
 }

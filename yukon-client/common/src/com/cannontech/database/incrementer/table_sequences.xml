@@ -224,8 +224,8 @@
         <table name="DmvTest" identitycolumn="DMVTestID" initsequence="true"/>
       </sequence>
       <sequence name="DeviceGroupComposed">
-        <table name="DeviceGroupComposed" identitycolumn="DeviceGroupComposedId"/>
-        <table name="DeviceGroupComposedGroup" identitycolumn="DeviceGroupComposedGroupId"/>
+        <table name="DeviceGroupComposed" identitycolumn="DeviceGroupComposedId" initsequence="true"/>
+        <table name="DeviceGroupComposedGroup" identitycolumn="DeviceGroupComposedGroupId" initsequence="true"/>
       </sequence>
       <sequence name="CustomerResidence">
         <table name="CustomerResidence" identitycolumn="AccountSiteId"/>

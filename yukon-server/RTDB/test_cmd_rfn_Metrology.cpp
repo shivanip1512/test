@@ -5,6 +5,7 @@
 #include "boost_test_helpers.h"
 
 using namespace Cti::Devices::Commands;
+using MetrologyState = Cti::Devices::Commands::RfnMetrologyCommand::MetrologyState;
 using namespace std::chrono_literals;
 
 // --- defined in RTDB\test_main.cpp -- so BOOST_CHECK_EQUAL_COLLECTIONS() works for RfnCommand::CommandException
@@ -16,6 +17,12 @@ namespace test_tools    {
 
 namespace std   {
     ostream & operator<<( ostream & os, const RfnCommand::CommandException & ex );
+    ostream & operator<<( ostream & os, const MetrologyState state ) {
+        return os << (
+            state == MetrologyState::Enable
+                ? "Enable"
+                : "Disable");
+    }
 }
 // ---
 
@@ -36,15 +43,15 @@ BOOST_AUTO_TEST_CASE( supported_devices )
     const std::map<DeviceTypes, bool> testCases
     {
         //  RFN Focus
-        { TYPE_RFN410FL,     true  },
-        { TYPE_RFN410FX,     true  },
-        { TYPE_RFN410FD,     true  },
-        { TYPE_RFN420FL,     true  },
-        { TYPE_RFN420FX,     true  },
-        { TYPE_RFN420FD,     true  },
-        { TYPE_RFN420FRX,    true  },
-        { TYPE_RFN420FRD,    true  },
-        { TYPE_RFN510FL,     true  },
+        { TYPE_RFN410FL,     false  },
+        { TYPE_RFN410FX,     false  },
+        { TYPE_RFN410FD,     false  },
+        { TYPE_RFN420FL,     false  },
+        { TYPE_RFN420FX,     false  },
+        { TYPE_RFN420FD,     false  },
+        { TYPE_RFN420FRX,    false  },
+        { TYPE_RFN420FRD,    false  },
+        { TYPE_RFN510FL,     false  },
         { TYPE_RFN520FAX,    true  },
         { TYPE_RFN520FRX,    true  },
         { TYPE_RFN520FAXD,   true  },
@@ -86,7 +93,7 @@ BOOST_AUTO_TEST_CASE( supported_devices )
 
 BOOST_AUTO_TEST_CASE( SetConfiguration_Disable_request )
 {
-    RfnMetrologySetConfigurationCommand command( RfnMetrologyCommand::Disable );
+    RfnMetrologySetConfigurationCommand command( MetrologyState::Disable );
 
     BOOST_CHECK_EQUAL( command.getCommandName(), "METLIB Disable Request" );
 
@@ -175,7 +182,7 @@ BOOST_AUTO_TEST_CASE( SetConfiguration_Disable_request )
 
 BOOST_AUTO_TEST_CASE( SetConfiguration_Enable_request )
 {
-    RfnMetrologySetConfigurationCommand command( RfnMetrologyCommand::Enable );
+    RfnMetrologySetConfigurationCommand command( MetrologyState::Enable );
 
     BOOST_CHECK_EQUAL( command.getCommandName(), "METLIB Enable Request" );
 
@@ -297,7 +304,7 @@ BOOST_AUTO_TEST_CASE( GetConfiguration_State_request )
                            "Status: Successful (0)"
                            "\nValue: Enable (0)" );
 
-        BOOST_CHECK_EQUAL( *command.getMetrologyState(), RfnMetrologyCommand::Enable );       
+        BOOST_CHECK_EQUAL( *command.getMetrologyState(), MetrologyState::Enable );       
     }
 
     // decode -- success response -- disabled
@@ -317,7 +324,7 @@ BOOST_AUTO_TEST_CASE( GetConfiguration_State_request )
                            "Status: Successful (0)"
                            "\nValue: Disable (1)" );
 
-        BOOST_CHECK_EQUAL( *command.getMetrologyState(), RfnMetrologyCommand::Disable );
+        BOOST_CHECK_EQUAL( *command.getMetrologyState(), MetrologyState::Disable );
     }
 
     // decode -- non-exceptional non-zero status returns

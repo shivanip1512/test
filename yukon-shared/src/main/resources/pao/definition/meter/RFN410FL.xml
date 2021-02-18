@@ -22,7 +22,6 @@
     <configuration>
         <category type="rfnDemand" optional="true"/>
         <category type="rfnChannelConfiguration"/>
-        <category type="rfnMetrologyConfiguration" optional="true"/>
         <category type="rfnTempAlarm"/>
     </configuration>
     <pointInfos>

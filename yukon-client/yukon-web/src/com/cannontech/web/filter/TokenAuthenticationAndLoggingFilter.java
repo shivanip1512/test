@@ -73,7 +73,7 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
 
                 }
             } catch (Exception e) {
-                buildApiError(response, e);
+                buildApiError(request, response, e);
                 return;
             }
 
@@ -128,11 +128,10 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
     /**
      *  Build API error to show Authentication message.
      */
-    private void buildApiError(HttpServletResponse response, Exception e) throws IOException {
+    private void buildApiError(HttpServletRequest request, HttpServletResponse response, Exception e) throws IOException {
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         apiLog.error(uniqueKey + " Expired or invalid token", e);
-        final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), "Authentication Required", uniqueKey);
-        ApiExceptionHandler.parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
+        ApiExceptionHandler.authorizationRequired(request, response, uniqueKey);
     }
 
     @Override

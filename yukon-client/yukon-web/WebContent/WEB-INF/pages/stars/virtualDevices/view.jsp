@@ -1,8 +1,6 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -34,16 +32,6 @@
             </form:form>
         </cti:checkRolesAndProperties>
     </div>
-    
-    <tags:widgetContainer deviceId="${id}" identify="false">
-        <div class="column-12-12 clearfix">
-            <div class="one column">
-                <tags:widget bean="virtualDeviceInfoWidget"/>
-            </div>
-        </div>
-        <div>
-            <tags:widget bean="devicePointsWidget"/>
-        </div>
-    </tags:widgetContainer>
+    <%@ include file="virtualDeviceCommon.jsp" %>
     <cti:includeScript link="/resources/js/pages/yukon.assets.virtualDevice.js"/>
 </cti:standardPage>

@@ -273,7 +273,7 @@ public enum YukonRoleProperty {
     STATUS_POINT_MONITORING(METERING, METERING.getBasePropertyId() - 17, booleanType()),
     PORTER_RESPONSE_MONITORING(METERING, METERING.getBasePropertyId() - 18, booleanType()),
     METER_EVENTS(METERING, METERING.getBasePropertyId() - 19, booleanType()),
-    ALLOW_DISCONNECT_CONTROL(METERING, METERING.getBasePropertyId() - 20, booleanType()),
+    ALLOW_DISCONNECT_CONTROL(METERING, METERING.getBasePropertyId() - 20, InputTypeFactory.permissionType(OWNER, INTERACT, NO_ACCESS)),
     DEVICE_DATA_MONITORING(METERING, METERING.getBasePropertyId() - 21, booleanType()),
     WATER_LEAK_REPORT(METERING, METERING.getBasePropertyId() - 22, booleanType()),
     USAGE_THRESHOLD_REPORT(METERING, METERING.getBasePropertyId() - 23, booleanType()),
@@ -288,7 +288,7 @@ public enum YukonRoleProperty {
     WORK_ORDER_REPORT(WORK_ORDER, WORK_ORDER.getBasePropertyId() - 2, booleanType()),
     ADDTL_ORDER_NUMBER_LABEL(WORK_ORDER, WORK_ORDER.getBasePropertyId() - 3, stringType()),
     
-    MANAGE_INFRASTRUCTURE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId(), InputTypeFactory.permissionType(OWNER, CREATE, INTERACT, VIEW, NO_ACCESS)),
+    MANAGE_INFRASTRUCTURE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId(), InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, INTERACT, VIEW, NO_ACCESS)),
     ENDPOINT_PERMISSION(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 4, InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, VIEW, INTERACT)),
     MANAGE_POINT_DATA(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 5, InputTypeFactory.permissionType(VIEW, UPDATE, OWNER)),
     MANAGE_POINTS(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 6, InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, VIEW, NO_ACCESS)),

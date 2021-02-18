@@ -2,7 +2,6 @@ package com.eaton.tests.assets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -19,81 +18,76 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.HOME);
-
+        navigate(Urls.HOME);
         page = new HomePage(driverExt);
     }
-
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_dashboardUrlCorrect() {
+    
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS })
+    public void assetsMenu_Dashboard_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 0);
 
         assertThat(url).contains(Urls.Assets.DASHBOARD);
     }
-
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_gatewaysUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS })
+    public void assetsMenu_Gateways_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 1);
 
         assertThat(url).contains(Urls.Assets.GATEWAYS);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_relaysUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS })
+    public void assetsMenu_Relays_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 2);
 
         assertThat(url).contains(Urls.Assets.RELAYS);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_rtusUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS })
+    public void assetsMenu_Rtus_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 3);
 
         assertThat(url).contains(Urls.Assets.RTUS);
     }
         
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_virtualDevicesUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS })
+    public void assetsMenu_VirtualDevices_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 4);
 
         assertThat(url).contains(Urls.Assets.VIRTUAL_DEVICES);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_optOutStatusUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS })
+    public void assetsMenu_OptOutStatus_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 5);
 
         assertThat(url).contains(Urls.Assets.OPT_OUT_STATUS);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_workOrdersUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS })
+    public void assetsMenu_WorkOrders_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 6);
 
         assertThat(url).contains(Urls.Assets.WORK_ORDERS);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_importUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS })
+    public void assetsMenu_Import_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 7);
 
         assertThat(url).contains(Urls.Assets.IMPORT);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_reportsUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS })
+    public void assetsMenu_Reports_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 8);
 

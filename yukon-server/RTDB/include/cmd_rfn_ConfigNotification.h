@@ -112,10 +112,10 @@ public:
         RDCC::DisconnectMode disconnectMode;
         RDCC::Reconnect      reconnect;
 
-        unsigned demandInterval;
-        double   demandThreshold;
-        unsigned connectDelay;
-        unsigned maxDisconnects;
+        boost::optional<unsigned> demandInterval;
+        boost::optional<double>   demandThreshold;
+        boost::optional<unsigned> connectDelay;
+        boost::optional<unsigned> maxDisconnects;
 
         boost::optional<unsigned> disconnectTime;
         boost::optional<unsigned> connectTime;

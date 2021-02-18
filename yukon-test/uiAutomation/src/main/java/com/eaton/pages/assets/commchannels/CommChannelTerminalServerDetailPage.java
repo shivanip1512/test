@@ -16,7 +16,7 @@ public class CommChannelTerminalServerDetailPage extends CommChannelDetailPage {
         requiresLogin = true;
         pageUrl = Urls.Assets.COMM_CHANNEL_DETAIL + id;
     }
-
+    
     public Section getGeneralSection() {
         return new Section(this.driverExt, "General");
     }
@@ -25,11 +25,12 @@ public class CommChannelTerminalServerDetailPage extends CommChannelDetailPage {
         return new Section(this.driverExt, "Shared");
     }
 
-    public EditTerminalServerCommChannelModal showTerminalServerCommChannelEditModal(String modalTitle) {
-        getCommChannelInfoPanel().getEdit().click();
+    public EditTerminalServerCommChannelModal showTerminalServerCommChannelEditModal() {
+        String describedBy = "js-edit-comm-channel-popup";
+        getEditBtn().getButton().click();
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-edit-comm-channel-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy(describedBy);
 
-        return new EditTerminalServerCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
+        return new EditTerminalServerCommChannelModal(this.driverExt, Optional.empty(), Optional.of(describedBy));
     }
 }

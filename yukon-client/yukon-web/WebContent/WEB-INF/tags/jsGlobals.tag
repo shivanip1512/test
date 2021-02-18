@@ -41,9 +41,53 @@ var yg = {
     },
     
     highcharts_options: {
+        disable_credits: {
+            enabled: false
+        },
+        lang: {
+            thousandsSep: ","
+        },
         global: {
             useUTC: false,
             timezoneOffset : new Date().getTimezoneOffset()
+        },
+        chart_options: {
+            renderTo: 'chart',
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+        },
+        pie_chart_options: {
+            legend: {
+                symbolPadding: -60,
+                symbolWidth: 0.001,
+                symbolHeight: 0.001,
+                symbolRadius: 0,
+                align: 'right',
+                borderWidth: 0,
+                useHTML: true,
+                layout: 'vertical',
+                verticalAlign: 'middle'
+            },
+            title: { 
+                text: null
+            },
+            tooltip: {
+                pointFormat: '<b>{point.displayPercentage}, {point.x} <cti:msg2 key="yukon.common.devices"/></b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: false
+                    },
+                    showInLegend: true,
+                    borderWidth: 0.25,
+                }
+            },
+            series_type_pie: 'pie',
+            series_type_area: 'area',
         }
     },
     
@@ -54,6 +98,8 @@ var yg = {
         // Any of the paging controls (previous, next, page counts)
         paging : '.paging-area .previous-page .button, .paging-area .next-page .button, .paging-area .page-size a'
     },
+    
+    colors: JSON.parse('<cti:getYukonColorPaletteJson/>'),
     
     text: {
         cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>',

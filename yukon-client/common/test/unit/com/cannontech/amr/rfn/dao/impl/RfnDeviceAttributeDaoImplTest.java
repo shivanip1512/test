@@ -14,9 +14,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointMappingIcd;
-import com.cannontech.amr.rfn.service.pointmapping.icd.YukonPointMappingIcdParser;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.YamlParserUtils;
 import com.google.common.collect.Sets;
 
 public class RfnDeviceAttributeDaoImplTest {
@@ -39,7 +39,7 @@ public class RfnDeviceAttributeDaoImplTest {
     public void test_allMetricsMapped() throws IOException {
         ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
 
-        PointMappingIcd icd = YukonPointMappingIcdParser.parse(yukonPointMappingIcdYaml.getInputStream());
+        PointMappingIcd icd = YamlParserUtils.parseToObject(yukonPointMappingIcdYaml.getInputStream(), PointMappingIcd.class);
 
         Set<Integer> baseMetricIds = rfnDeviceAttributeDao.getAttributeLookup().keySet().stream()
                 .map(metricId -> metricId % TOU_OFFSET) // Trim down to just the base metric ID
@@ -60,6 +60,23 @@ public class RfnDeviceAttributeDaoImplTest {
         Assert.assertTrue(
                 "Found metric IDs in metricIdToAttributeMapping.json not in yukonPointMappingIcd.yaml: " + unexpectedMissingMetricIds,
                 unexpectedMissingMetricIds.isEmpty());
+    }
+    
+    @Test
+    public void test_allMetricsUnique() throws IOException {
+        ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
+
+        PointMappingIcd icd = YamlParserUtils.parseToObject(yukonPointMappingIcdYaml.getInputStream(), PointMappingIcd.class);
+
+        icd.metricIds.entrySet().stream().collect(
+                Collectors.groupingBy(e -> e.getValue().getUnit(),
+                Collectors.groupingBy(e -> Set.copyOf(e.getValue().getModifiers()),
+                Collectors.reducing((t1, t2) -> { 
+                    Assert.fail("Multiple metric IDs for identical UOM/modifiers:"
+                            + "\n" + t1 
+                            + "\n" + t2);
+                    return t1;
+                }))));
     }
     
     @Test
@@ -103,13 +120,14 @@ public class RfnDeviceAttributeDaoImplTest {
                 35, 
                 37, 38, 39, 40, 
                 45, 46, 47, 48, 
-                54, 55, 56, 
+                54, 55, 56, 57,
                 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 
                 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 
                 106, 107, 108, 
                 125, 126, 127, 
                 150, 151, 152, 153, 154, 155, 156, 157, 158, 
-                182, 183, 185, 186, 187, 188, 189, 190, 191, 192, 193, 
+                182, 183, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194,
+                197, 198,
                 203, 
                 206, 207, 208, 209, 
                 211, 212, 213, 214, 215, 216, 217, 

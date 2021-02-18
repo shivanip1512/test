@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -201,7 +201,7 @@ public class TrendEditorController {
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, Object.class, trendModel);
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Object> responseMap = (HashMap<String, Object>) response.getBody();
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", responseMap.get("name")));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", responseMap.get("trendName")));
                 return redirectLink + "/" + responseMap.get("trendId");
             }
             
@@ -213,6 +213,8 @@ public class TrendEditorController {
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 log.error("Error saving trend:{}", JsonUtils.toJson(response.getBody()));
                 flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.genericMainMessage"));
+                BindException error = new BindException(trendModel, "trendDefinition");
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 return bindAndForward(trendModel, result, redirectAttributes);
             }
 
@@ -266,7 +268,7 @@ public class TrendEditorController {
                 json.put("dateStr", dateFormattingService.format(trendSeries.getDate(), DateFormatEnum.DATE, userContext));
             }
         }
-        json.put("color", accessor.getMessage(trendSeries.getColor().getFormatKey()));
+        json.put("color", accessor.getMessage(trendSeries.getColor().getYukonColor().getFormatKey()));
         json.put("colorHexValue", trendSeries.getColor().getHexValue());
         json.put("axis", accessor.getMessage(trendSeries.getAxis().getFormatKey()));
         
@@ -302,8 +304,7 @@ public class TrendEditorController {
     }
 
     private void setModel(ModelMap model, boolean isMarker) {
-        List<String> colors = Lists.newArrayList(GraphColors.values()).stream().map(color -> color.getHexValue()).collect(Collectors.toList());
-        model.addAttribute("colors", colors);
+        model.addAttribute("colors", GraphColors.values());
         model.addAttribute("axes", Lists.newArrayList(TrendAxis.values()));
         
         if (!isMarker) {
@@ -356,10 +357,10 @@ public class TrendEditorController {
             }
         });
         
-        binder.registerCustomEditor(YukonColorPalette.class, new PropertyEditorSupport() {
+        binder.registerCustomEditor(GraphColors.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String color) throws IllegalArgumentException {
-                setValue(YukonColorPalette.getColorByHexValue(color));
+                setValue(GraphColors.getByYukonColor(YukonColorPalette.getColorByHexValue(color)));
             }
         });
     }

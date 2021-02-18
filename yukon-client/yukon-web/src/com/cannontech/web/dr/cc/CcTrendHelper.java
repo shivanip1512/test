@@ -10,10 +10,12 @@ import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.trends.TrendUtils;
+import com.cannontech.web.user.service.UserPreferenceService;
 
 public class CcTrendHelper {
     @Autowired private GraphDao graphDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private UserPreferenceService userPreferenceService;
     
     public void setUpTrends(ModelMap model, YukonUserContext userContext, Integer trendId, boolean showAll) {
         
@@ -25,7 +27,6 @@ public class CcTrendHelper {
             trends = graphDao.getGraphDefinitionsForUser(userId);
         }
         model.addAttribute("trends", trends);
-        
         if (trendId != null) {
             LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(trendId);
             model.addAttribute("trendId", trendId);
@@ -37,5 +38,6 @@ public class CcTrendHelper {
         }
         
         model.addAttribute("labels", TrendUtils.getLabels(userContext, messageSourceResolver));
+        model.addAttribute("autoUpdate", userPreferenceService.getDefaultTrendAutoUpdateSelection(userContext.getYukonUser()));
     }
 }

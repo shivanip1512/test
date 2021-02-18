@@ -419,4 +419,10 @@ public interface DeviceConfigurationDao {
      * Returns configurations for devices that have an entry in DeviceConfigState table
      */
     List<LightDeviceConfiguration> getAllConfigsWithDeviceConfigStateEntry();
+
+
+    /**
+     * Returns error code for the Device Config State entry, null if error code is not available or error code is 0
+     */
+    Integer getErrorCodeByDeviceId(int deviceId);
 }

@@ -11,7 +11,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
 import com.cannontech.rest.api.documentation.DocumentationBase;
 import com.cannontech.rest.api.documentation.DocumentationFields;
@@ -65,7 +64,7 @@ public class ProgramConstraintApiDoc  extends DocumentationBase {
 
     @Test(dependsOnMethods = "Test_ProgramConstraint_Get")
     public void Test_ProgramConstraint_Update() {
-        updateDoc();
+        updateAllDoc();
     }
 
     @Test(dependsOnMethods = "Test_ProgramConstraint_Update")
@@ -77,7 +76,7 @@ public class ProgramConstraintApiDoc  extends DocumentationBase {
     protected Get buildGetFields() {
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        String url = ApiCallHelper.getProperty("getProgramConstraint") + constraintId;
+        String url = ApiCallHelper.getProperty("programConstraints") + "/" + constraintId;
         return new DocumentationFields.Get(responseFields, url);
     }
 
@@ -86,7 +85,7 @@ public class ProgramConstraintApiDoc  extends DocumentationBase {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
         List<FieldDescriptor> responseFields = Arrays.asList(new FieldDescriptor[] {
                 fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr) });
-        String url = ApiCallHelper.getProperty("saveProgramConstraint");
+        String url = ApiCallHelper.getProperty("programConstraints");
         return new DocumentationFields.Create(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
 
@@ -97,7 +96,7 @@ public class ProgramConstraintApiDoc  extends DocumentationBase {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
         List<FieldDescriptor> responseFields = Arrays.asList(new FieldDescriptor[] {
                 fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr) });
-        String url = ApiCallHelper.getProperty("updateProgramConstraint") + constraintId;
+        String url = ApiCallHelper.getProperty("programConstraints") + "/" + constraintId;
         return new DocumentationFields.Update(requestFields, responseFields, idStr, idDescStr, programConstraint, url);
     }
 
@@ -105,11 +104,8 @@ public class ProgramConstraintApiDoc  extends DocumentationBase {
     protected Delete buildDeleteFields() {
         List<FieldDescriptor> responseFields = Arrays.asList(new FieldDescriptor[] {
                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("Program Constraint Id.") });
-        List<FieldDescriptor> requestFields = Arrays.asList(new FieldDescriptor[] {
-                fieldWithPath("name").type(JsonFieldType.STRING).description("Program Constraint Name.") });
-        MockLMDto deleteConstraint = MockLMDto.builder().name("Program Constraint").build();
-        String url = ApiCallHelper.getProperty("deleteProgramConstraint") + constraintId;
-        return new DocumentationFields.DeleteWithBody(requestFields, responseFields, deleteConstraint, url);
+        String url = ApiCallHelper.getProperty("programConstraints") + "/" + constraintId;
+        return new DocumentationFields.DeleteWithBody(null, responseFields, null, url);
     }
 
     @Override

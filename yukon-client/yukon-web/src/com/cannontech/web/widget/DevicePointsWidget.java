@@ -59,8 +59,9 @@ public class DevicePointsWidget extends AdvancedWidgetControllerBase {
                          @DefaultSort(dir = Direction.asc, sort = "POINTNAME") SortingParameters sorting, 
                          @DefaultItemsPerPage(value=250) PagingParameters paging) throws ServletRequestBindingException {
         Integer deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        model.addAttribute("pointTypes", PointType.values());
-        retrievePointsForModel(deviceId, PointType.values(), model, userContext, sorting, paging);
+        PointType[] creatableTypes = PointType.getCreatablePointTypes().toArray(PointType[]::new);
+        model.addAttribute("pointTypes", creatableTypes);
+        retrievePointsForModel(deviceId, creatableTypes, model, userContext, sorting, paging);
         return "devicePointsWidget/render.jsp";
     }
     
@@ -80,7 +81,7 @@ public class DevicePointsWidget extends AdvancedWidgetControllerBase {
         
         //TODO: Replace with Points REST API when ready
         if (pointTypes == null) {
-            pointTypes = PointType.values();
+            pointTypes = PointType.getCreatablePointTypes().toArray(PointType[]::new);
         }
         List<LiteYukonPoint> liteYukonPoints = yukonPointHelper.getYukonPoints(pao, sorting, accessor);
         List<PointType> pointTypeList = Arrays.asList(pointTypes);

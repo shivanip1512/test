@@ -42,7 +42,6 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private AttributeService attributeService;
     private static DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
-    private PointDataTrackingLogger trackingLogger = new PointDataTrackingLogger(log);
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorProcessorFactoryImpl.class);
 
     private final Cache<Pair<SimpleDevice, Integer>, Boolean> devicesToMonitors = CacheBuilder.newBuilder()
@@ -88,7 +87,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
                         continue;
                     }
                     log("Removing from queue", data);
-                    updateViolationsGroupBasedOnNewPointData(data.monitor, data.richPointData, data.attribute);
+                    updateViolationsGroupBasedOnNewPointData(data.monitor, data.richPointData, data.attribute, data.trackingLogger);
                 } catch (Exception e) {
                     log.error("Processor {}", this.getName(), e);
                 }
@@ -110,18 +109,19 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
 
     @Override
     protected RichPointDataListener createPointListener(DeviceDataMonitor monitor) {
-        return richPointData -> handlePointDataReceived(monitor, richPointData);
+        var trackingLogger = new PointDataTrackingLogger(monitor.getName(), log);
+        return richPointData -> handlePointDataReceived(monitor, richPointData, trackingLogger);
     }
 
     @Override
-    public void handlePointDataReceived(DeviceDataMonitor monitor, RichPointData richPointData) {
+    public void handlePointDataReceived(DeviceDataMonitor monitor, RichPointData richPointData, PointDataTrackingLogger trackingLogger) {
         if (richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType() == PaoType.SYSTEM
                 || richPointData.getPointValue().getPointQuality().isInvalid() || !monitor.isEnabled()
                 || monitor.getAttributes().isEmpty()) {
             if (richPointData.getPointValue().getPointQuality().isInvalid()) {
                 log.debug("monitor {} discarded point data {} because point quality is invalid", monitor,
                         richPointData.getPointValue());
-                trackingLogger.rejectId(monitor.getName(), richPointData);
+                trackingLogger.rejectId(richPointData);
             }
             return;
         }
@@ -151,7 +151,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
             }
             int queue = Math.abs(richPointData.getPointValue().getId()) % processors.size();
             Processor processor = processors.get(queue);
-            processor.add(new Data(monitor, richPointData, attribute));
+            processor.add(new Data(monitor, richPointData, attribute, trackingLogger));
         }
     }
 
@@ -175,22 +175,24 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
         private RichPointData richPointData;
         private BuiltInAttribute attribute;
         private DateTime written;
+        private PointDataTrackingLogger trackingLogger;
 
-        public Data(DeviceDataMonitor monitor, RichPointData richPointData, BuiltInAttribute attribute) {
+        public Data(DeviceDataMonitor monitor, RichPointData richPointData, BuiltInAttribute attribute, PointDataTrackingLogger trackingLogger) {
             this.monitor = monitor;
             this.richPointData = richPointData;
             this.attribute = attribute;
             this.written = DateTime.now();
+            this.trackingLogger = trackingLogger;
         }
     }
 
     private void updateViolationsGroupBasedOnNewPointData(DeviceDataMonitor monitor, RichPointData richPointData,
-            BuiltInAttribute attribute) {
+            BuiltInAttribute attribute, PointDataTrackingLogger trackingLogger) {
         if (isValidPointDataForCalculation(monitor, richPointData)) {
             deviceDataMonitorCalculationService.updateViolationsGroupBasedOnNewPointData(monitor, richPointData, attribute);
-            trackingLogger.acceptId(monitor.getName(), richPointData);
+            trackingLogger.acceptId(richPointData);
         } else {
-            trackingLogger.rejectId(monitor.getName(), richPointData);
+            trackingLogger.rejectId(richPointData);
         }
     }
 

@@ -119,7 +119,9 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg* pReq, CtiCommandParser& pa
 
     if( errorCode )
     {
-        CTILOG_ERROR(dout, "Execute error for device " << getName() <<". Command: "<< pReq->CommandString());
+        CTILOG_INFO(dout, "Execute error for device " << getName() <<". Command: "<< pReq->CommandString() << FormattedList::of(
+            "Error",       errorCode,
+            "Description", errorDescription));
 
         returnMsgs.emplace_back(
                 makeReturnMsg(

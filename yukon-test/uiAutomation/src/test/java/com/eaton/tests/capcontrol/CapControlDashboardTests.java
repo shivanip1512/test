@@ -2,7 +2,7 @@ package com.eaton.tests.capcontrol;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.openqa.selenium.WebDriver;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -18,17 +18,23 @@ public class CapControlDashboardTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.CapControl.DASHBOARD);
-
+        setRefreshPage(false);
+        
+        navigate(Urls.CapControl.DASHBOARD);
         dashboardPage = new CapControlDashboardPage(driverExt);
     }
+    
+    @AfterMethod()
+    public void afterMethod() {
+        if(getRefreshPage()) {
+            refreshPage(dashboardPage);    
+        }
+        setRefreshPage(false);
+    }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void capControlDashboard_pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
+    public void capControlDashboard_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Volt/Var Dashboard";
 
         String actualPageTitle = dashboardPage.getPageTitle();

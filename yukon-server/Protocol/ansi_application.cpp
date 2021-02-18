@@ -1181,7 +1181,7 @@ static BYTE    sboxes[8][64] = {
 
 static BYTE    keys[16][48];
 
-
+// dst MUST be 64 bytes or more if src is NULL
 void permutation(BYTE *dst, BYTE *src, BYTE lgn, BYTE *perm_table)
 {
     BYTE tmp[64];
@@ -1235,7 +1235,7 @@ void sBoxes(BYTE *dst, BYTE *src, BYTE *sbox)
 }
 void dataEncryptionStandard(BYTE *_key, BYTE *_data, int _encrypt)
 {
-    BYTE key[64], data[64], right[48];
+    BYTE key[64], data[64], right[64];
     int i, j;
 
     permutation(key, _key, 56, perm1);

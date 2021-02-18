@@ -2,7 +2,7 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="DR Suite">
-	<test name="Load Group Test">
+    <test name="Load Group Test">
         <classes>       
             <class name="com.cannontech.rest.api.dr.loadgroup.ItronLoadGroupApiTest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.MeterDisconnectLoadGroupApiTest" />
@@ -18,15 +18,15 @@
             <class name="com.cannontech.rest.api.dr.loadgroup.RFNExpresscomLoadGroupApiTest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.NestLoadGroupApiTest" />
         </classes>
-
-	</test>
-		<test name="Macro Load Group Test">
+    </test>
+    
+    <test name="Macro Load Group Test">
         <classes>       
             <class name="com.cannontech.rest.api.dr.macroloadgroup.MacroLoadGroupApiTest" />
         </classes>
-	</test>
-	
-	<test name="Load Program Test">
+    </test>
+    
+    <test name="Load Program Test">
         <classes>       
             <class name="com.cannontech.rest.api.dr.loadprogram.HoneywellProgramApiTest" />
             <class name="com.cannontech.rest.api.dr.loadprogram.EcobeeProgramApiTest" />

@@ -33,7 +33,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.getGears().get(0).setGearName("");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Gear Name is required."),
@@ -49,7 +49,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.getGears().get(0).setGearName("GearNameLenghthMoreThan30Charac");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Exceeds maximum length of 30."),
@@ -65,7 +65,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setControlPercent(4);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.controlPercent", "Must be between 5 and 100."),
@@ -81,7 +81,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setControlPercent(101);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.controlPercent", "Must be between 5 and 100."),
@@ -97,7 +97,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setCriticality(0);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.criticality", "Must be between 1 and 15."),
@@ -113,7 +113,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setCriticality(16);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.criticality", "Must be between 1 and 15."),
@@ -129,7 +129,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setCapacityReduction(-1);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.capacityReduction", "Must be between 0 and 100."),
@@ -145,7 +145,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setCapacityReduction(101);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.capacityReduction", "Must be between 0 and 100."),
@@ -161,7 +161,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setWhenToChangeFields(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields", "When To Change Fields is required."),
@@ -176,7 +176,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setHowToStopControl(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.howToStopControl", "How To Stop Control is required."),
@@ -191,7 +191,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setRampIn(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampIn", "Ramp In is required."),
@@ -206,7 +206,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setRampOut(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampOut", "Ramp Out is required."),
@@ -221,7 +221,7 @@ public class SepCycleGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setTrueCycle(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.trueCycle", "True Cycle or Adaptive Algorithm is required."),

@@ -9,7 +9,7 @@
         <tag name="GATEWAY_DETAIL_DISPLAYABLE"/>
         <tag name="DATA_STREAMING"/>
         <tag name="RFN_EVENTS"/>
-        <tag name="DEVICE_ICON_TYPE" option="transmitter"/>
+        <tag name="DEVICE_ICON_TYPE" option="virtual_gateway"/>
     </tags>
     <pointInfos>
         <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
@@ -20,5 +20,6 @@
         <pointInfo name="Radio Failure" attributes="RADIO_FAILURE"/>
         <pointInfo name="Ready Nodes" init="true" attributes="READY_NODES" />
         <pointInfo name="Streaming Device Count" attributes="STREAMING_ACTIVE_DEVICE_COUNT" />
+        <pointInfo name="High Disk Usage" attributes="HIGH_DISK_USAGE"/>
     </pointInfos>
 </pao>

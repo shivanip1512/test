@@ -776,6 +776,10 @@ try
     {
         return ClientErrors::ConfigCurrent;
     }
+    if( parse.isKeyValid("verify") )
+    {
+        return ClientErrors::ConfigNotCurrent;
+    }
 
     rfnRequests.push_back(
         std::make_unique<RfnDemandIntervalSetConfigurationCommand>( 

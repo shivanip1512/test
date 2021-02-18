@@ -3,12 +3,13 @@ package com.cannontech.rest.api.trend.request;
 public enum MockColor {
     BLACK,
     BLUE,
-    CYAN,
-    GREY,
+    GRAY,
     GREEN,
-    MAGENTA,
     ORANGE,
-    PINK,
-    RED,
+    PURPLE,
+    SAGE,
+    SKY,
+    TEAL,
+    WINE,
     YELLOW;
 }

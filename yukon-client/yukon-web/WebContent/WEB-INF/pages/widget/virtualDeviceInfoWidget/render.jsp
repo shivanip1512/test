@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="yukon.common,yukon.web.modules.operator.virtualDeviceInfoWidget">
@@ -9,13 +10,32 @@
     <c:if test="${not empty errorMsg}"><tags:alertBox includeCloseButton="true">${fn:escapeXml(errorMsg)}</tags:alertBox></c:if>
     <form:form modelAttribute="virtualDevice" id="virtual-device-form">
         <cti:csrfToken />
-        <tags:hidden path="type"/>
         <tags:hidden path="id"/>
+        <input type="hidden" id="virtualMeterType" value="${virtualMeterType}"/>
+        <input type="hidden" name="virtualDevice" value="${virtualDevice.type}">
         
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".name">
-                <tags:input path="name" maxlength="60" inputClass="w300 wrbw dib"/>
+                <tags:input id="name" path="name" maxlength="60" inputClass="w300 wrbw dib"/>
             </tags:nameValue2>
+            <tags:nameValue2 nameKey=".type">
+                <cti:displayForPageEditModes modes="CREATE">
+                    <tags:selectWithItems path="type" items="${types}" inputClass="js-type"/>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="VIEW">
+                    <tags:paoType yukonPao="${virtualDevice}"/>
+                    <tags:hidden path="type"/>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="EDIT">
+                    <i:inline key="${virtualDevice.type.formatKey}"/>
+                    <tags:hidden path="type"/>
+                </cti:displayForPageEditModes>
+            </tags:nameValue2>
+            <c:if test="${virtualDevice.type == virtualMeterType}">
+                <tags:nameValue2 nameKey=".meterNumber">
+                    <tags:input path="meterNumber" maxlength="50" inputClass="w300 wrbw dib"/>
+                </tags:nameValue2>
+            </c:if>
             <tags:nameValue2 nameKey=".status">
                 <tags:switchButton path="enable" offNameKey=".disabled.label" onNameKey=".enabled.label" />
             </tags:nameValue2>

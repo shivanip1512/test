@@ -1,8 +1,10 @@
 package com.eaton.framework;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,19 +40,19 @@ public class SeleniumTestSetup {
 
     private static final String EXCEPTION_MSG = "Exception :";
 
-    private static Random randomNum;
-
     private static boolean loggedIn = false;
 
     private static String screenShotPath;
-    
+
+    private static String database;
+
     private static Faker faker;
+
+    private boolean refreshPage = false;
 
     @BeforeSuite(alwaysRun = true)
     public static void beforeSuite() {
-
         try {
-            setRandomNum(new Random());
             logger = setupLogger();
             initialSetup();
             navigateToLoginPage();
@@ -61,7 +63,6 @@ public class SeleniumTestSetup {
     }
 
     public static void initialSetup() {
-
         try {
             ConfigFileReader configFileReader = new ConfigFileReader();
 
@@ -75,6 +76,7 @@ public class SeleniumTestSetup {
             setDriverExt(new DriverExtensions(SeleniumTestSetup.driver));
             setFaker(new Faker());
             setScreenShotPath(configFileReader.getScreenShotPath());
+            setDatabase(configFileReader.getDatabaseParameter());
         } catch (Exception ex) {
             logger.fine(EXCEPTION_MSG + ex);
         }
@@ -95,7 +97,6 @@ public class SeleniumTestSetup {
     }
 
     public static Logger setupLogger() {
-
         Logger newLogger = Logger.getLogger("selenium.logger");
         newLogger.setLevel(Level.ALL);
         ConsoleHandler handler = new ConsoleHandler();
@@ -133,17 +134,25 @@ public class SeleniumTestSetup {
     public static Faker getFaker() {
         return SeleniumTestSetup.faker;
     }
-    
+
     private static void setFaker(Faker faker) {
-        SeleniumTestSetup.faker = faker; 
+        SeleniumTestSetup.faker = faker;
     }
-    
+
     private static void setScreenShotPath(String screenShotPath) {
         SeleniumTestSetup.screenShotPath = screenShotPath;
     }
 
     public static String getScreenShotPath() {
         return SeleniumTestSetup.screenShotPath;
+    }
+
+    private static void setDatabase(String database) {
+        SeleniumTestSetup.database = database;
+    }
+
+    public static String getDatabase() {
+        return SeleniumTestSetup.database;
     }
 
     public static String getCurrentUrl() {
@@ -166,35 +175,17 @@ public class SeleniumTestSetup {
         return baseUrl;
     }
 
-    public static Random getRandomNum() {
-        return randomNum;
-    }
-
-    public static void setRandomNum(Random randomNum) {
-        SeleniumTestSetup.randomNum = randomNum;
-    }
-
     public static Logger getLogger() {
         return logger;
     }
 
-    public boolean waitForUrlToLoad(String expectedUrl, Optional<Integer> timeOutSeconds) {
-        Integer timeOut = timeOutSeconds.orElse(null);
-
-        Integer waitTime;
-
-        if (timeOut == null) {
-            waitTime = 5000;
-        } else if (timeOut < 5) {
-            waitTime = 5000;
-        } else {
-            waitTime = timeOut * 1000;
-        }
+    public static boolean waitForUrlToLoad(String expectedUrl, Optional<Integer> timeOutSeconds) {
+        Integer timeOut = timeOutSeconds.orElse(3000);
 
         long startTime = System.currentTimeMillis();
 
         boolean expectedUrlLoaded = false;
-        while (!expectedUrlLoaded && System.currentTimeMillis() - startTime < waitTime) {
+        while (!expectedUrlLoaded && ((System.currentTimeMillis() - startTime) < timeOut)) {
             String currentUrl = driver.getCurrentUrl();
 
             expectedUrlLoaded = currentUrl.contains(expectedUrl);
@@ -204,23 +195,16 @@ public class SeleniumTestSetup {
     }
 
     public void waitForPageToLoad(String pageTitle, Optional<Integer> timeOutSeconds) {
-        Integer timeOut = timeOutSeconds.orElse(null);
+        Integer timeOut = timeOutSeconds.orElse(1);
 
-        Integer waitTime;
-
-        if (timeOut == null) {
-            waitTime = 1;
-        } else {
-            waitTime = timeOut;
-        }
-
-        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime))
+        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(timeOut))
                 .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
     }
 
     public void refreshPage(PageBase page) {
         if (getCurrentUrl().equals(getBaseUrl() + page.getPageUrl())) {
-            driver.navigate().refresh();
+            JavascriptExecutor je = (JavascriptExecutor) driver;
+            je.executeScript("document.location.reload(true);");
         } else {
             navigate(page.getPageUrl());
         }
@@ -230,98 +214,171 @@ public class SeleniumTestSetup {
         String display = "";
 
         long startTime = System.currentTimeMillis();
-        while (!display.equals("display: none;") || System.currentTimeMillis() - startTime < 2000) {
+
+        while (!display.equals("display: none;") && (System.currentTimeMillis() - startTime < 2000)) {
             try {
-                display = driverExt.findElement(By.id("modal-glass"), Optional.empty()).getAttribute("style");
+                display = driverExt.findElement(By.id("modal-glass"), Optional.of(0)).getAttribute("style");
             } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
             }
         }
     }
 
-    public static void waitUntilModalVisibleByDescribedBy(String describedBy) {
-        boolean displayed = false;
-
+    public static void waitUntilModalOpenByDescribedBy(String describedBy) {
+        Integer count;
         long startTime = System.currentTimeMillis();
 
-        while (!displayed && System.currentTimeMillis() - startTime < 300) {
-            try {
-                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
-                        .isDisplayed();
-            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
+        do {
+            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
+        } while (count.equals(0) && ((System.currentTimeMillis() - startTime) < 2000));
+    }
+
+    public static void waitUntilModalOpenDisplayBlock(String describedBy) {
+        long startTime = System.currentTimeMillis();
+
+        while ((System.currentTimeMillis() - startTime) < 2000) {
+
+            String style = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
+                    .getAttribute("style");
+
+            if (style.contains("display: block")) {
+                break;
             }
         }
     }
 
     public static void waitUntilModalClosedByDescribedBy(String describedBy) {
-        boolean displayed = true;
+        long startTime = System.currentTimeMillis();
+        Integer count;
+
+        do {
+            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
+        } while (count.equals(1) && ((System.currentTimeMillis() - startTime) < 2000));
+    }
+
+    /**
+     * Use this method when going to a page for the first time and table has not loaded
+     * @param parentElement - Optional
+     */
+    public static void waitUntilTableVisiable(Optional<WebElement> parentElement) {
+        
+        WebElement display = null;
 
         long startTime = System.currentTimeMillis();
 
-        while (displayed && System.currentTimeMillis() - startTime < 300) {
+        while (display == null && (System.currentTimeMillis() - startTime < 2000)) {
             try {
-                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
-                        .isDisplayed();
+            	if (parentElement.isPresent()) {
+                    display = parentElement.get().findElement(By.cssSelector("[class='.compact-results-table']"));	
+            	} else {
+            		display = driverExt.findElement(By.cssSelector("[class='.compact-results-table']"), Optional.of(0));
+            	}
+            	
             } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
             }
         }
     }
-
-    public static void waitUntilModalVisibleByTitle(String modalTitle) {
-        List<WebElement> elements;
-        Optional<WebElement> el;
-        boolean found = false;
-
+        
+    public static void waitUntilModalClosedDisplayNone(String describedBy) {
         long startTime = System.currentTimeMillis();
 
-        while (!found && System.currentTimeMillis() - startTime < 300) {
-            try {
-                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.of(0));
+        while ((System.currentTimeMillis() - startTime) < 2000) {
 
-                el = elements.stream().filter(element -> element.getText().equals(modalTitle)).findFirst();
-                found = el.isPresent();
-            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
+            String style = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
+                    .getAttribute("style");
+
+            if (style.contains("display: none")) {
+                break;
             }
         }
     }
 
+    public static void waitUntilModalInvisibleByDescribedBy(String describedBy) {
+        driverExt.waitUntilElementInvisibleByCssLocator("[aria-describedby='" + describedBy + "']");
+    }
+
+    /**
+     * @param modalTitle title of the modal
+     * 
+     *                   only use this method if area-describedby uses a dynamic id and
+     *                   can not use method waitUntilModalVisibleByDescribedBy
+     */
+    public static void waitUntilModalOpenByTitle(String modalTitle) {
+        long startTime = System.currentTimeMillis();
+
+        while ((System.currentTimeMillis() - startTime) < 2000) {
+            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"),
+                    Optional.of(0));
+
+            Optional<WebElement> el = list.stream()
+                    .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
+
+            if (el.isPresent()) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * @param modalTitle title of the modal
+     * 
+     *                   only use this method if area-describedby uses a dynamic id and
+     *                   can not use method waitUntilModalClosedByDescribedBy
+     */
     public static void waitUntilModalClosedByTitle(String modalTitle) {
-        List<WebElement> elements;
-        Optional<WebElement> el;
-        boolean found = true;
+        long startTime = System.currentTimeMillis();
+
+        while ((System.currentTimeMillis() - startTime) < 2000) {
+            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-describedby^='ui-id']"),
+                    Optional.of(0));
+
+            try {
+                Optional<WebElement> el = list.stream()
+                        .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle))
+                        .findFirst();
+
+                if (!el.isPresent()) {
+                    break;
+                }
+            } catch (StaleElementReferenceException ex) {
+
+            }
+        }
+    }
+
+    public static void waitUntilDropDownMenuOpen() {
+        String display = "display: none;";
 
         long startTime = System.currentTimeMillis();
 
-        while (found && System.currentTimeMillis() - startTime < 100) {
+        while (display.equals("display: none;") && (System.currentTimeMillis() - startTime < 2000)) {
             try {
-                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.empty());
+                List<WebElement> menus = driverExt.findElements(By.cssSelector(".dropdown-menu"), Optional.of(0));
 
-                el = elements.stream().filter(element -> element.getText().equals(modalTitle)).findFirst();
-                found = el.isPresent();
-                if (!found) {
-                    return;
+                Optional<WebElement> el = menus.stream().filter(x -> x.getAttribute("style").contains("display: block;"))
+                        .findFirst();
+
+                if (el.isPresent()) {
+                    display = el.get().getAttribute("style");
                 }
             } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
-                found = false;
             }
         }
     }
 
-    public static void waitUntilModalClosed(WebElement modal) {
-        String display = "";
+    public static void navigate(String url) {
+        String pageUrl = getBaseUrl() + url;
 
-        long startTime = System.currentTimeMillis();
-        while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 100) {
-            try {
-                display = modal.getAttribute("style");
-            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
-            }
-        }
+        driver.get(pageUrl);
+        waitForUrlToLoad(pageUrl, Optional.empty());
     }
 
-    public void navigate(String url) {
-        SeleniumTestSetup.driver.navigate().to(getBaseUrl() + url);
+    public static int getResponseCode(String urlString) throws IOException {
+        URL u = new URL(urlString);
+        HttpURLConnection huc = (HttpURLConnection) u.openConnection();
+        huc.setRequestMethod("GET");
+        huc.connect();
 
-        waitForUrlToLoad(url, Optional.empty());
+        return huc.getResponseCode();
     }
 
     public static void moveToElement(WebElement element) {
@@ -333,6 +390,14 @@ public class SeleniumTestSetup {
     public static void scrollToElement(WebElement element) {
         JavascriptExecutor je = (JavascriptExecutor) driver;
         je.executeScript("arguments[0].scrollIntoView(true);", element);
+    }    
+
+    public boolean getRefreshPage() {
+        return refreshPage;
+    }
+
+    public void setRefreshPage(boolean refreshPage) {
+        this.refreshPage = refreshPage;
     }
 
     @AfterSuite(alwaysRun = true)

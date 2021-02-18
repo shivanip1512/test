@@ -38,7 +38,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         mockLoadProgram.getGears().get(0).setGearName("");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -54,7 +54,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         mockLoadProgram.getGears().get(0).setGearName("GearNameLenghthMoreThan30Characters");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -73,7 +73,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setRandomStartTimeInMinutes(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -92,7 +92,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setRandomStartTimeInMinutes(121);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -111,7 +111,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setPreOpTemp(-25);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -131,7 +131,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setPreOpTemp(21);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -152,7 +152,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setPreOpTimeInMinutes(301);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -171,7 +171,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setPreOpTimeInMinutes(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -191,7 +191,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setPreOpHoldInMinutes(301);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -209,7 +209,7 @@ public class SimpleThermostatRampingGearApiTest {
                 .getGears().get(0).getFields();
 
         simpleThermostatRampingGearFields.setPreOpHoldInMinutes(-1);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -228,7 +228,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setMaxRuntimeInMinutes(1440);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -248,7 +248,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setMaxRuntimeInMinutes(239);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -269,7 +269,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setRampOutTimeInMinutes(301);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -289,7 +289,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setRampOutTimeInMinutes(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -308,7 +308,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setRampPerHour((float) 10);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -327,7 +327,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setRampPerHour((float) -10);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -347,7 +347,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setMax(21);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -365,7 +365,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setMax(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -384,7 +384,7 @@ public class SimpleThermostatRampingGearApiTest {
 
         simpleThermostatRampingGearFields.setWhenToChangeFields(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -405,7 +405,7 @@ public class SimpleThermostatRampingGearApiTest {
         simpleThermostatRampingGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.Priority);
         simpleThermostatRampingGearFields.getWhenToChangeFields().setChangePriority(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -424,7 +424,7 @@ public class SimpleThermostatRampingGearApiTest {
         simpleThermostatRampingGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.Priority);
         simpleThermostatRampingGearFields.getWhenToChangeFields().setChangePriority(100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");

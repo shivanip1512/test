@@ -8,8 +8,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 
 public class SearchBoxElement {
     private DriverExtensions driverExt;
@@ -57,7 +59,7 @@ public class SearchBoxElement {
     }    
 
     public List<String> getSearchResults() {
-        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".ui-menu .ui-menu-item"), Optional.of(3));
+        List<WebElement> list = SeleniumTestSetup.getDriverExt().getDriverWait().until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(".ui-menu .ui-menu-item")));
         
         List<String> results = new ArrayList<>();
         for (WebElement webElement : list) {
@@ -70,7 +72,7 @@ public class SearchBoxElement {
     public void setSearchValueAndClickResult(String searchValue) {        
         setSearchValue(searchValue);
         
-        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".ui-menu .ui-menu-item"), Optional.of(3));
+        List<WebElement> list = SeleniumTestSetup.getDriverExt().getDriverWait().until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(".ui-menu .ui-menu-item .ui-menu-item-wrapper")));
         
         WebElement value = list.stream().filter(element -> element.getText().contains(searchValue)).findFirst().orElseThrow();
         

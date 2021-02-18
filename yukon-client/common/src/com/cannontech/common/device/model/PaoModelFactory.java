@@ -1,9 +1,12 @@
 package com.cannontech.common.device.model;
 
 import com.cannontech.common.device.port.LocalSharedPortDetail;
+import com.cannontech.common.device.port.Rfn1200Detail;
 import com.cannontech.common.device.port.TcpPortDetail;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.UdpPortDetail;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
+import com.cannontech.common.device.virtualDevice.VirtualMeterModel;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 
@@ -26,6 +29,15 @@ public class PaoModelFactory {
             break;
         case LOCAL_SHARED:
             yukonPaoModel = new LocalSharedPortDetail();
+            break;
+        case VIRTUAL_SYSTEM:
+            yukonPaoModel = new VirtualDeviceModel();
+            break;
+        case VIRTUAL_METER:
+            yukonPaoModel = new VirtualMeterModel();
+            break;
+        case RFN_1200:
+            yukonPaoModel = new Rfn1200Detail();
             break;
         default:
             break;

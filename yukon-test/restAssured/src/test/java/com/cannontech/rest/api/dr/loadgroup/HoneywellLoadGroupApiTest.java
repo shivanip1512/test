@@ -12,7 +12,6 @@ import org.testng.annotations.Test;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockApiError;
 import com.cannontech.rest.api.common.model.MockApiFieldError;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
@@ -24,6 +23,7 @@ import io.restassured.response.ExtractableResponse;
 public class HoneywellLoadGroupApiTest {
 
     MockLoadGroupHoneywell loadGroup = null;
+    private static final String contextGroupId = "LM_GROUP_HONEYWELL.id";
 
     @BeforeClass
     public void setUp() {
@@ -36,10 +36,10 @@ public class HoneywellLoadGroupApiTest {
     @Test
     public void loadGroupHoneywell_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupHoneywell_01_Create");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
-        String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
+        Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Group Id should not be Null", groupId != null);
         Log.endTestCase("loadGroupHoneywell_01_Create");
     }
@@ -53,8 +53,8 @@ public class HoneywellLoadGroupApiTest {
         Log.info(
                 "Group Id of LmGroupHoneywell created is : " + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         MockLoadGroupHoneywell loadGroupResponse = getResponse.as(MockLoadGroupHoneywell.class);
@@ -84,13 +84,13 @@ public class HoneywellLoadGroupApiTest {
         context.setAttribute("Honeywell_GrpName", name);
 
         Log.info("Updated Load Group is :" + loadGroup);
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup",
+        ExtractableResponse<?> getResponse = ApiCallHelper.put("loadGroups",
                 loadGroup,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("loadGroups",
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
 
         MockLoadGroupHoneywell updatedLoadGroupResponse = getupdatedResponse.as(MockLoadGroupHoneywell.class);
         assertTrue("Name Should be : " + name, name.equals(updatedLoadGroupResponse.getName()));
@@ -108,12 +108,12 @@ public class HoneywellLoadGroupApiTest {
         Log.startTestCase("loadGroupHoneywell_04_Copy");
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getLoadGroupName(MockPaoType.LM_GROUP_HONEYWELL)).build();
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
                 loadGroupCopy,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
 
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
-        String copyGroupId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        Integer copyGroupId= copyResponse.jsonPath().getInt(LoadGroupHelper.CONTEXT_GROUP_ID);
         assertTrue("Group Id should not be Null", copyGroupId != null);
         context.setAttribute("honeywell_CopyGrpId", copyGroupId);
         context.setAttribute("honeywell_CopyGrpName", loadGroupCopy.getName());
@@ -130,7 +130,7 @@ public class HoneywellLoadGroupApiTest {
         Log.startTestCase("loadGroupHoneywell_05_GroupNameValidation");
 
         loadGroup.setName(groupName);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
         MockApiError error = response.as(MockApiError.class);
         assertTrue("Expected message should be - Validation error", error.getMessage().equals("Validation error"));
@@ -151,7 +151,7 @@ public class HoneywellLoadGroupApiTest {
         Log.startTestCase("loadGroupHoneywell_06_KwCapacityValidation");
 
         loadGroup.setKWCapacity(kwCapacity);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
         MockApiError error = response.as(MockApiError.class);
         assertTrue("Expected message should be - Validation error", error.getMessage().equals("Validation error"));
@@ -170,26 +170,20 @@ public class HoneywellLoadGroupApiTest {
         Log.startTestCase("loadGroupHoneywell_07_Delete");
         String expectedMessage = "Id not found";
 
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("Honeywell_GrpName").toString()).build();
-
-        Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("loadGroups",
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", deleteResponse.statusCode() == 200);
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("loadGroups",
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 400", getDeletedLoadGroupResponse.statusCode() == 400);
         MockApiError error = getDeletedLoadGroupResponse.as(MockApiError.class);
         assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
 
         // Delete copy Load group
-        lmDeleteObject = MockLMDto.builder().name(context.getAttribute("honeywell_CopyGrpName").toString()).build();
-        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                context.getAttribute("honeywell_CopyGrpId").toString());
+        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("loadGroups",
+               "/" + context.getAttribute("honeywell_CopyGrpId").toString());
         assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
         Log.startTestCase("loadGroupHoneywell_07_Delete");
     }
@@ -202,8 +196,8 @@ public class HoneywellLoadGroupApiTest {
     public Object[][] getGroupNameData(ITestContext context) {
 
         return new Object[][] { { "", "Name is required.", 422 },
-                { "Test\\Honeywell", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
-                { "Test,Honeywell", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+                { "Test\\Honeywell", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
+                { "Test,Honeywell", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
                 { "TestHoneywellMoreThanSixtyCharacter_TestHoneywellMoreThanSixtyCharacters", "Exceeds maximum length of 60.",
                         422 },
                 { context.getAttribute("Honeywell_GrpName"), "Name must be unique.", 422 } };

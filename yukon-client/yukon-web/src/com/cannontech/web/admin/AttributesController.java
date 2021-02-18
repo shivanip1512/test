@@ -130,7 +130,7 @@ public class AttributesController {
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(attribute, "editAttribute");
-                result = helper.populateBindingError(result, error, response);
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 if (result.hasErrors()) {
                     resp.setStatus(HttpStatus.BAD_REQUEST.value());
                     setupErrorModel(redirectAttributes, attribute, result, isEditMode);
@@ -275,7 +275,11 @@ public class AttributesController {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl);
             for (PaoType type : deviceTypes) {
                 assignment.setPaoType(type);
-                callCreateAssignment(assignment, successDeviceTypes, failedDeviceTypes, attributeName, userContext, request, url, result);
+                callCreateAssignment(assignment, successDeviceTypes, failedDeviceTypes, attributeName, userContext, request, url,
+                        result);
+                if (result.hasErrors()) {
+                    break;
+                }
             }
         }
         
@@ -308,7 +312,7 @@ public class AttributesController {
                                                                                           method, Object.class, assignment);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(assignment, "assignment");
-                helper.populateBindingError(result, error, response);
+                helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
             }
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 successDeviceTypes.add(assignment.getPaoType().getDbString());

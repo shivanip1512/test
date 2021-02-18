@@ -27,6 +27,7 @@
 #include "lmgroupnest.h"
 #include "lmgroupitron.h"
 #include "lmgroupmeterdisconnect.h"
+#include "lmgroupeatoncloud.h"
 
 
 namespace
@@ -58,7 +59,8 @@ static const std::map< DeviceTypes, std::function< CtiLMGroupBase * ( Cti::RowRe
     { TYPE_LMGROUP_SA305,            makeGroup< CtiLMGroupSA305 >           },
     { TYPE_LMGROUP_SADIGITAL,        makeGroup< CtiLMGroupSADigital >       },
     { TYPE_LMGROUP_GOLAY,            makeGroup< CtiLMGroupGolay >           },
-    { TYPE_MACRO,                    makeGroup< CtiLMGroupMacro >           }
+    { TYPE_MACRO,                    makeGroup< CtiLMGroupMacro >           },
+    { TYPE_LMGROUP_EATON_CLOUD,      makeGroup< LMGroupEatonCloud >         }
 };
 
 }

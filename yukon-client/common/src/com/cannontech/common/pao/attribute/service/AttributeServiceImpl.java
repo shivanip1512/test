@@ -166,6 +166,14 @@ public class AttributeServiceImpl implements AttributeService {
                 .forEach(assignment -> customAttributeAssignments.put(assignment.getAttributeAssignmentId(), assignment));
     }
     
+    @Override
+    public CustomAttribute getCustomAttribute(int attributeId) {
+        if (! isValidAttributeId(attributeId)) {
+            throw new NotFoundException("Attribute id:" + attributeId + " is not in the database.");
+        }
+        return customAttributes.getIfPresent(attributeId);
+    }
+
     private PaoType getPaoTypeByAttributeId(int attributeId) {
         return customAttributeAssignments.asMap().values().stream()
                 .filter(assignment -> assignment.getAttributeId() == attributeId)
@@ -190,7 +198,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public CustomAttribute getCustomAttribute(int attributeId) {
+    public CustomAttribute findCustomAttribute(int attributeId) {
         return customAttributes.getIfPresent(attributeId);
     }
     
@@ -242,7 +250,7 @@ public class AttributeServiceImpl implements AttributeService {
             CustomAttribute customAttribute = (CustomAttribute) attribute;
             //TODO: test
             AttributeAssignment attributeAssignment = customAttributeAssignments.asMap().values().stream()
-                    .filter(assignment -> assignment.getAttributeId() == customAttribute.getCustomAttributeId())
+                    .filter(assignment -> assignment.getAttributeId().equals(customAttribute.getCustomAttributeId()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalUseOfAttribute(
                             "Attribute id:" + customAttribute.getCustomAttributeId() + " doesn't exits (not in cache)"));
@@ -331,7 +339,7 @@ public class AttributeServiceImpl implements AttributeService {
         try {
             return BuiltInAttribute.valueOf(name);
         } catch (IllegalArgumentException e) {
-            return getCustomAttribute(Integer.valueOf(name));
+            return findCustomAttribute(Integer.valueOf(name));
         }
     }
 
@@ -838,7 +846,7 @@ public class AttributeServiceImpl implements AttributeService {
         try {
             return BuiltInAttribute.valueOf(attribute);
         } catch (IllegalArgumentException e) {
-            return getCustomAttribute(Integer.valueOf(attribute));
+            return findCustomAttribute(Integer.valueOf(attribute));
         }
     }
 }

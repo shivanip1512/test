@@ -24,34 +24,37 @@ public class SwitchBtnMultiSelectElement {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentElement = parentElement;
-    }
-
-    public void setTrueFalseByName(String buttonName, boolean checked) {
-        WebElement switchElement = getSwitchBtn();
-        String name = buttonName.replace(" ", "_");
-        WebElement switchButton = getSwitchBtnByName(buttonName);
-        WebElement switchBtn;
-        if(name.contains("Load_")) {
-            switchBtn= switchElement.findElement(By.cssSelector("input[id='" + name + "_chk']"));
-        } else {
-            switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
-        }
-        
-        String isChecked = switchBtn.getAttribute("checked");
-
-        if ((isChecked == null && checked) || (isChecked != null && !checked)) {
-            switchButton.click();
-        }
-    }
+    }    
     
+    public void setTrueFalseByLabel(String label, String id, boolean checked) {
+        WebElement switchElement = getSwitchBtn();
+        
+        List<WebElement> buttons = switchElement.findElements(By.cssSelector(".switch-btn"));
+        
+        WebElement el = buttons.stream().filter(x -> x.findElement(By.cssSelector(".b-label")).getText().contains(label)).findFirst().orElseThrow();
+        
+        WebElement switchButton = el.findElement(By.cssSelector("input[id='" + id + "_chk']"));
+        
+        String isChecked = switchButton.getAttribute("checked");
+        
+        if ((isChecked == null && checked) || (isChecked != null && !checked)) {
+            el.findElement(By.cssSelector(".b-label")).click();
+        }
+    }
+
     public boolean isValueSelected(String name) {
         WebElement element = getSwitchBtn();
 
-        WebElement switchBtn = element.findElement(By.cssSelector("input[value='" + name.toUpperCase() + "']"));
-        
+        WebElement switchBtn;
+        if (name.contains("Load_")) {
+            switchBtn = element.findElement(By.cssSelector("input[id='" + name + "_chk']"));
+        } else {
+            switchBtn = element.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
+        }
+
         String isChecked = switchBtn.getAttribute("checked");
-        
-        return !Strings.isNullOrEmpty(isChecked);               
+
+        return !Strings.isNullOrEmpty(isChecked);
     }
 
     // This method should only be used for Load Group of type Ripple
@@ -65,7 +68,8 @@ public class SwitchBtnMultiSelectElement {
             switchButtonIdIndex = bitNo * 2;
         } else
             switchButtonIdIndex = bitNo - 1;
-        WebElement switchBtn = switchElement.findElement(By.cssSelector("input[id='" + elementName + "-chkbx_" + switchButtonIdIndex + "']"));
+        WebElement switchBtn = switchElement
+                .findElement(By.cssSelector("input[id='" + elementName + "-chkbx_" + switchButtonIdIndex + "']"));
 
         String isChecked = switchBtn.getAttribute("checked");
 
@@ -80,15 +84,15 @@ public class SwitchBtnMultiSelectElement {
         WebElement switchBtn = element.findElement(By.cssSelector("input[value='" + name.toUpperCase() + "']"));
 
         String disabled = switchBtn.getAttribute("disabled");
-        
-        return !Strings.isNullOrEmpty(disabled);                
+
+        return !Strings.isNullOrEmpty(disabled);
     }
 
     public boolean allValuesDisabled() {
         WebElement element = getSwitchBtn();
 
         List<WebElement> list = element.findElements(By.cssSelector("label .switch-btn-checkbox"));
-        
+
         boolean allDisabled = true;
         for (WebElement webElement : list) {
             String disabled = webElement.getAttribute("disabled");
@@ -128,5 +132,9 @@ public class SwitchBtnMultiSelectElement {
         List<WebElement> switchElements = switchbtn.findElements(By.cssSelector(".button .b-label"));
 
         return switchElements.size();
+    }
+    
+    public String getSwitchButtonValueString(String switchButtonId) {
+        return this.driverExt.findElement(By.cssSelector("#"+switchButtonId), Optional.empty()).getAttribute("value");
     }
 }

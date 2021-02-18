@@ -3,14 +3,18 @@ package com.eaton.elements;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 
 public class TextEditElement extends EditElement {
 
     private String elementName;
+    private WebElement parentElement;
 
     public TextEditElement(DriverExtensions driverExt, String elementName) {
         super(driverExt, elementName);
@@ -20,6 +24,7 @@ public class TextEditElement extends EditElement {
     public TextEditElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
         super(driverExt, elementName, parentElement);
         this.elementName = elementName;
+        this.parentElement = parentElement;
     }
 
     public TextEditElement(DriverExtensions driverExt, String elementName, String parentName) {
@@ -28,11 +33,14 @@ public class TextEditElement extends EditElement {
     }
 
     public void clearInputValue() {
-        getEditElement().clear();
+        WebElement input = getEditElement();
+        SeleniumTestSetup.moveToElement(input);
+        input.clear();
     }
 
     public void setInputValue(String value) {
         WebElement input = getEditElement();
+        SeleniumTestSetup.moveToElement(input);
 
         input.click();
         input.clear();
@@ -52,8 +60,30 @@ public class TextEditElement extends EditElement {
     }
 
     public String getValidationError() {
-        String by = "span[id='" + this.elementName + ".errors']";
+        String validationError = "";
+        long startTime = System.currentTimeMillis();
+
+        while (validationError.equals("") && (System.currentTimeMillis() - startTime) < 5000) {
+            try {
+                if (this.parentElement != null) {
+                    validationError = this.parentElement.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']")).getText(); 
+                    System.out.println("parent error: " + validationError);
+                } else {
+                    validationError = this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();   
+                    System.out.println("error: " + validationError);
+                }
+            } catch (StaleElementReferenceException | NoSuchElementException ex) {
+            }
+        }
         
-        return this.driverExt.findElement(By.cssSelector(by), Optional.of(3)).getText();        
+        return validationError;
+    }
+    
+    public String getMaxLength() {
+        return getEditElement().getAttribute("maxLength");
+    }
+    
+    public String getPlaceHolder() {
+        return getEditElement().getAttribute("placeholder");
     }
 }

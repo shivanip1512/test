@@ -203,13 +203,6 @@ auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, 
 
             CTILOG_INFO(dout, "Received " << type << " packet (" << indication_pdu->hdr->id << ") with request method (" << message.code << ") for endpointId "<< endpointId);
 
-            if( indication_pdu->hdr->id == mapFind(_inboundIds, endpointId) )
-            {
-                CTILOG_WARN(dout, type << " packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
-
-                throw DuplicatePacket(indication_pdu->hdr->id);
-            }
-
             _inboundIds[endpointId] = indication_pdu->hdr->id;
 
             break;

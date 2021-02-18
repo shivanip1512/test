@@ -644,15 +644,15 @@ public class NmIntegrationController {
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
             return "redirect:viewBase";
         }
-        if (rfnMeterFieldSimulatorResponse == null) {
-            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
-            return "redirect:viewBase";
+        if (rfnMeterFieldSimulatorResponse != null) {
+            model.addAttribute("fieldSimulatorSettings", rfnMeterFieldSimulatorResponse.getSettings());
+        } else {
+            model.addAttribute("fieldSimulatorError", "Field Simulator must be running to use the RFN Meter Device Config Simulator.");
         }
         
         model.addAttribute("currentSettings", rfnMeterResponse.getSettings());
         model.addAttribute("selectedReportingInterval", rfnMeterResponse.getSettings().getReportingInterval());
         model.addAttribute("rfnMeterSimulatorStatus", buildSimulatorStatusJson(rfnMeterResponse.getStatus()));
-        model.addAttribute("fieldSimulatorSettings", rfnMeterFieldSimulatorResponse.getSettings());
         
         model.addAttribute("currentRfnMeterReadAndControlReadSimulatorSettings", rfnMeterReadAndControlResponse.getReadSettings());
         model.addAttribute("currentRfnMeterReadAndControlDisconnectSimulatorSettings", rfnMeterReadAndControlResponse.getDisconnectSettings());
@@ -1088,7 +1088,6 @@ public class NmIntegrationController {
 
     private void updateSettings(FlashScope flash, SimulatedNmMappingSettings currentSettings) {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL, currentSettings.getEmptyNullPercent());
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MIN_HOP, currentSettings.getMinHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MAX_HOP, currentSettings.getMaxHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_ONE_HOP, currentSettings.getNodesOneHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_NUM_DEVICES_PER_GW, currentSettings.getNumberOfDevicesPerGateway());

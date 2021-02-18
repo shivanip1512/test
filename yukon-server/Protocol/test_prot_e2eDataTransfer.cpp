@@ -161,20 +161,21 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_duplicatePacket )
     const auto er = e2e.handleIndication(inbound.bytes, endpointId);
 
     BOOST_CHECK_EQUAL(er.confirmable, false);
+    BOOST_CHECK_EQUAL(er.nodeOriginated, true);
     BOOST_CHECK_EQUAL(er.block.has_value(), false);
     BOOST_CHECK(er.data.empty());
     BOOST_REQUIRE(er.token);
     BOOST_CHECK_EQUAL(*er.token, token);
 
-    try
-    {
-        e2e.handleIndication(inbound.bytes, endpointId);
-        BOOST_FAIL("Did not throw");
-    }
-    catch( Cti::Protocols::E2e::DuplicatePacket &ex )
-    {
-        BOOST_CHECK_EQUAL(ex.what(), "Duplicate packet, id: 29442");
-    }
+    //  Duplicates are retries, and are handled identically to the initial request
+    e2e.handleIndication(inbound.bytes, endpointId);
+
+    BOOST_CHECK_EQUAL(er.confirmable, false);
+    BOOST_CHECK_EQUAL(er.nodeOriginated, true);
+    BOOST_CHECK_EQUAL(er.block.has_value(), false);
+    BOOST_CHECK(er.data.empty());
+    BOOST_REQUIRE(er.token);
+    BOOST_CHECK_EQUAL(*er.token, token);
 }
 
 BOOST_AUTO_TEST_CASE( test_handleIndication_requestNotAcceptable )

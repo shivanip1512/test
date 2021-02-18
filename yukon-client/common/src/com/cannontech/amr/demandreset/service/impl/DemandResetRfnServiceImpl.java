@@ -163,7 +163,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                 DeviceVerificationInfo verificationInfo = infoIterator.next();
                 // find devices that are waiting for verification with the same command request execution id
                 // as execution we are attempting to cancel
-                if (verificationInfo.verificationExecution.getId() == result.getVerificationExecution().getId()) {
+                if (verificationInfo.verificationExecution.getId().equals(result.getVerificationExecution().getId())) {
                     //remove devices from the waiting list
                     infoIterator.remove();
                     //mark devices as canceled
@@ -441,7 +441,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                 SimpleDevice device = verificationInfo.getDevice(pointData.getId());
                 if (device != null) {
                     if (pointData.getPointDataTimeStamp() == null) {
-                        log.debug("Point data recieved. Verification failed for device {} with data {}. PointDataTimeStamp is NULL.",
+                        log.debug("Point data received. Verification failed for device {} with data {}. PointDataTimeStamp is NULL.",
                                 device, pointData);
                         callback.failed(device, getError(DeviceError.NO_TIMESTAMP));
                     } else {
@@ -451,13 +451,13 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                                 && resetState == RfnDemandResetState.SUCCESS) {
                             callback.verified(device, pointData);
                             log.debug(
-                                    "Point data recieved device:{} point data: {}. Verified. ResetTime: {} Requested: {} State: {}",
+                                    "Point data received device:{} point data: {}. Verified. ResetTime: {} Requested: {} State: {}",
                                     device, pointData,
                                     timeFormatter.format(resetTime.toDate()),
                                     timeFormatter.format(verificationInfo.whenRequested.toDate()),
                                     resetState);
                         } else {
-                            log.debug("Verification failed. Point data recieved device:{} point data: {}. ResetTime: {} Requested: {} State: {}",
+                            log.debug("Verification failed. Point data received device:{} point data: {}. ResetTime: {} Requested: {} State: {}",
                                     device, pointData,
                                     timeFormatter.format(resetTime.toDate()),
                                     timeFormatter.format(verificationInfo.whenRequested.toDate()), resetState);

@@ -23,7 +23,7 @@ public class TrendPointModal extends BaseModal {
     }   
     
     public PickerElement getPoint() {
-        return new PickerElement(this.driverExt, "picker-trendPointPicker");
+        return new PickerElement(this.driverExt, Optional.empty(), Optional.of("trendPointPicker"));
     }
     
     public TextEditElement getLabel() {
@@ -49,10 +49,11 @@ public class TrendPointModal extends BaseModal {
     public TextEditElement getDevice() {
         return new TextEditElement(this.driverExt, "multiplier", getModal());
     }
+    
     public SelectPointModal showAndWaitSelectPointModal() {
-        getPoint().clickLinkWithDynamicId();
+        getPoint().clickLink();
         
-        SeleniumTestSetup.waitUntilModalVisibleByTitle("Select Point");
+        SeleniumTestSetup.waitUntilModalOpenByTitle("Select Point");
         
         return new SelectPointModal(this.driverExt, Optional.of("Select Point"), Optional.empty());
     }

@@ -66,9 +66,9 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
             }
             
             String pattern = null;
-            if (exportField.isTimestamp() || exportField.isValue() || exportField.getField().isPlainTextType()) {
+            if (exportField.isTimestamp() || exportField.isValue() || exportField.getField().isPlainTextType() || exportField.getField().isAttributeName()) {
                 //Don't use 'SqlUtils.convertStringToDbValue' since we need to store a null in the db for an empty string.
-                pattern = exportField.getPattern().equals("") ? null : exportField.getPattern();
+                pattern = StringUtils.isEmpty(exportField.getPattern()) ? null : exportField.getPattern();
             }
             
             int maxLength = exportField.getMaxLength();
@@ -152,7 +152,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                     exportField.setPadSide(rs.getEnum("PadSide", PadSide.class));
                 }
                 exportField.setPadChar(SqlUtils.convertDbValueToString(rs.getString("PadChar")));
-                if (exportField.getPadChar().isEmpty() && exportField.getPadSide() != null 
+                if (StringUtils.isEmpty(exportField.getPadChar()) && exportField.getPadSide() != null 
                     && (exportField.getPadSide() == PadSide.LEFT || exportField.getPadSide() == PadSide.RIGHT)) {
                     exportField.setPadChar(" ");
                 }

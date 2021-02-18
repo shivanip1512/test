@@ -1,9 +1,6 @@
 package com.cannontech.web.bulk;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -19,27 +16,17 @@ import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
-import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
-import com.cannontech.common.bulk.collection.device.model.CollectionAction;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionInput;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
-import com.cannontech.common.bulk.mapper.PassThroughMapper;
-import com.cannontech.common.bulk.processor.Processor;
-import com.cannontech.common.bulk.processor.ProcessorFactory;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.config.model.DeviceConfigState;
-import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.service.DeviceConfigService;
-import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.bulk.service.DeviceConfigAssignService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
@@ -49,14 +36,13 @@ public class DeviceConfigController {
 
     @Resource(name="oneAtATimeProcessor") private BulkProcessor bulkProcessor;
 
-    @Autowired private ProcessorFactory processorFactory;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private AlertService alertService;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired protected CollectionActionService collectionActionService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private CollectionActionDao collectionActionDao;
+    @Autowired private DeviceConfigAssignService deviceConfigAssignService;
     
     @RequestMapping(value = "deviceConfigs", method = RequestMethod.GET)
     public String deviceConfigs(DeviceCollection deviceCollection, ModelMap model, String action) throws ServletException {
@@ -98,8 +84,6 @@ public class DeviceConfigController {
             return doSendConfig(request, deviceCollection, method, model, userContext);
         } else if (action.equals("READ")) {
             return doReadConfig(request, deviceCollection, model, userContext);
-        } else if (action.equals("VERIFY")) {
-            return doVerifyConfigs(deviceCollection, userContext, model);
         }
         return null;
     }
@@ -109,20 +93,7 @@ public class DeviceConfigController {
     public String doAssignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext, int configuration)
             throws ServletException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-        Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao
-                .getDeviceConfigStatesByDeviceIds(getDeviceIds(deviceCollection.getDeviceList()));
-        DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(configuration);
-        Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(deviceConfig,
-                deviceToState, userContext);
-
-        LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
-        userInputs.put(CollectionActionInput.CONFIGURATION.name(), deviceConfig.getName());
-        CollectionActionResult result = collectionActionService.createResult(CollectionAction.ASSIGN_CONFIG, userInputs,
-                deviceCollection, userContext);
-        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
-        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
-                new AssignUnassignCallback(result, collectionActionService, collectionActionDao));
-
+        CollectionActionResult result =  deviceConfigAssignService.assign(configuration, deviceCollection, userContext);
         return "redirect:/collectionActions/progressReport/detail?key=" + result.getCacheKey();
     }
 
@@ -131,33 +102,10 @@ public class DeviceConfigController {
     public String doUnassignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext)
             throws ServletException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-        Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao
-                .getDeviceConfigStatesByDeviceIds(getDeviceIds(deviceCollection.getDeviceList()));
-        Processor<SimpleDevice> processor = processorFactory.createUnassignConfigurationToYukonDeviceProcessor(deviceToState,
-                userContext.getYukonUser());
-        CollectionActionResult result = collectionActionService.createResult(CollectionAction.UNASSIGN_CONFIG, null,
-                deviceCollection, userContext);
-        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
-        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
-                new AssignUnassignCallback(result, collectionActionService, collectionActionDao));
-
+        CollectionActionResult result =  deviceConfigAssignService.unassign(deviceCollection, userContext);
         return "redirect:/collectionActions/progressReport/detail?key=" + result.getCacheKey();
     }
-
-    private List<Integer> getDeviceIds(List<SimpleDevice> devices) {
-        return devices
-                .stream()
-                .map(device -> device.getDeviceId())
-                .collect(Collectors.toList());
-    }
     
-    @RequestMapping(value = "doVerifyConfigs", method = RequestMethod.POST)
-    public String doVerifyConfigs(DeviceCollection deviceCollection, YukonUserContext context, ModelMap model) {
-        model.addAttribute("deviceCollection", deviceCollection);
-        int key = deviceConfigService.verifyConfigs(deviceCollection, context);
-        return "redirect:/collectionActions/progressReport/detail?key=" + key;
-    }
-
     @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     @RequestMapping(value = "doReadConfig", method = RequestMethod.POST)
     public String doReadConfig(HttpServletRequest request, DeviceCollection deviceCollection, ModelMap model, 
@@ -178,19 +126,5 @@ public class DeviceConfigController {
                 messageResolver.getMessageSourceAccessor(context), request);
         int key = deviceConfigService.sendConfigs(deviceCollection, method, alertCallback, context);
         return "redirect:/collectionActions/progressReport/detail?key=" + key;
-    }
-    
-    private class AssignUnassignCallback extends CollectionActionBulkProcessorCallback {
-
-        public AssignUnassignCallback(CollectionActionResult result, CollectionActionService collectionActionService,
-                CollectionActionDao collectionActionDao) {
-            super(result, collectionActionService, collectionActionDao);
-        }
-        
-        @Override
-        public void processingSucceeded() {
-            super.processingSucceeded();
-            deviceConfigService.updateConfigStateForAssignAndUnassign(result);
-        }
     }
 }

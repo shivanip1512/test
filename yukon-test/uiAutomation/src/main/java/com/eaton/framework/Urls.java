@@ -9,8 +9,9 @@ public final class Urls {
     public static final String SITE_MAP = "/sitemap";
     public static final String EDIT = "/edit";
     public static final String SEARCH = "/search";
-    public static final String SEARCH_PARAM = "?q=";
-
+    public static final String SEARCH_PARAM = "?q=";    
+    public static final String OTHER_ACTIONS = "bulk/collectionActions?collectionType=idList&idList.ids=";
+    
     public static final class Ami {
         public static final String AMI_DASHBOARD = "/dashboards/-2/view?dashboardPageType=AMI";
         public static final String ARCHIVE_DATA_ANALYSIS = "/bulk/archiveDataAnalysis/list/view";
@@ -188,11 +189,18 @@ public final class Urls {
         public static final String WORK_ORDER_REPORTS = "/operator/WorkOrder/Report.jsp";
         public static final String ZIGBEE_PROBLEM_DEVICES = "/stars/operator/inventory/zbProblemDevices/view";
         public static final String VIRTUAL_DEVICES = "/stars/virtualDevices";
-
+        public static final String VIRTUAL_DEVICES_NAME_ASC = "/stars/virtualDevices?sort=name&dir=asc";
+        public static final String VIRTUAL_DEVICES_NAME_DESC = "/stars/virtualDevices?sort=name&dir=desc";
+        public static final String VIRTUAL_DEVICES_STATUS_ASC = "/stars/virtualDevices?sort=status&dir=asc";
+        public static final String VIRTUAL_DEVICES_STATUS_DESC = "/stars/virtualDevices?sort=status&dir=desc";
+        public static final String VIRTUAL_DEVICES_EDIT = "/stars/virtualDevice";
+        public static final String VIRTUAl_DEVICE_DETAIL = "/stars/virtualDevice/";
+        
     }
 
     public static final class Tools {
         public static final String COLLECTION_ACTIONS = "/collectionActions/home";
+        public static final String AGGREGATE_INTERVAL_DATA_REPORT = "/tools/aggregateIntervalReport/view";
         public static final String COMMANDER = "/tools/commander";
         public static final String DATA_EXPORTER = "/tools/data-exporter/view";
         public static final String DATA_VIEWER = "/tools/data-viewer";
@@ -215,6 +223,16 @@ public final class Urls {
         public static final String PROBABILITY_PEAK_LOAD = "/multispeak/visualDisplays/probabilityForPeak/home";
         public static final String RECENT_RESULTS = "/collectionActions/recentResults";
         public static final String DATA_STREAMING = "/tools/dataStreaming/configurations";
+        
+        public static final String POINT = "/tools/points/";
+        
+        public static final String ANALOG_POINT = "/tools/points/Analog/create?parentId=";
+        public static final String CALC_ANALOG_POINT = "/tools/points/CalcAnalog/create?parentId=";
+        public static final String CALC_STATUS_POINT = "/tools/points/CalcStatus/create?parentId=";
+        public static final String DEMAND_ACCUMULATOR_POINT = "/tools/points/DemandAccumulator/create?parentId=";
+        public static final String PULSE_ACCUMULATOR_POINT = "/tools/points/PulseAccumulator/create?parentId=";
+        public static final String STATUS_POINT = "/tools/points/Status/create?parentId=";
+        
     }
 
     public static final class Admin {
@@ -247,6 +265,7 @@ public final class Urls {
         public static final String ENERGY_COMPANY_OPERATOR_USER_LIST = "/admin/energyCompany/operatorLogin/home?ecId=";
         public static final String ENERGY_COMPANY_OPERATOR_USER_EDIT = "/admin/energyCompany/operatorLogin/edit?ecId=";
         public static final String ENERGY_COMPANY_OPERATOR_USER_DETAILS = "/admin/energyCompany/operatorLogin/view?ecId=";
+        public static final String ENERGY_COMPANY_OPERATOR_USER_AFTER_DELETE_OR_EDIT = "/admin/energyCompany/operatorLogin/home?";
         public static final String ENERGY_COMPANY_OPERATOR_LOGIN_ID = "&operatorLoginId=";
 
         public static final String ACTIVE_JOBS = "/admin/jobsscheduler/active";
@@ -259,6 +278,8 @@ public final class Urls {
         public static final String STATISTICAL_REPORTS = "/analysis/Reports.jsp?groupType=STATISTICAL";
         public static final String SURVEYS = "/stars/survey/list";
         public static final String THEMES = "/admin/config/themes";
+        
+        public static final String ATTRIBUTES_LIST = "/admin/config/attributes";
     }
 
     public static final class Support {

@@ -70,18 +70,13 @@ public enum WidgetType implements DisplayableEnum {
     static {
         Builder<WidgetType, String> javascriptBuilder = new ImmutableListMultimap.Builder<WidgetType, String>()
             .put(SYSTEM_MESSAGING, "/resources/js/pages/yukon.support.systemHealth.js")
-            .putAll(DATA_COLLECTION, baseJSPath + "yukon.widget.dataCollection.js",
-                                     "HIGH_STOCK")
+            .putAll(DATA_COLLECTION, baseJSPath + "yukon.widget.dataCollection.js")
             .putAll(ASSET_AVAILABILITY, baseJSPath + "yukon.widget.assetAvailability.js",
-                    "HIGH_STOCK")
+                    "/resources/js/common/yukon.assetAvailability.pieChart.js")
             .put(INFRASTRUCTURE_WARNINGS, baseJSPath + "yukon.widget.infrastructureWarnings.js")
-            .putAll(PORTER_QUEUE_COUNTS, baseJSPath + "yukon.widget.porterQueueCounts.js",
-                                         "HIGH_STOCK",
-                                         "HIGH_STOCK_NO_DATA")
+            .putAll(PORTER_QUEUE_COUNTS, baseJSPath + "yukon.widget.porterQueueCounts.js")
             .putAll(TRENDS, baseJSPath + "yukon.widget.trends.js",
-                            "/resources/js/common/yukon.trends.js",
-                                         "HIGH_STOCK",
-                                         "HIGH_STOCK_NO_DATA");
+                            "/resources/js/common/yukon.trends.js");
         widgetSpecificJavascript = javascriptBuilder.build();
         
         widgetSpecificCss = ImmutableListMultimap.of(

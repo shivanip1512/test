@@ -1,19 +1,25 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<table class="compact-results-table row-highlighting">
-    <tr>
-        <tags:sort column="${POINTNAME}" />
-        <tags:sort column="${ATTRIBUTE}" />
-        <th></th>
-        <th><i:inline key="yukon.common.value"/></th>
-        <th><i:inline key="yukon.common.dateTime"/></th>
-        <tags:sort column="${POINTTYPE}" />
-        <tags:sort column="${POINTOFFSET}" />
-    </tr>
+<table class="compact-results-table row-highlighting has-actions">
+    <thead>
+        <tr>
+            <tags:sort column="${POINTNAME}" />
+            <tags:sort column="${ATTRIBUTE}" />
+            <th></th>
+            <th><i:inline key="yukon.common.value"/></th>
+            <th><i:inline key="yukon.common.dateTime"/></th>
+            <tags:sort column="${POINTTYPE}" />
+            <tags:sort column="${POINTOFFSET}" />
+            <cti:checkRolesAndProperties value="MANAGE_POINT_DATA" level="UPDATE">
+                <th class="action-column"><cti:icon icon="icon-cog" classes="M0" /></th>
+            </cti:checkRolesAndProperties>
+        </tr>
+    </thead>
     <tbody>
         <c:forEach var="point" items="${points.resultList}">
             <tr>
@@ -68,6 +74,22 @@
                 <td>
                     ${point.paoPointIdentifier.pointIdentifier.offset}
                 </td>
+                <cti:checkRolesAndProperties value="MANAGE_POINT_DATA" level="UPDATE">
+                    <td>
+                        <cm:dropdown icon="icon-cog">
+                            <cti:msg2 key="yukon.common.point.manualEntry.title" var="title"/>
+                            <cti:list var="arguments">
+                                <cti:item value="${title}"/>
+                                <cti:item value="${device.paoName}"/>
+                                <cti:item value="${point.pointName}"/>
+                            </cti:list>
+                            <cti:msg2 key="yukon.common.point.popupTitle" arguments="${arguments}" var="popupTitle"/>
+                            <cm:dropdownOption key="yukon.common.point.manualEntry.title" icon="icon-pencil"
+                                               data-point-id="${point.pointId}" data-popup-title="${popupTitle}" 
+                                               classes="js-manual-entry" id="manualEntry-${point.pointId}"/>
+                        </cm:dropdown>
+                    </td>
+                </cti:checkRolesAndProperties>
             </tr>
         </c:forEach>
     </tbody>

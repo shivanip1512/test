@@ -34,7 +34,7 @@ public class SepTemperatureOffsetGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.getGears().get(0).setGearName("");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Gear Name is required."),
@@ -50,7 +50,7 @@ public class SepTemperatureOffsetGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.getGears().get(0).setGearName("GearNameLenghthMoreThan30Charac");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Exceeds maximum length of 30."),
@@ -68,7 +68,7 @@ public class SepTemperatureOffsetGearApiTest {
                                                                                                                                     .get(0)
                                                                                                                                     .getFields();
         mockSepTemperatureOffsetGearFields.setWhenToChangeFields(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields", "When To Change Fields is required."),
@@ -86,7 +86,7 @@ public class SepTemperatureOffsetGearApiTest {
                                                                                                                                     .get(0)
                                                                                                                                     .getFields();
         mockSepTemperatureOffsetGearFields.setCapacityReduction(-2);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.capacityReduction", "Must be between 0 and 100."),
@@ -104,7 +104,7 @@ public class SepTemperatureOffsetGearApiTest {
                                                                                                                                     .get(0)
                                                                                                                                     .getFields();
         mockSepTemperatureOffsetGearFields.setCapacityReduction(101);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.capacityReduction", "Must be between 0 and 100."),
@@ -125,7 +125,7 @@ public class SepTemperatureOffsetGearApiTest {
         mockSepTemperatureOffsetGearFields.setMode(MockMode.HEAT);
         mockSepTemperatureOffsetGearFields.setTempMeasureUnit(MockTemperatureMeasureUnit.FAHRENHEIT);
         mockSepTemperatureOffsetGearFields.setOffset(0.0);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.offset", "Must be between 0.1 and 77.7"),
@@ -145,7 +145,7 @@ public class SepTemperatureOffsetGearApiTest {
         mockSepTemperatureOffsetGearFields.setMode(MockMode.HEAT);
         mockSepTemperatureOffsetGearFields.setTempMeasureUnit(MockTemperatureMeasureUnit.FAHRENHEIT);
         mockSepTemperatureOffsetGearFields.setOffset(77.8);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.offset", "Must be between 0.1 and 77.7"),
@@ -166,7 +166,7 @@ public class SepTemperatureOffsetGearApiTest {
         mockSepTemperatureOffsetGearFields.setMode(MockMode.HEAT);
         mockSepTemperatureOffsetGearFields.setTempMeasureUnit(MockTemperatureMeasureUnit.CELSIUS);
         mockSepTemperatureOffsetGearFields.setOffset(0.0);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.offset", "Must be between 0.1 and 25.4"),
@@ -187,7 +187,7 @@ public class SepTemperatureOffsetGearApiTest {
         mockSepTemperatureOffsetGearFields.setMode(MockMode.HEAT);
         mockSepTemperatureOffsetGearFields.setTempMeasureUnit(MockTemperatureMeasureUnit.CELSIUS);
         mockSepTemperatureOffsetGearFields.setOffset(25.5);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.offset", "Must be between 0.1 and 25.4"),
@@ -206,7 +206,7 @@ public class SepTemperatureOffsetGearApiTest {
                                                                                                                                     .get(0)
                                                                                                                                     .getFields();
         mockSepTemperatureOffsetGearFields.setCriticality(0);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.criticality", "Must be between 1 and 15."),
@@ -224,7 +224,7 @@ public class SepTemperatureOffsetGearApiTest {
                                                                                                                                     .get(0)
                                                                                                                                     .getFields();
         mockSepTemperatureOffsetGearFields.setCriticality(16);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.criticality", "Must be between 1 and 15."),
@@ -242,7 +242,7 @@ public class SepTemperatureOffsetGearApiTest {
                                                                                                                                     .get(0)
                                                                                                                                     .getFields();
         mockSepTemperatureOffsetGearFields.setHowToStopControl(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.howToStopControl", "How To Stop Control is required."),

@@ -50,6 +50,12 @@ const IM_EX_MSG OutboundQueue
     OutboundQueue::MeterDisconnectRestore
     {"yukon.notif.stream.dr.MeterDisconnectRestoreMessage"};
 const IM_EX_MSG OutboundQueue
+    OutboundQueue::EatonCloudScheduledCyclingRequest
+    {"yukon.notif.stream.dr.EatonCloudScheduledCyclingRequest"};
+const IM_EX_MSG OutboundQueue
+    OutboundQueue::EatonCloudStopRequest
+    {"yukon.notif.stream.dr.EatonCloudStopRequest"};
+const IM_EX_MSG OutboundQueue
     OutboundQueue::HistoryRowAssociationResponse
     {"yukon.notif.stream.dr.HistoryRowAssociationResponse"};
 const IM_EX_MSG OutboundQueue
@@ -117,4 +123,12 @@ const IM_EX_MSG InboundQueue
 const IM_EX_MSG InboundQueue
     InboundQueue::FieldSimulatorModifyConfiguration
     { "com.eaton.eas.yukon.fieldSimulator.modifyConfiguration" };
+
+const IM_EX_MSG InboundQueue
+    InboundQueue::RfnMeterDisconnectRequest
+    { "com.eaton.eas.yukon.RfnMeterDisconnectRequest" };
+const IM_EX_MSG InboundQueue
+    InboundQueue::RfnMeterReadRequest
+    { "com.eaton.eas.yukon.RfnMeterReadRequest" };
+
 }

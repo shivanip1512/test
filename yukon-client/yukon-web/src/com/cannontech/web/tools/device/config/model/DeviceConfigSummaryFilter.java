@@ -39,6 +39,10 @@ public class DeviceConfigSummaryFilter {
         return !CollectionUtils.isEmpty(configurationIds);
     }
 
+    public boolean isDisplayAll() {
+        return CollectionUtils.isEmpty(configurationIds) && !isDisplayUnassigned();
+    }
+
     public void setDisplayUnassigned(boolean displayUnassigned) {
         this.displayUnassigned = displayUnassigned;
     }

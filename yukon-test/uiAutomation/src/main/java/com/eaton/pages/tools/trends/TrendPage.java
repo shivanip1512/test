@@ -9,7 +9,7 @@ import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.WebTable;
 import com.eaton.elements.WebTableRow;
-import com.eaton.elements.WebTableRow.Icon;
+import com.eaton.elements.WebTableRow.Icons;
 import com.eaton.elements.modals.TrendMarkerModal;
 import com.eaton.elements.modals.TrendPointModal;
 import com.eaton.elements.tabs.TabElement;
@@ -94,7 +94,7 @@ public class TrendPage extends PageBase {
     public TrendPointModal showAndWaitAddPointModal() {
         getpointSetupAdd().click();
         
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-add-point-dialog");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-add-point-dialog");
         
         return new TrendPointModal(this.driverExt, Optional.empty(), Optional.of("js-add-point-dialog"));
     }
@@ -102,9 +102,9 @@ public class TrendPage extends PageBase {
     public TrendPointModal showAndWaitEditPointModal(String modalTitle, int index) {
         WebTableRow row = getPointSetupTable().getDataRowByIndex(index);
         
-        row.clickIcon(Icon.PENCIL);
+        row.clickActionIcon(Icons.PENCIL);
         
-        SeleniumTestSetup.waitUntilModalVisibleByTitle(modalTitle);
+        SeleniumTestSetup.waitUntilModalOpenByTitle(modalTitle);
         
         return new TrendPointModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
     }
@@ -112,9 +112,9 @@ public class TrendPage extends PageBase {
     public TrendMarkerModal showAndWaitEditMarkerModal(String modalTitle, int index) {                
         WebTableRow row = getMarkerSetupTable().getDataRowByIndex(index);
         
-        row.clickIcon(Icon.PENCIL);
+        row.clickActionIcon(Icons.PENCIL);
         
-        SeleniumTestSetup.waitUntilModalVisibleByTitle(modalTitle);
+        SeleniumTestSetup.waitUntilModalOpenByTitle(modalTitle);
         
         return new TrendMarkerModal(this.driverExt, Optional.of(modalTitle) ,Optional.empty());
     }
@@ -122,7 +122,7 @@ public class TrendPage extends PageBase {
     public TrendMarkerModal showAndWaitAddMarkerModal() {
         getMarkerSetupAdd().click();
         
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-add-marker-dialog");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-add-marker-dialog");
         
         return new TrendMarkerModal(this.driverExt, Optional.empty(), Optional.of("js-add-marker-dialog"));
     }

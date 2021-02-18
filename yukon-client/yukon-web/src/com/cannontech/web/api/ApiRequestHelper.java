@@ -31,8 +31,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
-import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.ProgramConstraint;
@@ -58,30 +58,44 @@ public class ApiRequestHelper {
     private static final String authToken = "authToken";
     @Autowired private RestTemplate apiRestTemplate;
     @Autowired private GlobalSettingDao settingDao;
+    
+    public static volatile boolean isSSLConfigInitialized = false; 
     private static final Logger log = YukonLogManager.getLogger(ApiRequestHelper.class);
 
     public synchronized void setProxyAndSslConfig() {
-        try {
-            TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-    
-            SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(SSLContexts.custom()
-                                                                                                           .loadTrustMaterial(acceptingTrustStrategy)
-                                                                                                           .build(),
-                                                                                                NoopHostnameVerifier.INSTANCE);
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
+            HttpHost proxyHost = new HttpHost(httpProxy.getHost(), httpProxy.getPort());
+            HttpClient httpClient = HttpClientBuilder.create()
+                                                     .setProxy(proxyHost)
+                                                     .setSSLSocketFactory(getSSLConnectionSocketFactory())
+                                                     .build();
+            factory.setHttpClient(httpClient);
+        });
+        apiRestTemplate.setRequestFactory(factory);
+    }
 
-            HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-            YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
-                HttpHost proxyHost = new HttpHost(httpProxy.getHost(), httpProxy.getPort());
-                HttpClient httpClient = HttpClientBuilder.create()
-                        .setProxy(proxyHost)
-                        .setSSLSocketFactory(connectionSocketFactory)
-                        .build();
-                factory.setHttpClient(httpClient);
-            });
-            apiRestTemplate.setRequestFactory(factory);
+    public synchronized void setSslConfig() {
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        HttpClient httpClient = HttpClientBuilder.create()
+                                                 .setSSLSocketFactory(getSSLConnectionSocketFactory())
+                                                 .build();
+        factory.setHttpClient(httpClient);
+        apiRestTemplate.setRequestFactory(factory);
+        isSSLConfigInitialized = true;
+    }
+
+    private SSLConnectionSocketFactory getSSLConnectionSocketFactory() {
+        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+        SSLConnectionSocketFactory connectionSocketFactory = null;
+        try {
+            connectionSocketFactory = new SSLConnectionSocketFactory(SSLContexts.custom()
+                                                                                .loadTrustMaterial(acceptingTrustStrategy)
+                                                                                .build(), NoopHostnameVerifier.INSTANCE);
         } catch (KeyManagementException|NoSuchAlgorithmException|KeyStoreException e) {
-            log.error("Error setting up SSL support", e);
+            log.error("Error setting up Proxy and SSL support", e);
         }
+        return connectionSocketFactory;
     }
 
     @SuppressWarnings("rawtypes")
@@ -92,8 +106,6 @@ public class ApiRequestHelper {
         paramTypeRefMap.put(LMDto.class, new ParameterizedTypeReference<List<LMDto>>() {
         });
         paramTypeRefMap.put(LiteGear.class, new ParameterizedTypeReference<List<LiteGear>>() {
-        });
-        paramTypeRefMap.put(ControlRawState.class, new ParameterizedTypeReference<List<ControlRawState>>() {
         });
         paramTypeRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<List<DeviceBaseModel>>() {
         });
@@ -124,7 +136,7 @@ public class ApiRequestHelper {
         });
         paramTypeObjectRefMap.put(ProgramGear.class, new ParameterizedTypeReference<ProgramGear>() {
         });
-        paramTypeObjectRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<PaginatedResponse<DeviceBaseModel>>() {
+        paramTypeObjectRefMap.put(VirtualDeviceBaseModel.class, new ParameterizedTypeReference<PaginatedResponse<VirtualDeviceBaseModel<?>>>() {
         });
     }
 

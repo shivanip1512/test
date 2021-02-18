@@ -9,6 +9,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/thread.hpp>
 #include <boost/optional.hpp>
+#include <boost/bind/bind.hpp>
 
 #include <string>
 #include <atomic>

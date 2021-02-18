@@ -378,10 +378,10 @@ RFN-420 Node in L & G Focus AX Prior to Advanced Metrology:
     - Watt-hours Received Rate D:  { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateD                 ] }
     - Watt-hours Net Rate D:       { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ] }
     - Peak Demand Rate D:          { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateD           ] }
-    - Watt-hours Delivered Rate E: { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateE                 ] }
-    - Watt-hours Received Rate E:  { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateE                 ] }
-    - Watt-hours Net Rate E:       { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateE ] }
-    - Peak Demand Rate E:          { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateE           ] }
+    - Watt-hours Delivered Rate E: { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateE                 ], Mapped: false }
+    - Watt-hours Received Rate E:  { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateE                 ], Mapped: false }
+    - Watt-hours Net Rate E:       { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateE ], Mapped: false }
+    - Peak Demand Rate E:          { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateE           ], Mapped: false }
     - Voltage Phase A:             { Unit: *V,      Modifiers: [ *PhA, *milli                     ] }
     - Voltage Phase B:             { Unit: *V,      Modifiers: [ *PhB, *milli                     ] }
     - Voltage Phase C:             { Unit: *V,      Modifiers: [ *PhC, *milli                     ] }
@@ -703,21 +703,25 @@ Itron Sentinel:
     - Volt-ampere hours Delivered:                                              { Unit: *VAh,   Modifiers: [ *Q1, *Q4                                   ], Models: *_1234, Itron name: "Volt-ampere Hours Delivered" }
     - Volt-ampere hours Received:                                               { Unit: *VAh,   Modifiers: [ *Q2, *Q3                                   ], Models: *_1234, Itron name: "Volt-ampere Hours Received" }
     - Volt-ampere hours Lagging:                                                { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q4                              ], Models: *_1234, Itron name: "Volt-ampere Hours Lagging" }
+    - Volt-amperes Delivered:                                                   { Unit: *VA,    Modifiers: [ *Q1, *Q4                                   ], Models: *__234, Mapped: false, Itron name: "Volt-amperes Delivered" }
     - Peak Volt-amperes Delivered:                                              { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max                             ], Models: *_1234, Itron name: "Max Volt-amperes Delivered" }
     - Coincident Cumulative Delivered Volt-amperes:                             { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *Coin1, *Cuml              ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Delivered" }
     - Coincident Continuous Cumulative Delivered Volt-amperes:                  { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *Coin2, *Cont              ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Delivered" }
     - Frozen Peak Delivered Volt-amperes:                                       { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *Prev                      ], Models: *__234, Itron name: "Previous Delivered Volt-amperes" }
     - Time of Frozen Peak Delivered Volt-amperes:                               { Unit: *s,     Modifiers: [ *Coin1, *Prev                              ], Models: *__234}
+    - Volt-amperes Received:                                                    { Unit: *VA,    Modifiers: [ *Q2, *Q3                                   ], Models: *__234, Mapped: false, Itron name: "Volt-amperes Received" }
     - Peak Volt-amperes Received:                                               { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max                             ], Models: *_1234, Itron name: "Max Volt-amperes Received" }
     - Coincident Cumulative Received Volt-amperes:                              { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *Coin1, *Cuml              ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Received" }
     - Coincident Continuous Cumulative Received Volt-amperes:                   { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cont              ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Received" }
     - Frozen Peak Received Volt-amperes:                                        { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *Prev                      ], Models: *__234, Itron name: "Previous Received Volt-amperes" }
     - Time of Frozen Peak Received Volt-amperes:                                { Unit: *s,     Modifiers: [ *Coin1, *Prev                              ], Models: *__234}
+    - Volt-amperes Lagging:                                                     { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4                              ], Models: *__234, Mapped: false, Itron name: "Volt-amperes Lagging" }
     - Peak Volt-amperes Lagging:                                                { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max                        ], Models: *_1234, Itron name: "Max Volt-amperes Lagging" }
     - Coincident Cumulative Volt-ampers Lagging:                                { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *Coin1, *Cuml         ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered" }
     - Coincident Continuous Cumulative Volt-amperes Lagging:                    { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *Coin2, *Cont         ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered" }
     - Q-hours Delivered:                                                        { Unit: *Qh,    Modifiers: [ *Q1, *Q4                                   ], Models: *_1234, Mapped: false, Itron name: "Q-hours" }
     - Q-hours Received:                                                         { Unit: *Qh,    Modifiers: [ *Q2, *Q3                                   ], Models: *_1234, Mapped: false, Itron name: "Q-hours Received" }
+    - Delivered Demand:                                                         { Unit: *W,     Modifiers: [ *Q1, *Q4                                   ], Models: *_1234, Mapped: false, Itron name: "Watts Delivered" }
     - Peak Delivered Demand:                                                    { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max                             ], Models: *_1234, Itron name: "Max Watts Delivered" }
     - Coincident Time of Peak Delivered Demand:                                 { Unit: *s,     Modifiers: [ *Coin1                                     ], Models: *_1234, Itron name: "Time of Max Watts Delivered" }
     - Coincident Cumulative Delivered Demand:                                   { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *Coin2, *Cuml              ], Models: *_1234, Mapped: false, Itron name: "Cumulative Watts Delivered" }
@@ -727,14 +731,24 @@ Itron Sentinel:
     - Coincident Var Delivered:                                                 { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Coin6                           ], Models: *_1234, Mapped: false, Itron name: "VAR Delivered at Max Watts Delivered" }
     - Frozen Peak Delivered Demand:                                             { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *Prev                      ], Models: *_1234, Itron name: "Previous Delivered Watt" }
     - Time of Frozen Peak Delivered Demand:                                     { Unit: *s,     Modifiers: [ *Coin1, *Prev                              ], Models: *_1234}
+    - Received Demand:                                                          { Unit: *W,     Modifiers: [ *Q2, *Q3                                   ], Models: *_1234, Mapped: false, Itron name: "Received Watts" }
     - Peak Received Demand:                                                     { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max                             ], Models: *_1234, Itron name: "Max Watts Received" }
     - Coincident Time of Peak Received Demand:                                  { Unit: *s,     Modifiers: [ *Coin1                                     ], Models: *_1234, Itron name: "Time of Max Watts Received" }
     - Coincident Cumulative Received Demand:                                    { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cuml              ], Models: *_1234, Mapped: false, Itron name: "Cumulative Watts Received" }
     - Coincident Continuous Cumulative Received Demand:                         { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *Coin3, *Cont              ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Watts Received" }
+    - Total Watts:                                                              { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4                         ], Models: *_1234, Mapped: false, Itron name: "Watt Uni-Directional" }
+    - Net Watts:                                                                { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                   ], Models: *_1234, Mapped: false, Itron name: "Watt Net" }
+    - Volt-ampere-reactive Delivered:                                           { Unit: *Var,   Modifiers: [ *Q1, *Q2                                   ], Models: *__234, Mapped: false, Itron name: "Volt-ampere-reactive Delivered" }
     - Peak Volt-ampere-reactive Delivered:                                      { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max                             ], Models: *__234, Itron name: "Max Volt-ampere-reactive Delivered" }
     - Coincident Time of Peak Volt-ampere-reactive Delivered:                   { Unit: *s,     Modifiers: [ *Coin1                                     ], Models: *__234, Itron name: "Time of Max Var Delivered" }
     - Coincident Cumulative Volt-ampere-reactive Delivered:                     { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *Coin2, *Cuml              ], Models: *__234, Itron name: Cumulative Volt-ampere-reactive Delivered }
     - Coincident Continuous Cumulative Volt-ampere-reactive Delivered:          { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *Coin3, *Cont              ], Models: *__234, Mapped: false, Itron name: Continuous Cumulative Volt-ampere-reactive Delivered }
+    - Volt-ampere-reactive Received:                                            { Unit: *Var,   Modifiers: [ *Q3, *Q4                                   ], Models: *__234, Mapped: false, Itron name: "Volt-ampere-reactive Received" }
+    - Volt-ampere-reactive Net:                                                 { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                   ], Models: *__234, Mapped: false, Itron name: "Var Net" }
+    - Volt-ampere-reactive Q1:                                                  { Unit: *Var,   Modifiers: [ *Q1                                        ], Models: *__234, Mapped: false, Itron name: "Var Q1"}
+    - Volt-ampere-reactive Q2:                                                  { Unit: *Var,   Modifiers: [ *Q2                                        ], Models: *____4, Mapped: false, Itron name: "Var Q2" }
+    - Volt-ampere-reactive Q3:                                                  { Unit: *Var,   Modifiers: [ *Q3                                        ], Models: *____4, Mapped: false, Itron name: "Var Q3" }
+    - Volt-ampere-reactive Q4:                                                  { Unit: *Var,   Modifiers: [ *Q4                                        ], Models: *__234, Mapped: false, Itron name: "Var Q4" }
     - Watt-hours Delivered Rate A:                                              { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateA                           ], Models: *_1234, Itron name: "Delivered kWh" }
     - Watt-hours Received Rate A:                                               { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateA                           ], Models: *_1234, Itron name: "Received kWh" }
     - Watt-hours Net Rate A:                                                    { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA           ], Models: *_1234, Itron name: "Net Delivered kWh" }
@@ -943,7 +957,7 @@ Itron Sentinel:
 
 #  Table 10 - RFN-500 Node in Landis & Gyr S4e and S4x
 RFN-500 Node in Landis & Gyr S4e and S4x:
-    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4                                              ], Models: *____-____-650 }
+    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4                                              ], Models: *ADTR-RDTR-650 }
     - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3                                              ], Models: *ADTR-RDTR-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4                                    ], Models: *ADTR-RDTR-650 }
     - Net Watthours:                              { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                              ], Models: *ADTR-RDTR-___ }
@@ -972,12 +986,14 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered watts:               { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *Coin2, *Cuml                         ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered watts: { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *Coin3, *Cont                         ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered watts:       { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Coin4                            ], Models: *____-____-650 }
     - Previous Peak Delivered watts:              { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *Prev                                 ], Models: *____-____-650 }
     - Time of Previous Peak Delivered watts:      { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *____-____-650 }
     - Peak Received watts:                        { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max                                        ], Models: *____-____-650 }
     - Time of Peak Received watts:                { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *____-____-650 }
     - Cumulative Peak Received watts:             { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cuml                         ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received watts:  { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *Coin3, *Cont                         ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received watts:        { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Coin4                            ], Models: *____-____-650 }
     - Previous Peak Received watts:               { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *Prev                                 ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received watts:       { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *____-____-650 }
     - Peak Total watts:                           { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max                              ], Models: *ADTR-RDTR-650 }
@@ -998,46 +1014,54 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered VAR:                 { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *____-____-650 }
     - Cumulative Peak Delivered VAR:              { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *Coin2, *Cuml                         ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered VAR:   { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *Coin3, *Cont                         ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered VAR:         { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Coin4                            ], Models: *____-____-650 }
     - Previous Peak Delivered VAR:                { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *Prev                                 ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Delivered VAR:        { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *____-____-650 }
     - Peak Received VAR:                          { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max                                        ], Models: *____-____-650 }
     - Time of Peak Received VAR:                  { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *____-____-650 }
     - Cumullative Peak Received VAR:              { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *Coin2                                ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received VAR:    { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *Coin3                                ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received VAR:          { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Coin4                            ], Models: *____-____-650 }
     - Previous Peak Received VAR:                 { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *Prev                                 ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received VAR:         { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *____-____-650 }
     - Peak Total VAR:                             { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max                              ], Models: *____-RDTR-650 }
     - Time of Peak Total VAR:                     { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *____-RDTR-650 }
     - Cumulative Peak Total VAR:                  { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Coin2, *Cuml               ], Models: *____-RDTR-650, Mapped: false }
     - Continuous Cumulative Peak Total VAR:       { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Coin3, *Cont               ], Models: *____-RDTR-650, Mapped: false }
+    - Power Factor at Peak Total VAR:             { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Coin4                            ], Models: *____-____-650 }
     - Previous Peak Total VAR:                    { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev                       ], Models: *____-RDTR-650, Mapped: false }
     - Time of Previous Peak Total VAR:            { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *____-RDTR-650 }
     - Peak Delivered VA:                          { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max                                        ], Models: *____-____-650 }
     - Time of Peak Delivered VA:                  { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *____-____-650 }
     - Cumulative Peak Delivered VA:               { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *Coin2, *Cuml                         ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered VA:    { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *Coin3, *Cont                         ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered VA:          { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Coin4                            ], Models: *____-____-650 }
     - Previous Peak Delivered VA:                 { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *Prev                                 ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Delivered VA:         { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *____-____-650 }
     - Peak Received VA:                           { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max                                        ], Models: *____-____-650 }
     - Time of Peak Received VA:                   { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *____-____-650 }
     - Cumulative Peak Received VA:                { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cuml                         ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received VA:     { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *Coin3, *Cont                         ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received VA:          { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Coin4                            ], Models: *____-____-650 }
     - Previous Peak Received VA:                  { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *Prev                                 ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received VA:          { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *____-____-650 }
     - Peak Total VA:                              { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max                              ], Models: *____-RDTR-650 }
     - Time of Peak Total VA:                      { Unit: *s,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Coin1                      ], Models: *____-RDTR-650 }
     - Cumulative Peak Total VA:                   { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Coin2, *Cuml               ], Models: *____-RDTR-650, Mapped: false }
     - Continuous Cumulative Peak Total VA:        { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Coin3, *Cont               ], Models: *____-RDTR-650, Mapped: false }
+    - Power Factor at Peak Total VA:              { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Coin4                            ], Models: *____-____-650 }
     - Previous Peak Total VA:                     { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev                       ], Models: *____-RDTR-650, Mapped: false }
     - Time of Previous Peak Total VA:             { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *____-RDTR-650 }
+    - Average Power Factor:                       { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg                              ], Models: *____-RDTR-___ }
+    - Average Power Factor Frozen:                { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg, *Prev                       ], Models: *____-RDTR-___ }
     - Min Power factor:                           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min                              ], Models: *____-RDTR-650, Mapped: false }
     - Time of Min Power factor:                   { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *____-RDTR-650 }
     - Cumulative Min Power factor:                { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Cuml                       ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Min Power factor:     { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Cont                       ], Models: *____-____-650, Mapped: false }
     - Previous Min Power factor:                  { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Prev                       ], Models: *____-RDTR-650, Mapped: false }
     - Time of Previous Min Power factor:          { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *____-RDTR-650 }
-    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateA                                      ], Models: *____-____-650 }
-    - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateA                                      ], Models: *____-____-650 }
+    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateA                                      ], Models: *A_TR-R_TR-650 }
+    - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateA                                      ], Models: *A_TR-R_TR-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA                            ], Models: *A_TR-R_TR-650 }
     - Net Watthours:                              { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA                      ], Models: *A_TR-R_TR-___ }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateA                                           ], Models: *____-____-650, Mapped: false }
@@ -1063,18 +1087,21 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered watts:               { Unit: *s,     Modifiers: [ *RateA, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateA, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered watts: { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateA, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered watts:       { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered watts:              { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateA, *Prev                         ], Models: *____-____-650 }
     - Time of Previous Peak Delivered watts:      { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received watts:                        { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateA                                ], Models: *____-____-650 }
     - Time of Peak Received watts:                { Unit: *s,     Modifiers: [ *RateA, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Received watts:             { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateA, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received watts:  { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateA, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received watts:        { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received watts:               { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateA, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received watts:       { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total watts:                           { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA                      ], Models: *A_TR-R_TR-650 }
     - Time of Peak Total watts:                   { Unit: *s,     Modifiers: [ *RateA, *Coin1                                        ], Models: *A_TR-R_TR-650 }
     - Cumulative Peak Total watts:                { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA, *Coin2, *Cuml       ], Models: *A_TR-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total watts:     { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA, *Coin3, *Cont       ], Models: *A_TR-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total watts:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total watts:          { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateA                ], Models: *____-____-650 }
@@ -1087,36 +1114,42 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered VAR:                 { Unit: *s,     Modifiers: [ *RateA, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered VAR:              { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateA, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered VAR:   { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateA, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered VAR:         { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered VAR:                { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateA, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Delivered VAR:        { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received VAR:                          { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateA                                ], Models: *____-____-650 }
     - Time of Peak Received VAR:                  { Unit: *s,     Modifiers: [ *RateA, *Coin1                                        ], Models: *____-____-650 }
     - Cumullative Peak Received VAR:              { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateA, *Coin2                        ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received VAR:    { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateA, *Coin3                        ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received VAR:          { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received VAR:                 { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateA, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received VAR:         { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total VAR:                             { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA                      ], Models: *____-R_TR-650 }
     - Time of Peak Total VAR:                     { Unit: *s,     Modifiers: [ *RateA, *Coin1                                        ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VAR:                  { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA, *Coin2, *Cuml       ], Models: *____-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total VAR:       { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA, *Coin3, *Cont       ], Models: *____-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total VAR:             { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total VAR:                    { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total VAR:            { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Delivered VA:                          { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateA                                ], Models: *____-____-650 }
     - Time of Peak Delivered VA:                  { Unit: *s,     Modifiers: [ *RateA, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered VA:               { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateA, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered VA:    { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateA, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered VA:          { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered VA:                 { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateA, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Delivered VA:         { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received VA:                           { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateA                                ], Models: *____-____-650 }
     - Time of Peak Received VA:                   { Unit: *s,     Modifiers: [ *RateA, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Received VA:                { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateA, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received VA:     { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateA, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received VA:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received VA:                  { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateA, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received VA:          { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total VA:                              { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA                      ], Models: *____-R_TR-650 }
     - Time of Peak Total VA:                      { Unit: *s,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA, *Coin1              ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VA:                   { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA, *Coin2, *Cuml       ], Models: *____-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total VA:        { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA, *Coin3, *Cont       ], Models: *____-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total VA:              { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total VA:                     { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total VA:             { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Min Power factor:                           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateA                      ], Models: *____-R_TR-650, Mapped: false }
@@ -1125,8 +1158,8 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Min Power factor:     { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateA, *Cont               ], Models: *____-____-650, Mapped: false }
     - Previous Min Power factor:                  { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateA, *Prev               ], Models: *____-R_TR-650, Mapped: false }
     - Time of Previous Min Power factor:          { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-R_TR-650 }
-    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateB                                      ], Models: *____-____-650 }
-    - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateB                                      ], Models: *____-____-650 }
+    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateB                                      ], Models: *A_TR-R_TR-650 }
+    - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateB                                      ], Models: *A_TR-R_TR-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB                            ], Models: *A_TR-R_TR-650 }
     - Net Watthours:                              { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB                      ], Models: *A_TR-R_TR-___ }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateB                                           ], Models: *____-____-650, Mapped: false }
@@ -1152,18 +1185,21 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered watts:               { Unit: *s,     Modifiers: [ *RateB, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateB, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered watts: { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateB, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered watts:       { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered watts:              { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateB, *Prev                         ], Models: *____-____-650 }
     - Time of Previous Peak Delivered watts:      { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received watts:                        { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateB                                ], Models: *____-____-650 }
     - Time of Peak Received watts:                { Unit: *s,     Modifiers: [ *RateB, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Received watts:             { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateB, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received watts:  { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateB, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received watts:        { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received watts:               { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateB, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received watts:       { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total watts:                           { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB                      ], Models: *A_TR-R_TR-650 }
     - Time of Peak Total watts:                   { Unit: *s,     Modifiers: [ *RateB, *Coin1                                        ], Models: *A_TR-R_TR-650 }
     - Cumulative Peak Total watts:                { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB, *Coin2, *Cuml       ], Models: *A_TR-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total watts:     { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB, *Coin3, *Cont       ], Models: *A_TR-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total watts:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total watts:          { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateB                ], Models: *____-____-650 }
@@ -1176,36 +1212,42 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered VAR:                 { Unit: *s,     Modifiers: [ *RateB, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered VAR:              { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateB, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered VAR:   { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateB, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered VAR:         { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered VAR:                { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateB, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Delivered VAR:        { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received VAR:                          { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateB                                ], Models: *____-____-650 }
     - Time of Peak Received VAR:                  { Unit: *s,     Modifiers: [ *RateB, *Coin1                                        ], Models: *____-____-650 }
     - Cumullative Peak Received VAR:              { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateB, *Coin2                        ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received VAR:    { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateB, *Coin3                        ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received VAR:          { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received VAR:                 { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateB, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received VAR:         { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total VAR:                             { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB                      ], Models: *____-R_TR-650 }
     - Time of Peak Total VAR:                     { Unit: *s,     Modifiers: [ *RateB, *Coin1                                        ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VAR:                  { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB, *Coin2, *Cuml       ], Models: *____-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total VAR:       { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB, *Coin3, *Cont       ], Models: *____-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total VAR:             { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total VAR:                    { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total VAR:            { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Delivered VA:                          { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateB                                ], Models: *____-____-650 }
     - Time of Peak Delivered VA:                  { Unit: *s,     Modifiers: [ *RateB, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered VA:               { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateB, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered VA:    { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateB, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered VA:          { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered VA:                 { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateB, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Delivered VA:         { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received VA:                           { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateB                                ], Models: *____-____-650 }
     - Time of Peak Received VA:                   { Unit: *s,     Modifiers: [ *RateB, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Received VA:                { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateB, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received VA:     { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateB, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received VA:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received VA:                  { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateB, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received VA:          { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total VA:                              { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB                      ], Models: *____-R_TR-650 }
     - Time of Peak Total VA:                      { Unit: *s,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB, *Coin1              ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VA:                   { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB, *Coin2, *Cuml       ], Models: *____-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total VA:        { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB, *Coin3, *Cont       ], Models: *____-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total VA:              { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total VA:                     { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total VA:             { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Min Power factor:                           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateB                      ], Models: *____-____-650, Mapped: false }
@@ -1214,8 +1256,8 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Min Power factor:     { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateB, *Cont               ], Models: *____-____-650, Mapped: false }
     - Previous Min Power factor:                  { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateB, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Min Power factor:          { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
-    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateC                                      ], Models: *____-____-650 }
-    - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateC                                      ], Models: *____-____-650 }
+    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateC                                      ], Models: *A_TR-R_TR-650 }
+    - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateC                                      ], Models: *A_TR-R_TR-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC                            ], Models: *A_TR-R_TR-650 }
     - Net Watthours:                              { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC                      ], Models: *A_TR-R_TR-___ }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateC                                           ], Models: *____-____-650, Mapped: false }
@@ -1241,18 +1283,21 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered watts:               { Unit: *s,     Modifiers: [ *RateC, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateC, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered watts: { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateC, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered watts:       { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered watts:              { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateC, *Prev                         ], Models: *____-____-650 }
     - Time of Previous Peak Delivered watts:      { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received watts:                        { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateC                                ], Models: *____-____-650 }
     - Time of Peak Received watts:                { Unit: *s,     Modifiers: [ *RateC, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Received watts:             { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateC, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received watts:  { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateC, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received watts:        { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received watts:               { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateC, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received watts:       { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total watts:                           { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC                      ], Models: *A_TR-R_TR-650 }
     - Time of Peak Total watts:                   { Unit: *s,     Modifiers: [ *RateC, *Coin1                                        ], Models: *A_TR-R_TR-650 }
     - Cumulative Peak Total watts:                { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC, *Coin2, *Cuml       ], Models: *A_TR-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total watts:     { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC, *Coin3, *Cont       ], Models: *A_TR-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total watts:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total watts:          { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateC                ], Models: *____-____-650 }
@@ -1265,36 +1310,42 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered VAR:                 { Unit: *s,     Modifiers: [ *RateC, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered VAR:              { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateC, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered VAR:   { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateC, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered VAR:         { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered VAR:                { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateC, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Delivered VAR:        { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received VAR:                          { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateC                                ], Models: *____-____-650 }
     - Time of Peak Received VAR:                  { Unit: *s,     Modifiers: [ *RateC, *Coin1                                        ], Models: *____-____-650 }
     - Cumullative Peak Received VAR:              { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateC, *Coin2                        ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received VAR:    { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateC, *Coin3                        ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received VAR:          { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received VAR:                 { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateC, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received VAR:         { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total VAR:                             { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC                      ], Models: *____-R_TR-650 }
     - Time of Peak Total VAR:                     { Unit: *s,     Modifiers: [ *RateC, *Coin1                                        ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VAR:                  { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC, *Coin2, *Cuml       ], Models: *____-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total VAR:       { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC, *Coin3, *Cont       ], Models: *____-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total VAR:             { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total VAR:                    { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total VAR:            { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Delivered VA:                          { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateC                                ], Models: *____-____-650 }
     - Time of Peak Delivered VA:                  { Unit: *s,     Modifiers: [ *RateC, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered VA:               { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateC, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered VA:    { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateC, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered VA:          { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered VA:                 { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateC, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Delivered VA:         { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received VA:                           { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateC                                ], Models: *____-____-650 }
     - Time of Peak Received VA:                   { Unit: *s,     Modifiers: [ *RateC, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Received VA:                { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateC, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received VA:     { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateC, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received VA:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received VA:                  { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateC, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received VA:          { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total VA:                              { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC                      ], Models: *____-R_TR-650 }
     - Time of Peak Total VA:                      { Unit: *s,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC, *Coin1              ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VA:                   { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC, *Coin2, *Cuml       ], Models: *____-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total VA:        { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC, *Coin3, *Cont       ], Models: *____-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total VA:              { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total VA:                     { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total VA:             { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Min Power factor:                           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateC                      ], Models: *____-____-650, Mapped: false }
@@ -1303,8 +1354,8 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Min Power factor:     { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateC, *Cont               ], Models: *____-____-650, Mapped: false }
     - Previous Min Power factor:                  { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateC, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Min Power factor:          { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
-    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateD                                      ], Models: *____-____-650 }
-    - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateD                                      ], Models: *____-____-650 }
+    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateD                                      ], Models: *A_TR-R_TR-650 }
+    - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateD                                      ], Models: *A_TR-R_TR-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD                            ], Models: *A_TR-R_TR-650 }
     - Net Watthours:                              { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD                      ], Models: *A_TR-R_TR-___ }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateD                                           ], Models: *____-____-650, Mapped: false }
@@ -1330,18 +1381,21 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered watts:               { Unit: *s,     Modifiers: [ *RateD, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateD, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered watts: { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateD, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered watts:       { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered watts:              { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev                         ], Models: *____-____-650 }
     - Time of Previous Peak Delivered watts:      { Unit: *s,     Modifiers: [ *RateD, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received watts:                        { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateD                                ], Models: *____-____-650 }
     - Time of Peak Received watts:                { Unit: *s,     Modifiers: [ *RateD, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Received watts:             { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateD, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received watts:  { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateD, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received watts:        { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received watts:               { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateD, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received watts:       { Unit: *s,     Modifiers: [ *RateD, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total watts:                           { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD                      ], Models: *A_TR-R_TR-650 }
     - Time of Peak Total watts:                   { Unit: *s,     Modifiers: [ *RateD, *Coin1                                        ], Models: *A_TR-R_TR-650 }
     - Cumulative Peak Total watts:                { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD, *Coin2, *Cuml       ], Models: *A_TR-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total watts:     { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD, *Coin3, *Cont       ], Models: *A_TR-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total watts:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total watts:          { Unit: *s,     Modifiers: [ *RateD, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateD                ], Models: *____-____-650 }
@@ -1354,36 +1408,42 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered VAR:                 { Unit: *s,     Modifiers: [ *RateD, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered VAR:              { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateD, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered VAR:   { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateD, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered VAR:         { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered VAR:                { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *RateD, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Delivered VAR:        { Unit: *s,     Modifiers: [ *RateD, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received VAR:                          { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateD                                ], Models: *____-____-650 }
     - Time of Peak Received VAR:                  { Unit: *s,     Modifiers: [ *RateD, *Coin1                                        ], Models: *____-____-650 }
     - Cumullative Peak Received VAR:              { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateD, *Coin2                        ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received VAR:    { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateD, *Coin3                        ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received VAR:          { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received VAR:                 { Unit: *Var,   Modifiers: [ *Q3, *Q4, *Max, *RateD, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received VAR:         { Unit: *s,     Modifiers: [ *RateD, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total VAR:                             { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD                      ], Models: *____-R_TR-650 }
     - Time of Peak Total VAR:                     { Unit: *s,     Modifiers: [ *RateD, *Coin1                                        ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VAR:                  { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD, *Coin2, *Cuml       ], Models: *____-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total VAR:       { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD, *Coin3, *Cont       ], Models: *____-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total VAR:             { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total VAR:                    { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total VAR:            { Unit: *s,     Modifiers: [ *RateD, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Delivered VA:                          { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateD                                ], Models: *____-____-650 }
     - Time of Peak Delivered VA:                  { Unit: *s,     Modifiers: [ *RateD, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered VA:               { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateD, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered VA:    { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateD, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Delivered VA:          { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Delivered VA:                 { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Delivered VA:         { Unit: *s,     Modifiers: [ *RateD, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Received VA:                           { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateD                                ], Models: *____-____-650 }
     - Time of Peak Received VA:                   { Unit: *s,     Modifiers: [ *RateD, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Received VA:                { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateD, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Received VA:     { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateD, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
+    - Power Factor at Peak Received VA:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Received VA:                  { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateD, *Prev                         ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Received VA:          { Unit: *s,     Modifiers: [ *RateD, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Peak Total VA:                              { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD                      ], Models: *____-R_TR-650 }
     - Time of Peak Total VA:                      { Unit: *s,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD, *Coin1              ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VA:                   { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD, *Coin2, *Cuml       ], Models: *____-R_TR-650, Mapped: false }
     - Continuous Cumulative Peak Total VA:        { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD, *Coin3, *Cont       ], Models: *____-R_TR-650, Mapped: false }
+    - Power Factor at Peak Total VA:              { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total VA:                     { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total VA:             { Unit: *s,     Modifiers: [ *RateD, *Coin1, *Prev                                 ], Models: *____-____-650 }
     - Min Power factor:                           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateD                      ], Models: *____-____-650, Mapped: false }
@@ -1446,8 +1506,8 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Var-hours Delivered:                  { Unit: *Varh,   Modifiers: [ *Q1, *Q2                         ], Models: *__-RX-23 }
     - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q3, *Q4                         ], Models: *__-RX-23 }
     - Var-hours Total:                      { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *__-RX-23 }
-    - Var -hours Net:                       { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *__-RX-23 }
-    - VA-hours Delivered:                   { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4                    ], Models: *__-RX-23 }
+    - Var-hours Net:                        { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *__-RX-23 }
+    - VA-hours Lagging:                     { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4                    ], Models: *__-RX-23 }
     - VA-hours Received:                    { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4                    ], Models: *__-RX-23 }
     - VA-hours Total:                       { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *__-RX-23 }
     - VA-hours Net:                         { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *__-RX-23 }
@@ -1455,58 +1515,96 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time of Peak Delivered Demand:        { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
     - Frozen Peak Delivered Demand:         { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *Prev            ], Models: *AX-RX-23 }
     - Time of Frozen Peak Delivered Demand: { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *AX-RX-23 }
+    - Daily Peak Delivered Demand:          { Unit: *W,      Modifiers: [ *Q1, *Q4, *DayMax                ], Models: *AX-RX-23 }
+    - Time of Daily Peak Delivered Demand:  { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
     - Peak Delivered Var:                   { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max                   ], Models: *__-RX-23 }
     - Time of Peak Delivered Var:           { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Delivered Var:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *Prev            ], Models: *__-RX-23 }
-    - Time of Frozen Peak Delivered Var:    { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
     - Peak Total Var:                       { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total Var:               { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Total Var:                { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23 }
-    - Time of Frozen Peak Total Var:        { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
-    - Peak Delivered VA:                    { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max              ], Models: *__-RX-23 }
-    - Time of Peak Delivered VA:            { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Delivered VA:             { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev       ], Models: *__-RX-23 }
-    - Time of Frozen Peak Delivered VA:     { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
+    - Peak Volt-amperes Lagging:            { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max              ], Models: *__-RX-23 }
+    - Time of Peak Volt-amperes Lagging:    { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
     - Peak Total VA:                        { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total VA:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Total VA:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23 }
-    - Time of Frozen Peak Total VA:         { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
     - Watt-hours Delivered Rate A:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateA                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate A:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateA                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate A:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *AX-RX-23 }
     - Watt-hours Net Rate A:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *AX-RX-23 }
+    - Var-hours Delivered Rate A:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateA                 ], Models: *__-RX-23 } 
+    - Var-hours Received Rate A:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateA                 ], Models: *__-RX-23 } 
+    - Var-hours Total Rate A:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *__-RX-23 } 
+    - Var-hours Net Rate A:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *__-RX-23 } 
+    - VA-hours Delivered Rate A:            { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *RateA                 ], Models: *__-RX-23 } 
+    - VA-hours Received Rate A:             { Unit: *VAh,    Modifiers: [ *Q3, *Q4, *RateA                 ], Models: *__-RX-23 } 
+    - VA-hours Total Rate A:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *__-RX-23 } 
+    - VA-hours Net Rate A:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *__-RX-23 } 
     - Peak Demand Rate A:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateA           ], Models: *AX-RX-23 }
     - Time of Peak Demand Rate A:           { Unit: *s,      Modifiers: [ *RateA                           ], Models: *AX-RX-23 }
     - Frozen Peak Demand Rate A:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateA, *Prev    ], Models: *AX-RX-23 }
     - Time of Frozen Peak Demand Rate A:    { Unit: *s,      Modifiers: [ *RateA, *Prev                    ], Models: *AX-RX-23 }
+    - Peak Delivered Var Rate A:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA           ], Models: *__-RX-23 } 
+    - Time of Peak Var Rate A:              { Unit: *s,      Modifiers: [ *RateA                           ], Models: *__-RX-23 } 
+    - Peak Delivered VA Rate A:             { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Max, *RateA           ], Models: *__-RX-23 } 
+    - Time of Peak VA Rate A:               { Unit: *s,      Modifiers: [ *RateA                           ], Models: *__-RX-23 } 
     - Watt-hours Delivered Rate B:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateB                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate B:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateB                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate B:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *AX-RX-23 }
     - Watt-hours Net Rate B:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *AX-RX-23 }
+    - Var-hours Delivered Rate B:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateB                 ], Models: *__-RX-23 } 
+    - Var-hours Received Rate B:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateB                 ], Models: *__-RX-23 } 
+    - Var-hours Total Rate B:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *__-RX-23 } 
+    - Var-hours Net Rate B:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *__-RX-23 } 
+    - VA-hours Delivered Rate B:            { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *RateB                 ], Models: *__-RX-23 } 
+    - VA-hours Received Rate B:             { Unit: *VAh,    Modifiers: [ *Q3, *Q4, *RateB                 ], Models: *__-RX-23 } 
+    - VA-hours Total Rate B:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *__-RX-23 } 
+    - VA-hours Net Rate B:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *__-RX-23 } 
     - Peak Demand Rate B:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateB           ], Models: *AX-RX-23 }
     - Time of Peak Demand Rate B:           { Unit: *s,      Modifiers: [ *RateB                           ], Models: *AX-RX-23 }
     - Frozen Peak Demand Rate B:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateB, *Prev    ], Models: *AX-RX-23 }
     - Time of Frozen Peak Demand Rate B:    { Unit: *s,      Modifiers: [ *RateB, *Prev                    ], Models: *AX-RX-23 }
+    - Peak Delivered Var Rate B:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB           ], Models: *__-RX-23 } 
+    - Time of Peak Var Rate B:              { Unit: *s,      Modifiers: [ *RateB                           ], Models: *__-RX-23 } 
+    - Peak Delivered VA Rate B:             { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Max, *RateB           ], Models: *__-RX-23 } 
+    - Time of Peak VA Rate B:               { Unit: *s,      Modifiers: [ *RateB                           ], Models: *__-RX-23 } 
     - Watt-hours Delivered Rate C:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateC                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate C:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateC                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate C:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *AX-RX-23 }
     - Watt-hours Net Rate C:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *AX-RX-23 }
+    - Var-hours Delivered Rate C:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateC                 ], Models: *__-RX-23 } 
+    - Var-hours Received Rate C:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateC                 ], Models: *__-RX-23 } 
+    - Var-hours Total Rate C:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *__-RX-23 } 
+    - Var-hours Net Rate C:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *__-RX-23 } 
+    - VA-hours Delivered Rate C:            { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *RateC                 ], Models: *__-RX-23 } 
+    - VA-hours Received Rate C:             { Unit: *VAh,    Modifiers: [ *Q3, *Q4, *RateC                 ], Models: *__-RX-23 } 
+    - VA-hours Total Rate C:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *__-RX-23 } 
+    - VA-hours Net Rate C:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *__-RX-23 } 
     - Peak Demand Rate C:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateC           ], Models: *AX-RX-23 }
     - Time of Peak Demand Rate C:           { Unit: *s,      Modifiers: [ *RateC                           ], Models: *AX-RX-23 }
     - Frozen Peak Demand Rate C:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateC, *Prev    ], Models: *AX-RX-23 }
     - Time of Frozen Peak Demand Rate C:    { Unit: *s,      Modifiers: [ *RateC, *Prev                    ], Models: *AX-RX-23 }
+    - Peak Delivered Var Rate C:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC           ], Models: *__-RX-23 } 
+    - Time of Peak Var Rate C:              { Unit: *s,      Modifiers: [ *RateC                           ], Models: *__-RX-23 } 
+    - Peak Delivered VA Rate C:             { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Max, *RateC           ], Models: *__-RX-23 } 
+    - Time of Peak VA Rate C:               { Unit: *s,      Modifiers: [ *RateC                           ], Models: *__-RX-23 } 
     - Watt-hours Delivered Rate D:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateD                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate D:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateD                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate D:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *AX-RX-23 }
     - Watt-hours Net Rate D:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *AX-RX-23 }
+    - Var-hours Delivered Rate D:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateD                 ], Models: *__-RX-23 } 
+    - Var-hours Received Rate D:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateD                 ], Models: *__-RX-23 } 
+    - Var-hours Total Rate D:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *__-RX-23 } 
+    - Var-hours Net Rate D:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *__-RX-23 } 
+    - VA-hours Delivered Rate D:            { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *RateD                 ], Models: *__-RX-23 } 
+    - VA-hours Received Rate D:             { Unit: *VAh,    Modifiers: [ *Q3, *Q4, *RateD                 ], Models: *__-RX-23 } 
+    - VA-hours Total Rate D:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *__-RX-23 } 
+    - VA-hours Net Rate D:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *__-RX-23 } 
     - Peak Demand Rate D:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateD           ], Models: *AX-RX-23 }
     - Time of Peak Demand Rate D:           { Unit: *s,      Modifiers: [ *RateD                           ], Models: *AX-RX-23 }
     - Frozen Peak Demand Rate D:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev    ], Models: *AX-RX-23 }
     - Time of Frozen Peak Demand Rate D:    { Unit: *s,      Modifiers: [ *RateD, *Prev                    ], Models: *AX-RX-23 }
-    - Minimum Voltage:                      { Unit: *V,      Modifiers: [ *Min, *milli                     ], Models: *AX-RX-23 }
-    - Time for Minimum Voltage:             { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
-    - Peak Voltage:                         { Unit: *V,      Modifiers: [ *Max, *milli                     ], Models: *AX-RX-23 }
-    - Time for Peak Voltage:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
+    - Peak Delivered Var Rate D:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD           ], Models: *__-RX-23 } 
+    - Time of Peak Var Rate D:              { Unit: *s,      Modifiers: [ *RateD                           ], Models: *__-RX-23 } 
+    - Peak Delivered VA Rate D:             { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Max, *RateD           ], Models: *__-RX-23 } 
+    - Time of Peak VA Rate D:               { Unit: *s,      Modifiers: [ *RateD                           ], Models: *__-RX-23 } 
     - Peak Daily Voltage:                   { Unit: *V,      Modifiers: [ *DayMax, *milli                  ], Models: *AX-RX-23 }
     - Coincident Time of Peak Daily Voltage: { Unit: *s,     Modifiers: [                                  ], Models: *AX-RX-23 }
     - Minimum Daily Voltage:                { Unit: *V,      Modifiers: [ *DayMin, *milli                  ], Models: *AX-RX-23 }
@@ -1531,9 +1629,6 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Current Phase A:                      { Unit: *A,      Modifiers: [ *PhA, *milli                     ], Models: *AX-RX-23 }
     - Current Phase B:                      { Unit: *A,      Modifiers: [ *PhB, *milli                     ], Models: *AX-RX-_3 }
     - Current Phase C:                      { Unit: *A,      Modifiers: [ *PhC, *milli                     ], Models: *AX-RX-_3 }
-    - Power Factor Angle Phase A:           { Unit: *PF_deg, Modifiers: [ *PhA                             ], Models: *AX-RX-23 }
-    - Power Factor Angle Phase B:           { Unit: *PF_deg, Modifiers: [ *PhB                             ], Models: *AX-RX-_3 }
-    - Power Factor Angle Phase C:           { Unit: *PF_deg, Modifiers: [ *PhC                             ], Models: *AX-RX-_3 }
     - RFN Temperature:                      { Unit: *C,      Modifiers: [                                  ], Models: *AX-RX-23 }
 
 # Table 12 - Next Gen Water Node
@@ -1604,6 +1699,7 @@ Metric IDs:
     54:  { name: "VA received, peak demand (Frozen)",    Unit: *VA,     Modifiers: [ *Q2, *Q3, *Max, *Prev                 ] }
     55:  { name: "VA lagging peak",                      Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max                   ] }
     56:  { name: "VA lagging peak (Frozen)",             Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev            ] }
+    57:  { name: "VA lagging",                           Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4                         ] }
     # ------     
     59:  { name: "Q hour Q1 + Q4",                       Unit: *Qh,     Modifiers: [ *Q1, *Q4                              ] }
     60:  { name: "Q hour Q2 + Q3",                       Unit: *Qh,     Modifiers: [ *Q2, *Q3                              ] }
@@ -1700,6 +1796,10 @@ Metric IDs:
     191: { name: "Watt hour Q2",                         Unit: *Wh,     Modifiers: [ *Q2                                   ] }
     192: { name: "Watt hour Q3",                         Unit: *Wh,     Modifiers: [ *Q3                                   ] }
     193: { name: "Watt hour Q4",                         Unit: *Wh,     Modifiers: [ *Q4                                   ] }
+    194: { name: "Watts total",                          Unit: *W,      Modifiers: [ *Q1, *Q2, *Q3, *Q4                    ] }
+    # ------     
+    197: { name: "Watts net",                            Unit: *W,      Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net              ] }
+    198: { name: "Var net",                              Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net              ] }
     # ------     
     200: { name: "Watts",                                Unit: *W,      Modifiers: [                                       ] }
     201: { name: "Var",                                  Unit: *Var,    Modifiers: [                                       ] }
@@ -1724,6 +1824,8 @@ Metric IDs:
     222: { name: "VA hour Q2 + Q3 + Q4",                 Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4                         ] }
     # ------     
     230: { name: "Power Factor total, minimum",          Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min              ] }
+    233: { name: "Average Power Factor",                 Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg              ] }
+    234: { name: "Average Power Factor Frozen",          Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg, *Prev       ] }
     # ------     
     240: { name: "kW Delivered Daily Max",               Unit: *W,      Modifiers: [ *Q1, *Q4, *DayMax                     ] }
     # ------     

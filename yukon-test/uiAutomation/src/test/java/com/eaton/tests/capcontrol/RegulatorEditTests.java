@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -12,6 +13,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.RegulatorDetailPage;
 import com.eaton.pages.capcontrol.RegulatorEditPage;
@@ -20,31 +22,41 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 public class RegulatorEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private RegulatorEditPage editPage;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        String regulatorId = TestDbDataType.VoltVarData.REGULATOR_ID.getId().toString();
+        
+        setRefreshPage(false);
+        navigate(Urls.CapControl.REGULATOR_EDIT + regulatorId + Urls.EDIT);
+        editPage = new RegulatorEditPage(driverExt, Integer.parseInt(regulatorId));
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void regulatorEdit_pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
+    public void regulatorEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Regulator: AT Regulator";
-
-        navigate(Urls.CapControl.REGULATOR_EDIT + "671" + Urls.EDIT);
-
-        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 671);
 
         String actualPageTitle = editPage.getPageTitle();
 
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void regulatorEdit_requiredFieldsOnlySuccess() {
-
-        navigate(Urls.CapControl.REGULATOR_EDIT + "490" + Urls.EDIT);
-
-        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 490);
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
+    public void regulatorEdit_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
+        String regulatorEditId = TestDbDataType.VoltVarData.REGULATOR_EDIT_ID.getId().toString();
+        
+        navigate(Urls.CapControl.REGULATOR_EDIT + regulatorEditId+ Urls.EDIT);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -55,7 +67,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Regulator: " + name, Optional.empty());
 
-        RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt, 490);
+        RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt, Integer.parseInt(regulatorEditId));
 
         // The saved successfully message is missing why?
 //        String userMsg = detailsPage.getUserMessageSuccess();
@@ -66,12 +78,13 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("Regulator: " + name);
     }
 
-    @Test(enabled = false, groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void regulatorEdit_deleteSuccess() {
+    @Test(enabled = false, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
+    public void regulatorEdit_Delete_Success() {
+        setRefreshPage(true);
+        
+        String regulatorDeleteId = TestDbDataType.VoltVarData.REGULATOR_DELETE_ID.getId().toString();
 
-        navigate(Urls.CapControl.REGULATOR_EDIT + "578" + Urls.EDIT);
-
-        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 578);
+        navigate(Urls.CapControl.REGULATOR_EDIT + regulatorDeleteId + Urls.EDIT);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

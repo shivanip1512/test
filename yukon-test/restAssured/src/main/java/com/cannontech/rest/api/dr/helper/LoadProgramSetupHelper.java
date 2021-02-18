@@ -236,6 +236,10 @@ public class LoadProgramSetupHelper {
     public static FieldDescriptor responseFieldDescriptor() {
         return fieldWithPath("programId").type(JsonFieldType.NUMBER).description("Load Program Id");
     }
+    
+    public static FieldDescriptor deleteFieldDescriptor() {
+        return fieldWithPath("id").type(JsonFieldType.NUMBER).description("Load Program Id");
+    }
 
     public static FieldDescriptor requestFieldDesriptorForDelete() {
         return fieldWithPath("name").type(JsonFieldType.STRING).description("Load Program Name");
@@ -255,13 +259,13 @@ public class LoadProgramSetupHelper {
                 gearTypes,
                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
         subOrdinateLoadProgram.setName(subOrdinateLoadProgram.getName().concat("MemberControl"));
-        ExtractableResponse<?> loadProgramResponse = ApiCallHelper.post("saveLoadProgram", subOrdinateLoadProgram);
+        ExtractableResponse<?> loadProgramResponse = ApiCallHelper.post("loadPrograms", subOrdinateLoadProgram);
 
         subOrdinateLoadProgram.setProgramId(loadProgramResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID));
         assertTrue("Program Id should not be Null", subOrdinateLoadProgram.getProgramId() != null);
-        assertTrue("Status code should be 200", loadProgramResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", loadProgramResponse.statusCode() == 201);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getLoadProgram",
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadPrograms",  "/" +
                 loadProgramResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
         subOrdinateLoadProgram = getResponse.as(MockLoadProgram.class);

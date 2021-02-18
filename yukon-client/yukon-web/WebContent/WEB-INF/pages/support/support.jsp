@@ -7,45 +7,6 @@
 
 <cti:standardPage module="support" page="support">
 
-<script type="text/javascript">
-function openFtpPopup(fileName){
-    $.ajax({
-        url: yukon.url("/support/infoOnBundle"),
-        data: {fileName: fileName}
-    }).done(function(json) {
-        var form = $("#ftpPopupForm");
-        $("#uploadFileName").text(json.fileName);
-        $("#uploadFileSize").text(json.fileSize);
-        $("#uploadFileDate").text(json.fileDate);
-        $("input[name=fileName]", "#ftpPopupForm").val(fileName);
-        $("#ftpUploadPopup").dialog({
-            buttons: {
-                upload: {
-                    text: "<cti:msg2 key='.supportBundle.startUpload.label' />",
-                    'class': "primary",
-                    click: function() {
-                        form.submit();
-                    }
-                },
-                cancel: {
-                    text: '<cti:msg2 key=".cancel"/>',
-                    click: function() {
-                        $(this).dialog("close");
-                    }
-                }
-            }
-        });
-    });
-}
-
-$(function() {
-    $("#ftpUploadBtn").click(function() {
-        var chosenBundle = $("input[name=fileName]:checked", "#previousBundlesForm").val();
-        openFtpPopup(chosenBundle);
-    });
-});
-</script>
-
 <div class="column-8-8-8 clearfix">
     <div class="column one">
         <tags:sectionContainer2 nameKey="pageList">
@@ -60,7 +21,7 @@ $(function() {
                         <span title="${perms}" class="disabled"><i:inline key="${wrapper.page}"/></span>
                     </c:if>
                     </li>
-                </c:forEach>            
+                </c:forEach>
             </ul>
         </tags:sectionContainer2>
     </div>
@@ -98,9 +59,6 @@ $(function() {
             <div>
                 <a href="<cti:msg2 key=".rma.link"/>" target="_blank"><i:inline key=".rma"/></a>
             </div>
-            <div>
-                <a href="<cti:msg2 key=".utilityProRma.link"/>" target="_blank"><i:inline key=".utilityProRma"/></a>
-            </div>
         </tags:sectionContainer2>
     </div>
 </div>
@@ -133,7 +91,8 @@ $(function() {
                                 <c:forEach var="writer" items="${writerList}">
                                     <c:if test="${writer.optional}">
                                         <label>
-                                            <form:checkbox path="optionalWritersToInclude" value="${writer.name}"/> 
+                                            <form:checkbox path="optionalWritersToInclude" value="${writer.name}"
+                                                           id="${writer.name}"/>
                                             <i:inline key=".supportBundle.writerName.${writer.name}"/>
                                         </label><br>
                                     </c:if>
@@ -175,27 +134,8 @@ $(function() {
                         </c:if>
                         <div class="page-action-area">
                             <cti:button nameKey="supportBundle.downloadBtn" type="submit" disabled="${empty bundleList}" icon="icon-download"/>
-                            <cti:button nameKey="supportBundle.ftpUploadBtn" id="ftpUploadBtn" href="javascript:void(0);" disabled="${empty bundleList}" icon="icon-upload"/>
                         </div>
                     </form>
-
-                    <div id="ftpUploadPopup" title="<cti:msg2 key=".supportBundle.send.fileHeading"/>" class="dn">
-                        <tags:nameValueContainer2>
-                            <tags:nameValue2 nameKey=".supportBundle.send.filenameLbl">
-                                <span id="uploadFileName"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".supportBundle.send.fileDateCreatedLbl">
-                                <span id="uploadFileDate"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".supportBundle.send.fileSizeLbl">
-                                <span id="uploadFileSize"/>
-                            </tags:nameValue2>
-                        </tags:nameValueContainer2>
-                        <form id="ftpPopupForm" action="/support/uploadBundle" method="POST">
-                            <cti:csrfToken/>
-                            <input type="hidden" name="fileName" />
-                        </form>
-                    </div>
                 </cti:tab>
             </cti:tabs>
         </tags:sectionContainer2>

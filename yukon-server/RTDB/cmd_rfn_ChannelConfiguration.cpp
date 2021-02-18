@@ -39,6 +39,7 @@ const MetricInfo metricInfos[] = {
         {  11,  TouRates,  "Watt hour delivered (Frozen)"          },
         {  12,  TouRates,  "Watt hour received (Frozen)"           },
         {  13,  TouRates,  "Watts, peak"                           },
+        {  17,  None,      "kVAh Lagging"                          },
 
         {  21,  TouRates,  "Var hour delivered"                    },
         {  22,  TouRates,  "Var hour received"                     },
@@ -75,6 +76,7 @@ const MetricInfo metricInfos[] = {
         {  52,  TouRates,  "VA received, peak demand"              },
         {  53,  TouRates,  "VA delivered, peak demand (Frozen)"    },
         {  54,  TouRates,  "VA received, peak demand (Frozen)"     },
+        {  55,  None,      "VA lagging, peak demand"               },
 
         {  61,  TouRates,  "Q hour delivered"                      },
         {  62,  TouRates,  "Q hour received"                       },
@@ -92,7 +94,7 @@ const MetricInfo metricInfos[] = {
         {  80,  TouRates,  "Power Factor"                          },
         {  81,  TouRates,  "Average Power Factor (Quadrants 1 2 4)"},
         {  82,  TouRates,  "Average Power Factor (Quadrants 2 3 4)"},
-        {  83,  TouRates,  "Average Power Factor"                  },
+        {  83,  TouRates,  "Average Power Factor (Quadrants 1 2 3 4)"},
 
         { 100,  TouRates,  "Voltage Phase A"                       },
         { 101,  TouRates,  "Voltage Phase B"                       },
@@ -149,7 +151,11 @@ const MetricInfo metricInfos[] = {
         { 201,  TouRates,  "Var"                                   },
         { 202,  TouRates,  "VA"                                    },
 
+        { 206,  TouRates,  "Peak kVA (Quadrants 1 2)"              },
         { 210,  TouRates,  "Sum Peak kVA"                          },
+        { 222,  None,      "Received kVAh (Quadrants 2 3 4)"       },
+        { 233,  None,      "Average Power Factor"                  },
+        { 234,  None,      "Average Power Factor Frozen"           },
 
         { 240,  TouRates,  "Peak Demand Daily"                     },
 

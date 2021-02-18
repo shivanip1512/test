@@ -174,8 +174,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     YukonListEntry typeEntry = listDao.getYukonListEntry(liteHw.getLmHardwareTypeID());
                     HardwareType hardwareType = HardwareType.valueOf(typeEntry.getYukonDefID());
                     
-                    if(hardwareType.isNest()) {
-                        //we do not send any messages to Nest on enrollment
+                    if (hardwareType.isNest() || hardwareType.isEatonCloud()) {
+                        //do not send any messages on enrollment
                         continue;
                     }
 

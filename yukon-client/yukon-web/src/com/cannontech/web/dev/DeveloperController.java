@@ -61,7 +61,6 @@ import com.cannontech.common.util.jms.api.JmsApiCategory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.jms.api.JmsCommunicatingService;
 import com.cannontech.common.util.jms.api.JmsCommunicationPattern;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -114,7 +113,6 @@ public class DeveloperController {
     @Autowired private SelectionListService selectionListService;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private YukonListDao listDao;
     @Autowired private EncryptedRouteDao encryptedRouteDao;
     @Autowired private ItronSecurityService itronSecurityService;
 

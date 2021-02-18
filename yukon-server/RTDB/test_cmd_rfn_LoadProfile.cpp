@@ -1,5 +1,4 @@
 #include <boost/test/unit_test.hpp>
-#include <boost/assign/list_of.hpp>
 
 #include "ctidate.h"
 #include "cmd_rfn_LoadProfile.h"
@@ -16,9 +15,6 @@ using Cti::Devices::Commands::RfnLoadProfileGetRecordingCommand;
 using Cti::Devices::Commands::RfnLoadProfileSetTemporaryRecordingCommand;
 using Cti::Devices::Commands::RfnLoadProfileSetPermanentRecordingCommand;
 using Cti::Devices::Commands::RfnLoadProfileReadPointsCommand;
-
-using boost::assign::list_of;
-using boost::assign::pair_list_of;
 
 
 // --- defined in RTDB\test_main.cpp -- so BOOST_CHECK_EQUAL_COLLECTIONS() works for RfnCommand::CommandException
@@ -47,8 +43,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x68 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x04 )( 0x22 );
+        const std::vector< unsigned char > exp {
+            0x68, 0x00, 0x01, 0x01, 0x00, 0x02, 0x04, 0x22 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -58,8 +54,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x00 )( 0x00 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x00, 0x00, 0x00 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -68,8 +64,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 ) ( 0x00 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x00, 0x01, 0x00 };
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -88,17 +84,17 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exceptions )
 {
-    const std::vector< std::pair< unsigned, unsigned > > inputs = pair_list_of
-        (   0,  15 )      // voltage averaging interval of 0 seconds
-        (  64,  15 )      // voltage averaging interval not modulo 15 and not one of the allowed values
-        ( 300,   0 )      // load profile interval of 0 minutes
-        ( 300, 300 );     // load profile interval > 255
+    const std::vector< std::pair< unsigned, unsigned > > inputs {
+        {   0,  15 },      // voltage averaging interval of 0 seconds
+        {  64,  15 },      // voltage averaging interval not modulo 15 and not one of the allowed values
+        { 300,   0 },      // load profile interval of 0 minutes
+        { 300, 300 } };    // load profile interval > 255
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Voltage Averaging Interval: (0) invalid setting" ) )
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Voltage Averaging Interval: (64) invalid setting" ) )
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Load Profile Demand Interval: (0) underflow (minimum: 1)" ) )
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Load Profile Demand Interval: (300) overflow (maximum: 255)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        { RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Voltage Averaging Interval: (0) invalid setting" ) },
+        { RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Voltage Averaging Interval: (64) invalid setting" ) },
+        { RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Load Profile Demand Interval: (0) underflow (minimum: 1)" ) },
+        { RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Load Profile Demand Interval: (300) overflow (maximum: 255)" ) } };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -121,18 +117,18 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exce
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+    const std::vector< RfnCommand::RfnResponsePayload >   responses {
         { 0x6f,  0x00,  0x00,  0x00 },
         { 0x69,  0x01,  0x00,  0x00 },
         { 0x69,  0x00,  0x02,  0x00 },
         { 0x69,  0x00,  0x00,  0x01,  0x00,  0x00 }
     };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x6f)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x6f)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) } };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -163,8 +159,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x68 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > exp {
+            0x68, 0x01, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -174,8 +170,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x04 )( 0x06 );
+        const std::vector< unsigned char > response {
+            0x69, 0x01, 0x00, 0x01, 0x01, 0x00, 0x02, 0x04, 0x06 };
 
 
         BOOST_CHECK( ! command.getVoltageAveragingInterval() );
@@ -194,8 +190,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x01 )( 0x01 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x04 )( 0x06 );
+        const std::vector< unsigned char > response {
+            0x69, 0x01, 0x01, 0x01, 0x01, 0x00, 0x02, 0x04, 0x06 };
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -214,18 +210,18 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+    const std::vector< RfnCommand::RfnResponsePayload >   responses {
         {0x69,  0x00,  0x00,  0x01,  0x01,  0x02,  0x04,  0x06 },
         {0x69,  0x01,  0x00,  0x02,  0x00,  0x00,  0x04,  0x00 },
         {0x69,  0x01,  0x00,  0x01,  0x04,  0x00,  0x00 },
         {0x69,  0x01,  0x00,  0x01,  0x01,  0x00,  0x01,  0x04 }
     };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type (4 != 1)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV length (1)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type (4 != 1)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV length (1)" ) } };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -256,8 +252,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileTemporaryRecord
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x68 )( 0x02 )( 0x00 );
+        const std::vector< unsigned char > exp {
+            0x68, 0x02, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -267,8 +263,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileTemporaryRecord
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x02 )( 0x00 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x02, 0x00, 0x00 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -277,8 +273,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileTemporaryRecord
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x02 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x02, 0x01, 0x00 };
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -297,14 +293,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileTemporaryRecord
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileTemporaryRecording_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+    const std::vector< RfnCommand::RfnResponsePayload >   responses {
         { 0x69, 0x03, 0x00, 0x00 },
         { 0x69, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00 }
     };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x03)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x03)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) } };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -335,8 +331,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableTemporaryLoadProfileRecordi
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x68 )( 0x03 )( 0x00 );
+        const std::vector< unsigned char > exp {
+            0x68, 0x03, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -346,8 +342,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableTemporaryLoadProfileRecordi
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x03 )( 0x00 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x03, 0x00, 0x00 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -356,8 +352,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableTemporaryLoadProfileRecordi
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x03 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x03, 0x01, 0x00 };
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -376,14 +372,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableTemporaryLoadProfileRecordi
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableTemporaryLoadProfileRecording_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+    const std::vector< RfnCommand::RfnResponsePayload >   responses {
         { 0x69, 0x02, 0x00, 0x00 },
         { 0x69, 0x03, 0x00, 0x01, 0x01, 0x00, 0x00 }
     };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) } };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -414,8 +410,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfilePermanentRecord
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x68 )( 0x02 )( 0x00 );
+        const std::vector< unsigned char > exp {
+            0x68, 0x02, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -425,8 +421,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfilePermanentRecord
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x02 )( 0x00 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x02, 0x00, 0x00 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -435,8 +431,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfilePermanentRecord
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x02 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x02, 0x01, 0x00 };
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -455,14 +451,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfilePermanentRecord
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfilePermanentRecording_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+    const std::vector< RfnCommand::RfnResponsePayload >   responses {
         { 0x69, 0x03, 0x00, 0x00 },
         { 0x69, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00 }
     };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x03)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x03)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) } };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -493,8 +489,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnablePermanentLoadProfileRecordi
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x68 )( 0x06 )( 0x00 );
+        const std::vector< unsigned char > exp {
+            0x68, 0x06, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -504,8 +500,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnablePermanentLoadProfileRecordi
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x06 )( 0x00 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x06, 0x00, 0x00 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -514,8 +510,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnablePermanentLoadProfileRecordi
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x06 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x06, 0x01, 0x00 };
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -534,16 +530,16 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnablePermanentLoadProfileRecordi
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnablePermanentLoadProfileRecording_decoding_exceptions )
 {
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
-    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+    const std::vector< RfnCommand::RfnResponsePayload >   responses {
         { 0x69, 0x02, 0x00, 0x00 },
         { 0x69, 0x06, 0x00, 0x01, 0x01, 0x00, 0x00 }
     };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) } };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -570,14 +566,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnablePermanentLoadProfileRecordi
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 {
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     RfnLoadProfileGetRecordingCommand  command;
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x68 )( 0x04 )( 0x00 );
+        const std::vector< unsigned char > exp {
+            0x68, 0x04, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -587,8 +583,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
     // decode -- success response -- disabled -- old firmware style
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x00 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x04, 0x00, 0x01, 0x02, 0x00, 0x01, 0x00 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -605,8 +601,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
     // decode -- success response -- enabled -- old firmware style
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x00 )( 0x01 )( 0x01 );
+        const std::vector< unsigned char > response {
+            0x69, 0x04, 0x00, 0x01, 0x02, 0x00, 0x01, 0x01 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -623,8 +619,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
     // decode -- success response -- enabled -- new firmware - permanent
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x05 )( 0x00 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x04, 0x00, 0x01, 0x05, 0x00, 0x00 };
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -641,8 +637,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
     // decode -- success response -- enabled -- new firmware - temporary
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x06 )( 0x00 )( 0x04 )( 0x56 )( 0x28 )( 0x22 )( 0x16 );
+        const std::vector< unsigned char > response {
+            0x69, 0x04, 0x00, 0x01, 0x06, 0x00, 0x04, 0x56, 0x28, 0x22, 0x16 };
 
         // 0x56282216 == 1445470742 == Wed, 21 Oct 2015 23:39:02 GMT
 
@@ -662,8 +658,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x69 )( 0x04 )( 0x01 )( 0x01 )( 0x02 )( 0x00 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x69, 0x04, 0x01, 0x01, 0x02, 0x00, 0x01, 0x00 };
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -682,7 +678,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+    const std::vector< RfnCommand::RfnResponsePayload >   responses {
         { 0x69, 0x02, 0x00, 0x01, 0x02, 0x00, 0x01, 0x00 },
         { 0x69, 0x04, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00 },
         { 0x69, 0x04, 0x00, 0x01, 0x01, 0x00, 0x01, 0x00 },
@@ -690,12 +686,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_
         { 0x69, 0x04, 0x00, 0x01, 0x02, 0x00, 0x01, 0x03 }
     };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type (1)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV length (2)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid State (3)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type (1)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV length (2)" ) },
+        { RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid State (3)" ) } };
 
 
     std::vector< RfnCommand::CommandException > actual;
@@ -824,7 +820,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
 {
     using Cti::Devices::Commands::RfnCommand;
 
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     //  begin == end, before today
     {
@@ -836,12 +832,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
 
         // execute
         {
-            const std::vector< unsigned char > exp = boost::assign::list_of
-                    ( 0x68 )( 0x05 )( 0x01 )
-                    ( 0x04 )
-                    ( 0x00 )( 0x08 ) // 8 bytes
-                    ( 0x51 )( 0xd8 )( 0xf5 )( 0xd0 )  // start timestamp
-                    ( 0x52 )( 0x00 )( 0x82 )( 0xd0 ); // end timestamp
+            const std::vector< unsigned char > exp {
+                    0x68, 0x05, 0x01,
+                    0x04,
+                    0x00, 0x08, // 8 bytes
+                    0x51, 0xd8, 0xf5, 0xd0,    // start timestamp
+                    0x52, 0x00, 0x82, 0xd0 };  // end timestamp
 
             RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -853,43 +849,43 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
         {
             const unsigned interval_minutes = 0x12;
 
-            const std::vector< unsigned char > response = boost::assign::list_of
-                   ( 0x69 )( 0x05 )( 0x00 )( 0x01 )
-                   ( 0x03 )
-                   ( 0x00 )( 0x43 ) // tlv size = 67-byte
+            const std::vector< unsigned char > response {
+                   0x69, 0x05, 0x00, 0x01,
+                   0x03,
+                   0x00, 0x43, // tlv size = 67-byte
                    // report header
-                   ( 0x00 ) // channel number
-                   ( 0x10 ) // uom
-                   ( 0x80 )( 0x00 ) // uom modifier 1
-                   ( 0x00 )( 0x00 ) // uom modifier 2
-                   ( interval_minutes )
-                   ( 0x04 ) // Number of profile point records
+                   0x00, // channel number
+                   0x10, // uom
+                   0x80, 0x00, // uom modifier 1
+                   0x00, 0x00, // uom modifier 2
+                   interval_minutes,
+                   0x04, // Number of profile point records
                    // record 1
-                   ( 0x51 )( 0xd8 )( 0xf5 )( 0xd0 )
-                   ( 0x00 ) // 8-bit delta
-                   ( 0x01 )
-                   ( 0x11 )( 0x00 )
+                   0x51, 0xd8, 0xf5, 0xd0,
+                   0x00, // 8-bit delta
+                   0x01,
+                   0x11, 0x00,
                    // record 2
-                   ( 0x51 )( 0xd8 )( 0xf5 )( 0xd1 )
-                   ( 0x01 ) // 16-bit delta
-                   ( 0x02 )
-                   ( 0x11 )( 0x12 )( 0x00 )
-                   ( 0x21 )( 0x22 )( 0x01 )
+                   0x51, 0xd8, 0xf5, 0xd1,
+                   0x01, // 16-bit delta
+                   0x02,
+                   0x11, 0x12, 0x00,
+                   0x21, 0x22, 0x01,
                    // record 3
-                   ( 0x51 )( 0xd8 )( 0xf5 )( 0xd2 )
-                   ( 0x02 ) // 32-bit absolute
-                   ( 0x03 )
-                   ( 0x11 )( 0x12 )( 0x13 )( 0x14 )( 0x00 )
-                   ( 0x21 )( 0x22 )( 0x23 )( 0x24 )( 0x01 )
-                   ( 0x31 )( 0x32 )( 0x33 )( 0x34 )( 0x02 )
+                   0x51, 0xd8, 0xf5, 0xd2,
+                   0x02, // 32-bit absolute
+                   0x03,
+                   0x11, 0x12, 0x13, 0x14, 0x00,
+                   0x21, 0x22, 0x23, 0x24, 0x01,
+                   0x31, 0x32, 0x33, 0x34, 0x02,
                    // record 4
-                   ( 0x51 )( 0xd8 )( 0xf5 )( 0xd3 )
-                   ( 0x03 ) // 16-bit absolute
-                   ( 0x04 )
-                   ( 0x11 )( 0x12 )( 0x00 )
-                   ( 0x21 )( 0x22 )( 0x01 )
-                   ( 0x31 )( 0x32 )( 0x02 )
-                   ( 0x41 )( 0x42 )( 0x03 );
+                   0x51, 0xd8, 0xf5, 0xd3,
+                   0x03, // 16-bit absolute
+                   0x04,
+                   0x11, 0x12, 0x00,
+                   0x21, 0x22, 0x01,
+                   0x31, 0x32, 0x02,
+                   0x41, 0x42, 0x03 };
 
             RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
@@ -987,7 +983,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_FloatingPoin
 {
     using Cti::Devices::Commands::RfnCommand;
 
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     //  begin == end, before today
     {
@@ -999,12 +995,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_FloatingPoin
 
         // execute
         {
-            const std::vector< unsigned char > exp = boost::assign::list_of
-                    ( 0x68 )( 0x05 )( 0x01 )
-                    ( 0x04 )
-                    ( 0x00 )( 0x08 ) // 8 bytes
-                    ( 0x51 )( 0xd8 )( 0xf5 )( 0xd0 )  // start timestamp
-                    ( 0x52 )( 0x00 )( 0x82 )( 0xd0 ); // end timestamp
+            const std::vector< unsigned char > exp {
+                    0x68, 0x05, 0x01,
+                    0x04,
+                    0x00, 0x08, // 8 bytes
+                    0x51, 0xd8, 0xf5, 0xd0,    // start timestamp
+                    0x52, 0x00, 0x82, 0xd0 };  // end timestamp
 
             RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -1014,22 +1010,22 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_FloatingPoin
 
         // decode
         {
-            const std::vector< unsigned char > response = boost::assign::list_of
-                   ( 0x69 )( 0x05 )( 0x00 )( 0x01 )
-                   ( 0x03 )
-                   ( 0x00 )( 0x11 ) // tlv size = 17-byte
+            const std::vector< unsigned char > response {
+                   0x69, 0x05, 0x00, 0x01,
+                   0x03,
+                   0x00, 0x11, // tlv size = 17-byte
                    // report header
-                   ( 0x00 ) // channel number
-                   ( 0x10 ) // uom
-                   ( 0x80 )( 0x00 ) // uom modifier 1
-                   ( 0x01 )( 0x40 ) // uom modifier 2
-                   ( 0x12 ) // 18 minute intervals
-                   ( 0x01 ) // Number of profile point records
+                   0x00, // channel number
+                   0x10, // uom
+                   0x80, 0x00, // uom modifier 1
+                   0x01, 0x40, // uom modifier 2
+                   0x12, // 18 minute intervals
+                   0x01, // Number of profile point records
                    // record 1
-                   ( 0x51 )( 0xd8 )( 0xf5 )( 0xd3 )
-                   ( 0x03 ) // 16-bit absolute
-                   ( 0x01 )
-                   ( 0x09 )( 0xd4 )( 0x00 );
+                   0x51, 0xd8, 0xf5, 0xd3,
+                   0x03, // 16-bit absolute
+                   0x01,
+                   0x09, 0xd4, 0x00 };
 
             RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 

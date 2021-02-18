@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
@@ -23,11 +24,10 @@ import com.cannontech.common.fdr.FdrOptionType;
 import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
-import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -38,11 +38,11 @@ import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.PointAlarming;
 import com.cannontech.web.tools.points.model.PointBaseModel;
-import com.cannontech.web.tools.points.validators.PointValidationUtil;
+import com.cannontech.web.tools.points.validators.PointApiValidationUtil;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValidator<T> {
-    @Autowired private PointValidationUtil pointValidationUtil;
+    @Autowired private PointApiValidationUtil pointApiValidationUtil;
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired protected StateGroupDao stateGroupDao;
     @Autowired private AlarmCatDao alarmCatDao;
@@ -65,28 +65,28 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         boolean isCreationOperation = target.getPointId() == null ? true : false;
 
         if (target.getPointName() != null) {
-            YukonValidationUtils.checkIsBlank(errors, "pointName", target.getPointName(), "Name", false);
+            YukonApiValidationUtils.checkIsBlank(errors, "pointName", target.getPointName(), "Name", false);
         }
         if (target.getPaoId() != null) {
             LiteYukonPAObject liteYukonPAObject = serverDatabaseCache.getAllPaosMap().get(target.getPaoId());
             if (liteYukonPAObject == null) {
-                errors.rejectValue("paoId", "yukon.web.api.error.doesNotExist", new Object[] { target.getPaoId() }, "");
+                errors.rejectValue("paoId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { target.getPaoId() }, "");
             }
 
             if (!errors.hasFieldErrors("paoId")) {
-                pointValidationUtil.checkIfPaoIdChanged(errors,target, isCreationOperation);
+                pointApiValidationUtil.checkIfPaoIdChanged(errors,target, isCreationOperation);
             }
             
             if (!errors.hasFieldErrors("paoId")) {
 
                 if (!errors.hasFieldErrors("pointName") && target.getPointName() != null) {
-                    pointValidationUtil.validatePointName(target, "pointName", errors, isCreationOperation);
+                    pointApiValidationUtil.validatePointName(target, "pointName", errors, isCreationOperation);
                 }
 
                 if (target.getPointOffset() != null) {
-                    YukonValidationUtils.checkRange(errors, "pointOffset", target.getPointOffset(), 0, 99999999, true);
+                    YukonApiValidationUtils.checkRange(errors, "pointOffset", target.getPointOffset(), 0, 99999999, true);
                     if (!errors.hasFieldErrors("pointOffset")) {
-                        pointValidationUtil.validatePointOffset(target, "pointOffset", errors, isCreationOperation);
+                        pointApiValidationUtil.validatePointOffset(target, "pointOffset", errors, isCreationOperation);
                     }
                 }
 
@@ -94,7 +94,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         }
 
         if(!errors.hasFieldErrors("pointType") && target.getPointType() != null) {
-            pointValidationUtil.checkIfPointTypeChanged(errors, target, isCreationOperation);
+            pointApiValidationUtil.checkIfPointTypeChanged(errors, target, isCreationOperation);
         }
 
         validateArchiveSettings(target, pointType, errors);
@@ -120,7 +120,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                                                                         .filter(e -> e.getNotificationGroupID() == notificationGroupId)
                                                                         .findFirst();
                 if (existingNotifGroup.isEmpty()) {
-                    errors.rejectValue("alarming.notificationGroupId", "yukon.web.api.error.doesNotExist", new Object[] { "Notification GroupId" }, "");
+                    errors.rejectValue("alarming.notificationGroupId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { notificationGroupId }, "");
                 }
             }
             
@@ -153,24 +153,31 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                     AlarmTableEntry entry = alarmList.get(i);
 
                     if (entry == null || entry.getCondition() == null) {
-                        errors.rejectValue("condition", "yukon.web.error.fieldrequired", new Object[] { "Condition" }, "");
+                        errors.rejectValue("condition", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                                new Object[] { "Condition" }, "");
                     }
 
                     if (!errors.hasFieldErrors("condition")) {
                         if (!alarmStates.contains(entry.getCondition())) {
-                            errors.rejectValue("condition", "yukon.web.api.error.invalid", new Object[] { "Condition" }, "");
+                            errors.rejectValue("condition", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                    new Object[] { StringUtils.join(alarmStates, ", ") }, "");
                         }
                         if (!errors.hasFieldErrors("condition") && alarmStateEntries.contains(entry.getCondition())) {
-                            errors.rejectValue("condition", "yukon.web.api.error.field.uniqueError", new Object[] { "Condition", entry.getCondition() }, "");
+                            errors.rejectValue("condition", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                                    new Object[] { entry.getCondition() }, "");
                         }
 
                         if (entry.getCategory() != null) {
-                            Optional<LiteAlarmCategory> catagory = alarmCatDao.getAlarmCategories()
-                                                                              .stream()
-                                                                              .filter(e -> e.getCategoryName().equals(entry.getCategory()))
-                                                                              .findFirst();
+                            List<String> catagoryNameList = alarmCatDao.getAlarmCategories()
+                                                                       .stream()
+                                                                       .map(alarmCategory -> alarmCategory.getCategoryName())
+                                                                       .collect(Collectors.toList());
+                            Optional<String> catagory = catagoryNameList.stream()
+                                                                        .filter(e -> e.equals(entry.getCategory()))
+                                                                        .findFirst();
                             if (catagory.isEmpty()) {
-                                errors.rejectValue("category", "yukon.web.api.error.invalid", new Object[] { "Category" }, "");
+                                errors.rejectValue("category", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                        new Object[] { StringUtils.join(catagoryNameList, ", ") }, "");
                             }
                         }
                         alarmStateEntries.add(entry.getCondition());
@@ -189,7 +196,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
         if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.NONE || target.getArchiveType() == PointArchiveType.ON_CHANGE || target.getArchiveType() == PointArchiveType.ON_UPDATE)) {
             if (target.getArchiveInterval() != null && target.getArchiveInterval() != 0) {
-                errors.rejectValue("archiveInterval", baseKey + ".invalid.archiveInterval");
+                errors.rejectValue("archiveInterval", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { 0 }, "");
             }
         }
     }
@@ -202,7 +209,8 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         if (target.getStateGroupId() != null) {
             LiteStateGroup liteStateGroup = stateGroupDao.findStateGroup(target.getStateGroupId());
             if (liteStateGroup == null) {
-                errors.rejectValue("stateGroupId", baseKey + ".invalid.stateGroupId", new Object[] { target.getStateGroupId() }, "");
+                errors.rejectValue("stateGroupId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
+                        new Object[] { target.getStateGroupId() }, "");
             }
         }
 
@@ -217,11 +225,11 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         StaleData staleData = target.getStaleData();
         if (staleData != null) {
             if (staleData.getTime() != null) {
-                YukonValidationUtils.checkRange(errors, "staleData.time", staleData.getTime(), 0, 99999999, false);
+                YukonApiValidationUtils.checkRange(errors, "staleData.time", staleData.getTime(), 0, 99999999, false);
             }
             if (staleData.getUpdateStyle() != null) {
                 if (!(staleData.getUpdateStyle() == 1 || staleData.getUpdateStyle() == 0)) {
-                    YukonValidationUtils.rejectValues(errors, baseKey + ".staleData.updateStyle", "staleData.updateStyle");
+                    errors.rejectValue( "staleData.updateStyle", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "0 - 1" }, "");
                 }
             }
         }
@@ -232,7 +240,6 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
      */
 
     private void validateFdrTranslation(List<FdrTranslation> fdrList, Errors errors) {
-
         if (CollectionUtils.isNotEmpty(fdrList)) {
             Set<FdrTranslation> usedTypes = new HashSet<>();
             for (int i = 0; i < fdrList.size(); i++) {
@@ -240,17 +247,17 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 FdrTranslation fdrTranslation = fdrList.get(i);
 
                 if (fdrTranslation == null || fdrTranslation.getFdrInterfaceType() == null) {
-                    errors.rejectValue("fdrInterfaceType", "yukon.web.error.fieldrequired", new Object[] { "Interface" }, "");
+                    errors.rejectValue("fdrInterfaceType", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                            new Object[] { "Interface" }, "");
                 }
 
                 if (!errors.hasFieldErrors("fdrInterfaceType")) {
                     FdrInterfaceType fdrInterfaceType = fdrTranslation.getFdrInterfaceType();
                     FdrDirection fdrDirection = fdrTranslation.getDirection();
                     List<FdrDirection> supportedDirections = fdrInterfaceType.getSupportedDirectionsList();
-                    String supportedDirectionsInString  = supportedDirections.stream().map(direction -> direction.name()).collect(Collectors.joining(", "));
-
                     if (fdrDirection == null || !supportedDirections.contains(fdrDirection)) {
-                        errors.rejectValue("direction", baseKey + ".fdr.supportedDirection", new Object[] { supportedDirectionsInString, fdrInterfaceType }, "");
+                        errors.rejectValue("direction", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                new Object[] { StringUtils.join(supportedDirections, ", ") }, "");
                     }
 
                     Map<FdrInterfaceOption, String> parameterMap = new HashMap<>();
@@ -260,14 +267,13 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                     if (translation != null) {
                         String[] parameters = translation.split(";");
 
-
                         if (parameterMap.size() > maxFdrInterfaceTranslations) {
-                            errors.reject(baseKey + ".fdr.invalidTranslationPropertyCount", new Object[] { maxFdrInterfaceTranslations }, "");
+                            errors.reject(ApiErrorDetails.MAX_LENGTH_EXCEEDED.getCodeString(),
+                                    new Object[] { maxFdrInterfaceTranslations }, "");
                         }
                         
                         if (usedTypes.contains(fdrTranslation)) {
-                            errors.reject("yukon.web.modules.tools.point.error.fdr.unique", new Object[] { fdrInterfaceType },
-                                    "");
+                            errors.rejectValue("interfaceType", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { translation }, "");
                         }
                         usedTypes.add(fdrTranslation);
 
@@ -288,25 +294,19 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                                     if (!(parameterMap.containsKey(fdrInterfaceOption))) {
                                         parameterMap.put(fdrInterfaceOption, fieldValue);
                                     } else {
-                                        errors.rejectValue("translation",
-                                                           baseKey + ".fdr.duplicateTranslationProperty",
-                                                           new Object[] { fdrInterfaceOption.getOptionLabel(), fdrInterfaceType },
-                                                           "");
+                                        errors.rejectValue("translation", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                                                new Object[] { translation }, "");
                                     }
 
                                     FdrOptionType optionType = fdrInterfaceOption.getOptionType();
-
-                                    if (!(optionType == FdrOptionType.TEXT && fieldValue.equals(CtiUtilities.STRING_NONE)) && !(fdrInterfaceOption.isValid(fieldValue))) {
-                                        errors.rejectValue("translation",
-                                                           baseKey + ".fdr.invalidTranslationPropertyValue",
-                                                           new Object[] { fieldValue, fdrInterfaceOption.getOptionLabel(), fdrInterfaceType },
-                                                           "");
+                                    if (!(optionType == FdrOptionType.TEXT && fieldValue.equals(CtiUtilities.STRING_NONE))
+                                            && !(fdrInterfaceOption.isValid(fieldValue))) {
+                                        errors.rejectValue("translation", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                                new Object[] { StringUtils.join(fdrInterfaceOption.getOptionValues(), ", ") }, "");
                                     }
                                 } else {
-                                    errors.rejectValue("translation",
-                                                       baseKey + ".fdr.inValidTranslationPropertyInterface",
-                                                       new Object[] { option, fdrInterfaceType },
-                                                       "");
+                                    errors.rejectValue("translation", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                            new Object[] { "any translation property" }, "");
                                 }
 
                             }
@@ -316,12 +316,10 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                                                                        .filter(option -> !(parameterMap.keySet().contains(option)))
                                                                        .map(option -> option.getOptionLabel())
                                                                        .collect(Collectors.joining(", "));
-
                     if (StringUtils.isNotBlank(missedFdrInterfaceOptions)) {
-                        errors.rejectValue("translation",
-                                           baseKey + ".fdr.missingTranslationProperty",
-                                           new Object[] { missedFdrInterfaceOptions, fdrInterfaceType },
-                                           "");
+                        errors.rejectValue("translation", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                                new Object[] { "Translation property " + missedFdrInterfaceOptions + " for"
+                                        + fdrInterfaceType + " Interface." }, "");
                     }
 
                 }

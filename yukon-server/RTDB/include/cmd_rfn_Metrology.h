@@ -12,7 +12,7 @@ public:
 
     static bool isSupportedByDeviceType( DeviceTypes type ); 
 
-    enum State
+    enum class MetrologyState
     {
         Enable,
         Disable
@@ -55,11 +55,13 @@ class IM_EX_DEVDB RfnMetrologySetConfigurationCommand
 {
 public:
 
-    RfnMetrologySetConfigurationCommand( State state );
+    RfnMetrologySetConfigurationCommand( MetrologyState state );
 
     std::string getCommandName() const override;
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
+
+    MetrologyState getMetrologyState() const;
 
 private:
 
@@ -83,13 +85,13 @@ public:
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 
-    std::optional<State> getMetrologyState() const;
+    std::optional<MetrologyState> getMetrologyState() const;
 
 private:
 
     Bytes getCommandData() override;
 
-    std::optional<State> _metrologyState;
+    std::optional<MetrologyState> _metrologyState;
 };
 
 }   // -- Cti::Devices::Commands

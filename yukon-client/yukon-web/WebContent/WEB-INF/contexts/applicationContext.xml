@@ -181,6 +181,12 @@
         <property name="required" value="true"/>
     </bean>
     
+    <bean id="widgetInput.infrastructureWarningDeviceCategory" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="widgetInput.infrastructureWarningDeviceCategory"/>
+        <property name="description" value="type of InfrastructureWarningDeviceCategory"/>
+        <property name="required" value="false"/>
+    </bean>
+    
     <bean id="tdcBackingService" class="com.cannontech.web.updater.tdc.TdcBackingService"/>
         
     <bean id="ecobeeReadBackingService" class="com.cannontech.web.updater.dr.EcobeeReadBackingService"/>
@@ -334,6 +340,9 @@
                 </entry>
                 <entry key="METER_PROGRAMMING">
                     <ref bean="meterProgrammingBackingService"/>
+                </entry>
+                <entry key="DEVICE_CONFIG_SUMMARY">
+                    <ref bean="deviceConfigSummaryBackingService"/>
                 </entry>
             </map>
         </property>
@@ -1095,6 +1104,7 @@
     <bean id="exportAttributeValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportAttributeValidator"/>
     <bean id="exportFieldValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportFieldValidator"/>
     <bean id="dataRangeValidator" class="com.cannontech.web.tools.dataExporter.validator.DataRangeValidator"/>
+    <bean class="com.cannontech.web.tools.dataExporter.validator.ExportFormatTemplateValidator"/>
 
     <bean id="lmReportedDataBackingService" class="com.cannontech.web.updater.dr.LmReportedDataBackingService"/>
     <jms:listener-container 
@@ -1266,7 +1276,7 @@
 
     <bean class="com.cannontech.web.common.chart.service.impl.ChartServiceImpl"/>
     <bean class="com.cannontech.web.common.chart.service.impl.FlotChartServiceImpl"/>
-    <bean class="com.cannontech.web.common.chart.service.impl.AssetAvailabilityChartServiceImpl"/>
+    <bean class="com.cannontech.web.common.chart.service.impl.HighChartServiceImpl"/>
 
     <bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
     <bean class="com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper"/>
@@ -1301,7 +1311,7 @@
         <property name="memoryAttribute" value="WEB_SERVICE_MEMORY_UTILIZATION" />
     </bean>
     
-    <bean class="com.cannontech.web.updater.point.CachedPointDataCorrelationServiceImpl"/>
+    <bean class="com.cannontech.web.common.service.impl.CachedPointDataCorrelationServiceImpl"/>
     
     <bean class="com.cannontech.web.support.service.impl.SystemHealthServiceImpl"/>
     <bean class="com.cannontech.web.support.service.impl.YsmJmxQueryService"/>
@@ -1366,6 +1376,8 @@
      
      <bean id="meterProgrammingBackingService" class="com.cannontech.web.updater.meterProgramming.MeterProgrammingBackingService"/>
      
+     <bean id="deviceConfigSummaryBackingService" class="com.cannontech.web.updater.deviceConfigSummary.DeviceConfigSummaryBackingService"/>
+     
      <bean class="com.cannontech.web.paonote.validator.PaoNoteValidator"/>
      <bean id="scheduledDataImportService" class="com.cannontech.web.scheduledDataImport.service.impl.ScheduledDataImportServiceImpl"/>
      <bean class="com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory"/>
@@ -1410,6 +1422,8 @@
     <bean class="com.cannontech.web.api.token.TokenHelper"/>
     <bean class="com.cannontech.web.api.ApiRequestHelper"/>
     <bean class="com.cannontech.web.api.dr.setup.LMValidatorHelper"/>
+    <bean class="com.cannontech.common.validator.YukonApiValidationUtils"/>
+    <bean class="com.cannontech.common.validator.YukonValidationUtilsCommon"/>
     <bean class="com.cannontech.dr.controlscenario.service.impl.ControlScenarioServiceImpl">
         <qualifier value="controlScenario" />
     </bean>
@@ -1439,6 +1453,7 @@
     <bean class="com.cannontech.web.dr.setup.LoadProgramSetupControllerHelper"/>
 
     <bean class="com.cannontech.web.api.dr.gear.setup.fields.validator.GearValidatorHelper"/>
+    <bean id="eatonCloudCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EatonCloudCycleGearFieldsValidator"/>
     <bean id="MeterDisconnectGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MeterDisconnectGearFieldsValidator"/>
     <bean id="honeywellCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellCycleGearFieldsValidator"/>
     <bean id="honeywellSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellSetpointGearFieldsValidator"/>
@@ -1472,12 +1487,15 @@
     <bean class="com.cannontech.common.device.port.service.impl.PortServiceImpl"/>
     <bean class="com.cannontech.web.api.commChannel.PortApiValidator"/>
     <bean class="com.cannontech.common.validator.YukonValidationHelper"/>
+    <bean class="com.cannontech.common.validator.YukonApiValidationHelper"/>
+    <bean class="com.cannontech.common.validator.YukonValidationHelperCommon"/>
     <bean class="com.cannontech.web.stars.commChannel.CommChannelValidator"/>
 
     <bean class="com.cannontech.web.admin.AttributeValidator"/>
+    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeApiValidator"/>
     <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentApiController"/>
-    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentValidator"/>
-    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentCreationValidator"/>
+    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentApiValidator"/>
+    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentCreationApiValidator"/>
 
     <bean class="com.cannontech.common.device.virtualDevice.service.impl.VirtualDeviceServiceImpl"/>
 
@@ -1497,10 +1515,22 @@
     <bean class="com.cannontech.web.api.trend.TrendCreateValidator"/>
     <bean class="com.cannontech.web.api.trend.TrendValidator"/>
     <bean class="com.cannontech.web.api.trend.TrendValidatorHelper"/>
+    <bean class="com.cannontech.web.api.trend.TrendApiValidatorHelper"/>
     <bean class="com.cannontech.web.api.trend.ResetPeakValidatorHelper"/>
-    <bean class="com.cannontech.web.api.trend.ResetPeakValidator"/>
+    <bean class="com.cannontech.web.api.trend.ResetPeakApiValidator"/>
     <bean class="com.cannontech.web.tools.trends.validator.ResetPeakPopupValidator"/>
+    
+    <bean class="com.cannontech.web.api.picker.PickerSearchApiValidator"/>
+    <bean class="com.cannontech.web.api.picker.PickerIdSearchApiValidator"/>
 
     <bean class="com.cannontech.web.admin.dao.impl.CustomAttributeDaoImpl"/>
     <bean class="com.cannontech.web.admin.service.impl.CustomAttributeServiceImpl"/>
+
+    <bean class="com.cannontech.web.tools.reports.service.impl.AggregateIntervalReportServiceImpl"/>  
+    <bean class="com.cannontech.web.api.aggregateIntervalDataReport.AggregateIntervalDataReportValidator"/>
+    
+    <bean class="com.cannontech.web.bulk.service.impl.DeviceConfigAssignServiceImpl"/>
+    
+    <bean class="com.cannontech.web.stars.virtualDevice.VirtualDeviceValidator"/>
+    
 </beans>

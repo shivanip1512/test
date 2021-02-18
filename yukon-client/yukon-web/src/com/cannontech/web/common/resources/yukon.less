@@ -1,3 +1,5 @@
+ @import (less) "classpath:com/cannontech/colors.less";
+ 
 /*
     This file defines the basic look and feel of Yukon.
     This file can be included on consumer pages to reuse container styles.
@@ -40,13 +42,6 @@
 @primary-color: #06c;
 @font-color: #555;
 @visited-color: #04a;
-
-@red: #d14836;
-@green: #2ca618;
-@orange: #e99012;
-@grey: #7b8387;
-@blue: #0088f2;
-@white: #ffffff;
 
 @border-radius: 2px;
 @form-control-height: 26px;
@@ -143,12 +138,12 @@ a,
 .primary-background .highlight {
     color: @orange;
 }
-.alert { background-color: #ffcccc !important; }
+.alert { background-color: @pink !important; }
 .txt-color-white { color: @white; }
 .bg-color-green { background-color: @green; }
 .bg-color-orange { background-color: @orange; }
 .bg-color-blue { background-color: @blue; }
-.bg-color-grey { background-color: @grey; }
+.bg-color-grey { background-color: @gray; }
 
 
 /* FORM FIELDS */
@@ -991,7 +986,7 @@ ol.error{ list-style-type: none; }
 .grey, 
 .disabled, 
 .disabled a { 
-    color: @grey !important; 
+    color: @gray !important; 
     cursor: default;
 }
 
@@ -1007,7 +1002,7 @@ ol.error{ list-style-type: none; }
 .green-background { background: @green; }
 .blue-background { background: @blue; }
 .orange-background { background: @orange; }
-.grey-background { background: @grey; }
+.grey-background { background: @gray; }
 
 .small-rectangle { 
     width: 20px;
@@ -1075,12 +1070,15 @@ ol.error{ list-style-type: none; }
     color: #1c5b16 !important;
 }
 
-.user-message.info, .user-message.pending {
+.user-message.info, .user-message.pending, .user-message.help {
     background: #e0f1fd;
     color: #002f55 !important;
 }
 .user-message.info:before {
     background-position: -96px -192px;
+}
+.user-message.help:before {
+    background-position: -416px -176px;
 }
 .user-message.pending:before {
     background-image: url(../Icons/spinner.gif);
@@ -1117,17 +1115,17 @@ textarea.error {
     /* These match the YukonColorPalette.name strings and hex color*/
     &.green {background-color: @green;}
     &.red {background-color: @red;}         /* this isn't a valid color, but we may not have found all the hard-coded text in code*/
-    &.wine {background-color: #ce8799;}
-    &.white {background-color: #ffffff;}
-    &.yellow {background-color: #f0cb2f;}
-    &.blue {background-color: #0088f2;}
-    &.teal{background-color: #00b2a9;}
-    &.black {background-color: #000000;}
+    &.wine {background-color: @wine;}
+    &.white {background-color: @white;}
+    &.yellow {background-color: @yellow;}
+    &.blue {background-color: @blue;}
+    &.teal{background-color: @teal;}
+    &.black {background-color: @black;}
     &.orange {background-color: @orange;}
-    &.sage {background-color: #b2c98d;}
-    &.gray {background-color: #7b8387;}
-    &.purple {background-color: #b779f4;}
-    &.sky{background-color: #abd7e1;}
+    &.sage {background-color: @sage;}
+    &.gray {background-color: @gray;}
+    &.purple {background-color: @purple;}
+    &.sky{background-color: @sky;}
 }
 .ie .state-box { outline: 1px solid #bbb; }
 .no-ie .state-box { box-shadow: 0px 0px 0px 1px #bbb; }

@@ -124,7 +124,8 @@ public class EventLogTypeController {
         List<Integer> argumentIndexes = Lists.newArrayList(); // the EventLog column name number part only; shall be index into searchResults.resultList
         List<EventLogFilter> eventLogFilters = filter.getEventLogFilters();
         columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.event"));
-        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.dateAndTime"));
+        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.date"));
+        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.time"));
         for (EventLogFilter eventLogFilter : eventLogFilters) {
             columnNames.add(messageSourceAccessor.getMessage(eventLogFilter.getKey()));
             argumentIndexes.add(eventLogFilter.getArgumentColumn().getColumnIndex());

@@ -32,9 +32,9 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.LoadGroupBase;
@@ -120,7 +120,7 @@ public class LoadGroupSetupController {
     @GetMapping("/{id}")
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.VIEW);
             LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
             if (loadGroup == null) {
@@ -145,7 +145,7 @@ public class LoadGroupSetupController {
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.EDIT);
             LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
             if (loadGroup == null) {
@@ -176,13 +176,15 @@ public class LoadGroupSetupController {
 
         try {
             String url;
+            ResponseEntity<? extends Object> response;
             if (loadGroup.getId() == null) {
-                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupSaveUrl);
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl);
+                response = saveGroup(userContext, request, url, loadGroup, HttpMethod.POST);
             } else {
-                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUpdateUrl + loadGroup.getId());
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl + "/" + loadGroup.getId());
+                response = saveGroup(userContext, request, url, loadGroup, HttpMethod.PUT);
             }
-            ResponseEntity<? extends Object> response =
-                    saveGroup(userContext, request, url, loadGroup, HttpMethod.POST);
+
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroup");
                 result = helper.populateBindingError(result, error, response);
@@ -192,9 +194,10 @@ public class LoadGroupSetupController {
                 return bindAndForward(loadGroup, result, redirectAttributes);
             }
 
-            if (response.getStatusCode() == HttpStatus.OK) {
-                HashMap<String, Integer> groupIdMap = (HashMap<String, Integer>) response.getBody();
-                int groupId = groupIdMap.get("groupId");
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
+            	HashMap<String, Object> responseMap = (HashMap<String, Object>) response.getBody();
+                Map<String,Object> loadGroupMap = (Map<String, Object>) responseMap.get(loadGroup.getType().name());
+                int groupId = (int) loadGroupMap.get("id");
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", loadGroup.getName()));
                 return "redirect:/dr/setup/loadGroup/" + groupId;
             }
@@ -217,7 +220,7 @@ public class LoadGroupSetupController {
             FlashScope flash, HttpServletRequest request) {
 
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupDeleteUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl + "/" + id);
             ResponseEntity<? extends Object> response = deleteGroup(userContext, request, url, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -243,7 +246,7 @@ public class LoadGroupSetupController {
             HttpServletResponse servletResponse) throws IOException {
         Map<String, String> json = new HashMap<>();
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupCopyUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl + "/" + id + "/copy" );
             ResponseEntity<? extends Object> response = copyGroup(userContext, request, url, lmCopy, HttpMethod.POST);
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
@@ -380,23 +383,26 @@ public class LoadGroupSetupController {
     }
 
     @GetMapping("/getPointGroupStartState/{pointId}")
-    public @ResponseBody Map<String, List<ControlRawState>> getPointGroupStartState(@PathVariable int pointId,
+    public @ResponseBody Map<String, List<LMDto>> getPointGroupStartState(@PathVariable int pointId,
             YukonUserContext userContext, HttpServletRequest request) {
-        List<ControlRawState> startStates = retrieveStartState(pointId, userContext, request);
+        List<LMDto> startStates = retrieveStartState(pointId, userContext, request);
         return Collections.singletonMap("startStates", startStates);
     }
 
-    private List<ControlRawState> retrieveStartState(int pointId, YukonUserContext userContext, HttpServletRequest request) {
+    @SuppressWarnings("unchecked")
+    private List<LMDto> retrieveStartState(int pointId, YukonUserContext userContext, HttpServletRequest request) {
         // Give API call to get all control state
-        List<ControlRawState> startStates = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drPointGroupStartStateUrl + pointId);
+        List<LMDto> startStates = new ArrayList<>();
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.pointUrl + pointId + "/states");
         ResponseEntity<? extends Object> response =
-                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, List.class);
-
+                apiRequestHelper.callAPIForList(userContext, request, url, LMDto.class, HttpMethod.GET, LMDto.class);
         if (response.getStatusCode() == HttpStatus.OK) {
-            startStates = (List<ControlRawState>) response.getBody();
+            startStates = (List<LMDto>) response.getBody();
         }
-        return startStates;
+        //  Raw state is either 0 or 1 in Control start state of Point Load Group
+        return startStates.stream()
+                          .filter(state -> (state.getId() == 0 || state.getId() == 1))
+                          .collect(Collectors.toList());
     }
 
     /**

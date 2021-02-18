@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -317,6 +318,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             if (!filter.getDescendantCount().containsAll(Arrays.asList(DescendantCount.values()))) {
                 data.values().forEach(datas -> datas.removeIf(value -> !filter.getDescendantCount()
                         .contains(DescendantCount.getDescendantCount(value.getDescendantCount()))));
+                data = data.entrySet().stream()
+                                      .filter(e -> !e.getValue().isEmpty())
+                                      .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
             }
             if (filter.getColorCodeBy() == ColorCodeBy.GATEWAY) {
                 gatewaysToAddToMap.removeAll(data.keySet().stream().map(id -> gatewayIdsToIdentifiers.get(id))
@@ -476,7 +480,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private void colorCodeByGatewayAndAddToMap(NetworkMap map,  Map<Integer, List<DynamicRfnDeviceData>> data) {
         AtomicInteger i = new AtomicInteger(0);
         for (Integer gatewayId : data.keySet()) {
-            Color color = Color.values()[i.getAndIncrement()];
+            Color color = Color.values()[i.getAndIncrement() % Color.values().length];
             RfnDevice gateway = data.get(gatewayId).iterator().next().getGateway();
             Set<RfnIdentifier> devices = data.get(gatewayId).stream()
                     .map(d -> d.getDevice().getRfnIdentifier())
@@ -554,7 +558,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             log.debug("Failed to add devices {} to map, locations empty", paoIds.size());
             return;
         }
-        String hexColor = "#ffffff";
+        String hexColor = YukonColorPalette.WHITE.getHexValue();
         if (color != null) {
             hexColor = color.getHexColor();
         }

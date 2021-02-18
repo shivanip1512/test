@@ -111,7 +111,7 @@ public class WifiConnectionController {
 
         if (includeConnected) {
             List<Integer> connectedList = Arrays.asList(connectedIds);
-            String connectedColor = YukonColorPalette.GREEN.getHexValue();;
+            String connectedColor = YukonColorPalette.GREEN.getHexValue();
             DeviceCollection connectedCollection = producer.createDeviceCollection(connectedList);
             MappingColorCollection mapCollection = new MappingColorCollection(connectedCollection, connectedColor, null);
             Optional <LiteState> connectedState = phaseStateGroup.getStatesList().stream()
@@ -126,7 +126,7 @@ public class WifiConnectionController {
         
         if (includeDisconnected) {
             List<Integer> disconnectedList = Arrays.asList(disconnectedIds);
-            String disconnectedColor = "#D14836";
+            String disconnectedColor = YukonColorPalette.RED.getHexValue();
             DeviceCollection disconnectedCollection = producer.createDeviceCollection(disconnectedList);
             MappingColorCollection disconnectedMapCollection = new MappingColorCollection(disconnectedCollection, disconnectedColor, null);
             Optional <LiteState> disconnectedState = phaseStateGroup.getStatesList().stream()

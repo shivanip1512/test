@@ -843,6 +843,8 @@ string& traceBuffer(string &str, BYTE *Message, ULONG Length)
 CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate )
 {
     CtiTime first(YUKONEOT);
+    const CtiTime midnight = CtiDate();
+    const long midnight_offset = midnight.seconds() % 3600;
 
     if( rate > 3600 )
     {
@@ -860,13 +862,13 @@ CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate )
         }
         else
         {
-            CtiTime hourstart = CtiTime(origin.seconds() - (origin.seconds() % 3600));            // align to the current hour.
-            first = CtiTime(hourstart.seconds() - ((hourstart.hour() * 3600) % rate) + rate);
+            CtiTime hourstart = origin - ((origin.seconds() - midnight_offset) % 3600);            // align to the current hour.
+            first = hourstart - ((hourstart.hour() * 3600) % rate) + rate;
         }
     }
     else if(rate > 0 )    // Prevent a divide by zero with this check...
     {
-        first = CtiTime(origin.seconds() - (origin.seconds() % rate) + rate);
+        first = origin - ((origin.seconds() - midnight_offset) % rate) + rate;
     }
     else if(rate == 0)
     {

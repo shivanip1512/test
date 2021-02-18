@@ -1,7 +1,9 @@
 <?xml version="1.0" ?>
-<project name="Yukon Ant Build Script" default="targets" basedir="..">
+<project name="Yukon Ant Build Script" default="targets" basedir=".." xmlns:jacoco="antlib:org.jacoco.ant">
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
-	
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="./lib/jacocoant.jar"/>
+    </taskdef>
     <property environment="env" />
     <tstamp/>
     <tstamp>
@@ -11,6 +13,7 @@
     <property name="log.dir" value="${basedir}/yukon-build/logs" />
     <property name="dist.dir" value="${basedir}/yukon-build/dist" />
     <property name="temp.dir" value="${basedir}/yukon-build/temp" />
+    <property name="apiDocumentationTemp.dir" value="${basedir}/yukon-build/apiDocumentationTemp" />
     <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
 
     <target name="targets">
@@ -71,6 +74,15 @@
         <ant dir="${basedir}/yukon-client/build" >
             <target name="createDatabaseSnapshots"/>
         </ant>
+    
+        <!-- Restore files which got modifies and present in "Changes not staged for commit" Unstaged section -->
+        <exec executable="git" dir='${basedir}'>
+            <arg line="restore yukon-database/"/>
+        </exec>
+        <!-- Clean newly created untracked files -->
+        <exec executable="git" dir='${basedir}'>
+            <arg line="clean -f"/>
+        </exec>
     </target>
     
     <target name="build-client">
@@ -148,7 +160,7 @@
             <mkdir dir="${client.dir}/Import"/>
             <mkdir dir="${client.dir}/Log"/>
             <mkdir dir="${client.dir}/DBScripts"/>
-        
+
         <copy todir="${client.bag}" preservelastmodified="yes">
             <fileset dir="${basedir}/yukon-client/build/lib" excludes="*.jar"/>
             <fileset dir="${basedir}/yukon-client/sensus-jms/lib"/>
@@ -216,6 +228,13 @@
         <mkdir dir="${server.dir}/Import"/>
         <mkdir dir="${server.dir}/Log"/>
         
+        <!-- Tools Component -->
+        <property name="tools.dir" value="${install.bag}/Yukon Base/Tools"/>
+        <mkdir dir="${tools.dir}/RfNetworkData"/>
+        <copy todir="${tools.dir}/RfNetworkData" preservelastmodified="true">
+            <fileset dir="${basedir}/yukon-install/resources/scripts/rfNetworkData"/>
+        </copy>
+        
         <!-- Initial Server Config Component -->
         <copy todir="${install.bag}/Initial Server Config/Config" file="${basedir}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
 
@@ -233,6 +252,11 @@
             <fileset dir="${client.bag}/exampleXml"/>
         </copy>
         
+        <!-- Add data export template folder and template files.-->
+        <copy todir="${install.bag}/Common Directories/Config/DataExportTemplates" preservelastmodified="true">
+            <fileset dir="${basedir}/yukon-shared/src/main/resources/DataExportTemplates/" includes="*.yaml" casesensitive="false"/>
+        </copy>
+ 
         <!-- JRE Component -->
         <copy todir="${install.bag}/JRE" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/JRE" />
@@ -395,6 +419,10 @@
             <fileset dir="${basedir}/yukon-database/DBUpdates/sqlserver" />
         </copy>
         
+
+        <antcall target="apiDocumentation">
+            <param name="tempDir" value="${temp.dir}"/>
+        </antcall>
         <mkdir dir="${dist.dir}" />
         
         <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}_${yukon-build-number}.zip">
@@ -430,7 +458,69 @@
         <exec failonerror="true" dir="${basedir}/yukon-client/build" executable="cmd.exe">
             <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' runUnitTests"/>
         </exec>
+        <!-- Merge all jococo exe files from lib/coverage to yukon-client-->
+        <jacoco:merge destfile="${basedir}/yukon-client/merged.exec">
+            <fileset dir="${basedir}/yukon-client/lib/coverage" includes="*.exec"/>
+        </jacoco:merge>
+        <antcall target="generateReport"/>
     </target>
+
+    <target name="generateReport">
+        <mkdir dir="${basedir}/yukon-client/jacocoReport"/>
+        <jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
+            <executiondata>
+                <file file="${basedir}/yukon-client/merged.exec"/>
+            </executiondata>
+            <structure name="Coverage Structure">
+                <group name="common">
+                    <classfiles>
+                       <fileset dir="${basedir}/yukon-client/common/build/com/cannontech">
+                           <exclude name="**/*dao*.class" />
+                           <exclude name="**/*Dao*.class" />
+                           <exclude name="**/dao/**/*.class" />
+                           <exclude name="**/*Model.class" />
+                           <exclude name="**/model/**/*.class" />
+                           <exclude name="**/simulators/**/*.class" />
+                           <exclude name="**/clientutils/commander/*.class" />
+                           <exclude name="**/clientutils/popup/*.class" />
+                           <exclude name="**/common/editor/*.class" />
+                           <exclude name="**/common/device/groups/service/*.class" />
+                           <exclude name="**/common/gui/**/*.class"/>
+                           <exclude name="**/common/gui/wizard/state/*.class" />
+                           <exclude name="**/common/i18n/*.class" />
+                           <exclude name="**/common/login/*.class" />
+                           <exclude name="**/common/opc/*.class" />
+                           <exclude name="**/common/wizard/*.class" />
+                           <exclude name="**/common/database/model/*.class" />
+                           <exclude name="**/common/loadcontrol/displays/*.class" />
+                           <exclude name="**/common/loadcontrol/events/*.class" />
+                       </fileset>
+                    </classfiles>
+                    <sourcefiles>
+                        <fileset dir="${basedir}/yukon-client/common/src"/>
+                    </sourcefiles>
+                </group>
+                <group name="yukon-web">
+                     <classfiles>
+                          <fileset dir="${basedir}/yukon-client/yukon-web/build_src"/>
+                     </classfiles>
+                     <sourcefiles>
+                          <fileset dir="${basedir}/yukon-client/yukon-web/src"/>
+                     </sourcefiles>
+                </group>
+                <group name="services">
+                     <classfiles>
+                          <fileset dir="${basedir}/yukon-client/services/build"/>
+                     </classfiles>
+                     <sourcefiles>
+                          <fileset dir="${basedir}/yukon-client/services/src"/>
+                     </sourcefiles>
+                </group>
+            </structure>
+            <html destdir="${basedir}/yukon-client/jacocoReport"/>
+            <xml destfile="C:/CodeCoverage/junitCoverage.xml"/>
+        </jacoco:report>
+   </target>
 
     <target name="signclient">
         <exec failonerror="true" dir="${basedir}/yukon-client/build" executable="cmd.exe">
@@ -484,5 +574,22 @@
             <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/jqGrid/jqGridHelper.js" />
         </jsdoctoolkit>
     </target>
+
+
+    <target name="apiDocumentation">
+        <mkdir dir="${apiDocumentationTemp.dir}" />      
+        <copy todir="${apiDocumentationTemp.dir}/apiDocumentation">
+            <fileset dir="${basedir}/yukon-build/swagger-ui" />
+        </copy>
+        <copy todir="${apiDocumentationTemp.dir}/apiDocumentation/apiDocumentation">
+            <fileset dir="${basedir}/yukon-client/yukon-web/apiDocumentation" />
+        </copy>
+
+        <zip destfile="${tempDir}/apiDocumentation.zip">
+            <fileset dir="${apiDocumentationTemp.dir}/apiDocumentation" />
+        </zip>
+
+        <delete dir="${apiDocumentationTemp.dir}" />  
+    </target> 
 
 </project>

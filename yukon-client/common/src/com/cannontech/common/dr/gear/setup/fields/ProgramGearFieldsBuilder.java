@@ -17,6 +17,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.dr.eatonCloud.model.EatonCloudCycleType;
 import com.cannontech.dr.itron.model.ItronCycleType;
 import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
@@ -91,6 +92,9 @@ public class ProgramGearFieldsBuilder {
                 gearFields = getNoControlGearFields(directGear);
                 break;
             case MeterDisconnect:
+                break;
+            case EatonCloudCycle:
+                gearFields = getEatonCloudCycleGearFields(directGear);
                 break;
         }
 
@@ -514,6 +518,30 @@ public class ProgramGearFieldsBuilder {
         gearFields.setCriticality(Integer.parseInt(methodOptionType));
         gearFields.setDutyCyclePeriodInMinutes(directGear.getMethodPeriod() / 60);
         ItronCycleType cycleType = gearDao.getItronCycleType(directGear.getGearId());
+        gearFields.setDutyCycleType(cycleType);
+
+        WhenToChangeFields changeFields = getWhenToChangeFields(directGear);
+        gearFields.setWhenToChangeFields(changeFields);
+        return gearFields;
+
+    }
+    
+    /**
+     * Build Eaton Cloud Cycle gear fields.
+     */
+
+    private ProgramGearFields getEatonCloudCycleGearFields(LMProgramDirectGear directGear) {
+        EatonCloudCycleGearFields gearFields = new EatonCloudCycleGearFields();
+
+        gearFields.setHowToStopControl(HowToStopControl.valueOf(directGear.getMethodStopType()));
+        gearFields.setCapacityReduction(directGear.getPercentReduction());
+        gearFields.setDutyCyclePercent(directGear.getMethodRate());
+        gearFields.setRampIn(IlmDefines.RAMP_RANDOM.equals(directGear.getFrontRampOption()));
+        gearFields.setRampOut(IlmDefines.RAMP_RANDOM.equals(directGear.getBackRampOption()));
+        String methodOptionType = directGear.getMethodOptionType();
+        gearFields.setCriticality(Integer.parseInt(methodOptionType));
+        gearFields.setDutyCyclePeriodInMinutes(directGear.getMethodPeriod() / 60);
+        EatonCloudCycleType cycleType = gearDao.getEatonCloudCycleType(directGear.getGearId());
         gearFields.setDutyCycleType(cycleType);
 
         WhenToChangeFields changeFields = getWhenToChangeFields(directGear);

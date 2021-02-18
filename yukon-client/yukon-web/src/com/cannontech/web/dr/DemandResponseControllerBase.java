@@ -2,12 +2,11 @@ package com.cannontech.web.dr;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
@@ -23,14 +22,14 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
-import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.NaturalOrderComparator;
-import com.cannontech.web.common.chart.service.AssetAvailabilityChartService;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.common.widgets.model.AssetAvailabilityWidgetSummary;
+import com.cannontech.web.common.widgets.service.AssetAvailabilityWidgetService;
 import com.cannontech.web.dr.assetavailability.AssetAvailabilityController.AssetAvailabilitySortBy;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -39,23 +38,14 @@ import com.google.common.collect.Lists;
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public abstract class DemandResponseControllerBase {
 
-    @Autowired private AssetAvailabilityChartService assetAvailabilityChartService;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private AssetAvailabilityWidgetService assetAvailabilityWidgetService;
 
     protected static final TypeReference<Set<AssetAvailabilityCombinedStatus>> assetAvailStatusType =
         new TypeReference<Set<AssetAvailabilityCombinedStatus>>() {
         };
-
-    protected static Map<AssetAvailabilityCombinedStatus, String> colorMap;
-    static {
-        colorMap = new HashMap<>();
-        colorMap.put(AssetAvailabilityCombinedStatus.ACTIVE, "green");
-        colorMap.put(AssetAvailabilityCombinedStatus.INACTIVE, "orange");
-        colorMap.put(AssetAvailabilityCombinedStatus.UNAVAILABLE, "red");
-        colorMap.put(AssetAvailabilityCombinedStatus.OPTED_OUT, "grey");
-    }
 
     protected static enum AssetDetailsColumn implements DisplayableEnum {
         
@@ -87,15 +77,12 @@ public abstract class DemandResponseControllerBase {
 
 
     protected int getAssetAvailabilityInfo(DisplayablePao dispPao, ModelMap model, YukonUserContext userContext) {
-        AssetAvailabilitySummary aaSummary =
-            assetAvailabilityService.getAssetAvailabilityFromDrGroup(dispPao.getPaoIdentifier());
-        int assetTotal = aaSummary.getTotalSize();
-        model.addAttribute("assetAvailabilitySummary", aaSummary);
-        model.addAttribute("assetTotal", assetTotal);
-        model.addAttribute("pieJSONData", assetAvailabilityChartService.getJsonPieData(aaSummary, userContext));
-        model.addAttribute("colorMap", colorMap);
+        AssetAvailabilityWidgetSummary assetAvailabilityWidgetSummary = assetAvailabilityWidgetService
+                .getAssetAvailabilitySummary(dispPao.getPaoIdentifier().getPaoId(), new Instant());
+        model.addAttribute("assetAvailabilitySummary", assetAvailabilityWidgetSummary);
+        model.addAttribute("statusTypes", AssetAvailabilityCombinedStatus.values());
         model.addAttribute("maxPingableDevices", AssetAvailabilityPingService.PING_MAXIMUM_DEVICES);
-        return assetTotal;
+        return assetAvailabilityWidgetSummary.getTotalDeviceCount();
     }
 
     /*

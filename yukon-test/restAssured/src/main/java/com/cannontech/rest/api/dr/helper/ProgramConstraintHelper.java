@@ -60,7 +60,7 @@ public class ProgramConstraintHelper {
                                    .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                                    .body(deleteConstraint)
                                    .when()
-                                   .delete(ApiCallHelper.getProperty("deleteProgramConstraint") + constraintId)
+                                   .delete(ApiCallHelper.getProperty("programConstraints") + "/" + constraintId)
                                    .then()
                                    .extract()
                                    .response();
@@ -81,11 +81,10 @@ public class ProgramConstraintHelper {
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setName(name);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         constraintId = createResponse.path(CONTEXT_PROGRAM_CONSTRAINT_ID);
         assertTrue("Constraint Id should not be Null", constraintId != null);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         programConstraint.setId(constraintId);
 
         return programConstraint;

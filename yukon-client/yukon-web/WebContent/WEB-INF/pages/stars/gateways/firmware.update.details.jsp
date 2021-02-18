@@ -6,11 +6,6 @@
 
 <cti:msgScope paths="modules.operator.gateways.firmware.update, yukon.common">
 
-<div class="stacked wsnw fr">
-    <span class="badge badge-error">${fn:length(results.failed)}</span>
-    <span class="badge badge-success">${fn:length(results.success)}</span>
-    <span class="badge">${fn:length(results.pending)}</span>
-</div>
 <div class="stacked clear">
     <h3>
         <i:inline key=".failed"/>&nbsp;

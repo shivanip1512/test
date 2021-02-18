@@ -2,7 +2,7 @@ package com.cannontech.web.api.point;
 
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.web.tools.points.model.AccumulatorPointModel;
 import com.cannontech.web.tools.points.model.PointAccumulatorModel;
 
@@ -26,10 +26,10 @@ public class AccumulatorPointApiValidator extends ScalarPointApiValidator<Accumu
 
             if (pointAccumulator != null) {
                 if (pointAccumulator.getMultiplier() != null) {
-                    YukonValidationUtils.checkRange(errors, "accumulatorPoint.multiplier", pointAccumulator.getMultiplier(), -99999999.0, 99999999.0, false);
+                    YukonApiValidationUtils.checkRange(errors, "accumulatorPoint.multiplier", pointAccumulator.getMultiplier(), -99999999.0, 99999999.0, false);
                 }
                 if (pointAccumulator.getDataOffset() != null) {
-                    YukonValidationUtils.checkRange(errors, "accumulatorPoint.dataOffset", pointAccumulator.getDataOffset(), -99999999.0, 99999999.0, false);
+                    YukonApiValidationUtils.checkRange(errors, "accumulatorPoint.dataOffset", pointAccumulator.getDataOffset(), -99999999.0, 99999999.0, false);
                 }
             }
         }

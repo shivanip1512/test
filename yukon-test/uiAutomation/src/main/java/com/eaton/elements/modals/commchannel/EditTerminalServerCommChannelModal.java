@@ -9,7 +9,7 @@ import com.eaton.elements.SwitchBtnYesNoElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 
-public class EditTerminalServerCommChannelModal extends EditCommChannelModal{
+public class EditTerminalServerCommChannelModal extends EditCommChannelModal {
 
     public EditTerminalServerCommChannelModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);

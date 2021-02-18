@@ -13,9 +13,10 @@ import com.eaton.elements.modals.CopyLoadProgramModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
-import com.eaton.pages.demandresponse.LoadProgramDetailPage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramDetailPage;
 
 public class LoadProgramDetailsTests extends SeleniumTestSetup {
 
@@ -26,25 +27,28 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadPrgoramDetails_pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void loadPrgoramDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Load Program: AT Load Program";
+        
+        String ldPrgrmId = TestDbDataType.DemandResponseData.LOADPROGRAM_ID.getId().toString();
 
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "665");
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + ldPrgrmId);
 
-        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, 665);
+        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, Integer.parseInt(ldPrgrmId));
 
         String actualPageTitle = detailPage.getPageTitle();
 
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadPrgoramDetails_copySuccess() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void loadPrgoramDetails_Copy_Success() {
+        String ldPrgrmCopyId = TestDbDataType.DemandResponseData.LOADPROGRAM_COPY_ID.getId().toString();
 
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "604");
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + ldPrgrmCopyId);
 
-        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, 604);
+        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, Integer.parseInt(ldPrgrmCopyId));
 
         CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
 
@@ -58,20 +62,22 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Load Program: " + name, Optional.of(8));
 
-        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, 604);
+        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, Integer.parseInt(ldPrgrmCopyId));
 
         String userMsg = detailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadPrgoramDetails_deleteSuccess() {
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void loadPrgoramDetails_Delete_Success() {
         final String EXPECTED_MSG = "AT Delete Direct Program deleted successfully.";
+        
+        String ldPrgrmDeleteId = TestDbDataType.DemandResponseData.LOADPROGRAM_DELETE_ID.getId().toString();
 
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "605");
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + ldPrgrmDeleteId);
 
-        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, 605);
+        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, Integer.parseInt(ldPrgrmDeleteId));
 
         ConfirmModal modal = detailPage.showDeleteLoadProgramModal();
 

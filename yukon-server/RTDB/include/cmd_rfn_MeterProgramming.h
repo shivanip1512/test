@@ -33,6 +33,8 @@ namespace Cti::Devices::Commands {
 
         bool isPost() const override;
 
+        std::string getGuid() const;
+
         static std::unique_ptr<RfnMeterProgrammingSetConfigurationCommand> handleUnsolicitedReply(const CtiTime now, const RfnResponsePayload & response);
 
     private:

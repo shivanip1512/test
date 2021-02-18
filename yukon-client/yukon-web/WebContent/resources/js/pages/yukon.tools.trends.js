@@ -40,7 +40,7 @@ yukon.tools.trends = (function () {
                             rangeSelectorButtons : _rangeSelectorButtons,
                             selected: selectedZoomOption,
                             inputStyle : {
-                                color: '#333333'
+                                color: yg.colors.BLACK
                             }
                         },
                         chartWidth : null, //When null the width is calculated from the offset width of the containing element.
@@ -198,11 +198,7 @@ yukon.tools.trends = (function () {
                     }
                 });
             });
-            
-            $(document).on("click", ".js-reset-peak-help-icon", function () {
-                $('.js-help-text-message').removeClass('dn');
-            });
-            
+
             $(document).on("change", ".js-reset-peak-duration", function () {
                 var selectedDuration = $(this).val(),
                       datePicker = $(".js-reset-peak-date");

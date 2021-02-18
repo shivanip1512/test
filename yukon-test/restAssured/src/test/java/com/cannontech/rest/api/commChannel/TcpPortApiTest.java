@@ -82,7 +82,7 @@ public class TcpPortApiTest {
                 tcpPort.getBaudRate().equals(updatedTcpPortResponse.getBaudRate()));
     }
 
-    @Test(dependsOnMethods = { "tcpPort_02_Get" })
+    @Test(dependsOnMethods = { "tcpPort_16_UpdateCommChannelWithExistingCommChannelName" })
     public void tcpPort_04_Delete(ITestContext context) {
         String expectedMessage = "Port Id not found";
         ExtractableResponse<?> response = ApiCallHelper.delete("deletePort",
@@ -356,9 +356,9 @@ public class TcpPortApiTest {
      * Test case to validate TCPPort comm channel cannot be updated with same name as other comm channel, as each comm channel is unique and gets valid error message
      * in response
      */
-    @Test(dependsOnMethods = { "tcpPort_01_Create" })
+    @Test(dependsOnMethods = { "tcpPort_03_Update" })
     public void tcpPort_16_UpdateCommChannelWithExistingCommChannelName(ITestContext context) {
-        String existingCommChannelName = "Test Port11112346144";
+        String existingCommChannelName = context.getAttribute("tcpTerminalName").toString();
 
         MockTcpPortDetail mockTcpPort = (MockTcpPortDetail) CommChannelHelper
                 .buildCommChannel(MockPaoType.TCPPORT);
@@ -371,7 +371,7 @@ public class TcpPortApiTest {
         
         mockTcpPort.setName(existingCommChannelName);
         
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updatePort", mockTcpPort,
+        ExtractableResponse<?> getResponse = ApiCallHelper.patch("updatePort", mockTcpPort,
                 portId);
                        
         assertTrue(getResponse.statusCode() == 422, "Status code should be 422");

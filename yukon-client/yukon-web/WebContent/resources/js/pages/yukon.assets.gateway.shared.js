@@ -74,6 +74,7 @@ yukon.assets.gateway.shared = (function () {
                     popup.dialog({
                         title: _text['collect.data.title'].replace('{0}', name),
                         width: 550,
+                        modal: true,
                         buttons: yukon.ui.buttons({ event: 'yukon:assets:gateway:collect:data', target: target })
                     });
                 });

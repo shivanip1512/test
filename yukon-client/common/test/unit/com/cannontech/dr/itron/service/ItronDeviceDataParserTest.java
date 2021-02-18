@@ -3,6 +3,7 @@ package com.cannontech.dr.itron.service;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,13 +74,13 @@ public class ItronDeviceDataParserTest {
     }
     
     @Test
-    public void validateRowParsingForPayloadValuedEvent() {
-        String[] rowData = rowData("type: 0, log event ID: 32925 (0x809D) - Vendor-specific or Unknown, payload:  data(00F0000000)");
+    public void validateRowParsingForPayloadValuedEventWithMultiplier() {
+        String[] rowData = rowData("type: 0, log event ID: 32925 (0x809D) - Vendor-specific or Unknown, payload:  data(0960000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.AVERAGE_VOLTAGE, rowData);
         Assert.assertEquals(1, data.size());
         PointData pointData = (PointData) data.toArray()[0];
         double value = pointData.getValue();
-        Assert.assertEquals(240, value, .1);
+        Assert.assertEquals(240.0, value, .1);
     }
 
     @Test
@@ -126,9 +127,10 @@ public class ItronDeviceDataParserTest {
         Collection<PointData> data = parseRow(BuiltInAttribute.MINIMUM_VOLTAGE, rowData);
         Assert.assertEquals(0, data.size());
         
-        String[] rowData2 = rowData("type: 0, log event ID: 32926 (0x809E) - Vendor-specific or Unknown, payload:  data(2213E24400)");
+        String[] rowData2 = rowData("type: 0, log event ID: 32926 (0x809E) - Vendor-specific or Unknown, payload:  data(2712638700)");
         data = parseRow(BuiltInAttribute.MINIMUM_VOLTAGE, rowData2);
         assertOnlyEntryEquals(data, 240);
+        assertOnlyEntryTimestamp(data, new Date(1602201351000L)); // This date is taken from TSSL-6175
     }
 
     @Test
@@ -258,7 +260,13 @@ public class ItronDeviceDataParserTest {
         PointData pointData = (PointData) data.toArray()[0];
         Assert.assertEquals(expectedEntryValue, pointData.getValue(), 0.1);
     }
-    
+
+    private void assertOnlyEntryTimestamp(Collection<PointData> data, Date expectedTimestamp) {
+        Assert.assertEquals(1, data.size());
+        PointData pointData = (PointData) data.toArray()[0];
+        Assert.assertEquals(expectedTimestamp, pointData.getPointDataTimeStamp());
+    }
+
     private void setupMocksForLoadControlUnsupported() {
         LiteYukonPAObject pao = new LiteYukonPAObject(1, "pao1", 
                                                       PaoCategory.DEVICE, 

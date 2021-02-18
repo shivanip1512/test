@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -15,6 +14,7 @@ import com.eaton.elements.modals.CreateUserModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.admin.RoleGroupDetailsPage;
 import com.eaton.pages.admin.UserDetailPage;
@@ -28,16 +28,24 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
-        WebDriver driver = getDriver();        
         driverExt = getDriverExt();
         
-        driver.get(getBaseUrl() + Urls.Admin.USERS_AND_GROUPS);
-
-        page = new UsersAndGroupsPage(driverExt);
+        setRefreshPage(false);
+        navigate(Urls.Admin.USERS_AND_GROUPS);
+        page = new UsersAndGroupsPage(driverExt);        
     }
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void userAndGroupsDetails_pageTitleCorrect() {
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        if(getRefreshPage()) {
+            refreshPage(page);    
+        }
+        
+        setRefreshPage(false);
+    }
+    
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void userAndGroupsDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "User and Groups";
         
         String actualPageTitle = page.getPageTitle();
@@ -45,18 +53,23 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void userAndGroupsDetails_CreateUserSuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void userAndGroupsDetails_CreateUser_Success() {
+        setRefreshPage(true);
         CreateUserModal createModal = page.showAndWaitCreateUserModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String userGroup = TestDbDataType.AdminData.QA_ADMIN_USERGROUP_ID.getId().toString();
+        String energyCoId = TestDbDataType.EnergyCompanyData.EC_ID.getId().toString();
         
         String name = "ATUser" + timeStamp;
         createModal.getUserName().setInputValue(name);
         createModal.getPassword().setInputValue("At12345!");
         createModal.getConfirmPassword().setInputValue("At12345!");
-        createModal.getUserGroup().selectItemByText("QA Admin User Grp");
-        createModal.getEnergyCompany().selectItemByText("QA_Test");
+        //42 = QA Admin User Grp
+        createModal.getUserGroup().selectItemByValue(userGroup);
+        //64 = QA_Test
+        createModal.getEnergyCompany().selectItemByValue(energyCoId);
         
         createModal.clickOk();
         
@@ -69,8 +82,9 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("User (" + name + ")");
     }  
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void userAndGroupsDetails_CreateRoleGroupSuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void userAndGroupsDetails_CreateRoleGroup_Success() {
+        setRefreshPage(true);
         CreateRoleGroupModal createModal = page.showAndWaitCreateRoleGroupModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -90,8 +104,9 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("Role Group (" + name + ")");
     } 
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void userAndGroupsDetails_CreateUserGroupSuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void userAndGroupsDetails_CreateUserGroup_Success() {
+        setRefreshPage(true);
         CreateUserGroupModal createModal = page.showAndWaitCreateUserGroupModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -109,10 +124,5 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
         String actualPageTitle = detailPage.getPageTitle();
         
         assertThat(actualPageTitle).isEqualTo("User Group (" + name + ")");
-    }
-    
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
-        refreshPage(page);
-    }
+    }    
 }

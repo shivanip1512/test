@@ -24,7 +24,7 @@ public class SelectUserGroupModal extends BaseModal {
         getuserGroupTable().searchTable(userGroupName);
 
         WebTable table = getuserGroupTable();
-        WebTableRow row = table.getDataRowByName(userGroupName);
+        WebTableRow row = table.getDataRowByLinkName(userGroupName);
 
         row.selectCellByLink();
     }

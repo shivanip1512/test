@@ -153,7 +153,7 @@ public class PaoDefinitionDaoImplTest {
         Multimap<String, PaoDefinition> deviceDisplayGroupMap = dao.getPaoDisplayGroupMap();
 
         // Make sure there are the correct number of device type groups
-        assertEquals("There should be 15 device type groups", 15, deviceDisplayGroupMap.keySet().size());
+        assertEquals("There should be 16 device type groups", 16, deviceDisplayGroupMap.keySet().size());
 
         // Make sure there are the correct number of IPC device types
         try {

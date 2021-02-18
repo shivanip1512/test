@@ -140,6 +140,7 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -182,6 +183,7 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -426,6 +428,8 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\LMDynamicTriggerData_types.cpp">
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMEatonCloudCommandData_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\LMEatonCloudCommandData_types.cpp" />
     <ClCompile Include="Serialization\Thrift\LMEnergyExchangeAccept_constants.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\LMEnergyExchangeAccept_types.cpp">
@@ -584,6 +588,10 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\RfnExpressComBroadcastReply_types.cpp">
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RfnMeterDisconnectRequest_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\RfnMeterDisconnectRequest_types.cpp" />
+    <ClCompile Include="Serialization\Thrift\RfnMeterReadRequest_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\RfnMeterReadRequest_types.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnWaterNodeConfigMessages_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnWaterNodeConfigMessages_types.cpp" />
     <ClCompile Include="Serialization\Thrift\ServerRequest_constants.cpp">
@@ -676,6 +684,8 @@
     <ClInclude Include="Serialization\Thrift\LMDynamicProgramData_types.h" />
     <ClInclude Include="Serialization\Thrift\LMDynamicTriggerData_constants.h" />
     <ClInclude Include="Serialization\Thrift\LMDynamicTriggerData_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMEatonCloudCommandData_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMEatonCloudCommandData_types.h" />
     <ClInclude Include="Serialization\Thrift\LMEnergyExchangeAccept_constants.h" />
     <ClInclude Include="Serialization\Thrift\LMEnergyExchangeAccept_types.h" />
     <ClInclude Include="Serialization\Thrift\LMEnergyExchangeControl_constants.h" />
@@ -760,6 +770,10 @@
     <ClInclude Include="Serialization\Thrift\RfnE2eData_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnExpressComBroadcastReply_constants.h" />
     <ClInclude Include="Serialization\Thrift\RfnExpressComBroadcastReply_types.h" />
+    <ClInclude Include="Serialization\Thrift\RfnMeterDisconnectRequest_constants.h" />
+    <ClInclude Include="Serialization\Thrift\RfnMeterDisconnectRequest_types.h" />
+    <ClInclude Include="Serialization\Thrift\RfnMeterReadRequest_constants.h" />
+    <ClInclude Include="Serialization\Thrift\RfnMeterReadRequest_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnWaterNodeConfigMessages_constants.h" />
     <ClInclude Include="Serialization\Thrift\RfnWaterNodeConfigMessages_types.h" />
     <ClInclude Include="Serialization\Thrift\ServerRequest_constants.h" />

@@ -34,6 +34,7 @@ class RfnTouHolidayConfigurationCommand;
 class RfnMeterProgrammingGetConfigurationCommand;
 class RfnMeterProgrammingSetConfigurationCommand;
 class RfnMeterProgrammingGetFileCommand;
+class RfnMeterReadCommand;
 class RfnGetOvUvAlarmConfigurationCommand;
 class RfnSetOvUvAlarmProcessingStateCommand;
 class RfnSetOvUvAlarmRepeatCountCommand;
@@ -43,7 +44,9 @@ class RfnSetOvUvSetOverVoltageThresholdCommand;
 class RfnSetOvUvSetUnderVoltageThresholdCommand;
 class RfnRemoteDisconnectGetConfigurationCommand;
 class RfnRemoteDisconnectSetConfigurationCommand;
-class RfnChannelSelectionCommand;
+class RfnSetChannelSelectionCommand;
+class RfnGetChannelSelectionCommand;
+class RfnGetChannelSelectionFullDescriptionCommand;
 namespace RfnChannelIntervalRecording {
 class GetConfigurationCommand;
 class GetActiveConfigurationCommand;
@@ -99,6 +102,7 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnMeterProgrammingGetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnMeterProgrammingSetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnMeterProgrammingGetFileCommand &)                   {}
+        virtual void handleCommandResult(const RfnMeterReadCommand &)                                 {}
         virtual void handleCommandResult(const RfnGetOvUvAlarmConfigurationCommand &)                 {}
         virtual void handleCommandResult(const RfnSetOvUvAlarmProcessingStateCommand &)               {}
         virtual void handleCommandResult(const RfnSetOvUvAlarmRepeatCountCommand &)                   {}
@@ -108,7 +112,9 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnSetOvUvSetUnderVoltageThresholdCommand &)           {}
         virtual void handleCommandResult(const RfnRemoteDisconnectGetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnRemoteDisconnectSetConfigurationCommand &)          {}
-        virtual void handleCommandResult(const RfnChannelSelectionCommand &)                          {}
+        virtual void handleCommandResult(const RfnSetChannelSelectionCommand &)                       {}
+        virtual void handleCommandResult(const RfnGetChannelSelectionCommand &)                       {}
+        virtual void handleCommandResult(const RfnGetChannelSelectionFullDescriptionCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::SetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetActiveConfigurationCommand &)  {}

@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -12,6 +11,7 @@ import org.testng.annotations.Test;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.admin.energycompany.EnergyCompanyWarehouseCreatePage;
 import com.eaton.pages.admin.energycompany.EnergyCompanyWarehouseListPage;
@@ -20,19 +20,27 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
 
     private EnergyCompanyWarehouseCreatePage createPage;
     private DriverExtensions driverExt;
+    private String ecId;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();        
         driverExt = getDriverExt();
-        
-        driver.get(getBaseUrl() + Urls.Admin.ENERGY_COMPANY_WAREHOUSE_CREATE + "64");
-
-        createPage = new EnergyCompanyWarehouseCreatePage(driverExt, 64);
+        setRefreshPage(false);
+        ecId = TestDbDataType.EnergyCompanyData.EC_ID.getId().toString();
+        navigate(Urls.Admin.ENERGY_COMPANY_WAREHOUSE_CREATE + ecId);
+        createPage = new EnergyCompanyWarehouseCreatePage(driverExt, Integer.parseInt(ecId));
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyWarehouseCreate_pageTitleCorrect() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void energyCompanyWarehouseCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "QA_Test";
         
         String actualPageTitle = createPage.getPageTitle();
@@ -40,8 +48,9 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyWarehouseCreate_createWarehouseAllFieldsSuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void energyCompanyWarehouseCreate_AllFields_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String wareHouseName = "AT EC Warehouse " + timeStamp;
         
@@ -64,10 +73,5 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
         String userMsg = listPage.getUserMessage();
         
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }    
-    
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
-        refreshPage(createPage);
-    }
+    }       
 }

@@ -772,6 +772,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
             request->watchPoints( pointRequests );
+            dispatchConnection->refreshPointRegistration();
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -1147,6 +1148,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
             request->watchPoints( pointRequests );
+            dispatchConnection->refreshPointRegistration();
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -1294,6 +1296,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
             request->watchPoints( pointRequests );
+            dispatchConnection->refreshPointRegistration();
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -1425,6 +1428,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request(_requestFactory->createDispatchPointDataRequest(dispatchConnection));
             request->watchPoints(pointRequests);
+            dispatchConnection->refreshPointRegistration();
 
             //ActiveMQ message here for System Refresh
             sendCapControlOperationMessage( CapControlOperationMessage::createRefreshSystemMessage( subbus->getPaoId(), CtiTime() ) );
@@ -1493,8 +1497,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     // This means we tried to look up a capbank and failed, probably due to a store reload.
 
                     CTILOG_ERROR( dout, "IVVC Algorithm: Data validation issue -- aborting analysis." );
-
-                    state->setState(IVVCState::IVVC_WAIT);
                 }
                 else    // result == ValidityCheckResults::Invalid
                 {
@@ -1508,7 +1510,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     state->setCommsRetryCount(state->getCommsRetryCount() + 1);
                     if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
                     {
-                        state->setState(IVVCState::IVVC_WAIT);
                         state->setCommsRetryCount(0);
 
                         if ( ! state->isCommsLost() )
@@ -1525,6 +1526,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }
                 }
 
+                state->setState(IVVCState::IVVC_WAIT);
                 updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
                 CTILOG_INFO(dout, request->createStatusReport());
                 break;
@@ -1535,7 +1537,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 state->setState(IVVCState::IVVC_WAIT);
                 state->setCommsRetryCount(0);
-
                 state->setCommsLost(false);
 
                 long stationId, areaId, spAreaId;
@@ -1583,8 +1584,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     if ( ! state->isCommsLost() )
                     {
                         state->setCommsLost(true);
-
-                        state->setState(IVVCState::IVVC_WAIT);
                         state->setCommsRetryCount(0);
 
                         handleCommsLost( state, subbus );
@@ -1596,6 +1595,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }
                 }
 
+                state->setState(IVVCState::IVVC_WAIT);
                 updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
                 CTILOG_INFO(dout, request->createStatusReport());
                 break;
@@ -1739,6 +1739,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
 
             request->watchPoints(pointRequests);
+            dispatchConnection->refreshPointRegistration();
 
             state->setTimeStamp(now);
             state->setGroupRequest(request);
@@ -4940,11 +4941,11 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
     if ( const auto reason = handleReverseFlow( subbus );
             ! reason.empty() )
     {
+        CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Improper Power Flow.\n" << reason );
+
         if ( state->powerFlow.valid )   // transition from good to bad
         {
             state->powerFlow.valid = false;
-
-            CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Improper Power Flow.\n" << reason );
 
             sendDisableRemoteControl( subbus );
 

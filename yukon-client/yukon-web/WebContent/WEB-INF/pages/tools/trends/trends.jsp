@@ -30,13 +30,7 @@
     
     <div id="page-buttons">
         <c:if test="${not empty trends}">
-            <span class="form-control"><i:inline key=".trends.autoRefresh"/></span>
-            <div id="trend-updater" class="button-group button-group-toggle">
-                <c:set var="onClasses" value="${autoUpdate ? 'on yes' : 'yes'}"/>
-                <cti:button nameKey="on" classes="${onClasses}"/>
-                <c:set var="offClasses" value="${autoUpdate ? 'no' : 'on no'}"/>
-                <cti:button nameKey="off" classes="${offClasses}"/>
-            </div>
+            <%@ include file="../../common/trends/trendsAutoRefresh.jsp" %>
 
             <div class="js-page-additional-actions dn">
                 <cti:checkRolesAndProperties value="MANAGE_TRENDS" level="UPDATE">
@@ -101,24 +95,25 @@
         </c:choose>
     </div>
     
+    <cti:msg var="helpText" key="yukon.web.modules.tools.trend.resetPeak.helpTxt"/>
     <cti:url value="/tools/trend/renderResetPeakPopup" var="renderResetPeakPopup">
         <cti:param name="trendId" value="${trendId}"/>
     </cti:url>
     <div class="dn js-reset-peak-popup"
              data-popup
              data-dialog
+             data-width="500"
              data-title="${resetPeakLbl}"
              data-url="${renderResetPeakPopup}"
              data-load-event="yukon:tools:trend:resetPeakPopupLoaded"
-             data-event="yukon:tools:trend:resetPeak">
+             data-event="yukon:tools:trend:resetPeak"
+             data-help-text="${helpText}">
     </div>
     
     <dt:pickerIncludes />
     
     <cti:includeScript link="/resources/js/pages/yukon.tools.trends.js"/>
     <cti:includeScript link="/resources/js/common/yukon.trends.js"/>
-    <cti:includeScript link="HIGH_STOCK"/>
     <cti:includeScript link="HIGH_STOCK_EXPORTING"/>
-    <cti:includeScript link="HIGH_STOCK_NO_DATA"/>
     
 </cti:standardPage>

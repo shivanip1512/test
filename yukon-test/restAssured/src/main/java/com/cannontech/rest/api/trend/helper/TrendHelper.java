@@ -23,7 +23,7 @@ public class TrendHelper {
                 .type(MockGraphType.DATE_TYPE)
                 .pointId(-110)
                 .label("System Device / System Point")
-                .color(MockColor.BLACK)
+                .color(MockColor.TEAL)
                 .axis(MockTrendAxis.LEFT)
                 .multiplier(1.2)
                 .style(MockRenderType.LINE)

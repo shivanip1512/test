@@ -2,7 +2,6 @@ package com.eaton.tests.capcontrol.pointimport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -18,17 +17,13 @@ public class PointImportTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.CapControl.POINT_IMPORT);
-
+        navigate(Urls.CapControl.POINT_IMPORT);
         importPage = new PointImportPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void pointImport_pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VOLT_VAR })
+    public void pointImport_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Point Import";
 
         String actualPageTitle = importPage.getPageTitle();

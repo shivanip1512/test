@@ -60,7 +60,7 @@ void IDLC::sendFrame( CtiXfer &xfer )
 {
     unsigned short crc;
 
-    unsigned char out_frame_length  = _out_data.size() + Frame_DataPacket_OverheadLength;
+    unsigned long out_frame_length  = _out_data.size() + Frame_DataPacket_OverheadLength;
 
     //  byte 0
     _out_frame.header.flag      = FramingFlag;
@@ -635,6 +635,11 @@ unsigned IDLC::getMaximumPayload( void ) const
     return Frame_MaximumDataLength;
 }
 
+void IDLC::clearSequenceNumbers( Test::use_in_unit_tests_only & )
+{
+    _master_sequence = 0;
+    _slave_sequence = 0;
+}
 
 }
 }

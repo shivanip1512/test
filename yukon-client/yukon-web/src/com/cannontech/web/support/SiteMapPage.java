@@ -200,6 +200,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRole.TABULAR_DISPLAY_CONSOLE),
     PAO_NOTE_SEARCH(SiteMapCategory.TOOLS, "yukon.web.modules.tools.paoNotesSearch.pageName", "/tools/paoNotes/search",
         MatchStyle.all),
+    AGGREGATE_INTERVAL_REPORT(SiteMapCategory.TOOLS, "yukon.web.modules.tools.aggregateIntervalReport.pageName", 
+                              "/tools/aggregateIntervalReport/view", MatchStyle.all),
 
     SUPPORT(SiteMapCategory.SUPPORT, "yukon.web.modules.support.support.pageName", "/support",
             MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),

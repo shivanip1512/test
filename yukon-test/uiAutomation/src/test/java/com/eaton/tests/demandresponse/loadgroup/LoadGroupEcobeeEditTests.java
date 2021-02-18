@@ -10,7 +10,6 @@ import java.util.Optional;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -20,195 +19,206 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupEditPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupEditPage;
 
 public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
-	private DriverExtensions driverExt;
-	private Integer id;
-	private String name;
-	private LoadGroupEditPage editPage;
-	private LoadGroupDetailPage detailsPage;
+    private DriverExtensions driverExt;
+    private String name;
+    private LoadGroupEditPage editPage;
 
-	@BeforeClass(alwaysRun = true)
-	public void beforeClass() {
-		driverExt = getDriverExt();
-		Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
-		name = response.getString("name");
-		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-		editPage = new LoadGroupEditPage(driverExt, id);
-	}
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+        setRefreshPage(false);
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        name = "AT Ecobee" + timeStamp;
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(name))
+                .create();
+        JSONObject response = pair.getValue1();
+        Integer id = response.getInt("id");
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        editPage = new LoadGroupEditPage(driverExt, id);
+    }
 
-	@AfterMethod
-	public void afterMethod() {
-		refreshPage(editPage);
-	}
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
+    }
 
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_Page_TitleCorrect() {
+        final String EXPECTED_TITLE = "Edit Load Group: " + name;
 
-		final String EXPECTED_TITLE = "Edit Load Group: " + name;
+        String actualPageTitle = editPage.getPageTitle();
 
-		String actualPageTitle = editPage.getPageTitle();
+        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
+    }
 
-		assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-	}
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String editName = "AT Ecobee Edited Required " + timeStamp;
+        final String EXPECTED_MSG = editName + " saved successfully.";        
+        
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
+                .create();
+        
+        JSONObject response = pair.getValue1();
+        Integer editId = response.getInt("id");
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_requiredFieldsOnlySuccess() {
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String name = "AT Edited Ecobee Ldgrp " + timeStamp;
-		final String EXPECTED_MSG = name + " saved successfully.";
+        editPage.getName().setInputValue(editName);
 
-		Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
-		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        editPage.getSaveBtn().click();
 
-		editPage.getName().setInputValue(name);
+        waitForPageToLoad("Load Group: " + editName, Optional.empty());
 
-		editPage.getSaveBtn().click();
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
 
-		waitForPageToLoad("Load Group: " + name, Optional.empty());
+        String userMsg = detailsPage.getUserMessage();
 
-		LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
+    }
 
-		String userMsg = detailsPage.getUserMessage();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_Name_RequiredValidation() {
+        final String EXPECTED_MSG = "Name is required.";
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
+        editPage.getName().clearInputValue();
+        editPage.getSaveBtn().click();
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_name_requiredValidation() {
-		final String EXPECTED_MSG = "Name is required.";
+        String actualMsg = editPage.getName().getValidationError();
+        assertThat(EXPECTED_MSG).isEqualTo(actualMsg);
+    }
 
-		editPage.getName().setInputValue(" ");
-		editPage.getSaveBtn().click();
+    //TODO: remove the refresh once defect is fixed
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_Name_UniqueValidation() {
+        setRefreshPage(true);
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String newName = "AT Unique Name " + timeStamp;
+        new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(newName))
+                .create();
 
-		String actualMsg = editPage.getName().getValidationError();
-		assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
-	}
+        final String EXPECTED_MSG = "Name must be unique.";
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_name_alreadyExists() {
-		Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
-		JSONObject response = pair.getValue1();
+        editPage.getName().setInputValue(newName);
+        editPage.getSaveBtn().click();
 
-		String name = response.getString("name");
+        String actualMsg = editPage.getName().getValidationError();
+        assertThat(EXPECTED_MSG).isEqualTo(actualMsg);
+    }
 
-		final String EXPECTED_MSG = "Name must be unique.";
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_Name_InvalidCharsValidation() {
+        final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
-		editPage.getName().setInputValue(name);
-		editPage.getSaveBtn().click();
+        editPage.getName().setInputValue("/eco,|group ");
+        editPage.getSaveBtn().click();
 
-		String actualMsg = editPage.getName().getValidationError();
-		assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
-	}
+        String actualMsg = editPage.getName().getValidationError();
+        assertThat(EXPECTED_MSG).isEqualTo(actualMsg);
+    }
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_name_invalidChars() {
-		final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_KwCapacity_MinValueValidation() {
+        final String EXPECTED_MSG = "Must be between 0 and 99,999.999.";
 
-		editPage.getName().setInputValue("/eco,|group ");
-		editPage.getSaveBtn().click();
+        editPage.getkWCapacity().setInputValue("-1");
+        editPage.getSaveBtn().click();
 
-		String actualMsg = editPage.getName().getValidationError();
-		assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
-	}
+        String actualMsg = editPage.getkWCapacity().getValidationError();
+        assertThat(EXPECTED_MSG).isEqualTo(actualMsg);
+    }
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_kWCapacity_minValidation() {
-		final String EXPECTED_MSG = "Must be between 0 and 99,999.999.";
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_KwCapacity_MaxValueValidation() {
+        final String EXPECTED_MSG = "Must be between 0 and 99,999.999.";
 
-		editPage.getkWCapacity().setInputValue("-1");
-		editPage.getSaveBtn().click();
+        editPage.getkWCapacity().setInputValue("100000.00");
+        editPage.getSaveBtn().click();
 
-		String actualMsg = editPage.getkWCapacity().getValidationError();
-		assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
-	}
+        String actualMsg = editPage.getkWCapacity().getValidationError();
+        assertThat(EXPECTED_MSG).isEqualTo(actualMsg);
+    }
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_kWCapacity_maxValidation() {
-		final String EXPECTED_MSG = "Must be between 0 and 99,999.999.";
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_Cancel_NavigatesToCorrectUrl() {
+        setRefreshPage(true);
+        final String EXPECTED_MSG = "Load Group: " + name;
+        editPage.getCancelBtn().click();
 
-		editPage.getkWCapacity().setInputValue("100000.00");
-		editPage.getSaveBtn().click();
+        waitForPageToLoad("Load Group: " + name, Optional.empty());
 
-		String actualMsg = editPage.getkWCapacity().getValidationError();
-		assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
-	}
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+        String userMsg = detailsPage.getPageTitle();
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_cancelNavigatesCorrectly() {
-		final String EXPECTED_MSG = "Load Group: " + name;
-		editPage.getCancelBtn().click();
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
+    }
 
-		waitForPageToLoad("Load Group: " + name, Optional.empty());
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_AllFields_Success() {
+        setRefreshPage(true);
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String editName = "AT Edited Ecobee" + timeStamp;
+        final String EXPECTED_MSG = editName + " saved successfully.";
 
-		LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
-		String userMsg = detailsPage.getPageTitle();
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
+                .create();
+        
+        JSONObject response = pair.getValue1();
+        Integer editId = response.getInt("id");
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
+        editPage.getName().setInputValue(editName);
+        editPage.getkWCapacity().setInputValue("2345");
+        editPage.getDisableGroup().selectValue("Yes");
+        editPage.getDisableControl().selectValue("Yes");
+        editPage.getSaveBtn().click();
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_updateAllFieldsSuccess() {
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String name = "AT Edited Ecobee Ldgrp " + timeStamp;
-		final String EXPECTED_MSG = name + " saved successfully.";
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+        String userMsg = detailsPage.getUserMessage();
 
-		Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
-		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
+    }
 
-		editPage.getName().setInputValue(name);
-		editPage.getkWCapacity().setInputValue("2345");
-		editPage.getDisableGroup().setValue(true);
-		editPage.getDisableControl().setValue(true);
-		editPage.getSaveBtn().click();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_GeneralSection_TitleCorrect() {
 
-		LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
-		String userMsg = detailsPage.getUserMessage();
+        Section general = editPage.getPageSection("General");
+        assertThat(general.getSection()).isNotNull();
+    }
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_OptionalAttributeSection_TitleCorrect() {
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_generalSectionTitleCorrect() {
+        Section optAttr = editPage.getPageSection("Optional Attributes");
+        assertThat(optAttr.getSection()).isNotNull();
+    }
 
-		Section general = editPage.getPageSection("General");
-		assertThat(general.getSection()).isNotNull();
-	}
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_GeneralSection_LabelsCorrect() {
+        String sectionName = "General";
+        List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:"));
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_optionalAttributeSectionTitleCorrect() {
+        List<String> actualLabels = editPage.getPageSection(sectionName).getSectionLabels();
 
-		Section optAttr = editPage.getPageSection("Optional Attributes");
-		assertThat(optAttr.getSection()).isNotNull();
-	}
+        assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_generalSectionLabelsCorrect() {
-		String sectionName = "General";
-		List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:"));
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_OptionalAttrSection_LabelsCorrect() {
+        String sectionName = "Optional Attributes";
+        List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
 
-		List<String> actualLabels = editPage.getPageSection(sectionName).getSectionLabels();
+        List<String> actualLabels = editPage.getPageSection(sectionName).getSectionLabels();
 
-		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-	}
-
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_optionalAttrSectionLabelsCorrect() {
-		String sectionName = "Optional Attributes";
-		List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
-
-		List<String> actualLabels = editPage.getPageSection(sectionName).getSectionLabels();
-
-		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-	}
-
+        assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
+    }
 }

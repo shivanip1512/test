@@ -30,7 +30,7 @@ public class AmiDashboardPage extends PageBase {
         
         actionBtn.clickAndSelectOptionByText("Create Meter");        
                       
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("contentPopup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("contentPopup");
         
         return new CreateMeterModal(this.driverExt, Optional.empty(), Optional.of("contentPopup"));
     }    

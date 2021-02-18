@@ -385,6 +385,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         NodeData node = new NodeData();
         node.setFirmwareVersion("R2.1.5Wp");
         node.setHardwareVersion("1.1.1 (Sim)");
+        node.setBootLoaderVersion((long)2);
         node.setInNetworkTimestamp(1517588257267L);
         node.setMacAddress("11:22:33:44:91:11");
         node.setNetworkAddress("00C36E09081400");
@@ -484,8 +485,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             // Network Tree
             simulatedNmMappingSettings.setEmptyNullPercent(
                     yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL));
-            simulatedNmMappingSettings
-                    .setMinHop(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MIN_HOP));
             simulatedNmMappingSettings
                     .setMaxHop(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MAX_HOP));
             simulatedNmMappingSettings.setNodesOneHop(
