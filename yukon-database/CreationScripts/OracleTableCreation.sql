@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/10/2021 1:09:33 AM                         */
+/* Created on:     2/18/2021 8:51:55 AM                         */
 /*==============================================================*/
 
 
@@ -6837,6 +6837,13 @@ create table LMHardwareEvent  (
    EventID              NUMBER                          not null,
    InventoryID          NUMBER                          not null,
    constraint PK_LMHARDWAREEVENT primary key (EventID)
+);
+
+/*==============================================================*/
+/* Index: INDX_LMHardwareEvent_InventoryID                      */
+/*==============================================================*/
+create index INDX_LMHardwareEvent_InventoryID on LMHardwareEvent (
+   InventoryID ASC
 );
 
 /*==============================================================*/
