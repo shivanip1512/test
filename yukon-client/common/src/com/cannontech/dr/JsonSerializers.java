@@ -1,10 +1,9 @@
-package com.cannontech.common.util;
+package com.cannontech.dr;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -12,8 +11,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.dr.ecobee.message.EcobeeJobStatus;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
@@ -21,16 +18,13 @@ import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.cannontech.dr.honeywellWifi.azure.event.ConnectionStatus;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
 import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
-import com.cannontech.spring.YukonSpringHook;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
@@ -49,8 +43,6 @@ public interface JsonSerializers {
     
     public static final DateTimeFormatter PX_WHITE_ERROR_MESSAGE_DATE_TIME = 
             DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZZ");
-    
-    public static final DateTimeFormatter MMDDYYYY_FORMAT = DateTimeFormat.forPattern("MM/dd/yyyy");
     
     class TO_DATE_PX_WHITE_ERROR extends JsonSerializer<Instant> {
         @Override
@@ -334,69 +326,4 @@ public interface JsonSerializers {
             return EcobeeJobStatus.fromEcobeeStatusString(paramJsonParser.getValueAsString());
         }
     }
-
-    /**
-     * Serializer for MM/dd/yyyy format.
-     */
-    class TO_MMDDYYYY_FORMAT extends JsonSerializer<DateTime> {
-        @Override
-        public void serialize(DateTime dateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-                throws IOException {
-            jsonGenerator.writeString(MMDDYYYY_FORMAT.print(dateTime));
-        }
-    }
-
-    /**
-     * Deserializer for MM/dd/yyyy format.
-     */
-    class FROM_MMDDYYYY_FORMAT extends JsonDeserializer<DateTime> {
-
-        @Override
-        public DateTime deserialize(JsonParser jsonParser, DeserializationContext context)
-                throws IOException, JsonProcessingException {
-            return MMDDYYYY_FORMAT.parseDateTime(jsonParser.getValueAsString());
-        }
-    }
-    
-    /**
-     * Deserializer for Attribute Name.
-     */
-    class FROM_ATTIBUTE extends StdDeserializer<Attribute> {
-
-        protected FROM_ATTIBUTE() {
-            super(Attribute.class);
-        }
-
-        private AttributeService attributeService = YukonSpringHook.getBean(AttributeService.class);
-
-        @Override
-        public Attribute deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
-                throws IOException, JsonProcessingException {
-            TreeNode node = paramJsonParser.readValueAsTree();
-            TreeNode idNode = node.get("customAttributeId");
-            String attributeName = null;
-            if (idNode != null) {
-                attributeName = idNode.toString();
-            } else {
-                attributeName = node.toString().replaceAll("\"", "");
-            }
-            return attributeService.resolveAttributeName(attributeName);
-        }
-    }
-
-    /**
-     * This serializer delegator choose the correct serializer based on passed value
-     */
-    class REJECT_VALUE_DELEGATING_SERIALIZER extends JsonSerializer<Object> {
-
-        @Override
-        public void serialize(Object type, JsonGenerator gen, SerializerProvider provider) throws IOException {
-            if (type instanceof DateTime) {
-                new TO_MMDDYYYY_FORMAT().serialize((DateTime) type, gen, provider);
-            } else {
-                gen.writeString(type.toString());
-            }
-        }
-    }
-
 }

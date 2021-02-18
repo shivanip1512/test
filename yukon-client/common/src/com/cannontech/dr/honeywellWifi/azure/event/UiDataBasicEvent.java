@@ -3,10 +3,10 @@ package com.cannontech.dr.honeywellWifi.azure.event;
 import org.joda.time.Instant;
 
 import com.cannontech.common.temperature.TemperatureUnit;
-import com.cannontech.common.util.JsonSerializers.FROM_DATE_HONEYWELL;
-import com.cannontech.common.util.JsonSerializers.FROM_TEMPERATURE_UNIT;
-import com.cannontech.common.util.JsonSerializers.TO_DATE_HONEYWELL;
-import com.cannontech.common.util.JsonSerializers.TO_TEMPERATURE_UNIT;
+import com.cannontech.dr.JsonSerializers.FROM_DATE_HONEYWELL;
+import com.cannontech.dr.JsonSerializers.FROM_TEMPERATURE_UNIT;
+import com.cannontech.dr.JsonSerializers.TO_DATE_HONEYWELL;
+import com.cannontech.dr.JsonSerializers.TO_TEMPERATURE_UNIT;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,7 +1,6 @@
 package com.cannontech.amr.archivedValueExporter.model;
 
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.util.JsonSerializers.FROM_ATTIBUTE;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -34,7 +33,7 @@ public class ExportAttribute {
         this.formatId = formatId;
     }
     
-    @JsonDeserialize(using = FROM_ATTIBUTE.class)
+    @JsonDeserialize(using = AttributeDeserializer.class)
     public Attribute getAttribute() {
         return attribute;
     }

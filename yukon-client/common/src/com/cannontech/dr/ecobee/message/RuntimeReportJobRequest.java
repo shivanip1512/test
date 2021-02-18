@@ -4,10 +4,10 @@ import java.util.Collection;
 
 import org.joda.time.LocalDate;
 
-import com.cannontech.common.util.JsonSerializers.FROM_BASIC_CSV;
-import com.cannontech.common.util.JsonSerializers.FROM_LOCAL_DATE;
-import com.cannontech.common.util.JsonSerializers.TO_BASIC_CSV;
-import com.cannontech.common.util.JsonSerializers.TO_LOCAL_DATE;
+import com.cannontech.dr.JsonSerializers.FROM_BASIC_CSV;
+import com.cannontech.dr.JsonSerializers.FROM_LOCAL_DATE;
+import com.cannontech.dr.JsonSerializers.TO_BASIC_CSV;
+import com.cannontech.dr.JsonSerializers.TO_LOCAL_DATE;
 import com.cannontech.dr.ecobee.message.partial.Selection;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.fasterxml.jackson.annotation.JsonCreator;
