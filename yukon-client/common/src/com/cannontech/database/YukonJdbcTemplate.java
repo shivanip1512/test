@@ -187,7 +187,44 @@ public class YukonJdbcTemplate extends JdbcTemplate {
                             deleteSql.append("WHERE").append(deleteByColumn).in(deleteValues);
                             deleteSql.appendFragment(batchUpdater.getDeleteBeforeInsertClauses());
                             log.trace("Delete sql {}", deleteSql.getDebugSql());
-                            update(deleteSql);
+                            batchUpdate(deleteSql.toString(), new BatchPreparedStatementSetter() {
+                                @Override
+                                public void setValues(PreparedStatement ps, int rowIndex) throws SQLException {
+                                    List<Object> values = batchList.get(rowIndex);
+                                    for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
+                                        Object value = values.get(valueIndex);
+                                        if (value == null) {
+                                            ps.setNull(valueIndex + 1, Types.NULL);
+                                        } else {
+                                            Object jdbcFriendlyValue;
+                                            if (value instanceof DatabaseRepresentationSource) {
+                                                jdbcFriendlyValue = ((DatabaseRepresentationSource) value)
+                                                        .getDatabaseRepresentation();
+                                            } else if (value instanceof Enum<?>) {
+                                                Enum<?> e = (Enum<?>) value;
+                                                jdbcFriendlyValue = e.name();
+                                            } else if (value instanceof ReadableInstant) {
+                                                jdbcFriendlyValue = new Timestamp(((ReadableInstant) value).getMillis());
+                                            } else if (value instanceof ReadablePeriod) {
+                                                jdbcFriendlyValue = ISOPeriodFormat.standard().print((ReadablePeriod) value);
+                                            } else if (value instanceof Date) {
+                                                // Unlike the normal jdbcTemplate, the prepared statement doesn't seem to
+                                                // automatically convert java.util.date into a java.sql.* type, so we do it here.
+                                                jdbcFriendlyValue = new Timestamp(((Date) value).getTime());
+                                            } else {
+                                                jdbcFriendlyValue = value;
+                                            }
+
+                                            ps.setObject(valueIndex + 1, jdbcFriendlyValue);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public int getBatchSize() {
+                                    return deleteValues.size();
+                                }
+                            });
                         }
 
                         // Insert the batch of rows

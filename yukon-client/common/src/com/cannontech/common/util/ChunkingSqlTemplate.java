@@ -16,7 +16,7 @@ import com.cannontech.database.YukonRowMapperAdapter;
 import com.google.common.collect.Lists;
 
 public class ChunkingSqlTemplate {
-    public static final int DEFAULT_SIZE = 50000;
+    public static final int DEFAULT_SIZE = 1000;
 
     private final YukonJdbcTemplate yukonJdbcTemplate;
     private int chunkSize = DEFAULT_SIZE;
