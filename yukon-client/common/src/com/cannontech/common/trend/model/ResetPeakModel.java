@@ -2,6 +2,8 @@ package com.cannontech.common.trend.model;
 
 import org.joda.time.DateTime;
 
+import com.cannontech.common.util.DateDeserializer;
+import com.cannontech.common.util.DateSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

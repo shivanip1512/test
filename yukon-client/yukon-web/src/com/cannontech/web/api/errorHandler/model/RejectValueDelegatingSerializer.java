@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.joda.time.DateTime;
 
-import com.cannontech.common.trend.model.DateSerializer;
+import com.cannontech.common.util.DateSerializer;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
