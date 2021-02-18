@@ -1792,6 +1792,7 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
 
     int ret = ClientErrors::NoMethod;
     std::vector<std::string> nonCurrentConfigParts;
+    std::vector<std::string> missingConfigParts;
 
     if (getDeviceConfig())
     {
@@ -1823,10 +1824,18 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                     tempReq.setConnectionHandle(pReq->getConnectionHandle());
 
                     CtiCommandParser parseSingle(tempReq.CommandString());
-                    if( executePutConfigSingle(&tempReq, parseSingle, OutMessage, vgList, retList, outList, readsOnly ) )
+                    if( auto retCode = executePutConfigSingle(&tempReq, parseSingle, OutMessage, vgList, retList, outList, readsOnly ) )
                     {
-                        nonCurrentConfigParts.push_back(configPart);
-                        ret = ClientErrors::ConfigNotCurrent;
+                        if ( retCode == ClientErrors::NoConfigData )
+                        {
+                            missingConfigParts.push_back(configPart);
+                            ret = ClientErrors::NoConfigData;
+                        }
+                        else
+                        {
+                            nonCurrentConfigParts.push_back(configPart);
+                            ret = ClientErrors::ConfigNotCurrent;
+                        }
                     }
                 }
             }
@@ -1851,24 +1860,40 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
         retList.push_back( retMsg );
     }
 
-    // Can only be ClientErrors::ConfigNotCurrent for now.
     if( ret )
     {
-        CTILOG_ERROR(dout, "Device " << getName() << " has non-current configuration.");
+        // return the more serious error despite what is in 'ret' as its current value, as it is completely
+        //  configparts order dependent in the case of multiple errors.
 
-        CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID( ),
-                                string(OutMessage->Request.CommandStr),
-                                "ERROR: Config Part(s) " + boost::join(nonCurrentConfigParts, ", ") + " not current.",
-                                ClientErrors::ConfigNotCurrent,
-                                OutMessage->Request.RouteID,
-                                OutMessage->Request.RetryMacroOffset,
-                                OutMessage->Request.Attempt,
-                                OutMessage->Request.GrpMsgID,
-                                OutMessage->Request.UserID,
-                                OutMessage->Request.SOE,
-                                CtiMultiMsg_vec( ));
+        std::string errorMessage;
 
-        retList.push_back( retMsg );
+        if ( ! missingConfigParts.empty() )
+        {
+            CTILOG_ERROR(dout, "Device " << getName() << " has an incomplete configuration.");
+
+            ret = ClientErrors::NoConfigData;
+            errorMessage = "ERROR: Config Part(s) " + boost::join(missingConfigParts, ", ") + " are incomplete.";
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Device " << getName() << " has non-current configuration.");
+
+            errorMessage = "ERROR: Config Part(s) " + boost::join(nonCurrentConfigParts, ", ") + " not current.";
+        }
+
+        auto retMsg = std::make_unique<CtiReturnMsg>(
+            getID( ),
+            string(OutMessage->Request.CommandStr),
+            errorMessage,
+            ret,
+            OutMessage->Request.RouteID,
+            OutMessage->Request.RetryMacroOffset,
+            OutMessage->Request.Attempt,
+            OutMessage->Request.GrpMsgID,
+            OutMessage->Request.UserID,
+            OutMessage->Request.SOE );
+
+        retList.push_back( retMsg.release() );
     }
 
     if( isVerify )
