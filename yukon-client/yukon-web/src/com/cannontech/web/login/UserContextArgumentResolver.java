@@ -6,7 +6,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Logger;
-import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebArgumentResolver;
@@ -46,17 +45,23 @@ public class UserContextArgumentResolver implements HandlerMethodArgumentResolve
         Class<?> parameterType = methodParameter.getParameterType();
         if (parameterType.isAssignableFrom(YukonUserContext.class)) {
             HttpServletRequest nativeHttpRequest = (HttpServletRequest) webRequest.getNativeRequest();
-            Optional<LiteYukonUser> user = getUserFromToken(nativeHttpRequest);
-            if (user.isPresent()) {
-                return userContextConstructor.resolveContext(user.get(), nativeHttpRequest);
+            String requestURI = nativeHttpRequest.getRequestURI();
+            if (isApiRequest(requestURI)) {
+                Optional<LiteYukonUser> user = getUserFromToken(nativeHttpRequest);
+                if (user.isPresent()) {
+                    return userContextConstructor.resolveContext(user.get(), nativeHttpRequest);
+                }
             }
             return YukonUserContextUtils.getYukonUserContext(nativeHttpRequest);
         }
         if (parameterType.isAssignableFrom(LiteYukonUser.class)) {
             ServletRequest nativeRequest = (ServletRequest) webRequest.getNativeRequest();
-            Optional<LiteYukonUser> user = getUserFromToken((HttpServletRequest) webRequest.getNativeRequest());
-            if (user.isPresent()) {
-                return user.get();
+            String requestURI = ((HttpServletRequest) nativeRequest).getRequestURI();
+            if (isApiRequest(requestURI)) {
+                Optional<LiteYukonUser> user = getUserFromToken((HttpServletRequest) webRequest.getNativeRequest());
+                if (user.isPresent()) {
+                    return user.get();
+                }
             }
             return ServletUtil.getYukonUser(nativeRequest);
         }
@@ -73,5 +78,12 @@ public class UserContextArgumentResolver implements HandlerMethodArgumentResolve
             log.debug("Failed to authenticate user via token.", e);
             return Optional.empty();
         }
+    }
+
+    /**
+     * Return true if requestURI contains "/api" in the request. Return false if requestURI = null.
+     */
+    private boolean isApiRequest(String requestURI) {
+        return requestURI == null ? false : requestURI.contains("/api");
     }
 }
