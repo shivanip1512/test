@@ -78,20 +78,27 @@ public class ChartController {
              * name for both of them in 'Temperature'. Setting explicit text is help user understand is the temperature
              * point is on Min temperature line graph or max temperature line graph.
              * */
-            String minTemperatureTxt = messageSourceAccessor.getMessage("yukon.common.chart.label.minTemperature");
             String maxTemperatureTxt = messageSourceAccessor.getMessage("yukon.common.chart.label.maxTemperature");
-            
-            // Add graph detail for min temperature trend
-            GraphDetail minTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", true,
-                    ChartColorsEnum.LIGHT_BLUE, temperatureChartInterval, minTemperatureTxt);
-            graphDetails.add(minTemperatureGraphDetail);
+            String temperatureTxt = org.apache.commons.lang3.StringUtils.EMPTY;
 
+            boolean isMaxTemperatureSet = false;
             if (temperatureChartInterval.getMillis() >= ChartInterval.DAY.getMillis()) {
                 // Add graph detail for max temperature trend
                 GraphDetail maxTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", false,
                         ChartColorsEnum.LIGHT_RED, temperatureChartInterval, maxTemperatureTxt);
                 graphDetails.add(maxTemperatureGraphDetail);
+                isMaxTemperatureSet = true;
             }
+            if (isMaxTemperatureSet) {
+                temperatureTxt = messageSourceAccessor.getMessage("yukon.common.chart.label.minTemperature");
+            } else {
+                temperatureTxt = messageSourceAccessor.getMessage("yukon.common.chart.yLabel.temperature");
+            }
+            // Add graph detail for min temperature trend
+            GraphDetail minTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", true,
+                    ChartColorsEnum.LIGHT_BLUE, temperatureChartInterval, temperatureTxt);
+            graphDetails.add(minTemperatureGraphDetail);
+
         }
 
         Instant start = new DateTime(startDate).withTimeAtStartOfDay().toInstant();
