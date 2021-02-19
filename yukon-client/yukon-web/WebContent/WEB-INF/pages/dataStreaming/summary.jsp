@@ -17,66 +17,51 @@
         <cti:msg2 var="helpText" key=".detail.helpText"/>
         <div id="page-help" class="dn" data-title="${helpTitle}" data-width="500" data-height="270">${helpText}</div>
 
-        <div class="filter-section">
-        <hr>
-            <div class="column-12-12 clearfix">
-                <div class="column one">
-                    <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
-                    <cti:msg2 var="gatewayPlaceholder" key=".filter.gateways"/>
-                    <tags:selectWithItems items="${gateways}" path="selectedGatewayIds" itemLabel="name" itemValue="id"
-                                          inputClass="js-selected-gateways" dataPlaceholder="${gatewayPlaceholder}"
-                                          defaultItemValue="-1" defaultItemLabel="All Gateways"/>&nbsp;
-                </div>
-                <div class="column two nogutter">
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".filter.gatewayLoading">
-                            <tags:input path="minLoadPercent" size="3"/>
-                            <i:inline key="yukon.common.units.PERCENT"/>&nbsp;&nbsp;
-                            <i:inline key="yukon.common.to" />&nbsp;&nbsp;
-                            <tags:input path="maxLoadPercent" size="3"/>
-                            <i:inline key="yukon.common.units.PERCENT"/>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2> 
-                </div>
-            </div>
+        <div class="filter-section" id="searchSection">
+            <hr>
 
-            <div class="column-10-7-7 clearfix">
-                <div class="column one">
-                    <tags:nameValueContainer2>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <form:select path="selectedConfiguration" name="selectedConfiguration" class="js-selected-configuration">
-                        <form:option value="-1">All Configurations</form:option>
-                        <c:forEach var="config" items="${existingConfigs}">
-                            <c:set var="selected" value=""/>
-                            <c:if test="${searchFilters.selectedConfiguration == config.id}">
-                                <c:set var="selected" value="selected"/>
-                            </c:if>
-                            <option value="${config.id}" ${selected}>${fn:escapeXml(config.name)}</option>
-                        </c:forEach>
-                    </form:select>
-                    </tags:nameValueContainer2>
-                </div>
-
-                <div class="column two">
-                    <cti:msg2 var="AtrributePlaceholder" key=".filter.attributes"/>
+            <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
+            <cti:msg2 var="gatewayPlaceholder" key=".filter.gateways"/>
+            <tags:selectWithItems items="${gateways}" path="selectedGatewayIds" itemLabel="name" itemValue="id"
+                                  inputClass="js-selected-gateways" dataPlaceholder="${gatewayPlaceholder}"/>
+                                  
+            <span class="ML15"><i:inline key=".filter.gatewayLoading"/>:</span>
+            <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
+            <tags:input path="minLoadPercent" size="3" units="${percent}" inputClass="MR0"/>
+            &nbsp;&nbsp;<i:inline key="yukon.common.to" />&nbsp;&nbsp;
+            <tags:input path="maxLoadPercent" size="3" units="${percent}" inputClass="MR0"/>
+            
+            <div style="padding-top:5px;padding-left:60px;">
+                <form:select path="selectedConfiguration" name="selectedConfiguration" class="js-selected-configuration">
+                    <form:option value="-1">All Configurations</form:option>
+                    <c:forEach var="config" items="${existingConfigs}">
+                        <c:set var="selected" value=""/>
+                        <c:if test="${searchFilters.selectedConfiguration == config.id}">
+                            <c:set var="selected" value="selected"/>
+                        </c:if>
+                        <option value="${config.id}" ${selected}>${fn:escapeXml(config.name)}</option>
+                    </c:forEach>
+                </form:select>
+                
+                <span class="ML15">    
+                    <cti:msg2 var="attributePlaceholder" key=".filter.attributes"/>
                     <tags:selectWithItems items="${searchAttributes}" path="selectedAttributes" itemLabel="description" itemValue="key"
-                                          inputClass="js-selected-attInterval" dataPlaceholder="${AtrributePlaceholder}"
-                                          defaultItemValue="-1" defaultItemLabel="All Attributes"/>
-                </div>
+                                          inputClass="js-selected-attInterval js-selected-attribute ML15" dataPlaceholder="${attributePlaceholder}"/>
+                </span>
+    
+                <span class="ML15">
+                    <cti:msg2 var="intervalPlaceholder" key=".filter.interval"/>
+                    <tags:selectWithItems id="intervalSelect" path="selectedInterval" items="${searchIntervals}" inputClass="js-selected-attInterval"
+                                          defaultItemValue="-1" defaultItemLabel="${intervalPlaceholder}"/>
+                </span>
+                
+                <span class="fr">
+                    <cti:url var="showAllUrl" value="/tools/dataStreaming/summary" />
+                    <cti:button nameKey="showAll" href="${showAllUrl}"/>
+                    <cti:button nameKey="export" classes="primary action" type="submit" />
+                </span>
+            </div>
 
-                <div class="column three nogutter">
-                    <span style="margin-left: 40px;">
-                        <cti:msg2 var="intervalPlaceholder" key=".filter.interval"/>
-                        <tags:selectWithItems id="intervalSelect" path="selectedInterval" items="${searchIntervals}" inputClass="js-selected-attInterval"
-                                              defaultItemValue="-1" defaultItemLabel="All Intervals" dataPlaceholder="${intervalPlaceholder}"/>
-                    </span>
-                </div>
-            </div>
-            <div class="action-area">
-                <cti:button nameKey="export" classes="primary action" type="submit" />
-                <cti:url var="showAllUrl" value="/tools/dataStreaming/summary" />
-                <cti:button nameKey="showAll" href="${showAllUrl}"/>
-            </div>
         <hr>
     </div>
 

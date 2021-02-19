@@ -16,19 +16,19 @@ yukon.tools.dataStreaming = (function () {
     mod = {    
 
         showHideConfigurations: function() {
-            var selectedAtt = ($('#attributesSelect').val()? $('#attributesSelect').val(): -1),
-                selectedInt = ($('#intervalSelect').val()? $('#intervalSelect').val(): -1),
-                selectedConfig = ($('.js-selected-configuration').val()? $('.js-selected-configuration').val(): -1);
+            var selectedAtt = ($('.js-selected-attribute').chosen().val().length > 0 ? $('.js-selected-attribute').chosen().val() : -1),
+                selectedInt = ($('#intervalSelect').val() ? $('#intervalSelect').val() : -1),
+                selectedConfig = ($('.js-selected-configuration').chosen().val() ? $('.js-selected-configuration').chosen().val() : -1);
             
             if (selectedConfig == -1 && !(selectedAtt == -1 && selectedInt == -1)) {
-                $('.js-selected-attInterval').prop('disabled', false);
-                $('.js-selected-configuration').prop('disabled', true);
+                $('.js-selected-attInterval').prop('disabled', false).trigger("chosen:updated");
+                $('.js-selected-configuration').prop('disabled', true).trigger("chosen:updated");
             } else if (selectedAtt == -1 && selectedInt == -1 && !(selectedConfig == -1)) {
-                $('.js-selected-attInterval').prop('disabled', true);
-                $('.js-selected-configuration').prop('disabled', false);
+                $('.js-selected-attInterval').prop('disabled', true).trigger("chosen:updated");
+                $('.js-selected-configuration').prop('disabled', false).trigger("chosen:updated");
             } else {
-                $('.js-selected-attInterval').prop('disabled', false);
-                $('.js-selected-configuration').prop('disabled', false);
+                $('.js-selected-attInterval').prop('disabled', false).trigger("chosen:updated");
+                $('.js-selected-configuration').prop('disabled', false).trigger("chosen:updated");
             }
         },
         
@@ -61,7 +61,7 @@ yukon.tools.dataStreaming = (function () {
             if (_initialized) return;
             $(".js-selected-gateways").chosen({width: "350px"});
             $(".js-selected-configuration").chosen({width: "350px"});
-            $(".js-selected-attInterval").chosen({width: "200px"});
+            $(".js-selected-attribute").chosen({width: "250px"});
 
             mod.showHideConfigurations();
             mod.checkAll();
