@@ -63,7 +63,9 @@ yukon.tools.dataStreaming = (function () {
             $(".js-selected-configuration").chosen({width: "350px"});
             $(".js-selected-attribute").chosen({width: "250px"});
 
-            mod.showHideConfigurations();
+            if ($('#searchSection').exists()) {
+                mod.showHideConfigurations();
+            }
             mod.checkAll();
 
             /** A checkbox was clicked, update the selected count and device collection. */
