@@ -34,13 +34,10 @@ public class AssignmentValidator extends SimpleValidator<Assignment> {
     protected void doValidation(Assignment assignment, Errors errors) {
         if (!errors.hasFieldErrors("offset")) {
             String pointOffsetLabel = accessor.getMessage("yukon.common.pointOffset");
-            if (assignment.getPointType() == PointType.CalcAnalog || assignment.getPointType() == PointType.CalcStatus) {
-                Range<Integer> range = Range.inclusive(0, 99999999);
-                YukonValidationUtils.checkRange(errors, "offset", pointOffsetLabel, assignment.getOffset(), range, true);
-            } else {
-                Range<Integer> range = Range.inclusive(1, 99999999);
-                YukonValidationUtils.checkRange(errors, "offset", pointOffsetLabel, assignment.getOffset(), range, true);
-            }
+            int min = assignment.getPointType() == PointType.CalcAnalog
+                    || assignment.getPointType() == PointType.CalcStatus ? 0 : 1;
+            Range<Integer> range = Range.inclusive(min, 99999999);
+            YukonValidationUtils.checkRange(errors, "offset", pointOffsetLabel, assignment.getOffset(), range, true);
         }
     }
 }
