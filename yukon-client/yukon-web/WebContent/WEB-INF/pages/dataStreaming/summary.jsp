@@ -12,68 +12,73 @@
     <form:form id="searchForm" modelAttribute="searchFilters" action="${action}" method="GET">
         <cti:csrfToken />
 
-        <tags:sectionContainer2 nameKey="filterSection" hideEnabled="true" hideInitially="false" id="searchSection">
+        <span class="fr cp"><cti:icon icon="icon-help" data-popup="#page-help"/></span>
+        <cti:msg2 var="helpTitle" key=".detail.helpTitle"/>
+        <cti:msg2 var="helpText" key=".detail.helpText"/>
+        <div id="page-help" class="dn" data-title="${helpTitle}" data-width="500" data-height="270">${helpText}</div>
 
-            <div class="column-10-10 clearfix">
+        <div class="filter-section">
+        <hr>
+            <div class="column-12-12 clearfix">
                 <div class="column one">
-
-                    <tags:nameValueContainer2>
-
-                        <tags:nameValue2 nameKey=".filter.gateway">
-                            <form:select multiple="true" id="gatewaysSelect" path="selectedGatewayIds" size="6" style="min-width:200px;">
-                                <form:option value="-1">Any</form:option>
-                                <c:forEach var="gateway" items="${gateways}">
-                                    <form:option value="${gateway.id}">${fn:escapeXml(gateway.name)}</form:option>
-                                </c:forEach>
-                            </form:select>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".filter.gatewayLoading">
-                            <tags:input path="minLoadPercent" size="3" />
-                            <i:inline key="yukon.common.units.PERCENT" />&nbsp;&nbsp;
-                            <i:inline key="yukon.common.to" />&nbsp;&nbsp;
-                            <tags:input path="maxLoadPercent" size="3" />
-                            <i:inline key="yukon.common.units.PERCENT" />
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
+                    <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
+                    <cti:msg2 var="gatewayPlaceholder" key=".filter.gateways"/>
+                    <tags:selectWithItems items="${gateways}" path="selectedGatewayIds" itemLabel="name" itemValue="id"
+                                          inputClass="js-selected-gateways" dataPlaceholder="${gatewayPlaceholder}"
+                                          defaultItemValue="-1" defaultItemLabel="All Gateways"/>&nbsp;
                 </div>
-                <div class="column two">
+                <div class="column two nogutter">
                     <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".filter.configuration">
-                            <form:select path="selectedConfiguration" name="selectedConfiguration" class="js-selected-configuration">
-                                <form:option value="-1">Any</form:option>
-                                <c:forEach var="config" items="${existingConfigs}">
-                                    <c:set var="selected" value=""/>
-                                    <c:if test="${searchFilters.selectedConfiguration == config.id}">
-                                        <c:set var="selected" value="selected"/>
-                                    </c:if>
-                                    <option value="${config.id}" ${selected}>${fn:escapeXml(config.name)}</option>
-                                </c:forEach>
-                            </form:select>
+                        <tags:nameValue2 nameKey=".filter.gatewayLoading">
+                            <tags:input path="minLoadPercent" size="3"/>
+                            <i:inline key="yukon.common.units.PERCENT"/>&nbsp;&nbsp;
+                            <i:inline key="yukon.common.to" />&nbsp;&nbsp;
+                            <tags:input path="maxLoadPercent" size="3"/>
+                            <i:inline key="yukon.common.units.PERCENT"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".filter.attributes" valueClass="dif">
-                            <form:select multiple="true" path="selectedAttributes" id="attributesSelect" class="js-selected-attInterval" size="6" style="min-width:200px;">
-                                <form:option value="-1">Any</form:option>
-                                <c:forEach var="attribute" items="${searchAttributes}">
-                                    <form:option value="${attribute.key}">${attribute.description}</form:option>
-                                </c:forEach>
-                            </form:select>
-                            <span style="margin-left: 40px;"> <i:inline
-                                    key=".filter.interval" />:&nbsp;&nbsp;&nbsp;&nbsp; 
-                                    <tags:selectWithItems id="intervalSelect" path="selectedInterval" items="${searchIntervals}" inputClass="js-selected-attInterval"
-                                    defaultItemValue="-1" defaultItemLabel="Any" />
-                            </span>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
+                    </tags:nameValueContainer2> 
                 </div>
             </div>
 
+            <div class="column-10-7-7 clearfix">
+                <div class="column one">
+                    <tags:nameValueContainer2>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <form:select path="selectedConfiguration" name="selectedConfiguration" class="js-selected-configuration">
+                        <form:option value="-1">All Configurations</form:option>
+                        <c:forEach var="config" items="${existingConfigs}">
+                            <c:set var="selected" value=""/>
+                            <c:if test="${searchFilters.selectedConfiguration == config.id}">
+                                <c:set var="selected" value="selected"/>
+                            </c:if>
+                            <option value="${config.id}" ${selected}>${fn:escapeXml(config.name)}</option>
+                        </c:forEach>
+                    </form:select>
+                    </tags:nameValueContainer2>
+                </div>
+
+                <div class="column two">
+                    <cti:msg2 var="AtrributePlaceholder" key=".filter.attributes"/>
+                    <tags:selectWithItems items="${searchAttributes}" path="selectedAttributes" itemLabel="description" itemValue="key"
+                                          inputClass="js-selected-attInterval" dataPlaceholder="${AtrributePlaceholder}"
+                                          defaultItemValue="-1" defaultItemLabel="All Attributes"/>
+                </div>
+
+                <div class="column three nogutter">
+                    <span style="margin-left: 40px;">
+                        <cti:msg2 var="intervalPlaceholder" key=".filter.interval"/>
+                        <tags:selectWithItems id="intervalSelect" path="selectedInterval" items="${searchIntervals}" inputClass="js-selected-attInterval"
+                                              defaultItemValue="-1" defaultItemLabel="All Intervals" dataPlaceholder="${intervalPlaceholder}"/>
+                    </span>
+                </div>
+            </div>
             <div class="action-area">
                 <cti:button nameKey="export" classes="primary action" type="submit" />
                 <cti:url var="showAllUrl" value="/tools/dataStreaming/summary" />
                 <cti:button nameKey="showAll" href="${showAllUrl}"/>
             </div>
-
-        </tags:sectionContainer2>
+        <hr>
+    </div>
 
     </form:form>
     
@@ -118,8 +123,9 @@
         <div data-url="${dataUrl}" data-load-event="yukon:tools:dataStreaming:results:load">
             <%@ include file="summaryResults.jsp" %>
         </div>
-            
-        <cti:includeScript link="/resources/js/pages/yukon.tools.dataStreaming.js"/>
-            
+
+    <cti:includeScript link="OPEN_LAYERS"/>
+    <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.dataStreaming.js"/>
 
 </cti:standardPage>

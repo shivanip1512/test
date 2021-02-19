@@ -59,7 +59,10 @@ yukon.tools.dataStreaming = (function () {
         init: function () {
                         
             if (_initialized) return;
-            
+            $(".js-selected-gateways").chosen({width: "350px"});
+            $(".js-selected-configuration").chosen({width: "350px"});
+            $(".js-selected-attInterval").chosen({width: "200px"});
+
             mod.showHideConfigurations();
             mod.checkAll();
 

@@ -40,7 +40,24 @@
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.interval">Interval</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.exportFileName">DataStreamingSummary</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.errors.connectionError">Connection to server failed during download. Please try again.</entry>
-    
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.detail.helpTitle">Data Streaming Summary Help</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.detail.helpText"><![CDATA[
+        The Data Streaming Summary page displays the devices currently configured for Data Streaming throughout the system.
+        The following filters can be applied to the results:
+        <ul>
+            <li><b>Gateway(s)</b> – Select one to many gateways or all Gateways.
+            <li><b>Loading</b> – Enter a min and max gateway loading percentage.
+            <li><b>Configuration or Attribute/Interval</b> – Select a Data Streaming Configuration OR select one to many Attributes and an Interval.
+        </ul>
+        The resulting devices will display in the table.<br/>
+        There are options to Configure Data Streaming, Remove Data Streaming or do a Collection Action on the resulting collection of devices.<br/>
+    ]]></entry>
+
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.gateways">Select Gateway(s)</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.configuration">Select Configuration</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.attributes">Select Attributes(s)</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.interval">Select Interval</entry>
+
     <!-- DATA STREAMING DISCREPANCIES PAGE-->
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.pageName">Data Streaming Discrepancies</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.pageDescription">Data Streaming Discrepancies</entry>
