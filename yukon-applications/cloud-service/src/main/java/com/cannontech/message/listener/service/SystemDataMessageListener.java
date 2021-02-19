@@ -6,12 +6,14 @@ import javax.jms.TextMessage;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.data.provider.DataProvider;
 import com.cannontech.message.model.SystemData;
+import com.cannontech.util.DateTimeDeserializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -30,7 +32,9 @@ public class SystemDataMessageListener {
             String json = null;
             try {
                 json = ((TextMessage) message).getText();
-                Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").create();
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
+                        .create();
                 SystemData data = gson.fromJson(json, SystemData.class);
                 log.info("System data received " + data);
                 dataProvider.updateSystemInformation(data);
