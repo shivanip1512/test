@@ -266,13 +266,11 @@ INSERT INTO DBUpdates VALUES ('YUK-22912', '9.0.0', GETDATE());
 /* @end YUK-22912 */
 
 /* @start YUK-23267 */
-/* errors are ignored for an edge case where the tables had been already modified */
-/* @error ignore-begin */
 CREATE INDEX INDX_LMHardwareEvent_InventoryID ON LMHardwareEvent (
 InventoryID ASC
 );
-/* @error ignore-end */
-INSERT INTO DBUpdates VALUES ('YUK-23267', 'Manual', GETDATE());
+
+INSERT INTO DBUpdates VALUES ('YUK-23267', '9.0.0', GETDATE());
 /* @end YUK-23267 */
 
 /**************************************************************/
