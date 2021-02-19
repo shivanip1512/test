@@ -43,18 +43,18 @@
                     </c:forEach>
                 </form:select>
                 
-                <span class="ML15">    
+                <span class="ML15">
                     <cti:msg2 var="attributePlaceholder" key=".filter.attributes"/>
                     <tags:selectWithItems items="${searchAttributes}" path="selectedAttributes" itemLabel="description" itemValue="key"
                                           inputClass="js-selected-attInterval js-selected-attribute ML15" dataPlaceholder="${attributePlaceholder}"/>
                 </span>
-    
+
                 <span class="ML15">
                     <cti:msg2 var="intervalPlaceholder" key=".filter.interval"/>
                     <tags:selectWithItems id="intervalSelect" path="selectedInterval" items="${searchIntervals}" inputClass="js-selected-attInterval"
                                           defaultItemValue="-1" defaultItemLabel="${intervalPlaceholder}"/>
                 </span>
-                
+
                 <span class="fr">
                     <cti:url var="showAllUrl" value="/tools/dataStreaming/summary" />
                     <cti:button nameKey="showAll" href="${showAllUrl}"/>
