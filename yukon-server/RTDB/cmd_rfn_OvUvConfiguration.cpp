@@ -218,7 +218,7 @@ RfnCommand::Bytes RfnSetOvUvSetThresholdCommand::getCommandData()
     bytes.push_back( _thresholdValue        );
 
     // UoM
-    bytes.push_back( static_cast<unsigned char>(Rfn::UnitOfMeasure::Volts) );
+    bytes.push_back( Rfn::UnitOfMeasure::Volts );
 
     // UoM modifier 1 == 0x8000
     bytes.push_back( 0x80 );
@@ -340,7 +340,7 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 
     // UoM is always in volts for Ov/Uv (0x10)
 
-    validate( Condition( response[14] == static_cast<unsigned char>(Rfn::UnitOfMeasure::Volts), ClientErrors::InvalidData )
+    validate( Condition( response[14] == Rfn::UnitOfMeasure::Volts, ClientErrors::InvalidData )
             << "Invalid UoM Code (" << CtiNumStr(response[14]).xhex(2) << ")" );
 
     // UoM modifier 1 is always 0x8000 for Ov/Uv
