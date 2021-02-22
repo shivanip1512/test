@@ -27,9 +27,11 @@
                                   
             <span class="ML15"><i:inline key=".filter.gatewayLoading"/>:</span>
             <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
-            <tags:input path="minLoadPercent" size="3" units="${percent}" inputClass="MR0"/>
+            <cti:msg2 var="min" key="yukon.common.min"/>
+            <cti:msg2 var="max" key="yukon.common.max"/>
+            <tags:input path="minLoadPercent" size="3" units="${percent}" inputClass="MR0" placeholder="${min}"/>
             &nbsp;&nbsp;<i:inline key="yukon.common.to" />&nbsp;&nbsp;
-            <tags:input path="maxLoadPercent" size="3" units="${percent}" inputClass="MR0"/>
+            <tags:input path="maxLoadPercent" size="3" units="${percent}" inputClass="MR0" placeholder="${max}"/>
             
             <div style="padding-top:5px;padding-left:60px;">
                 <form:select path="selectedConfiguration" name="selectedConfiguration" class="js-selected-configuration">
