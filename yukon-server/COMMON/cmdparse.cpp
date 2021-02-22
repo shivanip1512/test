@@ -1161,6 +1161,11 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
         {
             flag |= CMD_FLAG_CTL_CONNECT;
             _snprintf(tbuf, sizeof(tbuf), "CONNECT");
+
+            if( containsString(CmdStr, " arm") )
+            {
+                _cmd["arm"] = true;
+            }
         }
         else if(containsString(CmdStr, " restore"))    // Sourcing from CmdStr, which is the entire command string.
         {

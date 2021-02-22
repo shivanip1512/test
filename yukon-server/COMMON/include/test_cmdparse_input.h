@@ -282,5 +282,6 @@ std::string inputStrings[] = {
 "getvalue hourly read channel 3 12/25/2014 12/31/2014",
 "control close offset 17 offset 99",
 "getvalue meter_read",
+"control connect arm"
 };
 

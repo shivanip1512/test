@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "rfn_uom.h"
+#include "std_helper.h"
 
 namespace {
 
@@ -28,6 +29,61 @@ static void addBitmaskedValues(std::set<std::string>& strings, size_t bitmask, c
 }
 
 namespace Cti::Devices::Rfn {
+
+UnitOfMeasure::UnitOfMeasure(unsigned char raw) :
+    _uom { raw }
+{}
+
+bool UnitOfMeasure::getExtensionBit() const
+{
+    return _uom.ext;
+}
+
+bool UnitOfMeasure::isTime() const
+{
+    return _uom.uom == Time;
+}
+
+std::string UnitOfMeasure::getName() const
+{
+    static const std::map<unsigned char, std::string> UomStrings{
+        //  Taken from Network Manager's DB tables at
+        //      \ekadb\build\common\data\UOM.dat
+        { 1, "Wh" },
+        { 2, "Varh" },
+        { 3, "Qh" },
+        { 4, "VAh" },
+        { 5, "s" },
+        { 6, "SID" },
+        { 7, "PID" },
+        { 8, "Credit" },
+        { 16, "V" },
+        { 17, "A" },
+        { 18, "V degree" },
+        { 19, "A degree" },
+        { 20, "V" },
+        { 21, "A" },
+        { 22, "PF degree" },
+        { 24, "PF" },
+        { 33, "gal" },
+        { 34, "ft^3" },
+        { 35, "m^3" },
+        { 62, "Status" },
+        { 63, "Pulse" },
+        { 64, " " },
+        { 65, "W" },
+        { 66, "Var" },
+        { 67, "Q" },
+        { 68, "VA" },
+        { 80, "Outage Count" },
+        { 81, "Restore Count" },
+        { 82, "Outage Blink Count" },
+        { 83, "Restore Blink Count" },
+        { 84, "deg C" },
+        { 127, "-" },
+    };
+    return mapFindOrDefault(UomStrings, _uom.uom, "Unmapped UOM " + std::to_string(_uom.uom));
+}
 
 UomModifier1::UomModifier1(unsigned short uomm1) :
     _mod1{ uomm1 }

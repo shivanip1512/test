@@ -38,12 +38,18 @@ protected:
     /// Returns a map that contains the configuration methods.
     virtual ConfigMap getConfigMethods(InstallType installType);
 
+    YukonError_t executeControl  (CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests) override;
     YukonError_t executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests) override;
     YukonError_t executeGetConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests) override;
     YukonError_t executeGetValue (CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests) override;
     YukonError_t executePutValue (CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests) override;
     YukonError_t executeGetStatus(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests) override;
     YukonError_t executePutStatus(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests) override;
+
+    virtual YukonError_t executeControlArm         (CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests);
+    virtual YukonError_t executeControlConnect     (CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests);
+    virtual YukonError_t executeControlDisconnect  (CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests);
+    virtual YukonError_t executeGetStatusDisconnect(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests);
 
     virtual YukonError_t executeGetStatusWifi(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 

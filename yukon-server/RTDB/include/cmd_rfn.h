@@ -31,6 +31,7 @@ class RfnTouScheduleGetConfigurationCommand;
 class RfnTouScheduleSetConfigurationCommand;
 class RfnTouStateConfigurationCommand;
 class RfnTouHolidayConfigurationCommand;
+class RfnMeterDisconnectCommand;
 class RfnMeterProgrammingGetConfigurationCommand;
 class RfnMeterProgrammingSetConfigurationCommand;
 class RfnMeterProgrammingGetFileCommand;
@@ -99,6 +100,7 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnTouScheduleSetConfigurationCommand &)               {}
         virtual void handleCommandResult(const RfnTouStateConfigurationCommand &)                     {}
         virtual void handleCommandResult(const RfnTouHolidayConfigurationCommand &)                   {}
+        virtual void handleCommandResult(const RfnMeterDisconnectCommand &)                           {}
         virtual void handleCommandResult(const RfnMeterProgrammingGetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnMeterProgrammingSetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnMeterProgrammingGetFileCommand &)                   {}

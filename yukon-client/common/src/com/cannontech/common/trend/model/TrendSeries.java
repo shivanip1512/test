@@ -3,6 +3,8 @@ package com.cannontech.common.trend.model;
 import org.joda.time.DateTime;
 
 import com.cannontech.common.trend.model.TrendType.GraphType;
+import com.cannontech.common.util.DateDeserializer;
+import com.cannontech.common.util.DateSerializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

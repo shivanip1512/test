@@ -43,6 +43,7 @@
 
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_MeterDisconnect.h"
 #include "cmd_rfn_MeterRead.h"
 
 #include "debug_timer.h"
@@ -791,6 +792,16 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler, Devices::Commands::Rfn
         }
     }
 
+    void handleCommandResult(const Devices::Commands::RfnMeterDisconnectCommand& command) override
+    {
+        if( auto resultMsg = command.getResponseMessage() )
+        {
+            serviceReplies.emplace(
+                command.getUserMessageId(),
+                Messaging::Serialization::serialize(*resultMsg));
+        }
+    }
+
     YukonError_t execute(Devices::RfnDevice &dev)
     {
         bool anySuccess = false;
@@ -955,17 +966,17 @@ void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
         //  Was this an internal request?
         if( ! connectionHandle )
         {
-            const auto lg = _replyCallbacks.synchronize();
+            auto replyCallbacks = _replyCallbacks.synchronize();
 
             for( const auto& [userMessageId, serializedMessage] : rp.serviceReplies )
             {
-                const auto itr = _replyCallbacks->find(userMessageId);
+                const auto itr = replyCallbacks->find(userMessageId);
 
-                if( itr != _replyCallbacks->end() )
+                if( itr != replyCallbacks->end() )
                 {
                     (itr->second)(serializedMessage);
 
-                    _replyCallbacks->erase(itr);
+                    replyCallbacks->erase(itr);
                 }
                 else
                 {
@@ -1101,7 +1112,6 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
 
 void PilServer::handleRfnDisconnectRequest(const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback)
 {
-/*
     using namespace Messaging::Rfn;
     using Messaging::Serialization::MessageSerializer;
 
@@ -1109,40 +1119,76 @@ void PilServer::handleRfnDisconnectRequest(const amq_cm::MessageDescriptor& md, 
 
     if( ! req )
     {
+        CTILOG_WARN(dout, "Could not deserialize request message");
+
         return;
     }
 
     RfnMeterDisconnectInitialReplyMsg rsp1;
 
-    if( ! DeviceManager.getDeviceByRfnIdentifier(req->rfnIdentifier) )
+    auto dev = DeviceManager.getDeviceByRfnIdentifier(req->rfnIdentifier);
+    const auto userMessageId = PilUserMessageIdGenerator();
+
+    std::map<RfnMeterDisconnectCmdType, std::string> cmdStrings{
+        { RfnMeterDisconnectCmdType::ARM,
+            "control connect arm" },
+        { RfnMeterDisconnectCmdType::QUERY,
+            "getstatus disconnect" },
+        { RfnMeterDisconnectCmdType::RESUME,
+            "control connect" },
+        { RfnMeterDisconnectCmdType::TERMINATE,
+            "control disconnect" }};
+
+    const auto cmdString = mapFind(cmdStrings, req->action);
+
+    if( ! dev )
     {
+        CTILOG_WARN(dout, "Could not find device for RFN address" << FormattedList::of(
+            "RFN address", req->rfnIdentifier,
+            "Action", static_cast<int>(req->action)));
+
         rsp1.replyType = RfnMeterDisconnectInitialReplyType::NO_NODE;
+    }
+    else if( ! cmdString )
+    {
+        CTILOG_WARN(dout, "Could not find command string for action" << FormattedList::of(
+            "RFN address", req->rfnIdentifier,
+            "Action", static_cast<int>(req->action)));
+
+        rsp1.replyType = RfnMeterDisconnectInitialReplyType::FAILURE;
+    }
+    else if( ! _replyCallbacks->try_emplace(userMessageId, callback).second )
+    {
+        CTILOG_WARN(dout, "Could not insert callback" << FormattedList::of(
+            "RFN address", req->rfnIdentifier,
+            "Action", static_cast<int>(req->action)));
+
+        rsp1.replyType = RfnMeterDisconnectInitialReplyType::FAILURE;
     }
     else
     {
-        Devices::Commands::RfnMeterReadCommand
+        auto disconnectRequest = std::make_unique<CtiRequestMsg>(dev->getID(), *cmdString);
 
-        //_rfnRequestManager.submitRequests();
-        auto command = [callback]() {
-            RfnMeterDisconnectConfirmationReplyMsg rsp2;
+        disconnectRequest->setUserMessageId(userMessageId);
+        //disconnectRequest->setConnectionHandle(connectionHandle);  //  Leave the connectionHandle null as our indication this is internal
 
-            rsp2.replyType = RfnMeterDisconnectConfirmationReplyType::FAILURE;
-            rsp2.state = RfnMeterDisconnectState::UNKNOWN;
+        MainQueue_.putQueue(disconnectRequest.release());
 
-            auto serialized = Messaging::Serialization::serialize(rsp2);
-            callback(serialized);
-        };
+        rsp1.replyType = RfnMeterDisconnectInitialReplyType::OK;
     }
 
     auto serializedRsp1 = Messaging::Serialization::serialize(rsp1);
 
     if( serializedRsp1.empty() )
     {
+        CTILOG_WARN(dout, "Could not serialize response message" << FormattedList::of(
+            "RFN address", req->rfnIdentifier,
+            "Reply type", static_cast<int>(rsp1.replyType)));
+
         return;
     }
 
     callback(std::move(serializedRsp1));
-*/
 }
 
 void PilServer::handleRfnMeterReadRequest(const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback)
@@ -1154,7 +1200,8 @@ void PilServer::handleRfnMeterReadRequest(const amq_cm::MessageDescriptor& md, a
 
     if( ! req )
     {
-        CTILOG_WARN(dout, "Could not deserialize message");
+        CTILOG_WARN(dout, "Could not deserialize request message");
+
         return;
     }
 
@@ -1165,24 +1212,26 @@ void PilServer::handleRfnMeterReadRequest(const amq_cm::MessageDescriptor& md, a
 
     if( ! dev )
     {
+        CTILOG_WARN(dout, "Could not find device for RFN address" << FormattedList::of(
+            "RFN address", req->rfnIdentifier));
+
         rsp1.replyType = RfnMeterReadingReplyType::NO_NODE;
     }
     else if( ! _replyCallbacks->try_emplace(userMessageId, callback).second )
     {
         CTILOG_WARN(dout, "Could not insert callback" << FormattedList::of(
-            "RFN address", req->rfnIdentifier,
-            "Reply type", static_cast<int>(rsp1.replyType)));
+            "RFN address", req->rfnIdentifier));
 
         rsp1.replyType = RfnMeterReadingReplyType::FAILURE;
     }
     else
     {
-        auto verifyRequest = std::make_unique<CtiRequestMsg>(dev->getID(), "getvalue meter_read");
+        auto readRequest = std::make_unique<CtiRequestMsg>(dev->getID(), "getvalue meter_read");
 
-        verifyRequest->setUserMessageId(userMessageId);
-        //verifyRequest->setConnectionHandle(connectionHandle);  //  Leave the connectionHandle null as our indication this is internal
+        readRequest->setUserMessageId(userMessageId);
+        //readRequest->setConnectionHandle(connectionHandle);  //  Leave the connectionHandle null as our indication this is internal
 
-        MainQueue_.putQueue(verifyRequest.release());
+        MainQueue_.putQueue(readRequest.release());
     }
 
     auto serializedRsp1 = Messaging::Serialization::serialize(rsp1);
@@ -1192,6 +1241,7 @@ void PilServer::handleRfnMeterReadRequest(const amq_cm::MessageDescriptor& md, a
         CTILOG_WARN(dout, "Could not serialize response message" << FormattedList::of(
             "RFN address", req->rfnIdentifier,
             "Reply type", static_cast<int>(rsp1.replyType)));
+
         return;
     }
 

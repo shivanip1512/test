@@ -28,6 +28,10 @@ struct test_state_rfnMeter
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;
+    const decltype(Cti::Test::set_to_central_timezone()) overrideTimezone = Cti::Test::set_to_central_timezone();
+
+    const CtiTime execute_time = CtiTime(CtiDate(27, 8, 2013), 15);
+    const CtiTime decode_time  = CtiTime(CtiDate(27, 8, 2013), 16);
 
     test_state_rfnMeter() :
         request( new CtiRequestMsg ),
@@ -56,19 +60,19 @@ namespace test_cmd_rfn_ConfigNotification {
     extern const std::vector<uint8_t> payload;
 }
 
-const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
-const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
-
-
 BOOST_FIXTURE_TEST_SUITE( test_dev_rfnMeter, test_state_rfnMeter )
 
 BOOST_AUTO_TEST_CASE(test_getvalue_meter_read)
 {
     test_RfnMeterDevice dut;
 
+    Cti::Test::Override_CtiTime_Now newNow { execute_time };
+
     dut.setDeviceType(TYPE_RFN410FX);
 
     CtiCommandParser parse("getvalue meter_read");
+
+    request->setUserMessageId(11235);
 
     BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
     BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
@@ -119,11 +123,36 @@ BOOST_AUTO_TEST_CASE(test_getvalue_meter_read)
                 0x00, //  Status (OK)
         };
 
-    command->handleResponse(CtiTime::now(), response);
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
 
-    //  Successful decode will not throw
-
-    dut.extractCommandResult(*command);
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Read:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\nTimestamp       : 08/27/2013 15:00:00"
+        "\n# Channel data  : 0"
+        "\n# Dated data    : 2"
+        "\nDated data 0    : Channel number : 25"
+        "\n                  Status         : 0"
+        "\n                  Timestamp      : 01/29/2021 14:15:56"
+        "\n                  UOM            : W"
+        "\n                  Modifiers      : {Max}"
+        "\n                  Value          : 42"
+        "\n                  Base channel   : (none)"
+        "\nDated data 1    : Channel number : 26"
+        "\n                  Status         : 0"
+        "\n                  Timestamp      : 01/29/2021 14:15:56"
+        "\n                  UOM            : PF"
+        "\n                  Modifiers      : {Quadrant 1,Quadrant 4}"
+        "\n                  Value          : 42"
+        "\n                  Base channel   : Channel number : 25"
+        "\n                                   Status         : 0"
+        "\n                                   UOM            : W"
+        "\n                                   Modifiers      : {Max}"
+        "\n                                   Value          : 42");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
 }
 
 

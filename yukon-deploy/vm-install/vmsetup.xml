@@ -29,7 +29,7 @@
         </then>
         <else>
             <if>
-                <equals arg1="${vm_host_prefix}" arg2="PSPL-SW-REST"/>
+                <equals arg1="${vm_host_prefix}" arg2="PSPL-SW-RESTVM"/>
                     <then>
                         <property name="guest_userid" value="${vm_host_prefix}+${guest_username}" if:set="env.VM_HOST_NAME_PREFIX"/>
                         <property name="guest_address" value="${vm_host_prefix}.${vmdomain}" if:set="env.VM_HOST_NAME_PREFIX"/>
@@ -795,14 +795,6 @@
                             command="powershell c:/YukonUpgradeWithDBRestore.ps1 -databaseType ${db.type}"/>
     </target>
 
-    <target name="remote_API_coverage" depends="find_guestid">
-        <sshexec host="${guest_address}"
-                            trust="true"
-                            username="${guest_userid}"
-                            password="${guest_password}"
-                            command="ant -f C:/install.xml run_code_coverage"/>
-    </target>
-
     <target name="copy_coverage_report_file" depends="find_guestid">
         <sshexec host="${guest_address}"
                             trust="true"
@@ -812,29 +804,6 @@
                                     -Dsonar_guest_userid=${sonar_guest_userid}
                                     -Dguest_password=${guest_password}
                                     -Dsonar_guest_address=${sonar_guest_address}"/>
-    </target>
-
-    <target name="copy_sonar_file" depends="find_guestid">
-        <copy todir="${basedir}" preservelastmodified="true">
-            <fileset file="${basedir}/yukon-deploy/sonar/sonar-project.properties" />
-        </copy>
-    </target>
-
-    <target name="clean_API_code_coverage_report">
-        <sshexec host="${guest_address}"
-                            trust="true"
-                            username="${guest_userid}"
-                            password="${guest_password}"
-                            command="ant -f C:/install.xml cleanup_code_coverage"/>
-    </target>
-
-    <target name="copy_API_coverage_files" depends="clean_API_code_coverage_report">
-        <echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
-        <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/CodeCoverage/" trust="true">
-            <fileset dir="${basedir}/yukon-deploy/vm-install/CodeCoverage">
-                <include name="**"/>
-             </fileset>
-        </scp>
     </target>
 
     <target name="populate_oracle_db" depends="find_guestid">

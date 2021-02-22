@@ -1,8 +1,7 @@
-package com.cannontech.amr.archivedValueExporter.model;
+package com.cannontech.common.pao.attribute.model;
 
 import java.io.IOException;
 
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.spring.YukonSpringHook;
 import com.fasterxml.jackson.core.JsonParser;

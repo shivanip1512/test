@@ -1,2 +1,3 @@
 echo Current Directory is : %cd%
-sonar-scanner.bat -D"sonar.projectKey=Yukon" -D"sonar.host.url=http://10.6.1.9:9000" -D"sonar.login=c939f62c00f3c6123c696c3ef02ff0fd59ab0787"
+cd %cd%/Yukon
+sonar-scanner.bat -D"sonar.projectKey=Yukon" -D"sonar.host.url=http://127.0.0.1:9000" -D"sonar.login=87730cb40a9f75413cfe44671dc66822423c289a"

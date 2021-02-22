@@ -6,6 +6,7 @@
 
 #include <boost/range/adaptor/indexed.hpp>
 
+using Cti::Devices::Rfn::UnitOfMeasure;
 using Cti::Devices::Rfn::UomModifier1;
 using Cti::Devices::Rfn::UomModifier2;
 
@@ -13,6 +14,97 @@ template <size_t Size>
 using string_lists = std::array<std::initializer_list<std::string>, Size>;
 
 BOOST_AUTO_TEST_SUITE(test_rfn_uom)
+
+BOOST_AUTO_TEST_CASE(test_uom_extension_bit)
+{
+    const UnitOfMeasure ext_unset { 0x01 };
+
+    BOOST_CHECK_EQUAL(false, ext_unset.getExtensionBit());
+
+    const UnitOfMeasure ext_set { 0x81 };
+
+    BOOST_CHECK_EQUAL(true, ext_set.getExtensionBit());
+}
+
+BOOST_AUTO_TEST_CASE(test_uom_isTime)
+{
+    const UnitOfMeasure uom_wh { UnitOfMeasure::WattHour };
+
+    BOOST_CHECK_EQUAL(false, uom_wh.isTime());
+
+    const UnitOfMeasure uom_time { UnitOfMeasure::Time };
+
+    BOOST_CHECK_EQUAL(true, uom_time.isTime());
+}
+
+BOOST_AUTO_TEST_CASE(test_uom_getName)
+{
+    const auto expectedNames = []() {
+        std::vector<std::string> names { 128 };
+        
+        //  Pre-fill the unused entries with "Unmapped UOM N"
+        std::generate(names.begin(), names.end(), [i=0]() mutable {
+            return "Unmapped UOM " + std::to_string(i++);
+        });
+
+        names[1] = "Wh";
+        names[2] = "Varh";
+        names[3] = "Qh";
+        names[4] = "VAh";
+        names[5] = "s";
+        names[6] = "SID";
+        names[7] = "PID";
+        names[8] = "Credit";
+        //
+        names[16] = "V";
+        names[17] = "A";
+        names[18] = "V degree";
+        names[19] = "A degree";
+        names[20] = "V";
+        names[21] = "A";
+        names[22] = "PF degree";
+        //
+        names[24] = "PF";
+        //
+        names[33] = "gal";
+        names[34] = "ft^3";
+        names[35] = "m^3";
+        //
+        names[62] = "Status";
+        names[63] = "Pulse";
+        names[64] = " ";
+        names[65] = "W";
+        names[66] = "Var";
+        names[67] = "Q";
+        names[68] = "VA";
+        //
+        names[80] = "Outage Count";
+        names[81] = "Restore Count";
+        names[82] = "Outage Blink Count";
+        names[83] = "Restore Blink Count";
+        names[84] = "deg C";
+        //
+        names[127] = "-";
+        
+        //  Duplicate all names again for raw values with the extension bit set
+        names.resize(names.size() * 2);
+        const auto middle = names.begin() + names.size() / 2;
+        std::copy(names.begin(), middle, middle);
+        
+        return names;
+    }();
+
+    BOOST_REQUIRE_EQUAL(expectedNames.size(), std::numeric_limits<unsigned char>::max() + 1);
+
+    for( int raw = 0; raw <= std::numeric_limits<unsigned char>::max(); ++raw )
+    {
+        BOOST_TEST_CONTEXT("Raw UOM " << raw)
+        {
+            const UnitOfMeasure uom { static_cast<unsigned char>(raw) };
+            BOOST_CHECK_EQUAL(expectedNames[raw], uom.getName());
+        }
+    }
+}
 
 BOOST_AUTO_TEST_CASE(test_mod1_extension_bits)
 {

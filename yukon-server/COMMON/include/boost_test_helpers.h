@@ -418,6 +418,37 @@ public:
     }
 };
 
+CtiTime parseIso8601String(std::string iso_str)
+{
+    //  Requires a string in the format yyyy-mm-dd hh:mm:ss
+
+    if( iso_str.length() == 19 )
+    {
+        try
+        {
+            const auto year = boost::lexical_cast<unsigned>(iso_str.substr(0, 4));
+            const auto month = boost::lexical_cast<unsigned>(iso_str.substr(5, 2));
+            const auto day = boost::lexical_cast<unsigned>(iso_str.substr(8, 2));
+
+            const auto hour = boost::lexical_cast<unsigned>(iso_str.substr(11, 2));
+            const auto min = boost::lexical_cast<unsigned>(iso_str.substr(14, 2));
+            const auto sec = boost::lexical_cast<unsigned>(iso_str.substr(17, 2));
+
+            //  naive date construction - no range checking, so we count
+            //    on CtiDate() resetting itself to 1/1/1970
+            return CtiTime(CtiDate(day, month, year), hour, min, sec);
+        }
+        catch( boost::gregorian::bad_year&/*ex*/ )
+        {
+        }
+        catch( boost::bad_lexical_cast&/*ex*/ )
+        {
+        }
+    }
+
+    return CtiTime::neg_infin;
+}
+
 [[nodiscard]] auto set_to_central_timezone()
 {
     return Override_Timezone<Timezones::USA_Central>();

@@ -11,6 +11,7 @@ import com.cannontech.common.pao.attribute.model.Assignment;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
@@ -33,7 +34,9 @@ public class AssignmentValidator extends SimpleValidator<Assignment> {
     protected void doValidation(Assignment assignment, Errors errors) {
         if (!errors.hasFieldErrors("offset")) {
             String pointOffsetLabel = accessor.getMessage("yukon.common.pointOffset");
-            Range<Integer> range = Range.inclusive(0, 99999999);
+            int min = assignment.getPointType() == PointType.CalcAnalog
+                    || assignment.getPointType() == PointType.CalcStatus ? 0 : 1;
+            Range<Integer> range = Range.inclusive(min, 99999999);
             YukonValidationUtils.checkRange(errors, "offset", pointOffsetLabel, assignment.getOffset(), range, true);
         }
     }

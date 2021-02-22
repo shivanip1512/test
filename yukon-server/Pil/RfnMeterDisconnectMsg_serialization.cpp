@@ -15,11 +15,35 @@ using RmdConMsg = Rfn::RfnMeterDisconnectConfirmationReplyMsg;
 template<>
 boost::optional<RmdReqMsg> MessageSerializer<RmdReqMsg>::deserialize(const ActiveMQConnectionManager::SerializedMessage& msg)
 {
+    static const std::map<Thrift::RfnMeterDisconnectCmdType::type, Rfn::RfnMeterDisconnectCmdType> actionTypes {
+        { Thrift::RfnMeterDisconnectCmdType::ARM,
+            Rfn::RfnMeterDisconnectCmdType::ARM },
+        { Thrift::RfnMeterDisconnectCmdType::QUERY,
+            Rfn::RfnMeterDisconnectCmdType::QUERY },
+        { Thrift::RfnMeterDisconnectCmdType::RESUME,
+            Rfn::RfnMeterDisconnectCmdType::RESUME },
+        { Thrift::RfnMeterDisconnectCmdType::TERMINATE,
+            Rfn::RfnMeterDisconnectCmdType::TERMINATE } };
+
     try
     {
         auto tmsg = DeserializeThriftBytes<Thrift::RfnMeterDisconnectRequest>(msg);
 
-        return RmdReqMsg { fromThrift( tmsg.rfnIdentifier ) };
+        RmdReqMsg msg;
+        
+        msg.rfnIdentifier = fromThrift( tmsg.rfnIdentifier );
+
+        if( const auto action = mapFind(actionTypes, tmsg.action) )
+        {
+            msg.action = *action;
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Unknown action type " << static_cast<int>(tmsg.action) << ", discarding request to " << msg.rfnIdentifier);
+            return boost::none;
+        }
+
+        return msg;
     }
     catch( apache::thrift::TException& e )
     {

@@ -8,51 +8,16 @@
 #include "rfn_uom.h"
 
 #include <boost/range/algorithm/set_algorithm.hpp>
+#include <boost/range/adaptor/indexed.hpp>
 
 using namespace Cti::Logging::Set;
 
 namespace {
-static const std::map<unsigned char, std::string> UomStrings{
-    //  Taken from Network Manager's DB tables at
-    //      \ekadb\build\common\data\UOM.dat
-    { 1, "Wh" },
-    { 2, "Varh" },
-    { 3, "Qh" },
-    { 4, "VAh" },
-    { 5, "s" },
-    { 6, "SID" },
-    { 7, "PID" },
-    { 8, "Credit" },
-    { 16, "V" },
-    { 17, "A" },
-    { 18, "V degree" },
-    { 19, "A degree" },
-    { 20, "V" },
-    { 21, "A" },
-    { 22, "PF degree" },
-    { 24, "PF" },
-    { 33, "gal" },
-    { 34, "ft^3" },
-    { 35, "m^3" },
-    { 62, "Status" },
-    { 63, "Pulse" },
-    { 64, " " },
-    { 65, "W" },
-    { 66, "Var" },
-    { 67, "Q" },
-    { 68, "VA" },
-    { 80, "Outage Count" },
-    { 81, "Restore Count" },
-    { 82, "Outage Blink Count" },
-    { 83, "Restore Blink Count" },
-    { 84, "deg C" },
-    { 127, "-" },
-};
 
 struct RawChannel
 {
     unsigned channelNumber;
-    std::uint8_t unitOfMeasure;
+    Cti::Devices::Rfn::UnitOfMeasure unitOfMeasure;
     std::optional<Cti::Devices::Rfn::UomModifier1> modifier1;
     std::optional<Cti::Devices::Rfn::UomModifier2> modifier2;
     std::uint32_t value;
@@ -72,7 +37,7 @@ RfnMeterReadCommand::RfnMeterReadCommand(long userMessageId) :
 
 auto RfnMeterReadCommand::getApplicationServiceId() const -> ASID
 {
-    return ASID::HubMeterCommandSet;
+    return ASID::ChannelManager;
 }
 
 std::string RfnMeterReadCommand::getCommandName() const
@@ -142,10 +107,10 @@ try
 
     const auto responseType = response[0];
 
-    validate(Condition(responseType == 0x02 || responseType == 0x03, ClientErrors::InvalidData)
+    validate(Condition(responseType == Response_fmt1 || responseType == Response_fmt23, ClientErrors::InvalidData)
         << "RFN meter read response type is unknown: " << static_cast<int>(responseType));
 
-    const bool includesModifiers = (responseType == 0x03);
+    const bool includesModifiers = (responseType == Response_fmt23);
 
     const auto readStatus = response[1];
     validate(Condition(readStatus == 0, ClientErrors::InvalidData)
@@ -182,7 +147,7 @@ try
 
         rc.channelNumber = response[pos];
         pos++;
-        rc.unitOfMeasure = response[pos];
+        rc.unitOfMeasure = Rfn::UnitOfMeasure(response[pos]);
         pos++;
 
         if( includesModifiers )
@@ -217,10 +182,87 @@ try
         rawChannels.emplace_back(std::move(rc));
     }
 
-    _response = correlateRawChannels(now, std::move(rawChannels));
+    if( _response = correlateRawChannels(now, std::move(rawChannels)) )
+    {
+        FormattedList resultList;
 
-    return FormattedList::of(
-        "Channel count", channelCount);
+        resultList.add("User message ID") 
+            << _userMessageId;
+        resultList.add("Reply type") 
+            << static_cast<int>(_response->replyType);
+        resultList.add("Timestamp")
+            << _response->data.timeStamp.asString();
+        
+        resultList.add("# Channel data")
+            << _response->data.channelDataList.size();
+        
+        for( const auto& indexedChannelData : _response->data.channelDataList | boost::adaptors::indexed() )
+        {
+            const auto& channelData = indexedChannelData.value();
+
+            resultList.add("Channel data " + std::to_string(indexedChannelData.index())) 
+                << FormattedList::of(
+                    "Channel number", 
+                        channelData.channelNumber,
+                    "Status",
+                        static_cast<int>(channelData.status),
+                    "UOM",
+                        channelData.unitOfMeasure,
+                    "Modifiers",
+                        channelData.unitOfMeasureModifiers,
+                    "Value",
+                        channelData.value)
+                    .substr(1);  //  Lop off the leading newline
+        }
+        
+        resultList.add("# Dated data")
+            << _response->data.datedChannelDataList.size();
+
+        for( const auto& indexedDatedChannelData : _response->data.datedChannelDataList | boost::adaptors::indexed() )
+        {
+            const auto& datedChannelData = indexedDatedChannelData.value();
+
+            const auto baseChannelDescription =
+                datedChannelData.baseChannelData
+                    ? FormattedList::of(
+                        "Channel number",
+                            datedChannelData.baseChannelData->channelNumber,
+                        "Status",
+                        static_cast<int>(datedChannelData.baseChannelData->status),
+                        "UOM",
+                            datedChannelData.baseChannelData->unitOfMeasure,
+                        "Modifiers",
+                            datedChannelData.baseChannelData->unitOfMeasureModifiers,
+                        "Value",
+                            datedChannelData.baseChannelData->value)
+                        .substr(1)  //  Lop off the leading newline
+                    : "(none)";
+
+            resultList.add("Dated data " + std::to_string(indexedDatedChannelData.index()))
+                << FormattedList::of(
+                    "Channel number",
+                        datedChannelData.channelData.channelNumber,
+                    "Status",
+                        static_cast<int>(datedChannelData.channelData.status),
+                    "Timestamp",
+                        datedChannelData.timeStamp,
+                    "UOM",
+                        datedChannelData.channelData.unitOfMeasure,
+                    "Modifiers",
+                        datedChannelData.channelData.unitOfMeasureModifiers,
+                    "Value",
+                        datedChannelData.channelData.value,
+                    "Base channel",
+                        baseChannelDescription)
+                    .substr(1);  //  Lop off the leading newline
+        }
+
+        return resultList.toString().substr(1);  //  Lop off the leading newline
+    }
+
+    return "No message generated" + FormattedList::of(
+            "User message ID", _userMessageId,
+            "Channels", channelCount);
 }
 catch( const YukonErrorException& ex )
 {
@@ -247,7 +289,7 @@ ChannelData makeChannelData(const RawChannel& rawChannel)
 
     cd.channelNumber = rawChannel.channelNumber;
     cd.status = mapFindOrDefault(StatusLookup, rawChannel.status, ChannelDataStatus::FAILURE);
-    cd.unitOfMeasure = mapFindOrDefault(UomStrings, rawChannel.unitOfMeasure, "");
+    cd.unitOfMeasure = rawChannel.unitOfMeasure.getName();
     cd.value = rawChannel.value;
 
     if( rawChannel.modifier1 )
@@ -302,7 +344,7 @@ RfnMeterReadDataReplyMsg correlateRawChannels(const CtiTime now, const std::vect
     for( auto& channel : rawChannels )
     {
         //  Is this a timestamp channel?
-        if( channel.unitOfMeasure == static_cast<std::uint8_t>(Cti::Devices::Rfn::UnitOfMeasure::Time) )
+        if( channel.unitOfMeasure.isTime() )
         {
             //  Timestamp channels immediately follow their base channel
             const auto baseOffset = channel.channelNumber - 1;
@@ -343,14 +385,11 @@ RfnMeterReadDataReplyMsg correlateRawChannels(const CtiTime now, const std::vect
             if( auto base = mapFindRef(correlated, baseOffset);
                 ! base )
             {
-                const auto rawUom = static_cast<uint8_t>(channel.unitOfMeasure);
-                const auto unitName = std::to_string(rawUom) + " (" + Cti::mapFindOrDefault(UomStrings, rawUom, "<unmapped>") + ")";
-
                 CTILOG_DEBUG(dout, "No channel for coincident, discarding" << FormattedList::of(
                     "Channel #", channel.channelNumber,
                     "Coincident", channel.modifier2->getCoincidentOffset(),
                     "Base offset", baseOffset,
-                    "Unit", unitName,
+                    "Unit", channel.unitOfMeasure.getName(),
                     "Modifiers", modifiers,
                     "Value", channel.value,
                     "Status", channel.status));

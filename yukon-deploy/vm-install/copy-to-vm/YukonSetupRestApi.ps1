@@ -24,11 +24,10 @@ exit
 
 Import-Module $PSScriptRoot\YukonDeploy
 Import-Module $PSScriptRoot\YukonDatabase
- 
-Stop-Services
-Uninstall-Yukon
-Reset-DatabaseSnapshot
+
 Expand-Installer
-Install-Yukon
+Stop-Services
+Reset-DatabaseSnapshot
+Upgrade-Yukon
 Update-YukonDatabase
 Start-YukonServices

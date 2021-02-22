@@ -82,6 +82,7 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg* pReq, CtiCommandParser& pa
     using RfnExecuteMethod = decltype(&RfnDevice::executeGetConfig);
 
     const std::map<int, RfnExecuteMethod> executeMethods {
+        { ControlRequest,   &RfnDevice::executeControl   },
         { GetConfigRequest, &RfnDevice::executeGetConfig },
         { PutConfigRequest, &RfnDevice::executePutConfig },
         { GetValueRequest,  &RfnDevice::executeGetValue  },
@@ -248,6 +249,11 @@ YukonError_t RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiComma
     }
 
     return nRet;
+}
+
+YukonError_t RfnDevice::executeControl(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
+{
+    return ClientErrors::NoMethod;
 }
 
 YukonError_t RfnDevice::executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)

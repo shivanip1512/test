@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/10/2021 1:08:21 AM                         */
+/* Created on:     2/18/2021 5:24:27 AM                         */
 /*==============================================================*/
 
 
@@ -7248,6 +7248,14 @@ create table LMHardwareEvent (
    EventID              numeric              not null,
    InventoryID          numeric              not null,
    constraint PK_LMHARDWAREEVENT primary key (EventID)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_LMHardwareEvent_InventoryID                      */
+/*==============================================================*/
+create index INDX_LMHardwareEvent_InventoryID on LMHardwareEvent (
+InventoryID ASC
 )
 go
 

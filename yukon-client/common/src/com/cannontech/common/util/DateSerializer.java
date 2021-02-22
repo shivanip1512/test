@@ -1,4 +1,4 @@
-package com.cannontech.common.trend.model;
+package com.cannontech.common.util;
 
 import java.io.IOException;
 
