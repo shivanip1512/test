@@ -254,6 +254,14 @@ DeviceId ASC
 INSERT INTO DBUpdates VALUES ('YUK-22912', '9.0.0', SYSDATE);
 /* @end YUK-22912 */
 
+/* @start YUK-23267 */
+CREATE INDEX INDX_LMHardwareEvent_InventoryID ON LMHardwareEvent (
+InventoryID ASC
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-23267', '9.0.0', SYSDATE);
+/* @end YUK-23267 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
