@@ -33,7 +33,9 @@
             
             <div style="padding-top:5px;padding-left:60px;">
                 <form:select path="selectedConfiguration" name="selectedConfiguration" class="js-selected-configuration">
-                    <form:option value="-1">All Configurations</form:option>
+                    <form:option value="-1">
+                        <cti:msg2 key=".filter.configuration"/>
+                    </form:option>
                     <c:forEach var="config" items="${existingConfigs}">
                         <c:set var="selected" value=""/>
                         <c:if test="${searchFilters.selectedConfiguration == config.id}">
