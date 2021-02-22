@@ -2598,7 +2598,17 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        
+        <point name="Sum kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
         <point name="Outage Count" icd="false">
             <uom>Outage Count</uom>
             <modifiers match="equal"/> 
@@ -2650,17 +2660,6 @@
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Net Flow</modifier>
-            </modifiers>
-        </point>
-        <point name="Sum kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
         <point name="Peak kW"> 
@@ -3115,6 +3114,29 @@
             </baseModifiers>
         </point>
 
+        <point name="Demand at Peak kVa Coincidental" icd="false">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <baseUom>VA</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+            </baseModifiers>
+        </point>
+    </pointGroup>
+    
+    <!-- ITRON SENTINEL LEVEL 2 & 3 -->
+    <pointGroup>
+        <paoType value="RFN430SL2"/>
+        <paoType value="RFN430SL3"/>
+        <paoType value="RFN430SL4"/>
+        
         <point name="kVAh">
             <uom>VAh</uom>
             <multiplier value=".001"/>
@@ -3434,29 +3456,6 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Demand at Peak kVa Coincidental" icd="false">
-            <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-            <baseUom>VA</baseUom>
-            <baseModifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
-            </baseModifiers>
-        </point>
-    </pointGroup>
-    
-    <!-- ITRON SENTINEL LEVEL 2 & 3 -->
-    <pointGroup>
-        <paoType value="RFN430SL2"/>
-        <paoType value="RFN430SL3"/>
-        <paoType value="RFN430SL4"/>
-        
         <point name="Peak kVA Frozen">
             <uom>VA</uom>
             <multiplier value=".001"/>
