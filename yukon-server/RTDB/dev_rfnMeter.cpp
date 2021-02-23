@@ -971,6 +971,11 @@ void RfnMeterDevice::handleCommandResult(const Commands::RfnConfigNotificationCo
     {
         storeTemperatureConfig( *cmd.temperature );
     }
+
+    if( cmd.metrologyState )
+    {
+        storeMetrologyEnable(*cmd.metrologyState);
+    }
 }
 
 void RfnMeterDevice::handleCommandResult( const Commands::RfnTemperatureAlarmCommand & cmd )
@@ -1149,21 +1154,22 @@ YukonError_t RfnMeterDevice::executeGetConfigMetrology(CtiRequestMsg *pReq, CtiC
 
 void RfnMeterDevice::handleCommandResult( const Commands::RfnMetrologyGetConfigurationCommand & cmd )
 {
-    using MetrologyState = Commands::RfnMetrologyCommand::MetrologyState;
-
     if ( const auto state = cmd.getMetrologyState() )
     {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled,
-                        state == MetrologyState::Enable );
+        storeMetrologyEnable(*state);
     }
 }
 
 void RfnMeterDevice::handleCommandResult(const Commands::RfnMetrologySetConfigurationCommand& cmd)
 {
-    using MetrologyState = Commands::RfnMetrologyCommand::MetrologyState;
+    storeMetrologyEnable(cmd.getMetrologyState());
+}
 
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled,
-                    cmd.getMetrologyState() == MetrologyState::Enable );
+void RfnMeterDevice::storeMetrologyEnable(const Commands::RfnMetrologyCommand::MetrologyState state)
+{
+    constexpr auto Enable = Commands::RfnMetrologyCommand::MetrologyState::Enable;
+
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled, state == Enable);
 }
 
 }

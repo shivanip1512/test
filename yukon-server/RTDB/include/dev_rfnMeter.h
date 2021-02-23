@@ -2,6 +2,7 @@
 
 #include "dev_rfn.h"
 #include "cmd_rfn_ChannelConfiguration.h"
+#include "cmd_rfn_Metrology.h"
 #include "cmd_rfn_TemperatureAlarm.h"
 #include <boost/container/flat_map.hpp>
 
@@ -117,6 +118,7 @@ private:
     void storeTemperatureConfig( const Commands::RfnTemperatureAlarmCommand::AlarmConfiguration & configuration );
     void storeChannelSelections( const Commands::RfnChannelConfigurationCommand::MetricIds & metricsReceived );
     void storeIntervalRecordingActiveConfiguration( const Commands::RfnChannelIntervalRecording::ActiveConfiguration & cmd );
+    void storeMetrologyEnable( const Commands::RfnMetrologyCommand::MetrologyState state );
 };
 
 typedef RfnMeterDevice Rfn410flDevice;  //  kWh only

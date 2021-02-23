@@ -11,9 +11,7 @@
 using namespace std;
 using namespace std::string_literals;
 
-namespace Cti {
-namespace Devices {
-namespace Commands {
+namespace Cti::Devices::Commands {
 
 RfnCommandResult RfnConfigNotificationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
 {
@@ -84,7 +82,8 @@ std::string RfnConfigNotificationCommand::decodeTlvs(const std::vector<TLV> tlvs
         &Self::decodeTemperature,
         &Self::decodeDataStreaming,
         &Self::decodeDemandInterval,
-        &Self::decodeVoltageProfileStatus
+        &Self::decodeVoltageProfileStatus,
+        &Self::decodeMetrology
     };
     
     std::vector<std::string> results;
@@ -766,6 +765,26 @@ std::string RfnConfigNotificationCommand::decodeVoltageProfileStatus(Bytes paylo
     return "Voltage profile status:" + l.toString();
 }
 
+std::string RfnConfigNotificationCommand::decodeMetrology(Bytes payload)
+{
+    validate(Condition(payload.size() >= 1, ClientErrors::DataMissing)
+        << "Metrology payload too small - (" << payload.size() << " < " << 1);
+
+    FormattedList l;
+
+    const auto mode = payload[0];
+
+    if( mode > 1 )
+    {
+        return "Unknown Metrology mode " + std::to_string(mode);
+    }
+
+    metrologyState = mode 
+        ? RfnMetrologyCommand::MetrologyState::Disable
+        : RfnMetrologyCommand::MetrologyState::Enable;
+
+    return "Metrology " + mode ? "Disabled" : "Enabled";
+}
 
 std::string RfnConfigNotificationCommand::getCommandName() const
 {
@@ -802,6 +821,4 @@ auto RfnConfigNotificationCommand::getCommandData() -> Bytes
     return { }; 
 }
 
-}
-}
 }

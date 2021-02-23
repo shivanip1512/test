@@ -10,12 +10,11 @@
 #include "cmd_rfn_LoadProfile.h"
 #include "cmd_rfn_ChannelConfiguration.h"
 #include "cmd_rfn_DataStreamingConfiguration.h"
+#include "cmd_rfn_Metrology.h"
 
 #include <boost/variant.hpp>
 
-namespace Cti        {
-namespace Devices    {
-namespace Commands   {
+namespace Cti::Devices::Commands {
 
 /**
  * Channel Configuration Command
@@ -73,6 +72,7 @@ protected:
     std::string decodeDataStreaming       (Bytes payload);
     std::string decodeDemandInterval      (Bytes payload);
     std::string decodeVoltageProfileStatus(Bytes payload);
+    std::string decodeMetrology           (Bytes payload);
 
 public:
 
@@ -172,8 +172,8 @@ public:
     };
 
     std::optional<VoltageProfileStatus> voltageProfileStatus;
+
+    std::optional<RfnMetrologyCommand::MetrologyState> metrologyState;
 };
 
-}
-}
 }
