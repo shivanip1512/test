@@ -836,12 +836,12 @@ Bytes processAggregateRequests(const Bytes& payload, const RfnIdentifier rfnIden
                 "Request count", count,
                 "Request index", index,
                 "Context ID", (contextId_first << 8) | contextId_second,
-                "ASID", static_cast<unsigned char>(applicationServiceId),
+                "ASID", as_underlying(applicationServiceId),
                 "Reply size", reply->size()));
 
             result.push_back(contextId_first);
             result.push_back(contextId_second);
-            result.push_back(static_cast<unsigned char>(applicationServiceId));
+            result.push_back(as_underlying(applicationServiceId));
             result.push_back(reply->size() >> 8);
             result.push_back(reply->size());
             boost::insert(result, result.end(), *reply);
@@ -853,7 +853,7 @@ Bytes processAggregateRequests(const Bytes& payload, const RfnIdentifier rfnIden
                 "Request count", count,
                 "Request index", index,
                 "Context ID", (contextId_first << 8) | contextId_second,
-                "ASID", static_cast<unsigned char>(applicationServiceId)));
+                "ASID", as_underlying(applicationServiceId)));
         }
     }
 
