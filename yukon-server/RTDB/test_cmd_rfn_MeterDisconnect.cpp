@@ -121,10 +121,10 @@ BOOST_AUTO_TEST_CASE(test_unknown_command_status)
 
     const auto result = command.decodeCommand(execute_time, x.response);
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
-        "\nReply type      : 1"
-        "\nStatus          : 0");
+        "User message ID : 11235"
+        "\nReply type      : 1 - FAILURE"
+        "\nStatus          : 0 - UNKNOWN"
+        "\nDetails         : Unknown command status 153");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -150,10 +150,9 @@ BOOST_AUTO_TEST_CASE(test_unsupported)
 
     const auto result = command.decodeCommand(execute_time, x.response);
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
-        "\nReply type      : 6"
-        "\nStatus          : 0");
+        "User message ID : 11235"
+        "\nReply type      : 6 - NOT_SUPPORTED"
+        "\nStatus          : 0 - UNKNOWN");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -182,10 +181,10 @@ BOOST_AUTO_TEST_CASE(test_protocol_fail)
 
     const auto result = command.decodeCommand(execute_time, x.response);
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
-        "\nReply type      : 1"
-        "\nStatus          : 0");
+        "User message ID : 11235"
+        "\nReply type      : 1 - FAILURE"
+        "\nStatus          : 0 - UNKNOWN"
+        "\nDetails         : Protocol failure 6 - Device Busy (request not acted upon because meter was busy)");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -214,10 +213,10 @@ BOOST_AUTO_TEST_CASE(test_meter_fail)
 
     const auto result = command.decodeCommand(execute_time, x.response);
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
-        "\nReply type      : 3"
-        "\nStatus          : 0");
+        "User message ID : 11235"
+        "\nReply type      : 3 - FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT"
+        "\nStatus          : 0 - UNKNOWN"
+        "\nDetails         : Meter failure 10 - Error, load side voltage detected after completion of disconnect.");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -316,10 +315,10 @@ BOOST_AUTO_TEST_CASE(test_unknown_tlv)
 
     const auto result = command.decodeCommand(execute_time, x.response);
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
-        "\nReply type      : 1"
-        "\nStatus          : 0");
+        "User message ID : 11235"
+        "\nReply type      : 1 - FAILURE"
+        "\nStatus          : 0 - UNKNOWN"
+        "\nDetails         : Unknown failure TLV 3");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -346,10 +345,9 @@ BOOST_AUTO_TEST_CASE(test_arm)
 
     const auto result = command.decodeCommand(execute_time, x.response);
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
-        "\nReply type      : 0"
-        "\nStatus          : 3");
+        "User message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 3 - ARMED");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -376,10 +374,9 @@ BOOST_AUTO_TEST_CASE(test_query)
 
     const auto result = command.decodeCommand(execute_time, x.response);
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
-        "\nReply type      : 0"
-        "\nStatus          : 2");
+        "User message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 2 - DISCONNECTED");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -406,10 +403,9 @@ BOOST_AUTO_TEST_CASE(test_resume)
 
     const auto result = command.decodeCommand(execute_time, x.response);
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
-        "\nReply type      : 0"
-        "\nStatus          : 1");
+        "User message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 1 - CONNECTED");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -436,10 +432,9 @@ BOOST_AUTO_TEST_CASE(test_terminate)
 
     const auto result = command.decodeCommand(execute_time, x.response);
     BOOST_CHECK_EQUAL(result.description,
-        "Results:"
-        "\nUser message ID : 11235"
-        "\nReply type      : 0"
-        "\nStatus          : 2");
+        "User message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 2 - DISCONNECTED");
     BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
     BOOST_CHECK(result.points.empty());
 
@@ -447,6 +442,38 @@ BOOST_AUTO_TEST_CASE(test_terminate)
     BOOST_REQUIRE(responseMsg);
     BOOST_CHECK_EQUAL(responseMsg->replyType, rt::SUCCESS);
     BOOST_CHECK_EQUAL(responseMsg->state, s::DISCONNECTED);
+}
+
+BOOST_AUTO_TEST_CASE(test_terminate_failure)
+{
+    RfnMeterDisconnectCommand command(CommandType::TerminateService, 11235);
+
+    Exchange x {
+        { 0x80, 0x01 },
+        {
+            0x81, //  Response command
+            0x01, //  Echoed action (Terminate)
+            0x01, //  Command status (Failure)
+            0x02, //  TLV type 2 (Meter failure)
+            0x01, //  TLV length 1
+            0x06  //  Reason - 6
+        } };
+
+    BOOST_CHECK_EQUAL(x.outbound, command.executeCommand(execute_time));
+
+    const auto result = command.decodeCommand(execute_time, x.response);
+    BOOST_CHECK_EQUAL(result.description,
+        "User message ID : 11235"
+        "\nReply type      : 1 - FAILURE"
+        "\nStatus          : 0 - UNKNOWN"
+        "\nDetails         : Meter failure 6 - Command rejected because service disconnect is not enabled.");
+    BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
+    BOOST_CHECK(result.points.empty());
+
+    const auto responseMsg = command.getResponseMessage();
+    BOOST_REQUIRE(responseMsg);
+    BOOST_CHECK_EQUAL(responseMsg->replyType, rt::FAILURE);
+    BOOST_CHECK_EQUAL(responseMsg->state, s::UNKNOWN);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

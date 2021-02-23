@@ -63,7 +63,7 @@ public class RfnMeterReadDataReplySerializer extends RfnSerializationHelper impl
 
         translateChannelData(tdata.getChannelData(), data);
         
-        return null;
+        return data;
     }
 
     private static void translateChannelData(com.cannontech.messaging.serialization.thrift.generated.ChannelData tdata, ChannelData data) {

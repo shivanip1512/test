@@ -366,10 +366,10 @@ void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt
     e2eRequestSender(newRequest);
 }
 
-Bytes DataStreamingRead (const Bytes& request, const RfnIdentifier & rfnId);
-Bytes DataStreamingWrite(const Bytes& request, const RfnIdentifier & rfnId);
-auto GetMeterRead   (const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
-auto MeterDisconnect(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
+Bytes DataStreamingRead (const Bytes& request, const RfnIdentifier& rfnId);
+Bytes DataStreamingWrite(const Bytes& request, const RfnIdentifier& rfnId);
+auto GetMeterRead       (const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
+void doMeterDisconnect(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& payload, const RfnIdentifier& rfnId);
 
 void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& request, const RfnIdentifier rfnIdentifier)
 {
@@ -379,30 +379,23 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
         return;
     }
 
-    using RequestFunction = std::add_pointer_t<decltype(GetMeterRead)>;
-
-    static const std::map<unsigned char, RequestFunction> requestFunctions{
-        { 0x01, &GetMeterRead },
-        { 0x80, &MeterDisconnect } };
-    
-    if( const auto func = mapFindPtr(requestFunctions, request[0]) )
-    {
-        if( const auto reply = (*func)(request, rfnIdentifier) )
-        {
-            sendReply(*reply);
-        }
-        else
-        {
-            sendReply(Coap::ResponseCode::BadRequest);
-        }
-        return;
-    }
-        
     switch( request[0] )
     {
         default:
         {
             sendReply(Coap::ResponseCode::BadRequest);
+            return;
+        }
+        case 0x01:
+        {
+            if( const auto reply = GetMeterRead(request, rfnIdentifier) )
+            {
+                sendReply(*reply);
+            }
+            else
+            {
+                sendReply(Coap::ResponseCode::BadRequest);
+            }
             return;
         }
         case 0x55:
@@ -645,6 +638,11 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
             }
             return;
         }
+        case 0x80:
+        {
+            doMeterDisconnect(sendReply, sendDelayedReply, request, rfnIdentifier);
+            return;
+        }
         case 0x82:
         {
             /*
@@ -700,23 +698,29 @@ auto GetMeterRead(const Bytes& payload, const RfnIdentifier& rfnId) -> std::opti
     );
 }
 
-auto MeterDisconnect(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>
+void doMeterDisconnect(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& payload, const RfnIdentifier& rfnId)
 {
     if( payload.size() >= 2 )
     {
         switch( payload[1] )
         {
             case 0x01:
+                sendReply(Coap::ResponseCode::EmptyMessage);
+                sendDelayedReply(Bytes{ 0x81, payload[1], 0x00, payload[1] });  //  Echo the action
+                return;
+
             case 0x02:
             case 0x03:
-                return Bytes { 0x81, payload[1], 0x00, payload[1] };  //  Echo the action
+                sendReply(Bytes { 0x81, payload[1], 0x00, payload[1] });  //  Echo the action
+                return;
 
             case 0x04:
-                return Bytes { 0x81, payload[1], 0x00, 0x03 };  //  Resume
+                sendReply(Bytes { 0x81, payload[1], 0x00, 0x03 });  //  Resume
+                return;
         }
     }
 
-    return std::nullopt;
+    sendReply(Coap::ResponseCode::BadRequest);
 }
 
 
