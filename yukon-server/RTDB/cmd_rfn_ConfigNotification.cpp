@@ -783,7 +783,7 @@ std::string RfnConfigNotificationCommand::decodeMetrology(Bytes payload)
         ? RfnMetrologyCommand::MetrologyState::Disable
         : RfnMetrologyCommand::MetrologyState::Enable;
 
-    return "Metrology " + mode ? "Disabled" : "Enabled";
+    return "Metrology:\nMetrology "s + (mode ? "disabled" : "enabled");
 }
 
 std::string RfnConfigNotificationCommand::getCommandName() const

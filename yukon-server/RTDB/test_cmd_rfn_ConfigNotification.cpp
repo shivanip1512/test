@@ -13,7 +13,7 @@ const CtiTime execute_time(CtiDate(17, 2, 2010), 10);
 
 extern const std::vector<uint8_t> payload { 
     0x1e, 
-    0x00, 0x10,  //  16 TLVs
+    0x00, 0x11,  //  17 TLVs
     //  TLV 1
     0x00, 0x01,  //  TOU Enable/Disable
     0x00, 0x01,
@@ -195,7 +195,11 @@ extern const std::vector<uint8_t> payload {
     0x00, 0x0f,  //  Voltage profile status
     0x00, 0x05,
         0x02,  //  temporary enable
-        0x51, 0x23, 0x45, 0x67  //  enabled-until timestamp
+        0x51, 0x23, 0x45, 0x67, //  enabled-until timestamp
+    //  TLV 16
+    0x00, 0x10,  //  Metrology disable
+    0x00, 0x01,
+        0x01  //  Metrology disabled
     };
 
 BOOST_AUTO_TEST_CASE(test_request)
@@ -653,6 +657,60 @@ BOOST_AUTO_TEST_CASE(test_temperature)
     BOOST_CHECK_EQUAL(cmd.temperature->alarmRepeatInterval, 119);
 }
 
+BOOST_AUTO_TEST_CASE(test_metrology)
+{
+    {
+        const std::vector<uint8_t> payload{
+            0x1e,
+            0x00, 0x01,
+            0x00, 0x10,
+            0x00, 0x01,
+            0x00
+        };
+
+        RfnConfigNotificationCommand cmd;
+
+        const auto result = cmd.handleResponse(execute_time, payload);
+
+        BOOST_REQUIRE_EQUAL(result.size(), 1);
+
+        BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
+        BOOST_CHECK(result[0].points.empty());
+        BOOST_CHECK_EQUAL(result[0].description,
+            "Device Configuration Request:"
+            "\nMetrology:"
+            "\n    Metrology enabled");
+
+        BOOST_REQUIRE(cmd.metrologyState);
+        BOOST_CHECK(cmd.metrologyState.value() == Cti::Devices::Commands::RfnMetrologyCommand::MetrologyState::Enable);
+    }
+    {
+        const std::vector<uint8_t> payload{
+            0x1e,
+            0x00, 0x01,
+            0x00, 0x10,
+            0x00, 0x01,
+            0x01
+        };
+
+        RfnConfigNotificationCommand cmd;
+
+        const auto result = cmd.handleResponse(execute_time, payload);
+
+        BOOST_REQUIRE_EQUAL(result.size(), 1);
+
+        BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
+        BOOST_CHECK(result[0].points.empty());
+        BOOST_CHECK_EQUAL(result[0].description,
+            "Device Configuration Request:"
+            "\nMetrology:"
+            "\n    Metrology disabled");
+
+        BOOST_REQUIRE(cmd.metrologyState);
+        BOOST_CHECK(cmd.metrologyState.value() == Cti::Devices::Commands::RfnMetrologyCommand::MetrologyState::Disable);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_all_tlvs)
 {
     const auto tz_override = Cti::Test::set_to_central_timezone();
@@ -751,7 +809,9 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    Demand Interval : 6 minutes"
         "\nVoltage profile status:"
         "\n    Mode          : Temporarily enabled"
-        "\n    Temporary end : 02/19/2013 03:27:03";
+        "\n    Temporary end : 02/19/2013 03:27:03"
+        "\nMetrology:"
+        "\n    Metrology disabled";
 
     RfnConfigNotificationCommand cmd;
 
@@ -833,6 +893,9 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
     BOOST_CHECK_EQUAL(cmd.voltageProfileStatus->enabled, false);
     BOOST_REQUIRE(cmd.voltageProfileStatus->temporaryEnd);
     BOOST_CHECK_EQUAL(cmd.voltageProfileStatus->temporaryEnd.value(), CtiTime(CtiDate(19, 2, 2013), 3, 27, 3));
+
+    BOOST_REQUIRE(cmd.metrologyState);
+    BOOST_CHECK(cmd.metrologyState.value() == Cti::Devices::Commands::RfnMetrologyCommand::MetrologyState::Disable);
 
     BOOST_REQUIRE(cmd.touSchedule);
 
