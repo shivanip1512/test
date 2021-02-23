@@ -18,24 +18,12 @@ public enum ApiErrorCategory {
         return code;
     }
 
-    public void setCode(int code) {
-        this.code = code;
-    }
-
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getDefaultMessage() {
         return defaultMessage;
-    }
-
-    public void setDefaultMessage(String defaultMessage) {
-        this.defaultMessage = defaultMessage;
     }
 
     // This will return the type, url is fixed, with code appended
