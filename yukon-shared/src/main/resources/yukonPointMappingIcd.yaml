@@ -742,7 +742,6 @@ Itron Sentinel:
     - Net Watts:                                                                { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                   ], Models: *__234, Mapped: false, Itron name: "Watt Net" }
     - Peak Net Watts:                                                           { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net             ], Models: *__234, Mapped: false }
     - Frozen Peak Net Watts:                                                    { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *Prev      ], Models: *__234, Mapped: false }
-    - Net Watts:                                                                { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                   ], Models: *_1234, Mapped: false, Itron name: "Watt Net" }
     - Volt-ampere-reactive Delivered:                                           { Unit: *Var,   Modifiers: [ *Q1, *Q2                                   ], Models: *__234, Mapped: false, Itron name: "Volt-ampere-reactive Delivered" }
     - Peak Volt-ampere-reactive Delivered:                                      { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max                             ], Models: *__234, Itron name: "Max Volt-ampere-reactive Delivered" }
     - Coincident Time of Peak Volt-ampere-reactive Delivered:                   { Unit: *s,     Modifiers: [ *Coin1                                     ], Models: *__234, Itron name: "Time of Max Var Delivered" }
