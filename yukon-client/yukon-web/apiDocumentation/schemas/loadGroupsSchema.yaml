@@ -26,6 +26,8 @@ LM_GROUP_DIGI_SEP:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -37,6 +39,8 @@ LM_GROUP_DIGI_SEP:
           description: 'Flag to disable control of the load group.'
         utilityEnrollmentGroup:
           type: integer
+          minimum: 1
+          maximum: 255
           description: 'The utility enrollment group ID allows control events to be directed to specific groups of devices.'
         deviceClassSet:
           type: array
@@ -96,6 +100,8 @@ LM_GROUP_EMETCON:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -157,6 +163,8 @@ LM_GROUP_ECOBEE:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -191,6 +199,8 @@ LM_GROUP_METER_DISCONNECT:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -232,6 +242,8 @@ LM_GROUP_VERSACOM:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -311,6 +323,8 @@ LM_GROUP_ITRON:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -350,6 +364,8 @@ LM_GROUP_HONEYWELL:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -384,6 +400,8 @@ LM_GROUP_NEST:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -422,6 +440,8 @@ LM_GROUP_MCT:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -488,6 +508,8 @@ LM_GROUP_RIPPLE:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -592,6 +614,8 @@ LM_GROUP_EXPRESSCOMM:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -718,6 +742,8 @@ LM_GROUP_RFN_EXPRESSCOMM:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -831,6 +857,8 @@ LM_GROUP_EATON_CLOUD:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
@@ -880,6 +908,8 @@ LM_GROUP_POINT:
           description: 'Type of load group.'
         kWCapacity:
           type: number
+          minimum: 0.0
+          maximum: 99999.999
           description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
         disableGroup:
           type: boolean
