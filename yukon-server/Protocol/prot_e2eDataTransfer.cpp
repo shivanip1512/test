@@ -190,7 +190,7 @@ auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, 
             {
                 message.nodeOriginated = true;
             }
-            else if( message.code == static_cast<unsigned char>(Coap::ResponseCode::Content) )
+            else if( message.code == as_underlying(Coap::ResponseCode::Content) )
             {
                 message.nodeOriginated = false;
             }

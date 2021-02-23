@@ -100,6 +100,7 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
     if( dr.outbound.empty() || ! dr.outbound.front() )
     {
         msg.priority   = MAXPRIORITY - 1;  //  unsolicited, highest priority response
+        msg.priorityClass = Messaging::Rfn::PriorityClass::RfDa;
         msg.expiration = CtiTime::now() + getDeviceTimeout(dr);
         msg.groupId    = 0;
     }
@@ -107,7 +108,8 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
     {
         const CtiOutMessage &om = *dr.outbound.front();
 
-        msg.priority   = clamp<1, MAXPRIORITY>(om.Priority);
+        msg.priority   = std::clamp<int>(om.Priority, 1, MAXPRIORITY);
+        msg.priorityClass = Messaging::Rfn::PriorityClass::RfDa;
 
         msg.expiration = om.ExpirationTime
                              ? CtiTime(om.ExpirationTime)
