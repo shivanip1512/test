@@ -469,8 +469,10 @@ auto UdpPortHandler::getDestinationForAddress(const AddrInfo& address) -> Outbou
 
 YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
 {
-    string  device_ip   = getDeviceIp  (dr.device->getID());
-    u_short device_port = getDevicePort(dr.device->getID());
+    Endpoint endpoint = getDeviceSocketAddress( dr );
+
+    string  device_ip   = std::get<0>( endpoint );
+    u_short device_port = std::get<1>( endpoint );
 
     if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
@@ -511,7 +513,7 @@ YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
 
         dr.last_outbound = CtiTime::now();
 
-        _last_endpoint_send_time[ pAddrInfo ] = std::chrono::high_resolution_clock::now();
+        _last_endpoint_send_time[ endpoint ] = std::chrono::high_resolution_clock::now();
     }
     catch( const YukonErrorException& ex )
     {
@@ -920,23 +922,20 @@ void UdpPortHandler::loadEncodingFilter()
 }
 
 
-AddrInfo UdpPortHandler::getDeviceSocketAddress(device_record &dr) const
+UdpPortHandler::Endpoint UdpPortHandler::getDeviceSocketAddress(device_record &dr) const
 {
     string  device_ip   = getDeviceIp  ( dr.device->getID() );
     u_short device_port = getDevicePort( dr.device->getID() );
 
-    return Cti::makeUdpClientSocketAddress( device_ip, device_port );
+    return { device_ip, device_port };
 }
 
 
 bool UdpPortHandler::isPostCommWaitComplete(device_record &dr, ULONG postCommWait) const
 {
-    if ( AddrInfo addr = getDeviceSocketAddress( dr ) )
+    if ( auto tp = mapFind( _last_endpoint_send_time, getDeviceSocketAddress( dr ) ) )
     {
-        if ( auto tp = mapFind( _last_endpoint_send_time, addr ) )
-        {
-            return std::chrono::high_resolution_clock::now() >= ( *tp + std::chrono::milliseconds( postCommWait ) );
-        }
+        return std::chrono::high_resolution_clock::now() >= ( *tp + std::chrono::milliseconds( postCommWait ) );
     }
 
     return true;
@@ -944,28 +943,17 @@ bool UdpPortHandler::isPostCommWaitComplete(device_record &dr, ULONG postCommWai
 
 void UdpPortHandler::setDeviceActive(device_record *dr)
 {
-    if ( AddrInfo addr = getDeviceSocketAddress( *dr ) )
-    {
-        _last_endpoint_send_time[ addr ] = std::chrono::high_resolution_clock::now();
-    }
+    _last_endpoint_send_time[ getDeviceSocketAddress( *dr ) ] = std::chrono::high_resolution_clock::now();
 }
 
 bool UdpPortHandler::isDeviceActive(device_record *dr)
 {
-    if ( AddrInfo addr = getDeviceSocketAddress( *dr ) )
-    {
-        return _last_endpoint_send_time.find( addr ) != _last_endpoint_send_time.end();
-    }
-
-    return false;
+    return _last_endpoint_send_time.find( getDeviceSocketAddress( *dr ) ) != _last_endpoint_send_time.end();
 }
 
 void UdpPortHandler::clearActiveDevice(device_record *dr)
 {
-    if ( AddrInfo addr = getDeviceSocketAddress( *dr ) )
-    {
-        _last_endpoint_send_time.erase( addr );
-    }
+    _last_endpoint_send_time.erase( getDeviceSocketAddress( *dr ) );
 }
 
 }
