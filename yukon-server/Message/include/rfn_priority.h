@@ -12,7 +12,7 @@ enum class PriorityClass : bool
     MeterDisconnect = true,
     DeviceConfiguration = false,
     MeterProgramming = false,
-    RfDa = false
+    RfDa = true
 };
 
 }
