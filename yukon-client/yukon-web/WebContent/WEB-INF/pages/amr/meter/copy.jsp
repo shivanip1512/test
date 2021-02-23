@@ -28,7 +28,7 @@
         <c:if test="${showCarrierSettings}">
             <tags:inputNameValue nameKey=".physicalAddress" path="address" maxlength="18" size="18" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" rowClass="js-mct-fields"/>
         </c:if>
-        <c:if test="${!showRFMeshSettings && !showCarrierSettings}">
+        <c:if test="${showCommChannel}">
             <tags:selectNameValue nameKey=".ports" items="${ports}" path="portId" itemLabel="paoName" itemValue="liteID" rowClass="js-ied-fields"/>
         </c:if>
         <c:if test="${showCarrierSettings}">
@@ -47,6 +47,7 @@
 
     <cti:toJson id="rf-meter-types" object="${rfMeterTypes}"/>
     <cti:toJson id="mct-meter-types" object="${mctMeterTypes}"/>
+    <cti:toJson id="virtual-meter-type" object="${virtualMeterType}"/>
 <style>
 #contentPopup {
     overflow: visible !important;
