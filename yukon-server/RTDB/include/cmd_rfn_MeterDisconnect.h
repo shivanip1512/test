@@ -30,6 +30,7 @@ public:
     unsigned char getCommandCode() const override;
 
     ASID getApplicationServiceId() const override;
+    auto getPriorityClass() const -> Messaging::Rfn::PriorityClass override;
 
     unsigned char getOperation() const override;
 

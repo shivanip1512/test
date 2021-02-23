@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rfn_asid.h"
+#include "rfn_priority.h"
 #include "rfn_identifier.h"
 
 #include "RfnE2eDataIndicationMsg.h"
@@ -52,6 +53,7 @@ public:
         CtiTime expiration;
         long long groupId;
         unsigned char priority : 7;  //  7 bits - this needs to fit into a signed byte
+        PriorityClass priorityClass;
     };
 
     struct Indication : PayloadMessage, CallbackFor<Indication>

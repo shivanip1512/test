@@ -5,6 +5,8 @@
 
 #include "RfnMeterDisconnectMsg.h"
 
+#include "std_helper.h"
+
 #include <gsl/span>
 
 namespace Cti::Devices::Commands {
@@ -18,6 +20,11 @@ RfnMeterDisconnectCommand::RfnMeterDisconnectCommand(CommandType action, long us
 auto RfnMeterDisconnectCommand::getApplicationServiceId() const -> ASID
 {
     return ASID::ChannelManager;
+}
+
+auto RfnMeterDisconnectCommand::getPriorityClass() const -> Messaging::Rfn::PriorityClass
+{
+    return Messaging::Rfn::PriorityClass::MeterDisconnect;
 }
 
 std::string RfnMeterDisconnectCommand::getCommandName() const
@@ -50,7 +57,7 @@ auto RfnMeterDisconnectCommand::getCommandHeader() -> Bytes
 
 auto RfnMeterDisconnectCommand::getCommandData() -> Bytes
 {
-    return { static_cast<uint8_t>(_action) };
+    return { as_underlying(_action) };
 }
 
 unsigned char RfnMeterDisconnectCommand::getOperation() const
@@ -135,7 +142,7 @@ try
 
     const auto commandType = response[1];
 
-    validate(Condition(commandType == static_cast<std::uint8_t>(_action), ClientErrors::InvalidData)
+    validate(Condition(commandType == as_underlying(_action), ClientErrors::InvalidData)
         << "RFN meter disconnect command type does not match request: " << FormattedList::of(
             "Request type", static_cast<int>(_action),
             "Response type", commandType));

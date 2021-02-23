@@ -46,6 +46,12 @@ auto RfnCommand::getApplicationServiceId() const -> ASID
     return ASID::ChannelManager;
 }
 
+//  Defaults to the Device Configuration priority class
+auto RfnCommand::getPriorityClass() const -> Messaging::Rfn::PriorityClass
+{
+    return Messaging::Rfn::PriorityClass::DeviceConfiguration;
+}
+
 bool RfnCommand::isPost() const
 {
     return false;
