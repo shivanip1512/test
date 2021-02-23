@@ -32,8 +32,7 @@ using Cti::Logging::Range::Hex::operator<<;
 
 extern CtiDeviceManager DeviceManager;
 
-namespace Cti    {
-namespace Porter {
+namespace Cti::Porter {
 
 /* Threads that handle each port for communications */
 void PortRfDaThread(void *pid)
@@ -96,11 +95,11 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
     Messaging::Rfn::E2eMessenger::Request msg;
 
     msg.rfnIdentifier = _rf_da_port->getRfnIdentifier();
+    msg.priorityClass = Messaging::Rfn::PriorityClass::RfDa;
 
     if( dr.outbound.empty() || ! dr.outbound.front() )
     {
         msg.priority   = MAXPRIORITY - 1;  //  unsolicited, highest priority response
-        msg.priorityClass = Messaging::Rfn::PriorityClass::RfDa;
         msg.expiration = CtiTime::now() + getDeviceTimeout(dr);
         msg.groupId    = 0;
     }
@@ -109,7 +108,6 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
         const CtiOutMessage &om = *dr.outbound.front();
 
         msg.priority   = std::clamp<int>(om.Priority, 1, MAXPRIORITY);
-        msg.priorityClass = Messaging::Rfn::PriorityClass::RfDa;
 
         msg.expiration = om.ExpirationTime
                              ? CtiTime(om.ExpirationTime)
@@ -328,5 +326,3 @@ void RfDaPortHandler::clearActiveDevice(device_record *dr)
 
 
 }
-}
-
