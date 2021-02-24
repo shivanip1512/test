@@ -198,6 +198,9 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      * Adds an entry in rfnLogger
      */
     private void log(String text) {
+        if(commsLogger == null) {
+            return;
+        }
         if (commsLogger.isInfoEnabled()) {
             commsLogger.info(text);
         } else if (commsLogger.isDebugEnabled()) {

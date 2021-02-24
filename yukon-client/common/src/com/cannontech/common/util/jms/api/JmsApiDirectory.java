@@ -212,6 +212,7 @@ public final class JmsApiDirectory {
                   .responseMessage(DeviceDataMonitorStatusResponse.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .disableLogging()
                   .build();
     
     public static final JmsApi<DeviceDataMonitorMessage,?,?> DEVICE_DATA_MONITOR_RECALC =
