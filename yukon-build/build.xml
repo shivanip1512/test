@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="Yukon Ant Build Script" default="targets" basedir=".." xmlns:jacoco="antlib:org.jacoco.ant">
+<project name="Yukon Ant Build Script" default="targets" basedir=".." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:if="ant:if">
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
         <classpath path="./lib/jacocoant.jar"/>
@@ -111,6 +111,7 @@
         <mkdir dir="${log.dir}" />
 
         <!-- build it -->
+        <property name="server-build-single-core" value="false"/>
         <exec failonerror="true" 
               dir="${basedir}/yukon-server/"
               resultproperty="serverbuilderrorcode"
@@ -118,6 +119,7 @@
             <arg value="/c" />
             <arg value="${basedir}\yukon-server\b.cmd" />
             <arg value="--exit" />
+            <arg value="single" if:true="${server-build-single-core}" />
             <arg value="--basedir" />
             <arg value="${basedir}" />
             <arg value="--labels" />
