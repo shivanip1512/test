@@ -11,6 +11,11 @@
 
 #include <boost/algorithm/cxx11/all_of.hpp>
 
+namespace Cti {
+    //  defined in pil/test_main.cpp
+    std::ostream& operator<<(std::ostream& o, const ConnectionHandle& h);
+}
+
 BOOST_AUTO_TEST_SUITE( test_pilserver )
 
 using namespace std;
@@ -272,8 +277,8 @@ BOOST_AUTO_TEST_CASE(test_rfnExpectMore)
         BOOST_REQUIRE(reqMsg);
 
         BOOST_CHECK_EQUAL(reqMsg->CommandString(), "putconfig install all verify");
-        BOOST_CHECK(reqMsg->getConnectionHandle(), handle);
-        BOOST_CHECK(reqMsg->UserMessageId(), UserMessageId);
+        BOOST_CHECK_EQUAL(reqMsg->getConnectionHandle(), handle);
+        BOOST_CHECK_EQUAL(reqMsg->UserMessageId(), UserMessageId);
     }
 }
 

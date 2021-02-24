@@ -798,7 +798,7 @@ std::string logPoints(const Protocols::DnpSlave::control_request &control, const
     l.add("Offset")         << control.offset;
     l.add("On time (ms)")   << control.on_time;
     l.add("Queue")          << control.queue;
-    l.add("Status")         << Protocols::DnpProtocol::getControlResultString(static_cast<unsigned char>(control.status));
+    l.add("Status")         << Protocols::DnpProtocol::getControlResultString(as_underlying(control.status));
     l.add("Trip/close")     << control.trip_close;
 
     l.add("Yukon point");
@@ -1293,7 +1293,7 @@ std::string describeAnalogOutputRequest(const Protocols::DnpSlave::analog_output
     l.add("Action") << log(analog.action);
     l.add("Long index") << analog.isLongIndexed;
     l.add("Offset") << analog.offset;
-    l.add("Status") << Protocols::DnpProtocol::getControlResultString(static_cast<unsigned char>(analog.status));
+    l.add("Status") << Protocols::DnpProtocol::getControlResultString(as_underlying(analog.status));
     l.add("Type") << analog.type;
     l.add("Value") << analog.value;
 
@@ -1398,23 +1398,23 @@ bool DnpSlave::shouldIgnoreOldData() const
 ControlStatus DnpSlave::waitForResponse(const long userMessageId, const bool isPassthroughControl)
 {
     static const std::map<unsigned char, ControlStatus> controlStatuses {
-        { static_cast<unsigned char>(ControlStatus::Success),           ControlStatus::Success           },
-        { static_cast<unsigned char>(ControlStatus::Timeout),           ControlStatus::Timeout           },
-        { static_cast<unsigned char>(ControlStatus::NoSelect),          ControlStatus::NoSelect          },
-        { static_cast<unsigned char>(ControlStatus::FormatError),       ControlStatus::FormatError       },
-        { static_cast<unsigned char>(ControlStatus::NotSupported),      ControlStatus::NotSupported      },
-        { static_cast<unsigned char>(ControlStatus::AlreadyActive),     ControlStatus::AlreadyActive     },
-        { static_cast<unsigned char>(ControlStatus::HardwareError),     ControlStatus::HardwareError     },
-        { static_cast<unsigned char>(ControlStatus::Local),             ControlStatus::Local             },
-        { static_cast<unsigned char>(ControlStatus::TooManyObjs),       ControlStatus::TooManyObjs       },
-        { static_cast<unsigned char>(ControlStatus::NotAuthorized),     ControlStatus::NotAuthorized     },
-        { static_cast<unsigned char>(ControlStatus::AutomationInhibit), ControlStatus::AutomationInhibit },
-        { static_cast<unsigned char>(ControlStatus::ProcessingLimited), ControlStatus::ProcessingLimited },
-        { static_cast<unsigned char>(ControlStatus::OutOfRange),        ControlStatus::OutOfRange        },
-        { static_cast<unsigned char>(ControlStatus::ReservedMin),       ControlStatus::ReservedMin       },
-        { static_cast<unsigned char>(ControlStatus::ReservedMax),       ControlStatus::ReservedMax       },
-        { static_cast<unsigned char>(ControlStatus::NonParticipating),  ControlStatus::NonParticipating  },
-        { static_cast<unsigned char>(ControlStatus::Undefined),         ControlStatus::Undefined         }};
+        { as_underlying(ControlStatus::Success),           ControlStatus::Success           },
+        { as_underlying(ControlStatus::Timeout),           ControlStatus::Timeout           },
+        { as_underlying(ControlStatus::NoSelect),          ControlStatus::NoSelect          },
+        { as_underlying(ControlStatus::FormatError),       ControlStatus::FormatError       },
+        { as_underlying(ControlStatus::NotSupported),      ControlStatus::NotSupported      },
+        { as_underlying(ControlStatus::AlreadyActive),     ControlStatus::AlreadyActive     },
+        { as_underlying(ControlStatus::HardwareError),     ControlStatus::HardwareError     },
+        { as_underlying(ControlStatus::Local),             ControlStatus::Local             },
+        { as_underlying(ControlStatus::TooManyObjs),       ControlStatus::TooManyObjs       },
+        { as_underlying(ControlStatus::NotAuthorized),     ControlStatus::NotAuthorized     },
+        { as_underlying(ControlStatus::AutomationInhibit), ControlStatus::AutomationInhibit },
+        { as_underlying(ControlStatus::ProcessingLimited), ControlStatus::ProcessingLimited },
+        { as_underlying(ControlStatus::OutOfRange),        ControlStatus::OutOfRange        },
+        { as_underlying(ControlStatus::ReservedMin),       ControlStatus::ReservedMin       },
+        { as_underlying(ControlStatus::ReservedMax),       ControlStatus::ReservedMax       },
+        { as_underlying(ControlStatus::NonParticipating),  ControlStatus::NonParticipating  },
+        { as_underlying(ControlStatus::Undefined),         ControlStatus::Undefined         }};
 
     Cti::Timing::MillisecondTimer t;
 

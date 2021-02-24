@@ -1014,21 +1014,21 @@ bool DnpProtocol::isTransactionComplete( void ) const
 
 
 const auto ControlResultStrings = std::map<unsigned char, const char *> {
-        { static_cast<unsigned char>(ControlStatus::Success),           "Request accepted, initiated, or queued."},
-        { static_cast<unsigned char>(ControlStatus::Timeout),           "Request not accepted because the operate message was received after the arm timer timed out. The arm timer was started when the select operation for the same point was received."},
-        { static_cast<unsigned char>(ControlStatus::NoSelect),          "Request not accepted because no previous matching select request exists. {An operate message was sent to activate an output that was not previously armed with a matching select message.},"},
-        { static_cast<unsigned char>(ControlStatus::FormatError),       "Request not accepted because there were formatting errors in the control request."},
-        { static_cast<unsigned char>(ControlStatus::NotSupported),      "Request not accepted because a control operation is not supported for this point."},
-        { static_cast<unsigned char>(ControlStatus::AlreadyActive),     "Request not accepted, because the control queue is full or the point is already active."},
-        { static_cast<unsigned char>(ControlStatus::HardwareError),     "Request not accepted because of control hardware problems."},
-        { static_cast<unsigned char>(ControlStatus::Local),             "Request not accepted because Local/Remote switch is in Local position."},
-        { static_cast<unsigned char>(ControlStatus::TooManyObjs),       "Request not accepted because too many objects appeared in the same request."},
-        { static_cast<unsigned char>(ControlStatus::NotAuthorized),     "Request not accepted because of insufficient authorization."},
-        { static_cast<unsigned char>(ControlStatus::AutomationInhibit), "Request not accepted because it was inhibited by a local automation process."},
-        { static_cast<unsigned char>(ControlStatus::ProcessingLimited), "Request not accepted because the device cannot process any more activities than are presently in progress."},
-        { static_cast<unsigned char>(ControlStatus::OutOfRange),        "Request not accepted because the value is outside the acceptable range permitted for this point."},
-        { static_cast<unsigned char>(ControlStatus::NonParticipating),  "Outstation shall not issue or perform the control operation."},
-        { static_cast<unsigned char>(ControlStatus::Undefined),         "Request not accepted because of some other undefined reason."}};
+        { as_underlying(ControlStatus::Success),           "Request accepted, initiated, or queued."},
+        { as_underlying(ControlStatus::Timeout),           "Request not accepted because the operate message was received after the arm timer timed out. The arm timer was started when the select operation for the same point was received."},
+        { as_underlying(ControlStatus::NoSelect),          "Request not accepted because no previous matching select request exists. {An operate message was sent to activate an output that was not previously armed with a matching select message.},"},
+        { as_underlying(ControlStatus::FormatError),       "Request not accepted because there were formatting errors in the control request."},
+        { as_underlying(ControlStatus::NotSupported),      "Request not accepted because a control operation is not supported for this point."},
+        { as_underlying(ControlStatus::AlreadyActive),     "Request not accepted, because the control queue is full or the point is already active."},
+        { as_underlying(ControlStatus::HardwareError),     "Request not accepted because of control hardware problems."},
+        { as_underlying(ControlStatus::Local),             "Request not accepted because Local/Remote switch is in Local position."},
+        { as_underlying(ControlStatus::TooManyObjs),       "Request not accepted because too many objects appeared in the same request."},
+        { as_underlying(ControlStatus::NotAuthorized),     "Request not accepted because of insufficient authorization."},
+        { as_underlying(ControlStatus::AutomationInhibit), "Request not accepted because it was inhibited by a local automation process."},
+        { as_underlying(ControlStatus::ProcessingLimited), "Request not accepted because the device cannot process any more activities than are presently in progress."},
+        { as_underlying(ControlStatus::OutOfRange),        "Request not accepted because the value is outside the acceptable range permitted for this point."},
+        { as_underlying(ControlStatus::NonParticipating),  "Outstation shall not issue or perform the control operation."},
+        { as_underlying(ControlStatus::Undefined),         "Request not accepted because of some other undefined reason."}};
 
 std::string DnpProtocol::getControlResultString( unsigned char result_status )
 {

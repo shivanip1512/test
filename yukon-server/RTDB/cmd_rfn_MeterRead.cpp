@@ -7,6 +7,8 @@
 
 #include "rfn_uom.h"
 
+#include "std_helper.h"
+
 #include <boost/range/algorithm/set_algorithm.hpp>
 #include <boost/range/adaptor/indexed.hpp>
 
@@ -38,6 +40,11 @@ RfnMeterReadCommand::RfnMeterReadCommand(long userMessageId) :
 auto RfnMeterReadCommand::getApplicationServiceId() const -> ASID
 {
     return ASID::ChannelManager;
+}
+
+auto RfnMeterReadCommand::getPriorityClass() const -> Messaging::Rfn::PriorityClass
+{
+    return Messaging::Rfn::PriorityClass::MeterRead;
 }
 
 std::string RfnMeterReadCommand::getCommandName() const

@@ -205,10 +205,9 @@ BOOST_AUTO_TEST_CASE(test_control_connect_arm)
     BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
     BOOST_CHECK_EQUAL(commandResults[0].description, 
         "RFN Meter Disconnect - Arm for resume:"
-        "\nResults:"
         "\nUser message ID : 11235"
-        "\nReply type      : 0"
-        "\nStatus          : 3");
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 3 - ARMED");
     BOOST_CHECK_EQUAL(commandResults[0].status, 0);
     BOOST_CHECK(commandResults[0].points.empty());
 }
@@ -259,15 +258,14 @@ BOOST_AUTO_TEST_CASE(test_control_connect)
     BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
     BOOST_CHECK_EQUAL(commandResults[0].description, 
         "RFN Meter Disconnect - Resume immediately:"
-        "\nResults:"
         "\nUser message ID : 11235"
-        "\nReply type      : 0"
-        "\nStatus          : 1");
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 1 - CONNECTED");
     BOOST_CHECK_EQUAL(commandResults[0].status, 0);
     BOOST_CHECK(commandResults[0].points.empty());
 }
 
-BOOST_AUTO_TEST_CASE(test_control_disconnect)
+BOOST_AUTO_TEST_CASE(test_control_disconnect_failure)
 {
     test_RfnResidentialDevice dut;
 
@@ -302,6 +300,62 @@ BOOST_AUTO_TEST_CASE(test_control_disconnect)
     BOOST_CHECK_EQUAL(rcv, exp);
 
     const std::vector<unsigned char> response {
+            0x81, //  Response command
+            0x01, //  Echoed action (Terminate)
+            0x01, //  Command status (Failure)
+            0x02, //  TLV type 2 (Meter failure)
+            0x01, //  TLV length 1
+            0x06
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Terminate service:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 1 - FAILURE"
+        "\nStatus          : 0 - UNKNOWN"
+        "\nDetails         : Meter failure 6 - Command rejected because service disconnect is not enabled.");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_control_disconnect)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control disconnect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Terminate service");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x80, 0x01 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector<unsigned char> response{
             0x81, //  Response 
             0x01, //  Command type
             0x00, //  Success
@@ -311,12 +365,11 @@ BOOST_AUTO_TEST_CASE(test_control_disconnect)
     const auto commandResults = command->handleResponse(CtiTime::now(), response);
 
     BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
-    BOOST_CHECK_EQUAL(commandResults[0].description, 
+    BOOST_CHECK_EQUAL(commandResults[0].description,
         "RFN Meter Disconnect - Terminate service:"
-        "\nResults:"
         "\nUser message ID : 11235"
-        "\nReply type      : 0"
-        "\nStatus          : 2");
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 2 - DISCONNECTED");
     BOOST_CHECK_EQUAL(commandResults[0].status, 0);
     BOOST_CHECK(commandResults[0].points.empty());
 }
@@ -367,10 +420,9 @@ BOOST_AUTO_TEST_CASE(test_getstatus_disconnect)
     BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
     BOOST_CHECK_EQUAL(commandResults[0].description, 
         "RFN Meter Disconnect - Query:"
-        "\nResults:"
         "\nUser message ID : 11235"
-        "\nReply type      : 0"
-        "\nStatus          : 7");
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 7 - CONNECTED_CYCLING_ACTIVE");
     BOOST_CHECK_EQUAL(commandResults[0].status, 0);
     BOOST_CHECK(commandResults[0].points.empty());
 }
