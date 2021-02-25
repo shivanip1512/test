@@ -202,7 +202,7 @@ public class GatewayListController {
 
         @Override
         public String getFormatKey() {
-            return "yukon.web.modules.operator.gateways.certificateUpdates." + name();
+            return "yukon.web.modules.operator.gateways.manageCertificates." + name();
         }
     }
 

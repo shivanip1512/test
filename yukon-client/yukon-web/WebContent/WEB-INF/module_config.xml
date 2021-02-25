@@ -1320,7 +1320,7 @@
                     <page name="gateways.manageFirmware" type="BASIC">
                         <link>/stars/gateways/manageFirmware</link>
                     </page>
-                    <page name="gateways.certificateUpdates" type="BASIC">
+                    <page name="gateways.manageCertificates" type="BASIC">
                         <link>/stars/gateways/manageCertificates</link>
                     </page>
                 </pages>

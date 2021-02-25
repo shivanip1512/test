@@ -54,15 +54,15 @@
     <entry key="yukon.web.modules.operator.gateways.manageFirmware.SUCCESSFUL">Successful</entry>
 
     <!-- Certificate Updates -->
-    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.pageName">Manage Certificates</entry>
-    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.cert.update.label">Update Certificate</entry>
-    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.cert.updates.none">No certificate updates</entry>
-    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.cert.update.more"> and {0} more...</entry>
-    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.TIMESTAMP">Timestamp</entry>
-    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.PENDING">Pending</entry>
-    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.FAILED">Failed</entry>
-    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.SUCCESSFUL">Successful</entry>
-    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.CERTIFICATE">Certificate</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.pageName">Manage Certificates</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.cert.update.label">Update Certificate</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.cert.updates.none">No certificate updates</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.cert.update.more"> and {0} more...</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.TIMESTAMP">Timestamp</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.PENDING">Pending</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.FAILED">Failed</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.SUCCESSFUL">Successful</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.CERTIFICATE">Certificate</entry>
     
     <!-- Certificate Updates Popup-->
     <entry key="yukon.web.modules.operator.gateways.cert.update.noGatewaySelected">Please select a Gateway.</entry>
