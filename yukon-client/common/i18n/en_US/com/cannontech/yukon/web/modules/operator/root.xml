@@ -43,7 +43,7 @@
     <entry key="yukon.web.modules.operator.gateways.list.downloadNetworkWarning">Network Information download may take several minutes. Please allow time for download to complete.</entry>
 
     <!-- Manage Firmware -->
-    <entry key="yukon.web.modules.operator.gateways.manageFirmware.pageName">Firmware Updates</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageFirmware.pageName">Manage Firmware</entry>
     <entry key="yukon.web.modules.operator.gateways.manageFirmware.updateServer.set">Set Update Servers</entry>
     <entry key="yukon.web.modules.operator.gateways.manageFirmware.firmwareUpdate">Update Firmware Version</entry>
     <entry key="yukon.web.modules.operator.gateways.manageFirmware.firmwareUpdate.confirmMultiple">This will update {0} gateway(s) using {1} server(s).</entry>
@@ -54,8 +54,8 @@
     <entry key="yukon.web.modules.operator.gateways.manageFirmware.SUCCESSFUL">Successful</entry>
 
     <!-- Certificate Updates -->
-    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.pageName">Certificate Updates</entry>
-    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.cert.update.label">Certificate Update</entry>
+    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.pageName">Manage Certificates</entry>
+    <entry key="yukon.web.modules.operator.gateways.certificateUpdates.cert.update.label">Update Certificate</entry>
     <entry key="yukon.web.modules.operator.gateways.certificateUpdates.cert.updates.none">No certificate updates</entry>
     <entry key="yukon.web.modules.operator.gateways.certificateUpdates.cert.update.more"> and {0} more...</entry>
     <entry key="yukon.web.modules.operator.gateways.certificateUpdates.TIMESTAMP">Timestamp</entry>
