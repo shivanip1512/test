@@ -69,7 +69,6 @@ public class EimJavaLibraryTest {
         "h2-1.4.178.jar",
         "hamcrest-core-1.3.jar",
         "itext.jar",
-        "jackson-datatype-joda-2.10.1.jar",
         "jasper-el.jar",
         "jasper.jar",
         "jaspic-api.jar",
