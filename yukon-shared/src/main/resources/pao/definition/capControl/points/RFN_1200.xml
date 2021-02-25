@@ -64,4 +64,9 @@
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Outage Status"/>
     </point>
+    <point offset="102" type="Status">
+        <name>Ultra Capacitor Bad</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
 </points>
