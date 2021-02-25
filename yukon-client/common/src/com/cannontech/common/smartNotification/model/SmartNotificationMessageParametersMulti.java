@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * Contains one to many related SmartNotificationMessageParameters objects.
  */
@@ -61,7 +64,11 @@ public class SmartNotificationMessageParametersMulti implements Serializable {
     
     @Override
     public String toString() {
-        return "SmartNotificationMessageParametersMulti[sendAllInOneEmail=" + sendAllInOneEmail + " event total="
-            + messageParameters.size() + "]";
+        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        tsb.appendSuper(super.toString());
+        tsb.append("sendAllInOneEmail", sendAllInOneEmail);
+        tsb.append("intervalMinutes", intervalMinutes);
+        tsb.append("messageParameters", messageParameters);
+        return tsb.toString();
     }
 }

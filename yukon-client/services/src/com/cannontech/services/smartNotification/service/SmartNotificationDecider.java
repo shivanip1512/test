@@ -14,6 +14,8 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +44,7 @@ public abstract class SmartNotificationDecider implements MessageListener {
     
     protected SmartNotificationEventType eventType;
     
-    private static final Logger log = YukonLogManager.getLogger(SmartNotificationDecider.class);
+    private static Logger commsLogger = YukonLogManager.getCommsLogger();
     private WaitTime waitTime;
 
     public boolean isScheduledToRunInTheFuture(){
@@ -50,10 +52,9 @@ public abstract class SmartNotificationDecider implements MessageListener {
     }
         
     @PostConstruct
-    private void processOnStartup() {
-        logInfo("Starting Smart Notification Event Decider");        
+    private void processOnStartup() {     
         List<SmartNotificationEvent> events = eventDao.getUnprocessedEvents(eventType);
-        logInfo("Processing " + events.size() + " Smart Notification Events");
+        deciderService.logInfo("on start-up processing events:" + events.size(), this);
         if (!events.isEmpty()) {
             ProcessorResult result = process(Instant.now(), events);
             deciderService.send(result);
@@ -66,14 +67,6 @@ public abstract class SmartNotificationDecider implements MessageListener {
     public void resetWaitTime(){
         waitTime = null;
     }
-    
-    private void logDebug(String text) {
-        log.debug(deciderService.getLogMsg(text, this));
-    }
-    
-    private void logInfo(String text) {
-        log.info(deciderService.getLogMsg(text, this));
-    }
 
     /**
      *  Returns events that can be processed. Marks events that can't be processed.
@@ -83,7 +76,8 @@ public abstract class SmartNotificationDecider implements MessageListener {
             List<SmartNotificationEvent> validEvents = validate(events);
             if (validEvents.isEmpty()) {
                 eventDao.markEventsAsProcessed(events, now, COALESCING, IMMEDIATE);
-                logDebug(events.size() + " events invalid because monitors or devices do not exist. Marked events as processed.");
+                deciderService.logInfo(events.size()
+                        + " events invalid because monitors or devices do not exist. Marked events as processed. Events:" + events, this);
                 // no events to process
                 return null;
             } else {
@@ -103,8 +97,9 @@ public abstract class SmartNotificationDecider implements MessageListener {
                 eventsWithoutSubscriptions.removeAll(immediate.values());
                 if (!eventsWithoutSubscriptions.isEmpty()) {
                     eventDao.markEventsAsProcessed(eventsWithoutSubscriptions, now, COALESCING, IMMEDIATE);
-                    logDebug(
-                        eventsWithoutSubscriptions.size() + " events that have no subscriptions or already processed.");
+                    deciderService.logInfo(eventsWithoutSubscriptions.size() +
+                            " events that have no subscriptions or already processed. Marked events as processed. Events:"
+                            + eventsWithoutSubscriptions, this);
                 }
                 if (coalescing.isEmpty() && immediate.isEmpty()) {
                     // no events to process
@@ -131,8 +126,8 @@ public abstract class SmartNotificationDecider implements MessageListener {
         if (!coalescing.isEmpty()) {
             if (isScheduledToRunInTheFuture()) {
                 result.setReschedule(false);
-                log.debug(eventType + " Unable to process " + Sets.newHashSet(coalescing.values()).size()
-                    + " events. The events will be processed at " + waitTime);
+                deciderService.logInfo("unable to process " + Sets.newHashSet(coalescing.values()).size()
+                    + " events. The events will be processed at " + waitTime, result.getDecider());
             } else {
                 if (waitTime == null && deciderService.getFirstInterval() != 0) {
                     // user wants to wait before getting his first notification
@@ -191,15 +186,15 @@ public abstract class SmartNotificationDecider implements MessageListener {
                 object = objMessage.getObject();
                 if (object instanceof SmartNotificationEventMulti) {
                     SmartNotificationEventMulti event = (SmartNotificationEventMulti) object;
-                    log.debug(eventType + " Processing message=" + event);
                     ProcessorResult result = process(Instant.now(), event.getEvents());
+                    deciderService.logInfo("Processing message:" + event + " Processor result:" + result, result.getDecider());
                     deciderService.send(result);
                 }
             }
         } catch (JMSException e) {
-            log.error("Unable to extract message", e);
+            commsLogger.error("Unable to extract message", e);
         } catch (Exception e) {
-            log.error("Unable to process message", e);
+            commsLogger.error("Unable to process message", e);
         }
     }
  
@@ -285,5 +280,17 @@ public abstract class SmartNotificationDecider implements MessageListener {
         public boolean hasMessages() {
             return !messageParameters.isEmpty();
         }
+        
+        @Override
+        public String toString() {
+            ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+            tsb.appendSuper(super.toString());
+            tsb.append("messageParameters", messageParameters);
+            tsb.append("reschedule", reschedule);
+            if(nextRun != null) {
+                tsb.append("nextRun", nextRun);
+            }
+            return tsb.toString();
+        } 
     }
 }

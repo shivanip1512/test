@@ -13,9 +13,10 @@ public interface SmartNotificationDeciderService {
     void send(ProcessorResult result);
 
     /**
-     * Returns log message.
+     * Logs comms info message.
      */
-    String getLogMsg(String text, SmartNotificationDecider decider);
+    
+    void logInfo(String text, Object obj);
 
     /**
      * Returns first interval.
@@ -23,5 +24,7 @@ public interface SmartNotificationDeciderService {
     int getFirstInterval();
 
     void putMessagesOnAssemblerQueue(List<SmartNotificationMessageParameters> messages, int interval, 
-                                     boolean sendAllInOneEmail);
+                                     boolean sendAllInOneEmail, String digestTime);
+
+
 }

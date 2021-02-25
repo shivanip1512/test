@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * A simple container for multiple smart notification events, for use by event producers that tend to produce multiple
  * events all at once.
@@ -29,6 +32,10 @@ public class SmartNotificationEventMulti implements Serializable {
     
     @Override
     public String toString() {
-        return "SmartNotificationMulti [type=" + type + "] "+ events.stream().map(e -> e.toString()).collect(Collectors.toList());
+        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        tsb.appendSuper(super.toString());
+        tsb.append("type", type);
+        tsb.append("events", events);
+        return tsb.toString();
     }
 }

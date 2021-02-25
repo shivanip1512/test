@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -22,7 +23,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 public class SmartNotificationEventCreationServiceImpl implements SmartNotificationEventCreationService {
-    private static final Logger log = YukonLogManager.getLogger(SmartNotificationEventCreationServiceImpl.class);
+    private static Logger commsLogger = YukonLogManager.getCommsLogger();
+    private static Logger log = YukonLogManager.getLogger(SmartNotificationEventCreationServiceImpl.class);
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private Map<SmartNotificationEventType, YukonJmsTemplate> queues;
@@ -60,11 +62,10 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
         if (!events.isEmpty()) {
             executor.execute(() -> {
                 try {
-                    log.debug(type + " Saving Smart Notification events " + events.size());
                     eventsDao.save(type, events);
                     sendEvents(type, events);
                 } catch (Exception e) {
-                    log.error("Exception sending smart notification event", e);
+                    commsLogger.error("Exception sending smart notification event", e);
                 }
             });
         }
@@ -77,13 +78,12 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
     
     private void sendEvents(SmartNotificationEventType type, List<SmartNotificationEvent> events) {
         if (!events.isEmpty()) {
-            if (log.isTraceEnabled()) {
-                for (SmartNotificationEvent event : events) {
-                    log.trace(event);
-                }
-            }
-            log.debug(type + " Sending Smart Notification events " + events.size());
-            queues.get(type).convertAndSend(new SmartNotificationEventMulti(type, events));
+            log.info("See Comms log for details. [SN:SmartNotificationEventCreationServiceImpl:{}] Sending Smart Notification events total:{} {}", type, events.size(), events
+                    .stream().map(event -> event.getEventId())
+                    .collect(Collectors.toList()));
+            SmartNotificationEventMulti msg = new SmartNotificationEventMulti(type, events);
+            commsLogger.info("[SN:SmartNotificationEventCreationServiceImpl:{}] Sending Smart Notification events total:{} {}", type, events.size(), msg);
+            queues.get(type).convertAndSend(msg);
         }
     }
 }
