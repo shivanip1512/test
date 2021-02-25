@@ -73,7 +73,6 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
         builder.add(timestampPattern);
         builder.add(padSide);
         builder.add(maxLength);
-        builder.add(missingAttribute);
         defaultedFieldNames = builder.build();
     }
 
@@ -237,7 +236,7 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                         continue;
                     }
 
-                    if (applicableFieldList.contains(fieldName) && (fieldName.equals(padSide) || fieldName.equals(padChar))) {
+                    if (applicableFieldList.contains(fieldName) && fieldName.equals(padChar)) {
                         if (exportField.getPadSide() != PadSide.NONE && exportField.getPadChar() == null) {
                             if (!errors.hasFieldErrors(padChar)) {
                                 errors.rejectValue(padChar, requiredKey, new Object[] { padChar, type }, "");
@@ -245,8 +244,7 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                         }
                         continue;
                     }
-                    if (applicableFieldList.contains(fieldName)
-                            && (fieldName.equals(missingAttribute) || fieldName.equals(missingAttributeValue))) {
+                    if (applicableFieldList.contains(fieldName) && fieldName.equals(missingAttributeValue)) {
                         if (exportField.getMissingAttribute() == MissingAttribute.FIXED_VALUE
                                 && exportField.getMissingAttributeValue() == null) {
                             if (!errors.hasFieldErrors(missingAttributeValue)) {
@@ -310,9 +308,6 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                 return false;
             }
             if (fieldValue instanceof Integer && Integer.valueOf(fieldValue.toString()) == 0) {
-                return false;
-            }
-            if (fieldValue instanceof MissingAttribute && (MissingAttribute) fieldValue == MissingAttribute.LEAVE_BLANK) {
                 return false;
             }
         }
