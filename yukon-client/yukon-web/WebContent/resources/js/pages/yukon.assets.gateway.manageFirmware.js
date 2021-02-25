@@ -1,7 +1,7 @@
 yukon.namespace('yukon.assets.gateway.manageFirmware');
 
 /**
- * Module that handles the behavior on the gateway manage firmware page (localhost:8080/yukon/stars/gateways/firmwareUpdates).
+ * Module that handles the behavior on the gateway manage firmware page (localhost:8080/yukon/stars/gateways/manageFirmware).
  * @module yukon.assets.gateway.manageFirmware
  * @requires JQUERY
  * @requires MOMENT
