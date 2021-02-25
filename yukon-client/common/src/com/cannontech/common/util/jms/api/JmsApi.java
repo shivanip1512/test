@@ -41,8 +41,10 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
     private final Class<Rq> requestMessage;
     private final Optional<Class<A>> ackMessage;
     private final Optional<Class<Rp>> responseMessage;
-    private final Logger commsLogger;
-    
+    private final boolean isLoggingDisabled;
+    //default logger
+    private Logger commsLogger = YukonLogManager.getCommsLogger();
+
     /**
      * Invoked by the builder.
      */
@@ -59,7 +61,8 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
                    Class<Rq> requestMessage,
                    Class<A> ackMessage,
                    Class<Rp> responseMessage,
-                   Logger logger) {
+                   Logger logger,
+                   boolean isLoggingDisabled) {
         if (name == null || StringUtils.isBlank(name)) {
             throw new IllegalArgumentException("Name must be specified");
         }
@@ -126,11 +129,12 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         this.responseMessage = Optional.ofNullable(responseMessage);
         this.topic = topic;
         this.timeToLive = timeToLive;
-        if (logger == null) {
-            //default logger
-            this.commsLogger = YukonLogManager.getCommsLogger();
-        } else {
+        this.isLoggingDisabled = isLoggingDisabled;
+        if (logger != null) {
             this.commsLogger = logger;
+        }
+        if (this.isLoggingDisabled) {
+            this.commsLogger = null;
         }
     }
     
@@ -369,6 +373,7 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         private Class<A> ackMessage;
         private Class<Rp> responseMessage;
         private Logger logger;
+        private boolean isLoggingDisabled;
         
         public static <Rq extends Serializable,A extends Serializable,Rp extends Serializable> Builder<Rq,A,Rp> get() {
             return new Builder<>();
@@ -376,7 +381,7 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         
         public JmsApi<Rq,A,Rp> build() {
             return new JmsApi<>(name, description, topic, timeToLive, pattern, senders, receivers, queue, ackQueue, responseQueue,
-                    requestMessage, ackMessage, responseMessage, logger);
+                    requestMessage, ackMessage, responseMessage, logger, isLoggingDisabled);
         }
         
         public Builder<Rq,A,Rp> name(String name) {
@@ -452,6 +457,11 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         
         public Builder<Rq,A,Rp> logger(Logger logger) {
             this.logger = logger;
+            return this;
+        }
+        
+        public Builder<Rq,A,Rp> disableLogging() {
+            isLoggingDisabled = true;
             return this;
         }
     }

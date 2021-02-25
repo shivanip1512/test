@@ -80,6 +80,9 @@ public abstract class ThriftRequestReplyTemplateBase<Q extends Serializable, T e
      * Adds an entry in rfnLogger
      */
     private void log(String text) {
+        if(commsLogger == null) {
+            return;
+        }
         if (!isDebugLog && commsLogger.isInfoEnabled()) {
             commsLogger.info(text);
         } else if (isDebugLog && commsLogger.isDebugEnabled()) {
