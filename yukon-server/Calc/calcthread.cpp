@@ -170,9 +170,9 @@ void CtiCalculateThread::periodicThread( void )
                 tempTime = CtiTime( );
 
                 Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::milliseconds(250));
-            }
 
-            _periodicThreadFunc.waitForResume();
+                _periodicThreadFunc.waitForResume();
+            }
 
             now = clock( );
 
@@ -286,10 +286,10 @@ void CtiCalculateThread::onUpdateThread( void )
                 }
 
                 Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::milliseconds(250));
+
+                _onUpdateThreadFunc.waitForResume();
             }
             while( _auAffectedPoints.empty() );
-
-            _onUpdateThreadFunc.waitForResume();
 
             auto pChg = std::make_unique<CtiMultiMsg>();
             pointsInMulti = FALSE;
@@ -495,6 +495,8 @@ void CtiCalculateThread::historicalThread( void )
 
                 //Historical doesnt do much most of the time, it can sleep for several seconds
                 Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::seconds(2));
+
+                _historicalThreadFunc.waitForResume();
             }
             while( now < nextCalcTime );
 
@@ -902,6 +904,8 @@ void CtiCalculateThread::baselineThread( void )
 
                 //baseline doesnt do much almost all of the time, it can sleep for as long as we can wait on shutdown
                 Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::seconds(2));
+
+                _baselineThreadFunc.waitForResume();
             }
             while( !(now >= nextCalcTime) );
 
@@ -1341,16 +1345,33 @@ void CtiCalculateThread::pauseThreads()
             << ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
 
         _onUpdateThreadFunc.pause();
+        while ( ! _onUpdateThreadFunc.isWaiting() )
+        {
+            // spin until the thread hits the waitForResume()...  then we know for sure that we've paused
+        }
+
         _periodicThreadFunc.pause();
+        while ( ! _periodicThreadFunc.isWaiting() )
+        {
+            // spin until the thread hits the waitForResume()...  then we know for sure that we've paused
+        }
 
         if (_historicalThreadFunc.isRunning())
         {
             _historicalThreadFunc.pause();
+            while ( ! _historicalThreadFunc.isWaiting() )
+            {
+                // spin until the thread hits the waitForResume()...  then we know for sure that we've paused
+            }
         }
 
         if( _runCalcBaseline )
         {
             _baselineThreadFunc.pause();
+            while ( ! _baselineThreadFunc.isWaiting() )
+            {
+                // spin until the thread hits the waitForResume()...  then we know for sure that we've paused
+            }
         }
     }
     catch(...)
