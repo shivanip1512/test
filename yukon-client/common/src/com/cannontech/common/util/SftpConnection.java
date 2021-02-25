@@ -11,10 +11,10 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.Selectors;
-import org.apache.commons.vfs2.VFS;
+import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
+import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.logging.log4j.core.Logger;
 
@@ -27,7 +27,7 @@ import com.cannontech.clientutils.YukonLogManager;
  */
 public class SftpConnection implements AutoCloseable {
     private static final Logger log = YukonLogManager.getLogger(SftpConnection.class);
-    private final FileSystemManager manager = VFS.getManager();
+    private final StandardFileSystemManager manager = new StandardFileSystemManager();
     private final String domainPort;
     private final FileSystemOptions fsOptions = new FileSystemOptions();
     private final String username;
@@ -37,6 +37,8 @@ public class SftpConnection implements AutoCloseable {
     public SftpConnection(String domain, String port, Optional<YukonHttpProxy> proxy, String username, String password, 
                        String privateKey) throws IOException {
         
+        manager.init();
+
         // Save the connection info
         if (StringUtils.isEmpty(port)) {
             log.debug("Initializing connection with default port (22)");
@@ -97,6 +99,7 @@ public class SftpConnection implements AutoCloseable {
     
     @Override
     public void close() {
+        ((DefaultFileSystemManager) manager).close();
         if (privateKeyFile != null) {
             try {
                 Files.delete(privateKeyFile.toPath());
