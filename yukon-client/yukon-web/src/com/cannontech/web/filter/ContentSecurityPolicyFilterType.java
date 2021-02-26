@@ -49,7 +49,8 @@ public enum ContentSecurityPolicyFilterType {
         + "http://localhost:3000 "
         + "https://www.google.com "             // Recaptcha
         + "http://www.google.com ; "),          // Recaptcha
-    FRAME_ANCESTORS("frame-ancestors 'self' ;"),
+    FRAME_ANCESTORS("frame-ancestors 'self' "
+            + "http://localhost:3000 ; "),
     FORM_ACTION("form-action 'self' "
         + "https://export.highcharts.com ; "),
     ;
