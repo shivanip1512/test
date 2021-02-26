@@ -78,7 +78,7 @@ public class GatewayListController {
     public String firmwareDetails(ModelMap model) {
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         model.addAttribute("dataExists", gateways.stream().anyMatch(gateway -> (gateway.getData() != null)));
-        return "gateways/firmwareUpdates.jsp";
+        return "gateways/manageFirmware.jsp";
     }
 
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
@@ -92,7 +92,7 @@ public class GatewayListController {
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @GetMapping("/gateways/manageCertificates")
     public String certificateUpdates() {
-        return "gateways/certificateUpdates.jsp";
+        return "gateways/manageCertificates.jsp";
     }
 
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
