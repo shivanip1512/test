@@ -387,6 +387,9 @@ public class MeterController {
         else if (meter.getType().isPlc()) {
             model.addAttribute("showCarrierSettings", true);
         }
+        if (meter.getType().isIed()) {
+            model.addAttribute("showCommChannel", true);
+        }
     }
 
     @RequestMapping(value="save", method=RequestMethod.POST)

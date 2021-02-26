@@ -304,7 +304,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public SimpleDevice getYukonDeviceObjectByName(String name) {
         ImmutableSet<PaoClass> allowedClasses =
-            ImmutableSet.of(PaoClass.CARRIER, PaoClass.METER, PaoClass.IED, PaoClass.RFMESH, PaoClass.THERMOSTAT);
+            ImmutableSet.of(PaoClass.CARRIER, PaoClass.METER, PaoClass.IED, PaoClass.RFMESH, PaoClass.THERMOSTAT, PaoClass.VIRTUAL);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAO.PAObjectId, PAO.Type");

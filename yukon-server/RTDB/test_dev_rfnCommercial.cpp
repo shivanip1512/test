@@ -687,6 +687,8 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
 
         { PI::Key_RFN_RecordingIntervalSeconds,  7200 },
         { PI::Key_RFN_ReportingIntervalSeconds, 86400 },
+
+        { PI::Key_RFN_MetrologyLibraryEnabled, false },
     };
 
     BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries[-1].size(), std::size(dpiExpected));

@@ -26,10 +26,6 @@
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
             <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" icon="icon-plus-green" data-popup-title="${popupTitle}"/>
         </cti:checkRolesAndProperties>
-        <!--  Meter Copy Button -->
-        <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
-            <cm:dropdownOption key="yukon.web.modules.amr.copy" classes="js-copy-meter" icon="icon-disk-multiple" data-popup-title="${copyTitle}"/>
-        </cti:checkRolesAndProperties>
         <!-- Delete Meter Button -->
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
             <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" icon="icon-cross"  

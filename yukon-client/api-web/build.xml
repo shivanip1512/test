@@ -93,7 +93,7 @@
         <include name="org.osgi.core-4.1.0.jar"/>
         <include name="quartz-2.3.2.jar"/>
         <include name="saaj.jar"/>
-        <include name="slf4j-api-1.7.25.jar"/>
+        <include name="slf4j-api-1.7.30.jar"/>
         <include name="slf4j-api-1.8.0-alpha2.jar"/>
         <include name="log4j-slf4j-impl-2.14.0.jar"/>
         <include name="spring-xml-3.0.10.RELEASE.jar"/>
@@ -124,7 +124,8 @@
         <include name="itronReportManagerTypes_v1_2.jar"/>
         <include name="itronServicePointManagerTypes_v1_3.jar"/>
         <include name="commons-compress-1.19.jar"/>
-    	<include name="opencsv-4.5.jar"/>
+        <include name="opencsv-4.5.jar"/>
+        <include name="jackson-datatype-joda-2.10.1.jar"/>
     </fileset>
 
     <target name="compile">

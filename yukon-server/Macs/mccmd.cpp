@@ -1153,6 +1153,7 @@ bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
                     string entry (workString);
                     aCmdVector.push_back (entry);
                 }
+                fclose(fromfileptr);
             }
 
             // loop the vector and append to the file
@@ -1184,7 +1185,6 @@ bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
             }
 
             CloseHandle (toFileHandle);
-            fclose(fromfileptr);
             DeleteFile (fromFileName.c_str());
         }
     }
