@@ -79,7 +79,7 @@ yukon.smart.notifications = (function () {
                 event.message = eventMessageSpan.html() + " - " + message;
             }
             
-            event.timestamp = event.timestamp.millis;
+            event.timestamp = event.timestamp.millis ? event.timestamp.millis : event.timestamp;
             //change the timezone if needed
             var row = $('.js-event-' + event.id),
                 timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
