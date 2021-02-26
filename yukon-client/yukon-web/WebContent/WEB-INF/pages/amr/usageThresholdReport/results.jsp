@@ -63,7 +63,7 @@
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".primaryGateway">
                          <cti:msg2 var="gatewayPlaceholder" key="yukon.web.modules.amr.usageThresholdReport.results.dataAvailability.selectGateways"/>
-                        <select name="selectedGatewayIds" class="js-primary-gateway-select" multiple="multiple" data-placeholder="${gatewayPlaceholder}">
+                        <select name="selectedGatewayIds" class="js-primary-gateway-select w300" multiple="multiple" data-placeholder="${gatewayPlaceholder}" size="1">
                             <c:forEach var="gateway" items="${gateways}">
                                 <c:set var="checked" value=""/>
                                 <c:forEach var="selectedGateway" items="${selectedGateways}">
