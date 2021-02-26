@@ -237,20 +237,26 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                     }
 
                     if (applicableFieldList.contains(fieldName) && fieldName.equals(padChar)) {
-                        if (exportField.getPadSide() != PadSide.NONE && exportField.getPadChar() == null) {
-                            if (!errors.hasFieldErrors(padChar)) {
+                        // If padSide is not NONE, padChar is required else it is not applicable.
+                        if (exportField.getPadSide() != PadSide.NONE) {
+                            if (exportField.getPadChar() == null && !errors.hasFieldErrors(padChar)) {
                                 errors.rejectValue(padChar, requiredKey, new Object[] { padChar, type }, "");
                             }
+                        } else if (exportField.getPadChar() != null) {
+                            errors.rejectValue(padChar, notApplicableKey, new Object[] { padChar, type }, "");
                         }
                         continue;
                     }
                     if (applicableFieldList.contains(fieldName) && fieldName.equals(missingAttributeValue)) {
-                        if (exportField.getMissingAttribute() == MissingAttribute.FIXED_VALUE
-                                && exportField.getMissingAttributeValue() == null) {
-                            if (!errors.hasFieldErrors(missingAttributeValue)) {
+                        // If missingAttribute is FIXED_VALUE, missingAttributeValue is required else it is not applicable.
+                        if (exportField.getMissingAttribute() == MissingAttribute.FIXED_VALUE) {
+                            if (exportField.getMissingAttributeValue() == null && !errors.hasFieldErrors(missingAttributeValue)) {
                                 errors.rejectValue(missingAttributeValue, requiredKey,
                                         new Object[] { missingAttributeValue, type }, "");
                             }
+                        } else if (exportField.getMissingAttributeValue() != null) {
+                            errors.rejectValue(missingAttributeValue, notApplicableKey,
+                                    new Object[] { missingAttributeValue, type }, "");
                         }
                         continue;
                     }
