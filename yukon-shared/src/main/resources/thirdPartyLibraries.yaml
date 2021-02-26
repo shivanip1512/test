@@ -2457,18 +2457,18 @@ Java :
     jira : YUK-23077
     notes : Tomcat Servlet API
   
-  - filename : slf4j-api-1.7.25.jar
+  - filename : slf4j-api-1.7.30.jar
     yukon group : Log4j
     project : Simple Logging Facade for Java API
-    version : 1.7.25
+    version : 1.7.30
     project URL : "https://www.slf4j.org/"
     license : MIT
     license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/org.slf4j/slf4j-api/1.7.25"
-    md5 : caafe376afb7086dcbee79f780394ca3
-    sha1 : da76ca59f6a57ee3102f8f9bd9cee742973efa8a
-    updated : 2018-04-25
-    jira : YUK-18100
+    maven URL : "https://mvnrepository.com/artifact/org.slf4j/slf4j-api/1.7.30"
+    md5 : f8be00da99bc4ab64c79ab1e2be7cb7c
+    sha1 : b5a4b6d16ab13e34a88fae84c35cd5d68cac922c
+    updated : 2021-02-24
+    jira : YUK-23771
     notes : 
   
   
