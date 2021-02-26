@@ -287,8 +287,7 @@ bool CtiLMProgramDirect::getIsRampingIn()
     {
         CTILOG_ERROR(dout, "no current gear found!?");
     }
-
-    if( gear->getRampInInterval() == 0 || gear->getRampInPercent() == 0 )
+    else if( gear->getRampInInterval() == 0 || gear->getRampInPercent() == 0 )
     {
         // The current gear doesn't ramp in, no way we can be ramping in
         return false;
@@ -320,15 +319,17 @@ bool CtiLMProgramDirect::getIsRampingOut()
     {
         CTILOG_ERROR(dout, "no current gear found!?");
     }
-
-    const string& stop_type = gear->getMethodStopType();
-    if( !(stop_type == CtiLMProgramDirectGear::RampOutRandomStopType ||
-          stop_type == CtiLMProgramDirectGear::RampOutFIFOStopType ||
-          stop_type == CtiLMProgramDirectGear::RampOutRandomRestoreStopType ||
-          stop_type == CtiLMProgramDirectGear::RampOutFIFORestoreStopType) )
+    else
     {
-        // The current gear doesn't ramp out, no way we can be ramping out
-        return false;
+        const string& stop_type = gear->getMethodStopType();
+        if( !(stop_type == CtiLMProgramDirectGear::RampOutRandomStopType ||
+              stop_type == CtiLMProgramDirectGear::RampOutFIFOStopType ||
+              stop_type == CtiLMProgramDirectGear::RampOutRandomRestoreStopType ||
+              stop_type == CtiLMProgramDirectGear::RampOutFIFORestoreStopType) )
+        {
+            // The current gear doesn't ramp out, no way we can be ramping out
+            return false;
+        }
     }
 
     // OK, the gear has ramp out set up, are any of our groups
