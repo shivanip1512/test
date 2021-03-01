@@ -243,15 +243,19 @@ public class GatewayUpdateServerController {
         }
         String versionString = gateway.getData().getReleaseVersion();
         log.debug("Release version: " + versionString);
-        GatewayFirmwareVersion minimumSupportedFirmwareVersion = null;
+        if (versionString == null) {
+            return false;
+        }
+        
         try {
             GatewayFirmwareVersion version = GatewayFirmwareVersion.parse(versionString);
-            Map<PaoType, GatewayFirmwareVersion> minimumUpgradeVersions = Map.of(
-                    PaoType.VIRTUAL_GATEWAY, new GatewayFirmwareVersion(9, 2, 0),
-                    PaoType.GWY800, new GatewayFirmwareVersion(6, 1, 0),
-                    PaoType.RFN_GATEWAY, new GatewayFirmwareVersion(6, 1, 1));
 
-            minimumSupportedFirmwareVersion = minimumUpgradeVersions.get(gateway.getPaoIdentifier().getPaoType());
+            GatewayFirmwareVersion minimumSupportedFirmwareVersion = 
+                    GatewayFirmwareVersion.getMinimumUpgradeVersion(gateway.getPaoIdentifier().getPaoType());
+            if (minimumSupportedFirmwareVersion == null) {
+                log.error("Unsupported gateway PaoType: " + gateway.getPaoIdentifier().getPaoType());
+                return false;
+            }
             log.debug("Minimum supported firmware version for upgrade: " + minimumSupportedFirmwareVersion);
             int compare = version.compareTo(minimumSupportedFirmwareVersion);
             boolean isUpgradeable = compare >= 0;

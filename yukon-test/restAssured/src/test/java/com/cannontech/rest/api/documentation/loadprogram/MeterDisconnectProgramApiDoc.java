@@ -3,27 +3,22 @@ package com.cannontech.rest.api.documentation.loadprogram;
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
@@ -46,45 +41,16 @@ public class MeterDisconnectProgramApiDoc {
     private Integer programId = null;
     private Integer copyProgramId = null;
     private FieldDescriptor[] meterDisconnectGearFieldDescriptor = null;
+    private List<FieldDescriptor> meterDisconnectProgramFieldDescriptor = null;
+    private MockLoadProgram subOrdinateLoadProgram = null;
 
     @BeforeMethod
     public void setUp(Method method) {
         baseURI = ApiCallHelper.getProperty("baseURI");
         this.restDocumentation.beforeTest(getClass(), method.getName());
         this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
-        meterDisconnectGearFieldDescriptor = new FieldDescriptor[] {
-                fieldWithPath("programId").type(JsonFieldType.NUMBER).optional().description("Load Program Id"),
-                fieldWithPath("name").type(JsonFieldType.STRING).description("Load Program Name"),
-                fieldWithPath("type").type(JsonFieldType.STRING).description("Load Program Type"),
-                fieldWithPath("operationalState").type(JsonFieldType.STRING).description("Load Program Operational State"),
-                fieldWithPath("constraint.constraintId").type(JsonFieldType.NUMBER).description("Constraint Id"),
-                fieldWithPath("triggerOffset").type(JsonFieldType.NUMBER).description("Trigger offset. Min Value: 0.0, Max Value: 99999.9999"),
-                fieldWithPath("restoreOffset").type(JsonFieldType.NUMBER).description("Restore offset. Min Value: -9999.9999 , Max Value: 99999.9999"),
-
-                fieldWithPath("gears[].gearName").type(JsonFieldType.STRING).description("Gear Name"),
-                fieldWithPath("gears[].gearNumber").type(JsonFieldType.NUMBER).description("Gear Number"),
-                fieldWithPath("gears[].controlMethod").type(JsonFieldType.STRING).description("Gear Type"),
-
-                fieldWithPath("controlWindow.controlWindowOne.availableStartTimeInMinutes").type(JsonFieldType.NUMBER)
-                                                                                           .description("Available Start Time In Minutes"),
-                fieldWithPath("controlWindow.controlWindowOne.availableStopTimeInMinutes").type(JsonFieldType.NUMBER)
-                                                                                          .description("Available Stop Time In Minutes"),
-                fieldWithPath("controlWindow.controlWindowTwo.availableStartTimeInMinutes").type(JsonFieldType.NUMBER)
-                                                                                           .description("Available Start Time In Minutes"),
-                fieldWithPath("controlWindow.controlWindowTwo.availableStopTimeInMinutes").type(JsonFieldType.NUMBER)
-                                                                                          .description("Available Stop Time In Minutes"),
-
-                fieldWithPath("assignedGroups[].groupId").type(JsonFieldType.NUMBER).description("Assigned Load Group Id"),
-                fieldWithPath("assignedGroups[].groupName").type(JsonFieldType.STRING).description("Assigned Load Group Name"),
-                fieldWithPath("assignedGroups[].type").type(JsonFieldType.STRING).description("Assigned Load Group Type"),
-
-                fieldWithPath("notification.notifyOnAdjust").type(JsonFieldType.BOOLEAN).description("Notify on Adjust"),
-                fieldWithPath("notification.enableOnSchedule").type(JsonFieldType.BOOLEAN).description("Enable on schedule"),
-                fieldWithPath("notification.assignedNotificationGroups[]").type(JsonFieldType.ARRAY).description("Assigned Notification groups"),
-                fieldWithPath("notification.assignedNotificationGroups[].notificationGrpID").type(JsonFieldType.NUMBER).description("Assigned Notification Id"),
-                fieldWithPath("notification.assignedNotificationGroups[].notificationGrpName").type(JsonFieldType.STRING)
-                                                                                              .description("Assigned Notification Group Name") };
-
+        meterDisconnectGearFieldDescriptor =  new FieldDescriptor[] {};
+        meterDisconnectProgramFieldDescriptor = LoadProgramSetupHelper.mergeProgramFieldDescriptors(meterDisconnectGearFieldDescriptor);
     }
 
     @AfterMethod
@@ -99,8 +65,8 @@ public class MeterDisconnectProgramApiDoc {
     public void meterDisconnectAssignedLoadGroup_Create(ITestContext context) {
 
         MockLoadGroupBase loadGroupDisconnect = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_METER_DISCONNECT);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupDisconnect);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroupDisconnect);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
 
         List<MockLoadGroupBase> loadGroups = new ArrayList<>();
         Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
@@ -116,12 +82,12 @@ public class MeterDisconnectProgramApiDoc {
     @Test(dependsOnMethods = { "meterDisconnectAssignedLoadGroup_Create" })
     public void programConstraint_Create(ITestContext context) {
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, constraintId);
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
         assertTrue("Constraint Id should not be Null", constraintId != null);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
     }
 
     /**
@@ -139,21 +105,21 @@ public class MeterDisconnectProgramApiDoc {
                                                                                  gearTypes,
                                                                                  (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(meterDisconnectGearFieldDescriptor),
+                                                                     requestFields(meterDisconnectProgramFieldDescriptor),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                                                     .body(loadProgram)
                                                     .when()
-                                                    .post(ApiCallHelper.getProperty("saveLoadProgram"))
+                                                    .post(ApiCallHelper.getProperty("loadPrograms"))
                                                     .then()
                                                     .extract()
                                                     .response();
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, loadProgram.getName());
         programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         assertTrue("Program Id should not be Null", programId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        assertTrue("Status code should be 201", response.statusCode() == 201);
     }
 
     /**
@@ -162,16 +128,13 @@ public class MeterDisconnectProgramApiDoc {
      */
     @Test(dependsOnMethods = { "Test_MeterDisconnectProgram_Create" })
     public void Test_MeterDisconnectProgram_Get(ITestContext context) {
-        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(meterDisconnectGearFieldDescriptor));
-        list.add(5, fieldWithPath("constraint.constraintName").type(JsonFieldType.STRING).description("Constraint Name"));
-        list.add(8, fieldWithPath("gears[].gearId").type(JsonFieldType.NUMBER).description("Gear Id"));
-        list.add(18, fieldWithPath("assignedGroups[].groupOrder").type(JsonFieldType.NUMBER).description("Group Order"));
+        List<FieldDescriptor> list =  LoadProgramSetupHelper.createFieldDescriptorForGet(meterDisconnectGearFieldDescriptor, 18);
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}", responseFields(list)))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                                                     .when()
-                                                    .get(ApiCallHelper.getProperty("getLoadProgram") + programId)
+                                                    .get(ApiCallHelper.getProperty("loadPrograms") + "/" + programId)
                                                     .then()
                                                     .extract()
                                                     .response();
@@ -190,20 +153,26 @@ public class MeterDisconnectProgramApiDoc {
 
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.MeterDisconnect);
-        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_METER_DISCONNECT_PROGRAM,
+        
+        List<MockGearControlMethod> gearsForsubOrdinateLoadProg = new ArrayList<>();
+        gearsForsubOrdinateLoadProg.add(MockGearControlMethod.NoControl);
+        subOrdinateLoadProgram = LoadProgramSetupHelper.getMemberControlLoadProgram(context, gearsForsubOrdinateLoadProg, MockPaoType.LM_DIRECT_PROGRAM);
+
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramUpdateRequest(MockPaoType.LM_METER_DISCONNECT_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
-                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
+                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID),
+                                                                                 subOrdinateLoadProgram);
 
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(meterDisconnectGearFieldDescriptor),
+                                                                     requestFields(LoadProgramSetupHelper.createFieldDescriptorForUpdate(meterDisconnectGearFieldDescriptor)),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                                                     .body(loadProgram)
                                                     .when()
-                                                    .post(ApiCallHelper.getProperty("updateLoadProgram") + programId)
+                                                    .put(ApiCallHelper.getProperty("loadPrograms") + "/" + programId)
                                                     .then()
                                                     .extract()
                                                     .response();
@@ -230,7 +199,7 @@ public class MeterDisconnectProgramApiDoc {
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                                                     .body(loadProgramCopy)
                                                     .when()
-                                                    .post(ApiCallHelper.getProperty("copyLoadProgram") + programId)
+                                                    .post(ApiCallHelper.getProperty("loadPrograms") + "/" + programId + "/copy")
                                                     .then()
                                                     .extract()
                                                     .response();
@@ -247,21 +216,19 @@ public class MeterDisconnectProgramApiDoc {
      */
     @Test(dependsOnMethods={"Test_MeterDisconnectProgram_Copy"})
     public void Test_MeterDisconnectCopyProgram_Delete(ITestContext context) {
-        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
-                                                                     responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
+                                                                     responseFields(LoadProgramSetupHelper.deleteFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(deleteObject)
                                                     .when()
-                                                    .delete(ApiCallHelper.getProperty("deleteLoadProgram") + copyProgramId)
+                                                    .delete(ApiCallHelper.getProperty("loadPrograms") + "/" + copyProgramId)
                                                     .then()
                                                     .extract()
                                                     .response();
 
         assertTrue("Status code should be 200", response.statusCode() == 200);
+        ApiCallHelper.delete("loadPrograms", "/" + subOrdinateLoadProgram.getProgramId());
     }
 
     /**
@@ -270,16 +237,13 @@ public class MeterDisconnectProgramApiDoc {
      */
     @Test(dependsOnMethods={"Test_MeterDisconnectProgram_Copy"})
     public void Test_MeterDisconnectProgram_Delete(ITestContext context) {
-        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
-                                                                     responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
+                                                                     responseFields(LoadProgramSetupHelper.deleteFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(deleteObject)
                                                     .when()
-                                                    .delete(ApiCallHelper.getProperty("deleteLoadProgram") + programId)
+                                                    .delete(ApiCallHelper.getProperty("loadPrograms") + "/" + programId)
                                                     .then()
                                                     .extract()
                                                     .response();
@@ -296,7 +260,7 @@ public class MeterDisconnectProgramApiDoc {
 
         List<MockLoadGroupBase> groups = (List<MockLoadGroupBase>) context.getAttribute("loadGroups");
         groups.forEach(group -> {
-            ExtractableResponse<?> response = ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            ExtractableResponse<?> response = ApiCallHelper.delete("loadGroups", "/" + group.getId());
             assertTrue("Status code should be 200", response.statusCode() == 200);
         });
 
@@ -307,9 +271,8 @@ public class MeterDisconnectProgramApiDoc {
      */
     @Test(dependsOnMethods={"assignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
-        ExtractableResponse<?> response = ApiCallHelper.delete((Integer)context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID),
-                                                               (String)context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME),
-                                                               "deleteProgramConstraint");
+        ExtractableResponse<?> response = ApiCallHelper.delete("programConstraints", 
+                "/" + (context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID)));
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 }

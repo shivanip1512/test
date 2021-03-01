@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -163,7 +164,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                 DeviceVerificationInfo verificationInfo = infoIterator.next();
                 // find devices that are waiting for verification with the same command request execution id
                 // as execution we are attempting to cancel
-                if (verificationInfo.verificationExecution.getId() == result.getVerificationExecution().getId()) {
+                if (verificationInfo.verificationExecution.getId().equals(result.getVerificationExecution().getId())) {
                     //remove devices from the waiting list
                     infoIterator.remove();
                     //mark devices as canceled
@@ -229,7 +230,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                     // devices will timeout and the code will work correctly.
                     // The exception should not happen. To test: run demand reset on the same group
                     // of devices multiple times with a couple of seconds between each run
-                    log.error(e);
+                    log.error("Error in TimeoutChecker", e);
                 }
             }
         }
@@ -441,7 +442,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                 SimpleDevice device = verificationInfo.getDevice(pointData.getId());
                 if (device != null) {
                     if (pointData.getPointDataTimeStamp() == null) {
-                        log.debug("Point data recieved. Verification failed for device {} with data {}. PointDataTimeStamp is NULL.",
+                        log.debug("Point data received. Verification failed for device {} with data {}. PointDataTimeStamp is NULL.",
                                 device, pointData);
                         callback.failed(device, getError(DeviceError.NO_TIMESTAMP));
                     } else {
@@ -451,13 +452,13 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                                 && resetState == RfnDemandResetState.SUCCESS) {
                             callback.verified(device, pointData);
                             log.debug(
-                                    "Point data recieved device:{} point data: {}. Verified. ResetTime: {} Requested: {} State: {}",
+                                    "Point data received device:{} point data: {}. Verified. ResetTime: {} Requested: {} State: {}",
                                     device, pointData,
                                     timeFormatter.format(resetTime.toDate()),
                                     timeFormatter.format(verificationInfo.whenRequested.toDate()),
                                     resetState);
                         } else {
-                            log.debug("Verification failed. Point data recieved device:{} point data: {}. ResetTime: {} Requested: {} State: {}",
+                            log.debug("Verification failed. Point data received device:{} point data: {}. ResetTime: {} Requested: {} State: {}",
                                     device, pointData,
                                     timeFormatter.format(resetTime.toDate()),
                                     timeFormatter.format(verificationInfo.whenRequested.toDate()), resetState);

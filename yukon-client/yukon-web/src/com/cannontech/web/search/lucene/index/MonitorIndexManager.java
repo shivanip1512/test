@@ -45,7 +45,7 @@ public class MonitorIndexManager extends SimpleIndexManager {
         sql.append("UNION ALL");
         sql.append("SELECT TamperFlagMonitorId AS id,TamperFlagMonitorname AS monitorname,'Tamper Flag' as type FROM TamperFlagMonitor");
         sql.append("UNION ALL");
-        sql.append("SELECT StatusPointMonitorId AS id,StatusPointMonitorName AS monitorname,'Status Point' AS type FROM StatusPointMonitor");
+        sql.append("SELECT StatusPointMonitorId AS id,StatusPointMonitorName AS monitorname,'Outage Notification' AS type FROM StatusPointMonitor");
         sql.append("UNION ALL");
         sql.append("SELECT  MonitorId AS id,Name AS monitorname,'Porter Response' AS type FROM PorterResponseMonitor");
         sql.append("UNION ALL");
@@ -72,7 +72,7 @@ public class MonitorIndexManager extends SimpleIndexManager {
         case "Tamper Flag":
             concatId = TAMPER_FLAG_MONITOR.getPrefix().concat(Integer.toString(id));
             break;
-        case "Status Point":
+        case "Outage Notification":
             concatId = STATUS_POINT_MONITOR.getPrefix().concat(Integer.toString(id));
             break;
         case "Porter Response":

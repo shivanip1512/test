@@ -34,6 +34,16 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DOOR_OPEN.CLEAR">Gateway no longer detecting open door.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_NODE_COUNT_EXCEEDED.LOW">Gateway node count exceeding limit.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_NODE_COUNT_EXCEEDED.CLEAR">Gateway node count is now below limit.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_UPS_BATTERY_VOLTAGE_LOW.LOW">Gateway detecting low voltage on UPS battery.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_UPS_BATTERY_VOLTAGE_LOW.CLEAR">Gateway no longer detecting low voltage on UPS battery.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CERT_EXPIRATION.LOW">Gateway detecting upcoming certificate expiration.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CERT_EXPIRATION.CLEAR">Gateway no longer detecting upcoming certificate expiration.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_HIGH_DISK_USAGE.LOW">Gateway detecting disk usage exceeding 80% availability.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_HIGH_DISK_USAGE.CLEAR">Gateway no longer detecting high disk usage.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RTC_BATTERY_FAILURE.LOW">Gateway detecting RTC battery failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RTC_BATTERY_FAILURE.CLEAR">Gateway no longer detecting RTC battery failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.LOW">Gateway detecting AC power failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.CLEAR">Gateway no longer detecting AC power failure.</entry>
     
     <entry key="yukon.web.widgets.infrastructureWarnings.gateways">Gateways</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.relays">Relays</entry>
@@ -73,7 +83,7 @@
         A summary of the devices with and without warnings will be displayed in the top left corner of the page, along with an option to download all infrastructure warnings.
         <ul>
             <li>
-                <span class="fwb bg-color-pie-green txt-color-white">Devices without warnings (Green)</span> - 
+                <span class="fwb bg-color-green txt-color-white">Devices without warnings (Green)</span> - 
                 Number of devices without any of the below mentioned warning types.
             </li>
             <li>

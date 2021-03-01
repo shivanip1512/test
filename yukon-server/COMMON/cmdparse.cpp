@@ -507,6 +507,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             flag |= CMD_FLAG_GV_USAGE;
         }
+        else if( containsString(CmdStr, " meter_read") )
+        {
+            _cmd["meter_read"] = true;
+        }
         else if(containsString(CmdStr, " lp "))
         {
             if(!(token = matchRegex(CmdStr, re_lp)).empty())
@@ -1157,6 +1161,11 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
         {
             flag |= CMD_FLAG_CTL_CONNECT;
             _snprintf(tbuf, sizeof(tbuf), "CONNECT");
+
+            if( containsString(CmdStr, " arm") )
+            {
+                _cmd["arm"] = true;
+            }
         }
         else if(containsString(CmdStr, " restore"))    // Sourcing from CmdStr, which is the entire command string.
         {

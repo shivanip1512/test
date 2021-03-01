@@ -60,6 +60,9 @@ public class CollectionActionResult {
     private DeviceMemoryCollectionProducer producer;
     private boolean loadedFromDatabase;
 
+    public CollectionActionResult() {
+    }
+
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, CommandRequestExecution execution,
             DeviceGroupMemberEditorDao editorDao, TemporaryDeviceGroupService tempGroupService,
@@ -356,7 +359,13 @@ public class CollectionActionResult {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
+        DateTimeFormatter df = null;
+        if (context != null) {
+            df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss")
+                    .withZone(context.getJodaTimeZone());
+        } else {
+            df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
+        }
         sb.append(getCacheKey());
         sb.append(" [");
         sb.append(getStatus());

@@ -92,7 +92,7 @@ public enum SiteMapPage implements DisplayableEnum {
     FDR_TRANSLATIONS(SiteMapCategory.VV, "yukon.web.modules.tools.bulk.fdrTranslationManagement.pageName", "/bulk/fdrTranslationManager/home",
              MatchStyle.all, YukonRoleProperty.FDR_TRANSLATION_MANAGER),
     DMV_TEST(SiteMapCategory.VV, "yukon.web.menu.vv.dmvTest", "/capcontrol/dmvTestList", 
-             MatchStyle.all, MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED),
+             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS, MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED),
     
     CREATE_ACCOUNT(SiteMapCategory.ASSETS, "yukon.web.modules.operator.account.CREATE.pageName", "/stars/operator/account/accountCreate",
             MatchStyle.all, OtherPermission.EC_OPERATOR, YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD),
@@ -164,7 +164,9 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, OtherPermission.HIDEABLE , YukonRoleProperty.OPERATOR_SURVEY_EDIT),
     DASHBOARDS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.dashboards.pageName", "dashboards/admin",
                MatchStyle.all, OtherPermission.HIDEABLE, YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS),
-
+    ATTRIBUTES(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.attributes.pageName", "/admin/config/attributes",
+               MatchStyle.all, YukonRoleProperty.ADMIN_MANAGE_ATTRIBUTES),
+    
     COMMANDER(SiteMapCategory.TOOLS, "yukon.web.modules.tools.commander.pageHeading", "/tools/commander",
             MatchStyle.all, YukonRoleProperty.ENABLE_WEB_COMMANDER),
     CREATE_BILLING_SCHEDULES(SiteMapCategory.TOOLS, "yukon.web.modules.tools.schedules.home.CREATE.pageDescription", "/group/scheduledGroupRequestExecution/home",
@@ -198,6 +200,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRole.TABULAR_DISPLAY_CONSOLE),
     PAO_NOTE_SEARCH(SiteMapCategory.TOOLS, "yukon.web.modules.tools.paoNotesSearch.pageName", "/tools/paoNotes/search",
         MatchStyle.all),
+    AGGREGATE_INTERVAL_REPORT(SiteMapCategory.TOOLS, "yukon.web.modules.tools.aggregateIntervalReport.pageName", 
+                              "/tools/aggregateIntervalReport/view", MatchStyle.all),
 
     SUPPORT(SiteMapCategory.SUPPORT, "yukon.web.modules.support.support.pageName", "/support",
             MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),

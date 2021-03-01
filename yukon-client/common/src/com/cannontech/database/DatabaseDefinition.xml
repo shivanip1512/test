@@ -252,6 +252,7 @@
         <data name="BackRampOption" />
         <data name="BackRampTime" />
         <data name="KWReduction" />
+        <data name="StopCommandRepeat" />
     </table>
 
     <table name="LMProgramWebPublishing">

@@ -40,6 +40,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.model.RfnGwy800;
+import com.cannontech.common.rfn.model.RfnGwy801;
 import com.cannontech.common.rfn.model.RfnVirtualGateway;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
@@ -62,7 +63,7 @@ public class RfnGatewayServiceTest {
     private final String ipAddress = "123.123.123.123";
     private final String gatewayName = "Test Gateway";
     private final PaoIdentifier gatewayPaoId = new PaoIdentifier(100, PaoType.RFN_GATEWAY);
-    private static final RfnIdentifier gatewayRfnId = new RfnIdentifier("10000", "CPS", "RFGateway");
+    private static final RfnIdentifier gatewayRfnId = new RfnIdentifier("10000", "EATON", "RFGateway");
     
     //Gateway 2.0 data
     private GatewaySettings settings2;
@@ -73,7 +74,7 @@ public class RfnGatewayServiceTest {
     private final String ipAddress2 = "123.123.123.124";
     private final static String gateway2Name = "Test Gateway 2";
     private final PaoIdentifier gateway2PaoId = new PaoIdentifier(101, PaoType.GWY800);
-    private static final RfnIdentifier gateway2RfnId = new RfnIdentifier("10001", "CPS", "RFGateway2");
+    private static final RfnIdentifier gateway2RfnId = new RfnIdentifier("10001", "EATON", "GWY800");
     
     //WIFI Super Meter Virtual Gateway
     private GatewaySettings settings3;
@@ -85,7 +86,18 @@ public class RfnGatewayServiceTest {
     private final Integer port3 = 32035;
     private final static String gateway3Name = "Test Gateway 3";
     private final PaoIdentifier gateway3PaoId = new PaoIdentifier(102, PaoType.VIRTUAL_GATEWAY);
-    private static final RfnIdentifier gateway3RfnId = new RfnIdentifier("10002", "CPS", "VGW");
+    private static final RfnIdentifier gateway3RfnId = new RfnIdentifier("10002", "EATON", "VGW");
+    
+    private GatewaySettings settings4;
+    private Authentication admin4;
+    private Authentication superAdmin4;
+    private Double latitude4 = 5.0;
+    private Double longitude4 = 6.0;
+    private final String ipAddress4 = "123.123.123.126";
+    private final Integer port4 = 32035;
+    private final static String gateway4Name = "Test Gateway 4";
+    private final PaoIdentifier gateway4PaoId = new PaoIdentifier(104, PaoType.GWY801);
+    private static final RfnIdentifier gateway4RfnId = new RfnIdentifier("10003", "EATON", "GW-801");
     
     @Before
     public void init() {
@@ -138,10 +150,27 @@ public class RfnGatewayServiceTest {
         LiteYukonPAObject gw3Pao = new LiteYukonPAObject(gateway3PaoId.getPaoId());
         gw3Pao.setPaoName(gateway3Name);
         
+        //Set up GW-801
+        admin4 = new Authentication();
+        admin4.setUsername("testAdmin4");
+        admin4.setPassword("testAdminPass4");
+        superAdmin4 = new Authentication();
+        superAdmin4.setUsername("testSuperAdmin4");
+        superAdmin4.setPassword("testSuperAdminPass4");
+        settings4 = new GatewaySettings();
+        settings4.setName(gateway4Name);
+        settings4.setAdmin(admin4);
+        settings4.setSuperAdmin(superAdmin4);
+        settings4.setLatitude(latitude4);
+        settings4.setLongitude(longitude4);
+        LiteYukonPAObject gw4Pao = new LiteYukonPAObject(gateway4PaoId.getPaoId());
+        gw4Pao.setPaoName(gateway4Name);
+        
         paos = new HashMap<>();
         paos.put(gatewayPaoId.getPaoId(), gwPao);
         paos.put(gateway2PaoId.getPaoId(), gw2Pao);
         paos.put(gateway3PaoId.getPaoId(), gw3Pao);
+        paos.put(gateway4PaoId.getPaoId(), gw4Pao);
     }
     
     private static RfnGatewayData createEmptyRfnGatewayData(RfnIdentifier rfnIdentifier) {
@@ -166,6 +195,7 @@ public class RfnGatewayServiceTest {
         rfnDevices.add(createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId)); //Gateway
         rfnDevices.add(createRfnDevice(gateway2Name, gateway2PaoId, gateway2RfnId)); //Gateway 2.0
         rfnDevices.add(createRfnDevice(gateway3Name, gateway3PaoId, gateway3RfnId)); //WIFI Super Meter Virtual Gateway
+        rfnDevices.add(createRfnDevice(gateway4Name, gateway4PaoId, gateway4RfnId)); //Gateway 2.0 (801)
         
         // Expect a call to retrieve all gateway devices from rfnDeviceDao.
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
@@ -175,6 +205,7 @@ public class RfnGatewayServiceTest {
         
         // Expect a call to retrieve PAO name for each gateway.
         IDatabaseCache cache = EasyMock.createStrictMock(IDatabaseCache.class);
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
         EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
         EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
         EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
@@ -188,6 +219,8 @@ public class RfnGatewayServiceTest {
                 .andReturn(createEmptyRfnGatewayData(gateway2RfnId));
         EasyMock.expect(gatewayDataCache.getIfPresent(gateway3PaoId))
                 .andReturn(createEmptyRfnGatewayData(gateway3RfnId));
+        EasyMock.expect(gatewayDataCache.getIfPresent(gateway4PaoId))
+        .andReturn(createEmptyRfnGatewayData(gateway4RfnId));
         EasyMock.replay(gatewayDataCache);
         
         PaoLocationDao paoLocationDao = new EmptyPaoLocationDao();
@@ -197,15 +230,17 @@ public class RfnGatewayServiceTest {
         Set<RfnGateway> allGateways = service.getAllGateways();
         
         // Test that we got the expected number of gateways from the service
-        Assert.assertEquals("Expecting 3 gateways", 3, allGateways.size());
+        Assert.assertEquals("Expecting 4 gateways", 4, allGateways.size());
         
         // Test that we got the expected values
         RfnGateway rfnGateway = new RfnGateway(gatewayName, gatewayPaoId, gatewayRfnId, createEmptyRfnGatewayData(gatewayRfnId));
         RfnGwy800 rfnGateway2 = new RfnGwy800(gateway2Name, gateway2PaoId, gateway2RfnId, createEmptyRfnGatewayData(gateway2RfnId));
         RfnVirtualGateway rfnGateway3 = new RfnVirtualGateway(gateway3Name, gateway3PaoId, gateway3RfnId, createEmptyRfnGatewayData(gateway3RfnId));
+        RfnGwy801 rfnGateway4 = new RfnGwy801(gateway4Name, gateway4PaoId, gateway4RfnId, createEmptyRfnGatewayData(gateway4RfnId));
         Assert.assertTrue("Gateway not retrieved from getAllGateways()", allGateways.contains(rfnGateway));
         Assert.assertTrue("Gateway 2.0 not retrieved from getAllGateways()", allGateways.contains(rfnGateway2));
         Assert.assertTrue("WIFI Super Meter Virtual Gateway not retrieved from getAllGateways()", allGateways.contains(rfnGateway3));
+        Assert.assertTrue("Gateway 2.0 (801) not retrieved from getAllGateways()", allGateways.contains(rfnGateway4));
     }
     
     @Test
@@ -898,6 +933,75 @@ public class RfnGatewayServiceTest {
         Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
     }
     
+    @Test
+    public void test_updateGateway_successResponseWithGateway4() throws NmCommunicationException {
+        
+        // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
+        RfnDevice gwDevice = createRfnDevice(gateway4Name, gateway4PaoId, gateway4RfnId);
+        RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
+        EasyMock.expect(rfnDeviceDao.getDeviceForId(gateway4PaoId.getPaoId()))
+                .andReturn(gwDevice);
+        EasyMock.replay(rfnDeviceDao);
+        
+        // Expect a call to retrieve PAO name.
+        IDatabaseCache cache = EasyMock.createStrictMock(IDatabaseCache.class);
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
+        EasyMock.replay(cache);
+        
+        // Expect a call to retrieve gateway data from the cache.
+        RfnGatewayDataCache gatewayDataCache = EasyMock.createStrictMock(RfnGatewayDataCache.class);
+        EasyMock.expect(gatewayDataCache.get(gateway4PaoId)).andReturn(createEmptyRfnGatewayData(gateway4RfnId));
+        
+        // Expect forced refresh of cached data.
+        gatewayDataCache.remove(gateway4PaoId);
+        EasyMock.expectLastCall();
+        
+        // Should be returning the updated data, but the return value is not used, so we are just creating an empty one.
+        EasyMock.expect(gatewayDataCache.get(gateway4PaoId))
+                .andReturn(createEmptyRfnGatewayData(gateway4RfnId));
+        EasyMock.replay(gatewayDataCache);
+        
+        // Expect call to retrieve existing location.
+        PaoLocationDao paoLocationDao = EasyMock.createStrictMock(PaoLocationDao.class);
+        EasyMock.expect(paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId()))
+                .andReturn(null);
+        
+        // Expect new location to be saved.
+        PaoLocation location = new PaoLocation(null, latitude4, longitude4);
+        paoLocationDao.save(location);
+        EasyMock.expectLastCall().once();
+        EasyMock.replay(paoLocationDao);
+        
+        // Expect device name to be changed.
+        DeviceDao deviceDao = EasyMock.createStrictMock(DeviceDao.class);
+        deviceDao.changeName(EasyMock.isA(YukonDevice.class), EasyMock.eq("New Name"));
+        EasyMock.expectLastCall();
+        EasyMock.replay(deviceDao);
+        
+        // Inject all the mocks into the service
+        EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
+        service = new RfnGatewayServiceImpl(null,deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        
+        // Set up the template to reply with a "success" result.
+        FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
+        fakeTemplate.setMode(Mode.REPLY);
+        ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
+        
+        // Build the RfnGateway object
+        GatewayDataResponse gatewayDataResponse = new GatewayDataResponse();
+        gatewayDataResponse.setRfnIdentifier(gateway4RfnId);
+        gatewayDataResponse.setIpAddress(ipAddress4);
+        gatewayDataResponse.setPort(port4.toString());
+        gatewayDataResponse.setAdmin(admin4);
+        gatewayDataResponse.setSuperAdmin(superAdmin4);
+        RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse, gatewayName);
+        RfnGateway rfnGateway = new RfnGateway("New Name", gateway4PaoId, gateway4RfnId, rfnGatewayData);
+        rfnGateway.setLocation(location);
+        
+        //Do the service call
+        GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
+        Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
+    }
     @Test
     public void test_updateGateway_failedResponse() throws NmCommunicationException {
         

@@ -1,0 +1,13 @@
+
+    {    "name": "TestTCP",    
+          "enable": true,  
+          "baudRate": "BAUD_1200",
+          "type": "TCPPORT",    
+          "timing": {        
+                     "preTxWait": 25,        
+                     "rtsToTxWait": 0,        
+                     "postTxWait": 10,        
+                     "receiveDataWait": 0,        
+                     "extraTimeOut": 0    
+            }
+}

@@ -60,16 +60,16 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         
         Integer serialNumber;
         try {
-            serialNumber = Integer.parseInt(device.getRfnIdentifier().getSensorSerialNumber());
+            serialNumber = Integer.parseUnsignedInt(device.getRfnIdentifier().getSensorSerialNumber());
         } catch (NumberFormatException e) {
             log.error("Device serial number either contained alphanumeric characters or was too large. "
                     + "Non-numeric characters are not allowed in ExpressCom message serial numbers. "
-                    + "Serial numbers must not be larger than 2147483647."
+                    + "Serial numbers must not be larger than 4294967295."
                     + "Device: " + device + " did not meet these requirements.");
             throw new InvalidExpressComSerialNumberException(
                     "Device serial number either contained alphanumeric characters or was too large. "
                             + "Non-numeric characters are not allowed in ExpressCom message serial numbers. "
-                            + "Serial numbers must not be larger than 2147483647."
+                            + "Serial numbers must not be larger than 4294967295."
                             + "Device: " + device.getName() + " did not meet these requirements.");
         }
         ByteBuffer outputBuffer = ByteBuffer.allocate(1024);

@@ -25,6 +25,8 @@
 #include "database_reader.h"
 #include "tbl_pt_alarm.h"
 
+using Cti::CapControl::PorterRequest;
+using Cti::CapControl::PorterRequests;
 using Cti::CapControl::PaoIdVector;
 using Cti::CapControl::PointIdVector;
 using Cti::CapControl::PointResponse;
@@ -770,6 +772,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
             request->watchPoints( pointRequests );
+            dispatchConnection->refreshPointRegistration();
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -831,7 +834,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     // if it is in the mapping, update the min and max voltages as necessary, if it isn't, add the current
                     //  value as both the min and max
 
-                    if ( auto result = Cti::mapFind( state->feasibilityData, pointData.first ) )
+                    if ( auto result = Cti::mapFindRef( state->feasibilityData, pointData.first ) )
                     {
                         auto & min_max_pair = *result;
 
@@ -1145,6 +1148,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
             request->watchPoints( pointRequests );
+            dispatchConnection->refreshPointRegistration();
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -1292,6 +1296,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
             request->watchPoints( pointRequests );
+            dispatchConnection->refreshPointRegistration();
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -1423,6 +1428,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request(_requestFactory->createDispatchPointDataRequest(dispatchConnection));
             request->watchPoints(pointRequests);
+            dispatchConnection->refreshPointRegistration();
 
             //ActiveMQ message here for System Refresh
             sendCapControlOperationMessage( CapControlOperationMessage::createRefreshSystemMessage( subbus->getPaoId(), CtiTime() ) );
@@ -1491,8 +1497,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     // This means we tried to look up a capbank and failed, probably due to a store reload.
 
                     CTILOG_ERROR( dout, "IVVC Algorithm: Data validation issue -- aborting analysis." );
-
-                    state->setState(IVVCState::IVVC_WAIT);
                 }
                 else    // result == ValidityCheckResults::Invalid
                 {
@@ -1506,7 +1510,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     state->setCommsRetryCount(state->getCommsRetryCount() + 1);
                     if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
                     {
-                        state->setState(IVVCState::IVVC_WAIT);
                         state->setCommsRetryCount(0);
 
                         if ( ! state->isCommsLost() )
@@ -1523,6 +1526,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }
                 }
 
+                state->setState(IVVCState::IVVC_WAIT);
                 updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
                 CTILOG_INFO(dout, request->createStatusReport());
                 break;
@@ -1533,7 +1537,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 state->setState(IVVCState::IVVC_WAIT);
                 state->setCommsRetryCount(0);
-
                 state->setCommsLost(false);
 
                 long stationId, areaId, spAreaId;
@@ -1581,8 +1584,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     if ( ! state->isCommsLost() )
                     {
                         state->setCommsLost(true);
-
-                        state->setState(IVVCState::IVVC_WAIT);
                         state->setCommsRetryCount(0);
 
                         handleCommsLost( state, subbus );
@@ -1594,6 +1595,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }
                 }
 
+                state->setState(IVVCState::IVVC_WAIT);
                 updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
                 CTILOG_INFO(dout, request->createStatusReport());
                 break;
@@ -1737,6 +1739,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
 
             request->watchPoints(pointRequests);
+            dispatchConnection->refreshPointRegistration();
 
             state->setTimeStamp(now);
             state->setGroupRequest(request);
@@ -2080,7 +2083,7 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                     varValueC  = feeder->getPhaseCValue();
                 }
 
-                CtiRequestMsg* request = NULL;
+                PorterRequest request;
 
                 if (isCapBankOpen)
                 {
@@ -2100,10 +2103,13 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
 
                 CtiTime timestamp;
 
-                if (request != NULL)
+                if( request )
                 {
                     CtiTime time = request->getMessageTime();
-                    CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(request, CALLSITE);
+                    sendPorterRequest(
+                        *CtiCapController::getInstance()->getPorterConnection(),
+                        std::move( request ),
+                        CALLSITE );
 
                     performedOperation = true;
 
@@ -3772,7 +3778,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
                     const long                      pointID = point->getPointId();
                     const Cti::CapControl::Phase    phase   = point->getPhase();
 
-                    if ( boost::optional<PointValue> pv = Cti::mapFind( voltages, pointID ) )
+                    if ( auto pv = Cti::mapFindRef( voltages, pointID ) )
                     {
                         pv->value += realVoltageChange[ phase ];
                     }
@@ -3794,7 +3800,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
             const long                      pointID = entry.second;
             const Cti::CapControl::Phase    phase   = entry.first;
 
-            if ( boost::optional<PointValue> pv = Cti::mapFind( voltages, pointID ) )
+            if ( auto pv = Cti::mapFindRef( voltages, pointID ) )
             {
                 pv->value += realVoltageChange[ phase ];
             }
@@ -3812,7 +3818,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 
             const long  pointID = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
 
-            if ( boost::optional<PointValue> pv = Cti::mapFind( voltages, pointID ) )
+            if ( auto pv = Cti::mapFindRef( voltages, pointID ) )
             {
                 pv->value += realVoltageChange[ phase ];
             }
@@ -4860,8 +4866,8 @@ bool IVVCAlgorithm::executeBusVerification( IVVCStatePtr state, CtiCCSubstationB
     CtiTime now;
 
     CtiMultiMsg_vec pointChanges,
-                    pilMessages,
                     capMessages;
+    PorterRequests pilMessages;
 
     EventLogEntries events;
 
@@ -4878,11 +4884,10 @@ bool IVVCAlgorithm::executeBusVerification( IVVCStatePtr state, CtiCCSubstationB
 
     if ( ! pilMessages.empty() )
     {
-        auto multiPilMsg = std::make_unique<CtiMultiMsg>();
-
-        multiPilMsg->setData( pilMessages );
-
-        CtiCapController::getInstance()->getPorterConnection()->WriteConnQue( multiPilMsg.release(), CALLSITE );
+        sendPorterRequests(
+            *CtiCapController::getInstance()->getPorterConnection(),
+            std::move( pilMessages ),
+            CALLSITE);
     }
 
     if ( ! capMessages.empty() )
@@ -4936,11 +4941,11 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
     if ( const auto reason = handleReverseFlow( subbus );
             ! reason.empty() )
     {
+        CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Improper Power Flow.\n" << reason );
+
         if ( state->powerFlow.valid )   // transition from good to bad
         {
             state->powerFlow.valid = false;
-
-            CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Improper Power Flow.\n" << reason );
 
             sendDisableRemoteControl( subbus );
 

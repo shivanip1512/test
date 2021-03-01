@@ -168,7 +168,7 @@
     <entry key="yukon.web.widgets.configWidget.meterProgramming">Meter Programming</entry>
     <entry key="yukon.web.widgets.configWidget.currentMeterProgram">Current Program</entry>
     <entry key="yukon.web.widgets.configWidget.program.label">Program</entry>
-    <entry key="yukon.web.widgets.configWidget.currentConfiguration">Current Configuration</entry>
+    <entry key="yukon.web.widgets.configWidget.assignedConfiguration">Assigned Configuration</entry>
     <entry key="yukon.web.widgets.configWidget.changeConfiguration">Change Configuration</entry>
     <entry key="yukon.web.widgets.configWidget.remove.label">Remove</entry>
     <entry key="yukon.web.widgets.configWidget.change.label">Change</entry>
@@ -189,6 +189,7 @@
     <!-- Used in outOfSync.jsp -->
     <entry key="yukon.web.widgets.configWidget.verifyResult">Verify Result</entry>
     <entry key="yukon.web.widgets.configWidget.inSync">In Sync</entry>
+    <entry key="yukon.web.widgets.configWidget.viewLastError">View Last Error</entry>
 
     <!-- touWidget/render.jsp -->
     <entry key="yukon.web.widgets.touWidget.title">Tou Readings</entry>

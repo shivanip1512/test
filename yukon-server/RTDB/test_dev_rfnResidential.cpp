@@ -33,6 +33,11 @@ struct test_RfnResidentialDevice : RfnResidentialDevice
     {
         return false;
     }
+
+    bool hasRfnFirmwareSupportIn(double version) const override
+    {
+        return true;
+    }
 };
 
 struct test_state_rfnResidential
@@ -45,11 +50,17 @@ struct test_state_rfnResidential
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;
+    const decltype(Cti::Test::set_to_central_timezone()) tzOverride;
+    const CtiTime execute_time;
+    const CtiTime decode_time;
 
     test_state_rfnResidential() :
         request( new CtiRequestMsg ),
         fixtureConfig(new Cti::Test::test_DeviceConfig),
-        overrideConfigManager(fixtureConfig)
+        overrideConfigManager(fixtureConfig),
+        tzOverride(Cti::Test::set_to_central_timezone()),
+        execute_time(CtiDate(27, 8, 2013), 15),
+        decode_time (CtiDate(27, 8, 2013), 16)
     {
     }
 
@@ -72,9 +83,6 @@ namespace std {
 namespace test_cmd_rfn_ConfigNotification {
     extern const std::vector<uint8_t> payload;
 }
-
-const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
-const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
 
 
 BOOST_FIXTURE_TEST_SUITE( test_dev_rfnResidential, test_state_rfnResidential )
@@ -140,7 +148,7 @@ BOOST_AUTO_TEST_CASE( test_isDisconnectType )
         {
             std::unique_ptr<CtiDeviceBase> dev(createDeviceType(type));
 
-            const auto deviceType = DeviceTypes { type };
+            const auto deviceType = static_cast<DeviceTypes>( type );
 
             const bool isResidentialDevice = !! dynamic_cast<RfnResidentialDevice*>(dev.get());
 
@@ -148,6 +156,275 @@ BOOST_AUTO_TEST_CASE( test_isDisconnectType )
             BOOST_CHECK_EQUAL(test_RfnResidentialDevice::isDisconnectType(deviceType).has_value(), isResidentialDevice);
         }
     }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_connect_arm)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control connect arm");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Arm for resume");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp {
+            0x80, 0x02 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector< unsigned char > response {
+            0x81, //  Response 
+            0x02, //  Command type
+            0x00, //  Success
+            0x02, //  Status (Armed)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Arm for resume:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 3 - ARMED");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_control_connect)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control connect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Resume immediately");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x80, 0x03 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector<unsigned char> response {
+            0x81, //  Response 
+            0x03, //  Command type
+            0x00, //  Success
+            0x03, //  Status (Resumed)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Resume immediately:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 1 - CONNECTED");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_control_disconnect_failure)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control disconnect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Terminate service");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp {
+            0x80, 0x01 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector<unsigned char> response {
+            0x81, //  Response command
+            0x01, //  Echoed action (Terminate)
+            0x01, //  Command status (Failure)
+            0x02, //  TLV type 2 (Meter failure)
+            0x01, //  TLV length 1
+            0x06
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Terminate service:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 1 - FAILURE"
+        "\nStatus          : 0 - UNKNOWN"
+        "\nDetails         : Meter failure 6 - Command rejected because service disconnect is not enabled.");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_control_disconnect)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control disconnect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Terminate service");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x80, 0x01 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector<unsigned char> response{
+            0x81, //  Response 
+            0x01, //  Command type
+            0x00, //  Success
+            0x01, //  Status (Terminated)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description,
+        "RFN Meter Disconnect - Terminate service:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 2 - DISCONNECTED");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_getstatus_disconnect)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("getstatus disconnect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Query");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x80, 0x04 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector< unsigned char > response{
+            0x81, //  Response 
+            0x04, //  Command type
+            0x00, //  Success
+            0x07, //  Status (Cycling Disconnect Active Resumed)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Query:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 7 - CONNECTED_CYCLING_ACTIVE");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
 }
 
 
@@ -921,8 +1198,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
 
 BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday )
 {
-    Cti::Test::set_to_central_timezone();
-
     test_RfnResidentialDevice dut;
 
     CtiCommandParser parse("putconfig emetcon holiday 02/01/2025 06/14/2036 12/30/2050");
@@ -1564,6 +1839,182 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_tomorrow )
     }
 }
 
+BOOST_AUTO_TEST_CASE( test_putconfig_install_demand )
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue( RfnStrings::demandInterval, "5" );
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    BOOST_CHECK( ! dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval) );
+
+    CtiCommandParser parse("putconfig install demand");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    const auto& returnMsgPtr = returnMsgs.front();
+    
+    BOOST_REQUIRE( returnMsgPtr );
+    
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+    BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+
+    const auto& command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+    std::vector<unsigned char> exp { 
+            0x62, 0x05 };
+
+    BOOST_CHECK_EQUAL( rcv, exp );
+
+    std::vector<unsigned char> response{
+            0x63, 0x00 };
+
+    command->handleResponse( CtiTime::now(), response );
+
+    dut.extractCommandResult( *command );
+
+    BOOST_CHECK( dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval) );
+
+    BOOST_CHECK_EQUAL( 5, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval) );
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_demand_configCurrent )
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue( RfnStrings::demandInterval, "5" );
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 5);
+
+    CtiCommandParser parse("putconfig install demand");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_CHECK_EQUAL  ( 0, rfnRequests.size() );
+
+    const auto & returnMsg = *returnMsgs.front();
+
+    BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+    BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config demand is current." );
+}
+
+BOOST_AUTO_TEST_CASE(test_putconfig_install_demand_force)
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue(RfnStrings::demandInterval, "5");
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 5);
+
+    CtiCommandParser parse("putconfig install demand force");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x62, 0x05 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    std::vector<unsigned char> response{
+            0x63, 0x00 };
+
+    command->handleResponse(CtiTime::now(), response);
+
+    dut.extractCommandResult(*command);
+
+    BOOST_CHECK(dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval));
+
+    BOOST_CHECK_EQUAL(5, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval));
+}
+
+BOOST_AUTO_TEST_CASE(test_putconfig_install_demand_verify)
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue(RfnStrings::demandInterval, "5");
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    BOOST_CHECK(! dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval));
+
+    {
+        CtiCommandParser parse("putconfig install demand verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK_EQUAL(0, rfnRequests.size());
+
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 219);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config demand is NOT current.");
+    }
+    returnMsgs.clear();
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 7);
+    {
+        CtiCommandParser parse("putconfig install demand verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK_EQUAL(0, rfnRequests.size());
+
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 219);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config demand is NOT current.");
+    }
+    returnMsgs.clear();
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 5);
+    {
+        CtiCommandParser parse("putconfig install demand verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK_EQUAL(0, rfnRequests.size());
+
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config demand is current.");
+    }
+}
+
 BOOST_AUTO_TEST_CASE( test_putconfig_install_freezeday )
 {
     test_RfnResidentialDevice dut;
@@ -1611,6 +2062,100 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_freezeday )
             BOOST_CHECK( dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay) );
 
             BOOST_CHECK_EQUAL( 7, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay) );
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_putconfig_install_metlib)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN520FAX);
+
+    Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue(RfnStrings::MetrologyLibraryEnabled, "true");
+
+    BOOST_CHECK(! dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+
+    {
+        CtiCommandParser parse("putconfig install metlib");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const auto& returnMsg = *returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+
+        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+        {
+            auto& command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            std::vector<unsigned char> exp {
+                0x57, 0x00, 0x00 };
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+
+            std::vector<unsigned char> response {
+                0x58, 0x00, 0x00, 0x00 };
+
+            command->handleResponse(CtiTime::now(), response);
+
+            dut.extractCommandResult(*command);
+
+            BOOST_CHECK(dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+
+            BOOST_CHECK_EQUAL(static_cast<long>(true), dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+        }
+    }
+
+    returnMsgs.clear();
+    rfnRequests.clear();
+
+    cfg.insertValue(RfnStrings::MetrologyLibraryEnabled, "false");
+
+    {
+        CtiCommandParser parse("putconfig install metlib");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const auto& returnMsg = *returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+
+        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+        {
+            auto& command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            std::vector<unsigned char> exp {
+                0x57, 0x00, 0x01 };
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+
+            std::vector<unsigned char> response {
+                0x58, 0x00, 0x00, 0x01 };
+
+            command->handleResponse(CtiTime::now(), response);
+
+            dut.extractCommandResult(*command);
+
+            BOOST_CHECK(dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+
+            BOOST_CHECK_EQUAL(static_cast<long>(false), dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
         }
     }
 }
@@ -1992,14 +2537,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
             };
 
     const std::vector< std::vector<bool> > returnExpectMoreExp {
-            { true, true, true, true, true, true, true, false },
-                                                      // no config data                   -> 8 error messages, NOTE: last expectMore expected to be false
-            { true, true, true, true, true, true, true },
-                                                      // add demand freeze day config     -> 7 error messages
-            { true, true, true, true, true },         // add TOU config                   -> 5 error messages
-            { true, true, true },                     // add temperature alarming config  -> 3 error messages
-            { true },                                 // add channel config               -> config sent successfully
-            { true },                                 // add demand interval config       -> config sent successfully
+            { true, true, true, true, true, true, true, true, false },
+                                                            // no config data                   -> 9 error messages, NOTE: last expectMore expected to be false
+            { true, true, true, true, true, true, true, true },
+                                                            // add demand freeze day config     -> 8 error messages
+            { true, true, true, true, true, true },         // add TOU config                   -> 6 error messages
+            { true, true, true, true },                     // add temperature alarming config  -> 4 error messages
+            { true },                                       // add channel config               -> config sent successfully
+            { true },                                       // add demand interval config       -> config sent successfully
             };
 
     std::vector<int> requestMsgsRcv;
@@ -2263,10 +2808,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
     BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
     BOOST_CHECK_EQUAL( 1, rfnRequests.size() );
-    BOOST_REQUIRE_EQUAL( 1, requestMsgs.size() );
-
-    BOOST_CHECK_EQUAL(requestMsgs.front()->CommandString(), "putconfig emetcon install all verify");
-    BOOST_CHECK_EQUAL(requestMsgs.front()->UserMessageId(), 11235);
+    BOOST_CHECK_EQUAL( 0, requestMsgs.size() );
 
     std::vector<bool> expectMoreRcv;
     const std::vector<bool> expectMoreExp { true, true, true, true, true };
@@ -2295,7 +2837,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
 
     auto& command = rfnRequests.front();
 
-    BOOST_CHECK_EQUAL( 2, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle()) );
+    BOOST_CHECK_EQUAL( 1, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle()) );
 
     {
         // execute
@@ -2327,7 +2869,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
         dut.decrementGroupMessageCount(request->UserMessageId(), request->getConnectionHandle());
     }
 
-    BOOST_CHECK_EQUAL( 1, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle() ) );
+    BOOST_CHECK_EQUAL( 0, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle() ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
@@ -2465,15 +3007,15 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
 
     const std::vector< std::vector<bool> > returnExpectMoreExp {
-            { true, true, true, true, true, true, true, true, true, false },
-                                                              // no config data                   -> 10 error messages, NOTE: last expectMore expected to be false
-            { true, true, true, true, true, true, true, true, true },
-                                                              // add remote disconnect config     -> 9 error messages
-            { true, true, true, true, true, true, true },     // add demand freeze day config     -> 7 error messages
-            { true, true, true, true, true },                 // add TOU config                   -> 5 error messages
-            { true, true, true },                             // add temperature alarming config  -> 3 error messages
-            { true },                                         // add channel config               -> config sent successfully
-            { true }                                          // add demand interval config       -> config sent successfully
+            { true, true, true, true, true, true, true, true, true, true, false },
+                                                                    // no config data                   -> 11 error messages, NOTE: last expectMore expected to be false
+            { true, true, true, true, true, true, true, true, true, true },
+                                                                    // add remote disconnect config     -> 10 error messages
+            { true, true, true, true, true, true, true, true },     // add demand freeze day config     -> 8 error messages
+            { true, true, true, true, true, true },                 // add TOU config                   -> 6 error messages
+            { true, true, true, true },                             // add temperature alarming config  -> 4 error messages
+            { true },                                               // add channel config               -> config sent successfully
+            { true }                                                // add demand interval config       -> config sent successfully
             };
 
     std::vector<int> requestMsgsRcv;
@@ -2612,7 +3154,9 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
         { PI::Key_RFN_TempAlarmHighTempThreshold, 5889 },
     
         { PI::Key_RFN_RecordingIntervalSeconds,  7200 },
-        { PI::Key_RFN_ReportingIntervalSeconds, 86400 } 
+        { PI::Key_RFN_ReportingIntervalSeconds, 86400 },
+
+        { PI::Key_RFN_MetrologyLibraryEnabled, false },
     };
 
     BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries[-1].size(), std::size(dpiExpected));

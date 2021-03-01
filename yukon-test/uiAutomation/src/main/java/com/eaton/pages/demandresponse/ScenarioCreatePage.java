@@ -10,20 +10,16 @@ import com.eaton.pages.PageBase;
 
 public class ScenarioCreatePage extends PageBase {
 
-    private TextEditElement name;
-
     public ScenarioCreatePage(DriverExtensions driverExt) {
         super(driverExt);
         
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.SCENARIO_CREATE;
-
-        name = new TextEditElement(this.driverExt, "name");
     }
     
     // General
     public TextEditElement getName() {
-        return name;
+        return new TextEditElement(this.driverExt, "name");
     }          
     
     public Button getSave() {

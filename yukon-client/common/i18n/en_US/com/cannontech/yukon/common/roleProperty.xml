@@ -119,8 +119,8 @@
 <entry key="yukon.common.roleProperty.LC_REDUCTION_COL.description">Controls access to display Reduction in All Control Areas display.</entry>
 
 <!-- Trending RoleProperties -->
-<entry key="yukon.common.roleProperty.GRAPH_EDIT_GRAPHDEFINITION">Graph Definition Access</entry>
-<entry key="yukon.common.roleProperty.GRAPH_EDIT_GRAPHDEFINITION.description">Controls access to Create or Edit graph definitions.</entry>
+<entry key="yukon.common.roleProperty.MANAGE_TRENDS">Manage Trends</entry>
+<entry key="yukon.common.roleProperty.MANAGE_TRENDS.description">Controls access to view, create, edit, or delete Trends.</entry>
 <entry key="yukon.common.roleProperty.TRENDING_DISCLAIMER">Trending Disclaimer</entry>
 <entry key="yukon.common.roleProperty.TRENDING_DISCLAIMER.description">The disclaimer displayed for operator metering pages.</entry>
 <entry key="yukon.common.roleProperty.SCAN_NOW_ENABLED">Scan Now Enabled</entry>
@@ -350,6 +350,8 @@
 <entry key="yukon.common.roleProperty.ADMIN_EVENT_LOGS.description">Controls access to event logs.</entry>
 <entry key="yukon.common.roleProperty.ADMIN_MANAGE_DASHBOARDS">Manage Dashboards</entry>
 <entry key="yukon.common.roleProperty.ADMIN_MANAGE_DASHBOARDS.description">Controls access to manage all user defined dashboards.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MANAGE_ATTRIBUTES">Manage Attributes</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MANAGE_ATTRIBUTES.description">Controls access to manage all user defined attributes.</entry>
 
 <!-- CI Curtailment RoleProperties -->
 <entry key="yukon.common.roleProperty.CURTAILMENT_IS_OPERATOR">C&amp;I Curtailment Operator</entry>
@@ -498,8 +500,8 @@
 <entry key="yukon.common.roleProperty.PHASE_DETECT.description">Controls access to Phase Detection.</entry>
 <entry key="yukon.common.roleProperty.VALIDATION_ENGINE">Validation Engine</entry>
 <entry key="yukon.common.roleProperty.VALIDATION_ENGINE.description">Controls access to Validation Processing.</entry>
-<entry key="yukon.common.roleProperty.STATUS_POINT_MONITORING">Status Point Monitor</entry>
-<entry key="yukon.common.roleProperty.STATUS_POINT_MONITORING.description">Controls access to the Status Point Monitor.</entry>
+<entry key="yukon.common.roleProperty.STATUS_POINT_MONITORING">Outage Notification Monitor</entry>
+<entry key="yukon.common.roleProperty.STATUS_POINT_MONITORING.description">Controls access to the Outage Notification Monitor.</entry>
 <entry key="yukon.common.roleProperty.PORTER_RESPONSE_MONITORING">Porter Response Monitor</entry>
 <entry key="yukon.common.roleProperty.PORTER_RESPONSE_MONITORING.description">Controls access to the Porter Response Monitor.</entry>
 <entry key="yukon.common.roleProperty.METER_EVENTS">Meter Events</entry>
@@ -535,7 +537,7 @@
 
 <!-- Device Management RoleProperties -->
 <entry key="yukon.common.roleProperty.ENDPOINT_PERMISSION">Endpoint Permission</entry>
-<entry key="yukon.common.roleProperty.ENDPOINT_PERMISSION.description">Controls access to create, edit, or delete endpoint devices. i.e Meters. Metering Role controls view access.</entry>
+<entry key="yukon.common.roleProperty.ENDPOINT_PERMISSION.description">Controls access to create, edit, or delete endpoint devices. i.e Meters, Relays. Metering Role controls view access for meter endpoints.</entry>
 <entry key="yukon.common.roleProperty.MANAGE_POINT_DATA">Manage Point Data</entry>
 <entry key="yukon.common.roleProperty.MANAGE_POINT_DATA.description">Controls access to edit, delete, or manually add point data values.</entry>
 <entry key="yukon.common.roleProperty.MANAGE_POINTS">Manage Points</entry>
@@ -543,6 +545,6 @@
 <entry key="yukon.common.roleProperty.MANAGE_NOTES">Manage Notes</entry>
 <entry key="yukon.common.roleProperty.MANAGE_NOTES.description">Controls access to view, create, edit, or delete notes.</entry>
 <entry key="yukon.common.roleProperty.MANAGE_INFRASTRUCTURE">Manage Infrastructure</entry>
-<entry key="yukon.common.roleProperty.MANAGE_INFRASTRUCTURE.description">Controls access to manage infrastructure devices. i.e. RF Gateways.</entry>
+<entry key="yukon.common.roleProperty.MANAGE_INFRASTRUCTURE.description">Controls access to manage infrastructure devices. i.e. RF Gateways, Comm Channels.</entry>
 
 </properties>

@@ -1,5 +1,6 @@
 package com.eaton.elements;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,15 +64,31 @@ public class DropDownSearchElement {
     
     private void setDropDownSearchElement() {
         if (this.parentName != null) {
-            this.searchDropDown = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] #" + this.elementId ), Optional.empty());
+            this.searchDropDown = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] #" + this.elementId ), Optional.of(3));
         } else if (this.parentElement != null) {
             this.searchDropDown = this.parentElement.findElement(By.id(this.elementId));
         } else {
-            this.searchDropDown = this.driverExt.findElement(By.id(this.elementId), Optional.empty());   
+            this.searchDropDown = this.driverExt.findElement(By.id(this.elementId), Optional.of(3));   
         }        
     }    
     
     private WebElement getDropDownSearchElement() {
         return this.searchDropDown;
+    }
+    
+    public List<String> getDropDownItems() {
+        WebElement dropDown = getDropDownSearchElement();
+        
+        dropDown.click();
+        
+        WebElement results = dropDown.findElement(By.cssSelector(".chosen-results"));
+        
+        List<WebElement> filteredResults = results.findElements(By.cssSelector(".active-result"));
+        List<String> dropDownItems = new LinkedList<String>();
+        for (WebElement result : filteredResults) {
+        	dropDownItems.add(result.getText());
+        }
+        
+        return dropDownItems;
     }
 }

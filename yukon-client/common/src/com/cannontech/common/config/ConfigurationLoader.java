@@ -13,18 +13,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-import javax.mail.MessagingException;
-
 import org.apache.commons.configuration2.INIConfiguration;
 import org.apache.commons.configuration2.SubnodeConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.BootstrapUtils;
-import com.cannontech.system.dao.GlobalSettingDao;
 
 /**
  * ConfigurationLoader class is meant to load the additional configuration.properties file into cache
@@ -34,15 +29,12 @@ import com.cannontech.system.dao.GlobalSettingDao;
  */
 public class ConfigurationLoader {
 
-    private Map<String, Map<String, String>> configSettings;
+    private static Map<String, Map<String, String>> configSettings;
     private final static Logger log = YukonLogManager.getLogger(ConfigurationLoader.class);
 
     private static File configFileLocation;
 
-    @Autowired private GlobalSettingDao globalSettingDao;
-
-    @PostConstruct
-    public void init() throws MessagingException {
+    static {
         URL url = ConfigurationLoader.class.getClassLoader().getResource("configuration.properties");
         if (url != null) {
             try {
@@ -52,8 +44,8 @@ public class ConfigurationLoader {
             }
             log.info("Local config found on classpath: " + url);
         } else {
-            configFileLocation =
-                new File(BootstrapUtils.getYukonBase(log.isDebugEnabled()), "Server/Config/configuration.properties");
+            configFileLocation = new File(BootstrapUtils.getYukonBase(log.isDebugEnabled()),
+                    "Server/Config/configuration.properties");
         }
         loadConfigurationProperties();
     }
@@ -61,7 +53,7 @@ public class ConfigurationLoader {
     /**
      * Loads the configuration file from properties file
      */
-    public void loadConfigurationProperties() {
+    public static void loadConfigurationProperties() {
         INIConfiguration iniConfiguration = new INIConfiguration();
         configSettings = new HashMap<String, Map<String, String>>();
         try {
@@ -95,7 +87,7 @@ public class ConfigurationLoader {
         }
     }
 
-    public Map<String, Map<String, String>> getConfigSettings() {
+    public static Map<String, Map<String, String>> getConfigSettings() {
         return configSettings;
     }
 }

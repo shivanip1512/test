@@ -1,13 +1,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="yukon.web.modules.operator.commChannelInfoWidget">
+<cti:msgScope paths="yukon.common,yukon.web.modules.operator.commChannelInfoWidget">
     <div class="js-global-error">
         <c:if test="${not empty uniqueErrorMsg}">
             <c:forEach var="globalErrorMsg" items="${uniqueErrorMsg}">
-                <tags:alertBox>${globalErrorMsg}</tags:alertBox>
+                <tags:alertBox>${fn:escapeXml(globalErrorMsg)}</tags:alertBox>
             </c:forEach>
         </c:if>
     </div>

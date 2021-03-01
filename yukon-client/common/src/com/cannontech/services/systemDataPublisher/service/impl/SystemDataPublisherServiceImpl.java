@@ -12,6 +12,9 @@ import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisherService;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 @Service
 public class SystemDataPublisherServiceImpl implements SystemDataPublisherService {
@@ -28,6 +31,11 @@ public class SystemDataPublisherServiceImpl implements SystemDataPublisherServic
     @PostConstruct
     public void initialize() {
         converter = new MappingJackson2MessageConverter();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JodaModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        converter.setObjectMapper(mapper);
+
         converter.setTargetType(MessageType.TEXT);
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SYSTEM_DATA, converter);
     }

@@ -13,65 +13,73 @@ import com.eaton.framework.SeleniumTestSetup;
 public class CreateBtnDropDownElement {
 
     private DriverExtensions driverExt;
+    private WebElement parentElement;
 
     public CreateBtnDropDownElement(DriverExtensions driverExt) {
         this.driverExt = driverExt;
     }
 
-    public WebElement getCreateBtn() {
-        List<WebElement> buttons = this.driverExt.findElements(By.cssSelector(".page-actions .dropdown-trigger button"),
-                Optional.empty());
-
-        return buttons.stream().filter(button -> button.findElement(By.cssSelector(".b-label")).getText().contains("Create"))
-                .findFirst().orElseThrow();
+    public CreateBtnDropDownElement(DriverExtensions driverExt, WebElement parentElement) {
+        this.driverExt = driverExt;
+        this.parentElement = parentElement;
     }
 
-    public void click() {
-        getCreateBtn().click();
+    public WebElement getCreateBtn() {
+        if (parentElement != null) {
+            return this.parentElement.findElement(By.cssSelector(".dropdown-trigger"));
+        } else {
+            List<WebElement> buttons = this.driverExt.findElements(By.cssSelector(".dropdown-trigger"), Optional.of(3));
+
+            return buttons.stream().filter(b -> b.findElement(By.cssSelector("button .b-label")).getText().contains("Create")).findFirst().orElseThrow();
+        }
+    }
+
+    public void clickAndWait() {
+        getCreateBtn().findElement(By.cssSelector("button")).click();
+        
+        String attr = "";
+        long startTime = System.currentTimeMillis();
+
+        while ((!attr.contains("menu-open")) && ((System.currentTimeMillis() - startTime) < 2000)) {
+            attr = getCreateBtn().getAttribute("class");
+        }
     }
 
     public Boolean isDisplayed() {
-        return getCreateBtn().isDisplayed();
+        return getCreateBtn().findElement(By.cssSelector("button")).isDisplayed();
     }
 
     public Boolean isEnabled() {
-        return getCreateBtn().isEnabled();
+        return getCreateBtn().findElement(By.cssSelector("button")).isEnabled();
     }
 
     public void clickAndSelectOptionByText(String value) {
-        click();
+        clickAndWait();
 
-//        WebElement element = null;
-//        long startTime = System.currentTimeMillis();
-//        while (element == null && System.currentTimeMillis() - startTime < 3000) {
-//            element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.empty());
-//        }
-
-        WebElement el = SeleniumTestSetup.getDriverExt().getDriverWait()
-                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".dropdown-menu[style*='display: block;']")));
+        WebElement el = SeleniumTestSetup.getDriverExt().getDriverWait().until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".dropdown-menu[style*='display: block;']")));
 
         List<WebElement> options = el.findElements(By.cssSelector(".dropdown-option"));
-        
-//        for (WebElement webElement : options) {
-//            
-//            String text = webElement.findElement(By.cssSelector(".dropdown-option-label")).getText();
-//            
-//            if (text.equals(value)) {
-//                webElement.click();
-//            }
-//        }
 
         WebElement optionValue = options.stream().filter(option -> option.findElement(By.cssSelector(".dropdown-option-label")).getText().equals(value)).findFirst().orElseThrow();
 
         optionValue.click();
+    }
 
-//            for (WebElement option : options) {
-//                String optionText = option.getText();
-//                if (optionText.equals(value)) {
-//                    option.click();
-//                    return;
-//                }
-//            }
-//        }  //TODO add an exception stating did not find dropdown
+    /**
+     * This method is used to get the link/href attribute from Action Dropdown
+     * 
+     * @param text - The text listed in dropdown
+     * @return - returns href attribute of option in dropdown
+     */
+    public String getOptionLinkByText(String text) {
+        clickAndWait();
+
+        WebElement el = SeleniumTestSetup.getDriverExt().getDriverWait().until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".dropdown-menu[style*='display: block;']")));
+
+        List<WebElement> options = el.findElements(By.cssSelector(".dropdown-option"));
+
+        WebElement element = options.stream().filter(x -> x.findElement(By.cssSelector(".dropdown-option-label")).getText().equals(text)).findFirst().orElseThrow();
+        
+        return element.findElement(By.cssSelector("a")).getAttribute("href");
     }
 }

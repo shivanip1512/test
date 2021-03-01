@@ -735,6 +735,7 @@ public class OperatorHardwareController {
         HardwareClass clazz = type.getHardwareClass();
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
+        model.addAttribute("showGuid", type.isSupportsGuid());
         model.addAttribute("showMacAddress", type.isSupportsMacAddress());
         model.addAttribute("showSecondaryMacAddress", type.isItron());
         
@@ -781,6 +782,8 @@ public class OperatorHardwareController {
         if (type.isZigbee() || type.isItron()) {
             model.addAttribute("macAddressEditable", true);
         }
+        
+        model.addAttribute("showGuid", type.isSupportsGuid());
     }
 
     private void setupHardwareViewEditModel(AccountInfoFragment accountInfoFragment, Hardware hardware, ModelMap model,

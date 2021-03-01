@@ -67,21 +67,21 @@ struct phase_operated_voltage_regulator_fixture_core
             CtiCapController::setInstance(this);
         }
 
-        virtual void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
+        void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
         {
             signalMessages.emplace_back( message );
         }
-        virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL)
+        void manualCapBankControl(Cti::CapControl::PorterRequest pilRequest, CtiMultiMsg* multiMsg = NULL) override
         {
-            requestMessages.emplace_back( pilRequest );
+            requestMessages.emplace_back( std::move( pilRequest ) );
         }
-        virtual void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event)
+        void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event) override
         {
             eventMessages.push_back(event);
         }
 
         std::vector< std::unique_ptr<CtiMessage> >      signalMessages;
-        std::vector< std::unique_ptr<CtiRequestMsg> >   requestMessages;
+        Cti::CapControl::PorterRequests                 requestMessages;
         Cti::CapControl::EventLogEntries                eventMessages;
     }
     capController;

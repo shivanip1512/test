@@ -4,8 +4,8 @@ public class PickerSearchCriteria {
     
     private String type;
     private String queryString;
-    private Integer startCount;
-    private Integer count;
+    private Integer startCount = 0;
+    private Integer count = 20;
     private String extraArgs;
     
     public String getType() {

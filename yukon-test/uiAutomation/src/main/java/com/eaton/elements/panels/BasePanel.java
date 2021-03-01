@@ -18,10 +18,14 @@ public class BasePanel {
         this.panelName = panelName;
     }
 
-    protected WebElement getPanel() {
+    public WebElement getPanel() {
         List<WebElement> elements = this.driverExt.findElements(By.cssSelector(".titled-container"), Optional.empty());
 
         return elements.stream().filter(element -> element.findElement(By.cssSelector(".title")).getText().contains(panelName))
                 .findFirst().orElseThrow();
+    }
+    
+    public String getPanelName() {
+        return panelName;
     }
 }

@@ -37,7 +37,7 @@ public class EnergyCompanyOperatorUserListPage extends PageBase {
         
         getAddBtn().click();      
         
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("ecOperatorCandidatePicker");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("ecOperatorCandidatePicker");
         
         return new SelectUserModal(this.driverExt, Optional.empty(), Optional.of("ecOperatorCandidatePicker"));
     }  

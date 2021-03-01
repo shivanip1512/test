@@ -34,10 +34,10 @@ public class MeterPointValue implements YukonPao {
         this.pointName = pointName;
     }
 
-    public MeterPointValue(RfnDevice relay, PaoPointIdentifier paoPointIdentifier, PointValueHolder pointValueHolder,
+    public MeterPointValue(RfnDevice rfnDevice, PaoPointIdentifier paoPointIdentifier, PointValueHolder pointValueHolder,
             String pointName) {
-        this.deviceName = relay.getName();
-        this.meterNumber = relay.getRfnIdentifier().getSensorSerialNumber();
+        this.deviceName = rfnDevice.getName();
+        this.meterNumber = rfnDevice.getRfnIdentifier().getSensorSerialNumber();
         this.paoPointIdentifier = paoPointIdentifier;
         this.pointValueHolder = pointValueHolder;
         this.pointName = pointName;

@@ -7,6 +7,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.device.port.LocalSharedPortDetail;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.PortTiming;
+import com.cannontech.common.device.port.Rfn1200Detail;
 import com.cannontech.common.device.port.TcpPortDetail;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
@@ -38,7 +39,7 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
     protected void doValidation(T commChannel, Errors errors) {
         String paoId = commChannel.getId() != null ? commChannel.getId().toString() : null;
 
-        yukonValidationHelper.validatePaoName(commChannel.getName(), commChannel.getType(), errors, "Name", paoId);
+        yukonValidationHelper.validatePaoName(commChannel.getName(), commChannel.getType(), errors, yukonValidationHelper.getMessage("yukon.common.name"), paoId);
         if (commChannel instanceof TcpPortDetail) {
             if (StringUtils.isNotEmpty(paoId)) {
                 validateTimingField(errors, ((TcpPortDetail) commChannel).getTiming());
@@ -59,7 +60,7 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
 
             if (commChannel instanceof TcpSharedPortDetail) {
                 PortValidatorHelper.validateIPAddress(errors, ((TcpSharedPortDetail) commChannel).getIpAddress(),
-                        yukonValidationHelper.getMessage(baseKey + "ipAddress"), true);
+                        yukonValidationHelper.getMessage("yukon.common.ipaddress"), true);
                 validatePort(errors, terminalServerPortDetail.getPortNumber(), ((TcpSharedPortDetail) commChannel).getIpAddress(),
                         paoId, commChannel.getType());
             }
@@ -83,6 +84,17 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
                 PortValidatorHelper.validatePortSharingFields(errors, ((LocalSharedPortDetail) commChannel).getSharing(),
                         yukonValidationHelper.getMessage(baseKey + "socketNumber"));
             }
+        }
+        
+        if (commChannel instanceof Rfn1200Detail) {
+            Rfn1200Detail rfn1200 = (Rfn1200Detail) commChannel;
+            validatePostCommWait(errors, rfn1200.getTiming());
+            PortValidatorHelper.validateRfnAddressField(errors, "rfnAddress.serialNumber", rfn1200.getRfnAddress().getSerialNumber(), 
+                                                     yukonValidationHelper.getMessage("yukon.common.serialNumber"), true, 30);
+            PortValidatorHelper.validateRfnAddressField(errors, "rfnAddress.manufacturer", rfn1200.getRfnAddress().getManufacturer(), 
+                                                        yukonValidationHelper.getMessage("yukon.common.manufacturer"), true, 60);
+            PortValidatorHelper.validateRfnAddressField(errors, "rfnAddress.model", rfn1200.getRfnAddress().getModel(), 
+                                                        yukonValidationHelper.getMessage("yukon.common.model"), true, 60);
         }
     }
 
@@ -111,6 +123,15 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
             Range<Integer> range = Range.inclusive(0, 999);
             YukonValidationUtils.checkRange(errors, "timing.extraTimeOut",
                     yukonValidationHelper.getMessage(baseKey + "additionalTimeOut"), timing.getExtraTimeOut(), range, true);
+        }
+        validatePostCommWait(errors, timing);
+    }
+    
+    private void validatePostCommWait(Errors errors, PortTiming timing) {
+        if (!errors.hasFieldErrors("timing.postCommWait")) {
+            Range<Integer> range = Range.inclusive(0, 100_000);
+            YukonValidationUtils.checkRange(errors, "timing.postCommWait",
+                    yukonValidationHelper.getMessage(baseKey + "postCommWait"), timing.getPostCommWait(), range, true);
         }
     }
 

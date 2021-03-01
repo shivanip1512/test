@@ -1,8 +1,5 @@
 package com.cannontech.common.rfn.service.impl;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +9,6 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
-import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
 import com.cannontech.common.mock.FakeRequestReplyTemplate;
 import com.cannontech.common.mock.FakeRfnDeviceDao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -31,7 +27,6 @@ import com.cannontech.common.rfn.message.gateway.Radio;
 import com.cannontech.common.rfn.message.gateway.RadioType;
 import com.cannontech.common.rfn.message.gateway.SequenceBlock;
 import com.cannontech.common.rfn.model.NmCommunicationException;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 
@@ -63,10 +58,6 @@ public class RfnGatewayDataCacheTest {
         FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
 
-        NmSyncServiceImpl nmSyncService = createNiceMock(NmSyncServiceImpl.class);
-        nmSyncService.syncGatewayName(anyObject(RfnDevice.class),anyObject(String.class));
-        ReflectionTestUtils.setField(cache, "nmSyncService", nmSyncService);
-        
         //retrieve uncached data
         fakeTemplate.setMode(FakeRequestReplyTemplate.Mode.REPLY);
         PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN_GATEWAY);
@@ -235,7 +226,7 @@ public class RfnGatewayDataCacheTest {
         @Override
         protected <Q extends Serializable> GatewayDataResponse buildResponse(Q request) {
             GatewayDataResponse response = new GatewayDataResponse();
-            response.setRfnIdentifier(new RfnIdentifier("10000", "CPS", "RFN_GATEWAY"));
+            response.setRfnIdentifier(new RfnIdentifier("10000", "EATON", "RFGateway"));
             return response;
         }
     }

@@ -12,7 +12,7 @@
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
         <tags:deviceSelection action="home"
             groupDataJson="${groupDataJson}"
-            pickerType="meterAndRelayPicker" 
+            pickerType="meterEventsDevicesPicker" 
             blockOnSubmit="true"/>
 	</tags:sectionContainer2>
 </cti:standardPage>

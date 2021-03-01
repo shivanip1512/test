@@ -10,12 +10,14 @@
     <cti:uniqueIdentifier var="uniqueId"/>
     <input type="hidden" class="js-date-type-enum-value" value="${graphTypeDateEnumValue}"/>
     <c:forEach items="${colors}" var="color">
-        <input type="hidden" class="js-color-item" value="${color}"/>
+        <cti:msg var="colorName" key="${color.formatKey}"/>
+        <input type="hidden" class="js-color-item" value="${color.hexValue}" data-color-name="${colorName}"/>
     </c:forEach>
     
     <cti:url var="addPointUrl" value="/tools/trend/addPointOrMarker"/>
     <form:form class="js-point-setup-form" modelAttribute="trendSeries" method="POST" action="${addPointUrl}">
         <cti:csrfToken/>
+        <input type="hidden" class="js-unique-identifier" value="${uniqueId}"/>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey="yukon.common.point" nameClass="vam">
                 <tags:pickerDialog id="trendPointPicker_${uniqueId}"
@@ -44,8 +46,8 @@
                 <tags:input path="label" maxlength="40" inputClass="js-point-label-input w300" />
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".color" nameClass="vam">
-                <input type="hidden" class="js-color-input" name="color" value="${trendSeries.color}"/>
-                <input type="text" class="js-color-picker" value="${trendSeries.color}" />
+                <input type="hidden" class="js-color-input" name="color" value="${trendSeries.color.hexValue}"/>
+                <input type="text" class="js-color-picker" value="${trendSeries.color.hexValue}" />
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".style" nameClass="vam">
                 <tags:selectWithItems items="${styles}" path="style" />

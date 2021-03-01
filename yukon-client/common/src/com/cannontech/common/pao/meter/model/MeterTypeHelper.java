@@ -29,6 +29,7 @@ public class MeterTypeHelper {
         // RFN/MCT/Electronic Meter groups.
         MCT,
         RF_MESH,
+        VIRTUAL,
         ELECTRONIC;        
         private static final String groupPrefix = "yukon.common.meterGroups.";
 
@@ -76,6 +77,10 @@ public class MeterTypeHelper {
                   .filter(type -> creatable.contains(type))
                   .sorted(byDbString).collect(Collectors.toList()));
         allGroupedBuilder.put(MeterGroup.RF_MESH, rfMetersBuilder.build());
+        
+        ImmutableSet.Builder<PaoType> virtualMeterBuilder = ImmutableSet.builder();
+        virtualMeterBuilder.add(PaoType.VIRTUAL_METER);
+        allGroupedBuilder.put(MeterGroup.VIRTUAL, virtualMeterBuilder.build());
 
         // YUK-17216 asked for these to not be included, at least for now.
         /*ImmutableSet.Builder<PaoType> electronicMetersBuilder = ImmutableSet.builder();

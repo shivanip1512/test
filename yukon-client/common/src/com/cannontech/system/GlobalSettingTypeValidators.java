@@ -17,6 +17,7 @@ import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.Validator;
 
 public class GlobalSettingTypeValidators {
     private static String baseKey = "yukon.web.modules.adminSetup.config.error.";
@@ -122,7 +123,7 @@ public class GlobalSettingTypeValidators {
         Pattern urlWithPortMatcher = Pattern.compile("\\s*(.*?):(\\d+)\\s*");
         @Override
         public void validate(String urlWithPort, Errors errors, GlobalSettingType globalSettingType) {
-            YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "values[" + globalSettingType + "]", urlWithPort, true, 1000);
+            YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(errors, "values[" + globalSettingType + "]", urlWithPort, true, 1000);
 
             if (!StringUtils.isBlank(urlWithPort)
                     && !urlWithPortMatcher.matcher(urlWithPort).matches()) {
@@ -158,6 +159,15 @@ public class GlobalSettingTypeValidators {
                 MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
                 String fieldName = messageSourceAccessor.getMessage(key);
                 YukonValidationUtils.checkRange(errors, field, fieldName, value, range, true);
+            }
+        }
+    };
+    
+    public static TypeValidator<String> guidValidator = new TypeValidator<>( ) {
+        @Override
+        public void validate(String value, Errors errors, GlobalSettingType globalSettingType) {
+            if (!StringUtils.isBlank(value) && !Validator.isValidGuid(value)) {
+                errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidGuid", null, "");
             }
         }
     };

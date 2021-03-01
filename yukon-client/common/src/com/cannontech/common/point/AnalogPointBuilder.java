@@ -16,7 +16,6 @@ import com.google.common.collect.Maps;
 
 public class AnalogPointBuilder extends ScalarPointBuilder {
     private final Logger log = YukonLogManager.getLogger(AnalogPointBuilder.class);
-    private int pointOffset = 0; //no physical point offset unless specified
     private double multiplier = 1.0;
     private final int stateGroupId = -1; //DefaultAnalog
     private int meterDials = 0;
@@ -97,14 +96,6 @@ public class AnalogPointBuilder extends ScalarPointBuilder {
     @Override
     public AnalogPoint insert() {
         return (AnalogPoint) super.insert();
-    }
-    
-    /**
-     * Must be a non-negative value.
-     */
-    public void setPointOffset(int pointOffset) {
-        if(pointOffset < 0) throw new IllegalArgumentException("Point Offset cannot be negative.");
-        this.pointOffset = pointOffset;
     }
     
     /**

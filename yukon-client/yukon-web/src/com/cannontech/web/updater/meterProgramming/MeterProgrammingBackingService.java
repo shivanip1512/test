@@ -3,7 +3,9 @@ package com.cannontech.web.updater.meterProgramming;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PorterDynamicPaoInfoService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao;
 import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDetail;
@@ -14,11 +16,13 @@ public class MeterProgrammingBackingService implements UpdateBackingService {
     
     @Autowired private PorterDynamicPaoInfoService porterDynamicPaoInfoService;
     @Autowired private MeterProgrammingSummaryDao meterProgrammingSummaryDao;
-    
+    @Autowired private DateFormattingService dateFormattingService;
+
     private enum RequestType {
         PROGRESS,
         IS_IN_PROGRESS,
-        IS_CONFIRMING
+        IS_CONFIRMING,
+        LAST_UPDATED
         ;
     }
     
@@ -40,6 +44,9 @@ public class MeterProgrammingBackingService implements UpdateBackingService {
         } else if (type == RequestType.IS_CONFIRMING) {
             MeterProgramSummaryDetail program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(Integer.valueOf(deviceId), userContext);
             return Boolean.toString(program.getStatus() == DisplayableStatus.CONFIRMING);
+        } else if (type == RequestType.LAST_UPDATED) {
+            MeterProgramSummaryDetail program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(Integer.valueOf(deviceId), userContext);
+            return dateFormattingService.format(program.getLastUpdate(), DateFormatEnum.BOTH, userContext);
         }
         return null;
     }

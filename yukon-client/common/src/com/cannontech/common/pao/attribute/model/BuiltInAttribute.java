@@ -29,7 +29,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
      /** 
        * Point Name naming convention: 
-       * [Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen|Daily] [Rate #|Phase X|Channel #]
+       * [Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen|Daily] [Rate #|Phase X|Channel #] [per Interval|Load Profile] [ at <base point name>]
        * Examples: 
        * Net kWh OR Net Delivered kWh 
        * Received kWh Rate A 
@@ -51,6 +51,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage", AttributeGroup.STATUS, false),   //440 types only
     DEMAND("Demand", AttributeGroup.DEMAND), // instantaneous
     DELIVERED_DEMAND("Delivered Demand", AttributeGroup.DEMAND),
+    DELIVERED_KWH_RATE_A("Delivered kWh Rate A", AttributeGroup.USAGE),
+    DELIVERED_KWH_RATE_B("Delivered kWh Rate B", AttributeGroup.USAGE),
+    DELIVERED_KWH_RATE_C("Delivered kWh Rate C", AttributeGroup.USAGE),
+    DELIVERED_KWH_RATE_D("Delivered kWh Rate D", AttributeGroup.USAGE),
     RECEIVED_DEMAND("Received Demand", AttributeGroup.DEMAND),
     DEMAND_PEAK_KVA_COIN("Demand at Peak kVa Coincidental", AttributeGroup.DEMAND),
     INSTANTANEOUS_KW("Instantaneous kW", AttributeGroup.DEMAND),
@@ -63,6 +67,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     IED_DEMAND_RESET_COUNT("IED Demand Reset Count", AttributeGroup.DEMAND),
     // Treating "kVAh" as "Delivered kVAh". May need to created separate attributes in the future.
     KVAH("kVAh", AttributeGroup.USAGE),
+    DELIVERED_KVAH_LAGGING("kVAh Lagging", AttributeGroup.REACTIVE),
     KVAH_RATE_A("kVAh Rate A", AttributeGroup.USAGE),
     KVAH_RATE_B("kVAh Rate B", AttributeGroup.USAGE),
     KVAH_RATE_C("kVAh Rate C", AttributeGroup.USAGE),
@@ -152,12 +157,18 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     PEAK_KVA_RATE_B("Peak kVA Rate B", AttributeGroup.REACTIVE),
     PEAK_KVA_RATE_C("Peak kVA Rate C", AttributeGroup.REACTIVE),
     PEAK_KVA_RATE_D("Peak kVA Rate D", AttributeGroup.REACTIVE),
+    PEAK_KVA_Q12("Peak kVA (Quadrants 1 2)", AttributeGroup.REACTIVE),
+    PEAK_KVA_Q12_RATE_A("Peak kVA (Quadrants 1 2) Rate A", AttributeGroup.REACTIVE),
+    PEAK_KVA_Q12_RATE_B("Peak kVA (Quadrants 1 2) Rate B", AttributeGroup.REACTIVE),
+    PEAK_KVA_Q12_RATE_C("Peak kVA (Quadrants 1 2) Rate C", AttributeGroup.REACTIVE),
+    PEAK_KVA_Q12_RATE_D("Peak kVA (Quadrants 1 2) Rate D", AttributeGroup.REACTIVE),
     PEAK_KVA_FROZEN("Peak kVA Frozen", AttributeGroup.REACTIVE),
     PEAK_KVA_FROZEN_RATE_A("Peak kVA Frozen Rate A", AttributeGroup.REACTIVE),
     PEAK_KVA_FROZEN_RATE_B("Peak kVA Frozen Rate B", AttributeGroup.REACTIVE),
     PEAK_KVA_FROZEN_RATE_C("Peak kVA Frozen Rate C", AttributeGroup.REACTIVE),
     PEAK_KVA_FROZEN_RATE_D("Peak kVA Frozen Rate D", AttributeGroup.REACTIVE),
     PEAK_KVA_COIN("Peak kVA Coincidental", AttributeGroup.REACTIVE),
+    DELIVERED_PEAK_KVA_LAGGING("Delivered Peak kVA Lagging", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVA("Received Peak kVA", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVA_RATE_A("Received Peak kVA Rate A", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVA_RATE_B("Received Peak kVA Rate B", AttributeGroup.REACTIVE),
@@ -212,9 +223,57 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     AVERAGE_RECEIVED_POWER_FACTOR("Average Received Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR("Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR_COIN("Power Factor Coincidental", AttributeGroup.REACTIVE),
+
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA("Coincident Power Factor at Delivered Peak kVA", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A("Coincident Power Factor at Delivered Peak kVA Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_B("Coincident Power Factor at Delivered Peak kVA Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_C("Coincident Power Factor at Delivered Peak kVA Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_D("Coincident Power Factor at Delivered Peak kVA Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR("Coincident Power Factor at Delivered Peak kVAr", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_A("Coincident Power Factor at Delivered Peak kVAr Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_B("Coincident Power Factor at Delivered Peak kVAr Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_C("Coincident Power Factor at Delivered Peak kVAr Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_D("Coincident Power Factor at Delivered Peak kVAr Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW("Coincident Power Factor at Delivered Peak kW", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_A("Coincident Power Factor at Delivered Peak kW Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_B("Coincident Power Factor at Delivered Peak kW Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_D("Coincident Power Factor at Delivered Peak kW Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_C("Coincident Power Factor at Delivered Peak kW Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA("Coincident Power Factor at Received Peak kVA", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_A("Coincident Power Factor at Received Peak kVA Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_B("Coincident Power Factor at Received Peak kVA Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_C("Coincident Power Factor at Received Peak kVA Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_D("Coincident Power Factor at Received Peak kVA Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR("Coincident Power Factor at Received Peak kVAr", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_A("Coincident Power Factor at Received Peak kVAr Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_B("Coincident Power Factor at Received Peak kVAr Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_C("Coincident Power Factor at Received Peak kVAr Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_D("Coincident Power Factor at Received Peak kVAr Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW("Coincident Power Factor at Received Peak kW", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_A("Coincident Power Factor at Received Peak kW Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_B("Coincident Power Factor at Received Peak kW Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_C("Coincident Power Factor at Received Peak kW Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_D("Coincident Power Factor at Received Peak kW Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVA("Coincident Power Factor at Sum Peak kVA", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_A("Coincident Power Factor at Sum Peak kVA Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_B("Coincident Power Factor at Sum Peak kVA Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_C("Coincident Power Factor at Sum Peak kVA Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_D("Coincident Power Factor at Sum Peak kVA Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR("Coincident Power Factor at Sum Peak kVAr", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_A("Coincident Power Factor at Sum Peak kVAr Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_B("Coincident Power Factor at Sum Peak kVAr Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_C("Coincident Power Factor at Sum Peak kVAr Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_D("Coincident Power Factor at Sum Peak kVAr Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_A("Coincident Power Factor at Sum Peak kW Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_B("Coincident Power Factor at Sum Peak kW Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_C("Coincident Power Factor at Sum Peak kW Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_D("Coincident Power Factor at Sum Peak kW Rate D", AttributeGroup.REACTIVE),
+
     AVERAGE_POWER_FACTOR_Q124("Average Power Factor (Quadrants 1 2 4)", AttributeGroup.REACTIVE),
     AVERAGE_POWER_FACTOR_Q234("Average Power Factor (Quadrants 2 3 4)", AttributeGroup.REACTIVE),
+    AVERAGE_POWER_FACTOR_Q1234("Average Power Factor (Quadrants 1 2 3 4)", AttributeGroup.REACTIVE),
     AVERAGE_POWER_FACTOR("Average Power Factor", AttributeGroup.REACTIVE),
+    AVERAGE_POWER_FACTOR_FROZEN("Average Power Factor Frozen", AttributeGroup.REACTIVE),
     POWER_FACTOR_ANGLE_PHASE_A("Power Factor Angle (Phase A)", AttributeGroup.REACTIVE),
     POWER_FACTOR_ANGLE_PHASE_B("Power Factor Angle (Phase B)", AttributeGroup.REACTIVE),
     POWER_FACTOR_ANGLE_PHASE_C("Power Factor Angle (Phase C)", AttributeGroup.REACTIVE),
@@ -238,7 +297,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_1_SHED_TIME_DATA_LOG_5_MIN("Relay 1 Shed Time Data Log 5 Minutes", AttributeGroup.RELAY),
     RELAY_1_SHED_TIME_DATA_LOG_15_MIN("Relay 1 Shed Time Data Log 15 Minutes", AttributeGroup.RELAY),
     RELAY_1_SHED_TIME_DATA_LOG_30_MIN("Relay 1 Shed Time Data Log 30 Minutes", AttributeGroup.RELAY),
-    RELAY_1_RELAY_STATE("Relay 1 Relay State", AttributeGroup.RELAY),
+    RELAY_1_LOAD_STATE("Relay 1 Load State", AttributeGroup.RELAY),
     RELAY_2_CALL_FOR_COOL("Relay 2 Call for Cool", AttributeGroup.RELAY),
     RELAY_2_LOAD_SIZE("Relay 2 kW Load Size", AttributeGroup.RELAY),
     RELAY_2_REMAINING_CONTROL("Relay 2 Remaining Control Time", AttributeGroup.RELAY),
@@ -251,7 +310,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_2_SHED_TIME_DATA_LOG_5_MIN("Relay 2 Shed Time Data Log 5 Minutes", AttributeGroup.RELAY),
     RELAY_2_SHED_TIME_DATA_LOG_15_MIN("Relay 2 Shed Time Data Log 15 Minutes", AttributeGroup.RELAY),
     RELAY_2_SHED_TIME_DATA_LOG_30_MIN("Relay 2 Shed Time Data Log 30 Minutes", AttributeGroup.RELAY),
-    RELAY_2_RELAY_STATE("Relay 2 Relay State", AttributeGroup.RELAY),
+    RELAY_2_LOAD_STATE("Relay 2 Load State", AttributeGroup.RELAY),
     RELAY_3_CALL_FOR_COOL("Relay 3 Call for Cool", AttributeGroup.RELAY),
     RELAY_3_LOAD_SIZE("Relay 3 kW Load Size", AttributeGroup.RELAY),
     RELAY_3_REMAINING_CONTROL("Relay 3 Remaining Control Time", AttributeGroup.RELAY),
@@ -264,7 +323,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_3_SHED_TIME_DATA_LOG_5_MIN("Relay 3 Shed Time Data Log 5 Minutes", AttributeGroup.RELAY),
     RELAY_3_SHED_TIME_DATA_LOG_15_MIN("Relay 3 Shed Time Data Log 15 Minutes", AttributeGroup.RELAY),
     RELAY_3_SHED_TIME_DATA_LOG_30_MIN("Relay 3 Shed Time Data Log 30 Minutes", AttributeGroup.RELAY),
-    RELAY_3_RELAY_STATE("Relay 3 Relay State", AttributeGroup.RELAY),
+    RELAY_3_LOAD_STATE("Relay 3 Load State", AttributeGroup.RELAY),
     RELAY_4_CALL_FOR_COOL("Relay 4 Call for Cool", AttributeGroup.RELAY),
     RELAY_4_LOAD_SIZE("Relay 4 kW Load Size", AttributeGroup.RELAY),
     RELAY_4_REMAINING_CONTROL("Relay 4 Remaining Control Time", AttributeGroup.RELAY),
@@ -277,7 +336,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_4_SHED_TIME_DATA_LOG_5_MIN("Relay 4 Shed Time Data Log 5 Minutes", AttributeGroup.RELAY),
     RELAY_4_SHED_TIME_DATA_LOG_15_MIN("Relay 4 Shed Time Data Log 15 Minutes", AttributeGroup.RELAY),
     RELAY_4_SHED_TIME_DATA_LOG_30_MIN("Relay 4 Shed Time Data Log 30 Minutes", AttributeGroup.RELAY),
-    RELAY_4_RELAY_STATE("Relay 4 Relay State", AttributeGroup.RELAY),
+    RELAY_4_LOAD_STATE("Relay 4 Load State", AttributeGroup.RELAY),
     REPORTING_INTERVAL("Reporting Interval", AttributeGroup.OTHER),
     REVERSE_INDUCTIVE_KVARH("Reverse Inductive kVArh", AttributeGroup.REACTIVE, false),   //440 types only
     REVERSE_POWER_FLAG("Reverse Power Flag", AttributeGroup.STATUS),
@@ -348,6 +407,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RECEIVED_KWH_RATE_D("Received kWh Rate D", AttributeGroup.USAGE),
     RECEIVED_KWH_RATE_E("Received kWh Rate E", AttributeGroup.USAGE),
     RECEIVED_KVAH("Received kVAh", AttributeGroup.USAGE),
+    RECEIVED_KVAH_Q234("Received kVAh (Quadrants 2 3 4)", AttributeGroup.USAGE),
 
     NET_KWH("Net kWh", AttributeGroup.USAGE),
     NET_KWH_RATE_A("Net kWh Rate A", AttributeGroup.USAGE),
@@ -370,9 +430,25 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     USAGE_PER_INTERVAL("Usage per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     DELIVERED_KWH_PER_INTERVAL("Delivered kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    DELIVERED_KWH_RATE_A_PER_INTERVAL("Delivered kWh Rate A per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    DELIVERED_KWH_RATE_B_PER_INTERVAL("Delivered kWh Rate B per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    DELIVERED_KWH_RATE_C_PER_INTERVAL("Delivered kWh Rate C per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    DELIVERED_KWH_RATE_D_PER_INTERVAL("Delivered kWh Rate D per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     RECEIVED_KWH_PER_INTERVAL("Received kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    RECEIVED_KWH_RATE_A_PER_INTERVAL("Received kWh Rate A per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_B_PER_INTERVAL("Received kWh Rate B per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_C_PER_INTERVAL("Received kWh Rate C per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_D_PER_INTERVAL("Received kWh Rate D per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     SUM_KWH_PER_INTERVAL("Sum kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_A_PER_INTERVAL("Sum kWh Rate A per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_B_PER_INTERVAL("Sum kWh Rate B per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_C_PER_INTERVAL("Sum kWh Rate C per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_D_PER_INTERVAL("Sum kWh Rate D per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     NET_KWH_PER_INTERVAL("Net kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    NET_KWH_RATE_A_PER_INTERVAL("Net kWh Rate A per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    NET_KWH_RATE_B_PER_INTERVAL("Net kWh Rate B per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    NET_KWH_RATE_C_PER_INTERVAL("Net kWh Rate C per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    NET_KWH_RATE_D_PER_INTERVAL("Net kWh Rate D per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     SUM_KVAH_PER_INTERVAL("Sum kVAh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     DELIVERED_KVARH_PER_INTERVAL("Delivered kVArh per Interval", AttributeGroup.REACTIVE, false),   //calculated, not readable
     SUM_KVARH_PER_INTERVAL("Sum kVArh per Interval", AttributeGroup.REACTIVE, false),   //calculated, not readable
@@ -384,15 +460,35 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     REVERSE_CAPACITIVE_KVARH_PER_INTERVAL("Reverse Capacitive kVArh per Interval", AttributeGroup.REACTIVE, false),   //440 types only
 
     DELIVERED_KW_LOAD_PROFILE("Delivered kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_A_LOAD_PROFILE("Delivered kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_B_LOAD_PROFILE("Delivered kW Rate B Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_C_LOAD_PROFILE("Delivered kW Rate C Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_D_LOAD_PROFILE("Delivered kW Rate D Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     DELIVERED_KVAR_LOAD_PROFILE("Delivered kVAr Load Profile", AttributeGroup.PROFILE, false),//calculated, not readable
     RECEIVED_KW_LOAD_PROFILE("Received kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_A_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_B_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_C_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_D_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KW_LOAD_PROFILE("Sum kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_A_LOAD_PROFILE("Sum kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_B_LOAD_PROFILE("Sum kW Rate B Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_C_LOAD_PROFILE("Sum kW Rate C Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_D_LOAD_PROFILE("Sum kW Rate D Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     NET_KW_LOAD_PROFILE("Net kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_A_LOAD_PROFILE("Net kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_B_LOAD_PROFILE("Net kW Rate B Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_C_LOAD_PROFILE("Net kW Rate C Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_D_LOAD_PROFILE("Net kW Rate D Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     KVA_LOAD_PROFILE("kVA Load Profile", AttributeGroup.PROFILE, false), //calculated, not readable
 
     NET_KVARH("Net kVArh", AttributeGroup.REACTIVE),
+    NET_KVARH_RATE_A("Net kVArh Rate A", AttributeGroup.REACTIVE),
+    NET_KVARH_RATE_B("Net kVArh Rate B", AttributeGroup.REACTIVE),
+    NET_KVARH_RATE_C("Net kVArh Rate C", AttributeGroup.REACTIVE),
+    NET_KVARH_RATE_D("Net kVArh Rate D", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH("Net Delivered kVArh", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH_RATE_A("Net Delivered kVArh Rate A", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH_RATE_B("Net Delivered kVArh Rate B", AttributeGroup.REACTIVE),
@@ -495,6 +591,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     TIME_SYNC_FAILED("Time Sync Failed", AttributeGroup.RFN_OTHER_EVENT, false),
     TOU_SCHEDULE_CHANGE("TOU Schedule Change", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     TOU_SCHEDULE_ERROR("TOU Schedule Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    ULTRA_CAPACITOR_BAD("Ultra Capacitor Bad", AttributeGroup.RFN_HARDWARE_EVENT, false),
     UNCONFIGURED("Unconfigured", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     UNPROGRAMMED("Unprogrammed", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED("User Programmable Temperature Threshold Exceeded", AttributeGroup.RFN_METERING_EVENT, false),
@@ -532,7 +629,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RADIO_FAILURE("Radio Failure", AttributeGroup.RFN_OTHER_EVENT, false),
     DOOR_OPEN("Door Open", AttributeGroup.RFN_OTHER_EVENT, false),
     NODE_COUNT_EXCEEDED("Node Count Exceeded", AttributeGroup.RFN_OTHER_EVENT, false),
-    
+    UPS_BATTERY_VOLTAGE_LOW("UPS Battery Voltage Low", AttributeGroup.RFN_OTHER_EVENT, false),
+    CERTIFICATE_EXPIRATION("Certificate Expiration", AttributeGroup.RFN_OTHER_EVENT, false),
+    HIGH_DISK_USAGE("High Disk Usage", AttributeGroup.RFN_OTHER_EVENT, false),
+    RTC_BATTERY_FAILURE("RTC Battery Failure", AttributeGroup.RFN_OTHER_EVENT, false),
+    AC_POWER_FAILURE("AC Power Failure", AttributeGroup.RFN_OTHER_EVENT, false),
+
     // Gateway Statistics
     STREAMING_CAPABLE_DEVICE_COUNT("Connected Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
     STREAMING_ACTIVE_DEVICE_COUNT("Streaming Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
@@ -656,12 +758,21 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     REVERSE_BANDWIDTH("Reverse Bandwidth", AttributeGroup.CAPCONTROL, false),
     REVERSE_SET_POINT("Reverse Set Point", AttributeGroup.CAPCONTROL, false),
     REVERSE_FLOW_INDICATOR("Reverse Flow Indicator", AttributeGroup.CAPCONTROL, false),
-    
+
+    CONFIGURATION_UPDATED_HASH("Configuration Updated Hash", AttributeGroup.ITRON, false),
+    EVENT_CANCELLED("Event Cancelled", AttributeGroup.ITRON, false),
+    EVENT_RECEIVED("Event Received", AttributeGroup.ITRON, false),
+    EVENT_STARTED("Event Started", AttributeGroup.ITRON, false),
+    EVENT_STOPPED("Event Stopped", AttributeGroup.ITRON, false),
     EVENT_SUPERSEDED("Event Superseded", AttributeGroup.ITRON, false),
     MEMORY_MAP_LOST("Memory Map Lost", AttributeGroup.ITRON, false),
-    CONFIGURATION_UPDATED_HASH("Configuration Updated Hash", AttributeGroup.ITRON, false),
     RADIO_LINK_QUALITY("Radio Link Quality", AttributeGroup.ITRON, false),
-    EVENT_RECEIVED("Event Received", AttributeGroup.ITRON, false),
+
+    // Eaton Cloud attribute mapping for PXMiddleware / Cellular LCR
+    COMMS_LOSS_COUNT("Comms Loss Count", AttributeGroup.SYSTEM),
+    FIRMWARE_UPDATE_STATUS("Firmware Update Status", AttributeGroup.SYSTEM),
+    FREQUENCY("Frequency", AttributeGroup.OTHER),
+    RELAY_1_ACTIVATION_STATUS("Relay 1 Activation Status", AttributeGroup.RELAY)
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
@@ -694,6 +805,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static Set<BuiltInAttribute> voltageAttributes;
     
     private static Set<BuiltInAttribute> itronLcrAttributes;
+    
+    private static Set<BuiltInAttribute> calculableAttributes;
 
     static {
 
@@ -717,6 +830,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         buildRelayDataAttributes();
         buildVoltageAttributes();
         buildItronLcrAttributes();
+        buildCalculableAttributes();
     }
 
     /**
@@ -775,6 +889,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static void buildRfnEventAttributeSets() {
 
         nonIntervalAttributes = ImmutableSet.of(
+                AVERAGE_POWER_FACTOR_FROZEN,
                 MAXIMUM_VOLTAGE,
                 MAXIMUM_VOLTAGE_DAILY,
                 MINIMUM_VOLTAGE,
@@ -1003,10 +1118,49 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                             FIRMWARE_VERSION, 
                                             RADIO_LINK_QUALITY,
                                             EVENT_RECEIVED,
+                                            EVENT_STARTED,
+                                            EVENT_CANCELLED,
+                                            EVENT_STOPPED,
+                                            EVENT_SUPERSEDED,
                                             CONTROL_STATUS,
                                             AVERAGE_VOLTAGE,
                                             SERVICE_STATUS,
                                             MEMORY_MAP_LOST);
+    }
+
+    /*
+     * These attributes are used as the basis of several calculated points in Yukon
+     * If rfnMeteringContext is updated with more PerIntervalAndLoadProfileCalculator beans
+     * then this list must be updated with the basedOn attributes
+     */
+    private static void buildCalculableAttributes() {
+
+        calculableAttributes = ImmutableSet.of(SUM_KWH,
+                                               DELIVERED_KWH,
+                                               RECEIVED_KWH,
+                                               NET_KWH,
+                                               SUM_KVARH,
+                                               SUM_KVAH,
+                                               KVARH,
+                                               USAGE_WATER,
+                                               USAGE_GAS,
+                                               KVAH,
+                                               DELIVERED_KWH_RATE_A,
+                                               DELIVERED_KWH_RATE_B,
+                                               DELIVERED_KWH_RATE_C,
+                                               DELIVERED_KWH_RATE_D,
+                                               RECEIVED_KWH_RATE_A,
+                                               RECEIVED_KWH_RATE_B,
+                                               RECEIVED_KWH_RATE_C,
+                                               RECEIVED_KWH_RATE_D,
+                                               SUM_KWH_RATE_A,
+                                               SUM_KWH_RATE_B,
+                                               SUM_KWH_RATE_C,
+                                               SUM_KWH_RATE_D,
+                                               NET_KWH_RATE_A,
+                                               NET_KWH_RATE_B,
+                                               NET_KWH_RATE_C,
+                                               NET_KWH_RATE_D);
     }
 
     private String defaultDescription;
@@ -1106,6 +1260,13 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     public static Set<BuiltInAttribute> getItronLcrAttributes() {
         return itronLcrAttributes;
+    }
+
+    /**
+     * Returns the attributes that other calculated attributes are based upon
+     */
+    public static Set<BuiltInAttribute> getCalculableAttributes() {
+        return calculableAttributes;
     }
 
     @Override

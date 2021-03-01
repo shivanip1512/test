@@ -107,6 +107,7 @@
     <ClCompile Include="PointValueHolder.cpp" />
     <ClCompile Include="Policy.cpp" />
     <ClCompile Include="RegulatorEvents.cpp" />
+    <ClCompile Include="Requests.cpp" />
     <ClCompile Include="ScanPolicy.cpp" />
     <ClCompile Include="StandardControlPolicy.cpp" />
     <ClCompile Include="StandardScanPolicy.cpp" />
@@ -120,6 +121,9 @@
     <ClCompile Include="Zone.cpp" />
     <ClCompile Include="ZoneLoader.cpp" />
     <ClCompile Include="ZoneManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Requests.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -213,13 +217,14 @@
       <ConformanceMode>false</ConformanceMode>
       <ProgramDataBaseFileName>$(SolutionDir)pdb\$(TargetName).pdb</ProgramDataBaseFileName>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;advapi32.lib;..\lib\service.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;..\lib\ctiholidaydb.lib;..\lib\ctiseasondb.lib;..\lib\ctidbsrc.lib;..\lib\ctithriftmsg.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;advapi32.lib;..\lib\service.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;..\lib\ctiholidaydb.lib;..\lib\ctiseasondb.lib;..\lib\ctidbsrc.lib;..\lib\ctithriftmsg.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LargeAddressAware>true</LargeAddressAware>
       <ProgramDatabaseFile>$(SolutionDir)pdb\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
@@ -229,7 +234,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
       <WarningLevel>Level1</WarningLevel>
-      <SDLCheck></SDLCheck>
+      <SDLCheck>
+      </SDLCheck>
       <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\capcontrol\include;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\Serialization;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;..\service\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_LIB;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WINDOWS;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=capcontrol-common;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
@@ -243,11 +249,12 @@
       <ProgramDataBaseFileName>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;advapi32.lib;..\lib-debug\service.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctiholidaydb.lib;..\lib-debug\ctiseasondb.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctithriftmsg.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;advapi32.lib;..\lib-debug\service.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctiholidaydb.lib;..\lib-debug\ctiseasondb.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctithriftmsg.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>

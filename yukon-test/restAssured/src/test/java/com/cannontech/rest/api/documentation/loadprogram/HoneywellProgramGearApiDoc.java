@@ -89,7 +89,7 @@ public class HoneywellProgramGearApiDoc {
                 fieldWithPath("gears[].fields.rampInOut").type(JsonFieldType.BOOLEAN).description("RampInOut"),
                 fieldWithPath("gears[].fields.controlPercent").type(JsonFieldType.NUMBER).description("Control Percent. Min Value: 5, Max Value: 100"),
                 fieldWithPath("gears[].fields.cyclePeriodInMinutes").type(JsonFieldType.NUMBER).description("Cycle Period"),
-                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).ignored().description("How To Stop Control"),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How To Stop Control"),
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER).description("Capacity Reduction. Min Value: 0, Max Value: 100"),
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
@@ -105,12 +105,12 @@ public class HoneywellProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(honeywellCycleDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
     
     @Test
@@ -119,7 +119,7 @@ public class HoneywellProgramGearApiDoc {
 
         FieldDescriptor[] honeywellSetpointDescriptor = new FieldDescriptor[] {
                 fieldWithPath("gears[].fields.mandatory").type(JsonFieldType.BOOLEAN).description("Mandatory"),
-                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).ignored().description("How To Stop Control"),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How To Stop Control"),
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER).description("Capacity Reduction. Min Value: 0, Max Value: 100"),
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
@@ -137,19 +137,19 @@ public class HoneywellProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(honeywellSetpointDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @AfterClass
     public void cleanUp() {
-        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
-            ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            ApiCallHelper.delete("loadGroups", "/" + group.getId());
         });
     }
 

@@ -21,7 +21,7 @@
     <!-- Device Configuration -->
     <c:if test="${configurableDevice}">
         <tags:nameValueContainer2 tableClass="spaced-form-controls">
-            <tags:nameValue2 nameKey=".currentConfiguration" nameColumnWidth="160px">
+            <tags:nameValue2 nameKey=".assignedConfiguration" nameColumnWidth="160px">
                 ${fn:escapeXml(currentConfigName)}
                 <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
                     <c:if test="${not empty currentConfigId}">
@@ -35,8 +35,14 @@
                     <span class="js-status"><i class="icon icon-spinner"></i></span>
                     <cti:msg2 var="actionsDisabledMessage" key=".actionsDisabledMessage"/>
                     <input id="actionsDisabledMessage" type="hidden" value="${actionsDisabledMessage}"/>
-                    <div class="dn js-out-of-sync-popup" data-dialog data-cancel-omit="true" data-title="<cti:msg2 key="yukon.web.modules.tools.configs.summary.outOfSync"/>" 
-                        data-width="600"></div>
+                    <cti:url var="outOfSyncUrl" value="/deviceConfiguration/summary/${deviceId}/outOfSync"/>
+                    <div class="dn js-out-of-sync-popup" data-title="<cti:msg2 key="yukon.web.modules.tools.configs.summary.outOfSync"/>" 
+                        data-width="550" data-url="${outOfSyncUrl}" data-destroy-dialog-on-close></div>
+                    <cti:msg2 var="lastErrorHoverText" key=".viewLastError"/>
+                    <cti:msg2 var="errorPopupTitle" key="yukon.web.modules.tools.configs.summary.failure"/>
+                    <span class="js-last-error dn" title="${lastErrorHoverText}" data-popup-title="${errorPopupTitle}">
+                        <cti:icon icon="icon-exclamation fn ML0 vam cp"/>
+                    </span>
                 </tags:nameValue2>
                 
                 <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
@@ -61,7 +67,8 @@
                     <cti:button nameKey="change" busy="true" classes="js-change-config js-config-action-btns fn vam" data-device-id="${deviceId}"/>
                     <cti:msg2 var="uploadTitle" key=".uploadPopup.title"/>
                     <cti:msg2 var="uploadButton" key=".upload.label"/>
-                    <div id="uploadPopup" data-dialog class="dn" data-title="${uploadTitle}" data-upload-btn="${uploadButton}">
+                    <div id="uploadPopup" data-dialog class="dn" data-title="${uploadTitle}" data-ok-text="${uploadButton}" data-event="yukon:config:upload"
+                        data-destroy-dialog-on-close data-width="400">
                         <span class=js-upload-msg></span>
                     </div>
                 </tags:nameValue2>
@@ -80,9 +87,11 @@
                             <c:when test="${dataStreamingConfig != null}">
                                 <a href="javascript:void(0);" data-popup="#data-streaming-popup">
                                     ${fn:escapeXml(dataStreamingConfig.name)}
-                                    <cti:url var="discrepancyUrl" value="/tools/dataStreaming/discrepancies"/>
-                                    <cti:msg2 var="viewDiscrepancy" key="yukon.web.modules.tools.dataStreaming.discrepancies.viewDiscrepancy"/>
-                                    <cti:icon icon="icon-error fn ML0" href="${discrepancyUrl}" title="${viewDiscrepancy}"/>
+                                    <c:if test="${dataStreamingDiscrepancy != null}">
+                                        <cti:url var="discrepancyUrl" value="/tools/dataStreaming/discrepancies"/>
+                                        <cti:msg2 var="viewDiscrepancy" key="yukon.web.modules.tools.dataStreaming.discrepancies.viewDiscrepancy"/>
+                                        <cti:icon icon="icon-error fn ML0" href="${discrepancyUrl}" title="${viewDiscrepancy}"/>
+                                    </c:if>
                                 </a>
                             </c:when>
                             <c:otherwise>

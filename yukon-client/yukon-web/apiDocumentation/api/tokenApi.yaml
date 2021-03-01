@@ -1,0 +1,27 @@
+token-generate:
+  post:
+      tags:
+        - Token Generation
+      summary: Log in and generate token
+      description: API to Generate a token and set it for authorization.
+      requestBody:
+        description: |-
+          Send the users username and password to retrive an API token.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/tokenSchema.yaml#/Token-Generate-Request'
+            examples:
+              Login: 
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/Login'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'
+              examples:
+                Token: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'

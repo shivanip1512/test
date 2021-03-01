@@ -1,3 +1,5 @@
+ @import (less) "classpath:com/cannontech/colors.less";
+ 
 /*
     This file defines the basic look and feel of Yukon.
     This file can be included on consumer pages to reuse container styles.
@@ -40,17 +42,6 @@
 @primary-color: #06c;
 @font-color: #555;
 @visited-color: #04a;
-
-@red: #d14836;
-@green: #093;
-@light-green: #5cb85c;
-@blue: #1f4cff;
-@light-blue: #849ddf;
-@orange: #ec971f;
-@grey: #888;
-@pie-blue: #4d90fe;
-@pie-green: #009933;
-@white: #ffffff;
 
 @border-radius: 2px;
 @form-control-height: 26px;
@@ -147,12 +138,12 @@ a,
 .primary-background .highlight {
     color: @orange;
 }
-.alert { background-color: #ffcccc !important; }
+.alert { background-color: @pink !important; }
 .txt-color-white { color: @white; }
-.bg-color-pie-green { background-color: @pie-green; }
+.bg-color-green { background-color: @green; }
 .bg-color-orange { background-color: @orange; }
-.bg-color-pie-blue { background-color: @pie-blue; }
-.bg-color-grey { background-color: @grey; }
+.bg-color-blue { background-color: @blue; }
+.bg-color-grey { background-color: @gray; }
 
 
 /* FORM FIELDS */
@@ -987,18 +978,15 @@ a.pipe-selector.selected {color: @font-color; cursor: default;}
 ol.error{ list-style-type: none; }
 .green, 
 .success { color: @green !important; }
-.light-blue { color: @light-blue; }
 .blue { color: @blue !important; }
 .orange, 
 .warning { color: @orange !important; }
-.pie-blue { color: @pie-blue !important; }
-.pie-green { color: @pie-green !important; }
 
 .gray, 
 .grey, 
 .disabled, 
 .disabled a { 
-    color: @grey !important; 
+    color: @gray !important; 
     cursor: default;
 }
 
@@ -1012,9 +1000,9 @@ ol.error{ list-style-type: none; }
 /* CIRCLES */
 .small-circle { border-radius: 50%; width: 12px; height: 12px; }
 .green-background { background: @green; }
-.blue-background { background: @pie-blue; }
+.blue-background { background: @blue; }
 .orange-background { background: @orange; }
-.grey-background { background: @grey; }
+.grey-background { background: @gray; }
 
 .small-rectangle { 
     width: 20px;
@@ -1055,10 +1043,7 @@ ol.error{ list-style-type: none; }
 
 .user-message {
     position: relative;
-    padding: 5px 10px 5px 30px;
-    border-radius: @border-radius;
-    border-width: 1px;
-    border-style: solid;
+    padding: 10px 10px 10px 30px;
     margin-bottom: 10px;
     line-height: normal;
 }
@@ -1066,31 +1051,34 @@ ol.error{ list-style-type: none; }
     content: '';
     position: absolute;
     left: 7px;
-    top: 5px;
+    top: 10px;
     width: 16px;
     height: 16px;
     background-image: url('../Icons/icons.png');
 }
 
 .user-message.error {
-    background: pink;
-    border-color:@red;
+    background: #f9e8e8;
+    color: #6e0414 !important;
 }
 .user-message.error:before {
     background-position: -512px -144px;
 }
 
 .user-message.success {
-    background: #c3fdb8;
-    border-color: @green;
+    background: #e7f6e4;
+    color: #1c5b16 !important;
 }
 
-.user-message.info, .user-message.pending {
-    background: #dde5ff;
-    border-color: #849ddf;
+.user-message.info, .user-message.pending, .user-message.help {
+    background: #e0f1fd;
+    color: #002f55 !important;
 }
 .user-message.info:before {
     background-position: -96px -192px;
+}
+.user-message.help:before {
+    background-position: -416px -176px;
 }
 .user-message.pending:before {
     background-image: url(../Icons/spinner.gif);
@@ -1098,8 +1086,8 @@ ol.error{ list-style-type: none; }
 }
 
 .user-message.warning {
-    background: #ffffda; 
-    border-color: @orange;
+    background: #feefe4;
+    color: #774e08 !important;
 }
 .user-message.warning:before {
     background-position: -448px -144px;
@@ -1124,17 +1112,20 @@ textarea.error {
     border: 1px solid white;
     margin: 1px 0 0 0;
     
+    /* These match the YukonColorPalette.name strings and hex color*/
     &.green {background-color: @green;}
-    &.red {background-color: @red;}
-    &.white {background-color: white;}
-    &.yellow {background-color: yellow;}
-    &.blue {background-color: blue;}
-    &.cyan {background-color: cyan;}
-    &.black {background-color: black;}
+    &.red {background-color: @red;}         /* this isn't a valid color, but we may not have found all the hard-coded text in code*/
+    &.wine {background-color: @wine;}
+    &.white {background-color: @white;}
+    &.yellow {background-color: @yellow;}
+    &.blue {background-color: @blue;}
+    &.teal{background-color: @teal;}
+    &.black {background-color: @black;}
     &.orange {background-color: @orange;}
-    &.magenta {background-color: magenta;}
-    &.gray {background-color: gray;}
-    &.pink {background-color: pink;}
+    &.sage {background-color: @sage;}
+    &.gray {background-color: @gray;}
+    &.purple {background-color: @purple;}
+    &.sky{background-color: @sky;}
 }
 .ie .state-box { outline: 1px solid #bbb; }
 .no-ie .state-box { box-shadow: 0px 0px 0px 1px #bbb; }

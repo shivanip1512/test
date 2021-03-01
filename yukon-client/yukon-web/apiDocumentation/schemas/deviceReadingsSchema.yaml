@@ -1,0 +1,123 @@
+deviceReadingsSelectors:
+  title: Device Readings
+  type: object
+  properties:
+    deviceReadingsSelectors:
+      type: array
+      items:
+        required:
+          - identifier
+          - attributes
+        type: object
+        properties:
+          identifier:
+            $ref: '#/identifier'
+          attributes:
+            type: array
+            items:
+              type: string
+              description: 'Attributes supported by identifier type.'
+              enum:
+                - BLINK_COUNT
+                - COMM_STATUS
+                - CONTROL_STATUS
+                - NEUTRAL_CURRENT
+                - OUTAGE_STATUS
+                - TOTAL_LUF_COUNT
+                - DELIVERED_KWH
+                - RECEIVED_KWH
+identifier:
+  type: object
+  required:
+    - value
+    - identifierType
+  properties:
+    value:
+      type: string
+      maxLength: 40
+      description: 'Value of specified identifierType.'
+    identifierType:
+      type: string
+      default: METERNUMBER
+      description: 'Identifier Types for point data.'
+      enum:
+        - METERNUMBER
+        - PAONAME
+        - PAOID
+        - SERIALNUMBER
+
+DeviceReadings:
+  title: Device Readings Response
+  type: object
+  properties:
+    DeviceReadings:
+        type: array
+        items:
+          type: object
+          properties:
+            deviceReadingResponse:
+              type: array
+              items:
+                type: object
+                properties:
+                  identifier:
+                    $ref: '#/identifier'
+                  pointId:
+                    type: integer
+                    description: 'Unique identifier for Point.'
+                  attribute: 
+                    type: string
+                    description: 'Attribute (type of point data) requested for specified device.'
+                  type:
+                    type: number
+                    description: 'Type of the point.'
+                  value:
+                    type: double
+                    format: double
+                    description: 'Point Value.'
+                  pointQuality:
+                    type: string
+                    description: 'Point Quality.'
+                    enum:
+                      - Uninitialized
+                      - NonUpdated
+                      - Manual
+                      - Normal
+                      - Abnormal
+                      - Unknown
+                      - Invalid
+                      - PartialInterval
+                      - DeviceFiller
+                      - Questionable
+                      - Overflow
+                      - Powerfail
+                      - Unreasonable
+                      - Constant
+                      - Estimated
+                  time:
+                    type: string
+                    format: date-type
+                    description: 'Date in yyyy-MM-dd HH:mm:ss.SSSZZ format.'
+components:
+  examples:
+    deviceReadingsSelectors:
+      value:
+        deviceReadingsSelectors:
+          - identifier:
+             value: '43043'
+             identifierType: PAOID
+            attributes:
+              - CONTROL_STATUS
+    DeviceReadings:
+      value:
+        DeviceReadings:
+          - deviceReadingResponse:
+              - identifier:
+                  value: '43043'
+                  identifierType: PAOID
+                attribute: CONTROL_STATUS
+                pointId: 198618
+                type: 0
+                pointQuality: Uninitialized
+                value: 0
+                time: '2010-01-01T06:30:00.000+0000'

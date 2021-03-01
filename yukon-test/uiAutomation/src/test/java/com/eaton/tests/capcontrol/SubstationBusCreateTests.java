@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -22,48 +21,50 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
     private SubstationBusCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
-        
-        driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_BUS_CREATE);
+        setRefreshPage(false);
 
+        navigate(Urls.CapControl.SUBSTATION_BUS_CREATE);
         createPage = new SubstationBusCreatePage(driverExt);
     }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
+    }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
+    public void substationBusCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Bus";
-        
+
         String actualPageTitle = createPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
-    public void createSubstationBusRequiredFieldsOnlySuccess() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
+    public void substationBusCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(false);
         final String EXPECTED_MSG = "Bus was saved successfully.";
-        
+
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        
+
         String name = "AT Bus " + timeStamp;
         createPage.getName().setInputValue(name);
-        
+
         createPage.getSaveBtn().click();
-        
+
         waitForPageToLoad("Bus: " + name, Optional.empty());
-        
+
         SubstationBusDetailPage detailsPage = new SubstationBusDetailPage(driverExt);
-        
+
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }    
-    
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
-        refreshPage(createPage);
     }
 }

@@ -7,6 +7,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupDisconnect;
+import com.cannontech.common.dr.setup.LoadGroupEatonCloud;
 import com.cannontech.common.dr.setup.LoadGroupEcobee;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
@@ -15,6 +16,7 @@ import com.cannontech.common.dr.setup.LoadGroupItron;
 import com.cannontech.common.dr.setup.LoadGroupMCT;
 import com.cannontech.common.dr.setup.LoadGroupNest;
 import com.cannontech.common.dr.setup.LoadGroupPoint;
+import com.cannontech.common.dr.setup.LoadGroupRFNExpresscom;
 import com.cannontech.common.dr.setup.LoadGroupRipple;
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.pao.PaoType;
@@ -38,8 +40,10 @@ public class LoadGroupBaseConverter implements Converter<String, LoadGroupBase> 
         }
         switch (paoType) {
         case LM_GROUP_EXPRESSCOMM:
-        case LM_GROUP_RFN_EXPRESSCOMM:
             loadGroup = new LoadGroupExpresscom();
+            break;
+        case LM_GROUP_RFN_EXPRESSCOMM:
+            loadGroup = new LoadGroupRFNExpresscom();
             break;
         case LM_GROUP_ITRON:
             loadGroup = new LoadGroupItron();
@@ -73,6 +77,9 @@ public class LoadGroupBaseConverter implements Converter<String, LoadGroupBase> 
             break;
         case LM_GROUP_POINT:
             loadGroup = new LoadGroupPoint();
+            break;
+        case LM_GROUP_EATON_CLOUD:
+            loadGroup = new LoadGroupEatonCloud();
             break;
         }
         return loadGroup;

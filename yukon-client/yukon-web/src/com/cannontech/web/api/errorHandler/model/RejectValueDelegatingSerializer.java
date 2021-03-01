@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.joda.time.DateTime;
 
-import com.cannontech.common.trend.model.DateSerializer;
+import com.cannontech.common.util.DateSerializer;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -18,8 +18,8 @@ public class RejectValueDelegatingSerializer extends JsonSerializer<Object> {
     public void serialize(Object type, JsonGenerator gen, SerializerProvider provider) throws IOException {
         if (type instanceof DateTime) {
             new DateSerializer().serialize((DateTime) type, gen, provider);
+        } else {
+            gen.writeString(type.toString());
         }
-
-        // If no match found default serializer is used.
     }
 }

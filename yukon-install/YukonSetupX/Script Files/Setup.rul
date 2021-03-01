@@ -410,6 +410,9 @@ begin
         DeleteFile (shortcutDir);
     endif;
 
+    //Delete Trending, TDC and Commander shortcuts if they exists.
+    removeShortcut();
+
     //Delete Static folder in case of upgrade when installed version < "7.2.0".
     if(IsInstalledVersionLesser("7.2.0")) then
         sDir = TARGETDIR ^ "\\Server\\Static";
@@ -426,6 +429,9 @@ begin
     if(IsInstalledVersionLesser("7.5.0")) then
         DeleteFile ( TARGETDIR ^ "\\Server\\bin\\logic.dll");
     endif;
+
+    // Delete Old Rfn Network data scripts
+    RemoveOldRfnNetworkDataScripts();
 
 	//set installer to update all features that are currently installed
 	FeatureReinstall();

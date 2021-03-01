@@ -53,6 +53,12 @@ yukon.tools.dataExporterFormat = (function () {
         return pattern;
     },
     
+    /** Gets the field value pattern selected. */
+    _getFieldValuePattern = function () {
+        var pattern = $('#field-value-pattern-select option:selected').val();
+        return pattern;
+    },
+    
     /** 
      * Returns an object of extra post data needed to post a field 
      * using the ajaxSubmit method on the jquery.form plugin. 
@@ -158,7 +164,7 @@ yukon.tools.dataExporterFormat = (function () {
                             daysPrevious = dataSelection.next();
                         
                         attribute.find('input').val(JSON.stringify(data.attribute));
-                        attribute.append('<span>' + data.text.attribute + '</span>');
+                        attribute.append('<span>' + yukon.escapeXml(data.text.attribute) + '</span>');
                         dataSelection.append('<span>' + data.text.dataSelection + '</span>');
                         daysPrevious.append('<span>' + data.text.daysPrevious + '</span>');
                         
@@ -198,7 +204,7 @@ yukon.tools.dataExporterFormat = (function () {
                             padding = fieldSize.next();
                         
                         field.find('input').val(JSON.stringify(data.exportField));
-                        field.append('<span>' + data.text.exportField + '</span>');
+                        field.append('<span>' + yukon.escapeXml(data.text.exportField) + '</span>');
                         attributeField.append('<span>' + data.text.attributeField + '</span>');
                         dataSelection.append('<span>' + data.text.dataSelection + '</span>');
                         daysPrevious.append('<span>' + data.text.daysPrevious + '</span>');
@@ -227,7 +233,8 @@ yukon.tools.dataExporterFormat = (function () {
                 
                 popup.load(_attributeUrl, function () {
                     popup.find('select[name=attribute]').addClass("dn");
-                    popup.find('select[name=attribute]').val(attribute.attribute).trigger("chosen:updated");
+                    var attributeKey = attribute.attribute.customAttributeId ? attribute.attribute.customAttributeId : attribute.attribute;
+                    popup.find('select[name=attribute]').val(attributeKey).trigger("chosen:updated");
                     popup.find('select[name=attribute]').removeClass("dn");
                     popup.find('select[name=dataSelection]').val(attribute.dataSelection);
                     popup.find('input[name=daysPrevious]').val(attribute.daysPrevious);
@@ -375,6 +382,7 @@ yukon.tools.dataExporterFormat = (function () {
                 type = field.type,
                 attributeSelect = $('#attribute-field'),
                 attrVal = attributeSelect.val(),
+                fieldVal = $('#field-value'),
                 fieldSize = $('#field-size'),
                 padding = $('#padding'),
                 timestampPattern = $('#timestamp-pattern'),
@@ -429,13 +437,19 @@ yukon.tools.dataExporterFormat = (function () {
                     timestampPattern.hide();
                     readingPattern.hide();
                     roundingMode.hide();
+                    fieldVal.hide();
                     
                     if (type === 'PLAIN_TEXT') {
                         plainText.show();
                         otherOptions.hide();
                         fieldSize.hide();
+                        fieldVal.hide();
                         padding.hide();
                         pattern.val(plainText.find('input').val());
+                    }
+                    if(type === 'ATTRIBUTE_NAME') {
+                        pattern.val(_getFieldValuePattern());
+                        fieldVal.show();
                     }
                 }
             });
@@ -588,6 +602,9 @@ yukon.tools.dataExporterFormat = (function () {
                     lastFooterValue = $(this).val();
                     $('[preview-footer]').text(lastFooterValue);
                 }
+            });
+            $(document).on("change", "#field-value-pattern-select", function () {
+                $("#pattern").val($(this).find('option:selected').val());
             });
             
             _initialized = true;

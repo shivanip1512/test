@@ -6,6 +6,7 @@
     <tags>
         <tag name="ASSET_DETAIL_DISPLAYABLE"/>
         <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
     </tags>
     <pointInfos>
         <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT"/>

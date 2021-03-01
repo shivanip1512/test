@@ -24,6 +24,9 @@
 #include "utility.h"
 #include "amq_constants.h"
 #include "MessageCounter.h"
+#include "ctidate.h"
+
+#include <boost/range/adaptor/map.hpp>
 
 using std::string;
 using std::endl;
@@ -212,8 +215,7 @@ long CtiFDRInterface::getClientLinkStatusID(const std::string &aClientName)
 BOOL CtiFDRInterface::init( void )
 {
     // only need to register outbound points
-    iOutBoundPoints.reset( new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND)) );
-    iOutBoundPoints->loadPointList();
+    iOutBoundPoints = loadOutboundPoints().value_or<std::set<long>>({});
 
     if ( !reloadConfigs() )
     {
@@ -538,7 +540,7 @@ bool CtiFDRInterface::connectWithDispatch()
             return false;
         }
 
-        if( iOutBoundPoints && iOutBoundPoints->entries() > 0 )
+        if( hasRegistrationPoints() )
         {
             std::unique_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
@@ -691,19 +693,11 @@ bool CtiFDRInterface::readConfig()
 *************************************************************************
 */
 
-bool CtiFDRInterface::sendPointRegistration( void )
+void CtiFDRInterface::sendPointRegistration( void )
 {
-    ReaderGuard guard(iDispatchLock);
-
-    if( ! iOutBoundPoints || ! iDispatchConn )
-    {
-        // not started correctly
-        return false;
-    }
-
     try
     {
-        if (iOutBoundPoints->entries() > 0)
+        if ( hasRegistrationPoints() )
         {
             std::unique_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
@@ -711,34 +705,24 @@ bool CtiFDRInterface::sendPointRegistration( void )
 
             sendMessageToDispatch( multiMsg.release() );
         }
-        return true;
     }
     catch (...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, getInterfaceName() <<"'s sendRegistration failed");
-        return false;
     }
 }
 
 
 std::unique_ptr<CtiPointRegistrationMsg> CtiFDRInterface::buildRegistrationPointList()
 {
-    CtiFDRPointSPtr pFdrPoint;
     auto ptRegMsg = std::make_unique<CtiPointRegistrationMsg>(REG_TAG_UPLOAD);
 
-    // get iterator on outbound list
-    CtiFDRManager::readerLock guard(iOutBoundPoints->getLock());
-    CtiFDRManager::spiterator  myIterator = iOutBoundPoints->getMap().begin();
-
-    for ( ; myIterator != iOutBoundPoints->getMap().end(); ++myIterator)
+    for( const auto pointId : iOutBoundPoints )
     {
-        pFdrPoint = (*myIterator).second;
-
-        // add this point ID to register
-        ptRegMsg->insert( pFdrPoint->getPointID());
+        ptRegMsg->insert( pointId );
     }
 
-    return std::move( ptRegMsg );
+    return ptRegMsg;
 }
 /************************************************************************
 * Function Name: CtiFDRInterface::disconnect(  )
@@ -781,6 +765,8 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             CTILOG_DEBUG(dout, logNow() <<" Initializing threadFunctionReceiveFromDispatch");
         }
 
+        std::optional<CtiTime>  lastPointUpdateTime;
+
         for( ; ; )
         {
             std::unique_ptr<CtiMessage> incomingMsg;
@@ -789,6 +775,18 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             while( ! incomingMsg.get() )
             {
                 Cti::WorkerThread::interruptionPoint();
+
+                // registration
+                if ( lastPointUpdateTime )
+                {
+                    CtiTime now;
+
+                    if ( ( *lastPointUpdateTime + 15 ) <  now ) // at least 15s since last point update...
+                    {
+                        lastPointUpdateTime.reset();
+                        reRegisterWithDispatch();
+                    }
+                }
 
                 {
                     ReaderGuard guard(iDispatchLock);
@@ -819,14 +817,10 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 
                     if ( dBChangeMsg->getDatabase() == ChangePointDb)
                     {
-                        if (changeType == ChangeTypeDelete)
-                            processFDRPointChange(pidChanged, true);
-                        else
-                        {
-                            processFDRPointChange(pidChanged, false);
-                            reRegisterWithDispatch();
-                        }
-
+                        CtiTime now;
+ 
+                        processFDRPointChange(pidChanged, changeType == ChangeTypeDelete);
+                        lastPointUpdateTime = now;
                     }
                     else if ( dBChangeMsg->getDatabase() == ChangePAODb)
                     {
@@ -1263,15 +1257,13 @@ bool CtiFDRInterface::reRegisterWithDispatch()
 {
     bool retVal=true;
 
-    std::unique_ptr<CtiFDRManager> tmpList( new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND)));
-
     // try and reload the outbound list
-    if( tmpList->loadPointList() )
+    if( auto tmpList = loadOutboundPoints() )
     {
         WriterGuard guard(iDispatchLock);
 
         // destroy the old one and set it to the new one
-        iOutBoundPoints.reset( tmpList.release() );
+        iOutBoundPoints.swap( *tmpList );
     }
     else
     {
@@ -1555,3 +1547,22 @@ bool CtiFDRInterface::verifyDispatchConnection()
 
     return false;
 }
+
+// If iOutBoundPoints has any points loaded into it 
+bool CtiFDRInterface::hasRegistrationPoints()
+{
+    return ! iOutBoundPoints.empty();
+}
+
+std::optional<std::set<long>> CtiFDRInterface::loadOutboundPoints()
+{
+    CtiFDRManager points(iInterfaceName, string(FDR_INTERFACE_SEND));
+
+    if( ! points.loadPointList() )
+    {
+        return std::nullopt;
+    }
+
+    return boost::copy_range<std::set<long>>(points.getMap() | boost::adaptors::map_keys);
+}
+

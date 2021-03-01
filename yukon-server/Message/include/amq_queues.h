@@ -26,6 +26,8 @@ public:
     static const OutboundQueue ItronRestore;
     static const OutboundQueue MeterDisconnectControl;
     static const OutboundQueue MeterDisconnectRestore;
+    static const OutboundQueue EatonCloudScheduledCyclingRequest;
+    static const OutboundQueue EatonCloudStopRequest;
     static const OutboundQueue HistoryRowAssociationResponse;
     static const OutboundQueue IvvcAnalysisMessage;
     static const OutboundQueue CapControlOperationMessage;
@@ -54,6 +56,12 @@ public:
     static const InboundQueue ScannerOutMessages;
     static const InboundQueue ScannerInMessages;
     static const InboundQueue PorterDynamicPaoInfoRequest;
+
+    static const InboundQueue FieldSimulatorStatusRequest;
+    static const InboundQueue FieldSimulatorModifyConfiguration;
+
+    static const InboundQueue RfnMeterDisconnectRequest;
+    static const InboundQueue RfnMeterReadRequest;
 };
 
 }

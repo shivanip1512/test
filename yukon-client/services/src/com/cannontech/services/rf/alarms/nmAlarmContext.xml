@@ -5,13 +5,13 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
     
-    <bean id="nmAlarmListener" class="com.cannontech.services.rf.alarms.service.impl.NmAlarmServiceImpl"/>
-    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-        <property name="destinationName" value="yukon.qr.obj.common.rfn.AlarmArchiveRequest" />
-        <property name="pubSubDomain" value="false"/>
-        <property name="concurrentConsumers" value="1"/>
-        <property name="connectionFactory" ref="connectionFactory" />
-        <property name="messageListener" ref="nmAlarmListener"/>
-    </bean>
-    
+    <bean id="nmAlarmArchiveRequestListener" class="com.cannontech.services.rf.alarms.NmAlarmArchiveRequestListener"/>
+    <jms:listener-container 
+        connection-factory="connectionFactory" 
+        destination-type="queue"
+        concurrency="2" 
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="com.eaton.eas.yukon.networkmanager.alarm.notification" ref="nmAlarmArchiveRequestListener" method="handleArchiveRequest"/>
+    </jms:listener-container>
 </beans>

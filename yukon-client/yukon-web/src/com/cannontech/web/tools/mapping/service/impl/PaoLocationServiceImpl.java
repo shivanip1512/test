@@ -69,10 +69,9 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         for (PaoType type : PaoType.getThermostatTypes()) {
             icons.put(type, Icon.THERMOSTAT);
         }
-        icons.put(PaoType.RFN_GATEWAY, Icon.TRANSMITTER);
-        icons.put(PaoType.GWY800, Icon.TRANSMITTER);
-        icons.put(PaoType.VIRTUAL_GATEWAY, Icon.TRANSMITTER);
-        
+        for (PaoType type : PaoType.getRfGatewayTypes()) {
+            icons.put(type, Icon.TRANSMITTER);
+        }
     }
     
     @Autowired

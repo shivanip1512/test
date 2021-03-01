@@ -112,7 +112,6 @@ public enum YukonSimulatorSettingsKey {
     
     //NetworkTree Settings
     RFN_NETWORK_SIM_TREE_PERCENT_NULL(0, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIM_TREE_MIN_HOP(2, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIM_TREE_MAX_HOP(9, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIM_TREE_NODES_ONE_HOP(350, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIM_NUM_DEVICES_PER_GW(5000, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
@@ -140,7 +139,11 @@ public enum YukonSimulatorSettingsKey {
     NEST_FILE_NAME("", InputTypeFactory.stringType(), SimulatorType.NEST),
     NEST_VERSION(1, InputTypeFactory.integerType(), SimulatorType.NEST),
    
-    DEMAND_RESET_STATUS_ARCHIVE("SUCCESS", InputTypeFactory.stringType(), SimulatorType.STATUS_ARCHIVE)
+    DEMAND_RESET_STATUS_ARCHIVE("SUCCESS", InputTypeFactory.stringType(), SimulatorType.STATUS_ARCHIVE),
+    
+    POINT_DATA_CACHE_CORRELATION_FREQUENCY_HOURS("4", InputTypeFactory.stringType(), SimulatorType.POINT_DATA_CACHE_CORRELATION),
+    POINT_DATA_CACHE_CORRELATION_NOTIFICATION_EMAIL("", InputTypeFactory.stringType(), SimulatorType.POINT_DATA_CACHE_CORRELATION),
+    POINT_DATA_CACHE_CORRELATION_GROUPS("/System/Meters/All Meters", InputTypeFactory.stringType(), SimulatorType.POINT_DATA_CACHE_CORRELATION)
     ;
     
     private final Object defaultValue;

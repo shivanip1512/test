@@ -25,7 +25,7 @@ Function Expand-Artifact () {
 #>
 Function Store-Symbols () {
     Write-Host "Connect to Symbol store drive"
-    net use p: \\pspl0003.eaton.ad.etn.com\Public /user:eaton\psplsoftwarebuild 13aq4xHAB
+    net use p: \\usplysfp1.napa.ad.etn.com\Public /user:eaton\psplsoftwarebuild 13aq4xHAB
     Write-Host "Send Symbols to the drive"
     yukon-build\go.bat init symstore
     Write-Host "Disconnect Symbol store drive"

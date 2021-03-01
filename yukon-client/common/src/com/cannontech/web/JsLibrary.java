@@ -10,8 +10,8 @@ public enum JsLibrary {
     
     DEBUGGER("/resources/js/lib/debugger.js"), // http://benalman.com/projects/javascript-debug-console-log/
     
-    JQUERY("/resources/js/lib/jquery/jquery-3.4.1.min.js",
-           "/resources/js/lib/jquery/jquery-3.4.1.js"), // http://www.jquery.com
+    JQUERY("/resources/js/lib/jquery/jquery-3.5.1.min.js",
+           "/resources/js/lib/jquery/jquery-3.5.1.js"), // http://www.jquery.com
     
     JQUERY_CHECK_ALL("/resources/js/lib/checkall/jquery.checkall.js"), // https://github.com/mjball/jQuery-CheckAll
     JQUERY_COOKIE("/resources/js/lib/cookie/jquery.cookie.js"), // https://github.com/carhartl/jquery-cookie
@@ -44,6 +44,7 @@ public enum JsLibrary {
     JQUERY_UI_WIDGET("/resources/js/lib/fileupload/jquery.ui.widget.js"), // https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
 
     YUKON_FLOTCHARTS("/resources/js/common/yukon.flot.js"), //in-house
+    YUKON_HIGHCHART("/resources/js/common/yukon.highChart.js"), //in-house
     JQUERY_FLOTCHARTS("/resources/js/lib/flotcharts/jquery.flot.min.js"), // http://www.flotcharts.org/
     JQUERY_FLOTCHARTS_PIE("/resources/js/lib/flotcharts/jquery.flot.pie.min.js"), // http://www.flotcharts.org/
     JQUERY_FLOTCHARTS_SELECTION("/resources/js/lib/flotcharts/jquery.flot.selection.min.js"), // http://www.flotcharts.org/

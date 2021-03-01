@@ -11,6 +11,8 @@
 #include "cmd_rfn_ChannelConfiguration.h"
 #include "cmd_rfn_DataStreamingConfiguration.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_MeterRead.h"
+#include "cmd_rfn_Metrology.h"
 
 #include "Attribute.h"
 #include "MetricIdLookup.h"
@@ -67,7 +69,45 @@ const std::string RfnMeterDevice::ConfigPart::temperaturealarm = "temperatureala
 const std::string RfnMeterDevice::ConfigPart::channelconfig    = "channelconfig";
 const std::string RfnMeterDevice::ConfigPart::voltageprofile   = "voltageprofile";
 const std::string RfnMeterDevice::ConfigPart::demand           = "demand";
+const std::string RfnMeterDevice::ConfigPart::metlib           = "metlib";
 
+
+YukonError_t RfnMeterDevice::executeControl(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
+{
+    if( parse.getFlags() & CMD_FLAG_CTL_DISCONNECT )
+    {
+        return executeControlDisconnect(pReq, parse, returnMsgs, rfnRequests);
+    }
+    if( parse.getFlags() & CMD_FLAG_CTL_CONNECT )
+    {
+        if( parse.isKeyValid("arm") )
+        {
+            return executeControlArm(pReq, parse, returnMsgs, rfnRequests);
+        }
+        return executeControlConnect(pReq, parse, returnMsgs, rfnRequests);
+    }
+    return RfnDevice::executeControl(pReq, parse, returnMsgs, requestMsgs, rfnRequests);
+}
+
+YukonError_t RfnMeterDevice::executeControlArm(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests)
+{
+    return ClientErrors::NoMethod;
+}
+
+YukonError_t RfnMeterDevice::executeControlConnect(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests)
+{
+    return ClientErrors::NoMethod;
+}
+
+YukonError_t RfnMeterDevice::executeControlDisconnect(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests)
+{
+    return ClientErrors::NoMethod;
+}
+
+YukonError_t RfnMeterDevice::executeGetStatusDisconnect(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests)
+{
+    return ClientErrors::NoMethod;
+}
 
 YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
@@ -300,15 +340,25 @@ RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(InstallType installTy
 {
     ConfigMap m;
 
+    const bool metlibSupported = hasMetrologyLibrarySupport();
+
     if( installType == InstallType::GetConfig )
     {
         m.emplace(ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executeGetConfigInstallChannels,     this ) );
         m.emplace(ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executeGetConfigTemperatureAlarm,    this ) );
+        if ( metlibSupported )
+        {
+            m.emplace(ConfigPart::metlib,           bindConfigMethod(&RfnMeterDevice::executeGetConfigMetrology,           this));
+        }
     }
     else
     {
         m.emplace(ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executePutConfigInstallChannels,     this ) );
         m.emplace(ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executePutConfigTemperatureAlarm,    this ) );
+        if ( metlibSupported )
+        {
+            m.emplace(ConfigPart::metlib,           bindConfigMethod(&RfnMeterDevice::executePutConfigMetrology,           this));
+        }
     }
 
     return m;
@@ -340,26 +390,15 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg* pReq, CtiComman
             {
                 rfnRequests.emplace_back(std::make_unique<Commands::RfnConfigNotificationCommand>());
 
-                auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
-
-                verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
-                verifyRequest->setCommandString("putconfig emetcon install all verify");
-
-                incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
-
-                requestMsgs.push_back(std::move(verifyRequest));
-
                 return ClientErrors::None;
             }
         }
 
         bool notCurrent = false;
-        for( const auto & p : configMethods )
+        for( const auto& [part, method] : configMethods )
         {
-            const auto & part   = p.first;
-            const auto & method = p.second;
-
-            if( executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, part, method ) == ClientErrors::ConfigNotCurrent )
+            if( auto status = executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, part, method );
+                status != ClientErrors::None && status != ClientErrors::ConfigCurrent )
             {
                 notCurrent = true;
             }
@@ -368,17 +407,6 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg* pReq, CtiComman
         if( notCurrent )
         {
             return ClientErrors::ConfigNotCurrent;
-        }
-        else if( ! parse.isKeyValid("verify") )
-        {
-            auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
-
-            verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
-            verifyRequest->setCommandString("putconfig emetcon install all verify");
-
-            incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
-
-            requestMsgs.push_back(std::move(verifyRequest));
         }
     }
     else
@@ -397,6 +425,10 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg* pReq, CtiComman
 
 YukonError_t RfnMeterDevice::executeGetStatus(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
+    if( parse.getFlags() & CMD_FLAG_GS_DISCONNECT )
+    {
+        return executeGetStatusDisconnect(pReq, parse, returnMsgs, rfnRequests);
+    }
     if( parse.getFlags() & CMD_FLAG_GS_TOU )
     {
         return executeGetStatusTou(pReq, parse, returnMsgs, rfnRequests);
@@ -478,11 +510,23 @@ YukonError_t RfnMeterDevice::executeGetValueVoltageProfile(CtiRequestMsg *pReq, 
     return ClientErrors::NoMethod;
 }
 
+YukonError_t RfnMeterDevice::executeGetValueMeterRead(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    rfnRequests.emplace_back(
+        std::make_unique<Commands::RfnMeterReadCommand>(pReq->UserMessageId()));
+
+    return ClientErrors::None;
+}
+
 YukonError_t RfnMeterDevice::executeGetValue(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if( parse.isKeyValid("voltage_profile") )
     {
         return executeGetValueVoltageProfile(pReq, parse, returnMsgs, rfnRequests);
+    }
+    if( parse.isKeyValid("meter_read") )
+    {
+        return executeGetValueMeterRead(pReq, parse, returnMsgs, rfnRequests);
     }
 
     return ClientErrors::NoMethod;
@@ -596,15 +640,27 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
 
             boost::optional<PaoMetricIds> paoMidnightMetrics = findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics );
 
-            if( cfgMidnightMetrics != paoMidnightMetrics || parse.isKeyValid("force") )
+            const bool is_mismatched = [ &, this ]
+            {
+                const bool metric_mismatch = cfgMidnightMetrics != paoMidnightMetrics;
+
+                if ( const auto is_filtered = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered ) )
+                {
+                    const bool cfg_is_filtered = ! cfgMidnightMetrics.empty();
+
+                    return ( *is_filtered )
+                        ? metric_mismatch || ! cfg_is_filtered
+                        : cfg_is_filtered;
+                }
+
+                return metric_mismatch;
+            }();
+
+            if( is_mismatched || parse.isKeyValid("force") )
             {
                 if( parse.isKeyValid( "verify" ) )
                 {
-                    //  This is a workaround to allow an empty (no-channels) config to verify successfully, even though we don't know if the channels match.
-                    if( ! cfgMidnightMetrics.empty() )
-                    {
-                        ret = compareChannels(pReq, parse, returnMsgs, "Midnight", cfgMidnightMetrics, paoMidnightMetrics);
-                    }
+                    ret = compareChannels(pReq, parse, returnMsgs, "Midnight", cfgMidnightMetrics, paoMidnightMetrics);
                 }
                 else
                 {
@@ -628,18 +684,30 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
             const boost::optional<unsigned>     paoRecordingIntervalSeconds = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds );
             const boost::optional<unsigned>     paoReportingIntervalSeconds = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds );
 
-            if( cfgIntervalMetrics != paoIntervalMetrics ||
+            const bool is_mismatched = [ &, this ]
+            {
+                const bool metric_mismatch = cfgIntervalMetrics != paoIntervalMetrics;
+
+                if ( const auto is_filtered = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered ) )
+                {
+                    const bool cfg_is_filtered = ! cfgIntervalMetrics.empty();
+
+                    return ( *is_filtered )
+                        ? metric_mismatch || ! cfg_is_filtered
+                        : cfg_is_filtered;
+                }
+
+                return metric_mismatch;
+            }();
+
+            if( is_mismatched ||
                 cfgRecordingIntervalSeconds != paoRecordingIntervalSeconds ||
                 cfgReportingIntervalSeconds != paoReportingIntervalSeconds ||
                 parse.isKeyValid("force") )
             {
                 if( parse.isKeyValid( "verify" ) )
                 {
-                    //  This is a workaround to allow an empty (no-channels) config to verify successfully, even though we don't know if the channels match.
-                    if( ! cfgIntervalMetrics.empty() )
-                    {
-                        ret = compareChannels(pReq, parse, returnMsgs, "Interval", cfgIntervalMetrics, paoIntervalMetrics);
-                    }
+                    ret = compareChannels(pReq, parse, returnMsgs, "Interval", cfgIntervalMetrics, paoIntervalMetrics);
 
                     if (cfgReportingIntervalSeconds != paoReportingIntervalSeconds)
                     {
@@ -712,7 +780,13 @@ YukonError_t RfnMeterDevice::compareChannels(
     {
         /* If we have device/config channels mismatched */
 
-        auto metric_to_string = [this](const MetricIdLookup::MetricId i) { return MetricIdLookup::GetAttribute(i, getDeviceType()).getName(); };
+        auto metric_to_string = [this](const MetricIdLookup::MetricId i) { 
+            if( auto attribute = MetricIdLookup::FindAttribute(i, getDeviceType()) )
+            {
+                return attribute->getName();
+            }
+            return "Unmapped metric ID " + std::to_string(i);
+        };
 
         PaoMetricIds cfgOnly, meterOnly;
 
@@ -897,6 +971,11 @@ void RfnMeterDevice::handleCommandResult(const Commands::RfnConfigNotificationCo
     {
         storeTemperatureConfig( *cmd.temperature );
     }
+
+    if( cmd.metrologyState )
+    {
+        storeMetrologyEnable(*cmd.metrologyState);
+    }
 }
 
 void RfnMeterDevice::handleCommandResult( const Commands::RfnTemperatureAlarmCommand & cmd )
@@ -921,7 +1000,21 @@ void RfnMeterDevice::storeTemperatureConfig( const Commands::RfnTemperatureAlarm
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold, configuration.alarmHighTempThreshold );
 }
 
-void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelSelectionCommand & cmd )
+void RfnMeterDevice::handleCommandResult( const Commands::RfnSetChannelSelectionCommand & cmd )
+{
+    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
+
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, ! paoMetrics.empty() );
+
+    storeChannelSelections( cmd.getMetricsReceived() );
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnGetChannelSelectionCommand & cmd )
+{
+    storeChannelSelections( cmd.getMetricsReceived() );
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnGetChannelSelectionFullDescriptionCommand & cmd )
 {
     storeChannelSelections( cmd.getMetricsReceived() );
 }
@@ -962,6 +1055,121 @@ void RfnMeterDevice::storeIntervalRecordingActiveConfiguration( const Commands::
     setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoMetrics );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, cmd.getIntervalRecordingSeconds() );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, cmd.getIntervalReportingSeconds() );
+}
+
+bool RfnMeterDevice::hasMetrologyLibrarySupport() const
+{
+    using Commands::RfnMetrologyCommand;
+
+    return hasRfnFirmwareSupportIn( 9.4 )
+            && RfnMetrologyCommand::isSupportedByDeviceType( getDeviceType() );
+}
+
+YukonError_t RfnMeterDevice::executePutConfigMetrology(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    using Commands::RfnMetrologyCommand;
+    using Commands::RfnMetrologySetConfigurationCommand;
+
+    if ( ! hasMetrologyLibrarySupport() )
+    {
+        return ClientErrors::NoMethod;
+    }
+
+    YukonError_t ret = ClientErrors::ConfigCurrent;
+
+    try
+    {
+        Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+        if ( ! deviceConfig )
+        {
+            return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
+        }
+
+        const auto configMetrologyLibraryEnabled 
+            = deviceConfig->findValue<bool>( Config::RfnStrings::MetrologyLibraryEnabled );
+
+        //  This is an optional config, so don't throw an error if it's missing
+        if ( ! configMetrologyLibraryEnabled.is_initialized() )
+        {
+            return ClientErrors::None;
+        }
+
+        const boost::optional<bool> paoMetrologyLibraryEnabled
+            = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled );
+
+        if ( *configMetrologyLibraryEnabled != paoMetrologyLibraryEnabled
+             || parse.isKeyValid("force") )
+        {
+            if ( parse.isKeyValid("verify") )
+            {
+                reportConfigMismatchDetails<>( "Metrology Library Enabled",
+                    *configMetrologyLibraryEnabled, paoMetrologyLibraryEnabled,
+                    pReq, returnMsgs );
+
+                ret = ClientErrors::ConfigNotCurrent;
+            }
+            else
+            {
+                const auto metrologyLibraryState
+                    = *configMetrologyLibraryEnabled
+                        ? RfnMetrologyCommand::MetrologyState::Enable
+                        : RfnMetrologyCommand::MetrologyState::Disable;
+
+                rfnRequests.push_back( std::make_unique<RfnMetrologySetConfigurationCommand>( metrologyLibraryState ) );
+
+                ret = ClientErrors::None;
+            }
+        }
+
+        return ret;
+    }
+    catch ( const MissingConfigDataException &e )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
+
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
+    }
+    catch ( const InvalidConfigDataException &e )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
+
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
+    }
+}
+
+YukonError_t RfnMeterDevice::executeGetConfigMetrology(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    using Commands::RfnMetrologyGetConfigurationCommand;
+
+    if ( ! hasMetrologyLibrarySupport() )
+    {
+        return ClientErrors::NoMethod;
+    }
+
+    rfnRequests.push_back( std::make_unique<RfnMetrologyGetConfigurationCommand>() );
+
+    return ClientErrors::None;
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnMetrologyGetConfigurationCommand & cmd )
+{
+    if ( const auto state = cmd.getMetrologyState() )
+    {
+        storeMetrologyEnable(*state);
+    }
+}
+
+void RfnMeterDevice::handleCommandResult(const Commands::RfnMetrologySetConfigurationCommand& cmd)
+{
+    storeMetrologyEnable(cmd.getMetrologyState());
+}
+
+void RfnMeterDevice::storeMetrologyEnable(const Commands::RfnMetrologyCommand::MetrologyState state)
+{
+    constexpr auto Enable = Commands::RfnMetrologyCommand::MetrologyState::Enable;
+
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled, state == Enable);
 }
 
 }

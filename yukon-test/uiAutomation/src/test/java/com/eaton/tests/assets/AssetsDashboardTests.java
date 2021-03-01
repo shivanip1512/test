@@ -2,7 +2,6 @@ package com.eaton.tests.assets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -16,19 +15,15 @@ public class AssetsDashboardTests extends SeleniumTestSetup {
 
     private AssetDashboardPage assetsPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.Assets.DASHBOARD);
-
+        navigate(Urls.Assets.DASHBOARD);
         assetsPage = new AssetDashboardPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS })
+    public void assetsDashboard_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Assets Dashboard";
         
         String actualPageTitle = assetsPage.getPageTitle();

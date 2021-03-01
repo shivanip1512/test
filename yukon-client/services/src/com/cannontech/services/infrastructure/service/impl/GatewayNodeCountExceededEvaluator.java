@@ -28,7 +28,7 @@ public class GatewayNodeCountExceededEvaluator extends InfrastructureStatusWarni
 
     @Override
     public Set<PaoType> getSupportedTypes() {
-        return ImmutableSet.of(PaoType.GWY800, PaoType.VIRTUAL_GATEWAY);
+        return PaoType.getRfGatewayTypes();
     }
     
 }

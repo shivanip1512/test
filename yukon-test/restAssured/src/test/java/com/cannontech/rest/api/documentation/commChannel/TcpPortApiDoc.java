@@ -29,7 +29,7 @@ public class TcpPortApiDoc extends CommChannelApiDocBase {
 
     @Test(dependsOnMethods = { "Test_TcpPort_01_Create" })
     public void Test_TcpPort_02_Update() {
-        portId = updateDoc();
+        portId = updatePartialDoc();
     }
 
     @Test(dependsOnMethods = { "Test_TcpPort_01_Create" })

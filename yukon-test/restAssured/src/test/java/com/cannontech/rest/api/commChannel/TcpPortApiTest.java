@@ -33,7 +33,7 @@ public class TcpPortApiTest {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", tcpPort);
         String portId = createResponse.path(CommChannelHelper.CONTEXT_PORT_ID).toString();
         context.setAttribute(CommChannelHelper.CONTEXT_PORT_ID, portId);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Port Id should not be Null", portId != null);
     }
 
@@ -64,7 +64,7 @@ public class TcpPortApiTest {
         tcpPort.setName(name);
         tcpPort.setBaudRate(MockBaudRate.BAUD_115200);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updatePort", tcpPort,
+        ExtractableResponse<?> getResponse = ApiCallHelper.patch("updatePort", tcpPort,
                 context.getAttribute(CommChannelHelper.CONTEXT_PORT_ID).toString());
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
@@ -82,7 +82,7 @@ public class TcpPortApiTest {
                 tcpPort.getBaudRate().equals(updatedTcpPortResponse.getBaudRate()));
     }
 
-    @Test(dependsOnMethods = { "tcpPort_02_Get" })
+    @Test(dependsOnMethods = { "tcpPort_16_UpdateCommChannelWithExistingCommChannelName" })
     public void tcpPort_04_Delete(ITestContext context) {
         String expectedMessage = "Port Id not found";
         ExtractableResponse<?> response = ApiCallHelper.delete("deletePort",
@@ -240,7 +240,7 @@ public class TcpPortApiTest {
         mockTcpPort.setName("TimingAsNull");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockTcpPort);
         String portId = createResponse.path(CommChannelHelper.CONTEXT_PORT_ID).toString();
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Port Id should not be Null", portId != null);
         
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getPort",
@@ -356,9 +356,9 @@ public class TcpPortApiTest {
      * Test case to validate TCPPort comm channel cannot be updated with same name as other comm channel, as each comm channel is unique and gets valid error message
      * in response
      */
-    @Test(dependsOnMethods = { "tcpPort_01_Create" })
+    @Test(dependsOnMethods = { "tcpPort_03_Update" })
     public void tcpPort_16_UpdateCommChannelWithExistingCommChannelName(ITestContext context) {
-        String existingCommChannelName = "Test Port11112346144";
+        String existingCommChannelName = context.getAttribute("tcpTerminalName").toString();
 
         MockTcpPortDetail mockTcpPort = (MockTcpPortDetail) CommChannelHelper
                 .buildCommChannel(MockPaoType.TCPPORT);
@@ -366,12 +366,12 @@ public class TcpPortApiTest {
         mockTcpPort.setName("OtherCommChannel1111");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockTcpPort);
         String portId = createResponse.path(CommChannelHelper.CONTEXT_PORT_ID).toString();
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Port Id should not be Null", portId != null);
         
         mockTcpPort.setName(existingCommChannelName);
         
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updatePort", mockTcpPort,
+        ExtractableResponse<?> getResponse = ApiCallHelper.patch("updatePort", mockTcpPort,
                 portId);
                        
         assertTrue(getResponse.statusCode() == 422, "Status code should be 422");

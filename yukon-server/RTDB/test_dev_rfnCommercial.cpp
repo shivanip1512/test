@@ -497,9 +497,9 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
         };
 
     const std::vector< std::vector<bool> > returnExpectMoreExp {
-            { true, true, true, false }, // no config data             -> 4 error messages, NOTE: last expectMore expected to be false
-            { true, true, true },  // add temperature alarming config  -> 3 error message + 1 config sent message
-            { true }               // add channel config               -> 1 config sent message
+            { true, true, true, true, false }, // no config data             -> 5 error messages, NOTE: last expectMore expected to be false
+            { true, true, true, true },  // add temperature alarming config  -> 4 error message + 1 config sent message
+            { true }                     // add channel config               -> 1 config sent message
         };
 
     std::vector<int> requestMsgsRcv;
@@ -687,6 +687,8 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
 
         { PI::Key_RFN_RecordingIntervalSeconds,  7200 },
         { PI::Key_RFN_ReportingIntervalSeconds, 86400 },
+
+        { PI::Key_RFN_MetrologyLibraryEnabled, false },
     };
 
     BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries[-1].size(), std::size(dpiExpected));
@@ -735,5 +737,376 @@ R"SQUID(DATA_STREAMING_JSON{
 "sequence" : 3735928559
 })SQUID");
 }
+
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configuration_verify_alpha_empty_channel_config )
+{
+    using CC = RfnStrings::ChannelConfiguration;
+
+    test_RfnCommercialDevice dut;
+    dut.setDeviceType(TYPE_RFN430A3K);
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    const std::map<std::string, std::string> configItems
+    {
+        { CC::EnabledChannels_Prefix,   "0"   },
+        { CC::RecordingIntervalMinutes, "123" },
+        { CC::ReportingIntervalMinutes, "456" }
+    };
+
+    cfg.addCategory(
+            Cti::Config::Category::ConstructCategory(
+                    "rfnChannelConfiguration",
+                    configItems));
+
+    // set up dynamic pao info
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60 );
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60 );
+    }
+
+    // test the cases where we have no channel related dynamic pao info
+
+    {
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    resetTestState();
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, true );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    resetTestState();
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, false );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
+    }
+
+    // test the cases where we have channel related dynamic pao info, but it doesn't match the config
+
+    resetTestState();
+
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, { 1, 3 } );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, { 3 } );
+
+    {
+        dut.purgeDynamicPaoInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, true );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, false );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
+    }
+
+    // test the cases where we have channel related dynamic pao info and it matches the config
+
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, { } );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, { } );
+
+    resetTestState();
+
+    {
+        dut.purgeDynamicPaoInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, true );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, false );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configuration_verify_alpha_filtering_channel_config )
+{
+    using CC = RfnStrings::ChannelConfiguration;
+
+    test_RfnCommercialDevice dut;
+    dut.setDeviceType(TYPE_RFN430A3K);
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    const std::map<std::string, std::string> configItems
+    {
+        { CC::EnabledChannels_Prefix,   "5" },
+        { CC::EnabledChannels_Prefix + ".0." + CC::EnabledChannels::Attribute, "DELIVERED_KWH" },
+        { CC::EnabledChannels_Prefix + ".0." + CC::EnabledChannels::Read,      "MIDNIGHT" },
+        { CC::EnabledChannels_Prefix + ".1." + CC::EnabledChannels::Attribute, "RECEIVED_KWH" },
+        { CC::EnabledChannels_Prefix + ".1." + CC::EnabledChannels::Read,      "MIDNIGHT" },
+        { CC::EnabledChannels_Prefix + ".2." + CC::EnabledChannels::Attribute, "SUM_KWH" },
+        { CC::EnabledChannels_Prefix + ".2." + CC::EnabledChannels::Read,      "INTERVAL" },
+        { CC::EnabledChannels_Prefix + ".3." + CC::EnabledChannels::Attribute, "NET_KWH" },
+        { CC::EnabledChannels_Prefix + ".3." + CC::EnabledChannels::Read,      "INTERVAL" },
+        { CC::EnabledChannels_Prefix + ".4." + CC::EnabledChannels::Attribute, "DELIVERED_DEMAND" },
+        { CC::EnabledChannels_Prefix + ".4." + CC::EnabledChannels::Read,      "INTERVAL" },
+        { CC::RecordingIntervalMinutes, "123" },
+        { CC::ReportingIntervalMinutes, "456" }
+    };
+
+    cfg.addCategory(
+            Cti::Config::Category::ConstructCategory(
+                    "rfnChannelConfiguration",
+                    configItems));
+
+    // set up dynamic pao info
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60 );
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60 );
+    }
+
+    // test the cases where we have no channel related dynamic pao info
+
+    {
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    resetTestState();
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, true );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    resetTestState();
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, false );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    // test the cases where we have channel related dynamic pao info, but it doesn't match the config
+
+    resetTestState();
+
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, { 1, 3 } );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, { 3 } );
+
+    {
+        dut.purgeDynamicPaoInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, true );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, false );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    // test the cases where we have channel related dynamic pao info and it matches the config
+
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, { 1, 2, 3, 4, 5 } );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, { 3, 4, 5 } );
+
+    resetTestState();
+
+    {
+        dut.purgeDynamicPaoInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, true );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, false );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

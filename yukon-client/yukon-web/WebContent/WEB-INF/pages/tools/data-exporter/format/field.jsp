@@ -92,6 +92,16 @@
                     <cti:icon icon="icon-help" data-popup="#timestamp-help" classes="cp fn"/>
                 </tags:nameValue2>
                 
+                <c:set var="classes" value="${exportField.field.attributeName ? '' : 'dn'}"/>
+                <tags:nameValue2 rowId="field-value" nameKey=".fieldValue" rowClass="${classes}">
+                    <form:select id="field-value-pattern-select" path="fieldValue">
+                        <c:forEach var="fieldValue" items="${fieldValues}">
+                            <form:option value="${fieldValue}">
+                            <cti:msg2 key="${fieldValue}"/></form:option>
+                        </c:forEach>
+                    </form:select>&nbsp;
+                </tags:nameValue2>
+                
                 <tags:nameValue2 rowId="field-size" nameKey=".fieldSize">
                     <cti:msg2 var="fieldSizeMsg" key=".fieldSizeMax"/>
                     <tags:input id="max-length" path="maxLength" size="5" maxlength="5" units="${fieldSizeMsg}"/>

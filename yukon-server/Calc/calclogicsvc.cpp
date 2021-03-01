@@ -311,7 +311,7 @@ void CtiCalcLogicService::Run( )
                     calcThread.reset();
                 }
 
-                unique_ptr<CtiCalculateThread> tempCalcThread( new CtiCalculateThread );
+                auto tempCalcThread = std::make_unique<CtiCalculateThread>();
 
                 if( ! readCalcPoints( tempCalcThread.get() ))
                 {
@@ -328,12 +328,7 @@ void CtiCalcLogicService::Run( )
                         // try it again
                         if(calcThread)
                         {
-                            tempCalcThread->setPeriodicPointMap(calcThread->getPeriodicPointMap());
-                            tempCalcThread->setOnUpdatePointMap(calcThread->getOnUpdatePointMap());
-                            tempCalcThread->setConstantPointMap(calcThread->getConstantPointMap());
-                            tempCalcThread->setHistoricalPointMap(calcThread->getHistoricalPointMap());
-
-                            calcThread->clearPointMaps();
+                            tempCalcThread->stealPointMaps(*calcThread);
                         }
                         else
                         {
@@ -449,7 +444,13 @@ void CtiCalcLogicService::Run( )
                             break; // exit the loop and reload
                         }
 
-                        if( (_lastDispatchMessageTime.seconds() + 400) < CtiTime::now().seconds() )
+                        if( dispatchConnection->hasReconnected() )
+                        {
+                            //  If we reconnected to Dispatch in the last 30 seconds, re-register for our points...
+                            _registerForPoints();
+                            //  ... then wait 30 seconds before checking the _lastDispatchMessageTime again
+                        }
+                        else if( (_lastDispatchMessageTime.seconds() + 400) < CtiTime::now().seconds() )
                         {
                             CTILOG_WARN(dout, "CalcLogic has not heard from dispatch for at least 7 minutes.");
 
@@ -548,7 +549,7 @@ void CtiCalcLogicService::_outputThread()
                 {
                     CtiLockGuard<CtiCriticalSection> outboxGuard(calcThread->outboxMux);
 
-                    while( calcThread->outboxEntries( ) )
+                    while( calcThread->hasOutboxEntries( ) )
                     {
                         outboxEntries.emplace_back(calcThread->getOutboxEntry());
                     }
@@ -575,7 +576,7 @@ void CtiCalcLogicService::_outputThread()
             {
                 if( entry && entry->getCount() > 0 )
                 {
-                    dispatchConnection->WriteConnQue( entry.release(), CALLSITE );
+                    dispatchConnection->WriteConnQue( std::move(entry), CALLSITE );
                 }
             }
         }
@@ -774,7 +775,7 @@ void CtiCalcLogicService::handleMultiMsg( const CtiMultiMsg &multiMsg, CtiCalcul
         CTILOG_DEBUG(dout, "Processing Multi Message with: "<< multiMsg.getData().size() <<" messages");
     }
 
-    for each( const CtiMessage *msg in multiMsg.getData() )
+    for( const auto *msg : multiMsg.getData() )
     {
         if( msg )
         {
@@ -1128,7 +1129,7 @@ void CtiCalcLogicService::updateCalcData()
             CTILOG_DEBUG(dout, "DBUpdate done changing points");
         }
 
-        calcThread->clearAndDestroyPointMaps();
+        calcThread->clearPointMaps();
         readCalcPoints(calcThread.get());
         _registerForPoints();
 

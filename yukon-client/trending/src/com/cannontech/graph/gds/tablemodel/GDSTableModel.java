@@ -1,9 +1,11 @@
 package com.cannontech.graph.gds.tablemodel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 
-import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -59,7 +61,7 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 	};	
 
 	//Graph data series rows
-	public java.util.ArrayList rows = new java.util.ArrayList(10);
+	public ArrayList<GraphDataSeries> rows = new ArrayList<>(10);
 	
 /**
  * DataSeriesTableModel constructor comment.
@@ -94,12 +96,12 @@ public GraphDataSeries[] getAllDataSeries()
 		
 	GraphDataSeries[] retVal = new GraphDataSeries[ gdsArraySize];
 
-	java.util.Iterator iter = getRows().iterator();
+	Iterator<GraphDataSeries> iter = getRows().iterator();
 
 	int i = 0;
 	while( iter.hasNext() )
 	{
-		retVal[i++] = (GraphDataSeries) iter.next();
+		retVal[i++] = iter.next();
 	}
 
 	return retVal;
@@ -176,7 +178,7 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 			return gds.getLabel();
 			
 		case COLOR_NAME_COLUMN:	
-			return Colors.getColorString(gds.getColor().intValue());
+		    return YukonColorPalette.getColor(gds.getColor().intValue());
 		
 		
 		case AXIS_NAME_COLUMN:
@@ -225,7 +227,7 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
  */
 public GraphDataSeries getRow(int row)
 {
-	return ( row < getRows().size() ? (GraphDataSeries) getRows().get(row) : null );
+	return ( row < getRows().size() ? getRows().get(row) : null );
 }
 /**
  * getRowCount method comment.
@@ -234,12 +236,7 @@ public int getRowCount()
 {
 	return getRows().size();
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/23/2001 4:05:03 PM)
- * @return java.util.ArrayList
- */
-public java.util.ArrayList getRows()
+public ArrayList<GraphDataSeries> getRows()
 {
 	return rows;
 }
@@ -250,7 +247,7 @@ public Object getValueAt(int row, int col)
 {
 	if( row < getRows().size() && col < getColumnCount() )
 	{
-		return getGDSAttribute(col, (GraphDataSeries) getRows().get(row) );
+		return getGDSAttribute(col, getRows().get(row) );
 	}
 	else
 		return null;
@@ -343,17 +340,17 @@ public void setValueAt(Object value, int row, int col)
 			gds.setLabel( valueString );
 		break;
 		case COLOR_NAME_COLUMN:
-			gds.setColor( new Integer(Colors.getColorID(Colors.getColor(value.toString()))));
+			gds.setColor(((YukonColorPalette)value).getColorId());
 			
 		break;		
 		case AXIS_NAME_COLUMN:
-			gds.setAxis( new Character(Character.toUpperCase(value.toString().charAt(0))));;
+			gds.setAxis(Character.valueOf(Character.toUpperCase(value.toString().charAt(0))));;
 		break;
 		
 		case TYPE_NAME_COLUMN:
 		{
 			//Save the Integer value of the String.
-			gds.setType( new Integer(GDSTypesFuncs.getTypeInt(new String(value.toString()))));
+			gds.setType(Integer.valueOf(GDSTypesFuncs.getTypeInt(new String(value.toString()))));
 			
 			String moreData = CtiUtilities.STRING_NONE;
 			if( GDSTypesFuncs.isDateType(gds.getType().intValue()))
@@ -361,7 +358,7 @@ public void setValueAt(Object value, int row, int col)
 				java.util.Date date = ServletUtil.parseDateStringLiberally(value.toString());
 				if(date != null)
 				{
-					Long ts = new Long(date.getTime());
+					Long ts = Long.valueOf(date.getTime());
 					moreData = String.valueOf(ts);
 				}
 			}
@@ -394,7 +391,7 @@ public void setValueAt(Object value, int row, int col)
 			gds.setMultiplier( Double.valueOf(value.toString()));
 		break;
 		case REND_NAME_COLUMN:
-			gds.setRenderer(new Integer(GraphRenderers.getRendererID(value.toString())));
+			gds.setRenderer(Integer.valueOf(GraphRenderers.getRendererID(value.toString())));
 		break;
 		
 /*		case SETUP_NAME_COLUMN:

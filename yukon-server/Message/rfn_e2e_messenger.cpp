@@ -389,7 +389,7 @@ E2eDataRequestMsg E2eMessenger::createMessageFromRequest(const Request& req, con
     E2eDataRequestMsg msg;
 
     msg.applicationServiceId = asid;
-    msg.highPriority  = req.priority > 7;
+    msg.highPriority  = as_underlying(req.priorityClass);
     msg.rfnIdentifier = req.rfnIdentifier;
     msg.protocol      = E2eMsg::Application;
     msg.payload       = req.payload;

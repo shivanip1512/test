@@ -26,7 +26,7 @@ public class TcpTerminalServerApiDoc extends CommChannelApiDocBase {
 
     @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })
     public void Test_TcpTerminalServer_02_Update() {
-        portId = updateDoc();
+        portId = updatePartialDoc();
     }
 
     @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })

@@ -55,7 +55,8 @@ public class SepProgramGearApiDoc {
             programConstraint_Create();
         }
         if (loadGroups == null) {
-            assignedLoadGroup_Create();
+            loadGroups = new ArrayList<>();
+            loadGroups.add(LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP));
         }
     }
 
@@ -81,28 +82,15 @@ public class SepProgramGearApiDoc {
     }
 
     /**
-     * Method to create Load group as we need to pass load group in request of Sep Load Program.
-     */
-    public void assignedLoadGroup_Create() {
-        MockLoadGroupBase loadGroupSep = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupSep);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        loadGroups = new ArrayList<>();
-        Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
-        loadGroupSep.setId(loadGroupId);
-        loadGroups.add(loadGroupSep);
-    }
-
-    /**
      * Method to create Program Constraint as we need to pass constraint in request of Sep Load Program.
      */
     public void programConstraint_Create() {
         programConstraint = ProgramConstraintHelper.buildProgramConstraint();
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         programConstraint.setId(constraintId);
         assertTrue("Constraint Id should not be Null", constraintId != null);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
     }
 
     @Test
@@ -117,7 +105,7 @@ public class SepProgramGearApiDoc {
                 fieldWithPath("gears[].fields.offset").type(JsonFieldType.NUMBER)
                                                       .description("Measurement Unit Offset. Min Value: 0.1, Max Value for Celsius: 25.4 and Max Value for Fahrenheit: 77.7"),
                 fieldWithPath("gears[].fields.criticality").type(JsonFieldType.NUMBER).description("Criticality. Min Value: 1, Max Value: 15"),
-                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).ignored().description("How To Stop Control"),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How To Stop Control"),
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER).description("Capacity Reduction. Min Value: 0, Max Value: 100"),
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
@@ -133,12 +121,12 @@ public class SepProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(sepTemperatureOffsetDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @Test
@@ -161,19 +149,19 @@ public class SepProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(noControlGearDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @AfterClass
     public void cleanUp() {
-        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
-            ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            ApiCallHelper.delete("loadGroups", "/" + group.getId());
         });
 
     }

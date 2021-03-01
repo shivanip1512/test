@@ -17,7 +17,7 @@ import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
@@ -53,10 +53,10 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 
 	private boolean exceededMaxMsg = true;
 
-	public static final int DEFAULT_FOREGROUNDCOLOR = Colors.WHITE_ID; // white as of 3-23-2000
-	public static final int DEFAULT_BACKGROUNDCOLOR = Colors.BLACK_ID;  // black as of 3-23-2000
-	public static final int DEFAULT_DISABLEDCOLOR = Colors.GRAY_ID;  // gray as of 8-31-2000
-	public static final int DEFAULT_ALARMCOLOR = Colors.RED_ID;  // red as of 1-12-2001
+	public static final int DEFAULT_FOREGROUNDCOLOR = YukonColorPalette.WHITE.getColorId(); // white as of 3-23-2000
+	public static final int DEFAULT_BACKGROUNDCOLOR = YukonColorPalette.BLACK.getColorId();  // black as of 3-23-2000
+	public static final int DEFAULT_DISABLEDCOLOR = YukonColorPalette.GRAY.getColorId();  // gray as of 8-31-2000
+	public static final int DEFAULT_ALARMCOLOR = YukonColorPalette.RED.getColorId();  // red as of 1-12-2001
 	
 	private static final PointValues DUMMY_POINT_VALUES =
 						new PointValues(
@@ -261,7 +261,7 @@ private boolean buildRowQuery()
 		 "order by y.ordering");
 		 		
 	Object[] objs = new Object[1];
-	objs[0] = new Integer( getCurrentDisplay().getDisplayNumber() );
+	objs[0] = Integer.valueOf( getCurrentDisplay().getDisplayNumber() );
 
 
 	Object[][] pointData = DataBaseInteraction.queryResults( query, objs );
@@ -294,7 +294,7 @@ private boolean buildRowQuery()
 				//assign the decimal places for each point id here if one is present
 				String decPlaces = pointData[i][5].toString();
 				if( decPlaces.length() > 0 )
-					pv.setDecimalPlaces( new Integer(decPlaces) );
+					pv.setDecimalPlaces( Integer.valueOf(decPlaces) );
 				
 				pointValues.addElement( pv );
 			}
@@ -323,7 +323,7 @@ private void checkForLimboPoints(Vector existingPoints)
 {
 	String query = "select pointid from display2waydata where displaynum = ? order by pointid";
 	Object[] objs = new Object[1];
-	objs[0] = new Integer( getCurrentDisplay().getDisplayNumber() );
+	objs[0] = Integer.valueOf( getCurrentDisplay().getDisplayNumber() );
 	Object[][] displayPoints = DataBaseInteraction.queryResults( query, objs );
 
 	for( int i = 0; i < displayPoints.length; i++ )
@@ -546,8 +546,8 @@ private void deleteRowFromDataBase( long pointid )
 
 
 	Object[] objs = new Object[2];
-	objs[0] = new Integer(getCurrentDisplay().getDisplayNumber());
-	objs[1] = new Long(pointid);
+	objs[0] = Integer.valueOf(getCurrentDisplay().getDisplayNumber());
+	objs[1] = Long.valueOf(pointid);
 	DataBaseInteraction.updateDataBase( query, objs );	
 }
 
@@ -630,7 +630,7 @@ public Object[] getBlankRows()
 	for( int i = 0; i < getRowCount(); i++ )
 	{
 		if( ((Vector)getRows().elementAt( i )).elementAt( 0 ).equals("") )
-			blank.addElement( new Integer( i ) );
+			blank.addElement( Integer.valueOf( i ) );
 	}
 
 	Object[] realBlanks = new Object[ blank.size() ];
@@ -646,25 +646,20 @@ public Object[] getBlankRows()
  * @param row int
  * @param col int
  */
-public java.awt.Color getCellBackgroundColor(int row, int col) 
-{
+public java.awt.Color getCellBackgroundColor(int row, int col) {
 
-	java.awt.Color color = Colors.getColor( DEFAULT_BACKGROUNDCOLOR );
+    java.awt.Color color = YukonColorPalette.getColor(DEFAULT_BACKGROUNDCOLOR).getAwtColor();
 
-	if( row < 0 || row >= getRowCount() )
-		return color;
-		
-	try
-	{
-		color = Colors.getColor( pointValues.elementAt( row ).getCurrentBackgroundColor() );
-	}
-	catch( ArrayIndexOutOfBoundsException e )
-	{
-		//do nothing here
-	}
-	
-	
-	return color;
+    if (row < 0 || row >= getRowCount()) {
+        return color;
+    }
+    try {
+        color = YukonColorPalette.getColor(pointValues.elementAt(row).getCurrentBackgroundColor()).getAwtColor();
+    } catch (ArrayIndexOutOfBoundsException e) {
+        // do nothing here
+    }
+
+    return color;
 }
 	/**
  * Insert the method's description here.
@@ -688,24 +683,21 @@ public String getCellData( int rowPosition, int colPosition )
  * @param row int
  * @param col int
  */
-public java.awt.Color getCellForegroundColor(int rowNumber, int col) 
-{
-	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() )
-		return Colors.getColor( DEFAULT_FOREGROUNDCOLOR );
+    public java.awt.Color getCellForegroundColor(int rowNumber, int col) {
+        if (pointValues == null || rowNumber < 0 || rowNumber >= getRowCount()) {
+            return YukonColorPalette.getColor(DEFAULT_FOREGROUNDCOLOR).getAwtColor();
+        }
+        int colorINT = 0;
 
-	int colorINT = 0;
-	
-	try
-	{		
-		colorINT = pointValues.elementAt( rowNumber ).getCurrentForegroundColor();
-	}
-	catch( ArrayIndexOutOfBoundsException e )  // no defined color, use default
-	{
-		colorINT = DEFAULT_FOREGROUNDCOLOR;
-	}
-		
-	return Colors.getColor( colorINT );
-}
+        try {
+            colorINT = pointValues.elementAt(rowNumber).getCurrentForegroundColor();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // no defined color, use default
+            colorINT = DEFAULT_FOREGROUNDCOLOR;
+        }
+
+        return YukonColorPalette.getColor(colorINT).getAwtColor();
+    }
 /**
  * Insert the method's description here.
  * Creation date: (2/3/00 3:15:32 PM)
@@ -736,7 +728,7 @@ private Object getCellValueObject( PointValues point, int loc )
 		{
 			if( point.getValue() % 1 == 0 )  // make sure we have a whole number
 			{
-				int value = new Integer( doubleToLong.format(point.getValue()) ).intValue();
+				int value = Integer.valueOf( doubleToLong.format(point.getValue()) ).intValue();
 				buffer = pt.getText( value );
 				pt.setCurrentRowColor( value );
 			}
@@ -839,7 +831,7 @@ public long getPointID( int rowNumber )
 	if( pointValues != null && pointValues.size() > 0 && rowNumber < pointValues.size() && 
 		 rowNumber >= 0 && rowNumber < getRowCount() )
 	{
-		return new Long( pointValues.elementAt( rowNumber ).getPointID()).longValue();
+		return Long.valueOf( pointValues.elementAt( rowNumber ).getPointID()).longValue();
 	}
 	else
 		return -1;
@@ -1163,7 +1155,7 @@ private void initAlarmColors()
 				   " order by rawstate";
 
 	Object[] objs = new Object[1];
-	objs[0] = new Integer( com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ALARM );
+	objs[0] = Integer.valueOf( com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ALARM );
 	Object[][] alarmStates = DataBaseInteraction.queryResults( query, objs );
 
 	alarmColors = new int[ alarmStates.length + 1 ];
@@ -1206,7 +1198,7 @@ private void initColumns()
 		 " and columntype.typenum = displaycolumns.typenum "+
 		 " order by displaycolumns.ordering");
 	Object[] objs = new Object[1];
-	objs[0] = new Integer(getCurrentDisplay().getDisplayNumber());
+	objs[0] = Integer.valueOf(getCurrentDisplay().getDisplayNumber());
 	Object[][] values = DataBaseInteraction.queryResults( query, objs );
 
 	
@@ -1217,7 +1209,7 @@ private void initColumns()
 	{
 		getColumnNames().addElement( values[column][0] );
 		getColumnTypeName().addElement( values[column][1] );
-		//columnWidth[ column ] = new Integer( values[column][2].toString() );
+		//columnWidth[ column ] = Integer.valueOf( values[column][2].toString() );
 	}
 
 
@@ -1404,7 +1396,7 @@ public boolean isSignalAlarmed( Signal signal_ )
  */
 public boolean isRowInAlarmVector( int rowNumber )
 {
-	return getAlarmingRowVector().contains( new Integer( rowNumber ) );
+	return getAlarmingRowVector().contains( Integer.valueOf( rowNumber ) );
 }
 /**
  * This method add a Blank row to the table
@@ -1441,8 +1433,6 @@ public synchronized void makeTable ( )
 {
 	initColumns();
 	initAlarmColors();
-
-	String query = new String();
 
 	if ( buildRowQuery() )
 	{
@@ -1505,7 +1495,7 @@ public boolean pointExists(String ptID)
 	
 	try
 	{
-		value = new Long(ptID);
+		value = Long.valueOf(ptID);
 	}
 	catch( Exception e ) // NumberFormatException of NullPointerException will be the most common caught
 	{
@@ -1703,7 +1693,7 @@ private void removeRow( int rowNumber )
 	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() )
 		return;
 
-	setRowUnalarmed( null, new Integer(rowNumber) );
+	setRowUnalarmed( null, Integer.valueOf(rowNumber) );
 
 	// just in case the rows below this one are alarming
 	if( getAlarmingRowVector().areRowNumbersGreaterAlarming( rowNumber ) )
@@ -1851,7 +1841,7 @@ public boolean setBGRowColor(int rowNumber, int color)
 private Integer getCellQualityCount( PointValues point_, int loc_, final Integer lastValue_ )
 {
 	PointValues pt = null;
-	Integer retValue = new Integer(0);
+	Integer retValue = Integer.valueOf(0);
 
 	try
 	{
@@ -1860,7 +1850,7 @@ private Integer getCellQualityCount( PointValues point_, int loc_, final Integer
 		if( pt != null 
 			 && (pt.getPointQuality() == point_.getPointQuality()) )
 		{
-			retValue = new Integer( lastValue_.intValue() + 1 );
+			retValue = Integer.valueOf( lastValue_.intValue() + 1 );
 		}
 	}
 	catch(ArrayIndexOutOfBoundsException ex )
@@ -1888,7 +1878,7 @@ private void setCorrectRowValue( PointValues point, int location )
 		{
 			Object currentCnt = dataRow.get( getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_QUALITYCNT) );
 			if( !(currentCnt instanceof Integer) )
-				currentCnt = new Integer(0);
+				currentCnt = Integer.valueOf(0);
 			
 			dataRow.setElementAt(
 					getCellQualityCount( point, location, (Integer)currentCnt ),
@@ -2073,7 +2063,7 @@ public void setRowAlarmed( Signal signal )
 	{
 		synchronized( getAlarmingRowVector() )
 		{
-			if( !getAlarmingRowVector().contains( new Integer(rowLoc) ) )
+			if( !getAlarmingRowVector().contains( Integer.valueOf(rowLoc) ) )
 			{
 				AlarmingRow alRow = new AlarmingRow( 
 										rowLoc,
@@ -2185,7 +2175,7 @@ private int setRowUnalarmed( Signal signal_, Integer rowNum_ )
 		if( rNum < 0 && signal_ != null )
 			rNum = getRowNumber( signal_.getPointID() );
 		
-		rowNum_ = new Integer(rNum);
+		rowNum_ = Integer.valueOf(rNum);
 	}
 
 	//strange, we are unable to find the row at this time

@@ -42,9 +42,9 @@
             <tags:nameValue name="Update Result for Delete">
                 The result to return for gateway delete operations.
             </tags:nameValue>
-            <tags:nameValue name="Update Result for Ipv6 Prefix">
+            <%-- <tags:nameValue name="Update Result for Ipv6 Prefix">
                 The result to return for ipv6 prefix update operation.
-            </tags:nameValue>
+            </tags:nameValue> --%>
         </tags:nameValueContainer>
     </div>
     
@@ -239,10 +239,10 @@
                                             <tags:selectWithItems path="updateSettings.deleteResult"
                                                 items="${gatewayUpdateResultTypes}" disabled="true"/>
                                         </tags:nameValue>
-                                        <tags:nameValue name="Update Result for Ipv6 Prefix">
+                                        <%-- <tags:nameValue name="Update Result for Ipv6 Prefix">
                                             <tags:selectWithItems path="updateSettings.ipv6PrefixUpdateResult"
                                                 items="${gatewayConfigResultTypes}" disabled="true"/>
-                                        </tags:nameValue>
+                                        </tags:nameValue> --%>
                                     </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not autoUpdateReplyActive}">
@@ -259,10 +259,10 @@
                                             <tags:selectWithItems path="updateSettings.deleteResult"
                                                 items="${gatewayUpdateResultTypes}"/>
                                         </tags:nameValue>
-                                        <tags:nameValue name="Update Result for Ipv6 Prefix">
+                                        <%-- <tags:nameValue name="Update Result for Ipv6 Prefix">
                                             <tags:selectWithItems path="updateSettings.ipv6PrefixUpdateResult"
                                                 items="${gatewayConfigResultTypes}"/>
-                                        </tags:nameValue>
+                                        </tags:nameValue> --%>
                                     </tags:nameValueContainer>
                                 </c:if>
                                 <cti:button renderMode="labeledImage" icon="icon-help" data-popup="#update-parameters-popup" label="Parameter Details"/>

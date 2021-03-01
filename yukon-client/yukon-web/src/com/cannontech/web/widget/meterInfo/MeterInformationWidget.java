@@ -175,7 +175,6 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         } else {
             model.addAttribute("meter", MeterModel.of(meter));
         }
-              
         return "meterInformationWidget/edit.jsp";
     }
     

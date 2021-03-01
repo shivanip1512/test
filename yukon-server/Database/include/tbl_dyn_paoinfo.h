@@ -388,6 +388,10 @@ public:
 
         Key_RFN_MeterProgrammingProgress,
         Key_RFN_MeterProgrammingConfigID,
+
+        Key_RFN_MetrologyLibraryEnabled,
+
+        Key_RFN_ChannelConfigFiltered,
     };
 
 protected:

@@ -22,7 +22,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
@@ -46,6 +45,7 @@ public class HoneywellProgramApiDoc {
     private Integer copyProgramId = null;
     private FieldDescriptor[] honeywellGearFieldDescriptor = null;
     private List<FieldDescriptor> honeywellProgramFieldDescriptor = null;
+    private MockLoadProgram subOrdinateLoadProgram = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -56,7 +56,7 @@ public class HoneywellProgramApiDoc {
                 fieldWithPath("gears[].fields.rampInOut").type(JsonFieldType.BOOLEAN).description("RampInOut").optional(),
                 fieldWithPath("gears[].fields.controlPercent").type(JsonFieldType.NUMBER).description("Control Percent. Min Value: 5, Max Value: 100").optional(),
                 fieldWithPath("gears[].fields.cyclePeriodInMinutes").type(JsonFieldType.NUMBER).description("Cycle Period").optional(),
-                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).ignored().description("How To Stop Control"),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How To Stop Control"),
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER).description("Capacity Reduction. Min Value: 0, Max Value: 100"),
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
@@ -77,8 +77,8 @@ public class HoneywellProgramApiDoc {
     @Test
     public void honeywellAssignedLoadGroup_Create(ITestContext context) {
         MockLoadGroupBase loadGroupHoneywell = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_HONEYWELL);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupHoneywell);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroupHoneywell);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         List<MockLoadGroupBase> loadGroups = new ArrayList<>();
         Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
         loadGroupHoneywell.setId(loadGroupId);
@@ -92,12 +92,12 @@ public class HoneywellProgramApiDoc {
     @Test(dependsOnMethods={"honeywellAssignedLoadGroup_Create"})
     public void programConstraint_Create(ITestContext context) {
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, constraintId);
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
         assertTrue("Constraint Id should not be Null", constraintId != null);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
     }
 
     /**
@@ -110,7 +110,6 @@ public class HoneywellProgramApiDoc {
     public void Test_HoneywellProgram_Create(ITestContext context) {
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.HoneywellCycle);
-        gearTypes.add(MockGearControlMethod.HoneywellSetpoint);
         MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
@@ -123,14 +122,14 @@ public class HoneywellProgramApiDoc {
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                                                     .body(loadProgram)
                                                     .when()
-                                                    .post(ApiCallHelper.getProperty("saveLoadProgram"))
+                                                    .post(ApiCallHelper.getProperty("loadPrograms"))
                                                     .then()
                                                     .extract()
                                                     .response();
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, loadProgram.getName());
         programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         assertTrue("Program Id should not be Null", programId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        assertTrue("Status code should be 201", response.statusCode() == 201);
     }
 
     /**
@@ -145,7 +144,7 @@ public class HoneywellProgramApiDoc {
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                                                     .when()
-                                                    .get(ApiCallHelper.getProperty("getLoadProgram") + programId)
+                                                    .get(ApiCallHelper.getProperty("loadPrograms") + "/" + programId)
                                                     .then()
                                                     .extract()
                                                     .response();
@@ -162,20 +161,22 @@ public class HoneywellProgramApiDoc {
     public void Test_HoneywellProgram_Update(ITestContext context) {
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.HoneywellCycle);
-        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
+        subOrdinateLoadProgram = LoadProgramSetupHelper.getMemberControlLoadProgram(context, gearTypes, MockPaoType.LM_HONEYWELL_PROGRAM);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramUpdateRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
-                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
+                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID),
+                                                                                 subOrdinateLoadProgram);
 
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(honeywellProgramFieldDescriptor),
+                                                                     requestFields(LoadProgramSetupHelper.createFieldDescriptorForUpdate(honeywellGearFieldDescriptor)),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                                                     .body(loadProgram)
                                                     .when()
-                                                    .post(ApiCallHelper.getProperty("updateLoadProgram") + programId)
+                                                    .put(ApiCallHelper.getProperty("loadPrograms") + "/" + programId)
                                                     .then()
                                                     .extract()
                                                     .response();
@@ -202,7 +203,7 @@ public class HoneywellProgramApiDoc {
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                                                     .body(loadProgramCopy)
                                                     .when()
-                                                    .post(ApiCallHelper.getProperty("copyLoadProgram") + programId)
+                                                    .post(ApiCallHelper.getProperty("loadPrograms") + "/" + programId + "/copy")
                                                     .then()
                                                     .extract()
                                                     .response();
@@ -220,21 +221,19 @@ public class HoneywellProgramApiDoc {
      */
     @Test(dependsOnMethods={"Test_HoneywellProgram_Copy"})
     public void Test_HoneywellCopyProgram_Delete(ITestContext context) {
-        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
-                                                                     responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
+                                                                     responseFields(LoadProgramSetupHelper.deleteFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(deleteObject)
                                                     .when()
-                                                    .delete(ApiCallHelper.getProperty("deleteLoadProgram") + copyProgramId)
+                                                    .delete(ApiCallHelper.getProperty("loadPrograms") + "/" + copyProgramId)
                                                     .then()
                                                     .extract()
                                                     .response();
 
         assertTrue("Status code should be 200", response.statusCode() == 200);
+        ApiCallHelper.delete("loadPrograms", "/" + subOrdinateLoadProgram.getProgramId());
     }
 
     /**
@@ -243,16 +242,13 @@ public class HoneywellProgramApiDoc {
      */
     @Test(dependsOnMethods={"Test_HoneywellProgram_Copy"})
     public void Test_HoneywellProgram_Delete(ITestContext context) {
-        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
-                                                                     responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
+                                                                     responseFields(LoadProgramSetupHelper.deleteFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(deleteObject)
                                                     .when()
-                                                    .delete(ApiCallHelper.getProperty("deleteLoadProgram") + programId)
+                                                    .delete(ApiCallHelper.getProperty("loadPrograms") + "/" + programId)
                                                     .then()
                                                     .extract()
                                                     .response();
@@ -268,7 +264,7 @@ public class HoneywellProgramApiDoc {
     public void assignedLoadGroup_Delete(ITestContext context) {
         List<MockLoadGroupBase> groups = (List<MockLoadGroupBase>) context.getAttribute("loadGroups");
         groups.forEach(group -> {
-            ExtractableResponse<?> response = ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            ExtractableResponse<?> response = ApiCallHelper.delete("loadGroups", "/" + group.getId());
             assertTrue("Status code should be 200", response.statusCode() == 200);
         });
     }
@@ -278,9 +274,8 @@ public class HoneywellProgramApiDoc {
      */
     @Test(dependsOnMethods={"assignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
-        ExtractableResponse<?> response = ApiCallHelper.delete((Integer)context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID),
-                                                               (String)context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME),
-                                                               "deleteProgramConstraint");
+        ExtractableResponse<?> response = ApiCallHelper.delete("programConstraints", 
+                "/" + (context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID)));
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 }

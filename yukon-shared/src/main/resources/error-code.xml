@@ -1991,6 +1991,20 @@
         <description>The password provided for the Meter Program is not valid.</description>
         <troubleshooting>Confirm the password to use with this device.</troubleshooting>
     </error>
+    
+    <error code="338" type="SYSTEM">
+        <category>Yukon System</category>
+        <porter>Node timed out while waiting for a response from Yukon.</porter>
+        <description>Node timed out while waiting for a response from Yukon.</description>
+        <troubleshooting>The RF node attempted to download the meter program from Yukon, but did not receive all of it, possibly due to network issues. Retry sending the Meter Program to the node.</troubleshooting>
+    </error>
+    
+    <error code="339" type="SYSTEM">
+        <category>Yukon System</category>
+        <porter>Node received an error response from Yukon.</porter>
+        <description>Node received an error response from Yukon.</description>
+        <troubleshooting>The RF node attempted to download the meter program from Yukon, but received an error response. Retry sending the Meter Program to the node.</troubleshooting>
+    </error>
 
   <error code="1024" type="NONE">
         <category>Network Manager</category>

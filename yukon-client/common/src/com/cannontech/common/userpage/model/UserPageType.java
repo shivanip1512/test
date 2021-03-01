@@ -97,11 +97,22 @@ public enum UserPageType {
             return trendUrls;
         }
     },
+    PROGRAM_CONSTRAINT {
+        List<Pattern> programConstraintUrl = new ArrayList<>();
+        @Override
+        public List<Pattern> getUrl() {
+            if (programConstraintUrl.isEmpty()) {
+                programConstraintUrl.add(Pattern.compile("/dr/setup/constraint/(\\d+)"));
+            }
+            return programConstraintUrl;
+        }
+    },
     DEMAND_RESPONSE {
         List<Pattern> demandResponseUrl = new ArrayList<>();
         @Override
         public List<Pattern> getUrl() {
             if (demandResponseUrl.isEmpty()) {
+                // DR "operator" pages
                 demandResponseUrl.add(compileUrlParam("/dr/program/detail", "programId"));
                 demandResponseUrl.add(compileUrlParam("/dr/scenario/detail", "scenarioId"));
                 demandResponseUrl.add(compileUrlParam("/dr/loadGroup/detail", "loadGroupId"));
@@ -133,6 +144,7 @@ public enum UserPageType {
                 paoUrls.add(compileUrlParam("/meter/moveIn", "deviceId"));
                 paoUrls.add(compileUrlParam("/meter/moveOut", "deviceId"));
                 paoUrls.add(compileUrlParam("/meter/highBill/view", "deviceId"));
+                paoUrls.add(compileUrlParam("/meter/virtual/home", "deviceId"));
                 paoUrls.add(compileUrlParam("/amr/profile/home", "deviceId"));
                 paoUrls.add(compileUrlParam("/amr/voltageAndTou/home", "deviceId"));
                 paoUrls.add(compileUrlParam("/amr/manualCommand/home", "deviceId"));
@@ -142,8 +154,17 @@ public enum UserPageType {
                 paoUrls.add(compileUrlParam("/stars/relay/home", "deviceId"));
                 paoUrls.add(Pattern.compile("/stars/gateways/(\\d+)"));
                 paoUrls.add(Pattern.compile("/stars/rtu/(\\d+)"));
+                paoUrls.add(Pattern.compile("/stars/device/commChannel/(\\d+)"));
+                paoUrls.add(Pattern.compile("/stars/virtualDevice/(\\d+)"));
 
-                // Demand Reponse url
+                // Demand Reponse Setup pages (Move into DEMAND_RESPONSE if we decide these should be in the DR Favorites as well. Currently, DR favorites are the "operations" pages.
+                paoUrls.add(Pattern.compile("/dr/setup/loadGroup/(\\d+)"));
+                paoUrls.add(Pattern.compile("/dr/setup/macroLoadGroup/(\\d+)"));
+                paoUrls.add(Pattern.compile("/dr/setup/loadProgram/(\\d+)"));
+                paoUrls.add(Pattern.compile("/dr/setup/controlArea/(\\d+)"));
+                paoUrls.add(Pattern.compile("/dr/setup/controlScenario/(\\d+)"));
+                
+                // Demand Reponse ("operator") url
                 paoUrls.addAll(UserPageType.DEMAND_RESPONSE.getUrl());
             }
 

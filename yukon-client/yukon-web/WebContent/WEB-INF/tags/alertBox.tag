@@ -3,6 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ attribute name="style"  description="CSS sytle to be applied to the help text div."%>
 
 <%@ attribute name="type" description="Values are 'success', 'info', 'pending', 'warning', and 'error'. Default: 'error'" %>
 
@@ -19,7 +20,7 @@
                          
 <cti:default var="type" value="error"/>
 
-<div id="user-message" class="user-message ${type} ${classes}">
+<div id="user-message" class="user-message ${type} ${classes}" style="${style}">
     <c:if test="${includeCloseButton}">
         <i class="cp fr icon icon-close-x" onclick="$(this).parent().addClass('dn');"></i>
     </c:if>

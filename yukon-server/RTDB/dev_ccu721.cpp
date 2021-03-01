@@ -9,8 +9,6 @@
 #include "desolvers.h"
 #include "words.h"
 
-#include <boost/bind.hpp>
-
 using namespace std;
 
 using Cti::Protocols::KlondikeProtocol;
@@ -354,7 +352,10 @@ unsigned long Ccu721Device::getRequestCount(unsigned long requestID) const
 
     return std::count_if(_queued_outmessages.begin(),
                          _queued_outmessages.end(),
-                         boost::bind(findRequestIDMatch, reinterpret_cast<void *>(requestID), _1));
+                         [=]( OUTMESS* om )
+                         {
+                             return findRequestIDMatch(reinterpret_cast<void*>(requestID), om);
+                         } );
 }
 
 
@@ -626,8 +627,8 @@ YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
                 InMessage.Port   = _current_om->Port;
                 InMessage.Remote = _current_om->Remote;
 
-                InMessage.Time   = CtiTime::now().seconds();
-
+                InMessage.ErrorCode = translateKlondikeError(_klondike.errorCode());
+                InMessage.Time      = CtiTime::now().seconds();
                 InMessage.InLength  = dtran_result.size();
 
                 copy(dtran_result.begin(), dtran_result.end(), InMessage.Buffer.InMessage);

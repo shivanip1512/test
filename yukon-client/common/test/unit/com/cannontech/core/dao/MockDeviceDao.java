@@ -207,4 +207,29 @@ public class MockDeviceDao implements DeviceDao {
     public List<PaoMacAddress> findAllDevicesWithNoSecondaryMacAddress() {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public boolean isGuidExists(String guid) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public String getGuid(int deviceId) throws NotFoundException {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public void updateGuid(int deviceId, String guid) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public void insertGuid(int deviceId, String guid) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<SimpleDevice> getDisabledDevices(Iterable<Integer> ids) {
+        throw new MethodNotImplementedException();
+    }
 }

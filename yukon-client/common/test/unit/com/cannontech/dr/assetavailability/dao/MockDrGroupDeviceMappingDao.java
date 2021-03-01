@@ -26,7 +26,7 @@ public class MockDrGroupDeviceMappingDao implements DRGroupDeviceMappingDao {
     
     private final String gatewayName = "Test Gateway";
     private final PaoIdentifier gatewayPaoId = new PaoIdentifier(100, PaoType.RFN_GATEWAY);
-    private static final RfnIdentifier gatewayRfnId = new RfnIdentifier("10000", "CPS", "RFGateway");
+    private static final RfnIdentifier gatewayRfnId = new RfnIdentifier("10000", "EATON", "RFGateway");
     private final static String gateway2Name = "Test Gateway 2";
     
     private static RfnGatewayData createEmptyRfnGatewayData(RfnIdentifier rfnIdentifier) {

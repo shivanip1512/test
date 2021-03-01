@@ -91,7 +91,7 @@ public class ItronRuntimeCalcServiceImplTest {
         lcr6600s_radioLinkQuality = 
                 new LitePoint(178, "Radio Link Quality", PointType.Analog.getPointTypeId(), lcr6600sId, 56, -1);
         lcr6600s_relay1_relayState = 
-                new LitePoint(179, "Relay 1 Relay State", PointType.Status.getPointTypeId(), lcr6600sId, 3, -1);
+                new LitePoint(179, "Relay 1 Load State", PointType.Status.getPointTypeId(), lcr6600sId, 3, -1);
         lcr6600s_relay1_runtimeLog_15m = 
                 new LitePoint(180, "Relay 1 Run Time Data Log 15 Minutes", PointType.Analog.getPointTypeId(), lcr6600sId, 12, -1);
         lcr6600s_relay1_runtimeLog_60m = 
@@ -436,9 +436,9 @@ public class ItronRuntimeCalcServiceImplTest {
         expect(mockPaoDefinitionDao.findAttributeLookup(eq(lcr6600s.getPaoType()), anyObject(BuiltInAttribute.class)))
             .andReturn(Optional.empty())
             .times(2);
-        expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_RELAY_STATE))
-            .andReturn(Optional.of(new AttributeDefinition(BuiltInAttribute.RELAY_1_RELAY_STATE, 
-                                                           new PointTemplate("Relay 1 Relay State",
+        expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_LOAD_STATE))
+            .andReturn(Optional.of(new AttributeDefinition(BuiltInAttribute.RELAY_1_LOAD_STATE, 
+                                                           new PointTemplate("Relay 1 Load State",
                                                                              PointType.Status,
                                                                              3, 1, -1, -1, 0),
                                                            null)));
@@ -551,9 +551,9 @@ public class ItronRuntimeCalcServiceImplTest {
         expect(mockPaoDefinitionDao.findAttributeLookup(eq(lcr6600s.getPaoType()), anyObject(BuiltInAttribute.class)))
             .andReturn(Optional.empty())
             .times(2);
-        expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_RELAY_STATE))
-            .andReturn(Optional.of(new AttributeDefinition(BuiltInAttribute.RELAY_1_RELAY_STATE, 
-                                                           new PointTemplate("Relay 1 Relay State",
+        expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_LOAD_STATE))
+            .andReturn(Optional.of(new AttributeDefinition(BuiltInAttribute.RELAY_1_LOAD_STATE, 
+                                                           new PointTemplate("Relay 1 Load State",
                                                                              PointType.Status,
                                                                              3, 1, -1, -1, 0),
                                                            null)));

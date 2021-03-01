@@ -283,7 +283,12 @@ public class CommonModuleBuilder implements ModuleBuilder {
             String prop = child.getAttributeValue("value");
             String name = child.getName();
             if (name.equals("requireRoleProperty")) {
-                checker = roleAndPropertyDescriptionService.compile(prop);
+                String level = child.getAttributeValue("level");
+                if (level != null) {
+                    checker = roleAndPropertyDescriptionService.compile(prop, level);
+                } else {
+                    checker = roleAndPropertyDescriptionService.compile(prop);
+                }
             } else if (name.equals("requireEcOperatorOrSuperUser")) {
                 checker = energyCompanyService.createEcOperatorOrSuperUserChecker();
             } else if (name.equals("requireCanEditEnergyCompany")) {

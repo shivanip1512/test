@@ -50,7 +50,7 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
 
 @Controller
-@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewaySettingsController {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
@@ -64,6 +64,7 @@ public class GatewaySettingsController {
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping("/gateways/create")
     public String createDialog(ModelMap model) {
         

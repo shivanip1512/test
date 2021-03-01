@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -243,21 +244,25 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Override
     public NodeComm getNodeCommStatusFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata) {
         if (metadata.isValidResultForMulti(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM)) {
-            DynamicRfnDeviceData deviceData =  rfnDeviceDao.findDynamicRfnDeviceData(rfnDevice.getPaoIdentifier().getPaoId());
-            RfnIdentifier primaryForwardGateway =  deviceData != null ?  deviceData.getGateway().getRfnIdentifier() : null;
             NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
             RfnIdentifier reverseGateway = comm.getGatewayRfnIdentifier();
-            if (reverseGateway != null && primaryForwardGateway != null && reverseGateway.equals(primaryForwardGateway)) {
+            DynamicRfnDeviceData deviceData = rfnDeviceDao.findDynamicRfnDeviceData(rfnDevice.getPaoIdentifier().getPaoId());
+            if (deviceData == null) {
+                log.info("Device:{} Primary Gateway:None Reverse Gateway:{} using Reverse Gateway", rfnDevice, reverseGateway);
+                return comm;
+            }
+            RfnIdentifier primaryForwardGateway = deviceData.getGateway().getRfnIdentifier();
+            if (reverseGateway == null) {
+                log.info("Device:{} Primary Gateway:{} Reverse Gateway:None Status is unknown", rfnDevice,
+                        primaryForwardGateway);
+            } else if (reverseGateway.equals(primaryForwardGateway)) {
                 return comm;
             } else {
-                log.debug("reverse gateway {} primary forward gateway {} for {}", reverseGateway, primaryForwardGateway, rfnDevice);
-                log.info(
-                        "Comm reverse gateway from DynamicRfnDeviceData {} doesn't match primary forward gateway {} for {}, unable to determine comm status",
-                        reverseGateway, primaryForwardGateway, rfnDevice);
+                log.info("Device:{} Primary Gateway:{} Reverse Gateway:{} do not match, unable to determine comm status",
+                        rfnDevice, primaryForwardGateway, reverseGateway);
             }
         } else {
-            log.error(
-                    "NM didn't return REVERSE_LOOKUP_NODE_COMM for {}, unable to determine comm status",
+            log.error("NM didn't return REVERSE_LOOKUP_NODE_COMM for {}, unable to determine comm status",
                     rfnDevice);
         }
         return null;
@@ -313,6 +318,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             if (!filter.getDescendantCount().containsAll(Arrays.asList(DescendantCount.values()))) {
                 data.values().forEach(datas -> datas.removeIf(value -> !filter.getDescendantCount()
                         .contains(DescendantCount.getDescendantCount(value.getDescendantCount()))));
+                data = data.entrySet().stream()
+                                      .filter(e -> !e.getValue().isEmpty())
+                                      .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
             }
             if (filter.getColorCodeBy() == ColorCodeBy.GATEWAY) {
                 gatewaysToAddToMap.removeAll(data.keySet().stream().map(id -> gatewayIdsToIdentifiers.get(id))
@@ -472,7 +480,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private void colorCodeByGatewayAndAddToMap(NetworkMap map,  Map<Integer, List<DynamicRfnDeviceData>> data) {
         AtomicInteger i = new AtomicInteger(0);
         for (Integer gatewayId : data.keySet()) {
-            Color color = Color.values()[i.getAndIncrement()];
+            Color color = Color.values()[i.getAndIncrement() % Color.values().length];
             RfnDevice gateway = data.get(gatewayId).iterator().next().getGateway();
             Set<RfnIdentifier> devices = data.get(gatewayId).stream()
                     .map(d -> d.getDevice().getRfnIdentifier())
@@ -550,7 +558,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             log.debug("Failed to add devices {} to map, locations empty", paoIds.size());
             return;
         }
-        String hexColor = "#ffffff";
+        String hexColor = YukonColorPalette.WHITE.getHexValue();
         if (color != null) {
             hexColor = color.getHexColor();
         }

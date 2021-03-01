@@ -1,13 +1,14 @@
 #include "precompiled.h"
 
 #include "ScanPolicy.h"
+#include "Requests.h"
 
 #include "std_helper.h"
+#include "logger.h"
 
 #include <boost/range/join.hpp>
 
-namespace Cti           {
-namespace CapControl    {
+namespace Cti::CapControl {
 
 Policy::AttributeList ScanPolicy::getSupportedAttributes() const
 {
@@ -56,10 +57,8 @@ Policy::Action ScanPolicy::makeIntegrityScanCommand( const LitePoint & point )
     return
     {
         makeSignalTemplate( point.getPointId(), 0, "Integrity Scan" ),
-        makeRequestTemplate( point.getPaoId(), "scan integrity" )
+        makeRequestTemplate( point.getPaoId(), "scan integrity", RequestType::Scan )
     };
 }
 
 }
-}
-

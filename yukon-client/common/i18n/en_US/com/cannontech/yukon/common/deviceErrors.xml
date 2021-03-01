@@ -1296,6 +1296,14 @@
     <entry key="yukon.web.error.code.337.description">The password provided for the Meter Program is not valid.</entry>
     <entry key="yukon.web.error.code.337.troubleshooting">Confirm the password to use with this device.</entry>
 
+    <entry key="yukon.web.error.code.338.porter">Node timed out while waiting for a response from Yukon.</entry>
+    <entry key="yukon.web.error.code.338.description">Node timed out while waiting for a response from Yukon.</entry>
+    <entry key="yukon.web.error.code.338.troubleshooting">The RF node attempted to download the meter program from Yukon, but did not receive all of it, possibly due to network issues. Retry sending the Meter Program to the node.</entry>
+    
+    <entry key="yukon.web.error.code.339.porter">Node received an error response from Yukon.</entry>
+    <entry key="yukon.web.error.code.339.description">Node received an error response from Yukon.</entry>
+    <entry key="yukon.web.error.code.339.troubleshooting">The RF node attempted to download the meter program from Yukon, but received an error response. Retry sending the Meter Program to the node.</entry>
+    
     <entry key="yukon.web.error.code.1024.porter">No node in Network Manager.</entry>
     <entry key="yukon.web.error.code.1024.description">There isn't a node in Network Manager which is
         currently associated with this device in Yukon.</entry>

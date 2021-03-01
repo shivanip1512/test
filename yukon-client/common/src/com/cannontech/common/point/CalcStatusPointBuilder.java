@@ -22,6 +22,7 @@ public class CalcStatusPointBuilder extends PointBuilder {
     private String stateGroupName = "TwoStateStatus";
     private String initialStateName = "Open";
     private Boolean archiveData = false;
+    protected int pointOffset = 0; //no physical point offset unless specified
     
     protected CalcStatusPointBuilder(int paoId, int pointId, String pointName, boolean isDisabled, PointPropertyValueDao pointPropertyValueDao) {
         super(paoId, pointId, pointName, isDisabled, pointPropertyValueDao);
@@ -73,7 +74,7 @@ public class CalcStatusPointBuilder extends PointBuilder {
             throw new IllegalStateException("No state \"" + initialStateName + "\" in state group \"" + stateGroupName + "\".");
         }
         
-        CalcStatusPoint point = (CalcStatusPoint) PointFactory.createCalcStatusPoint(paoId, pointName, stateGroupId);
+        CalcStatusPoint point = (CalcStatusPoint) PointFactory.createCalcStatusPoint(paoId, pointName, stateGroupId, pointOffset);
         
         point.getPointStatus().setInitialState(initialStateId);
         
@@ -117,5 +118,13 @@ public class CalcStatusPointBuilder extends PointBuilder {
     
     public void setArchiveData(boolean archiveData) {
         this.archiveData = archiveData;
+    }
+    
+    /**
+     * Must be a non-negative value.
+     */
+    public void setPointOffset(int pointOffset) {
+        if(pointOffset < 0) throw new IllegalArgumentException("Point Offset cannot be negative.");
+        this.pointOffset = pointOffset;
     }
 }

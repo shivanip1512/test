@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockLMDto;
@@ -16,7 +13,6 @@ import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.loadgroup.request.MockAddressLevel;
 import com.cannontech.rest.api.loadgroup.request.MockAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockControlPriority;
-import com.cannontech.rest.api.loadgroup.request.MockControlRawState;
 import com.cannontech.rest.api.loadgroup.request.MockEmetconAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockEmetconRelayUsage;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
@@ -30,18 +26,17 @@ import com.cannontech.rest.api.loadgroup.request.MockLoadGroupItron;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupMCT;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupNest;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupPoint;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupRFNExpresscom;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupRipple;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupVersacom;
 import com.cannontech.rest.api.loadgroup.request.MockLoads;
 import com.cannontech.rest.api.loadgroup.request.MockRelays;
 import com.cannontech.rest.api.loadgroup.request.MockSepDeviceClass;
 import com.cannontech.rest.api.loadgroup.request.MockVersacomAddressUsage;
-import com.cannontech.rest.api.utilities.Log;
 
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupHelper {
-    private static final Logger log = LogManager.getLogger(LoadGroupHelper.class);
     public final static String CONTEXT_GROUP_ID = "groupId";
     public final static String CONTEXT_GROUP_ID_DESC = "Load Group Id";
     public final static int INVALID_ROUTE_ID = 2222222;
@@ -140,7 +135,7 @@ public class LoadGroupHelper {
             rfnRelayUsage.add(MockLoads.Load_1);
             rfnRelayUsage.add(MockLoads.Load_2);
 
-            loadGroup = MockLoadGroupExpresscom.builder()
+            loadGroup = MockLoadGroupRFNExpresscom.builder()
                     .name(getLoadGroupName(paoType))
                     .type(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM)
                     .disableControl(false)
@@ -234,7 +229,7 @@ public class LoadGroupHelper {
             
             MockLMDto deviceUsage = MockLMDto.builder().id(Integer.valueOf(deviceIdStr)).build();
             MockLMDto pointUsage = MockLMDto.builder().id(Integer.valueOf(pointIdStr)).build();
-            MockControlRawState startControlRawState = MockControlRawState.builder().rawState(0).build();
+            MockLMDto startControlRawState = MockLMDto.builder().id(0).build();
             loadGroup = MockLoadGroupPoint.builder()
                     .name(getLoadGroupName(paoType))
                     .type(paoType)
@@ -288,10 +283,8 @@ public class LoadGroupHelper {
         return ApiUtils.buildFriendlyName(paoType, "LM_GROUP_", "TestCopy");
     }
 
-    public static void deleteLoadGroup(String name, String groupId) {
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(name).build();
-        Log.info("Delete load group is : " + lmDeleteObject);
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, groupId);
+    public static void deleteLoadGroup(String groupId) {
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -309,9 +302,9 @@ public class LoadGroupHelper {
         MockLoadGroupBase loadGroup = buildLoadGroup(paoType);
         loadGroup.setName(name);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        loadGroup.setId(createResponse.path("groupId"));
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
+        loadGroup = createResponse.as(MockLoadGroupBase.class);
 
         return loadGroup;
     }

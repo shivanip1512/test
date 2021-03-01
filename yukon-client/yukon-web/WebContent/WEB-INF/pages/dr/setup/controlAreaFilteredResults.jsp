@@ -39,7 +39,7 @@
                         </c:choose>
                     </td>
                     <td>
-                        ${programsForControlArea[filteredResult.controlAreaId]}
+                        ${fn:escapeXml(programsForControlArea[filteredResult.controlAreaId])}
                     </td>
                 </tr>
              </c:forEach>

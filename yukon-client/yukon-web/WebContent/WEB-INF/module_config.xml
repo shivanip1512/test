@@ -138,6 +138,10 @@
                 <link>/meter/water/home?deviceId=${deviceId}</link>
                 <labelArgument>${deviceName}</labelArgument>
               </page>
+              <page name="meterDetail.virtual" type="DETAIL">
+                <link>/meter/virtual/home?deviceId=${deviceId}</link>
+                <labelArgument>${deviceName}</labelArgument>
+              </page>
               <page name="meterDetail.gas" type="DETAIL">
                 <link>/meter/gas/home?deviceId=${deviceId}</link>
                 <labelArgument>${deviceName}</labelArgument>
@@ -328,6 +332,7 @@
                         <labelArgument>${formatName}</labelArgument>
                     </page>
                     <page name="bulk.archivedValueExporter.CREATE" type="BASIC" hideFavorite="true" />
+                    <page name="bulk.archivedValueExporter.VIEW" type="BASIC" hideFavorite="true" />
                     <page name="bulk.archivedValueExporter.selectDevices" type="BASIC">
                         <link>/amr/archivedValueExporter/selectDevices</link>
                     </page>
@@ -372,6 +377,9 @@
         </pages>
       </page>
       <page name="paoNotesSearch" type="BASIC"/>
+      <page name="aggregateIntervalReport" type="BASIC">
+        <link>/tools/aggregateIntervalReport/view</link>
+      </page>
     </pages>
   </module><!--  ENDS MODULE "tools" -->
 
@@ -972,6 +980,9 @@
                     <page name="config.weather" type="BLANK"/>
                     <page name="config.dashboards" type="BLANK"/>
                     <page name="security" type="BLANK" />
+                    <page name="config.attributes" type="BLANK">
+                        <requireRoleProperty value="ADMIN_MANAGE_ATTRIBUTES" level="OWNER"/>
+                    </page>
                 </pages>
             </page>
             
@@ -1305,6 +1316,12 @@
                         <pages>
                             <page name="wifiConnection" type="BASIC"/>
                         </pages>
+                    </page>
+                    <page name="gateways.manageFirmware" type="BASIC">
+                        <link>/stars/gateways/firmwareDetails</link>
+                    </page>
+                    <page name="gateways.certificateUpdates" type="BASIC">
+                        <link>/stars/gateways/certificateUpdates</link>
                     </page>
                 </pages>
             </page>
@@ -1767,21 +1784,29 @@
           <page name="deviceGroupSimulator" type="BASIC"/>
           <page name="ecobeePGPKeyPair" type="BASIC"/>
           <page name="itronKeyPair" type="BASIC"/>
+          <page name="pxMWToken" type="BASIC"/>
           <page name="systemMetricsSimulator" type="BASIC"/>
           <page name="ivvc.ivvcSimulator" type="BASIC"/>
           <page name="sftp.sftpTest" type="BASIC"/>
           <page name="rfnTest" type="BASIC">
             <link>/dev/rfn/viewBase</link>
             <pages>
-              <page name="rfnTest.viewMeterReadArchive" type="DETAIL"/>
-              <page name="rfnTest.viewEventArchive" type="DETAIL"/>
-              <page name="rfnTest.viewAlarmArchive" type="DETAIL"/>
-              <page name="rfnTest.viewDataSimulator" type="BASIC"/>
+              <page name="rfnTest.viewMeterReadArchive" type="BASIC"/>
+              <page name="rfnTest.viewEventArchive" type="BASIC"/>
+              <page name="rfnTest.viewAlarmArchive" type="BASIC"/>
+              <page name="rfnTest.viewLcrDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewGatewayDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewDataStreamingSimulator" type="BASIC"/>
               <page name="rfnTest.viewMappingSimulator" type="BASIC"/>
               <page name="rfnTest.statusArchiveRequest" type="BASIC"/>
-            </pages>            
+              <page name="rfnTest.pointMappingDecipher" type="BASIC"/>
+              <page name="rfnTest.pointMappingIcd" type="BASIC"/>
+              <page name="rfnTest.lcrReadArchiveRequest" type="BASIC"/>
+              <page name="rfnTest.rfnMeterSimulator" type="BASIC"/>
+              <page name="rfnTest.deviceArchive" type="BASIC"/>
+              <page name="rfnTest.rfLocationArchiveRequest" type="BASIC"/>
+              <page name="rfnTest.rfnConfigNotification" type="BASIC"/>
+            </pages>
           </page>
           <page name="ecobee.mockTest" type="BASIC"/>
           <page name="i18nDemo" type="BASIC"/>
@@ -1789,8 +1814,9 @@
           <page name="jsTesting" type="BASIC"/>
           <page name="paoDefinitionTesting" type="BASIC"/>
           <page name="smartNotificationsSimulator" type="BASIC"/>
-          <page name="collectionActionsTesting" type="BASIC"/>
+          <page name="cacheManagement" type="BASIC"/>
           <page name="itronSimulator" type="BASIC"/>
+          <page name="pxMWSimulator" type="BASIC"/>
           <page name="jmsApis" type="BASIC"/>
           <page name="nest" type="BASIC">
           <link>/dev/nest/home</link>

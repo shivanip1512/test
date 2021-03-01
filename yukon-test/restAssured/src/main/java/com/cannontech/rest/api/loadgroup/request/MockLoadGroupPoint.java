@@ -15,6 +15,6 @@ import lombok.experimental.SuperBuilder;
 public class MockLoadGroupPoint extends MockLoadGroupBase {
     private MockLMDto deviceUsage;
     private MockLMDto pointUsage;
-    private MockControlRawState startControlRawState;
+    private MockLMDto startControlRawState;
 
 }

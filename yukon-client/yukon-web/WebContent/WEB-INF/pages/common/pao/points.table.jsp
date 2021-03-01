@@ -35,8 +35,23 @@
             <tr>
                 <td>
                     <c:choose>
-                        <c:when test="${empty pointResultRow.attribute}"><i:inline key="yukon.common.na"/></c:when> 
-                        <c:otherwise><i:inline key="${pointResultRow.attribute}"/></c:otherwise> 
+                        <c:when test="${empty pointResultRow.attribute}">
+                            <i:inline key="yukon.common.na"/>
+                        </c:when> 
+                        <c:otherwise>
+                            <i:inline key="${pointResultRow.attribute}" htmlEscape="true"/>
+                            <c:if test="${pointResultRow.displayPopup}">
+                                <cti:msg2 var="moreAttributes" key="yukon.common.plusMore" argument="${pointResultRow.allAttributes.size() - 1}"/>
+                                <a href="javascript:void(0);" data-popup="#attributes-popup-${pointResultRow.pointId}">
+                                    ${moreAttributes}
+                                </a>
+                                <div id="attributes-popup-${pointResultRow.pointId}" class="dn" data-width="300"
+                                    data-title="<cti:msg2 key="yukon.common.attributes"/>">
+                                    <c:set var="point" value="${pointResultRow}"/>
+                                    <%@ include file="attributesTable.jsp" %>
+                                </div>
+                            </c:if>
+                        </c:otherwise> 
                     </c:choose>
                 </td>
                 <td>

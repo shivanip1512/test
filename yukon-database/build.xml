@@ -90,7 +90,6 @@
     </target>
 
     <target name="sqlServerCreationScriptXMLFile" depends="version_db_files">
-        <antcall target="git-checkout"/>
         <property name="databaseName" value="TempDBCreation_${version.major}_${version.minor}_${version.revision}" />
         <property environment="env" />
         
@@ -171,27 +170,11 @@
             <arg path = "../${dbSnapshot}"/>
         </exec>
 
-        <!-- Config git credential" before commit changes -->
-        <antcall target="config-git-credential" />
-
-        <!-- Commit snapshot chenges -->
         <git command="add" dir="../${dbSnapshot}">
             <args>
                 <arg value="mssql.xml" />
             </args>
         </git>
-        <git command="commit" dir="../${dbSnapshot}">
-            <args>
-                <arg value="-m Checking in the latest database snapshot" />
-            </args>
-        </git>
-        <git command="push" dir="../${dbSnapshot}">
-            <args>
-                <arg value="origin"/>
-                <arg value="HEAD:master"/>
-            </args>
-        </git>
-        <echo message="Snapshot complete and checked in" />
     </target>
     
     <target name="oracleCreationScriptXMLFile" depends="version_db_files">
@@ -262,24 +245,11 @@
             <arg path = "../${dbSnapshot}"/>
         </exec>
 
-        <!-- Commit snapshot chenges -->
         <git command="add" dir="../${dbSnapshot}">
             <args>
                 <arg value="oracle.xml" />
             </args>
         </git>
-        <git command="commit" dir="../${dbSnapshot}">
-            <args>
-                 <arg value="-m Checking in the latest database snapshot" />
-            </args>
-        </git>
-        <git command="push" dir="../${dbSnapshot}">
-            <args>
-                <arg value="origin"/>
-                <arg value="HEAD:master"/>
-            </args>
-        </git>
-        <echo message="Snapshot complete and checked in" />
     </target>
 
 </project>

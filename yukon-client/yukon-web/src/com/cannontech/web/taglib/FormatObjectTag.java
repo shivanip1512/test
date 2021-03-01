@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.common.i18n.ObjectFormattingService;
 
@@ -14,11 +15,13 @@ public class FormatObjectTag extends YukonTagSupport {
     private Object value;
     private String var;
     private boolean isVarSet = false;
+    private boolean htmlEscape = false;
     private ObjectFormattingService objectFormattingService;
     
     @Override
     public void doTag() throws IOException {
         String formattedObject = objectFormattingService.formatObjectAsString(value, getUserContext());
+        formattedObject = htmlEscape ? HtmlUtils.htmlEscape(formattedObject) : formattedObject;
         
         if (isVarSet) {
             getJspContext().setAttribute(var, formattedObject);
@@ -34,6 +37,10 @@ public class FormatObjectTag extends YukonTagSupport {
     public void setVar(final String var) {
         this.var = var;
         this.isVarSet = true;
+    }
+    
+    public void setHtmlEscape(boolean htmlEscape) {
+        this.htmlEscape = htmlEscape;
     }
     
     @Autowired

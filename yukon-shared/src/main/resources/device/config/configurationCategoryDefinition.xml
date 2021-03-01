@@ -401,4 +401,9 @@
             <string field="pointName" maxLength="60" />
         </indexed>
     </category>
+
+    <category type="rfnMetrologyConfiguration">
+        <boolean field="metrologyLibraryEnabled" default="false"/>
+    </category>
+
 </deviceConfigurationCategories>

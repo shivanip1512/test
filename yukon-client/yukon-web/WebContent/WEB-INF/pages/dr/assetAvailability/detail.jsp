@@ -60,7 +60,7 @@
                                 </c:forEach>
                                 <c:set var="buttonTextColor" value="green"/>
                                 <c:if test="${status == 'OPTED_OUT'}">
-                                    <c:set var="buttonTextColor" value="pie-blue"/>
+                                    <c:set var="buttonTextColor" value="blue"/>
                                 </c:if>
                                 <c:if test="${status == 'INACTIVE'}">
                                     <c:set var="buttonTextColor" value="orange"/>
@@ -75,7 +75,8 @@
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".primaryGateway">
                         <cti:msg2 var="gatewayPlaceholder" key=".selectGateways"/>
-                        <select id="selectedGatewayIds" name="selectedGatewayIds" class="js-primary-gateway-select" multiple="multiple" data-placeholder="${gatewayPlaceholder}">
+                        <select id="selectedGatewayIds" name="selectedGatewayIds" class="js-primary-gateway-select w300" multiple="multiple" 
+                            data-placeholder="${gatewayPlaceholder}" size="1">
                             <c:forEach var="gateway" items="${gateways}">
                                 <c:set var="checked" value="${false}"/>
                                 <c:forEach var="selectedGateway" items="${selectedGateways}">
@@ -97,8 +98,7 @@
     
     <div id="js-filtered-results"></div>
     
-    <cti:includeScript link="HIGH_STOCK"/>
     <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
-    <cti:includeScript link="/resources/js/widgets/yukon.widget.assetAvailability.js"/>
+    <cti:includeScript link="/resources/js/common/yukon.assetAvailability.pieChart.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.assetavailability.detail.js"/>
 </cti:standardPage>

@@ -2,6 +2,9 @@ package com.cannontech.common.rfn.message.node;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class NodeData implements Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -25,6 +28,8 @@ public class NodeData implements Serializable {
     private String meterConfigID;
     
     private String secondaryModuleFirmwareVersion;
+    
+    private Long bootLoaderVersion;
        
     private WifiSuperMeterData wifiSuperMeterData;
 
@@ -108,6 +113,14 @@ public class NodeData implements Serializable {
         this.secondaryModuleFirmwareVersion = secondaryModuleFirmwareVersion;
     }
     
+    public Long getBootLoaderVersion() {
+        return bootLoaderVersion;
+    }
+
+    public void setBootLoaderVersion(Long bootLoaderVersion) {
+        this.bootLoaderVersion = bootLoaderVersion;
+    }
+
     public WifiSuperMeterData getWifiSuperMeterData() {
         return wifiSuperMeterData;
     }
@@ -120,6 +133,7 @@ public class NodeData implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((bootLoaderVersion == null) ? 0 : bootLoaderVersion.hashCode());
         result = prime * result + ((firmwareVersion == null) ? 0 : firmwareVersion.hashCode());
         result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
         result = prime * result + (int) (inNetworkTimestamp ^ (inNetworkTimestamp >>> 32));
@@ -129,7 +143,8 @@ public class NodeData implements Serializable {
         result = prime * result + ((nodeSerialNumber == null) ? 0 : nodeSerialNumber.hashCode());
         result = prime * result + ((nodeType == null) ? 0 : nodeType.hashCode());
         result = prime * result + ((productNumber == null) ? 0 : productNumber.hashCode());
-        result = prime * result + ((secondaryModuleFirmwareVersion == null) ? 0 : secondaryModuleFirmwareVersion.hashCode());
+        result = prime * result
+                + ((secondaryModuleFirmwareVersion == null) ? 0 : secondaryModuleFirmwareVersion.hashCode());
         result = prime * result + ((wifiSuperMeterData == null) ? 0 : wifiSuperMeterData.hashCode());
         return result;
     }
@@ -143,6 +158,11 @@ public class NodeData implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         NodeData other = (NodeData) obj;
+        if (bootLoaderVersion == null) {
+            if (other.bootLoaderVersion != null)
+                return false;
+        } else if (!bootLoaderVersion.equals(other.bootLoaderVersion))
+            return false;
         if (firmwareVersion == null) {
             if (other.firmwareVersion != null)
                 return false;
@@ -197,9 +217,6 @@ public class NodeData implements Serializable {
 
     @Override
     public String toString() {
-        return String.format(
-                "NodeData [nodeSerialNumber=%s, nodeType=%s, inNetworkTimestamp=%s, macAddress=%s, networkAddress=%s, hardwareVersion=%s, firmwareVersion=%s, productNumber=%s, meterConfigID=%s, secondaryModuleFirmwareVersion=%s, wifiSuperMeterData=%s]",
-                nodeSerialNumber, nodeType, inNetworkTimestamp, macAddress, networkAddress, hardwareVersion, firmwareVersion,
-                productNumber, meterConfigID, secondaryModuleFirmwareVersion, wifiSuperMeterData);
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

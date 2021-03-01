@@ -81,6 +81,8 @@ public:
     VoltageRegulator(Cti::RowReader & rdr);
     VoltageRegulator(const VoltageRegulator & toCopy);
 
+    virtual ~VoltageRegulator() = default;
+
     void handlePointData( const CtiPointDataMsg & message ) override;
 
     IDSet getRegistrationPoints();

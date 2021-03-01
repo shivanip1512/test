@@ -34,7 +34,7 @@ public class MultiLineTextElement {
     }  
 
     public Boolean errorDisplayed() {
-        List<WebElement> list = this.driverExt.findElements(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty());
+        List<WebElement> list = this.driverExt.findElements(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.of(3));
 
         return !list.isEmpty() ? true : false;
     }
@@ -55,11 +55,11 @@ public class MultiLineTextElement {
     
     private WebElement getMultiLineTextElement() {
         if (this.parentName != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] textarea[name='" + this.elementName + "']"), Optional.empty());
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] textarea[name='" + this.elementName + "']"), Optional.of(3));
         } else if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector("textarea[name='" + this.elementName + "']"));
         } else {
-            return this.driverExt.findElement(By.cssSelector("textarea[name='" + this.elementName + "']"), Optional.empty());
+            return this.driverExt.findElement(By.cssSelector("textarea[name='" + this.elementName + "']"), Optional.of(3));
         } 
     }
 }

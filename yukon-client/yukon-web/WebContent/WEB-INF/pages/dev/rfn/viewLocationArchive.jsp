@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="dev" page="rfnTest">
+<cti:standardPage module="dev" page="rfnTest.rfLocationArchiveRequest">
     <tags:sectionContainer title="RFN Meter Location Archive Request Test">
         <form action="sendLocationArchiveRequest" method="post">
             <cti:csrfToken/>

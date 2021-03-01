@@ -15,50 +15,36 @@ import com.eaton.pages.PageBase;
 
 public class ControlAreaCreatePage extends PageBase {
 
-    private TextEditElement name;
-    private DropDownElement controlInterval;
-    private DropDownElement minResponseTime;
-    private DropDownElement dailyDefaultState;
-    private TrueFalseCheckboxElement requireAllTriggersActive;
-    private TrueFalseCheckboxElement useOptionControlWindow;
-
     public ControlAreaCreatePage(DriverExtensions driverExt) {
         super(driverExt);
         
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.CONTROL_AREA_CREATE;
-
-        name = new TextEditElement(this.driverExt, "name");
-        controlInterval = new DropDownElement(this.driverExt, "controlInterval");
-        minResponseTime = new DropDownElement(this.driverExt, "minResponseTime");
-        dailyDefaultState = new DropDownElement(this.driverExt, "dailyDefaultState");
-        requireAllTriggersActive = new TrueFalseCheckboxElement(this.driverExt, "allTriggersActiveFlag");
-        useOptionControlWindow = new TrueFalseCheckboxElement(this.driverExt, "controlWindow");
     }
     
     // General
     public TextEditElement getName() {
-        return name;
+        return new TextEditElement(this.driverExt, "name");
     }  
     
     public DropDownElement getControlInterval() {
-        return controlInterval;
+        return new DropDownElement(this.driverExt, "controlInterval");
     }
     
     public DropDownElement getMinResponseTime() {
-        return minResponseTime;
+        return new DropDownElement(this.driverExt, "minResponseTime");
     }
     
     public DropDownElement getDailyDefaultState() {
-        return dailyDefaultState;
+        return new DropDownElement(this.driverExt, "dailyDefaultState");
     }
     
     public TrueFalseCheckboxElement getRequireAlTriggersActive() {
-        return requireAllTriggersActive;
+        return new TrueFalseCheckboxElement(this.driverExt, "allTriggersActiveFlag");
     }
     
     public TrueFalseCheckboxElement getUseOptionControlWindow() {
-        return useOptionControlWindow;
+        return new TrueFalseCheckboxElement(this.driverExt, "controlWindow");
     }
     
     public Button getSave() {

@@ -19,6 +19,7 @@ import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.capcontrol.CapBankControllerVersacom;
 import com.cannontech.database.data.capcontrol.CapBankController_FP_2800;
 import com.cannontech.database.data.device.lm.LMGroupDigiSep;
+import com.cannontech.database.data.device.lm.LMGroupEatonCloud;
 import com.cannontech.database.data.device.lm.LMGroupEcobee;
 import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 import com.cannontech.database.data.device.lm.LMGroupGolay;
@@ -238,6 +239,16 @@ public final class DeviceFactory {
         case LCR6601S:
             returnDevice = new Lcr6601S();
             break;
+            
+        case LCR6600C:
+            returnDevice = new Lcr6200C();
+            break;
+        case LCR6200C:
+            returnDevice = new Lcr6600C();
+            break;
+        case LCR_DISCONNECT_C:
+            returnDevice = new LcrDisconnectC();
+            break;
         
         //Carrier type devices
         case MCT213:
@@ -428,6 +439,9 @@ public final class DeviceFactory {
         case LM_GROUP_METER_DISCONNECT:
             returnDevice = new LMGroupMeterDisconnect();
             break;    
+        case LM_GROUP_EATON_CLOUD:
+            returnDevice = new LMGroupEatonCloud();
+            break;
 
         case CAPBANK:
             returnDevice = new CapBank();
@@ -517,11 +531,17 @@ public final class DeviceFactory {
         case GWY800:
             returnDevice = new RfnGwy800();
             break;
+        case GWY801:
+            returnDevice = new RfnGwy801();
+            break;
         case RFN_RELAY:
             returnDevice = new RfnRelay();
             break;
         case VIRTUAL_GATEWAY:
             returnDevice = new RfnVirtualGateway();
+            break;
+        case VIRTUAL_METER:
+            returnDevice = new VirtualMeter();
             break;
         default:
             CTILogger.error("PaoType " + paoType + " is undefined for DeviceFactory");

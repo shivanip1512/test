@@ -34,7 +34,7 @@ public class ExportFieldValidator extends SimpleValidator<ExportField> {
         if (field.isTimestamp()) {
             {
                 YukonValidationUtils.checkExceedsMaxLength(errors, "timestampPattern", field.getPattern(), 50);
-                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "pattern", invalidPatternMsgKey);
+                YukonValidationUtils.checkIsBlank(errors, "pattern", field.getPattern(), "Pattern", false);
                 try {
                     new SimpleDateFormat(field.getPattern());
                 } catch (Exception e) {
@@ -43,7 +43,7 @@ public class ExportFieldValidator extends SimpleValidator<ExportField> {
             }
         } else if (field.isValue()) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "readingPattern", field.getPattern(), 50);
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "pattern", invalidPatternMsgKey);
+            YukonValidationUtils.checkIsBlank(errors, "pattern", field.getPattern(), "Pattern", false);
             try {
                 new DecimalFormat(field.getPattern());
             } catch (Exception e) {

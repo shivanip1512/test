@@ -2,7 +2,7 @@
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
         <analog offset="4"/>
-        <status offset="9"/>
+        <status offset="12"/>
         <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -33,27 +33,47 @@
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Status">
         <name>Security Alarm</name>
-        <stategroup value="TrueFalse"/>
+        <stategroup value="Event Status"/>
     </point>
     <point offset="2" type="Status">
         <name>Power Failure</name>
-        <stategroup value="TrueFalse"/>
+        <stategroup value="Event Status"/>
     </point>
     <point offset="3" type="Status">
         <name>Radio Failure</name>
-        <stategroup value="TrueFalse"/>
+        <stategroup value="Event Status"/>
     </point>
     <point offset="4" type="Status">
         <name>Door Open</name>
-        <stategroup value="TrueFalse"/>
+        <stategroup value="Event Status"/>
     </point>
     <point offset="5" type="Status">
         <name>Node Count Exceeded</name>
-        <stategroup value="TrueFalse"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="6" type="Status">
+        <name>UPS Battery Voltage Low</name>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="7" type="Status">
+        <name>Certificate Expiration</name>
+        <stategroup value="Event Status"/>
     </point>
     <point offset="9" type="Status">
         <name>Time Sync Failed</name>
         <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="10" type="Status">
+        <name>High Disk Usage</name>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="11" type="Status">
+        <name>RTC Battery Failure</name>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="12" type="Status">
+        <name>AC Power Failure</name>
+        <stategroup value="Event Status"/>
     </point>
     <point offset="2000" type="Status">
         <name>Comm Status</name>

@@ -125,6 +125,16 @@ yukon.dr.curtailment = (function () {
             debug.log('operation: ' + opts.operation + ' for customerId ' + customerId + ' successfully processed');
         },
         
+        _enableDisableActionsMenu = function() {
+            //Display the actions and auto-refresh if the current active tab is Trends
+            var isTrendsTabActive = $(".ui-tabs").find(".ui-tabs-active").hasClass('ccTrends');
+            if (isTrendsTabActive) {
+                $('.page-actions').css('display','block');
+            } else {
+                $('.page-actions').css('display','none');
+            }
+        },
+
         _swapNames = function(row, grepString, newString) {
             var inputs = row.find('input');
             inputs.each(function (index, input) {
@@ -226,8 +236,17 @@ yukon.dr.curtailment = (function () {
                 }
                 $('#program').submit();
             });
-            
+
+            $(document).on('click', '#curtailmentTabs', function () {
+                _enableDisableActionsMenu();
+            });
+
+            $(document).on("yukon:event:confirm", function () {
+                $('#confirm-form').submit();
+            });
+
             $(function () {
+                _enableDisableActionsMenu();
                 $(document).on('click', '#assigned-groups', function (ev) {
                     var button = $(ev.target).closest('button');
                     debug.log('moving assigned group to unassigned');

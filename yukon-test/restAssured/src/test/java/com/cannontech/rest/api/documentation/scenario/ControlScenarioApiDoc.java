@@ -102,25 +102,25 @@ public class ControlScenarioApiDoc {
 
             loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM, loadGroups, gearTypes,
                     programConstraint.getId());
-            ExtractableResponse<?> loadProgramResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+            ExtractableResponse<?> loadProgramResponse = ApiCallHelper.post("loadPrograms", loadProgram);
 
             loadProgram.setProgramId(loadProgramResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID));
             assertTrue("Program Id should not be Null", loadProgram.getProgramId() != null);
-            assertTrue("Status code should be 200", loadProgramResponse.statusCode() == 200);
+            assertTrue("Status code should be 201", loadProgramResponse.statusCode() == 201);
 
-            ExtractableResponse<?> response = ApiCallHelper.get("getLoadProgram",
-                    loadProgramResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString());
+            ExtractableResponse<?> response = ApiCallHelper.get("loadPrograms", 
+                    "/" + loadProgramResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString());
             assertTrue(response.statusCode() == 200, "Status code should be 200");
             loadProgram = response.as(MockLoadProgram.class);
 
             if (controlArea == null) {
                 controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                         loadProgram.getProgramId());
-                ExtractableResponse<?> controlAreaResponse = ApiCallHelper.post("saveControlArea", controlArea);
+                ExtractableResponse<?> controlAreaResponse = ApiCallHelper.post("controlAreas", controlArea);
 
                 controlArea.setControlAreaId(controlAreaResponse.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID));
                 assertTrue("Control Area Id should not be Null", controlArea.getControlAreaId() != null);
-                assertTrue("Status code should be 200", controlAreaResponse.statusCode() == 200);
+                assertTrue("Status code should be 201", controlAreaResponse.statusCode() == 201);
             }
         }
     }
@@ -143,14 +143,14 @@ public class ControlScenarioApiDoc {
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                 .body(scenario)
                 .when()
-                .post(ApiCallHelper.getProperty("saveControlScenario"))
+                .post(ApiCallHelper.getProperty("controlScenarios"))
                 .then()
                 .extract()
                 .response();
 
         scenario.setId(response.path(ControlScenarioHelper.CONTEXT_CONTROL_SCENARIO_ID));
         assertTrue("Control Scenario Id should not be Null", scenario.getId() != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        assertTrue("Status code should be 201", response.statusCode() == 201);
 
     }
 
@@ -166,7 +166,7 @@ public class ControlScenarioApiDoc {
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                 .when()
-                .get(ApiCallHelper.getProperty("getControlScenario") + scenario.getId())
+                .get(ApiCallHelper.getProperty("controlScenarios") + "/" + scenario.getId())
                 .then()
                 .extract()
                 .response();
@@ -187,7 +187,7 @@ public class ControlScenarioApiDoc {
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                 .body(scenario)
                 .when()
-                .post(ApiCallHelper.getProperty("updateControlScenario") + scenario.getId())
+                .put(ApiCallHelper.getProperty("controlScenarios") + "/" + scenario.getId())
                 .then()
                 .extract()
                 .response();
@@ -206,14 +206,13 @@ public class ControlScenarioApiDoc {
         MockLMDto deleteScenario = MockLMDto.builder().name(scenario.getName()).build();
 
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                requestFields(fieldWithPath("name").type(JsonFieldType.STRING).description("Control Scenario name")),
-                responseFields(fieldWithPath("paoId").type(JsonFieldType.NUMBER).description("Control Scenario Id"))))
+                responseFields(fieldWithPath("id").type(JsonFieldType.NUMBER).description("Control Scenario Id"))))
                 .accept("application/json")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                 .body(deleteScenario)
                 .when()
-                .delete(ApiCallHelper.getProperty("deleteControlScenario") + scenario.getId())
+                .delete(ApiCallHelper.getProperty("controlScenarios") + "/" + scenario.getId())
                 .then()
                 .extract()
                 .response();
@@ -223,9 +222,9 @@ public class ControlScenarioApiDoc {
 
     @AfterClass
     public void cleanUp() {
-        ApiCallHelper.delete(controlArea.getControlAreaId(), controlArea.getName(), "deleteControlArea");
-        ApiCallHelper.delete(loadProgram.getProgramId(), loadProgram.getName(), "deleteLoadProgram");
-        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete("controlAreas", "/" + controlArea.getControlAreaId().toString());
+        ApiCallHelper.delete("loadPrograms", "/" + loadProgram.getProgramId().toString());
+        ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
             ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
         });

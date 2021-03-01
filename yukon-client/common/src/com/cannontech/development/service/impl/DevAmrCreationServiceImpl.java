@@ -127,7 +127,7 @@ public class DevAmrCreationServiceImpl extends DevObjectCreationBase implements 
         terminalServerSharedPort.setPAOName(commChannel.getName());
         terminalServerSharedPort.setPortID(directPort.getCommPort().getPortID());
         terminalServerSharedPort.setPortName(commChannel.getName());
-        terminalServerSharedPort.setPortTiming(new PortTiming(portTerminalServer.getPortID(),commChannel.getPortTimingPreTxWait(),0,0,0,0));
+        terminalServerSharedPort.setPortTiming(new PortTiming(portTerminalServer.getPortID(),commChannel.getPortTimingPreTxWait(),0,0,0,0,0));
 
         // Create the default points for the port
         SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();

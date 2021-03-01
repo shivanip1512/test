@@ -29,9 +29,9 @@ public class ProgramConstraintApiTest {
 
         Log.startTestCase("programConstraint_01_Create");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         context.setAttribute("prgConstraintId", createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID) != null,
                 "Program Constraint Id should not be Null");
         programConstraint.setId(createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
@@ -47,8 +47,8 @@ public class ProgramConstraintApiTest {
 
         Log.startTestCase("programConstraint_02_Get");
         Log.info("Group Id of programConstraint created is : " + context.getAttribute("prgConstraintId"));
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getProgramConstraint",
-                context.getAttribute("prgConstraintId").toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("programConstraints",
+                "/" + context.getAttribute("prgConstraintId").toString());
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
         MockProgramConstraint programConstraintGetResponse = getResponse.as(MockProgramConstraint.class);
         context.setAttribute("ProgConstName", programConstraintGetResponse.getName());
@@ -79,12 +79,11 @@ public class ProgramConstraintApiTest {
         String name = "ProgramConstraintTest_Name_Update";
         programConstraint.setName(name);
         context.setAttribute("programConstraint_Name", name);
-        ExtractableResponse<?> updatedResponse = ApiCallHelper.post("updateProgramConstraint",
-                programConstraint,
-                context.getAttribute("prgConstraintId").toString());
+        ExtractableResponse<?> updatedResponse = ApiCallHelper.put("programConstraints", programConstraint,
+                "/" + context.getAttribute("prgConstraintId").toString());
         assertTrue(updatedResponse.statusCode() == 200, "Status code should be 200");
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getProgramConstraint",
-                context.getAttribute("prgConstraintId").toString());
+        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("programConstraints",
+                "/" + context.getAttribute("prgConstraintId").toString());
         MockProgramConstraint updatedProgramConstraintResponse = getupdatedResponse.as(MockProgramConstraint.class);
         assertTrue(name.equals(updatedProgramConstraintResponse.getName()), "Name Should be : " + name);
         Log.endTestCase("programConstraint_03_Update");
@@ -101,8 +100,8 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_04_CreateWithExistingName");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setName("programConstraint_Name");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID) != null,
                 "Program Constraint Id should not be Null");
         Log.endTestCase("programConstraint_04_CreateWithExistingName");
@@ -117,13 +116,12 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_05_Delete");
         MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("programConstraint_Name").toString()).build();
         Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("deleteProgramConstraint",
-                lmDeleteObject,
-                context.getAttribute("prgConstraintId").toString());
+        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("programConstraints",
+                "/" + context.getAttribute("prgConstraintId").toString());
         assertTrue(deleteResponse.statusCode() == 200, "Status code should be 200");
         // Get request to validate Program Constraint is deleted
-        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("getProgramConstraint",
-                context.getAttribute("prgConstraintId").toString());
+        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("programConstraints",
+                "/" + context.getAttribute("prgConstraintId").toString());
         assertTrue(getDeletedLoadGroupResponse.statusCode() == 400, "Status code should be 400");
         assertTrue(ValidationHelper.validateErrorMessage(getDeletedLoadGroupResponse, "Constraint Id not found"),
                 "Expected error message Should contains Text: " + "Program Constraint Id not found");
@@ -141,7 +139,7 @@ public class ProgramConstraintApiTest {
         String name = " ";
         programConstraint.setName(name);
         context.setAttribute("programConstraint_Name", name);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Name is required."),
@@ -160,7 +158,7 @@ public class ProgramConstraintApiTest {
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         String name = "TestProgramConstraintName_MoreThanSixtyCharacter_TestProgramConstraintNames";
         programConstraint.setName(name);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Exceeds maximum length of 60."),
@@ -179,13 +177,13 @@ public class ProgramConstraintApiTest {
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         String name = "programConstraint_\\,\"Name";
         programConstraint.setName(name);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "name",
-                        "Cannot be blank or include any of the following characters: / \\ , ' \" |"),
-                "Expected Error not found:" + "Cannot be blank or include any of the following characters: / \\ , ' \" |");
+                        "Name must not contain any of the following characters: / \\ , ' \" |."),
+                "Expected Error not found:" + "Name must not contain any of the following characters: / \\ , ' \" |.");
         Log.endTestCase("programConstraint_08_NameWithSpecialCharValidation");
     }
 
@@ -198,7 +196,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_09_MaxActivateMinValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMaxActivateSeconds(-1);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "maxActivateSeconds", "Must be between 0 and 99,999."),
@@ -215,7 +213,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_10_MaxActivateMaxValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMaxActivateSeconds(100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "maxActivateSeconds", "Must be between 0 and 99,999."),
@@ -232,7 +230,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_11_MaxDailyOpsMinValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMaxDailyOps(-1);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "maxDailyOps", "Must be between 0 and 99,999."),
@@ -249,7 +247,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_12_MaxDailyOpsMaxValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMaxDailyOps(100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "maxDailyOps", "Must be between 0 and 99,999."),
@@ -266,7 +264,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_13_MinActivateMinValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMinActivateSeconds(-1);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "minActivateSeconds", "Must be between 0 and 99,999."),
@@ -283,7 +281,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_14_MinActivateMaxValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMinActivateSeconds(100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "minActivateSeconds", "Must be between 0 and 99,999."),
@@ -300,7 +298,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_15_MinRestartMinValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMinRestartSeconds(-1);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "minRestartSeconds", "Must be between 0 and 99,999."),
@@ -317,7 +315,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_16_MinRestartMaxValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMinRestartSeconds(100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "minRestartSeconds", "Must be between 0 and 99,999."),
@@ -334,7 +332,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_17_DailyMinValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMaxHoursDaily(-1);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "maxHoursDaily", "Must be between 0 and 99,999."),
@@ -351,7 +349,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_18_DailyMaxValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMaxHoursDaily(100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "maxHoursDaily", "Must be between 0 and 99,999."),
@@ -368,7 +366,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_19_MonthlyMinValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMaxHoursMonthly(-1);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "maxHoursMonthly", "Must be between 0 and 99,999."),
@@ -385,7 +383,7 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_20_MonthlyMaxValueValidation");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setMaxHoursMonthly(100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "maxHoursMonthly", "Must be between 0 and 99,999."),
@@ -411,8 +409,8 @@ public class ProgramConstraintApiTest {
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setDaySelection(daySelection);
         programConstraint.setHolidayUsage(MockHolidayUsage.FORCE);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID) != null,
                 "Program Constraint Id should not be Null");
         Log.endTestCase("programConstraint_21_CreateWithDaySelectionWithAllYes");
@@ -427,10 +425,10 @@ public class ProgramConstraintApiTest {
         Log.startTestCase("programConstraint_22_CreateWithDaySelectionWithAllNo");
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setDaySelection(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         assertTrue(createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID) != null,
                 "Program Constraint Id should not be Null");
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         Log.endTestCase("programConstraint_22_CreateWithDaySelectionWithAllNo");
     }
 }

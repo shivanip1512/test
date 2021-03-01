@@ -527,8 +527,7 @@ public class DeviceDataMonitorController {
         List<Object> processorMissingList = new ArrayList<>();
 
         // Check vs the Attribute
-        List<SimpleDevice> attrSupportedDevices = 
-                    attributeService.getDevicesInGroupThatSupportAttribute(monitoringGroup, asg.getAttribute());
+        List<SimpleDevice> attrSupportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(monitoringGroup, asg.getAttribute());
         long numSupportAttribute = attrSupportedDevices.size();
         
         long numMissingAttribute = numTotal - numSupportAttribute;

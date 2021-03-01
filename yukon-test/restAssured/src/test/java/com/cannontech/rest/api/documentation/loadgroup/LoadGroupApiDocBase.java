@@ -10,7 +10,6 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.documentation.DocumentationBase;
 import com.cannontech.rest.api.documentation.DocumentationFields;
@@ -49,7 +48,7 @@ public abstract class LoadGroupApiDocBase extends DocumentationBase {
     protected Create buildCreateFields() {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
         List<FieldDescriptor> responseFields = Arrays.asList(fieldWithPath(LoadGroupHelper.CONTEXT_GROUP_ID).type(JsonFieldType.NUMBER).description(LoadGroupHelper.CONTEXT_GROUP_ID_DESC));
-        String url = ApiCallHelper.getProperty("saveloadgroup");
+        String url = ApiCallHelper.getProperty("loadGroups");
         return new DocumentationFields.Create(requestFields, responseFields, LoadGroupHelper.CONTEXT_GROUP_ID, LoadGroupHelper.CONTEXT_GROUP_ID_DESC, getMockObject(), url);
     }
     
@@ -57,7 +56,7 @@ public abstract class LoadGroupApiDocBase extends DocumentationBase {
     protected Update buildUpdateFields() {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
         List<FieldDescriptor> responseFields = Arrays.asList(fieldWithPath(LoadGroupHelper.CONTEXT_GROUP_ID).type(JsonFieldType.NUMBER).description(LoadGroupHelper.CONTEXT_GROUP_ID_DESC));
-        String url = ApiCallHelper.getProperty("updateloadgroup") + getLoadGroupId();
+        String url = ApiCallHelper.getProperty("loadGroups") + "/" + getLoadGroupId();
         return new DocumentationFields.Update(requestFields, responseFields, LoadGroupHelper.CONTEXT_GROUP_ID, LoadGroupHelper.CONTEXT_GROUP_ID_DESC, getMockObject(), url);
     }
     
@@ -66,7 +65,10 @@ public abstract class LoadGroupApiDocBase extends DocumentationBase {
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         String typeId = getMockPaoType().name() + ".id";
         responseFields.add(0,fieldWithPath(typeId).type(JsonFieldType.NUMBER).description(LoadGroupHelper.CONTEXT_GROUP_ID_DESC));
-        String url = ApiCallHelper.getProperty("getloadgroup") + getLoadGroupId();
+        if (LoadGroupHelper.isLoadGroupSupportRoute(getMockPaoType())) {
+            responseFields.add(7, fieldWithPath(getMockPaoType() + ".routeName").type(JsonFieldType.STRING).description("Route Name"));
+        }
+        String url = ApiCallHelper.getProperty("loadGroups") + "/" + getLoadGroupId() ;
         return new DocumentationFields.Get(responseFields, url);
     }
     
@@ -77,19 +79,16 @@ public abstract class LoadGroupApiDocBase extends DocumentationBase {
             requestFields.add(fieldWithPath("LOAD_GROUP_COPY.routeId").type(JsonFieldType.NUMBER).description("Route Id"));
         }
         List<FieldDescriptor> responseFields = Arrays.asList(fieldWithPath(LoadGroupHelper.CONTEXT_GROUP_ID).type(JsonFieldType.NUMBER).description("Load Group Copy Id"));
-        String url = ApiCallHelper.getProperty("copyloadgroup") + getLoadGroupId();
+        String url = ApiCallHelper.getProperty("loadGroups") + "/" + getLoadGroupId() + "/copy";
         return new DocumentationFields.Copy(requestFields, responseFields, LoadGroupHelper.CONTEXT_GROUP_ID, LoadGroupHelper.CONTEXT_GROUP_ID_DESC, getMockCopyObject(), url);
     }
     
     @Override
     protected Delete buildDeleteFields() {
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(LoadGroupHelper.getLoadGroupName(getMockPaoType())).build();
-
-        List<FieldDescriptor> requestFields = Arrays.asList(fieldWithPath("name").type(JsonFieldType.STRING).description("Load Group Name"));
-        List<FieldDescriptor> responseFields = Arrays.asList(fieldWithPath(LoadGroupHelper.CONTEXT_GROUP_ID).type(JsonFieldType.NUMBER).description(LoadGroupHelper.CONTEXT_GROUP_ID_DESC));
-        String url = ApiCallHelper.getProperty("deleteloadgroup") + getLoadGroupId();
-        return new DocumentationFields.DeleteWithBody(requestFields, responseFields, lmDeleteObject, url);
+        List<FieldDescriptor> responseFields = Arrays.asList(fieldWithPath("id").type(JsonFieldType.NUMBER).description(LoadGroupHelper.CONTEXT_GROUP_ID_DESC));
+        String url = ApiCallHelper.getProperty("loadGroups") + "/" + getLoadGroupId();
+        return new DocumentationFields.DeleteWithBody(null, responseFields, null, url);
     }
-    
+
     protected abstract MockPaoType getMockPaoType();
 }

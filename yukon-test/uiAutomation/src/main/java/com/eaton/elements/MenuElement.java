@@ -17,7 +17,7 @@ public class MenuElement {
     }
 
     private WebElement getMenu() {
-        return this.driverExt.findElement(By.cssSelector(".menus"), Optional.empty());
+        return this.driverExt.findElement(By.cssSelector(".menus"), Optional.of(3));
     }
 
     private List<WebElement> getAllMenuItems() {

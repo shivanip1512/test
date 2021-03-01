@@ -22,16 +22,16 @@ public class MappingServiceImpl implements MappingService {
     private final static String mappingHybridUrl = "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/{z}/{x}/{y}?access_token=";
     private final static String mappingElevationUrl = "https://{a-d}.tiles.mapbox.com/v4/mapbox.mapbox-terrain-v2/{z}/{x}/{y}.mvt?access_token=";
     private final static String mappingDevKey = "pk.eyJ1IjoiZWFzeXVrb25kZXYiLCJhIjoiY2lydzVjbnNyMGo3eHQxbmtidGVoNWt5bSJ9.ddhkDSTm2ONf47E9DVaNFw";
-    private final static String mappingProdKey = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2s5c2c3enNkMTUxZTNncXhkYmdhbWMwZSJ9.wIujl9uPYzzP5Ut5daRf1g";
+    private final static String mappingProdKey = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2tqbXlkY3p1OHV3dzMycnhxOWVsNGpsMyJ9.Dy3cOKkuRPlezMn5IClEnw";
 
     @Override
     public String getMappingUrl(String viewType) {
         boolean devMode = configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
         boolean disableAnalytics = configSource.getBoolean(MasterConfigBoolean.DISABLE_ANALYTICS);
-        String streetUrl = configSource.getString(MasterConfigString.MAP_DEVICES_STREET_URL, mappingStreetUrl);
-        String satelliteUrl = configSource.getString(MasterConfigString.MAP_DEVICES_SATELLITE_URL, mappingSatelliteUrl);
-        String hybridUrl = configSource.getString(MasterConfigString.MAP_DEVICES_HYBRID_URL, mappingHybridUrl);
-        String elevationUrl = configSource.getString(MasterConfigString.MAP_DEVICES_ELEVATION_URL, mappingElevationUrl);
+        String streetUrl = configSource.getString(MasterConfigString.MAP_DEVICES_STREET_URL_2, mappingStreetUrl);
+        String satelliteUrl = configSource.getString(MasterConfigString.MAP_DEVICES_SATELLITE_URL_2, mappingSatelliteUrl);
+        String hybridUrl = configSource.getString(MasterConfigString.MAP_DEVICES_HYBRID_URL_2, mappingHybridUrl);
+        String elevationUrl = configSource.getString(MasterConfigString.MAP_DEVICES_ELEVATION_URL_2, mappingElevationUrl);
         String devMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, mappingDevKey);
         String prodMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, mappingProdKey);
         

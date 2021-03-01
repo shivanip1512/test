@@ -88,6 +88,7 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.SECURITY, "icon-app icon-app-32-key");
         b.put(GlobalSettingSubCategory.DASHBOARD_ADMIN, "icon-app icon-app-32-home");
         b.put(GlobalSettingSubCategory.DASHBOARD_WIDGET, "icon-app icon-app-32-application-windows");
+        b.put(GlobalSettingSubCategory.ATTRIBUTES, "icon-app icon-app-32-attributes");
         iconMap = b.build();
     }
     
@@ -128,6 +129,7 @@ public class YukonConfigurationController {
         systemSetup.add(Pair.of(GlobalSettingSubCategory.YUKON_SERVICES, iconMap.get(GlobalSettingSubCategory.YUKON_SERVICES)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.WEB_SERVER, iconMap.get(GlobalSettingSubCategory.WEB_SERVER)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.THEMES, iconMap.get(GlobalSettingSubCategory.THEMES)));
+        systemSetup.add(Pair.of(GlobalSettingSubCategory.ATTRIBUTES, iconMap.get(GlobalSettingSubCategory.ATTRIBUTES)));
         Collections.sort(systemSetup, sorter);
         
         List<Pair<GlobalSettingSubCategory, String>> application = Lists.newArrayList();
@@ -170,6 +172,8 @@ public class YukonConfigurationController {
             return "redirect:/admin/config/security/view";
         } else if (category == GlobalSettingSubCategory.DASHBOARD_ADMIN) {
             return "redirect:/dashboards/admin";
+        } else if (category == GlobalSettingSubCategory.ATTRIBUTES) {
+            return "redirect:/admin/config/attributes";
         }
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);

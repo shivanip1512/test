@@ -102,6 +102,15 @@
 		<delete dir="C:\Yukon\YukonMisc"/>
 	</target>
 
+    <target name="copy_coverage_report_files">
+        <echo message="SCP todir ${sonar_guest_userid}:${guest_password}@${sonar_guest_address}:/cygdrive/c/" />
+        <scp todir="${sonar_guest_userid}:${guest_password}@${sonar_guest_address}:/cygdrive/c/CodeCoverage/" trust="true">
+            <fileset dir="C:/CodeCoverage">
+                <include name="apiCoverage.xml"/>
+            </fileset>
+        </scp>
+    </target>
+
 	<target name="install">
 		<mkdir dir="${install.to.dir}/Server/Config"/>
 

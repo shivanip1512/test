@@ -11,8 +11,9 @@
         <thead>
             <tr>
                 <tags:sort column="${program}" width="40%"/>
-                <tags:sort column="${numberOfDevices}"/>
+                <tags:sort column="${numberSuccessful}"/>
                 <tags:sort column="${numberInProgress}"/>
+                <tags:sort column="${numberFailed}"/>
                 <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
@@ -47,6 +48,15 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${program.failureTotal > 0}">
+                                <a href="${programUrl}&statuses=FAILURE">${program.failureTotal}</a>
+                            </c:when>
+                            <c:otherwise>
+                                ${program.failureTotal}
+                            </c:otherwise>
+                        </c:choose>
                     <td>
                         <c:if test="${program.isUnused()}">
                             <cm:dropdown icon="icon-cog">

@@ -12,21 +12,31 @@ yukon.tools.trend.setup = (function() {
 
     var _initialized = false,
     
+    _trendSetupDialogClass = "js-trend-setup-dialog-class",
+    
     _initColorPicker = function (dialog) {
         var colorArray = dialog.find(".js-color-item").map(function () {return $(this).val();}).get(),
-               colorArrayLength = colorArray.length,
-               firstRowOfColors = colorArray.splice(0, colorArrayLength/2);
+            colorArrayLength = colorArray.length,
+            firstRowOfColors = colorArray.splice(0, colorArrayLength/2);
         
         dialog.find(".js-color-picker").spectrum({
             showPaletteOnly: true,
-            showPalette:true,
             hideAfterPaletteSelect:true,
             palette: [
                 colorArray, firstRowOfColors
             ],
-            preferredFormat: "name",
+            preferredFormat: "hex",
             move: function(color){
-                dialog.find(".js-color-input").val(color.toName().toUpperCase());
+                dialog.find(".js-color-input").val(color.toHexString());
+            },
+            show: function(color) {
+                //Display color name instead of color hex value as a tooltip text
+                var colors = $(document).find(".sp-thumb-el:visible");
+                colors.each(function(index) {
+                    var hexValue = $(this).prop('title'),
+                        colorName = dialog.find("input[value='" + hexValue + "']").data("colorName");
+                    $(this).prop('title', colorName);
+                });
             }
         });
     },
@@ -37,6 +47,7 @@ yukon.tools.trend.setup = (function() {
     },
     
     _updateSetupTable = function (dialog, isMarkerRow, rowUpdated) {
+        yukon.ui.busy(dialog.closest(".ui-dialog").find(".js-primary-action"));
         var form = dialog.find("form"),
                displayTable = $("#js-point-setup-table"),
                templateTable = $(".js-point-setup-template-table");
@@ -49,12 +60,11 @@ yukon.tools.trend.setup = (function() {
         form.ajaxSubmit({
             success: function(data, status, xhr, $form) {
                 dialog.dialog('close');
-                
                 var clonnedRow = templateTable.find(".js-template-row").clone();
                 clonnedRow.removeClass("js-template-row");
                 clonnedRow.find(".js-label span").html(yukon.escapeXml(data.trendSeries.label));
                 clonnedRow.find(".js-color span").text(data.color);
-                clonnedRow.find(".js-color div.small-rectangle").css("background-color", data.color);
+                clonnedRow.find(".js-color div.small-rectangle").css("background-color", data.colorHexValue);
                 clonnedRow.find(".js-axis").html(data.axis);
                 clonnedRow.find(".js-multiplier").html(data.trendSeries.multiplier);
                 clonnedRow.find(".js-row-data").val(JSON.stringify(data.trendSeries));
@@ -84,6 +94,7 @@ yukon.tools.trend.setup = (function() {
                 } else {
                     _initPointSetupPopup(dialog);
                 }
+                yukon.ui.unbusy(dialog.closest(".ui-dialog").find(".js-primary-action"));
             }
         });
     },
@@ -103,19 +114,19 @@ yukon.tools.trend.setup = (function() {
             });
             
             $(document).on("yukon:trend:setup:addPoint", function () {
-                _updateSetupTable($("#js-add-point-dialog"), false, null);
+                _updateSetupTable($("#js-add-point-dialog:visible"), false, null);
             });
             
             $(document).on("yukon:trend:setup:updatePoint", function(event) {
-                _updateSetupTable($(".js-edit-point-dialog"), false, $(event.target));
+                _updateSetupTable($(".js-edit-point-dialog:visible"), false, $(event.target));
             });
             
             $(document).on("yukon:trend:setup:updateMarker", function(event) {
-                _updateSetupTable($(".js-edit-marker-dialog"), true, $(event.target));
+                _updateSetupTable($(".js-edit-marker-dialog:visible"), true, $(event.target));
             });
 
             $(document).on("yukon:trend:setup:addMarker", function() {
-                _updateSetupTable($("#js-add-marker-dialog"), true, null);
+                _updateSetupTable($("#js-add-marker-dialog:visible"), true, null);
             });
             
             $(document).on("yukon:trend:setup:markerPopupLoaded", function(event) {
@@ -127,7 +138,13 @@ yukon.tools.trend.setup = (function() {
             });
             
             $(document).on("change", ".js-graph-type", function () {
-                $(".js-date-picker-row").toggleClass("dn", !($(this).val() === $(".js-date-type-enum-value").val()));
+                var isDateTypeGraphSelected = $(this).val() === $(".js-date-type-enum-value").val();
+                var uniqueIdentifier = $(".js-unique-identifier").val();
+                $(".js-date-picker-row").toggleClass("dn", !isDateTypeGraphSelected);
+                if (isDateTypeGraphSelected) {
+                    var date = moment().tz(yg.timezone).format(yg.formats.date.date);
+                    $(this).closest("form").find("#js-date-picker_" + uniqueIdentifier).val(date);
+                }
             });
 
             $(document).on("click", ".js-remove", function (event) {
@@ -139,11 +156,12 @@ yukon.tools.trend.setup = (function() {
                 var row = $(this).closest("tr"),
                        isMarker = $(this).hasClass("js-marker"),
                        pointSetupData = row.find(".js-row-data").val(),
-                       dailogTitle,
-                       dialogPopup,
-                       dialogPopupSelector,
+                       dialogTitle,
+                       cssClass,
                        url,
+                       helpText,
                        okEvent,
+                       loadEvent,
                        form = $("<form/>"),
                        hiddenInput = $("<input/>").attr({
                            type: "hidden",
@@ -151,44 +169,71 @@ yukon.tools.trend.setup = (function() {
                        }); 
                 hiddenInput.val(pointSetupData);
                 form.append(hiddenInput);
+                row.uniqueId();
                 
                 if (isMarker) {
-                    dailogTitle = yg.text.edit + " " + $(this).closest("tr").find(".js-label span").text();
-                    dialogPopup = $("<div class='js-edit-marker-dialog'/>");
+                    dialogTitle = yg.text.edit + " " + $(this).closest("tr").find(".js-label span").text();
                     url = "/tools/trend/renderEditSetupPopup?";
-                    dialogPopupSelector = ".js-edit-marker-dialog";
+                    cssClass = "js-edit-marker-dialog";
                     okEvent = 'yukon:trend:setup:updateMarker';
+                    loadEvent = 'yukon:trend:setup:markerPopupLoaded';
+                    helpText = $('.js-marker-help').val();
                 } else {
-                    dailogTitle = yg.text.edit + " " + $(this).closest("tr").find(".js-point-name").text();
-                    dialogPopup = $("<div class='js-edit-point-dialog'/>");
+                    dialogTitle = yg.text.edit + " " + $(this).closest("tr").find(".js-point-name").text();
                     url = "/tools/trend/renderEditSetupPopup?";
-                    dialogPopupSelector = ".js-edit-point-dialog";
+                    cssClass = "js-edit-point-dialog";
                     okEvent = 'yukon:trend:setup:updatePoint';
+                    loadEvent = 'yukon:trend:setup:pointPopupLoaded';
+                }        
+    
+                var dialogDivJson = {
+                    "data-title": dialogTitle,
+                    "data-dialog": '',
+                    "class": cssClass + " " + _trendSetupDialogClass,
+                    "data-event": okEvent,
+                    "data-load-event": loadEvent,
+                    "data-help-text": helpText,
+                    "data-width": "500",
+                    "data-target": '#' + row.attr('id'),
+                    "data-url": yukon.url(url + form.serialize())
                 }
+                yukon.ui.dialog($("<div/>").attr(dialogDivJson));
+
+            });
+            
+            $(document).on('click', '.js-add-point', function () {
+                var isMarker = false,
+                       numberOfPoints = $("#js-point-setup-table tr").length - 1,
+                       url =  yukon.url("/tools/trend/renderSetupPopup") + "?isMarker=" + isMarker + "&numberOfRows=" + numberOfPoints,
+                       dialogDivJson = {
+                        "data-title": $(".js-add-point-title").val(),
+                        "data-dialog": '',
+                        "id": "js-add-point-dialog",
+                        "class": _trendSetupDialogClass,
+                        "data-event": "yukon:trend:setup:addPoint",
+                        "data-load-event": "yukon:trend:setup:pointPopupLoaded",
+                        "data-url": url
+                    }
+                yukon.ui.dialog($("<div/>").attr(dialogDivJson));
+            });
+            
+            $(document).on('click', '.js-add-marker', function () {
+                var isMarker = true,
+                       numberOfPoints = $("#js-marker-setup-table tr").length - 1,
+                       url =  yukon.url("/tools/trend/renderSetupPopup") + "?isMarker=" + isMarker + "&numberOfRows=" + numberOfPoints,
+                       dialogDivJson = {
+                            "data-title": $(".js-add-marker-title").val(),
+                            "data-dialog": '',
+                            "id": "js-add-marker-dialog",
+                            "class": _trendSetupDialogClass,
+                            "data-event": "yukon:trend:setup:addMarker",
+                            "data-load-event": "yukon:trend:setup:markerPopupLoaded",
+                            "data-help-text": $('.js-marker-help').val(),
+                            "data-width": "500",
+                            "data-url": url
+                    };
                 
-                dialogPopup.load(yukon.url(url + form.serialize()), function () {
-                    dialogPopup.dialog({
-                        title: dailogTitle,
-                        width: 'auto',
-                        height: 'auto',
-                        classes: {
-                            "ui-dialog": 'ov'
-                        },
-                        modal: true,
-                        open: function () {
-                            if (isMarker) {
-                                _initColorPicker($(dialogPopupSelector));
-                            } else {
-                                _initPointSetupPopup($(dialogPopupSelector));
-                            }
-                        },
-                        close: function () {
-                            $(dialogPopupSelector).empty();
-                            $(dialogPopupSelector).dialog('destroy').remove();
-                        },
-                        buttons: yukon.ui.buttons({event: okEvent, target: row})
-                    });
-                });
+                yukon.ui.dialog($("<div/>").attr(dialogDivJson));
             });
             
             $(document).on("click", ".js-save-trend", function () {
@@ -204,6 +249,14 @@ yukon.tools.trend.setup = (function() {
 
             yukon.ui.highlightErrorTabs();
             
+            $(document).on("dialogclose", function(event) {
+                if ($(event.target).hasClass(_trendSetupDialogClass)) {
+                    var dialog = $(event.target);
+                    dialog.dialog('destroy');
+                    dialog.empty();
+                    dialog.remove();
+                }
+            });
             _initialized = true;
         }
     };

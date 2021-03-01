@@ -39,7 +39,7 @@ public class LocalSharedPortApiDoc extends CommChannelApiDocBase {
 
     @Test(dependsOnMethods = { "Test_LocalSharedPort_01_Create" })
     public void Test_LocalSharedPort_02_Update() {
-        portId = updateDoc();
+        portId = updatePartialDoc();
     }
 
     @Test(dependsOnMethods = { "Test_LocalSharedPort_01_Create" })

@@ -1,10 +1,12 @@
 package com.cannontech.common.rfn.model;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.logging.log4j.core.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 
 /**
  * Utility class representing a gateway firmware version number. This is a three-part version in the form "X.Y.Z".
@@ -64,6 +66,18 @@ public final class GatewayFirmwareVersion implements Comparable<GatewayFirmwareV
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid firmware version string: " + versionString, e);
         }
+    }
+    
+    /**
+     * Returns the minimum upgrade version for the given gateway PaoType, or null if the PaoType is not supported.
+     */
+    public static GatewayFirmwareVersion getMinimumUpgradeVersion(PaoType gatewayPaoType) {
+        return  Map.of(
+                PaoType.GWY801, new GatewayFirmwareVersion(6, 1, 0),
+                PaoType.VIRTUAL_GATEWAY, new GatewayFirmwareVersion(9, 2, 0),
+                PaoType.GWY800, new GatewayFirmwareVersion(6, 1, 0),
+                PaoType.RFN_GATEWAY, new GatewayFirmwareVersion(6, 1, 1)
+            ).get(gatewayPaoType);
     }
     
     @Override

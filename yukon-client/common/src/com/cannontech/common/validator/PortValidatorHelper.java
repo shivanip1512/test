@@ -14,8 +14,7 @@ import com.cannontech.util.Validator;
 public class PortValidatorHelper {
     
     private final static String key = "yukon.web.api.error.";
-    private static final String baseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
-    
+
     public static void validatePortTimingFields(Errors errors, PortTiming timing) {
         if (!errors.hasFieldErrors("timing.preTxWait")) {
             Range<Integer> range = Range.inclusive(0, 10000000);
@@ -38,6 +37,11 @@ public class PortValidatorHelper {
         if (!errors.hasFieldErrors("timing.extraTimeOut")) {
             Range<Integer> range = Range.inclusive(0, 999);
             YukonValidationUtils.checkRange(errors, "timing.extraTimeOut", "Additional Time Out", timing.getExtraTimeOut(), range,
+                    false);
+        }
+        if (!errors.hasFieldErrors("timing.postCommWait")) {
+            Range<Integer> range = Range.inclusive(0, 100_000);
+            YukonValidationUtils.checkRange(errors, "timing.postCommWait", "Post Comm Wait", timing.getPostCommWait(), range,
                     false);
         }
     }
@@ -97,6 +101,16 @@ public class PortValidatorHelper {
             YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", ipAddress);
         }
     }
+    
+    /**
+     * Validate Rfn Address field
+     */
+    public static void validateRfnAddressField(Errors errors, String path, String fieldValue, String fieldName, boolean isRequired, int maxLength) {
+        YukonValidationUtils.checkIsBlank(errors, path, fieldValue, fieldName, isRequired);
+        if (!errors.hasFieldErrors(path)) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, path, fieldValue, maxLength);
+        }
+    }
 
     /**
      * Validate Carrier Detect Wait
@@ -113,7 +127,7 @@ public class PortValidatorHelper {
      * Validate Physical Port
      */
     public static void validatePhysicalPort(Errors errors, String fieldValue, String fieldName) {
-        YukonValidationUtils.checkIsBlank(errors, "physicalPort", fieldValue, fieldName, true);
+        YukonValidationUtils.checkIsBlank(errors, "physicalPort", fieldValue, fieldName, false);
         if (!errors.hasFieldErrors("physicalPort")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "physicalPort", fieldValue, 8);
         }

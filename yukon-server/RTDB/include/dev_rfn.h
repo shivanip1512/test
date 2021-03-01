@@ -5,7 +5,6 @@
 #include "rfn_identifier.h"
 #include "cmd_rfn_Individual.h"
 
-#include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/container/flat_map.hpp>
 
 namespace Cti::Devices {
@@ -42,12 +41,15 @@ protected:
         };
     }
 
+    virtual bool hasRfnFirmwareSupportIn( double minimumVersion ) const;
+
     virtual bool areAggregateCommandsSupported() const;
 
     std::unique_ptr<CtiReturnMsg> makeReturnMsg(const CtiRequestMsg& req, const std::string result, YukonError_t nRet);
 
     YukonError_t executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod );
 
+    virtual YukonError_t executeControl  (CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests);
     virtual YukonError_t executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests);
     virtual YukonError_t executeGetConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests);
     virtual YukonError_t executeGetValue (CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests);

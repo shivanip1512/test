@@ -42,13 +42,13 @@
         <tags:nameValue2 nameKey=".useDefaultPort">
             <tags:switchButton path="useDefaultPort" onNameKey=".yes.label" offNameKey=".no.label" 
                 toggleGroup="virtual-gateway" toggleAction="invisible" toggleInverse="true"/>
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".default.port" data-toggle-group="virtual-gateway">
-            <tags:input path="port" maxlength="5" size="5" tabindex="3"/>
             <cti:msg2 var="portHelpTextTitle" key=".default.port.title"/>
             <tags:helpInfoPopup title="${portHelpTextTitle}" classes="vam">
                 <cti:msg2 key=".default.port.helpText"/>
             </tags:helpInfoPopup>
+        </tags:nameValue2>
+        <tags:nameValue2 nameKey=".default.port" data-toggle-group="virtual-gateway">
+            <tags:input path="port" maxlength="5" size="5" tabindex="3"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".authentication" nameClass="fwb" excludeColon="true" valueClass="js-test-results">
         </tags:nameValue2>
@@ -64,10 +64,6 @@
                 <c:set var="clazz" value="${clazz} ${mode == 'EDIT' ? 'middle' : 'right'}"/>
                 <tags:password path="admin.password" cssClass="js-gateway-edit-password M0" 
                       placeholder="${phPassword}" tabindex="5" showPassword="true" includeShowHideButton="true"/>
-                <c:if test="${mode == 'EDIT' && !isVirtualGateway}">
-                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn admin" 
-                         disabled="true" nameKey="testConnection" tabindex="6"/>
-                </c:if>
             </spring:bind>
         </tags:nameValue2>
         
@@ -84,10 +80,6 @@
                     <tags:password  path="superAdmin.password" cssClass="js-gateway-edit-password M0"
                         placeholder="${phPassword}" tabindex="8" showPassword="true" includeShowHideButton="true"/>
                 </div>
-                <c:if test="${mode == 'EDIT' && !isVirtualGateway}">
-                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn superAdmin" 
-                         disabled="true" nameKey="testConnection" tabindex="9"/>
-                </c:if>
             </spring:bind>
         </tags:nameValue2>
         

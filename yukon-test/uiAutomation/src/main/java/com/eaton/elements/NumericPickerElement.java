@@ -51,11 +51,11 @@ public class NumericPickerElement {
  
     public void setNumericPicker() {
         if (this.parentName != null) {
-            this.numPickerElement = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name='" + elementName + "']"), Optional.empty());
+            this.numPickerElement = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name='" + elementName + "']"), Optional.of(3));
         } else if (this.parentElement != null) {
             this.numPickerElement =  this.parentElement.findElement(By.cssSelector("input[name='" + elementName + "']"));   
         } else {
-            this.numPickerElement =  this.driverExt.findElement(By.cssSelector("input[name='" + elementName + "']"), Optional.empty());   
+            this.numPickerElement =  this.driverExt.findElement(By.cssSelector("input[name='" + elementName + "']"), Optional.of(3));   
         }        
     }
     

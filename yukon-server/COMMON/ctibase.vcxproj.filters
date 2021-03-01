@@ -335,9 +335,6 @@
     <ClInclude Include="include\ctipcptrqueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\ctiqueues.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\ctitime.h">
       <Filter>Header Files</Filter>
     </ClInclude>

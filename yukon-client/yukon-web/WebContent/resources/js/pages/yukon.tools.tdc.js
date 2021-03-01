@@ -96,11 +96,14 @@ yukon.tools.tdc = (function () {
                     url = yukon.url('/meter/historicalReadings/trend'),
                     data = { pointId : pointId };
                 
-                $('#tdc-popup').load(url, data, function () {
+                $('.js-tdc-trend-container').load(url, data, function () {
                     $('#tdc-popup').dialog({
                         title : popupTitle,
-                        width : 700,
-                        autoOpen : true
+                        width: 780,
+                        height: 380,
+                        resizeStop: function(event, ui) {
+                            yukon.highChart.redrawTrendChart($(this), ui);
+                        }
                     });
                 });
             });

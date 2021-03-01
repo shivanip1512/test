@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.admin.energycompany.EnergyCompanyGeneralInfoPage;
 
@@ -19,13 +20,15 @@ public class EnergyCompanyGeneralInfoTests extends SeleniumTestSetup {
         driverExt = getDriverExt();               
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, ""})
-    public void pageTitleCorrect() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void energyCompanyGeneralInfo_Page_TitleCorrect() {
+        String energyCompanyId = TestDbDataType.EnergyCompanyData.EC_ID.getId().toString();
+        
         final String EXPECTED_TITLE = "QA_Test";
         
-        navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "64");
+        navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + energyCompanyId);
         
-        EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(driverExt, 64);
+        EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(driverExt, Integer.parseInt(energyCompanyId));
                                  
         String actualPageTitle = page.getPageTitle();
         

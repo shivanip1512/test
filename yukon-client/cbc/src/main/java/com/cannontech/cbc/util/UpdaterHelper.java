@@ -1,6 +1,5 @@
 package com.cannontech.cbc.util;
 
-import java.awt.Color;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +14,7 @@ import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -44,7 +43,6 @@ import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.CapControlConst;
-import com.cannontech.util.ColorUtil;
 
 /**
  * @author rneuharth
@@ -146,13 +144,13 @@ public class UpdaterHelper {
     public static final String keyPrefix = "yukon.web.modules.capcontrol.";
     
     // The color schemes - based on the schedule status
-    private static final Color[] _DEFAULT_COLORS = {
-        // Enabled subbus (Green like color)
-        new Color(0, 153, 51),
-        // Disabled subbus (Red like color)
-        new Color(209,72,54),
-        // Pending subbus (Yellow like color)
-        new Color(240, 145, 0) 
+    private static final YukonColorPalette[] _DEFAULT_COLORS = {
+        // Enabled subbus
+        YukonColorPalette.GREEN,
+        // Disabled subbus
+        YukonColorPalette.RED,
+        // Pending subbus
+        YukonColorPalette.ORANGE
     };
     
     @Autowired private AttributeService attributeService;
@@ -1200,27 +1198,27 @@ public class UpdaterHelper {
     }
 
     public String getHTMLFgColor(SubStation subBus) {
-        Color rc = getSubstationFgColor(subBus, Color.BLACK);
-        return ColorUtil.getHex(new int[] {rc.getRed(), rc.getGreen(), rc.getBlue()});
+        YukonColorPalette rc = getSubstationFgColor(subBus, YukonColorPalette.BLACK);
+        return rc.getHexValue();
     }
 
     public String getHTMLFgColor(SubBus subBus) {
-        Color rc = getSubFgColor(subBus, Color.BLACK);
-        return ColorUtil.getHex(new int[] {rc.getRed(), rc.getGreen(),rc.getBlue()});
+        YukonColorPalette rc = getSubFgColor(subBus, YukonColorPalette.BLACK);
+        return rc.getHexValue();
     }
 
     public String getHTMLFgColor(Feeder feeder) {
-        Color rc = getFeederFgColor(feeder, Color.BLACK);
-        return ColorUtil.getHex(new int[] {rc.getRed(), rc.getGreen(), rc.getBlue()});
+        YukonColorPalette rc = getFeederFgColor(feeder, YukonColorPalette.BLACK);
+        return rc.getHexValue();
     }
 
     public String getHTMLFgColor(CapBankDevice capBank) {
-        Color rc = getCapBankFGColor(capBank, Color.BLACK);
-        return ColorUtil.getHex(new int[] {rc.getRed(), rc.getGreen(), rc.getBlue()});
+        YukonColorPalette rc = getCapBankFGColor(capBank, YukonColorPalette.BLACK);
+        return rc.getHexValue();
     }
 
-    public Color getSubstationFgColor(SubStation substation, Color defColor) {
-        Color retColor = defColor;
+    public YukonColorPalette getSubstationFgColor(SubStation substation, YukonColorPalette defColor) {
+        YukonColorPalette retColor = defColor;
 
         if (substation != null) {
             if (substation.getCcDisableFlag()) {
@@ -1233,8 +1231,8 @@ public class UpdaterHelper {
         return retColor;
     }
 
-    public Color getSubFgColor(SubBus subBus, Color defColor) {
-        Color retColor = defColor;
+    public YukonColorPalette getSubFgColor(SubBus subBus, YukonColorPalette defColor) {
+        YukonColorPalette retColor = defColor;
 
         if (subBus != null) {
             if (subBus.getCcDisableFlag()) {
@@ -1249,14 +1247,14 @@ public class UpdaterHelper {
         return retColor;
     }
 
-    public Color getCapBankFGColor(CapBankDevice capBank, Color defColor) {
-        Color retColor = defColor;
+    public YukonColorPalette getCapBankFGColor(CapBankDevice capBank, YukonColorPalette defColor) {
+        YukonColorPalette retColor = defColor;
         int status = capBank.getControlStatus();
         LiteState state = CapControlUtils.getCapBankState(status);
         
         if (state != null) {
-            retColor = Colors.getColor(state.getFgColor());
-            if (retColor.equals(Colors.getColor(Colors.GREEN_ID))){
+            retColor = YukonColorPalette.getColor(state.getFgColor());
+            if (retColor.equals(YukonColorPalette.GREEN)){
                 retColor = _DEFAULT_COLORS[0];
             }
         }
@@ -1264,8 +1262,8 @@ public class UpdaterHelper {
         return retColor;
     }
 
-    public Color getFeederFgColor(Feeder feeder, Color defColor) {
-        Color retColor = defColor;
+    public YukonColorPalette getFeederFgColor(Feeder feeder, YukonColorPalette defColor) {
+        YukonColorPalette retColor = defColor;
 
         if (feeder != null) {
             if (feeder.getCcDisableFlag()) {

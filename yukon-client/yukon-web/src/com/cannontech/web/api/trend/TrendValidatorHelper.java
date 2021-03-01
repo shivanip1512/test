@@ -12,10 +12,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.trend.model.RenderType;
 import com.cannontech.common.trend.model.TrendSeries;
-import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.points.validators.PointValidationUtil;
@@ -38,46 +35,28 @@ public class TrendValidatorHelper {
     }
 
     /**
-     * Validate Trend name.
+     * Validate trend name.
      */
-    public void validateTrendName(Errors errors, String trendName, String fieldName, Integer trendId) {
-        // Applicable for update flow. We must have trendId but trendName is optional, Skip name validation when it's null.
-        if (trendId != null && trendName == null) {
-            return;
-        }
-        String nameI18nText = accessor.getMessage(commonkey + "name");
+    public void validateTrendName(Errors errors, String trendName, Integer trendId) {
 
+        String nameI18nText = accessor.getMessage(commonkey + "name");
         YukonValidationUtils.checkIsBlank(errors, "name", trendName, nameI18nText, false);
+
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", trendName, 40);
-
             if (StringUtils.containsAny(trendName, PaoUtils.ILLEGAL_NAME_CHARS)) {
                 errors.rejectValue("name", basekey + "paoName.containsIllegalChars");
             }
-
-            if (trendId == null) {
-                validateUniqueTrendName(errors, trendName);
-            } else {
-                LiteGraphDefinition existingTrend = dbCache.getAllGraphDefinitions()
-                                                           .stream()
-                                                           .filter(liteTrend -> liteTrend.getLiteID() == Integer.valueOf(trendId))
-                                                           .findAny()
-                                                           .orElseThrow(() -> new NotFoundException("Trend Id not found"));
-                if (!existingTrend.getName().equalsIgnoreCase(trendName.trim()))
-                    validateUniqueTrendName(errors, trendName);
-            }
+            dbCache.getAllGraphDefinitions()
+                   .stream()
+                   .filter(liteTrend -> liteTrend.getName().equalsIgnoreCase(trendName.trim()))
+                   .findAny()
+                   .ifPresent(liteGraphDefinition -> {
+                       if (trendId == null || liteGraphDefinition.getGraphDefinitionID() != trendId) {
+                           errors.rejectValue("name", basekey + "nameConflict");
+                       }
+                   });
         }
-    }
-
-    /**
-     * Check if Trend name already exists.
-     */
-    private void validateUniqueTrendName(Errors errors, String trendName) {
-        dbCache.getAllGraphDefinitions()
-               .stream()
-               .filter(liteTrend -> liteTrend.getName().equalsIgnoreCase(trendName.trim()))
-               .findAny()
-               .ifPresent(def -> errors.rejectValue("name", basekey + "nameConflict"));
     }
 
     /**
@@ -88,10 +67,13 @@ public class TrendValidatorHelper {
         String labelI18nText = accessor.getMessage(tdcBasekey + "label");
         String dateI18nText = accessor.getMessage(commonkey + "date");
 
-        YukonValidationUtils.checkIsBlank(errors, "pointId", Objects.toString(trendSeries.getPointId(), null), pointI18nText,
-                false);
-        if (!errors.hasFieldErrors("pointId")) {
-            pointValidationUtil.validatePointId(errors, "pointId", trendSeries.getPointId(), pointI18nText);
+        
+        if (trendSeries.getType() == null || !trendSeries.getType().isMarkerType()) {
+            YukonValidationUtils.checkIsBlank(errors, "pointId", Objects.toString(trendSeries.getPointId(), null), pointI18nText,
+                    false);
+            if (!errors.hasFieldErrors("pointId")) {
+                pointValidationUtil.validatePointId(errors, "pointId", trendSeries.getPointId(), pointI18nText);
+            }
         }
 
         YukonValidationUtils.checkIsBlank(errors, "label", trendSeries.getLabel(), labelI18nText, false);
@@ -108,7 +90,7 @@ public class TrendValidatorHelper {
                 errors.rejectValue("style", basekey + "notSupported", new Object[] { trendSeries.getStyle() }, "");
             }
         }
-        if (trendSeries.getType() != null && trendSeries.getType() == GraphType.DATE_TYPE) {
+        if (trendSeries.getType() != null && trendSeries.getType().isDateType() && !errors.hasFieldErrors("date")) {
             YukonValidationUtils.checkIsBlank(errors, "date", Objects.toString(trendSeries.getDate(), null), dateI18nText,
                     false);
             if (!errors.hasFieldErrors("date") && trendSeries.getDate().isAfterNow()) {

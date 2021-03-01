@@ -1,3 +1,4 @@
+
 #include <error.h>
 
 #include "yukon.h"
@@ -288,7 +289,9 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Invalid meter program.")
     ("Meter program not found.")
     ("Meter program password not valid.")
-    .repeat(12, UnknownErrorHelper(338));
+    ("Node timed out while waiting for a response from Yukon.")
+    ("Node received an error response from Yukon.")
+    .repeat(10, UnknownErrorHelper(340));
 
 BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
 {

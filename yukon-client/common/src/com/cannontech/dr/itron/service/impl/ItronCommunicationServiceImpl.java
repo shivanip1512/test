@@ -119,7 +119,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                                                                           "Done.programEventID");
     
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
-    private static final String READ_GROUP = "ITRON_READ_GROUP";
     public static final String FILE_PATH = CtiUtilities.getItronDirPath();
     private DateTime lastItronFileDeletionDate = DateTime.now().minus(Duration.standardDays(1));
     
@@ -170,7 +169,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     @Override
-    public void saveSecondaryMacAddress(PaoType type, int deviceId, String primaryMacAddress) {
+    public boolean findAndSaveSecondaryMacAddress(PaoType type, int deviceId, String primaryMacAddress) {
         FindHANDeviceRequest request = new FindHANDeviceRequest();
         request.setESIMacID(primaryMacAddress);
         PaginationType pagination = new PaginationType();
@@ -187,8 +186,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             
             FindDeviceResponseType response = responseElement.getValue();
             if (response.getDeviceCount() == 0) {
-                log.info("No secondary mac found for device with primary mac {}", primaryMacAddress);
-                return;
+                log.debug("No secondary mac found for device with primary mac {}", primaryMacAddress);
+                return false;
             }
             
             // 1 or more results found
@@ -199,8 +198,10 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 log.debug("Secondary macs: {}", secondaryMacs);
             }
             deviceDao.updateSecondaryMacAddress(type, deviceId, response.getMacIDs().get(0));
+            return true;
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.DEVICE);
+            return false;
         }
     }
     
@@ -338,32 +339,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         return new RecentEventParticipationItronData(programId, eventId);
     }
-    
-    /** 
-     * Sends message to Itron to update device logs for all itron groups
-     */
-    private void updateDeviceLogs() {
-        List<Long> itronIds = itronDao.getAllItronGroupIds();
-        UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
-        updateLogsRequest.getGroupIDs().addAll(itronIds);
-        updateDeviceLogs(updateLogsRequest);
-    }
-    
-    /**
-     * 1. Finds Itron group id used for reads
-     * 2. Sends message to Itron to add the devices we are attempting to read to the group
-     * 3. Sends message to Itron to update device logs
-     */
-    private long updateDeviceLogsBeforeRead(List<Integer> deviceIds) {      
-        //add new mac addresses to group
-        List<String> macAddresses = Lists.newArrayList(deviceDao.getDeviceMacAddresses(deviceIds).values());
-        long itronReadGroupId = createOrUpdateGroup(READ_GROUP, macAddresses);
-        //update event logs
-        UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
-        updateLogsRequest.getGroupIDs().add(itronReadGroupId);
-        updateDeviceLogs(updateLogsRequest);
-        return itronReadGroupId;
-    }
 
     /**
      * Attempt to edit the specified group, setting the mac addresses. If that operation fails, assume that the group
@@ -467,30 +442,38 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         inventoryIds.removeAll(optOuts);
         return inventoryIds;
     }
-        
+    
+    @Override
+    public long createOrUpdateItronGroup(String groupName, List<Integer> deviceIds) {
+        List<String> macAddresses = Lists.newArrayList(deviceDao.getDeviceMacAddresses(deviceIds).values());
+        return createOrUpdateGroup(groupName, macAddresses);
+    }
+    
+    @Override
+    public void updateDeviceLogsForAllGroups() {
+        List<Long> itronIds = itronDao.getAllItronGroupIds();
+        UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
+        updateLogsRequest.getGroupIDs().addAll(itronIds);
+        updateDeviceLogs(updateLogsRequest);
+    }
+    
+    @Override
+    public void updateDeviceLogsForItronGroup(long itronGroupId) {
+        UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
+        updateLogsRequest.getGroupIDs().add(itronGroupId);
+        updateDeviceLogs(updateLogsRequest);
+    }
+    
     @Override
     public ZipFile exportDeviceLogs(Long startRecordId, Long endRecordId) {
-        updateDeviceLogs();
-        
-        ExportDeviceLogRequest request = new ExportDeviceLogRequest();
-        request.setRecordIDRangeStart(startRecordId);
-        if(endRecordId != null) {
-            request.setRecordIDRangeEnd(endRecordId);
-        }
-        itronEventLogService.exportDeviceLogs(startRecordId, endRecordId);
+        ExportDeviceLogRequest request = ReportManagerHelper.buildExportDeviceLogRequest(startRecordId, endRecordId);
         return exportDeviceLogs(request, ExportType.ALL);
     }
     
     @Override
-    public synchronized ZipFile exportDeviceLogsForItronGroup(Long startRecordId, Long endRecordId, List<Integer> deviceId) {
-        long itronReadGroup = updateDeviceLogsBeforeRead(deviceId);
-        
-        ExportDeviceLogRequest request = new ExportDeviceLogRequest();
-        request.setRecordIDRangeStart(startRecordId);
-        if (endRecordId != null) {
-            request.setRecordIDRangeEnd(endRecordId);
-        }
-        request.getDeviceGroupIDs().add(itronReadGroup);
+    public ZipFile exportDeviceLogsForItronGroup(Long startRecordId, Long endRecordId, long itronGroupId) {
+        ExportDeviceLogRequest request = 
+                ReportManagerHelper.buildExportDeviceLogRequest(startRecordId, endRecordId, itronGroupId);
         return exportDeviceLogs(request, ExportType.READ);
     }
 

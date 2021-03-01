@@ -8,6 +8,7 @@
 #include "lmgrouphoneywell.h"
 #include "lmgroupnest.h"
 #include "lmgroupitron.h"
+#include "lmgroupeatoncloud.h"
 #include "lmgroupmeterdisconnect.h"
 #include "lmgroupemetcon.h"
 #include "lmgroupexpresscom.h"
@@ -40,6 +41,8 @@ MessagePtr<Thrift::LMGroupHoneywell>::type   populateThrift ( const ::LMGroupHon
 MessagePtr<Thrift::LMGroupNest>::type        populateThrift ( const ::LMGroupNest& imsg );
 
 MessagePtr<Thrift::LMGroupItron>::type       populateThrift ( const ::LMGroupItron& imsg );
+
+MessagePtr<Thrift::LMGroupEatonCloud>::type       populateThrift ( const ::LMGroupEatonCloud& imsg );
 
 MessagePtr<Thrift::LMGroupMeterDisconnect>::type    populateThrift ( const ::LMGroupMeterDisconnect& imsg );
 

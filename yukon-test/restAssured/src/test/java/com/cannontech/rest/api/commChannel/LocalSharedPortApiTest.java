@@ -35,7 +35,7 @@ public class LocalSharedPortApiTest {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", localSharedPortDetail);
         String portId = createResponse.path(CommChannelHelper.CONTEXT_PORT_ID).toString();
         context.setAttribute(CommChannelHelper.CONTEXT_PORT_ID, portId);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Port Id should not be Null", portId != null);
         Log.endTestCase("localSharedPortCommChannel_01_Create");
     }
@@ -76,7 +76,7 @@ public class LocalSharedPortApiTest {
         localSharedPortDetail.setBaudRate(MockBaudRate.BAUD_115200);
         localSharedPortDetail.setEnable(true);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updatePort", localSharedPortDetail, portId);
+        ExtractableResponse<?> getResponse = ApiCallHelper.patch("updatePort", localSharedPortDetail, portId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
         Log.endTestCase("localSharedPortCommChannel_03_Update");
     }

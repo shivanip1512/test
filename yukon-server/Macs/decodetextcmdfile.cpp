@@ -882,6 +882,8 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, string* programmin
                                                         if (workString.length() > 1)
                                                         {
                                                             memcpy (&buffer, &workString[1],workString.length()-1);
+                                                            buffer[workString.length()-1] = '\0';   // make sure it's null terminated
+
                                                             tmpAddress = atoi(buffer);
                                                             //check address level
                                                             if ((tmpAddress < XCOM_ADDRESS_START) || (tmpAddress > 254))
@@ -936,6 +938,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, string* programmin
                                                         if (workString.length() > 1)
                                                         {
                                                             memcpy (&buffer, &workString[1],workString.length()-1);
+                                                            buffer[workString.length()-1] = '\0';   // make sure it's null terminated
 
                                                             tmpAddress = atoi(buffer);
                                                             //check address level

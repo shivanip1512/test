@@ -1,0 +1,15 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Point Documentation Suite" preserve-order="true">
+    <test name="Point Documentation Test" >
+        <classes>
+          <class name = "com.cannontech.rest.api.documentation.point.AnalogPointApiDoc" />
+          <class name = "com.cannontech.rest.api.documentation.point.StatusPointApiDoc" />
+          <class name = "com.cannontech.rest.api.documentation.point.CalcStatusPointApiDoc" />
+          <class name = "com.cannontech.rest.api.documentation.point.CalcAnalogPointApiDoc" />
+          <class name = "com.cannontech.rest.api.documentation.point.PulseAccumulatorPointApiDoc" />
+        </classes>
+    </test>
+</suite>
+

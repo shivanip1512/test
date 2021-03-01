@@ -1,6 +1,7 @@
 package com.cannontech.common.device.programming.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,6 +45,7 @@ import com.cannontech.common.device.programming.message.MeterProgramStatusArchiv
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest.Source;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramCommandResult;
+import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.device.programming.service.MeterProgramValidationService;
@@ -131,6 +133,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         MeterProgram program = meterProgrammingDao.getProgramByDeviceId(device.getDeviceId());
 
         if (program != null && program.getGuid().equals(assignedGuid) && status != null && failures.contains(status.getStatus())) {
+            setProgramStatusToInitiating(program.getGuid(), Collections.singletonList(device));
             return sendCommandToPorter(device, context, DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE);
         }
         return createFailureResult(DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE, device, context);
@@ -210,6 +213,8 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         try {
             waitableCallback.waitForCompletion();
         } catch (InterruptedException | TimeoutException e) {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+            result.setErrorText(accessor.getMessage(baseKey + "summary.timeout"));
             log.error(e);
         }
         return result;
@@ -250,20 +255,22 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
         CommandCompletionCallback<CommandRequestDevice> execCallback = getExecutionCallback(context, result);
         meterProgrammingDao.assignDevicesToProgram(guid, supportedDevices);
-        setProgramStatusToInitiating(supportedDevices);
+        setProgramStatusToInitiating(guid, supportedDevices);
         execute(context, command, result, supportedDevices, execCallback);
         return result.getCacheKey();
     }
 
     /**
      * Sends status update message to SM to update MeterProgramStatus table
+     * @param guid 
      */
-    private void setProgramStatusToInitiating(List<SimpleDevice> supportedDevices) {
+    private void setProgramStatusToInitiating(UUID guid, List<SimpleDevice> supportedDevices) {
         Map<? extends YukonPao, RfnIdentifier> meterIdentifiersByPao = rfnDeviceDao.getRfnIdentifiersByPao(supportedDevices);
         supportedDevices.forEach(device -> {
             MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
             request.setError(DeviceError.SUCCESS);
             request.setSource(Source.WS_COLLECTION_ACTION);
+            request.setConfigurationId(MeterProgramSource.YUKON.getPrefix() + guid);
             request.setRfnIdentifier(meterIdentifiersByPao.get(device));
             request.setStatus(ProgrammingStatus.INITIATING);
             request.setTimestamp(Instant.now());

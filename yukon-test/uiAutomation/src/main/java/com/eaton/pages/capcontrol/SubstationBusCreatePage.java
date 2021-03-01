@@ -9,50 +9,34 @@ import com.eaton.pages.PageBase;
 
 public class SubstationBusCreatePage extends PageBase {
     
-    private TextEditElement name;
-    private TrueFalseCheckboxElement status;
-    private TextEditElement geoName;
-    private TextEditElement mapLocationId;
-    //TODO add Parent
-    //TODO add Volt Reduction Control Point link and modal
-    private Button saveBtn;
-    private Button cancelBtn;
-
     public SubstationBusCreatePage(DriverExtensions driverExt) {
         super(driverExt);
         
         requiresLogin = true;
         pageUrl = Urls.CapControl.SUBSTATION_BUS_CREATE;
-
-        name = new TextEditElement(this.driverExt, "name");
-        status = new TrueFalseCheckboxElement(this.driverExt, "disabled");
-        geoName = new TextEditElement(this.driverExt, "geoAreaName");
-        mapLocationId = new TextEditElement(this.driverExt, "capControlSubstationBus.mapLocationID");
-        saveBtn = new Button(this.driverExt, "Save");
-        cancelBtn = new Button(this.driverExt, "Cancel");
     }
     
     public TextEditElement getName() {
-        return name;
+        return new TextEditElement(this.driverExt, "name");
     }
     
     public TrueFalseCheckboxElement getStatus() {
-        return status;
+        return new TrueFalseCheckboxElement(this.driverExt, "disabled");
     }
     
     public TextEditElement getGeoName() {
-        return geoName;
+        return new TextEditElement(this.driverExt, "geoAreaName");
     }
     
     public TextEditElement getMapLocationId() {
-        return mapLocationId;
+        return new TextEditElement(this.driverExt, "capControlSubstationBus.mapLocationID");
     }
     
     public Button getSaveBtn() {
-        return saveBtn;
+        return new Button(this.driverExt, "Save");
     }
     
     public Button getCancelBtn() {
-        return cancelBtn;
+        return new Button(this.driverExt, "Cancel");
     }    
 }

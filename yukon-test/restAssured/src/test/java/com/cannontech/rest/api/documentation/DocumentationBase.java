@@ -93,10 +93,21 @@ public abstract class DocumentationBase {
     }
 
     /**
+     * Helper method to make a POST call having request and response fields with a body to generate restDocumentation for 
+     * Action APIs.
+     * 
+     * @return value in response having identifier of responseFieldPath
+     */
+    protected String actionDoc(DocumentationFields.Fields fields, String methodName) {
+        validateFields(methodName, fields);
+        return post(fields);
+    }
+
+    /**
      * Helper method to make a POST call having request and response fields with a body to generate restDocumentation.
      * @return value in response having identifier of responseFieldPath
      */
-    private String post(DocumentationFields.Create fields) {
+    private String post(DocumentationFields.Fields fields) {
         RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
         return RestApiDocumentationUtility.post(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body, fields.url);
     }
@@ -105,7 +116,7 @@ public abstract class DocumentationBase {
      * Helper method to make a PUT call having request and response fields with a body to generate restDocumentation.
      * @return value in response having identifier of responseFieldPath
      */
-    private String put(DocumentationFields.Create fields) {
+    private String put(DocumentationFields.Fields fields) {
         RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
         return RestApiDocumentationUtility.put(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body,
                 fields.url);
@@ -116,7 +127,7 @@ public abstract class DocumentationBase {
      * Helper method to make a PATCH call having request and response fields with a body to generate restDocumentation.
      * @return value in response having identifier of responseFieldPath
      */
-    private String patch(DocumentationFields.Create fields) {
+    private String patch(DocumentationFields.Fields fields) {
         RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
         return RestApiDocumentationUtility.patch(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body,
                 fields.url);

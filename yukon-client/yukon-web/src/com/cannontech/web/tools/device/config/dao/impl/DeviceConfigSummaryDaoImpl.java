@@ -3,12 +3,18 @@ package com.cannontech.web.tools.device.config.dao.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus;
@@ -36,16 +42,24 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigSummaryDaoImpl.class);
-    private static List<DeviceRequestType> deviceConfigExecTypes = ImmutableList.of(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY,
-        DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceRequestType.GROUP_DEVICE_CONFIG_READ);
+    private static List<DeviceRequestType> deviceConfigExecTypes = ImmutableList.of(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, 
+            DeviceRequestType.GROUP_DEVICE_CONFIG_READ);
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired ConfigurationSource configurationSource;
+    
+    private String rfTemplatePrefix;
+    
+    @PostConstruct
+    public void initialize() {
+         rfTemplatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
+    }
 
     private final YukonRowMapper<DeviceConfigSummaryDetail> detailRowMapper = rs -> {
         DeviceConfigSummaryDetail detail = new DeviceConfigSummaryDetail();
         detail.setAction(rs.getEnum("LastAction", LastAction.class));
-        detail.setActionEnd(rs.getInstant("LastActionStart"));
-        detail.setActionStart(rs.getInstant("LastActionEnd"));
+        detail.setActionStart(rs.getInstant("LastActionStart"));
+        detail.setActionEnd(rs.getInstant("LastActionEnd"));
         detail.setDevice(new DisplayableDevice(rs.getPaoIdentifier("PAObjectID", "Type"), rs.getString("PaoName")));
         Integer configId = rs.getNullableInt("DeviceConfigurationId");
         if (configId != null) {
@@ -71,13 +85,8 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
     public SearchResults<DeviceConfigSummaryDetail> getSummary(DeviceConfigSummaryFilter filter, PagingParameters paging,
             SortBy sortBy, Direction direction) {
         log.debug("filter:{}", filter);
-        if (!filter.isDisplayUnassigned() && CollectionUtils.isEmpty(filter.getConfigurationIds())) {
-            return new SearchResults<>();
-        }
-        SqlStatementBuilder allRowsSql = buildDetailSelect(filter, sortBy, direction, false);
-        log.debug(allRowsSql.getDebugSql());
-        SqlStatementBuilder countSql = buildDetailSelect(filter, null, null, true);
-        log.debug(countSql);
+        SqlStatementBuilder allRowsSql = buildSummarySelect(filter, sortBy, direction, false);
+        SqlStatementBuilder countSql = buildSummarySelect(filter, null, null, true);
         int totalCount = jdbcTemplate.queryForInt(countSql);
 
         int start = paging.getStartIndex();
@@ -93,23 +102,18 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         return searchResult;
     }
     
-    private SqlStatementBuilder buildDetailSelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
-            Direction direction, boolean selectCount) {
+    @Override
+    public DeviceConfigSummaryDetail getSummaryForDevice(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        if (CollectionUtils.isEmpty(filter.getConfigurationIds())) {
-            sql.append(buildUnassignSelect(filter, sortBy, direction, selectCount));
-        } else {
-            sql.append(buildConfigStatesSelect(filter, sortBy, direction, selectCount));
-        }
-        addGroupsAndOrderBy(filter, sortBy, direction, sql);
-        return sql;
+        buildCommonStateSelect(sql, false);
+        sql.append("WHERE ypo.PAObjectID").eq(deviceId);
+        return jdbcTemplate.queryForObject(sql, detailRowMapper);
     }
-
-    private SqlStatementBuilder buildUnassignSelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
-            Direction direction, boolean selectCount) {
+    
+    private SqlStatementBuilder buildUnassignSelect(DeviceConfigSummaryFilter filter, boolean selectCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (selectCount) {
-            sql.append("SELECT count(ypo.PAObjectID)");
+            sql.append("SELECT ypo.PAObjectID");
         } else {
             sql.append("SELECT");
             sql.append("ypo.PAObjectID,");
@@ -127,14 +131,32 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("FROM YukonPAObject ypo");
         sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
         sql.append("AND ypo.PAObjectID NOT IN (select DeviceID from DeviceConfigurationDeviceMap)");
+        sql.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix);
         return sql;
     }
 
-    private SqlStatementBuilder buildConfigStatesSelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
-            Direction direction, boolean selectCount) {
+    private SqlStatementBuilder buildStateSelect(DeviceConfigSummaryFilter filter, boolean selectCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        buildCommonStateSelect(sql, selectCount);
+        sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
+        if(!filter.isDisplayAll()) {
+            sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
+        }
+        if (filter.getStateSelection() == StateSelection.ALL) {
+            sql.append("AND (CurrentState").in_k(filter.getStateSelection().getStates());
+            sql.append("OR LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS).append(")");
+        } else if (filter.getStateSelection() == StateSelection.IN_PROGRESS) {
+            sql.append("AND LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
+        } else {
+            sql.append("AND CurrentState").in_k(filter.getStateSelection().getStates());
+        }
+        sql.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix);
+        return sql;
+    }
+    
+    private void buildCommonStateSelect(SqlStatementBuilder sql, boolean selectCount) {
         if (selectCount) {
-            sql.append("SELECT count(ypo.PAObjectID)");
+            sql.append("SELECT ypo.PAObjectID");
         } else {
             sql.append("SELECT");
             sql.append("ypo.PAObjectID,");
@@ -153,18 +175,30 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectID = dcs.PAObjectID");
         sql.append("JOIN DeviceConfigurationDeviceMap scdm ON dcs.PAObjectID = scdm.DeviceId");
         sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
-        sql.append("LEFT JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = dcs.CommandRequestExecId AND dcs.PAObjectID=crer.DeviceId");
-        sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
-        if (!CollectionUtils.isEmpty(filter.getConfigurationIds())) {
-            sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
+        if (!selectCount) {
+            sql.append("LEFT JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = dcs.CommandRequestExecId AND dcs.PAObjectID=crer.DeviceId");
         }
-        if (filter.getStateSelection() == StateSelection.ALL) {
-            sql.append("AND (CurrentState").in_k(filter.getStateSelection().getStates());
-            sql.append("OR LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS).append(")");
-        } else if (filter.getStateSelection() == StateSelection.IN_PROGRESS) {
-            sql.append("AND LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
-        } else {
-            sql.append("AND CurrentState").in_k(filter.getStateSelection().getStates());
+    }
+
+    private SqlStatementBuilder buildSummarySelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
+            Direction direction, boolean selectCount) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if (selectCount) {
+            sql.append("SELECT count(PaObjectId)");
+            sql.append("FROM (");
+        }
+        if (filter.isDisplayAssigned() || filter.isDisplayAll()) {
+            sql.append(buildStateSelect(filter, selectCount));
+            if (filter.isDisplayUnassigned() || filter.isDisplayAll()) {
+                sql.append("UNION");
+            }
+        }
+        if (filter.isDisplayUnassigned() || filter.isDisplayAll()) {
+            sql.append(buildUnassignSelect(filter, selectCount));
+        }
+        addGroupsAndOrderBy(filter, sortBy, direction, sql);
+        if (selectCount) {
+            sql.append(") T");
         }
         return sql;
     }
@@ -186,6 +220,10 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
     @Override
     public List<DeviceConfigActionHistoryDetail> getDeviceConfigActionHistory(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ExecType, StartTime, StopTime, ActionStatus, DeviceId");
+        sql.append("FROM (");
+        
+        //Getting config send and reads history from Command Request execution tables
         sql.append("SELECT");
         sql.append("CommandRequestExecType as ExecType,");
         sql.append("cre.StartTime,");
@@ -198,11 +236,31 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("FROM CommandRequestExec cre");
         sql.append("LEFT JOIN CommandRequestExecRequest request ON cre.CommandRequestExecId = request.CommandRequestExecId");
         sql.append("LEFT JOIN CommandRequestExecResult result ON cre.CommandRequestExecId = result.CommandRequestExecId AND request.DeviceId = result.DeviceId");
+        //GROUP_DEVICE_CONFIG_VERIFY is excluded because it doesn't always mean ASSIGN_CONFIG or UNASSIGN_CONFIG, clicking "Needs Upload" also does verify
         sql.append("WHERE cre.CommandRequestExecType").in_k(deviceConfigExecTypes);
         sql.append("AND (result.DeviceId").eq(deviceId);
         sql.append("    OR request.DeviceId").eq(deviceId).append(")");
-        sql.append("ORDER BY cre.StartTime DESC");
-        log.debug(sql);
+        
+        sql.append("UNION");
+        
+        //Getting assign and unassign history from collection action tables 
+        sql.append("SELECT");
+        sql.appendArgument_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY).append(" as ExecType,");
+        sql.append("ca.StartTime,");
+        sql.append("ca.StopTime,");
+        sql.append("CASE");
+        sql.append("    WHEN request.Result=").appendArgument_k(CommandRequestExecutionStatus.COMPLETE).append("THEN").appendArgument_k(LastActionStatus.SUCCESS);
+        sql.append("    WHEN request.Result=").appendArgument_k(CommandRequestExecutionStatus.FAILED).append("THEN").appendArgument_k(LastActionStatus.FAILURE);
+        sql.append("    ELSE").appendArgument_k(LastActionStatus.IN_PROGRESS);
+        sql.append("END as ActionStatus, request.PAObjectID as DeviceId");
+        sql.append("FROM CollectionAction ca");
+        sql.append("JOIN CollectionActionRequest request ON ca.CollectionActionId = request.CollectionActionId");
+        sql.append("WHERE Action").in_k(List.of(CollectionAction.ASSIGN_CONFIG, CollectionAction.UNASSIGN_CONFIG));
+        sql.append("AND request.PAObjectID").eq(deviceId);
+
+        sql.append(") results");
+        sql.append("ORDER BY StartTime DESC");
+        log.debug(sql.getDebugSql());
         return jdbcTemplate.query(sql, historyRowMapper);
     }
     

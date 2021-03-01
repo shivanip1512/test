@@ -153,7 +153,7 @@ public class PaoDefinitionDaoImplTest {
         Multimap<String, PaoDefinition> deviceDisplayGroupMap = dao.getPaoDisplayGroupMap();
 
         // Make sure there are the correct number of device type groups
-        assertEquals("There should be 15 device type groups", 15, deviceDisplayGroupMap.keySet().size());
+        assertEquals("There should be 16 device type groups", 16, deviceDisplayGroupMap.keySet().size());
 
         // Make sure there are the correct number of IPC device types
         try {
@@ -262,7 +262,8 @@ public class PaoDefinitionDaoImplTest {
         ImmutableSet<PaoTag> expectedTags =
             ImmutableSet.of(PaoTag.COMMANDER_REQUESTS, PaoTag.DEVICE_ICON_TYPE, PaoTag.DLC_ADDRESS_RANGE_ENFORCE,
                 PaoTag.LOCATE_ROUTE, PaoTag.MCT_300_SERIES, PaoTag.METER_DETAIL_DISPLAYABLE, PaoTag.OUTAGE,
-                PaoTag.PORTER_COMMAND_REQUESTS, PaoTag.STARS_ACCOUNT_ATTACHABLE_METER, PaoTag.USES_METER_NUMBER_FOR_MSP);
+                PaoTag.PORTER_COMMAND_REQUESTS, PaoTag.STARS_ACCOUNT_ATTACHABLE_METER, PaoTag.SUPPORTS_ATTRIBUTE_ASSIGNMENT, 
+                PaoTag.USES_METER_NUMBER_FOR_MSP);
 
         PaoDefinition mct370Definition = dao.getPaoDefinition(PaoType.MCT370);
         Set<PaoTag> supportedTags = dao.getSupportedTags(mct370Definition);

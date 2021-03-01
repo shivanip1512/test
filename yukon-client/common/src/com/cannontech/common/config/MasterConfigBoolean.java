@@ -15,6 +15,8 @@ public enum MasterConfigBoolean {
     DIGI_SMARTPOLL_ENABLED,
     DISABLE_ANALYTICS,
     DISABLE_RFN_TEMPLATE_AUTO_CREATION,
+    DISABLE_E2E_METER_DISCONNECTS,
+    DISABLE_E2E_METER_READS,
     ENABLE_ESTIMATED_LOAD,
     ENABLE_GENERIC_UPLOAD, // YUK-11376
     ENABLE_INVENTORY_SAVE_TO_FILE,
@@ -24,6 +26,7 @@ public enum MasterConfigBoolean {
     ENABLE_WEB_DEBUG_PAGES,
     HONEYWELL_SUPPORT_ENABLED,
     I18N_DESIGN_MODE,
+    ITRON_UPDATE_DEVICE_LOGS_BEFORE_EXPORT, // YUK-22621 Issue UpdateDeviceEventLogsRequest prior to periodic all-device ExportDeviceLogRequest.
     MAINTENANCE_DUPLICATE_POINT_DATA_NOLOCK_REQUIRED,
     MAP_DEVICES_DEV_MODE,  //If true, use Dev Key for Mapping, If false, use Prod key.  If key is not found, check for DEVELOPMENT_MODE OR DISABLE_ANALYTICS.  If either are true, use Dev Key otherwise Prod key
     MSP_ENABLE_ALTGROUP_EXTENSION, // YUK-10787

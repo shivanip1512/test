@@ -15,7 +15,8 @@
 #include "date_utility.h"
 #include "std_helper.h"
 
-#include <boost/assign/list_of.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 using namespace Cti::Protocols;
 using namespace Cti::Devices::Commands;
@@ -167,16 +168,16 @@ Mct4xxDevice::Mct4xxDevice()
     }
 }
 
-const Mct4xxDevice::error_map Mct4xxDevice::error_codes = boost::assign::map_list_of
-        (0xfffffffe, error_details("Meter communications problem",                 InvalidQuality))
-        (0xfffffffd, error_details("No data yet available for requested interval", InvalidQuality))
-        (0xfffffffc, error_details("No data yet available for requested interval", InvalidQuality))
-        (0xfffffffa, error_details(ErrorText_OutOfRange,                           InvalidQuality))
-        (0xfffffff8, error_details("Device filler",                                DeviceFillerQuality))
-        (0xfffffff6, error_details("Power failure occurred during part or all of this interval",   PowerfailQuality))
-        (0xfffffff4, error_details("Power restored during this interval",          PartialIntervalQuality))
-        (0xffffffe1, error_details("Overflow",                                     OverflowQuality))
-        (0xffffffe0, error_details("Overflow",                                     OverflowQuality));
+const Mct4xxDevice::error_map Mct4xxDevice::error_codes {
+        { 0xfffffffe, error_details("Meter communications problem",                 InvalidQuality) },
+        { 0xfffffffd, error_details("No data yet available for requested interval", InvalidQuality) },
+        { 0xfffffffc, error_details("No data yet available for requested interval", InvalidQuality) },
+        { 0xfffffffa, error_details(ErrorText_OutOfRange,                           InvalidQuality) },
+        { 0xfffffff8, error_details("Device filler",                                DeviceFillerQuality) },
+        { 0xfffffff6, error_details("Power failure occurred during part or all of this interval",   PowerfailQuality) },
+        { 0xfffffff4, error_details("Power restored during this interval",          PartialIntervalQuality) },
+        { 0xffffffe1, error_details("Overflow",                                     OverflowQuality) },
+        { 0xffffffe0, error_details("Overflow",                                     OverflowQuality) } };
 
 
 Mct4xxDevice::CommandSet Mct4xxDevice::initCommandStore()
@@ -877,10 +878,10 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                         typedef map<string, char> PeakTypes;
 
-                        const PeakTypes peakLookup = boost::assign::map_list_of
-                            (PeakString_Day,      FuncRead_LLPPeakDayPos)
-                            (PeakString_Hour,     FuncRead_LLPPeakHourPos)
-                            (PeakString_Interval, FuncRead_LLPPeakIntervalPos);
+                        static const PeakTypes peakLookup {
+                            { PeakString_Day,      FuncRead_LLPPeakDayPos },
+                            { PeakString_Hour,     FuncRead_LLPPeakHourPos },
+                            { PeakString_Interval, FuncRead_LLPPeakIntervalPos } };
 
                         PeakTypes::const_iterator peakType = peakLookup.find(parse.getsValue("lp_peaktype"));
 
@@ -1021,18 +1022,6 @@ YukonError_t Mct4xxDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParse
     {
         const auto readStatus = executeInstallReads(pReq, parse, OutMessage, vgList, retList, outList);
             
-        if( ! readStatus )
-        {
-            auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
-            
-            verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
-            verifyRequest->setCommandString(pReq->CommandString() + " verify");
-
-            incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
-
-            retList.push_back(verifyRequest.release());
-        }
-
         return readStatus;
     }
 
@@ -1172,7 +1161,6 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
     if( parse.isKeyValid("install") )
     {
         found = true;
-        bool verify = parse.isKeyValid("verify");
 
         if( parse.getsValue("installvalue") == PutConfigPart_basic
             || parse.getsValue("installvalue") == PutConfigPart_all )
@@ -1804,6 +1792,7 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
 
     int ret = ClientErrors::NoMethod;
     std::vector<std::string> nonCurrentConfigParts;
+    std::vector<std::string> missingConfigParts;
 
     if (getDeviceConfig())
     {
@@ -1835,10 +1824,18 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                     tempReq.setConnectionHandle(pReq->getConnectionHandle());
 
                     CtiCommandParser parseSingle(tempReq.CommandString());
-                    if( executePutConfigSingle(&tempReq, parseSingle, OutMessage, vgList, retList, outList, readsOnly ) )
+                    if( auto retCode = executePutConfigSingle(&tempReq, parseSingle, OutMessage, vgList, retList, outList, readsOnly ) )
                     {
-                        nonCurrentConfigParts.push_back(configPart);
-                        ret = ClientErrors::ConfigNotCurrent;
+                        if ( retCode == ClientErrors::NoConfigData )
+                        {
+                            missingConfigParts.push_back(configPart);
+                            ret = ClientErrors::NoConfigData;
+                        }
+                        else
+                        {
+                            nonCurrentConfigParts.push_back(configPart);
+                            ret = ClientErrors::ConfigNotCurrent;
+                        }
                     }
                 }
             }
@@ -1863,29 +1860,45 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
         retList.push_back( retMsg );
     }
 
-    // Can only be ClientErrors::ConfigNotCurrent for now.
     if( ret )
     {
-        CTILOG_ERROR(dout, "Device " << getName() << " has non-current configuration.");
+        // return the more serious error despite what is in 'ret' as its current value, as it is completely
+        //  configparts order dependent in the case of multiple errors.
 
-        CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID( ),
-                                string(OutMessage->Request.CommandStr),
-                                "ERROR: Config Part(s) " + boost::join(nonCurrentConfigParts, ", ") + " not current.",
-                                ClientErrors::ConfigNotCurrent,
-                                OutMessage->Request.RouteID,
-                                OutMessage->Request.RetryMacroOffset,
-                                OutMessage->Request.Attempt,
-                                OutMessage->Request.GrpMsgID,
-                                OutMessage->Request.UserID,
-                                OutMessage->Request.SOE,
-                                CtiMultiMsg_vec( ));
+        std::string errorMessage;
 
-        retList.push_back( retMsg );
+        if ( ! missingConfigParts.empty() )
+        {
+            CTILOG_ERROR(dout, "Device " << getName() << " has an incomplete configuration.");
+
+            ret = ClientErrors::NoConfigData;
+            errorMessage = "ERROR: Config Part(s) " + boost::join(missingConfigParts, ", ") + " are incomplete.";
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Device " << getName() << " has non-current configuration.");
+
+            errorMessage = "ERROR: Config Part(s) " + boost::join(nonCurrentConfigParts, ", ") + " not current.";
+        }
+
+        auto retMsg = std::make_unique<CtiReturnMsg>(
+            getID( ),
+            string(OutMessage->Request.CommandStr),
+            errorMessage,
+            ret,
+            OutMessage->Request.RouteID,
+            OutMessage->Request.RetryMacroOffset,
+            OutMessage->Request.Attempt,
+            OutMessage->Request.GrpMsgID,
+            OutMessage->Request.UserID,
+            OutMessage->Request.SOE );
+
+        retList.push_back( retMsg.release() );
     }
 
     if( isVerify )
     {
-        decrementGroupMessageCount(pReq->GroupMessageId(), pReq->getConnectionHandle());
+        decrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
     }
 
     return ret;
@@ -2064,10 +2077,10 @@ YukonError_t Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTim
 
                 typedef map<char, string> PeakStrings;
 
-                const PeakStrings peakLookup = boost::assign::map_list_of
-                    (FuncRead_LLPPeakDayPos,      PeakString_Day)
-                    (FuncRead_LLPPeakHourPos,     PeakString_Hour)
-                    (FuncRead_LLPPeakIntervalPos, PeakString_Interval);
+                static const PeakStrings peakLookup {
+                    { FuncRead_LLPPeakDayPos,      PeakString_Day },
+                    { FuncRead_LLPPeakHourPos,     PeakString_Hour },
+                    { FuncRead_LLPPeakIntervalPos, PeakString_Interval } };
 
                 PeakStrings::const_iterator peakString = peakLookup.find(_llpPeakInterest.peak_type);
 
@@ -2878,7 +2891,9 @@ YukonError_t Mct4xxDevice::decodeGetConfigTOU(const INMESS &InMessage, const Cti
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
+    decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
+
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection));
 
     return status;
 }

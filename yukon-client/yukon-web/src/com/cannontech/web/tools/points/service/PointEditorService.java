@@ -3,8 +3,13 @@ package com.cannontech.web.tools.points.service;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.device.dao.DevicePointDao.SortBy;
+import com.cannontech.common.device.model.DevicePointsFilter;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
@@ -12,7 +17,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.LitePointModel;
+import com.cannontech.web.tools.points.model.PaoPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
+import com.cannontech.web.tools.points.model.PointCopy;
 import com.cannontech.web.tools.points.model.PointModel;
 
 public interface PointEditorService {
@@ -27,7 +34,13 @@ public interface PointEditorService {
      * 
      * @return the id of the point
      */
-    int save(PointBase base, StaleData staleData, List<AlarmTableEntry> alarmTableEntries, LiteYukonUser liteYukonUser);
+    int save(PointBase base, List<AlarmTableEntry> alarmTableEntries, LiteYukonUser liteYukonUser);
+
+    /**
+     * Save staleData
+     * @param staleData
+     */
+    public void saveStaleData(StaleData staleData);
 
     /**
      * @param interfaceType
@@ -158,6 +171,21 @@ public interface PointEditorService {
      * Retrieve Point for passed pointId.
      */
     PointBaseModel<? extends PointBase> retrieve(int pointId);
+    
+    /**
+     * Copy Point.
+     */
+    PointBaseModel<? extends PointBase> copy(int portId, PointCopy pointCopy);
+    
+    /**
+     * Retrieve Points info for passed paoId.
+     */
+    PaoPointModel getDevicePointDetail(int paoId, DevicePointsFilter devicePointsFilter, Direction direction,
+                                       SortBy sortBy, PagingParameters paging);
 
+    /**
+     * Retrieve states for point Id.
+     */
+    List<LMDto> retrieveStates(int pointId);
 
 }

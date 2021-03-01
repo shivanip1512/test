@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,6 @@ import com.cannontech.common.rfn.message.gateway.GatewayActionResult;
 import com.cannontech.common.rfn.message.gateway.GatewayCollectionRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
 import com.cannontech.common.rfn.message.gateway.GatewayConnectRequest;
-import com.cannontech.common.rfn.message.gateway.GatewayConnectionTestRequest;
-import com.cannontech.common.rfn.message.gateway.GatewayConnectionTestResponse;
-import com.cannontech.common.rfn.message.gateway.GatewayConnectionTestResult;
 import com.cannontech.common.rfn.message.gateway.GatewayCreateRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDeleteRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayEditRequest;
@@ -57,6 +55,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.model.RfnGwy800;
+import com.cannontech.common.rfn.model.RfnGwy801;
 import com.cannontech.common.rfn.model.RfnVirtualGateway;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
@@ -111,7 +110,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     // Created in post-construct
     private RequestReplyTemplate<GatewayUpdateResponse> updateRequestTemplate;
     private RequestReplyTemplate<GatewayActionResponse> actionRequestTemplate;
-    private RequestReplyTemplate<GatewayConnectionTestResponse> connectionTestRequestTemplate;
     private RequestReplyTemplate<GatewaySetConfigResponse> configRequestTemplate;
     
     private Pattern prefixPattern = Pattern.compile("[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}::\\/64");
@@ -152,8 +150,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         YukonJmsTemplate gatewayActionRequestJmsTemplate = jmsTemplateFactory.createTemplate(gatewayActionRequestQueue);
         actionRequestTemplate = new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, configSource,
                 gatewayActionRequestJmsTemplate);
-        connectionTestRequestTemplate = new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, configSource,
-                gatewayActionRequestJmsTemplate);
 
         YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_SET_CONFIG);
         configRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.RF_GATEWAY_SET_CONFIG.getName(),
@@ -172,7 +168,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public Set<RfnGateway> getAllNonLegacyGateways() {
-        return getGateways(Lists.newArrayList(PaoType.GWY800, PaoType.VIRTUAL_GATEWAY));
+        return getGateways(Lists.newArrayList(PaoType.GWY800, PaoType.GWY801, PaoType.VIRTUAL_GATEWAY));
     }
     
     private Set<RfnGateway> getGateways(Collection<PaoType> types) {
@@ -265,7 +261,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         if (paoId.getPaoType() == PaoType.GWY800) {
             gateway = new RfnGwy800(name, paoId, rfId, data);
-        } else if (paoId.getPaoType() == PaoType.VIRTUAL_GATEWAY){
+        } else if (paoId.getPaoType() == PaoType.GWY801) {
+            gateway = new RfnGwy801(name, paoId, rfId, data);
+        } else if (paoId.getPaoType() == PaoType.VIRTUAL_GATEWAY) {
             gateway = new RfnVirtualGateway(name, paoId, rfId, data);
         } else {
             gateway = new RfnGateway(name, paoId, rfId, data);
@@ -491,7 +489,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             request.setRfnIdentifier(existingGateway.getRfnIdentifier());
             request.setData(editData);
             
-            log.debug("Sending gateway edit request: " + request);
+            log.debug("Sending gateway update request to NM for gateway:{} request:{}", gateway, request);
             BlockingJmsReplyHandler<GatewayUpdateResponse> replyHandler = 
                     new BlockingJmsReplyHandler<>(GatewayUpdateResponse.class);
             updateRequestTemplate.send(request, replyHandler);
@@ -559,56 +557,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         } catch (ExecutionException e) {
             throw new NmCommunicationException("Gateway delete failed due to a communication error with " +
                     "Network Manager.", e);
-        }
-    }
-    
-    @Override
-    public boolean testConnection(int deviceId, String ipAddress, String username, String password) 
-            throws NmCommunicationException {
-        
-        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
-        
-        Authentication auth = new Authentication();
-        auth.setUsername(username);
-        auth.setPassword(password);
-        
-        // Build request
-        GatewayConnectionTestRequest request = new GatewayConnectionTestRequest();
-        request.setRfnIdentifier(device.getRfnIdentifier());
-        request.setIpAddress(ipAddress);
-        request.setAuthentication(auth);
-        
-        return sendConnectionRequest(request);
-    }
-    
-    @Override
-    public boolean testConnection(int deviceId) throws NmCommunicationException {
-        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
-        
-        // Build request
-        GatewayConnectionTestRequest request = new GatewayConnectionTestRequest();
-        request.setRfnIdentifier(device.getRfnIdentifier());
-        
-        return sendConnectionRequest(request);
-    }
-    
-    private boolean sendConnectionRequest(GatewayConnectionTestRequest request) 
-            throws NmCommunicationException {
-        
-        BlockingJmsReplyHandler<GatewayConnectionTestResponse> replyHandler = 
-                new BlockingJmsReplyHandler<>(GatewayConnectionTestResponse.class);
-                
-        // Send request
-        log.debug("Sending connection request: " + request);
-        connectionTestRequestTemplate.send(request, replyHandler);
-        
-        // Parse response
-        try {
-            GatewayConnectionTestResponse response = replyHandler.waitForCompletion();
-            return response.getResult() == GatewayConnectionTestResult.SUCCESSFUL;
-        } catch (ExecutionException e) {
-            throw new NmCommunicationException("Gateway connection test failed due to a communication " +
-                    "error with Network Manager.", e);
         }
     }
     
@@ -773,7 +721,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         }
 
         PointData pointData = new PointData();
-        pointData = new PointData();
         pointData.setId(point.getLiteID());
         pointData.setPointQuality(PointQuality.Normal);
         pointData.setValue(value);

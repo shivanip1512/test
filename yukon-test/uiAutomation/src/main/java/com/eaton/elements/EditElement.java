@@ -14,48 +14,39 @@ public class EditElement {
     private String elementName;
     private String parentName;
     private WebElement parentElement;
-    private WebElement inputElement;
 
     public EditElement(DriverExtensions driverExt, String elementName) {
         this.driverExt = driverExt;
         this.elementName = elementName;     
-        
-        setEditElement();
     }
     
     public EditElement(DriverExtensions driverExt, String elementName, String parentName) {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentName = parentName;
-        
-        setEditElement();
     }  
     
     public EditElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentElement = parentElement;
-        
-        setEditElement();
     }
 
     public Boolean errorDisplayed() {
-        List<WebElement> list = this.driverExt.findElements(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty());
+        List<WebElement> list = this.driverExt.findElements(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.of(5));
 
         return !list.isEmpty() ? true : false;
     }
 
-    protected void setEditElement() {
+    public WebElement getEditElement() {
         if (this.parentName != null) {
-            this.inputElement = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name='" + this.elementName + "']"), Optional.empty());
+            this.driverExt.waitUntilElementVisibleByCssLocator("[aria-describedby='" + this.parentName + "'] input[name='" + this.elementName + "']");
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name='" + this.elementName + "']"), Optional.of(3));
         } else if (this.parentElement != null) {
-            this.inputElement = this.parentElement.findElement(By.cssSelector("input[name='" + this.elementName + "']"));
+            return this.parentElement.findElement(By.cssSelector("input[name='" + this.elementName + "']"));
         } else {
-            this.inputElement = this.driverExt.findElement(By.cssSelector("input[name='" + this.elementName + "']"), Optional.empty());
+            this.driverExt.waitUntilElementVisibleByCssLocator("input[name='" + this.elementName + "']");
+            return this.driverExt.findElement(By.cssSelector("input[name='" + this.elementName + "']"), Optional.of(3));
         }        
-    }
-    
-    protected WebElement getEditElement() {
-        return this.inputElement;
-    }
+    }    
 }

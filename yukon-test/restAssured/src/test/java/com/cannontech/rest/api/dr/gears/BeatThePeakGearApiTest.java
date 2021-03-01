@@ -37,7 +37,7 @@ public class BeatThePeakGearApiTest {
 
         mockLoadProgram.getGears().get(0).setGearName("");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -53,7 +53,7 @@ public class BeatThePeakGearApiTest {
 
         mockLoadProgram.getGears().get(0).setGearName("GearNameLenghthMoreThan30Characters");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -71,7 +71,7 @@ public class BeatThePeakGearApiTest {
 
         beatThePeakFeilds.setResendInMinutes(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -88,7 +88,7 @@ public class BeatThePeakGearApiTest {
         MockBeatThePeakGearFields beatThePeakFeilds = (MockBeatThePeakGearFields) mockLoadProgram.getGears().get(0).getFields();
         beatThePeakFeilds.setResendInMinutes(100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -107,7 +107,7 @@ public class BeatThePeakGearApiTest {
 
         beatThePeakFeilds.setTimeoutInMinutes(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -127,7 +127,7 @@ public class BeatThePeakGearApiTest {
 
         beatThePeakFeilds.setTimeoutInMinutes(100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -145,7 +145,7 @@ public class BeatThePeakGearApiTest {
         MockBeatThePeakGearFields beatThePeakFeilds = (MockBeatThePeakGearFields) mockLoadProgram.getGears().get(0).getFields();
 
         beatThePeakFeilds.setIndicator(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -165,7 +165,7 @@ public class BeatThePeakGearApiTest {
 
         beatThePeakFeilds.setWhenToChangeFields(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -184,7 +184,7 @@ public class BeatThePeakGearApiTest {
         beatThePeakFeilds.getWhenToChangeFields().setWhenToChange(MockWhenToChange.Duration);
         beatThePeakFeilds.getWhenToChangeFields().setChangeDurationInMinutes(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -204,7 +204,7 @@ public class BeatThePeakGearApiTest {
         beatThePeakFeilds.getWhenToChangeFields().setWhenToChange(MockWhenToChange.Duration);
         beatThePeakFeilds.getWhenToChangeFields().setChangeDurationInMinutes(100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -223,7 +223,7 @@ public class BeatThePeakGearApiTest {
 
         beatThePeakFeilds.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -242,7 +242,7 @@ public class BeatThePeakGearApiTest {
         beatThePeakFeilds.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
         beatThePeakFeilds.getWhenToChangeFields().setTriggerNumber(0);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -259,7 +259,7 @@ public class BeatThePeakGearApiTest {
         beatThePeakFeilds.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
         beatThePeakFeilds.getWhenToChangeFields().setTriggerNumber(100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -276,7 +276,7 @@ public class BeatThePeakGearApiTest {
         beatThePeakFeilds.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
         beatThePeakFeilds.getWhenToChangeFields().setTriggerOffset(-100005.000000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -295,7 +295,7 @@ public class BeatThePeakGearApiTest {
         beatThePeakFeilds.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
         beatThePeakFeilds.getWhenToChangeFields().setTriggerOffset(100005.000000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -316,7 +316,7 @@ public class BeatThePeakGearApiTest {
         beatThePeakFeilds.getWhenToChangeFields().setWhenToChange(MockWhenToChange.Priority);
         beatThePeakFeilds.getWhenToChangeFields().setChangePriority(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -333,7 +333,7 @@ public class BeatThePeakGearApiTest {
         beatThePeakFeilds.getWhenToChangeFields().setWhenToChange(MockWhenToChange.Priority);
         beatThePeakFeilds.getWhenToChangeFields().setChangePriority(100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");

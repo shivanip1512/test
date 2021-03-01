@@ -7,7 +7,6 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
 import com.cannontech.common.util.DatabaseRepresentationSource;
-import com.cannontech.database.data.point.PointBase;
 import com.cannontech.spring.YukonSpringHook;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -47,61 +46,37 @@ public class StaleData {
     //private SelectItem[] updateStyles = null;
     private Integer updateStyle;
     private Integer time;
-    @JsonIgnore
     private boolean enabled = false;
-    private PointBase point = null;
-    
+    private Integer pointId = null;
+  
     public static final int TIME_PROPERTY = 1;
     public static final int UPDATE_PROPERTY = 2;
 
-    public StaleData() {
-        this.updateStyle = 0;
-        this.time = 5;
-    }
-
     @JsonCreator
-    public StaleData(@JsonProperty("updateStyle") Integer updateStyle, @JsonProperty ("time") Integer time) {
+    public StaleData(@JsonProperty("pointId") Integer pointId, @JsonProperty("updateStyle") Integer updateStyle, @JsonProperty ("time") Integer time) {
+        this.pointId = pointId;
         this.updateStyle = updateStyle;
         this.time = time;
     }
     
-    public StaleData(PointBase point) {
-        this.point = point;
-        init();
+    public StaleData() {
     }
     
-    private void init() {
-        PointPropertyValue attrib1;
-        PointPropertyValue attrib2;
-        boolean staleEnabled = false;
-        PointPropertyValueDao dao = YukonSpringHook.getBean( "pointPropertyValueDao", PointPropertyValueDao.class);
-        try{
-            attrib1 = dao.getByIdAndPropertyId(point.getPoint().getPointID(), 1);
-            attrib2 = dao.getByIdAndPropertyId(point.getPoint().getPointID(), 2);
-            staleEnabled = true;
-        }catch( DataAccessException e) {
-            attrib1 = new PointPropertyValue(point.getPoint().getPointID(),1,5);
-            attrib2 = new PointPropertyValue(point.getPoint().getPointID(),2,1);
-        }
-        setTime((int)attrib1.getFloatValue());
-        setUpdateStyle((int)attrib2.getFloatValue()-1);
-        
-        if( staleEnabled ) {
-            setEnabled(true);
-        } else {
-            setEnabled(false);
-        }
+    public StaleData(Integer pointId) {
+        this.pointId = pointId;
+        this.updateStyle = 0;
+        this.time = 5;
     }
-    
+   
     public void update() {
         PointPropertyValue attribTime = new PointPropertyValue();
         PointPropertyValue attribUpdate = new PointPropertyValue();
         
-        attribTime.setPointId(point.getPoint().getPointID());
+        attribTime.setPointId(pointId);
         attribTime.setPointPropertyCode(1);
         attribTime.setFloatValue(getTime().floatValue());
         
-        attribUpdate.setPointId(point.getPoint().getPointID());
+        attribUpdate.setPointId(pointId);
         attribUpdate.setPointPropertyCode(2);
         attribUpdate.setFloatValue(getUpdateStyle()+1);
         PointPropertyValueDao dao = YukonSpringHook.getBean( "pointPropertyValueDao", PointPropertyValueDao.class);
@@ -136,7 +111,8 @@ public class StaleData {
     public void setTime(Integer time) {
         this.time = time;
     }
-
+    
+    @JsonIgnore
     public boolean isEnabled() {
         return enabled;
     }
@@ -144,7 +120,16 @@ public class StaleData {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     } 
-
+    
+    @JsonIgnore
+    public Integer getPointId() {
+        return pointId;
+    }
+    
+    public void setPointId(Integer pointId) {
+        this.pointId = pointId;
+    }
+    
     public StaleData overwriteWith(StaleData staleData) {
         if (getTime() != null) {
             staleData.setTime(getTime());

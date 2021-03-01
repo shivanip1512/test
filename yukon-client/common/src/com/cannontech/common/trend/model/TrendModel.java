@@ -4,18 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
+import com.cannontech.common.YukonColorPalette;
+import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TrendModel {
+public class TrendModel implements DBPersistentConverter<GraphDefinition> {
     private Integer trendId;
+    @JsonProperty("trendName")
     private String name;
     private List<TrendSeries> trendSeries;
 
@@ -32,7 +36,7 @@ public class TrendModel {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = StringUtils.trim(name);
     }
 
     public List<TrendSeries> getTrendSeries() {
@@ -46,6 +50,7 @@ public class TrendModel {
     /*
      * Create DBPersistent object to insert
      */
+    @Override
     public void buildDBPersistent(GraphDefinition graph) {
         if (getName() != null) {
             graph.getGraphDefinition().setName(getName().trim());
@@ -55,21 +60,19 @@ public class TrendModel {
         if (CollectionUtils.isNotEmpty(getTrendSeries())) {
             for (TrendSeries series : getTrendSeries()) {
                 GraphDataSeries graphSeries = new GraphDataSeries();
-                graphSeries.setPointID(series.getPointId());
                 graphSeries.setLabel(series.getLabel());
                 graphSeries.setAxis(
                         series.getAxis() == null ? TrendAxis.LEFT.getAbbreviation() : series.getAxis().getAbbreviation());
-                graphSeries.setColor(series.getColor() == null ? (int) Color.BLUE.getDatabaseRepresentation()
-                        : (int) series.getColor().getDatabaseRepresentation());
+                graphSeries.setColor(series.getColor() == null ? (int) YukonColorPalette.BLUE.getDatabaseRepresentation()
+                        : (int) series.getColor().getYukonColor().getDatabaseRepresentation());
                 graphSeries.setType(series.getType() == null ? GDSTypes.BASIC_GRAPH_TYPE
                         : GDSTypesFuncs.getTypeInt(series.getType().getStringType()));
                 graphSeries.setMultiplier(series.getMultiplier() == null ? 1 : series.getMultiplier());
-                graphSeries.setRenderer(series.getStyle() == null ? RenderType.LINE.getId() : series.getStyle().getId());
                 if (series.getType() != null
                         && (series.getType() == GraphType.PEAK_TYPE || series.getType() == GraphType.DATE_TYPE)) {
                     if (series.getType() == GraphType.PEAK_TYPE) {
                         // Set to this months start date.
-                        DateTime date = new DateTime(DateTimeZone.UTC);
+                        DateTime date = new DateTime();
                         DateTime startOfMonth = date.dayOfMonth().withMinimumValue().withTimeAtStartOfDay();
                         graphSeries.setMoreData(String.valueOf(startOfMonth.getMillis()));
                     } else {
@@ -79,6 +82,14 @@ public class TrendModel {
                     }
                 } else {
                     graphSeries.setMoreData(CtiUtilities.STRING_NONE);
+                }
+                // use defaults when MarkerType
+                if (series.getType() != null && series.getType().isMarkerType()) {
+                    graphSeries.setPointID(-100);
+                    graphSeries.setRenderer(RenderType.LINE);
+                } else {
+                    graphSeries.setPointID(series.getPointId());
+                    graphSeries.setRenderer(series.getStyle() == null ? RenderType.LINE : series.getStyle());
                 }
                 // Set GraphDefinationId in case of Update flow.
                 if (graph.getGraphDefinition().getGraphDefinitionID() != null) {
@@ -92,6 +103,7 @@ public class TrendModel {
         }
     }
 
+    @Override
     public void buildModel(GraphDefinition graph) {
         setName(graph.getGraphDefinition().getName());
         setTrendId(graph.getGraphDefinition().getGraphDefinitionID());
@@ -102,7 +114,7 @@ public class TrendModel {
             for (GraphDataSeries data : graphSeries) {
                 TrendSeries trend = new TrendSeries();
                 trend.setAxis(TrendAxis.getAxis(data.getAxis()));
-                trend.setColor(Color.getColor(data.getColor()));
+                trend.setColor(GraphColors.getByYukonColor(YukonColorPalette.getColor(data.getColor())));
                 if (!data.getMoreData().equals(CtiUtilities.STRING_NONE)) {
                     trend.setDate(new DateTime(Long.valueOf(data.getMoreData())));
                 }

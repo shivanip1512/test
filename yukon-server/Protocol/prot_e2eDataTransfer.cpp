@@ -186,14 +186,17 @@ auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, 
         case COAP_MESSAGE_NON:
         case COAP_MESSAGE_CON:
         {
-            //  This is the behavior at present.  Nodes only send "piggybacked responses" in an ACK to Yukon requests, and do not send CoAP "separate responses" yet.
-            //    When we do receive separate responses, we will need to switch on the incoming request method/response code in indication_pdu->hdr->code, and ideally
-            //    return separate message types for requests vs responses.
-            message.nodeOriginated = true;
-
-            if( message.code != COAP_REQUEST_GET && message.code != COAP_REQUEST_POST )
+            if( message.code == COAP_REQUEST_GET || message.code == COAP_REQUEST_POST )
             {
-                CTILOG_WARN(dout, "Unknown request method " << message.code << " (" << indication_pdu->hdr->id << ") for endpointId " << endpointId);
+                message.nodeOriginated = true;
+            }
+            else if( message.code == as_underlying(Coap::ResponseCode::Content) )
+            {
+                message.nodeOriginated = false;
+            }
+            else
+            {
+                CTILOG_WARN(dout, "Unknown request method " << message.code << " (packet id " << indication_pdu->hdr->id << ") for endpointId " << endpointId);
 
                 throw UnknownRequestMethod(message.code, indication_pdu->hdr->id);
             }
@@ -201,14 +204,7 @@ auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, 
             message.confirmable = indication_pdu->hdr->type == COAP_MESSAGE_CON;
             const auto type = message.confirmable ? "CONfirmable" : "NONconfirmable";
 
-            CTILOG_INFO(dout, "Received " << type << " packet (" << indication_pdu->hdr->id << ") with request method (" << message.code << ") for endpointId "<< endpointId);
-
-            if( indication_pdu->hdr->id == mapFind(_inboundIds, endpointId) )
-            {
-                CTILOG_WARN(dout, type << " packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
-
-                throw DuplicatePacket(indication_pdu->hdr->id);
-            }
+            CTILOG_INFO(dout, "Received " << type << " packet (id " << indication_pdu->hdr->id << ") with request method (" << message.code << ") for endpointId "<< endpointId);
 
             _inboundIds[endpointId] = indication_pdu->hdr->id;
 

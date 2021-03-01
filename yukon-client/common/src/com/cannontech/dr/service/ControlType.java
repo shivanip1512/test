@@ -11,7 +11,8 @@ public enum ControlType {
     HONEYWELLWIFI("Honeywell WIFI Cycle"),
     NEST("Nest Cycle"),
     ITRON("Itron Cycle"),
-    METER_DISCONNECT("Meter Disconnect Cycle")
+    METER_DISCONNECT("Meter Disconnect Cycle"),
+    EATON_CLOUD("Eaton Cloud Cycle")
     ;
     
     private String stringValue;

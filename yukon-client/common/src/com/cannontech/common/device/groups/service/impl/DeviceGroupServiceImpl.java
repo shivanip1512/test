@@ -218,7 +218,6 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         if (pao.getPaoIdentifier().getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
             return false;
         }
-        
         SimpleDevice simpleDevice = new SimpleDevice(pao);
         Pair<DeviceGroup, SimpleDevice> pair = Pair.of(group, simpleDevice);
         Boolean result = deviceGroupCache.getIfPresent(pair);
@@ -227,6 +226,11 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
             deviceGroupCache.put(pair, result);
         }
         return result;
+    }
+    
+    @Override
+    public void removeFromCache(DeviceGroup group, YukonPao pao) {
+        deviceGroupCache.invalidate(Pair.of(group, new SimpleDevice(pao)));
     }
     
     private DeviceGroup getRelativeGroup(DeviceGroup rootGroup, List<String> names) {

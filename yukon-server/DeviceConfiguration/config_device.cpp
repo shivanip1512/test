@@ -34,10 +34,10 @@ size_t DeviceConfig::getInstanceId() const
 }
 
 // Inserts a value into the mapping, this is a protected function and is
-// not meant to be called by devices
+// only meant for unit test access
 bool DeviceConfig::insertValue( std::string identifier, const std::string & value )
 {
-    std::pair<ItemsByName::iterator, bool> retVal = _items.insert(ItemsByName::value_type(identifier, value));
+    auto retVal = _items.insert_or_assign(identifier, value);
 
     return retVal.second;
 }

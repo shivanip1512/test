@@ -2,6 +2,8 @@ package com.cannontech.amr.archivedValueExporter.model;
 
 import java.text.DecimalFormat;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -25,6 +27,7 @@ public class ExportField implements Displayable {
     private MissingAttribute missingAttribute;
     private String missingAttributeValue;
     private String pattern;
+    private FieldValue fieldValue;
     
     public int getFieldId() {
         return fieldId;
@@ -74,6 +77,11 @@ public class ExportField implements Displayable {
     }
 
     public void setReadingPattern(ReadingPattern readingPattern) {
+        // In yaml file, either readingPattern or pattern is mandatory. If it contains anything except CUSTOM, set pattern.
+        // If it contains CUSTOM, yaml should contain a valid pattern.
+        if (isValue() && readingPattern != ReadingPattern.CUSTOM) {
+            this.pattern = readingPattern.getPattern();
+        }
         this.readingPattern = readingPattern;
     }
 
@@ -93,6 +101,11 @@ public class ExportField implements Displayable {
     }
 
     public void setTimestampPattern(TimestampPattern timestampPattern) {
+        // In yaml file, either timestampPattern or pattern is mandatory. If it contains anything except CUSTOM, set the pattern.
+        // If it contains CUSTOM, yaml should contain a valid pattern.
+        if (isTimestamp() && timestampPattern != TimestampPattern.CUSTOM) {
+            this.pattern = timestampPattern.getPattern();
+        }
         this.timestampPattern = timestampPattern;
     }
 
@@ -150,6 +163,29 @@ public class ExportField implements Displayable {
 
     public void setPattern(String pattern) {
         this.pattern = pattern;
+    }
+
+    public FieldValue getFieldValue() {
+        boolean patternFound = false;
+        if (field.isAttributeName()) {
+            for (FieldValue value : FieldValue.values()) {
+                if (value.name().equals(pattern)) {
+                    fieldValue = value;
+                    patternFound = true;
+                    break;
+                }
+            }
+            if (!patternFound)
+                fieldValue = FieldValue.DEFAULT;
+        }
+        return fieldValue;
+    }
+
+    public void setFieldValue(FieldValue fieldValue) {
+        if (field.isAttributeName()) {
+            this.pattern = fieldValue.name();
+        }
+        this.fieldValue = fieldValue;
     }
 
     public boolean isValue() {
@@ -345,15 +381,11 @@ public class ExportField implements Displayable {
         }
         return true;
     }
-
+    
     @Override
     public String toString() {
-        return String
-                .format("ExportField [fieldId=%s, field=%s, formatId=%s, attributeField=%s, readingPattern=%s, timestampPattern=%s, maxLength=%s, padChar=%s, padSide=%s, roundingMode=%s, missingAttribute=%s, missingAttributeValue=%s, pattern=%s]",
-                        fieldId, field, formatId, attributeField,
-                        readingPattern, timestampPattern, maxLength, padChar,
-                        padSide, roundingMode, missingAttribute,
-                        missingAttributeValue, pattern);
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                + System.getProperty("line.separator");
     }
     
 }

@@ -60,7 +60,7 @@ public class TimeRefreshGearApiTest {
         String errorMsg = "Gear Name is required.";
         mockLoadProgram.getGears().get(0).setGearName("");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -76,14 +76,14 @@ public class TimeRefreshGearApiTest {
     @Test
     public void timeRefreshGear_02_InvalidRefreshShedType() {
 
-        String errorMsg = "Invalid Refresh Shed Time value.";
+        String errorMsg = "Invalid Refresh Shed Type value.";
         mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.CountDown);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.refreshShedTime", errorMsg),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.refreshShedType", errorMsg),
                 "Expected Error not found: " + errorMsg);
     }
 
@@ -98,7 +98,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setShedTime(50);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -117,7 +117,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setSendRate(130);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -136,7 +136,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setNumberOfGroups(26);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -155,7 +155,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setGroupSelectionMethod(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -174,7 +174,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setRampInPercent(101);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -193,7 +193,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setRampInPercent(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -213,7 +213,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRampInPercent(10);
         mockTimeRefreshGearFields.setRampInIntervalInSeconds(100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -233,7 +233,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRampInPercent(10);
         mockTimeRefreshGearFields.setRampInIntervalInSeconds(-100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -252,7 +252,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setStopCommandRepeat(6);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -271,7 +271,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setStopCommandRepeat(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -291,7 +291,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setHowToStopControl(MockHowToStopControl.RampOutRestore);
         mockTimeRefreshGearFields.setRampOutPercent(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -311,7 +311,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setHowToStopControl(MockHowToStopControl.RampOutRestore);
         mockTimeRefreshGearFields.setRampOutPercent(101);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -332,7 +332,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRampOutPercent(10);
         mockTimeRefreshGearFields.setRampInIntervalInSeconds(100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -353,7 +353,7 @@ public class TimeRefreshGearApiTest {
         mockTimeRefreshGearFields.setRampOutPercent(10);
         mockTimeRefreshGearFields.setRampInIntervalInSeconds(-100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");

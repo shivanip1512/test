@@ -39,6 +39,14 @@ yukon.widget.config = (function () {
                         status.html("<a href=javascript:void(0) class=js-out-of-sync>" + yukon.escapeXml(data.statusText) + "</a>");
                     }
                 }
+                //show/hide last error
+                var lastErrorSpan = widgetContainer.find('.js-last-error');
+                if (data.errorCode) {
+                    lastErrorSpan.data('error-code', yukon.escapeXml(data.errorCode))
+                    lastErrorSpan.removeClass('dn');
+                } else {
+                    lastErrorSpan.addClass('dn');
+                }
             }
             var configBtns = widgetContainer.find('.js-config-action-btns');
             configBtns.prop('disabled', data.isInProgress);
@@ -83,33 +91,28 @@ yukon.widget.config = (function () {
                     }
                     //display upload popup if needed
                     if (data.displayUploadPopup) {
-                        var popup = $('#uploadPopup'),
-                            title = popup.data('title'),
-                            uploadBtnText = popup.data('upload-btn');
+                        var popup = $('#uploadPopup');
                         popup.attr('data-widget-id', widgetId);
-                        $('.js-upload-msg').text(data.popupMessage);
-                        popup.dialog({
-                            title: title,
-                            width: '400px',
-                            modal: true,
-                            buttons: yukon.ui.buttons({ okText: uploadBtnText, event: 'yukon:config:upload' })
-                        });
+                        popup.find('.js-upload-msg').text(data.popupMessage);
+                        yukon.ui.dialog(popup);
                     }
                 });
                 
             });
             
             $(document).on('click', '.js-out-of-sync', function () {
-                var popup = $('.js-out-of-sync-popup'),
-                    title = popup.data('title'),
-                    widgetContainer = $('.js-config-widget'),
-                    deviceId = widgetContainer.data('device-id');
-                popup.load(yukon.url('/deviceConfiguration/summary/' + deviceId + '/outOfSync'), function () {
-                    popup.dialog({
-                        title: title,
-                        width: 550
-                    });
-                });
+                yukon.ui.dialog($('.js-out-of-sync-popup'));
+            });
+            
+            $(document).on('click', '.js-last-error', function () {
+                var errorCode = $(this).data('errorCode'),
+                    popupTitle = $(this).data('popupTitle'),
+                    dialogDivJson = {
+                        'data-title': popupTitle,
+                        'data-width': '600',
+                        'data-url': yukon.url('/deviceConfiguration/summary/' + errorCode + '/displayError')
+                    };
+                yukon.ui.dialog($('<div/>').attr(dialogDivJson));
             });
             
             $(document).on('yukon:config:upload', function(event) {

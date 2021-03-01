@@ -49,6 +49,7 @@ public class PointPickerHelper {
                 fieldWithPath("resultList[].deviceId").type(JsonFieldType.NUMBER).description("Device Id"),
                 fieldWithPath("resultList[].category").type(JsonFieldType.STRING).description("Category"),
                 fieldWithPath("resultList[].pointId").type(JsonFieldType.NUMBER).description("Point Id"),
+                fieldWithPath("resultList[].pointOffset").type(JsonFieldType.NUMBER).description("Point Offset"),
 
                 fieldWithPath("previousStartIndex").type(JsonFieldType.NUMBER).description("Previous Start Index"),
                 fieldWithPath("count").type(JsonFieldType.NUMBER).description("Count : Number of results per page"),

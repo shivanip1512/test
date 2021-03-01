@@ -10,12 +10,14 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -161,9 +163,14 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     LCR6600S(DeviceTypes.LCR6600S, "LCR-6600S", PaoCategory.DEVICE, PaoClass.ITRON),
     LCR6601S(DeviceTypes.LCR6601S, "LCR-6601S", PaoCategory.DEVICE, PaoClass.ITRON),
+
+    LCR6200C(DeviceTypes.LCR6200C, "LCR-6200C", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
+    LCR6600C(DeviceTypes.LCR6600C, "LCR-6600C", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
+    LCR_DISCONNECT_C(DeviceTypes.LCR_DISCONNECT_C, "LCR-DisconnectC", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
     
     RFN_GATEWAY(DeviceTypes.RFN_GATEWAY, "RF Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
     GWY800(DeviceTypes.GWY800, "GWY-800", PaoCategory.DEVICE, PaoClass.RFMESH),
+    GWY801(DeviceTypes.GWY801, "GWY-801", PaoCategory.DEVICE, PaoClass.RFMESH),
     VIRTUAL_GATEWAY(DeviceTypes.VIRTUAL_GATEWAY, "Virtual Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFN_RELAY(DeviceTypes.RFN_RELAY, "RFN Relay", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -195,6 +202,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LM_GROUP_SADIGITAL(DeviceTypes.LM_GROUP_SADIGITAL, "SA-Digital Group", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_VERSACOM(DeviceTypes.LM_GROUP_VERSACOM, "VERSACOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_METER_DISCONNECT(DeviceTypes.LM_GROUP_METER_DISCONNECT, "METER DISCONNECT GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_EATON_CLOUD(DeviceTypes.LM_GROUP_EATON_CLOUD, "EATON CLOUD GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     MACRO_GROUP(DeviceTypes.MACRO_GROUP, "MACRO GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     
     LM_CURTAIL_PROGRAM(DeviceTypes.LM_CURTAIL_PROGRAM, "LM CURTAIL PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
@@ -206,6 +214,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LM_ITRON_PROGRAM(DeviceTypes.LM_ITRON_PROGRAM, "ITRON PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_NEST_PROGRAM(DeviceTypes.LM_NEST_PROGRAM, "NEST PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_METER_DISCONNECT_PROGRAM(DeviceTypes.LM_METER_DISCONNECT_PROGRAM, "METER DISCONNECT PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
+    LM_EATON_CLOUD_PROGRAM(DeviceTypes.LM_EATON_CLOUD_PROGRAM, "EATON CLOUD PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_CONTROL_AREA(DeviceTypes.LM_CONTROL_AREA, "LM CONTROL AREA", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_SCENARIO(DeviceTypes.LM_SCENARIO, "LMSCENARIO", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     
@@ -268,6 +277,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     SIMPLE_SCHEDULE(DeviceTypes.SIMPLE_SCHEDULE, "Simple", PaoCategory.SCHEDULE, PaoClass.SCHEDULE),
     SYSTEM(DeviceTypes.SYSTEM, "SYSTEM", PaoCategory.DEVICE, PaoClass.SYSTEM),
     VIRTUAL_SYSTEM(DeviceTypes.VIRTUAL_SYSTEM, "VIRTUAL SYSTEM", PaoCategory.DEVICE, PaoClass.VIRTUAL),
+    VIRTUAL_METER(DeviceTypes.VIRTUAL_METER, "VIRTUAL METER", PaoCategory.DEVICE, PaoClass.VIRTUAL),
     
     WEATHER_LOCATION(DeviceTypes.WEATHER_LOCATION, "WEATHER LOCATION", PaoCategory.DEVICE, PaoClass.VIRTUAL),
     
@@ -341,6 +351,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> wifiTypes;
     private final static ImmutableSet<PaoType> loadGroupSupportedFromWeb;
     private final static ImmutableSet<PaoType> batteryAnalysisTypes;
+    private final static ImmutableSet<PaoType> virtualTypes;
 
     public final static int INVALID = -1;
     
@@ -364,6 +375,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         lmProgramTypes = ImmutableSet.of(
             LM_CURTAIL_PROGRAM,
             LM_DIRECT_PROGRAM,
+            LM_EATON_CLOUD_PROGRAM,
             LM_ENERGY_EXCHANGE_PROGRAM,
             LM_SEP_PROGRAM,
             LM_ECOBEE_PROGRAM,
@@ -372,9 +384,13 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_ITRON_PROGRAM,
             LM_METER_DISCONNECT_PROGRAM
             );
+
+        virtualTypes = ImmutableSet.of(
+                VIRTUAL_METER);
         
         directProgramTypes = ImmutableSet.of(
             LM_DIRECT_PROGRAM,
+            LM_EATON_CLOUD_PROGRAM,
             LM_SEP_PROGRAM,
             LM_ECOBEE_PROGRAM,
             LM_HONEYWELL_PROGRAM,
@@ -522,7 +538,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             SENTINEL,
             SIXNET,
             TRANSDATA_MARKV,
-            VECTRON
+            VECTRON,
+            VIRTUAL_METER
             );
         
         rfTypes = ImmutableSet.of(
@@ -693,6 +710,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         rfGatewayTypes = ImmutableSet.of(
             RFN_GATEWAY,
             GWY800,
+            GWY801,
             VIRTUAL_GATEWAY);
         
         rfRelayTypes = ImmutableSet.of(
@@ -771,7 +789,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_GROUP_METER_DISCONNECT,
             LM_GROUP_MCT,
             LM_GROUP_RIPPLE,
-            LM_GROUP_POINT
+            LM_GROUP_POINT,
+            LM_GROUP_EATON_CLOUD
           );
         
         batteryAnalysisTypes = ImmutableSet.of(
@@ -891,7 +910,18 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public boolean isPlc() {
         return paoClass == PaoClass.CARRIER;
     }
-    
+
+    public boolean isVirtual() {
+        return paoClass == PaoClass.VIRTUAL;
+    }
+
+    /**
+     * Return true if provided PAO type is VIRTUAL_SYSTEM or VIRTUAL_METER
+     **/
+    public boolean isVirtualDevice() {   
+        return this == PaoType.VIRTUAL_SYSTEM || this == PaoType.VIRTUAL_METER;
+    }
+
     public boolean isTwoWayRfnLcr() {
         return twoWayLcrTypes.contains(this) 
                 && isRfn();
@@ -1064,7 +1094,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     }
 
     public boolean hasMeterNumber() {
-        return isMct() || isIed() || isRfMeter();
+        return isMct() || isIed() || isRfMeter() || this == PaoType.VIRTUAL_METER;
     }
     
     public boolean isTlvReporting() {
@@ -1077,6 +1107,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getRtuTypes() {
         return rtuTypes;
+    }
+
+    public static ImmutableSet<PaoType> getVirtualTypes() {
+        return virtualTypes;
     }
 
     public static ImmutableSet<PaoType> getIonTypes() {
@@ -1156,7 +1190,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
      */
     public static List<PaoType> getAllLMGroupTypes() {
         List<PaoType> paoTypes = Arrays.stream(PaoType.values())
-                                       .filter(paoType -> paoType.isLoadGroup() && paoType.isLoadGroupSupportedFromWeb() && paoType != PaoType.MACRO_GROUP &&paoType != PaoType.LM_GROUP_NEST)
+                                       .filter(paoType -> paoType.isLoadGroup() && paoType.isLoadGroupSupportedFromWeb() && 
+                                               paoType != PaoType.MACRO_GROUP && paoType != PaoType.LM_GROUP_NEST)
                                        .collect(Collectors.toList());
         return paoTypes;
     }
@@ -1242,5 +1277,14 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public boolean isWifiDevice() {
         return wifiTypes.contains(this);
+    }
+
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    public static PaoType getPaoType(String paoTypeJsonString) {
+        try {
+            return PaoType.valueOf(paoTypeJsonString);
+        } catch (IllegalArgumentException e) {
+            throw new TypeNotSupportedException(paoTypeJsonString + " paoType is not valid.");
+        }
     }
 }

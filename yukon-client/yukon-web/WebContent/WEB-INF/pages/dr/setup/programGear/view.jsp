@@ -90,8 +90,8 @@
                 <c:if test="${selectedGearType == 'HoneywellSetpoint'}">
                     <%@ include file="honeywellSetpoint.jsp" %>
                 </c:if>
-                <c:if test="${selectedGearType == 'ItronCycle'}">
-                    <%@ include file="itronCycle.jsp" %>
+                <c:if test="${selectedGearType == 'ItronCycle' || selectedGearType == 'EatonCloudCycle'}">
+                    <%@ include file="itronOrEatonCloudCycle.jsp" %>
                 </c:if>
                 <c:if test="${selectedGearType == 'NestStandardCycle'}">
                     <%@ include file="nestStandardCycle.jsp" %>

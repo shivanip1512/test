@@ -93,9 +93,9 @@
             <bean class="com.cannontech.web.search.lucene.criteria.MeterCriteria"/>
         </property>
     </bean>
-     <bean name="meterAndRelayPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+     <bean name="meterEventsDevicesPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.web.search.lucene.criteria.MeterAndRelayCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.EventsDevicesCriteria"/>
         </property>
     </bean>
     <bean name="waterMeterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
@@ -423,7 +423,16 @@
         </property>
     </bean>
     
+    <bean name="rfGatewayLegacyPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.RFGatewayLegacyCriteria"/>
+        </property>
+    </bean>
+    
+    
     <bean name="pointValidationUtil" class="com.cannontech.web.tools.points.validators.PointValidationUtil"/>
+    <bean name="pointApiValidationUtil" class="com.cannontech.web.tools.points.validators.PointApiValidationUtil"/>
+    <bean name="pointValidationUtilCommon" class="com.cannontech.web.tools.points.validators.PointValidationUtilCommon"/>
     <bean class="com.cannontech.dr.itron.simulator.model.SimulatedItronSettings"/>
     <bean id="accountImportSerivce" class="com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService"/>
     <bean class="com.cannontech.web.stars.scheduledDataImport.dao.impl.ScheduledDataImportDaoImpl"/>

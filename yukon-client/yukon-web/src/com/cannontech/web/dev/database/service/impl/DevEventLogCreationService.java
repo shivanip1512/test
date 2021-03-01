@@ -19,7 +19,6 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
 import com.cannontech.amr.meter.model.PlcMeter;
-import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
@@ -41,6 +40,7 @@ import com.cannontech.common.events.loggers.EcobeeEventLogService;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.loggers.InfrastructureEventLogService;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.common.events.loggers.ItronEventLogService;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
@@ -76,6 +76,8 @@ import com.cannontech.dr.nest.model.v3.RushHourEventType;
 import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.rfn.model.PqrConfig;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
+import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.system.DREncryption;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.dev.database.objects.DevEventLog;
@@ -100,6 +102,7 @@ public class DevEventLogCreationService {
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private HardwareEventLogService hardwareEventLogService;
+    @Autowired private InfrastructureEventLogService infrastructureEventLogService;
     @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
     @Autowired private ItronEventLogService itronEventLogService;
     @Autowired private MeteringEventLogService meteringEventLogService;
@@ -535,35 +538,35 @@ public class DevEventLogCreationService {
                 String input = "add config";
                 String statistics = "Completed: 1";
                 
-                deviceConfigEventLogService.assignConfigToDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
-                deviceConfigEventLogService.unassignConfigFromDeviceCompleted(deviceName, yukonUser, 0);
+                deviceConfigEventLogService.changeConfigOfDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
+                deviceConfigEventLogService.removeConfigFromDeviceCompleted(deviceName, yukonUser, 0);
                 
-                deviceConfigEventLogService.readConfigFromDeviceInitiated(deviceName, yukonUser);
-                deviceConfigEventLogService.readConfigFromDeviceCompleted(deviceName, 1);
+                deviceConfigEventLogService.validateConfigOnDeviceInitiated(deviceName, yukonUser);
+                deviceConfigEventLogService.validateConfigOnDeviceCompleted(deviceName, 1);
                 
-                deviceConfigEventLogService.sendConfigToDeviceInitiated(deviceName, yukonUser);
-                deviceConfigEventLogService.sendConfigToDeviceCompleted(deviceName, 0);
+                deviceConfigEventLogService.uploadConfigToDeviceInitiated(deviceName, yukonUser);
+                deviceConfigEventLogService.uploadConfigToDeviceCompleted(deviceName, 0);
                 
                 deviceConfigEventLogService.verifyConfigFromDeviceInitiated(deviceName, yukonUser);
                 deviceConfigEventLogService.verifyConfigFromDeviceCompleted(deviceName, 1);
                 
-                deviceConfigEventLogService.sendConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.sendConfigCompleted(action, input, statistics, creStatus, resultKey);
-                deviceConfigEventLogService.sendConfigCancelled(action, input, statistics, yukonUser, resultKey);
+                deviceConfigEventLogService.uploadConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.uploadConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.uploadConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
-                deviceConfigEventLogService.readConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.readConfigCompleted(action, input, statistics, creStatus, resultKey);
-                deviceConfigEventLogService.readConfigCancelled(action, input, statistics, yukonUser, resultKey);
+                deviceConfigEventLogService.validateConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.validateConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.validateConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
                 deviceConfigEventLogService.verifyConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
                 deviceConfigEventLogService.verifyConfigCompleted(action, input, statistics, creStatus, resultKey);
                 deviceConfigEventLogService.verifyConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
-                deviceConfigEventLogService.assignConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.assignConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.changeConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.changeConfigCompleted(action, input, statistics, creStatus, resultKey);
                 
-                deviceConfigEventLogService.unassignConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.unassignConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.removeConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.removeConfigCompleted(action, input, statistics, creStatus, resultKey);
             }
         });
         executables.put(LogType.DISCONNECT, new DevEventLogExecutable() {
@@ -889,8 +892,12 @@ public class DevEventLogCreationService {
                 RfnIdentifier rfnIdentifier = new RfnIdentifier(sensorSerialNumber, sensorManufacturer, sensorModel);
                 
                 rfnDeviceEventLogService.createdNewDeviceAutomatically(rfnIdentifier, templateName,  templateName);
-                rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName);
+                rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName, sensorSerialNumber);
                 rfnDeviceEventLogService.unableToCreateDeviceFromTemplate(templateName, sensorManufacturer, sensorModel, sensorSerialNumber);
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnEvent", "Outage", new Instant(), null);
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnEvent", "Restore", new Instant(), new Instant());
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnAlarm", "Outage", new Instant(), null);
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnAlarm", "Restore", null, new Instant());
             }
         });
         executables.put(LogType.STARS, new DevEventLogExecutable() {
@@ -997,6 +1004,14 @@ public class DevEventLogCreationService {
                 systemEventLogService.maintenanceTaskEnabled(user, taskName);
                 systemEventLogService.maintenanceTaskSettingsUpdated(user, taskName);
                 
+                String attributeName = "testAttribute";
+                Integer attributeId = 42;
+                Integer pointOffset = 1000;
+                systemEventLogService.attributeCreated(user, attributeId, attributeName);
+                systemEventLogService.attributeUpdated(user, attributeName, "newAttributeName");
+                systemEventLogService.attributeDeleted(user, attributeName);
+                systemEventLogService.attributeAssigned(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
+                systemEventLogService.attributeAssignmentDeleted(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
             }
         });
         executables.put(LogType.TOOLS, new DevEventLogExecutable() {
@@ -1055,6 +1070,13 @@ public class DevEventLogCreationService {
                 toolsEventLogService.scheduleUpdated(user, scheduleName, type, scheduledRun);
                 toolsEventLogService.scheduleDeleted(user, scheduleName);
                 toolsEventLogService.scheduleImportError(scheduleName, type, error);
+
+                String trendName = devEventLog.getIndicatorString() + "TrendName";
+                DateTime resetPeakStartDate = new DateTime();
+                toolsEventLogService.trendCreated(trendName, user);
+                toolsEventLogService.trendUpdated(trendName, user);
+                toolsEventLogService.trendDeleted(trendName, user);
+                toolsEventLogService.resetPeak(trendName, user, resetPeakStartDate);
 
             }
         });
@@ -1168,8 +1190,10 @@ public class DevEventLogCreationService {
                 LocalDate startDate = LocalDate.now().minusDays(1);
                 String loadGroupIds = devEventLog.getIndicatorString() + "123, 456, 789";
 
-                ecobeeEventLogService.syncIssueFixed(yukonUser, EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString(), devEventLog.getEventSource());
-                ecobeeEventLogService.allSyncIssuesFixed(yukonUser, devEventLog.getEventSource());
+                ecobeeEventLogService.reconciliationCompleted(0, "123453625", EcobeeDiscrepancyType.MISSING_DEVICE.toString(),
+                        yukonUser, 1);
+                ecobeeEventLogService.reconciliationStarted(1, yukonUser);
+                ecobeeEventLogService.reconciliationResults(10, 5, 4, 1);
                 ecobeeEventLogService.dataDownloaded(yukonUser, startDate, endDate, loadGroupIds, devEventLog.getEventSource());
             }
         });
@@ -1257,6 +1281,21 @@ public class DevEventLogCreationService {
                 pqrEventLogService.sendConfig(user, totalCount, config.toString());
             }
         });
+        executables.put(LogType.INFRASTRUCTURE, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                String testPaoName = "123456789";
+                String message = "Text of the warning";
+                InfrastructureWarningType warningType = InfrastructureWarningType.GATEWAY_CONNECTION_STATUS;
+                InfrastructureWarningSeverity severity = InfrastructureWarningSeverity.HIGH;
+
+                infrastructureEventLogService.warningGenerated(testPaoName,
+                                                               warningType.toString(),
+                                                               severity.toString(),
+                                                               message);
+                infrastructureEventLogService.warningCleared(testPaoName, warningType.toString());
+            }
+        });
         eventLogExecutables = ImmutableMap.copyOf(executables);
     }
 
@@ -1276,11 +1315,12 @@ public class DevEventLogCreationService {
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 54),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
         DISCONNECT(DisconnectEventLogService.class, 10),
-        ECOBEE(EcobeeEventLogService.class, 3),
+        ECOBEE(EcobeeEventLogService.class, 4),
         ENDPOINT(EndpointEventLogService.class, 11),
         GATEWAY(GatewayEventLogService.class, 9),
         HARDWARE(HardwareEventLogService.class, 23),
-        INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),  
+        INFRASTRUCTURE(InfrastructureEventLogService.class, 2),
+        INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),
         ITRON(ItronEventLogService.class, 14),
         METERING(MeteringEventLogService.class, 15),
         MULTISPEAK(MultispeakEventLogService.class, 35),
@@ -1288,10 +1328,10 @@ public class DevEventLogCreationService {
         OUTAGE(OutageEventLogService.class, 10),
         POINT(PointEventLogService.class, 15),
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
-        RFN_DEVICE(RfnDeviceEventLogService.class, 3),
+        RFN_DEVICE(RfnDeviceEventLogService.class, 4),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 35),
-        TOOLS(ToolsEventLogService.class, 28),
+        SYSTEM(SystemEventLogService.class, 40),
+        TOOLS(ToolsEventLogService.class, 32),
         USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),

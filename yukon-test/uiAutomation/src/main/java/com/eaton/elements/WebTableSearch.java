@@ -28,6 +28,6 @@ public class WebTableSearch {
     }  
     
     public void clickClearBtn() {
-        this.driverExt.findElement(By.id("picker-voltReduction-show-all-link"), Optional.empty()).click();
+        this.driverExt.findElement(By.id("picker-voltReduction-show-all-link"), Optional.of(3)).click();
     }
 }

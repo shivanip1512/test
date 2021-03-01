@@ -2,6 +2,7 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="virtualDevices.list">
@@ -24,26 +25,36 @@
             <thead>
                 <tr>
                     <tags:sort column="${name}"/>
+                    <tags:sort column="${meterNumber}"/>
                     <tags:sort column="${status}"/>
                 </tr>
             </thead>
             <tbody>
-                <c:forEach var="device" items="${virtualDevices.resultList}">
+                <c:forEach var="device" items="${virtualDevices.items}">
                     <tr>
                         <cti:url var="detailUrl" value="/stars/virtualDevice/${device.id}"/>
                         <td><a href="${detailUrl}">${fn:escapeXml(device.name)}</a></td>
-                            <c:set var="cssClass" value="success" />
-                            <cti:msg2 var="status" key="yukon.common.enabled"/>
-                            <c:if test="${!device.enable}">
-                                <c:set var="cssClass" value="error" />
-                                <cti:msg2 var="status" key="yukon.common.disabled"/>
+                        <td>
+                            <c:if test="${device.type == virtualMeterType}">
+                                ${fn:escapeXml(device.meterNumber)}
                             </c:if>
+                        </td>
+                        <c:set var="cssClass" value="success" />
+                        <cti:msg2 var="status" key="yukon.common.enabled"/>
+                        <c:if test="${!device.enable}">
+                            <c:set var="cssClass" value="error" />
+                            <cti:msg2 var="status" key="yukon.common.disabled"/>
+                        </c:if>
                         <td class="${cssClass}">${status}</td>
                     </tr>
                 </c:forEach>
             </tbody>
         </table>
-        <tags:pagingResultsControls result="${virtualDevices}" adjustPageCount="true" thousands="true"/>
+        <c:if test="${empty virtualDevices.items}">
+            <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>
+        </c:if>
+        <tags:paginatedResponseControls response="${virtualDevices}" adjustPageCount="true" thousands="true"/>
     </div>
+
     <cti:includeScript link="/resources/js/pages/yukon.assets.virtualDevice.js"/>
 </cti:standardPage>

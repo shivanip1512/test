@@ -76,7 +76,7 @@ public class ProgramConstraintController {
         ProgramConstraint programConstraint = null;
         try {
             model.addAttribute("mode", PageEditMode.VIEW);
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintUrl  + "/" + id);
             programConstraint = retrieveConstraint(userContext, request, id, url);
             if (programConstraint == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "constraint.retrieve.error"));
@@ -96,7 +96,7 @@ public class ProgramConstraintController {
             HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintUrl + "/" + id);
             ProgramConstraint programConstraint = retrieveConstraint(userContext, request, id, url);
             if (programConstraint == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "constraint.retrieve.error"));
@@ -122,21 +122,21 @@ public class ProgramConstraintController {
             String url = StringUtils.EMPTY;
             ResponseEntity<? extends Object> response = null;
             if (programConstraint.getId() == null) {
-                url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintCreateUrl);
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintUrl);
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
                     programConstraint);
             } else {
                 url = helper.findWebServerUrl(request, userContext,
-                    ApiURL.drProgramConstraintUpdateUrl + programConstraint.getId());
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
-                    programConstraint);
+                        ApiURL.drProgramConstraintUrl + "/" + programConstraint.getId());
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PUT, Object.class,
+                        programConstraint);
             }
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(programConstraint, "programConstraint");
                 result = helper.populateBindingError(result, error, response);
                 return bindAndForward(programConstraint, result, redirectAttributes);
             }
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Integer> constraintIdMap = (HashMap<String, Integer>) response.getBody();
                 int constraintId = constraintIdMap.get("id");
                 flash.setConfirm(
@@ -161,7 +161,7 @@ public class ProgramConstraintController {
     public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintDeleteUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintUrl + "/" + id);
             ResponseEntity<? extends Object> response =
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, lmDelete);
             if (response.getStatusCode() == HttpStatus.OK) {

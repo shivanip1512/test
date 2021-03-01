@@ -3,6 +3,8 @@ package com.cannontech.common.trend.model;
 import org.joda.time.DateTime;
 
 import com.cannontech.common.trend.model.TrendType.GraphType;
+import com.cannontech.common.util.DateDeserializer;
+import com.cannontech.common.util.DateSerializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -13,11 +15,20 @@ public class TrendSeries {
     private TrendType.GraphType type;
     private Integer pointId;
     private String label;
-    private Color color;
+    private GraphColors color;
     private TrendAxis axis;
     private Double multiplier;
     private RenderType style;
     private DateTime date;
+    
+    public TrendSeries () {
+        //Defaulting to BLUE, set to index 1 because BLUE is 2nd item in GraphColors enum list. 
+        this.color = GraphColors.getNextDefaultColor(1);
+    }
+    
+    public TrendSeries (GraphColors color) {
+        this.color = color;
+    }
 
     public TrendType.GraphType getType() {
         return type;
@@ -43,11 +54,11 @@ public class TrendSeries {
         this.label = label;
     }
 
-    public Color getColor() {
+    public GraphColors getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(GraphColors color) {
         this.color = color;
     }
 
@@ -90,20 +101,11 @@ public class TrendSeries {
         return String.format("TrendSeries [graphType=%s, pointId=%s, label=%s, color=%s, axis=%s, multiplier=%s, style=%s, date=%s]",
                 type, pointId, label, color, axis, multiplier, style, date);
     }
-    
+
     /**
      * Update the TrendSeries with default values when null.
      */
     public void applyDefaults() {
-        if (getMultiplier() == null) {
-            setMultiplier(1d);
-        }
-        if (getDate() == null) {
-            setDate(DateTime.now());
-        }
-        if (getColor() == null) {
-            setColor(Color.BLUE);
-        }
         if (getAxis() == null) {
             setAxis(TrendAxis.LEFT);
         }
@@ -113,8 +115,11 @@ public class TrendSeries {
         if (getType() == null) {
             setType(GraphType.BASIC_TYPE);
         }
+        if (getMultiplier() == null) {
+            setMultiplier(1d);
+        }
     }
-    
+
     public void setMarkerDefaults() {
         setType(GraphType.MARKER_TYPE);
         setPointId(-100);

@@ -11,6 +11,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.ScenarioDetailPage;
@@ -19,42 +20,46 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();                
+        driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_14_DeleteScenario" })
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void scenarioDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Scenario: AT Scenario";
         
-        navigate(Urls.DemandResponse.SCENARIO_DETAILS + "663");
-        
-        ScenarioDetailPage editPage = new ScenarioDetailPage(driverExt, 663);
+        String scenarioId = TestDbDataType.DemandResponseData.SCENARIO_ID.getId().toString();
+
+        navigate(Urls.DemandResponse.SCENARIO_DETAILS + scenarioId);
+
+        ScenarioDetailPage editPage = new ScenarioDetailPage(driverExt, Integer.parseInt(scenarioId));
 
         String actualPageTitle = editPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-    }    
-    
-    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_14_DeleteScenario"})
-    public void deleteScenarioSuccess() {
+    }
+
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void scenarioDetails_Delete_Success() {
         final String EXPECTED_MSG = "AT Delete Scenario deleted successfully.";
         
-        navigate(Urls.DemandResponse.SCENARIO_DETAILS + "619");
+        String scenarioDeleteId = TestDbDataType.DemandResponseData.SCENARIO_DELETE_ID.getId().toString();
 
-        ScenarioDetailPage detailPage = new ScenarioDetailPage(driverExt, 619);
-        
-        ConfirmModal  confirmModal = detailPage.showDeleteControlAreaModal();
-        
-        confirmModal.clickOkAndWait();
-        
+        navigate(Urls.DemandResponse.SCENARIO_DETAILS + scenarioDeleteId);
+
+        ScenarioDetailPage detailPage = new ScenarioDetailPage(driverExt, Integer.parseInt(scenarioDeleteId));
+
+        ConfirmModal confirmModal = detailPage.showDeleteControlAreaModal();
+
+        confirmModal.clickOkAndWaitForModalToClose();
+
         waitForPageToLoad("Setup", Optional.empty());
-        
-        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.CONTROl_SCENARIO);
-        
+
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.CONTROL_SCENARIO);
+
         String userMsg = setupPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 }

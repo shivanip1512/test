@@ -1,11 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="amr" page="statusPointMonitorCreator">
     
@@ -21,7 +18,7 @@
             <tags:nameValueContainer2>
             
                 <%-- name --%>
-                <tags:inputNameValue nameKey=".name" path="name" size="60" maxlength="60"/>
+                <tags:inputNameValue nameKey="yukon.common.name" path="name" size="60" maxlength="60"/>
                 
                 <%-- state group --%>
                 <tags:nameValue2 nameKey=".selectStateGroup">

@@ -7,9 +7,17 @@
     <tags>
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
         <tag name="GATEWAY_DETAIL_DISPLAYABLE"/>
+        <tag name="DEVICE_ICON_TYPE" option="transmitter"/>
+        <tag name="RFN_EVENTS"/>
     </tags>
     <pointInfos>
         <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
-        <pointInfo name="Ready Nodes" init="true" attributes="READY_NODES" />
+        <pointInfo name="Certificate Expiration" attributes="CERTIFICATE_EXPIRATION"/>
+        <pointInfo name="Node Count Exceeded" attributes="NODE_COUNT_EXCEEDED"/>
+        <pointInfo name="Radio Failure" attributes="RADIO_FAILURE"/>
+        <pointInfo name="Ready Nodes" init="true" attributes="READY_NODES"/>
+        <pointInfo name="Security Alarm" attributes="SECURITY_ALARM"/>
+        <pointInfo name="Time Sync Failed" attributes="TIME_SYNC_FAILED"/>
+        <pointInfo name="High Disk Usage" attributes="HIGH_DISK_USAGE"/>
     </pointInfos>
 </pao>

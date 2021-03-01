@@ -2,6 +2,7 @@ package com.cannontech.dr.ecobee.service;
 
 import java.util.List;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationResult;
@@ -29,11 +30,13 @@ public interface EcobeeReconciliationService {
      * Fixes the specified discrepancy by making changes to the ecobee portal's hierarchy.
      * @throws IllegalArgumentException if the specified reportId is outdated, or errorId is invalid.
      */
-    public EcobeeReconciliationResult fixDiscrepancy(int reportId, int errorId) throws IllegalArgumentException;
+    public EcobeeReconciliationResult fixDiscrepancy(int reportId, int errorId, LiteYukonUser liteYukonUser)
+            throws IllegalArgumentException;
     
     /**
      * Fixes the all discrepancies in the specified report by making changes to the ecobee portal's hierarchy.
      * @throws IllegalArgumentException if the specified reportId is outdated.
      */
-    public List<EcobeeReconciliationResult> fixAllDiscrepancies(int reportId) throws IllegalArgumentException;
+    public List<EcobeeReconciliationResult> fixAllDiscrepancies(int reportId, LiteYukonUser liteYukonUser)
+            throws IllegalArgumentException;
 }

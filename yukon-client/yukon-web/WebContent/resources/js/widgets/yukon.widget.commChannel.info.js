@@ -21,7 +21,7 @@ yukon.widget.commChannel.info = (function () {
             if (_initialized) return;
 
             $(document).on('change', '.js-physical-port', function (event) {
-                yukon.comm.channel.togglePhysicalPort();
+                yukon.comm.channel.togglePhysicalPort($(this).closest('.ui-dialog'));
             });
 
             $(document).on("yukon:assets:commChannel:save", function(event) {
@@ -37,10 +37,14 @@ yukon.widget.commChannel.info = (function () {
                     carrierDetectWaitField = popup.find('.js-carrier-detect-wait-switch'),
                     carrierDetectWait = carrierDetectWaitField.exists() && !carrierDetectWaitField.hasClass('dn'),
                     encryptionKeyField = popup.find('.js-encryption-key-switch'),
-                    encryptionKey = encryptionKeyField.exists() && !encryptionKeyField.hasClass('dn');
+                    encryptionKey = encryptionKeyField.exists() && !encryptionKeyField.hasClass('dn'),
+                    selectedSocketType = popup.find("input[class='js-socket-type-val']:checked").val();
 
                 popup.find('.js-physical-port').prop('disabled', userPortEntered);
                 userPortField.prop('disabled', !userPortEntered);
+                if (selectedSocketType === $('#socketTypeNone').val()) {
+                    popup.find("input[id='js-socket-number-val']").val("1025");
+                }
 
                 if (carrierDetectWait) {
                     var carrierDetectWaitRow = carrierDetectWaitField.closest('tr'),
@@ -71,8 +75,8 @@ yukon.widget.commChannel.info = (function () {
                     }).fail(function (xhr, status, error){
                         popup.html(xhr.responseText);
                         yukon.ui.initContent(popup);
-                        yukon.comm.channel.loadPhysicalPort();
-                        yukon.comm.channel.formatPhysicalPortErrors();
+                        yukon.comm.channel.loadPhysicalPort(popup);
+                        yukon.comm.channel.formatPhysicalPortErrors(popup);
                         var carrierDetectWaitErrorContainer = $('.js-carrier-detect-wait').find("span[id='carrierDetectWaitInMilliseconds.errors']"),
                             encryptionKeyErrorContainer = $('.js-encryption-key').find("span[id='keyInHex.errors']");
                         carrierDetectWaitErrorContainer.css({'margin-left':'80px'});
@@ -116,7 +120,18 @@ yukon.widget.commChannel.info = (function () {
             });
 
             $(document).on("yukon:assets:commChannel:load", function(event) {
-                yukon.comm.channel.loadPhysicalPort();
+                var popup = $(event.target);
+                yukon.comm.channel.loadPhysicalPort(popup);
+                var isUserMessageVisible = popup.find('#user-message').is(":visible");
+                if (isUserMessageVisible) {
+                    popup.closest('.ui-dialog').find('.ui-dialog-buttonset').find('.js-primary-action').prop('disabled', true);
+                }
+            });
+
+            $(document).on('change', '#js-socket-type', function (event) {
+                var selectedSocketType = $("input[class='js-socket-type-val']:checked").val(),
+                    socketTypeNone = $('#socketTypeNone').val();
+                $('.js-socket-number').toggleClass('dn', selectedSocketType === socketTypeNone);
             });
 
             _initialized = true;

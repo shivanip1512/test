@@ -3,17 +3,13 @@
 #include <windows.h>    
 
 #include "dlldefs.h"
-
-
 #include "string.h"
-//#include <wininet.h>
 #include <list>
 #include <fstream>
 #include <iostream>
 #include "fdrftpinterface.h"
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/bind.hpp>
 
 class StringMessageContainer;
 

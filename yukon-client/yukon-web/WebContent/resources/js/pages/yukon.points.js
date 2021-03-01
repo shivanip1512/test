@@ -12,7 +12,7 @@ yukon.points = (function () {
 
         init : function () {
             
-            $('.js-manual-entry').click(function (ev) {
+            $(document).on('click', '.js-manual-entry', function (ev) {
                 
                 var option = $(this),
                     pointId = option.data('pointId'),

@@ -597,7 +597,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
                                                                 programName,
                                                                 transactionId,
                                                                 drProgramStatusJmsMessage.getMessageType().toString(),
-                                                                drProgramStatusJmsMessage.getProgramGearHistId(),
+                                                                drProgramStatusJmsMessage.getProgramHistId(),
                                                                 CollectionUtils.size(errObjects),
                                                                 endpointUrl);
                 if (CollectionUtils.isNotEmpty(errObjects)) {
@@ -981,7 +981,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
         ArrayOfFormattedBlock arrayOfFormattedBlock = new ArrayOfFormattedBlock();
         List<FormattedBlock> formattedBlockList = arrayOfFormattedBlock.getFormattedBlock();
 
-        ProgramStatusBlock block = new ProgramStatusBlock(statusMessage.getProgramGearHistId(),
+        ProgramStatusBlock block = new ProgramStatusBlock(statusMessage.getProgramHistId(),
                                                           statusMessage.getProgramName(),
                                                           statusMessage.getGearName(),
                                                           statusMessage.getProgramStatusType().name(),

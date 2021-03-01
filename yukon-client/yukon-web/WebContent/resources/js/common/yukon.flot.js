@@ -31,7 +31,7 @@ yukon.flot = (function () {
                     hoverable: true,
                     clickable: true,
                     mouseActiveRadius: 50,
-                    borderColor: '#ccc'
+                    borderColor: yg.colors.GRAY_LIGHT
                 },
                 selection: {
                     mode: "x",
@@ -377,24 +377,7 @@ yukon.flot = (function () {
                 }
             };
         },
-        /**
-         * This method currently only supports reloading one chart per page.
-         * If you can figure out the setTimeout call to support multiple charts, let me know :)
-         * 
-         *  Required parameters: chartId, dataUrl, reloadInterval (in milliseconds)
-         */
-        reloadChartOnInterval: function(params) {
-            /* validation */
-            _validateReloadParams(params);
-            if (typeof params.reloadInterval === 'undefined') throw "no reloadInterval specified";
 
-            _timeoutArgs = params;
-            clearTimeout(_timeout);
-            _timeout = setTimeout(function () {
-                mod.reloadChartOnInterval(_timeoutArgs);
-            }, params.reloadInterval);
-            mod.reloadFlotChart({chartId: params.chartId, dataUrl: params.dataUrl});
-        },
         /**
          * Reload a chart. If the chart hasn't been added yet, then it is added
          * 

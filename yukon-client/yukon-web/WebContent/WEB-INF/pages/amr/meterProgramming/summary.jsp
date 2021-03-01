@@ -23,7 +23,7 @@
                 <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
                 
                 <cti:msg2 var="allPrograms" key=".allPrograms"/>&nbsp;
-                <select id="programSelect" class="js-selected-programs" multiple="multiple" data-placeholder="${allPrograms}">
+                <select id="programSelect" class="js-selected-programs w300" size="1" multiple="multiple" data-placeholder="${allPrograms}">
                     <c:forEach var="program" items="${programList}">
                         <c:set var="selectedText" value=""/>
                         <c:forEach var="selectedProgram" items="${selectedPrograms}">

@@ -4,8 +4,11 @@ import java.util.Set;
 
 import org.joda.time.Duration;
 
+import com.cannontech.common.exception.TypeNotSupportedException;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.point.Point;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.ImmutableSet;
 
 public enum TimeIntervals {
@@ -437,6 +440,25 @@ public enum TimeIntervals {
      */
     public static Set<TimeIntervals> getRippleShedtime() {
         return rippleShedTime;
+    }
+    
+    private static final Set<TimeIntervals> dataReportAggregateIntervals = ImmutableSet.of(
+            TimeIntervals.MINUTES_5, TimeIntervals.MINUTES_15, TimeIntervals.MINUTES_30, TimeIntervals.HOURS_1, TimeIntervals.DAYS_1);
+
+    /**
+     * Returns the list of intervals used by Aggregate Interval Data Report
+     */
+    public static Set<TimeIntervals> getDataReportAggregateIntervals() {
+        return dataReportAggregateIntervals;
+    }
+
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    public static TimeIntervals getTimeInterval(String timeIntervalJsonString) {
+        try {
+            return TimeIntervals.valueOf(timeIntervalJsonString);
+        } catch (IllegalArgumentException e) {
+            throw new TypeNotSupportedException(timeIntervalJsonString + " interval is not valid.");
+        }
     }
 
 }

@@ -15,6 +15,7 @@
         <tag name="RFN_DEMAND_RESET"/>
         <tag name="RFN_EVENTS"/>
         <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="THREE_PHASE_VOLTAGE"/>
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
         <tag name="METER_PROGRAMMING"/>
@@ -83,6 +84,7 @@
         <pointInfo name="Table Crc Error" attributes="TABLE_CRC_ERROR"/>
         <pointInfo name="Total Cumulative Peak kW"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
+        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
         <pointInfo name="Voltage Loss" attributes="VOLTAGE_LOSS"/>
         <pointInfo name="Volts Phase A" init="true" attributes="VOLTAGE_PHASE_A"/>
         <pointInfo name="Voltage Phase A Out" attributes="VOLTAGE_PHASE_A_OUT"/>

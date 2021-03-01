@@ -3,48 +3,62 @@ package com.cannontech.dr.itron.service.impl;
 import java.util.List;
 import java.util.zip.ZipFile;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.exception.EmptyImportFileException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
-import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.service.ItronDataReadService;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class ItronDataReadServiceImpl implements ItronDataReadService{
-
     private static final Logger log = YukonLogManager.getLogger(ItronDataReadServiceImpl.class);
-
-    @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-    @Autowired private ItronDeviceDataParser itronDeviceDataParser;
-    @Autowired private ItronCommunicationService communicationService;
-    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
-    @Autowired private ConfigurationSource configurationSource;
     
-    public int recordsPerRead;
+    /* 
+     * A special Itron group name, used for on-demand reads. Synchronize on this group when using it. If assignment to 
+     * the group and use of the group are interleaved, it may result in the wrong device data being updated.
+     */
+    private static final String onDemandReadGroup = "ITRON_READ_GROUP";
     
-    @PostConstruct
-    public void init(){
+    // Autowired
+    private ItronDeviceDataParser itronDeviceDataParser;
+    private ItronCommunicationService communicationService;
+    private PersistedSystemValueDao persistedSystemValueDao;
+    
+    // Master.cfg settings
+    private final int recordsPerRead;
+    private final boolean updateLogsBeforeExport;
+    
+    @Autowired
+    public ItronDataReadServiceImpl(ConfigurationSource configurationSource,
+            ItronDeviceDataParser itronDeviceDataParser,
+            ItronCommunicationService communicationService,
+            PersistedSystemValueDao persistedSystemValueDao) {
+        
+        this.itronDeviceDataParser = itronDeviceDataParser;
+        this.communicationService = communicationService;
+        this.persistedSystemValueDao = persistedSystemValueDao;
+        
         recordsPerRead = configurationSource.getInteger(MasterConfigInteger.ITRON_RECORD_IDS_PER_READ, 5000);
+        updateLogsBeforeExport = configurationSource.getBoolean(MasterConfigBoolean.ITRON_UPDATE_DEVICE_LOGS_BEFORE_EXPORT);
     }
     
     @Override
     public void collectData() {
         try {
+            if (updateLogsBeforeExport) {
+                communicationService.updateDeviceLogsForAllGroups();
+            }
             while (true) {
                 Range<Long> range = getRecordRange();
                 log.debug("Exporting Itron data for range: {} - {}", range.getMin(), range.getMax());
@@ -54,7 +68,7 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
                     break;
                 }
                 try {
-                    itronDeviceDataParser.parseAndSend(zip);
+                    itronDeviceDataParser.parseAndSend(zip, true);
                 } catch (EmptyImportFileException e) {
                     log.debug(e);
                     break;
@@ -68,31 +82,47 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
     @Override
     public void collectDataForRead(int deviceId) {
         Range<Long> range = getRecordRange();
-        ZipFile zip = communicationService.exportDeviceLogsForItronGroup(range.getMin(), null, Lists.newArrayList(deviceId));
-        try {
-            itronDeviceDataParser.parseAndSend(zip);
-        } catch (EmptyImportFileException e) {
-            log.info(e);
+        List<Integer> deviceIds = List.of(deviceId);
+        
+        synchronized(onDemandReadGroup) {
+            try {
+                long onDemandReadGroupId = communicationService.createOrUpdateItronGroup(onDemandReadGroup, deviceIds);
+                communicationService.updateDeviceLogsForItronGroup(onDemandReadGroupId);
+                ZipFile zip = communicationService.exportDeviceLogsForItronGroup(range.getMin(), null, onDemandReadGroupId);
+                itronDeviceDataParser.parseAndSend(zip, false);
+            } catch (EmptyImportFileException e) {
+                log.info("On-demand Itron read succeeded, but no new data was available.");
+            }
         }
     }
 
     @Override
-    public  Multimap<PaoIdentifier, PointValueHolder> collectDataForRead(List<Integer> deviceIds) {
+    public Multimap<PaoIdentifier, PointValueHolder> collectDataForRead(List<Integer> deviceIds) {
         Multimap<PaoIdentifier, PointValueHolder> pointValues = HashMultimap.create();
-        while (true) {
-            Range<Long> range = getRecordRange();
-            ZipFile zip = communicationService.exportDeviceLogsForItronGroup(range.getMin(), range.getMax(), deviceIds);
-            if (zip == null) {
-                break;
-            }
-            try {
-                pointValues.putAll(itronDeviceDataParser.parseAndSend(zip));
-            } catch (EmptyImportFileException e) {
-                log.info(e);
-                break;
+        Range<Long> range = getRecordRange();
+        long startRecordId = range.getMin();
+        long endRecordId = range.getMax();
+        
+        synchronized(onDemandReadGroup) {
+            long onDemandReadGroupId = communicationService.createOrUpdateItronGroup(onDemandReadGroup, deviceIds);
+            communicationService.updateDeviceLogsForItronGroup(onDemandReadGroupId);
+            
+            while (true) {
+                ZipFile zip = communicationService.exportDeviceLogsForItronGroup(startRecordId, endRecordId, onDemandReadGroupId);
+                if (zip == null) {
+                    break;
+                }
+                try {
+                    pointValues.putAll(itronDeviceDataParser.parseAndSend(zip, false));
+                } catch (EmptyImportFileException e) {
+                    log.info(e);
+                    break;
+                }
+                startRecordId = endRecordId +1;
+                endRecordId = startRecordId + recordsPerRead;
             }
         }
-      
+        
         return pointValues;
     }
     

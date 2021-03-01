@@ -25,6 +25,7 @@ public class YukonJmsTemplateFactory {
         jmsTemplate.setDefaultDestinationName(jmsApi.getQueueName());
         jmsTemplate.setPubSubDomain(jmsApi.isTopic());
         jmsTemplate.setTimeToLive(jmsApi.getTimeToLive().getMillis());
+        jmsTemplate.setCommsLogger(jmsApi.getCommsLogger());
         return jmsTemplate;
     }
 
@@ -33,10 +34,7 @@ public class YukonJmsTemplateFactory {
      * messageConverter.
      */
     public YukonJmsTemplate createTemplate(JmsApi<?, ?, ?> jmsApi, MessageConverter messageConverter) {
-        YukonJmsTemplate jmsTemplate = new YukonJmsTemplate(connectionFactory);
-        jmsTemplate.setDefaultDestinationName(jmsApi.getQueueName());
-        jmsTemplate.setPubSubDomain(jmsApi.isTopic());
-        jmsTemplate.setTimeToLive(jmsApi.getTimeToLive().getMillis());
+        var jmsTemplate = createTemplate(jmsApi);
         jmsTemplate.setMessageConverter(messageConverter);
         return jmsTemplate;
     }
@@ -46,10 +44,7 @@ public class YukonJmsTemplateFactory {
      * recieveTimeout.
      */
     public YukonJmsTemplate createTemplate(JmsApi<?, ?, ?> jmsApi, Duration recieveTimeout) {
-        YukonJmsTemplate jmsTemplate = new YukonJmsTemplate(connectionFactory);
-        jmsTemplate.setDefaultDestinationName(jmsApi.getQueueName());
-        jmsTemplate.setPubSubDomain(jmsApi.isTopic());
-        jmsTemplate.setTimeToLive(jmsApi.getTimeToLive().getMillis());
+        var jmsTemplate = createTemplate(jmsApi);
         jmsTemplate.setReceiveTimeout(recieveTimeout.getMillis());
         return jmsTemplate;
     }
@@ -63,6 +58,17 @@ public class YukonJmsTemplateFactory {
         jmsTemplate.setDefaultDestinationName(jmsApi.getResponseQueueName());
         jmsTemplate.setPubSubDomain(jmsApi.isTopic());
         jmsTemplate.setTimeToLive(jmsApi.getTimeToLive().getMillis());
+        jmsTemplate.setCommsLogger(jmsApi.getCommsLogger());
+        return jmsTemplate;
+    }
+
+    /**
+     * Create and return a YukonJmsTemplate object after setting responseQueueName in defaultDestinationName, pubSubDomain,
+     * timeToLive, and receiveTimeout.
+     */
+    public YukonJmsTemplate createResponseTemplate(JmsApi<?, ?, ?> jmsApi, Duration recieveTimeout) {
+        var jmsTemplate = createResponseTemplate(jmsApi);
+        jmsTemplate.setReceiveTimeout(recieveTimeout.getMillis());
         return jmsTemplate;
     }
 }

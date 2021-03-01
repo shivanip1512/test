@@ -31,6 +31,11 @@ using Cti::Logging::Range::Hex::operator<<;
 
 namespace {
 std::unique_ptr<DnpSlave> dnpSlaveInterface;
+constexpr unsigned DefaultPriority_AnalogOutput = 14;
+constexpr unsigned DefaultPriority_DnpTimesync  = 12;
+constexpr unsigned DefaultPriority_Operate      = 14;
+constexpr unsigned DefaultPriority_Other        = 14;
+constexpr unsigned DefaultPriority_Scan         = 11;
 }
 
 extern "C" {
@@ -55,8 +60,7 @@ DLLEXPORT int StopInterface( void )
 
 }
 
-namespace Cti {
-namespace Fdr {
+namespace Cti::Fdr {
 
 const std::string DNPInMessageString  = "DNP InMessage";
 const std::string DNPOutMessageString = "DNP OutMessage";
@@ -69,7 +73,13 @@ DnpSlave::DnpSlave() :
     CtiFDRSocketServer("DNPSLAVE"),
     _staleDataTimeout(0),
     _porterTimeout(30),
-    _porterPriority(14),
+    _porterPriorities {
+        DefaultPriority_AnalogOutput,
+        DefaultPriority_DnpTimesync,
+        DefaultPriority_Operate,
+        DefaultPriority_Other,
+        DefaultPriority_Scan,
+    },
     _porterConnection(Cti::Messaging::ActiveMQ::Queue::porter)
 {
     _porterConnection.setName("FDR DNP Slave to Porter");
@@ -124,15 +134,19 @@ std::unique_ptr<CtiPointRegistrationMsg> DnpSlave::buildRegistrationPointList()
 */
 bool DnpSlave::readConfig()
 {
-    const char *KEY_LISTEN_PORT_NUMBER          = "FDR_DNPSLAVE_PORT_NUMBER";
-    const char *KEY_DB_RELOAD_RATE              = "FDR_DNPSLAVE_DB_RELOAD_RATE";
-    const char *KEY_FDR_DNPSLAVE_SERVER_NAMES   = "FDR_DNPSLAVE_SERVER_NAMES";
-    const char *KEY_LINK_TIMEOUT                = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
-    const char *KEY_STALEDATA_TIMEOUT           = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
-    const char *KEY_PORTER_TIMEOUT              = "FDR_DNPSLAVE_PORTER_TIMEOUT";
-    const char *KEY_PORTER_PRIORITY             = "FDR_DNPSLAVE_PORTER_PRIORITY";
+    constexpr char* KEY_LISTEN_PORT_NUMBER          = "FDR_DNPSLAVE_PORT_NUMBER";
+    constexpr char* KEY_DB_RELOAD_RATE              = "FDR_DNPSLAVE_DB_RELOAD_RATE";
+    constexpr char* KEY_FDR_DNPSLAVE_SERVER_NAMES   = "FDR_DNPSLAVE_SERVER_NAMES";
+    constexpr char* KEY_LINK_TIMEOUT                = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
+    constexpr char* KEY_STALEDATA_TIMEOUT           = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
+    constexpr char* KEY_PORTER_TIMEOUT              = "FDR_DNPSLAVE_PORTER_TIMEOUT";
+    constexpr char* KEY_PORTER_PRIORITY             = "FDR_DNPSLAVE_PORTER_PRIORITY";
+    constexpr char* KEY_PORTER_PRIORITY_ANALOG_OUTPUT   = "FDR_DNPSLAVE_PORTER_PRIORITY_ANALOG_OUTPUT";
+    constexpr char* KEY_PORTER_PRIORITY_DNP_TIMESYNC    = "FDR_DNPSLAVE_PORTER_PRIORITY_DNP_TIMESYNC";
+    constexpr char* KEY_PORTER_PRIORITY_OPERATE         = "FDR_DNPSLAVE_PORTER_PRIORITY_OPERATE";
+    constexpr char* KEY_PORTER_PRIORITY_SCAN            = "FDR_DNPSLAVE_PORTER_PRIORITY_SCAN";
 
-    const int DNPSLAVE_PORTNUMBER = 2085;
+    constexpr int DNPSLAVE_PORTNUMBER = 2085;
 
     // load up the base class
     CtiFDRSocketServer::readConfig();
@@ -152,8 +166,23 @@ bool DnpSlave::readConfig()
     _porterTimeout =
             gConfigParms.getValueAsInt(KEY_PORTER_TIMEOUT, 30);
 
-    _porterPriority =
-            gConfigParms.getValueAsInt(KEY_PORTER_PRIORITY, 14);
+    _porterPriorities = {
+            gConfigParms.getValueAsUnsigned(
+                    KEY_PORTER_PRIORITY_ANALOG_OUTPUT, 
+                    DefaultPriority_AnalogOutput),
+            gConfigParms.getValueAsUnsigned(
+                    KEY_PORTER_PRIORITY_DNP_TIMESYNC, 
+                    DefaultPriority_DnpTimesync),
+            gConfigParms.getValueAsUnsigned(
+                    KEY_PORTER_PRIORITY_OPERATE,
+                    DefaultPriority_Operate),
+            gConfigParms.getValueAsUnsigned(
+                    KEY_PORTER_PRIORITY,
+                    DefaultPriority_Other),
+            gConfigParms.getValueAsUnsigned(
+                    KEY_PORTER_PRIORITY_SCAN,
+                    DefaultPriority_Scan),
+    };
 
     const std::string serverNames =
             gConfigParms.getValueAsString(KEY_FDR_DNPSLAVE_SERVER_NAMES);
@@ -769,7 +798,7 @@ std::string logPoints(const Protocols::DnpSlave::control_request &control, const
     l.add("Offset")         << control.offset;
     l.add("On time (ms)")   << control.on_time;
     l.add("Queue")          << control.queue;
-    l.add("Status")         << Protocols::DnpProtocol::getControlResultString(static_cast<unsigned char>(control.status));
+    l.add("Status")         << Protocols::DnpProtocol::getControlResultString(as_underlying(control.status));
     l.add("Trip/close")     << control.trip_close;
 
     l.add("Yukon point");
@@ -1051,7 +1080,23 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
                 commandString,
                 userMessageId);
 
-    requestMsg->setMessagePriority(_porterPriority);
+    if( boost::istarts_with(commandString, "putconfig ")
+        && boost::icontains(commandString, " timesync") )
+    {
+        requestMsg->setMessagePriority(_porterPriorities.dnpTimesync);
+    }
+    else if( boost::istarts_with(commandString, "scan ") )
+    {
+        requestMsg->setMessagePriority(_porterPriorities.scan);
+    }
+    else if( boost::istarts_with(commandString, "control ") )
+    {
+        requestMsg->setMessagePriority(_porterPriorities.operate);
+    }
+    else
+    {
+        requestMsg->setMessagePriority(_porterPriorities.other);
+    }
 
     if( const auto error = writePorterConnection(requestMsg.release(), Timing::Chrono::seconds(5)) )
     {
@@ -1248,7 +1293,7 @@ std::string describeAnalogOutputRequest(const Protocols::DnpSlave::analog_output
     l.add("Action") << log(analog.action);
     l.add("Long index") << analog.isLongIndexed;
     l.add("Offset") << analog.offset;
-    l.add("Status") << Protocols::DnpProtocol::getControlResultString(static_cast<unsigned char>(analog.status));
+    l.add("Status") << Protocols::DnpProtocol::getControlResultString(as_underlying(analog.status));
     l.add("Type") << analog.type;
     l.add("Value") << analog.value;
 
@@ -1304,7 +1349,7 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
                 commandString,
                 userMessageId);
 
-    requestMsg->setMessagePriority(_porterPriority);
+    requestMsg->setMessagePriority(_porterPriorities.analogOutput);
 
     if( const auto error = writePorterConnection(requestMsg.release(), Timing::Chrono::seconds(5)) )
     {
@@ -1353,23 +1398,23 @@ bool DnpSlave::shouldIgnoreOldData() const
 ControlStatus DnpSlave::waitForResponse(const long userMessageId, const bool isPassthroughControl)
 {
     static const std::map<unsigned char, ControlStatus> controlStatuses {
-        { static_cast<unsigned char>(ControlStatus::Success),           ControlStatus::Success           },
-        { static_cast<unsigned char>(ControlStatus::Timeout),           ControlStatus::Timeout           },
-        { static_cast<unsigned char>(ControlStatus::NoSelect),          ControlStatus::NoSelect          },
-        { static_cast<unsigned char>(ControlStatus::FormatError),       ControlStatus::FormatError       },
-        { static_cast<unsigned char>(ControlStatus::NotSupported),      ControlStatus::NotSupported      },
-        { static_cast<unsigned char>(ControlStatus::AlreadyActive),     ControlStatus::AlreadyActive     },
-        { static_cast<unsigned char>(ControlStatus::HardwareError),     ControlStatus::HardwareError     },
-        { static_cast<unsigned char>(ControlStatus::Local),             ControlStatus::Local             },
-        { static_cast<unsigned char>(ControlStatus::TooManyObjs),       ControlStatus::TooManyObjs       },
-        { static_cast<unsigned char>(ControlStatus::NotAuthorized),     ControlStatus::NotAuthorized     },
-        { static_cast<unsigned char>(ControlStatus::AutomationInhibit), ControlStatus::AutomationInhibit },
-        { static_cast<unsigned char>(ControlStatus::ProcessingLimited), ControlStatus::ProcessingLimited },
-        { static_cast<unsigned char>(ControlStatus::OutOfRange),        ControlStatus::OutOfRange        },
-        { static_cast<unsigned char>(ControlStatus::ReservedMin),       ControlStatus::ReservedMin       },
-        { static_cast<unsigned char>(ControlStatus::ReservedMax),       ControlStatus::ReservedMax       },
-        { static_cast<unsigned char>(ControlStatus::NonParticipating),  ControlStatus::NonParticipating  },
-        { static_cast<unsigned char>(ControlStatus::Undefined),         ControlStatus::Undefined         }};
+        { as_underlying(ControlStatus::Success),           ControlStatus::Success           },
+        { as_underlying(ControlStatus::Timeout),           ControlStatus::Timeout           },
+        { as_underlying(ControlStatus::NoSelect),          ControlStatus::NoSelect          },
+        { as_underlying(ControlStatus::FormatError),       ControlStatus::FormatError       },
+        { as_underlying(ControlStatus::NotSupported),      ControlStatus::NotSupported      },
+        { as_underlying(ControlStatus::AlreadyActive),     ControlStatus::AlreadyActive     },
+        { as_underlying(ControlStatus::HardwareError),     ControlStatus::HardwareError     },
+        { as_underlying(ControlStatus::Local),             ControlStatus::Local             },
+        { as_underlying(ControlStatus::TooManyObjs),       ControlStatus::TooManyObjs       },
+        { as_underlying(ControlStatus::NotAuthorized),     ControlStatus::NotAuthorized     },
+        { as_underlying(ControlStatus::AutomationInhibit), ControlStatus::AutomationInhibit },
+        { as_underlying(ControlStatus::ProcessingLimited), ControlStatus::ProcessingLimited },
+        { as_underlying(ControlStatus::OutOfRange),        ControlStatus::OutOfRange        },
+        { as_underlying(ControlStatus::ReservedMin),       ControlStatus::ReservedMin       },
+        { as_underlying(ControlStatus::ReservedMax),       ControlStatus::ReservedMax       },
+        { as_underlying(ControlStatus::NonParticipating),  ControlStatus::NonParticipating  },
+        { as_underlying(ControlStatus::Undefined),         ControlStatus::Undefined         }};
 
     Cti::Timing::MillisecondTimer t;
 
@@ -1525,7 +1570,19 @@ unsigned int DnpSlave::getHeaderLength()
 }
 
 
-}
+bool DnpSlave::hasRegistrationPoints()
+{
+    std::size_t
+        sendCount    = getSendToList().getPointList()->entries(),
+        receiveCount = getReceiveFromList().getPointList()->entries();
+
+    return ( sendCount || receiveCount );
 }
 
+std::optional<std::set<long>> DnpSlave::loadOutboundPoints()
+{
+    return {};
+}
+
+}
 

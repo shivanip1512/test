@@ -12,38 +12,36 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
-public class EnergyCompanyCreatePage extends PageBase {
-    
-    private TextEditElement companyName;
+public class EnergyCompanyCreatePage extends PageBase {    
+    private TextEditElement name;
     private TextEditElement email;
     private DropDownElement defaultRoute;
     private TextEditElement userName;
     private TextEditElement password;
     private TextEditElement confirmPassword;
-    
-    private PickerElement primaryOperatorGroup;
     private Button saveBtn;
     private Button cancelBtn;
-
+    private PickerElement primaryOperatorGroup;
+    
     public EnergyCompanyCreatePage(DriverExtensions driverExt) {
         super(driverExt);
 
         requiresLogin = true;
         pageUrl = Urls.Admin.CREATE_ENERGY_COMPANY;
         
-        companyName = new TextEditElement(this.driverExt, "name");
+        name = new TextEditElement(this.driverExt, "name");
         email = new TextEditElement(this.driverExt, "email");
         defaultRoute = new DropDownElement(this.driverExt, "defaultRouteId");
         userName = new TextEditElement(this.driverExt, "adminUsername");
         password = new TextEditElement(this.driverExt, "adminPassword1");
         confirmPassword = new TextEditElement(this.driverExt, "adminPassword2");
-        primaryOperatorGroup = new PickerElement(this.driverExt, "picker-primaryOperatorUserGroupPicker-btn");
         saveBtn = new Button(this.driverExt, "Save");
         cancelBtn = new Button(this.driverExt, "Cancel");
+        primaryOperatorGroup = new PickerElement(this.driverExt, Optional.of("primaryOperatorUserGroupPicker"), Optional.empty());
     }
     
     public TextEditElement getCompanyName() {
-        return companyName;
+        return name;
     }
     
     public TextEditElement getEmail() {
@@ -82,7 +80,7 @@ public class EnergyCompanyCreatePage extends PageBase {
 
         getPrimaryOperatorGroup().clickLink();
 
-        SeleniumTestSetup.waitUntilModalVisibleByTitle("Select User Group");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("primaryOperatorUserGroupPicker");
 
         return new SelectUserGroupModal(this.driverExt, Optional.empty(), Optional.of("primaryOperatorUserGroupPicker"));
     }

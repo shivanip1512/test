@@ -11,6 +11,21 @@ yukon.ami.meterProgramming.summary = (function () {
 
     'use strict';
     var _initialized = false,
+    
+    _displayResults = function (data, refreshRow, deviceId) {
+        if (data.successMsg) {
+            if (refreshRow) {
+                $.ajax(yukon.url('/amr/meterProgramming/' + deviceId + '/refreshDeviceRow'))
+                .done(function (rowData) {
+                    var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
+                    deviceRow.html(rowData).flash();
+                });
+            }
+            yukon.ui.alertSuccess(data.successMsg);
+        } else if (data.errorMsg) {
+            yukon.ui.alertError(data.errorMsg);
+        }
+    },
 
     mod = {
 
@@ -68,11 +83,7 @@ yukon.ami.meterProgramming.summary = (function () {
                         type: 'POST',
                         url: yukon.url('/amr/meterProgramming/' + id + '/readProgramming')
                     }).done(function(data) {
-                        if (data.successMsg) {
-                            yukon.ui.alertSuccess(data.successMsg);
-                        } else {
-                            yukon.ui.alertError(data.errorMsg);
-                        }
+                        _displayResults(data, false, id);
                     });
                 });
                 
@@ -86,11 +97,7 @@ yukon.ami.meterProgramming.summary = (function () {
                         },
                         url: yukon.url('/amr/meterProgramming/' + id + '/resendProgramming')
                     }).done(function(data) {
-                        if (data.successMsg) {
-                            yukon.ui.alertSuccess(data.successMsg);
-                        } else {
-                            yukon.ui.alertError(data.errorMsg);
-                        }
+                        _displayResults(data, true, id);
                     });
                 });
                 
@@ -104,11 +111,7 @@ yukon.ami.meterProgramming.summary = (function () {
                         },
                         url: yukon.url('/amr/meterProgramming/' + id + '/cancelProgramming')
                     }).done(function(data) {
-                        if (data.successMsg) {
-                            yukon.ui.alertSuccess(data.successMsg);
-                        } else {
-                            yukon.ui.alertError(data.errorMsg);
-                        }
+                        _displayResults(data, false, id);
                     });
                 });
                 
@@ -122,11 +125,7 @@ yukon.ami.meterProgramming.summary = (function () {
                         },
                         url: yukon.url('/amr/meterProgramming/' + id + '/acceptProgramming')
                     }).done(function(data) {
-                        if (data.successMsg) {
-                            yukon.ui.alertSuccess(data.successMsg);
-                        } else {
-                            yukon.ui.alertError(data.errorMsg);
-                        }
+                        _displayResults(data, true, id);
                     });
                 });
 
@@ -136,19 +135,25 @@ yukon.ami.meterProgramming.summary = (function () {
             
             refreshCheck: function (deviceId) {
                 return function (data) {
-                    if (data.isInProgress === 'false' || data.isConfirming === 'false') {
+                    var isUploadFinished = data.isInProgress === 'false',
+                        isConfirmFinished = data.isConfirming === 'false';
+                    if (isUploadFinished || isConfirmFinished) {
                         //refresh row
                         $.ajax(yukon.url('/amr/meterProgramming/' + deviceId + '/refreshDeviceRow'))
                         .done(function (rowData) {
                             var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
-                            deviceRow.html(rowData);
+                            deviceRow.html(rowData).flash();
                             //stop data updaters
-                            var idMap = {isInProgress : "METER_PROGRAMMING/" + deviceId + "/IS_IN_PROGRESS"};
-                            yukon.dataUpdater.unRegisterCallback(idMap);
-                            var idMap = {completedCount : "METER_PROGRAMMING/" + deviceId + "/PROGRESS"};
-                            yukon.dataUpdater.unRegisterCallback(idMap);
-                            var idMap = {isConfirming : "METER_PROGRAMMING/" + deviceId + "/IS_CONFIRMING"};
-                            yukon.dataUpdater.unRegisterCallback(idMap);
+                            if (isUploadFinished) {
+                                var idMap = {isInProgress : "METER_PROGRAMMING/" + deviceId + "/IS_IN_PROGRESS"};
+                                yukon.dataUpdater.unRegisterCallback(idMap);
+                                var idMap = {completedCount : "METER_PROGRAMMING/" + deviceId + "/PROGRESS"};
+                                yukon.dataUpdater.unRegisterCallback(idMap);
+                            }
+                            if (isConfirmFinished) {
+                                var idMap = {isConfirming : "METER_PROGRAMMING/" + deviceId + "/IS_CONFIRMING"};
+                                yukon.dataUpdater.unRegisterCallback(idMap);
+                            }
                         });
                     }
                 }

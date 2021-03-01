@@ -60,7 +60,11 @@ public class AutomationSetup {
         // RestAssured log configuration
         String testLogPath = basicConfiguration.getTestLogPath();
 
-        PrintStream fileOutPutStream = new PrintStream(new FileOutputStream(testLogPath, true));
+        File logFile = new File(testLogPath);
+        logFile.getParentFile().mkdirs();
+        logFile.createNewFile();
+
+        PrintStream fileOutPutStream = new PrintStream(new FileOutputStream(logFile, true));
         RestAssured.config = RestAssured.config().logConfig(new LogConfig().defaultStream(fileOutPutStream));
 
     }

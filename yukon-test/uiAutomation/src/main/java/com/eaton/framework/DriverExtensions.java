@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class DriverExtensions {
@@ -29,6 +30,10 @@ public class DriverExtensions {
         return this.driver;
     }
     
+    /**
+     * @param timeOutSeconds if Optional.empty() then will wait 5 seconds or will use the amount of seconds passed in.
+     * @return WebDriverWait
+     */
     public WebDriverWait getDriverWait(Optional<Integer> timeOutSeconds) {
         Integer timeOut = timeOutSeconds.orElse(null);
         
@@ -124,4 +129,41 @@ public class DriverExtensions {
         
         return element;
     }
+    
+    public void waitUntilElementVisibleByCssLocator(String by) {
+        driverWait.withTimeout(Duration.ofSeconds(1));
+        
+        driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(by)));
+    }
+    
+    public void waitUntilElementClickable(WebElement element) {
+        driverWait.withTimeout(Duration.ofSeconds(1));
+        
+        driverWait.until(ExpectedConditions.elementToBeClickable(element));
+    }
+    
+    public void waitUntilElementInvisible(WebElement element) {
+        driverWait.withTimeout(Duration.ofSeconds(1));
+        
+        driverWait.until(ExpectedConditions.invisibilityOf(element));
+    }
+    
+    public void waitUntilElementInvisibleByCssLocator(String locator) {
+        driverWait.withTimeout(Duration.ofSeconds(1));
+        
+        driverWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(locator)));
+    }  
+    
+    public void waitUntilStalenessOfElement(WebElement element) {
+        driverWait.withTimeout(Duration.ofSeconds(3));
+        
+        driverWait.until(ExpectedConditions.stalenessOf(element));
+    } 
+    
+    public void waitUntilVisibilityOfElements(List<WebElement> elements) {
+        driverWait.withTimeout(Duration.ofSeconds(3));
+        
+        driverWait.until(ExpectedConditions.visibilityOfAllElements(elements));
+    } 
 }
+

@@ -20,7 +20,6 @@
 <form:form id="zoneDetailsForm" modelAttribute="zoneDto" action="${action}" >
     <cti:csrfToken/>
     <form:hidden path="zoneId"/>
-    <form:hidden path="parentId"/>
     <form:hidden path="substationBusId" id="selectedBusId"/>
     <input type="hidden" id="zoneType" name="zoneType" value="${zoneDto.zoneType}"/>
     <c:if test="${zoneDto.zoneType != 'THREE_PHASE'}">
@@ -50,15 +49,23 @@
                     <i:inline key="yukon.common.dashes"/>
                 </c:when>
                 <c:otherwise>
-                    <c:choose>
-                        <c:when test="${parentZone.zoneType == singlePhase}">
-                            ${fn:escapeXml(parentZone.name)} - <i:inline key="${parentZone.zoneType}"/>: 
-                            <i:inline key="${parentZone.regulator.phase}"/>
-                        </c:when>
-                        <c:otherwise>
-                            ${fn:escapeXml(parentZone.name)} - <i:inline key="${parentZone.zoneType}"/>
-                        </c:otherwise>
-                    </c:choose>
+                    <cti:displayForPageEditModes modes="EDIT">
+                        <form:select path="parentId">
+                            <c:forEach var="parentZone" items="${parentZones}">
+                                <form:option value="${parentZone.id}">
+                                    <c:set var="regulator" value="${parentZone.regulators[0]}"/>
+                                    <%@ include file="zoneNameDisplay.jsp" %>
+                                </form:option>
+                            </c:forEach>
+                        </form:select>
+                    </cti:displayForPageEditModes>
+                    <cti:displayForPageEditModes modes="CREATE">
+                        <form:hidden path="parentId"/>
+                        <c:if test="${parentZone.zoneType == singlePhase}">
+                            <c:set var="regulator" value="${parentZone.regulator}"/>
+                        </c:if>
+                        <%@ include file="zoneNameDisplay.jsp" %>
+                    </cti:displayForPageEditModes>
                 </c:otherwise>
             </c:choose>
         </tags:nameValue2>

@@ -42,6 +42,7 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
     private Map<Status, DeviceError> statusCodesToErrors = ImmutableMap.<Status, DeviceError>builder()
 
             // .put(Status.SUCCESS, DeviceError.UNKNOWN)
+            .put(Status.OTHER, DeviceError.REASON_UNKNOWN)
             .put(Status.REASON_UNKNOWN, DeviceError.REASON_UNKNOWN)
             .put(Status.SERVICE_NOT_SUPPORTED, DeviceError.SERVICE_UNSUPPORTED)
             .put(Status.INSUFFICIENT_SECURITY_CLEARANCE, DeviceError.INSUFFICIENT_SECURITY_CLEARANCE)
@@ -62,6 +63,8 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
             .put(Status.WRITE_KEY_FAILED, DeviceError.WRITE_KEY_FAILED)
             .put(Status.CATASTROPHIC_FAILURE_FULL_REPROGRAM_REQUIRED, DeviceError.CATASTROPHIC_FAILURE)
             .put(Status.PASSWORD_ERROR, DeviceError.METER_PROGRAM_PASSWORD_ERROR)
+            .put(Status.RESPONSE_TIMEOUT, DeviceError.METER_PROGRAM_RESPONSE_TIMEOUT)
+            .put(Status.ERROR_RESPONSE, DeviceError.METER_PROGRAM_ERROR_RESPONSE)
             .build();
 
     @Override
@@ -75,7 +78,7 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
         log.info("Remote Meter Configuration failed for device={}, meterConfigurationId={}, status={}", device,
                 meterConfigurationId, meterConfigurationStatus);
 
-        archiveProgramStatus(device, meterConfigurationId, meterConfigurationStatus);
+        archiveProgramStatus(device, meterConfigurationId, meterConfigurationStatus, eventInstant);
 
         MeterProgramming attemptStatus = translateDetailStatus(meterConfigurationStatus.getDetailedConfigurationStatusCode());
         
@@ -95,9 +98,10 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
 
     /**
      * Sends status update message to SM to update MeterProgramStatus table
+     * @param eventInstant 
      */
     private void archiveProgramStatus(RfnDevice device, String meterConfigurationId,
-            MeterConfigurationStatus meterConfigurationStatus) {
+            MeterConfigurationStatus meterConfigurationStatus, Instant eventInstant) {
         if (meterConfigurationStatus.getDetailedConfigurationStatusCode() != null
                 && meterConfigurationStatus.getDetailedConfigurationStatusCode().getStatus() != null
                 && meterConfigurationId != null) {
@@ -113,7 +117,7 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
                 request.setStatus(ProgrammingStatus.FAILED);
                 request.setError(statusCodesToErrors.get(detail));
             }
-            request.setTimestamp(Instant.now());
+            request.setTimestamp(eventInstant);
             log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
             thriftMessenger.send(request);
         } else {

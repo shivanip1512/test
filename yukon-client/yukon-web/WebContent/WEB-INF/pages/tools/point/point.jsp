@@ -52,6 +52,9 @@
 
         <cti:tabs containerName="yukon:da:point:fields:tab">
             <cti:msg2 var="general" key=".tab.general" />
+            <cti:msg2 var="milliseconds" key="yukon.common.durationFormatting.symbol.MS_SHORT.suffix.singular"/>
+            <cti:msg2 var="seconds" key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.singular"/>
+            <cti:msg2 var="minutes" key="yukon.common.durationFormatting.symbol.M_SHORT.suffix.singular"/>
             <cti:tab title="${general}">
                 <tags:nameValueContainer2 tableClass="${nameValueClass} stacked-md">
 
@@ -59,7 +62,7 @@
                         <tags:input path="pointBase.point.pointName"/>
                     </tags:nameValue2>
 
-                    <tags:nameValue2 excludeColon="${true}">
+                    <tags:nameValue2 nameKey=".status">
                         <tags:switchButton path="pointBase.point.outOfService"  offClasses="M0"
                             offNameKey=".disabled.label" onNameKey=".enabled.label" inverse="${true}" />
                     </tags:nameValue2>
@@ -203,7 +206,6 @@
                 </c:if>
             </cti:tab>
 
-            <c:if test="${not isCalcType}">
             <cti:msg2 var="physicalTab" key=".tab.physical" />
             <cti:tab title="${physicalTab}">
 
@@ -315,35 +317,32 @@
                         <tags:nameValue2 nameKey=".close.time1"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- Specify how long each relay stays energized --%>
-                            <tags:input path="pointBase.pointStatusControl.closeTime1" size="6" maxlength="8" inputClass="js-reset-field"/>
-                            <i:inline key="yukon.common.durationFormatting.symbol.MS_SHORT.suffix.singular"/>
+                            <tags:input path="pointBase.pointStatusControl.closeTime1" size="6" maxlength="8" inputClass="js-reset-field" units="${milliseconds}"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".close.time2"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- Specify how long each relay stays energized --%>
-                            <tags:input path="pointBase.pointStatusControl.closeTime2" size="6" maxlength="8" inputClass="js-reset-field"/>
-                            <i:inline key="yukon.common.durationFormatting.symbol.MS_SHORT.suffix.singular"/>
+                            <tags:input path="pointBase.pointStatusControl.closeTime2" size="6" maxlength="8" inputClass="js-reset-field" units="${milliseconds}"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".command.timeout"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- The length of time to use to scan for a state change following control. 
                                    An alarm is raised if a state change is not detected. --%>
-                            <tags:input path="pointBase.pointStatusControl.commandTimeOut" size="6" maxlength="8" inputClass="js-reset-field"/>
-                            <i:inline key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.singular"/>
+                            <tags:input path="pointBase.pointStatusControl.commandTimeOut" size="6" maxlength="8" inputClass="js-reset-field" units="${seconds}"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".command.open"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- The OPEN command string sent out when Yukon controls this point --%>
-                            <tags:input path="pointBase.pointStatusControl.stateZeroControl"/>
+                            <tags:input path="pointBase.pointStatusControl.stateZeroControl" maxlength="100" inputClass="w300 wrbw dib"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".command.close"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- The CLOSE command string sent out when Yukon controls this point --%>
-                            <tags:input path="pointBase.pointStatusControl.stateOneControl"/>
+                            <tags:input path="pointBase.pointStatusControl.stateOneControl" maxlength="100" inputClass="w300 wrbw dib"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </c:if>
@@ -358,9 +357,16 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </c:if>
-                
+
+                <c:if test="${isCalcType}">
+                    <tags:nameValueContainer2 tableClass="${nameValueClass}">
+                        <tags:nameValue2 nameKey=".offset">
+                            <tags:input path="pointBase.point.pointOffset" size="6"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </c:if>
+
             </cti:tab>
-            </c:if>
 
             <c:if test="${not isSystemPoint}">
             <cti:msg2 var="limitsTab" key=".tab.limits"/>
@@ -388,8 +394,7 @@
 
                         <%-- The number of seconds the limit must be violated before an alarm is generated --%>
                         <tags:nameValue2 nameKey=".limit.duration" rowClass="js-limit-one-input">
-                            <tags:input path="pointBase.pointLimitsMap[1].limitDuration" size="6" maxlength="8" inputClass="js-reset-field"/>
-                            <i:inline key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.singular"/>
+                            <tags:input path="pointBase.pointLimitsMap[1].limitDuration" size="6" maxlength="8" inputClass="js-reset-field" units="${seconds}"/>
                         </tags:nameValue2>
 
                         <%-- The second limit that can be set for this point, used to determine if an alarm condition is active --%>
@@ -411,8 +416,7 @@
 
                         <%-- The number of seconds the limit must be violated before an alarm is generated --%>
                         <tags:nameValue2 nameKey=".limit.duration" rowClass="js-limit-two-input">
-                            <tags:input path="pointBase.pointLimitsMap[2].limitDuration" size="6" maxlength="8" inputClass="js-reset-field"/>
-                            <i:inline key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.singular"/>
+                            <tags:input path="pointBase.pointLimitsMap[2].limitDuration" size="6" maxlength="8" inputClass="js-reset-field" units="${seconds}"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".reasonability.high">
@@ -446,8 +450,7 @@
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".stale.time" rowClass="js-stale-data-input">
-                        <tags:input path="staleData.time" size="6" maxlength="8" inputClass="js-reset-field-time"/>
-                        <i:inline key="yukon.common.durationFormatting.symbol.M_SHORT.suffix.singular"/>
+                        <tags:input path="staleData.time" size="6" maxlength="8" inputClass="js-reset-field-time" units="${minutes}"/>
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".stale.update" rowClass="js-stale-data-input">
@@ -522,6 +525,7 @@
             <cti:tab title="${fdrTab}">
                 <div class="separated-sections">
                     <c:set var="enabledFdrs" value="0" />
+                    <input type="hidden" class="js-acs-interface-type-enum-val" value="${acsInterfaceTypeEnumVal}"/>
 
                     <c:forEach var="fdrIdx" items="${fdrTranslationNumbers}">
                         <c:set var="fdrTranslation" value="${pointModel.pointBase.pointFDRList[fdrIdx]}" />
@@ -645,7 +649,7 @@
                                         <span class="js-constant <c:if test="${calcComponent.componentType != 'Constant'}"> dn</c:if>"><tags:input path="pointBase.calcComponents[${status.index}].constant" inputClass="js-constant-value"/></span>
                                         <span class="js-point-picker <c:if test="${calcComponent.componentType == 'Constant'}"> dn</c:if>">
                                             <form:hidden id="calc-component-point-${status.index}-input"
-                                                path="pointBase.calcComponents[${status.index}].componentPointID" />
+                                                path="pointBase.calcComponents[${status.index}].componentPointID" cssClass="js-calc-point-comp"/>
                                             <tags:pickerDialog
                                                 id="calcPoint${status.index}Picker"
                                                 type="notSystemPointPicker"
@@ -654,13 +658,15 @@
                                                 buttonStyleClass="M0"
                                                 destinationFieldId="calc-component-point-${status.index}-input"
                                                 viewOnlyMode="${mode == 'VIEW'}"
-                                                includeRemoveButton="${true}"
-                                                removeValue="0" />
+                                                removeValue="0"
+                                                includeRemoveButton="${true}"/>
                                             <cti:displayForPageEditModes modes="VIEW">
                                                 <c:if test="${calcComponent.componentPointID == 0}">
                                                     <span class="empty-list"><i:inline key="yukon.web.components.button.selectionPicker.label"/></span>
                                                 </c:if>
                                             </cti:displayForPageEditModes>
+                                            <br>
+                                            <form:errors path="pointBase.calcComponents[${status.index}].componentPointID" cssClass="error"/>
                                         </span>
                                     </td>
                                     <td>

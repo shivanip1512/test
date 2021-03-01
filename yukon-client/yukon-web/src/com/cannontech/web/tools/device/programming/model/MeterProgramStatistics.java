@@ -7,6 +7,7 @@ public class MeterProgramStatistics {
     private MeterProgramInfo programInfo;
     private int deviceTotal;
     private int inProgressTotal;
+    private int failureTotal;
 
     public MeterProgramInfo getProgramInfo() {
         return programInfo;
@@ -36,11 +37,20 @@ public class MeterProgramStatistics {
         return programInfo.getGuid() != null && deviceTotal == 0 && inProgressTotal == 0 ;
     }
 
+    public int getFailureTotal() {
+        return failureTotal;
+    }
+
+    public void setFailureTotal(int failureTotal) {
+        this.failureTotal = failureTotal;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + deviceTotal;
+        result = prime * result + failureTotal;
         result = prime * result + inProgressTotal;
         result = prime * result + ((programInfo == null) ? 0 : programInfo.hashCode());
         return result;
@@ -56,6 +66,8 @@ public class MeterProgramStatistics {
             return false;
         MeterProgramStatistics other = (MeterProgramStatistics) obj;
         if (deviceTotal != other.deviceTotal)
+            return false;
+        if (failureTotal != other.failureTotal)
             return false;
         if (inProgressTotal != other.inProgressTotal)
             return false;

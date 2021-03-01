@@ -902,7 +902,7 @@ void Lcr3102Device::writeAddress(Database::DatabaseWriter &writer, int id, long 
 */
 void Lcr3102Device::writeRelay(Database::DatabaseWriter &writer, int id, int relay)
 {
-    if(relay < 0 || relay > 4)
+    if(relay < 0 || relay > 3)
     {
         CTILOG_ERROR(dout, "Invalid relay number specified");
         return;
@@ -1268,7 +1268,7 @@ YukonError_t Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandPar
         // Grab the info from the parser!
         CtiDate date = parseDateString(parse.getsValue("hourly_log_date"));
 
-        const boost::optional<TimeParts> timeParts = parseTimeString(parse.getsValue("hourly_log_time"));
+        const auto timeParts = parseTimeString(parse.getsValue("hourly_log_time"));
 
         if( timeParts )
         {

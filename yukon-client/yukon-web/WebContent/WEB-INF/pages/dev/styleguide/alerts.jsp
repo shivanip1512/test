@@ -13,8 +13,8 @@
 </style>
 
 <p class="description">
-    Alerts are message to the user.  They can be <span class="success">success</span>, <span class="light-blue">info</span>, 
-    <span class="light-blue">pending</span>, <span class="warning">warning</span>, or <span class="error">error</span> alerts. 
+    Alerts are message to the user.  They can be <span class="success">success</span>, <span class="blue">info</span>, 
+    <span class="blue">pending</span>, <span class="warning">warning</span>, or <span class="error">error</span> alerts. 
     They can be rendered through the <span class="label label-attr">&lt;tags:alertBox&gt;</span> tag, programtically 
     through the javascript api, or through the <span class="label label-attr">FlashScope</span> session object.
 </p>
@@ -24,8 +24,8 @@
 <h2>Tag Attributes</h2>
 <tags:nameValueContainer tableClass="description">
     <tags:nameValue name="type">
-        The type of alert: <span class="success">success</span>, <span class="light-blue">info</span>,
-        <span class="light-blue">pending</span>, <span class="warning">warning</span>, or 
+        The type of alert: <span class="success">success</span>, <span class="blue">info</span>,
+        <span class="blue">pending</span>, <span class="warning">warning</span>, or 
         <span class="error">error</span>.  Defaults to <span class="error">error</span>.
     </tags:nameValue>
     <tags:nameValue name="key">
@@ -50,6 +50,7 @@
         <tags:alertBox type="success">Things went well.</tags:alertBox>
         <tags:alertBox type="info">You should know something.</tags:alertBox>
         <tags:alertBox type="pending">I'm still working on that...</tags:alertBox>
+        <tags:alertBox type="help">This is a sample help text.</tags:alertBox>
         <tags:alertBox type="warning">Be careful.</tags:alertBox>
         <tags:alertBox>You did a bad thing, and you should feel bad.</tags:alertBox>
         <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>

@@ -33,6 +33,7 @@ public class PointImportFormats {
         basePointImportFormat.addRequiredColumn(POINT_NAME.NAME, POINT_NAME.CLASS);
         //Optional Columns
         basePointImportFormat.addOptionalColumn(DISABLED.NAME, DISABLED.CLASS);
+        basePointImportFormat.addOptionalColumn(POINT_OFFSET.NAME, POINT_OFFSET.CLASS);
         //Grouped Columns
         basePointImportFormat.addGroupedColumn(STALE_DATA_TIME.NAME, STALE_DATA_TIME.CLASS, STALE_DATA_GROUP);
         basePointImportFormat.addGroupedColumn(STALE_DATA_UPDATE.NAME, STALE_DATA_UPDATE.CLASS, STALE_DATA_GROUP, false, true);
@@ -42,6 +43,7 @@ public class PointImportFormats {
         basePointImportFormat.setDescriptionKeys(DEVICE_TYPE.NAME, DEVICE_TYPE.DESCRIPTION, DEVICE_TYPE.VALUES);
         basePointImportFormat.setDescriptionKey(POINT_NAME.NAME, POINT_NAME.DESCRIPTION);
         basePointImportFormat.setDescriptionKey(DISABLED.NAME, DISABLED.DESCRIPTION);
+        basePointImportFormat.setDescriptionKey(POINT_OFFSET.NAME, POINT_OFFSET.DESCRIPTION);
         basePointImportFormat.setDescriptionKey(STALE_DATA_TIME.NAME, STALE_DATA_TIME.DESCRIPTION);
         basePointImportFormat.setDescriptionKey(STALE_DATA_UPDATE.NAME, STALE_DATA_UPDATE.DESCRIPTION);
         
@@ -78,14 +80,12 @@ public class PointImportFormats {
         
         ANALOG_POINT_FORMAT = analogAccumulatorSharedImportFormat.clone();
         //Optional Columns
-        ANALOG_POINT_FORMAT.addOptionalColumn(POINT_OFFSET.NAME, POINT_OFFSET.CLASS);
         ANALOG_POINT_FORMAT.addOptionalColumn(DEADBAND.NAME, DEADBAND.CLASS);
         //ACTION dependent
         ANALOG_POINT_FORMAT.addValueDependentColumn(MULTIPLIER.NAME, MULTIPLIER.CLASS, ACTION.NAME, ImportAction.ADD);
         ANALOG_POINT_FORMAT.addValueDependentColumn(DATA_OFFSET.NAME, DATA_OFFSET.CLASS, ACTION.NAME, ImportAction.ADD);
         ANALOG_POINT_FORMAT.addValueDependentColumn(METER_DIALS.NAME, METER_DIALS.CLASS, ACTION.NAME, ImportAction.ADD);        
         //Column descriptions
-        ANALOG_POINT_FORMAT.setDescriptionKey(POINT_OFFSET.NAME, POINT_OFFSET.DESCRIPTION);
         ANALOG_POINT_FORMAT.setDescriptionKey(DEADBAND.NAME, DEADBAND.DESCRIPTION);
         ANALOG_POINT_FORMAT.setDescriptionKey(MULTIPLIER.NAME, MULTIPLIER.DESCRIPTION);
         ANALOG_POINT_FORMAT.setDescriptionKey(DATA_OFFSET.NAME, DATA_OFFSET.DESCRIPTION);
@@ -93,7 +93,6 @@ public class PointImportFormats {
         
         STATUS_POINT_FORMAT = basePointImportFormat.clone();
         //Optional Columns
-        STATUS_POINT_FORMAT.addOptionalColumn(POINT_OFFSET.NAME, POINT_OFFSET.CLASS);
         STATUS_POINT_FORMAT.addOptionalColumn(CONTROL_TYPE.NAME, CONTROL_TYPE.CLASS, false, true);
         STATUS_POINT_FORMAT.addOptionalColumn(ARCHIVE_DATA.NAME, ARCHIVE_DATA.CLASS);
         STATUS_POINT_FORMAT.addOptionalColumn(CONTROL_INHIBIT.NAME, CONTROL_INHIBIT.CLASS);
@@ -109,7 +108,6 @@ public class PointImportFormats {
         STATUS_POINT_FORMAT.addValueDependentColumn(STATE_2_COMMAND.NAME, STATE_2_COMMAND.CLASS, false, true, CONTROL_TYPE.NAME, dependentTypes);
         STATUS_POINT_FORMAT.addValueDependentColumn(COMMAND_TIMEOUT.NAME, COMMAND_TIMEOUT.CLASS, CONTROL_TYPE.NAME, dependentTypes);
         //Column descriptions
-        STATUS_POINT_FORMAT.setDescriptionKey(POINT_OFFSET.NAME, POINT_OFFSET.DESCRIPTION);
         STATUS_POINT_FORMAT.setDescriptionKey(CONTROL_TYPE.NAME, CONTROL_TYPE.DESCRIPTION);
         STATUS_POINT_FORMAT.setDescriptionKey(ARCHIVE_DATA.NAME, ARCHIVE_DATA.DESCRIPTION);
         STATUS_POINT_FORMAT.setDescriptionKey(CONTROL_INHIBIT.NAME, CONTROL_INHIBIT.DESCRIPTION);
@@ -126,14 +124,12 @@ public class PointImportFormats {
         //Required Columns
         ACCUMULATOR_POINT_FORMAT.addRequiredColumn(ACCUMULATOR_TYPE.NAME, ACCUMULATOR_TYPE.CLASS, false, true);
         //Optional Columns
-        ACCUMULATOR_POINT_FORMAT.addOptionalColumn(POINT_OFFSET.NAME, POINT_OFFSET.CLASS);
         //ACTION dependent
         ACCUMULATOR_POINT_FORMAT.addValueDependentColumn(MULTIPLIER.NAME, MULTIPLIER.CLASS, ACTION.NAME, ImportAction.ADD);
         ACCUMULATOR_POINT_FORMAT.addValueDependentColumn(DATA_OFFSET.NAME, DATA_OFFSET.CLASS, ACTION.NAME, ImportAction.ADD);
         ACCUMULATOR_POINT_FORMAT.addValueDependentColumn(METER_DIALS.NAME, METER_DIALS.CLASS, ACTION.NAME, ImportAction.ADD);
         //Column descriptions
         ACCUMULATOR_POINT_FORMAT.setDescriptionKey(ACCUMULATOR_TYPE.NAME, ACCUMULATOR_TYPE.DESCRIPTION);
-        ACCUMULATOR_POINT_FORMAT.setDescriptionKey(POINT_OFFSET.NAME, POINT_OFFSET.DESCRIPTION);
         ACCUMULATOR_POINT_FORMAT.setDescriptionKey(MULTIPLIER.NAME, MULTIPLIER.DESCRIPTION);
         ACCUMULATOR_POINT_FORMAT.setDescriptionKey(DATA_OFFSET.NAME, DATA_OFFSET.DESCRIPTION);
         ACCUMULATOR_POINT_FORMAT.setDescriptionKey(METER_DIALS.NAME, METER_DIALS.DESCRIPTION);

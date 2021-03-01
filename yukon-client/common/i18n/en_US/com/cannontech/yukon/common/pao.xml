@@ -144,7 +144,12 @@
     <entry key="yukon.common.pao.LCR6600S">LCR-6600S</entry>
     <entry key="yukon.common.pao.LCR6601S">LCR-6601S</entry>
 
+    <entry key="yukon.common.pao.LCR6200C">LCR-6200C</entry>
+    <entry key="yukon.common.pao.LCR6600C">LCR-6600C</entry>
+    <entry key="yukon.common.pao.LCR_DISCONNECT_C">LCR-DisconnectC</entry>
+    
     <entry key="yukon.common.pao.GWY800">GWY-800</entry>
+    <entry key="yukon.common.pao.GWY801">GWY-801</entry>
     <entry key="yukon.common.pao.RFN_GATEWAY">RF Gateway</entry>
     <entry key="yukon.common.pao.VIRTUAL_GATEWAY">Virtual Gateway</entry>
 
@@ -159,6 +164,7 @@
     <entry key="yukon.common.pao.RTUWELCO">RTU-Welco</entry>
 
     <entry key="yukon.common.pao.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
+    <entry key="yukon.common.pao.LM_GROUP_EATON_CLOUD">Eaton Cloud Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_ECOBEE">ecobee Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_EMETCON">Emetcon Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
@@ -178,6 +184,7 @@
     <entry key="yukon.common.pao.MACRO_GROUP">Macro Group</entry>
     <entry key="yukon.common.pao.LM_CURTAIL_PROGRAM">LM Curtail Program</entry>
     <entry key="yukon.common.pao.LM_DIRECT_PROGRAM">LM Direct Program</entry>
+    <entry key="yukon.common.pao.LM_EATON_CLOUD_PROGRAM">LM Eaton Cloud Program</entry>
     <entry key="yukon.common.pao.LM_ENERGY_EXCHANGE_PROGRAM">LM Energy Exchange Program</entry>
     <entry key="yukon.common.pao.LM_HONEYWELL_PROGRAM">LM Honeywell Program</entry>
     <entry key="yukon.common.pao.LM_ITRON_PROGRAM">LM Itron Program</entry>
@@ -247,6 +254,7 @@
     <entry key="yukon.common.pao.SIMPLE_SCHEDULE">Simple Schedule</entry>
     <entry key="yukon.common.pao.SYSTEM">System</entry>
     <entry key="yukon.common.pao.VIRTUAL_SYSTEM">Virtual System</entry>
+    <entry key="yukon.common.pao.VIRTUAL_METER">Virtual Meter</entry>
 
     <entry key="yukon.common.pao.WEATHER_LOCATION">Weather Location</entry>
 

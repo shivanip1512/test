@@ -9,7 +9,7 @@ import java.util.Properties;
 public class ConfigFileReader {
 
     private Properties properties;
-    private static final String FILE_PATH = "configs//Config.properties";
+    private static final String FILE_PATH = "configs//config.properties";
 
     public ConfigFileReader() throws IOException {
         BufferedReader reader = null;
@@ -50,6 +50,20 @@ public class ConfigFileReader {
         throw new RuntimeException("browser is not specified in the Configuration.properties file.");
     }
 
+    public String getProxy() {
+        String proxy = properties.getProperty("proxy");
+        if (proxy != null)
+            return proxy;
+        throw new RuntimeException("proxy is not specified in the Configuration.properties file.");
+    }
+
+    public Boolean getProxyFlag() {
+        boolean useProxy = Boolean.parseBoolean(properties.getProperty("useProxy"));
+        if (useProxy)
+            return useProxy;
+        throw new RuntimeException("useProxy(true/false) flag is not specified in the Configuration.properties file.");
+    }
+
     public String getUseRemoteDriver() {
 
         String useRemoteDriver = properties.getProperty("useRemoteDriver");
@@ -69,13 +83,22 @@ public class ConfigFileReader {
 
         throw new RuntimeException("runHeadless is not specified in the Configuration.properties file.");
     }
-    
+
     public String getScreenShotPath() {
         String screenShotPath = properties.getProperty("screenShotsPath");
-        
+
         if (screenShotPath != null)
             return screenShotPath;
-        
+
         throw new RuntimeException("screenShotPath is not specified in the Configuration.properties file.");
+    }
+    
+    public String getDatabaseParameter() {
+        String dataBase = properties.getProperty("database");
+
+        if (dataBase != null)
+            return dataBase;
+
+        throw new RuntimeException("parameter is not specified in the Configuration.properties file.");
     }
 }

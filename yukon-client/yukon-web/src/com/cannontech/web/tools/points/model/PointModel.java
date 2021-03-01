@@ -139,7 +139,6 @@ public class PointModel<T extends PointBase> {
             CalcStatusPoint calcStatus = (CalcStatusPoint) base;
 
             calcStatus.getCalcBase().setPointID(id);
-            calcStatus.getPoint().setPointOffset(0);
         }
 
         if (base instanceof CalculatedPoint) {
@@ -147,7 +146,6 @@ public class PointModel<T extends PointBase> {
             CalculatedPoint calcPoint = (CalculatedPoint) base;
 
             calcPoint.getCalcBase().setPointID(id);
-            calcPoint.getPoint().setPointOffset(0);
         }
     }
 

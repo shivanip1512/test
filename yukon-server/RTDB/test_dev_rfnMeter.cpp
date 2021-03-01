@@ -15,7 +15,7 @@ using namespace Cti::Config;
 
 struct test_RfnMeterDevice : RfnMeterDevice
 {
-    using CtiTblPAOLite::_type;
+    using CtiDeviceBase::setDeviceType;
 };
 
 struct test_state_rfnMeter
@@ -28,6 +28,10 @@ struct test_state_rfnMeter
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;
+    const decltype(Cti::Test::set_to_central_timezone()) overrideTimezone = Cti::Test::set_to_central_timezone();
+
+    const CtiTime execute_time = CtiTime(CtiDate(27, 8, 2013), 15);
+    const CtiTime decode_time  = CtiTime(CtiDate(27, 8, 2013), 16);
 
     test_state_rfnMeter() :
         request( new CtiRequestMsg ),
@@ -56,11 +60,101 @@ namespace test_cmd_rfn_ConfigNotification {
     extern const std::vector<uint8_t> payload;
 }
 
-const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
-const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
-
-
 BOOST_FIXTURE_TEST_SUITE( test_dev_rfnMeter, test_state_rfnMeter )
+
+BOOST_AUTO_TEST_CASE(test_getvalue_meter_read)
+{
+    test_RfnMeterDevice dut;
+
+    Cti::Test::Override_CtiTime_Now newNow { execute_time };
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    CtiCommandParser parse("getvalue meter_read");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Read");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x01 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector< unsigned char > response {
+            0x03, //  Response type 3, contains one or more modifiers
+            0x00, //  Response status (OK)
+            0x03, //  Number of channels in response
+                0x19, //  Channel number
+                0x41, //  Unit of measure (W)
+                0xc0, 0x00, //  Modifier 1, has extension bit set, Max
+                0x00, 0x00, //  Modifier 2, no extension bit
+                0x00, 0x00, 0x00, 0x2a, //  Data
+                0x00, //  Status (OK)
+
+                0x1a, //  Channel number
+                0x05, //  Unit of measure (s)
+                0x00, 0x00, //  Modifier 1, no extension bit
+                0x60, 0x14, 0x6c, 0xfc, //  Data  0x60146cfc - Fri, 29 Jan 2021 20:15:56 GMT
+                0x00, //  Status (OK)
+
+                0x1a, //  Channel number
+                0x18, //  Unit of measure (Power Factor)
+                0x80, 0x90, //  Modifier 1, Quad 1, Quad 4, no extension bit
+                0x02, 0x00, //  Modifier 2, Coincident 1, no extension bit
+                0x00, 0x00, 0x00, 0x2a, //  Data
+                0x00, //  Status (OK)
+        };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Read:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0"
+        "\nTimestamp       : 08/27/2013 15:00:00"
+        "\n# Channel data  : 0"
+        "\n# Dated data    : 2"
+        "\nDated data 0    : Channel number : 25"
+        "\n                  Status         : 0"
+        "\n                  Timestamp      : 01/29/2021 14:15:56"
+        "\n                  UOM            : W"
+        "\n                  Modifiers      : {Max}"
+        "\n                  Value          : 42"
+        "\n                  Base channel   : (none)"
+        "\nDated data 1    : Channel number : 26"
+        "\n                  Status         : 0"
+        "\n                  Timestamp      : 01/29/2021 14:15:56"
+        "\n                  UOM            : PF"
+        "\n                  Modifiers      : {Quadrant 1,Quadrant 4}"
+        "\n                  Value          : 42"
+        "\n                  Base channel   : Channel number : 25"
+        "\n                                   Status         : 0"
+        "\n                                   UOM            : W"
+        "\n                                   Modifiers      : {Max}"
+        "\n                                   Value          : 42");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
 
 BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_no_tlv )
 {
@@ -494,6 +588,101 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_extra)
             "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND, PEAK_DEMAND_FROZEN",
             "Config channelconfig is NOT current.",
         });
+    }
+}
+
+/**
+This test does a "putconfig install channelconfig verify" with the device reporting a metric ID that has no attribute mapping in Yukon.
+*/
+BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_unmapped_metric_id)
+{
+    test_RfnMeterDevice dut;
+
+    Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+                                                         /* Device settings */
+    std::vector<unsigned long> paoMidnightMetrics = { 1, 2, 3, 4, 5, 9, 182 };
+    std::vector<unsigned long> paoIntervalMetrics = { 1, 2, 3, 4, 5, 9 };
+
+    dut.setID(1234, test_tag);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60);
+
+    config_a_meter(cfg);
+
+    CtiCommandParser parse("putconfig install channelconfig verify");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+
+    BOOST_CHECK_EQUAL(0, rfnRequests.size());
+    BOOST_REQUIRE_EQUAL(7, returnMsgs.size());
+
+    auto itr = returnMsgs.begin();
+
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Midnight channel program mismatch.  Meter also contains PEAK_DEMAND_FROZEN, Unmapped metric ID 182");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND, PEAK_DEMAND_FROZEN, Unmapped metric ID 182");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Interval channel program mismatch.  Meter also contains DELIVERED_KWH, RECEIVED_KWH, PEAK_DEMAND_FROZEN");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Config: SUM_KWH, NET_KWH, DELIVERED_DEMAND");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND, PEAK_DEMAND_FROZEN");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Config channelconfig is NOT current.");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), false);
     }
 }
 
@@ -1226,6 +1415,8 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
         
         { PI::Key_RFN_RecordingIntervalSeconds,  7200 },
         { PI::Key_RFN_ReportingIntervalSeconds, 86400 },
+
+        { PI::Key_RFN_MetrologyLibraryEnabled, false },
     };
 
     BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries.begin()->second.size(), std::size(dpiExpected));

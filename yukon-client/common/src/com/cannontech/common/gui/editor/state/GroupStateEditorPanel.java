@@ -26,10 +26,10 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.YukonImagePanel;
 import com.cannontech.common.gui.util.ColorComboBoxCellRenderer;
-import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.TextFieldDocument;
@@ -51,7 +51,7 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
 
     private JLabel[] rawStateLabels = null;
     private JTextField[] stateNameTextFields = null;
-    private JComboBox[] foregroundColorComboBoxes = null;
+    private JComboBox<YukonColorPalette>[] foregroundColorComboBoxes = null;
     private JButton[] imageButtons = null;
     private JLabel ivjStateGroupNameLabel = null;
     private JTextField ivjStateGroupNameTextField = null;
@@ -65,6 +65,20 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
     private JScrollPane ivjJScrollPane = null;
     private JLabel ivjJLabelImage = null;
 
+    private YukonColorPalette[] foregroundColors = new YukonColorPalette[] {
+            YukonColorPalette.GREEN,
+            YukonColorPalette.RED,  // do not use WINE in this enum, as it's text will conflict. Both use "Red".
+            YukonColorPalette.WHITE,
+            YukonColorPalette.YELLOW,
+            YukonColorPalette.BLUE,
+            YukonColorPalette.TEAL,
+            YukonColorPalette.BLACK,
+            YukonColorPalette.ORANGE,
+            YukonColorPalette.SAGE,
+            YukonColorPalette.GRAY,
+            YukonColorPalette.PURPLE
+            };
+    
     /**
      * Constructor
      */
@@ -125,24 +139,16 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
      * 
      * @return JComboBox
      */
-    private JComboBox buildForegroundColorComboBox() {
-        JComboBox jComboBox = new JComboBox();
+    private JComboBox<YukonColorPalette> buildForegroundColorComboBox() {
+        JComboBox<YukonColorPalette> jComboBox = new JComboBox<YukonColorPalette>();
         jComboBox.setPreferredSize(new java.awt.Dimension(120, 25));
         jComboBox.setFont(new java.awt.Font("dialog", 0, 12));
         jComboBox.setMinimumSize(new java.awt.Dimension(120, 25));
         jComboBox.setRenderer(new ColorComboBoxCellRenderer());
 
-        jComboBox.addItem(Colors.GREEN_STR_ID);
-        jComboBox.addItem(Colors.RED_STR_ID);
-        jComboBox.addItem(Colors.WHITE_STR_ID);
-        jComboBox.addItem(Colors.YELLOW_STR_ID);
-        jComboBox.addItem(Colors.BLUE_STR_ID);
-        jComboBox.addItem(Colors.CYAN_STR_ID);
-        jComboBox.addItem(Colors.BLACK_STR_ID);
-        jComboBox.addItem(Colors.ORANGE_STR_ID);
-        jComboBox.addItem(Colors.MAGENTA_STR_ID);
-        jComboBox.addItem(Colors.GRAY_STR_ID);
-        jComboBox.addItem(Colors.PINK_STR_ID);
+        for (YukonColorPalette color : foregroundColors) {
+            jComboBox.addItem(color);
+        }
 
         return jComboBox;
     }
@@ -384,10 +390,10 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
                 ivjStateNumberSpinner.setBounds(141, 51, 50, 22);
                 ivjStateNumberSpinner.setMinimumSize(new java.awt.Dimension(50, 22));
                 ivjStateNumberSpinner.setDataProperties(new com.klg.jclass.field.DataProperties(
-                    new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(1),
-                        new Integer(STATE_COUNT), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false,
-                        false, false, null, new Integer(2)), new com.klg.jclass.util.value.MutableValueModel(
-                        java.lang.Integer.class, new Integer(1)), new com.klg.jclass.field.JCInvalidInfo(true, 2,
+                    new com.klg.jclass.field.validate.JCIntegerValidator(null, Integer.valueOf(1),
+                        Integer.valueOf(STATE_COUNT), null, true, null, Integer.valueOf(1), "#,##0.###;-#,##0.###", false,
+                        false, false, null, Integer.valueOf(2)), new com.klg.jclass.util.value.MutableValueModel(
+                        java.lang.Integer.class, Integer.valueOf(1)), new com.klg.jclass.field.JCInvalidInfo(true, 2,
                         new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
 
             } catch (java.lang.Throwable ivjExc) {
@@ -511,13 +517,13 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
 
         for (int i = 0; i < numberOfStates; i++) {
             Integer yukImgId =
-                (imageButtons[i].getClientProperty("LiteYukonImage") == null) ? new Integer(YukonImage.NONE_IMAGE_ID)
-                    : new Integer(((LiteYukonImage) imageButtons[i].getClientProperty("LiteYukonImage")).getImageID());
+                (imageButtons[i].getClientProperty("LiteYukonImage") == null) ? Integer.valueOf(YukonImage.NONE_IMAGE_ID)
+                    : Integer.valueOf(((LiteYukonImage) imageButtons[i].getClientProperty("LiteYukonImage")).getImageID());
 
             tempStateData = new State();
             tempStateData.setState(new com.cannontech.database.db.state.State(
-                groupState.getStateGroup().getStateGroupID(), new Integer(i), stateNameTextFields[i].getText(),
-                new Integer(foregroundColorComboBoxes[i].getSelectedIndex()), new Integer(Colors.BLACK_ID), yukImgId));
+                groupState.getStateGroup().getStateGroupID(), Integer.valueOf(i), stateNameTextFields[i].getText(),
+                foregroundColorComboBoxes[i].getSelectedIndex(), YukonColorPalette.BLACK.getColorId(), yukImgId));
 
             groupState.getStatesVector().add(tempStateData);
         }
@@ -631,7 +637,7 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
      */
     @Override
     public void itemStateChanged(java.awt.event.ItemEvent e) {
-        for (JComboBox foregroundColorComboBox : foregroundColorComboBoxes) {
+        for (JComboBox<YukonColorPalette> foregroundColorComboBox : foregroundColorComboBoxes) {
             if (e.getSource() == foregroundColorComboBox) {
                 try {
                     fireInputUpdate();
@@ -692,7 +698,7 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
                 "The number of states can NOT be changed for SYSTEM RESERVED or Analog state groups");
         }
 
-        getStateNumberSpinner().setValue(new Integer(statesVector.size()));
+        getStateNumberSpinner().setValue(Integer.valueOf(statesVector.size()));
 
         for (int i = 0; i < statesVector.size() && i < STATE_COUNT; i++) {
             rawStateLabels[i].setEnabled(true);
@@ -734,9 +740,9 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
             Object stateNumberSpinVal = getStateNumberSpinner().getValue();
             Integer numberOfStates = null;
             if (stateNumberSpinVal instanceof Long) {
-                numberOfStates = new Integer(((Long) stateNumberSpinVal).intValue());
+                numberOfStates = Integer.valueOf(((Long) stateNumberSpinVal).intValue());
             } else if (stateNumberSpinVal instanceof Integer) {
-                numberOfStates = new Integer(((Integer) stateNumberSpinVal).intValue());
+                numberOfStates = Integer.valueOf(((Integer) stateNumberSpinVal).intValue());
             }
 
             if (numberOfStates != null) {

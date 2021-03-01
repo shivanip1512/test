@@ -17,7 +17,7 @@
             <span class="fl">
                 <span class="vat"><i:inline key="yukon.common.filterBy"/>&nbsp;</span>
                 <cti:msg2 var="selectConfigPlaceholder" key=".selectConfigurations"/>
-                <form:select id="selectedConfigurations" multiple="true" path="configurationIds" data-placeholder="${selectConfigPlaceholder}">
+                <form:select id="selectedConfigurations" path="configurationIds" size="1" cssClass="w300" data-placeholder="${selectConfigPlaceholder}">
                     <form:option value="-999"><i:inline key=".configurations.unassigned"/></form:option>
                     <form:option value="-998"><i:inline key=".configurations.all"/></form:option>
                     <c:forEach var="configuration" items="${configurations}">
@@ -34,7 +34,7 @@
             </cti:list>
             <tags:deviceGroupPicker inputName="deviceSubGroups" multi="true" inputValue="${groups}" classes="fl"/>
             
-            <cti:button nameKey="filter" classes="primary action fl" type="submit" busy="true"/>
+            <cti:button nameKey="filter" classes="js-filter-configs primary action fl" busy="true"/>
         
         </form:form>
     </div><br/>
@@ -49,7 +49,7 @@
         </c:forEach>
         <cti:param name="stateSelection" value="${filter.stateSelection}"/>
     </cti:url>
-    <div data-url="${dataUrl}" data-static>
+    <div id="results-container" data-url="${dataUrl}">
         <%@ include file="resultsTable.jsp" %>
     </div>
     

@@ -1,6 +1,9 @@
 package com.cannontech.amr.monitors.impl;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -8,27 +11,27 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.core.dynamic.RichPointData;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 public class PointDataTrackingLogger {
 
     private static final Duration trackingLogFrequency = Duration.standardMinutes(1);
     private Instant nextTrackingLog = Instant.now().plus(trackingLogFrequency);
-    private Multimap<String, String> acceptedIds = ArrayListMultimap.create();
-    private Multimap<String, String> rejectedIds = ArrayListMultimap.create();
+    private Set<String> acceptedIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    private Set<String> rejectedIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
     private Logger log;
+    private String name;
     
-    public PointDataTrackingLogger(Logger log) {
+    public PointDataTrackingLogger(String name, Logger log) {
+        this.name = name;
         this.log = log;
     }
     
-    public void acceptId(String monitorName, RichPointData data) {
-        processTrackingId(acceptedIds.get(monitorName), data);
+    public void acceptId(RichPointData data) {
+        processTrackingId(acceptedIds, data);
         logTrackingIds();
     }
-    public void rejectId(String monitorName, RichPointData data) {
-        processTrackingId(rejectedIds.get(monitorName), data);
+    public void rejectId(RichPointData data) {
+        processTrackingId(rejectedIds, data);
         logTrackingIds();
     }
     
@@ -43,10 +46,8 @@ public class PointDataTrackingLogger {
         if (Instant.now().isAfter(nextTrackingLog)) {
             nextTrackingLog = Instant.now().plus(trackingLogFrequency);
             if (log.isInfoEnabled()) {
-                acceptedIds.asMap().forEach((monitorName, ids) -> 
-                    log.info("{} accepted tracking IDs: {}", monitorName, String.join(" ", ids)));
-                rejectedIds.asMap().forEach((monitorName, ids) -> 
-                    log.info("{} rejected tracking IDs: {}", monitorName, String.join(" ", ids)));
+                log.info("{} accepted tracking IDs: {}", name, String.join(" ", acceptedIds));
+                log.info("{} rejected tracking IDs: {}", name, String.join(" ", rejectedIds));
             }
             acceptedIds.clear();
             rejectedIds.clear();

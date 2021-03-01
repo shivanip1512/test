@@ -354,6 +354,12 @@ include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_BeatThePeakGear_Cre
 *Request JSON* 
 include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_BeatThePeakGear_Create/http-request.adoc[]
 
+===== Rotation Gear
+*Request Properties* 
+include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_RotationGear_Create/request-fields.adoc[]
+*Request JSON* 
+include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_RotationGear_Create/http-request.adoc[]
+
 ===== No Control Gear
 *Request Properties* 
 include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_NoControlGear_Create/request-fields.adoc[]
@@ -374,3 +380,18 @@ include::{snippets}/SepProgramGearApiDoc/Test_LoadProgram_NoControl_Create/reque
 *Request JSON* 
 include::{snippets}/SepProgramGearApiDoc/Test_LoadProgram_NoControl_Create/http-request.adoc[]
 
+==== Honeywell Program
+
+===== Honeywell Setpoint Gear
+*Request Properties* 
+include::{snippets}/HoneywellProgramGearApiDoc/Test_LoadProgram_HoneywellSetpointGear_Create/request-fields.adoc[]
+*Request JSON* 
+include::{snippets}/HoneywellProgramGearApiDoc/Test_LoadProgram_HoneywellSetpointGear_Create/http-request.adoc[]
+
+==== Ecobee Program
+
+===== Ecobee Setpoint Gear
+*Request Properties* 
+include::{snippets}/EcobeeProgramGearApiDoc/Test_LoadProgram_EcobeeSetpointGear_Create/request-fields.adoc[]
+*Request JSON* 
+include::{snippets}/EcobeeProgramGearApiDoc/Test_LoadProgram_EcobeeSetpointGear_Create/http-request.adoc[]
