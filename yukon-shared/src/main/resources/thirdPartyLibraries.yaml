@@ -4937,18 +4937,18 @@ Network Manager :
     jira : NM-706 NM-1575
     notes : Apache Commons Logging Bridge for Log4j
 
-  - filename : log4j-slf4j-impl-2.13.1.jar
+  - filename : log4j-slf4j-impl-2.14.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.13.1
+    version : 2.14.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.13.1"
-    md5 : f84462cbd50370f984992a25cf3f6dc0
-    sha1 : 79e92fe5b6c30cc4c8a52893378d4d130e298c65
-    updated : 2020-08-06
-    jira : NM-1696
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.14.0"
+    md5 : 0fecb509f39c3de5f481b6c33f8cfa5e
+    sha1 : 79f3b3b85a8e75663f843c1ad14d94c1d6c65269
+    updated : 2021-03-02
+    jira : NM-1957
     notes : The Apache Log4j SLF4J API binding to Log4j 2 Core
 
   - filename : looks.jar
