@@ -12,6 +12,10 @@
 
 #include <chrono>
 
+namespace Cti::Messaging::Pil {
+    struct MeterProgramStatusArchiveRequestMsg;
+}
+
 namespace Cti::Pil {
 
 struct RfnDeviceRequest
@@ -113,6 +117,7 @@ protected:
     virtual Bytes createE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const RfnIdentifier endpointId, const Token token);
     virtual Bytes createE2eDtReply(const unsigned short id, const Bytes& payload, const Token token);
     virtual Bytes createE2eDtBlockReply(const unsigned short id, const Bytes& payload, const Token token, Block block);
+    virtual void sendMeterProgramStatusUpdate(Messaging::Pil::MeterProgramStatusArchiveRequestMsg msg);
 
 private:
 
@@ -147,6 +152,7 @@ private:
     PacketInfo sendE2eDataRequestPacket(const Bytes& e2ePacket, const ApplicationServiceIdentifiers &asid, const PriorityClass priorityClass, const RfnIdentifier &rfnIdentifier, const unsigned priority, const long groupMessageId, const CtiTime timeout);
     void sendE2eDataAck  (const unsigned short id, const AckType ackType, const ApplicationServiceIdentifiers &asid, const PriorityClass priorityClass, const RfnIdentifier &rfnIdentifier);
     void sendMeterProgrammingBlock(const unsigned short id, const Bytes data, const ApplicationServiceIdentifiers& asid, const RfnIdentifier& rfnIdentifier, const Token token, const Block block);
+    void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::string& guid, const size_t totalSent);
 
     void checkForNewRequest(const RfnIdentifier &rfnId);
 

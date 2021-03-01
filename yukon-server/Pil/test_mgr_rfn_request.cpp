@@ -6,13 +6,25 @@
 #include "cmd_rfn_ConfigNotification.h"
 #include "cmd_rfn_LoadProfile.h"
 
+#include "cmd_rfn_MeterProgramming.h"
+#include "mgr_meter_programming.h"
+#include "MeterProgramStatusArchiveRequestMsg.h"
+
 #include "rtdb_test_helpers.h"
 
 #include "boost_test_helpers.h"
 
-BOOST_AUTO_TEST_SUITE( test_mgr_rfn_request )
+namespace Cti {
+    std::ostream& operator<<(std::ostream& os, const RfnIdentifier rfnId);
+}
+namespace Cti::Messaging::Pil {
+    std::ostream& operator<<(std::ostream& os, const ProgrammingStatus s) {
+        return os << "[ProgrammingStatus " << as_underlying(s) << "]";
+    }
+}
 
 using Cti::Messaging::Rfn::E2eDataRequestMsg;
+using Cti::Messaging::Pil::MeterProgramStatusArchiveRequestMsg;
 
 struct test_E2eMessenger : Cti::Messaging::Rfn::E2eMessenger
 {
@@ -37,9 +49,34 @@ struct test_E2eMessenger : Cti::Messaging::Rfn::E2eMessenger
     }
 };
 
+struct test_MeterProgrammingManager : Cti::MeterProgramming::MeterProgrammingManager
+{
+    Cti::ErrorOr<RawProgram> loadRawProgram(const std::string guid) override
+    {
+        auto make_placeholder = [](size_t length) {
+            Bytes buffer;
+            buffer.resize(11235);
+            std::iota(buffer.begin(), buffer.end(), 0);
+            return buffer;
+        };
+
+        return RawProgram{ make_placeholder(11235), make_placeholder(16) };
+    }
+    Bytes convertRawProgram(const RawProgram& raw, const std::string guid) override
+    {
+        return raw.program;  //  No conversion, disregard GUID and password, just return the raw bytes.
+    }
+    bool isAssigned(const Cti::RfnIdentifier rfnIdentifier, const std::string guid) override
+    {
+        return true;
+    }
+};
+
 struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
 {
     Cti::Test::test_DeviceManager devMgr;
+
+    std::vector<MeterProgramStatusArchiveRequestMsg> mpsArchiveMsgs;
 
     test_RfnRequestManager() 
         :   RfnRequestManager { devMgr }
@@ -57,6 +94,7 @@ struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
 
     } e2e;
 
+    //  These call our private E2E object with an overridden outbound ID
     EndpointMessage handleE2eDtIndication(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId) override
     {
         return e2e.handleIndication(payload, endpointId);
@@ -73,17 +111,44 @@ struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
     {
         return e2e.createPost(payload, endpointId, token);
     }
+
+    //  this intercepts/captures the MeterProgramStatus archive request messages
+    void sendMeterProgramStatusUpdate(MeterProgramStatusArchiveRequestMsg msg) override
+    {
+        mpsArchiveMsgs.emplace_back(std::move(msg));
+    }
 };
+
+struct test_fixture
+{
+    test_RfnRequestManager mgr;
+
+    std::unique_ptr<Cti::Messaging::Rfn::E2eMessenger> oldMessenger;
+    test_E2eMessenger* e2e;
+
+    std::unique_ptr<Cti::MeterProgramming::MeterProgrammingManager> oldMeterProgrammingManager;
+
+    test_fixture()
+    {
+        auto newMessenger = std::make_unique<test_E2eMessenger>();
+        //  a handle for our reference
+        e2e = newMessenger.get();
+
+        oldMessenger = std::exchange(Cti::Messaging::Rfn::gE2eMessenger, std::move(newMessenger));
+        oldMeterProgrammingManager = std::exchange(Cti::MeterProgramming::gMeterProgrammingManager, std::make_unique<test_MeterProgrammingManager>());
+    }
+    virtual ~test_fixture()
+    {
+        //  Put the old one back
+        Cti::Messaging::Rfn::gE2eMessenger = std::move(oldMessenger);
+        Cti::MeterProgramming::gMeterProgrammingManager = std::move(oldMeterProgrammingManager);
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(test_mgr_rfn_request, test_fixture)
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
 {
-    //  a handle for our reference
-    test_E2eMessenger *e2e = new test_E2eMessenger;
-
-    Cti::Messaging::Rfn::gE2eMessenger.reset(e2e);
-
-    test_RfnRequestManager mgr;
-
     mgr.e2e.id = 0x7301;
 
     mgr.start();
@@ -218,13 +283,6 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
 {
-    //  a handle for our reference
-    test_E2eMessenger *e2e = new test_E2eMessenger;
-
-    Cti::Messaging::Rfn::gE2eMessenger.reset(e2e);
-
-    test_RfnRequestManager mgr;
-
     mgr.e2e.id = 0x7301;
 
     mgr.start();
@@ -300,13 +358,6 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
 BOOST_AUTO_TEST_CASE(test_cmd_rfn_blockContinuation)
 {
     const auto tz_override = Cti::Test::set_to_central_timezone();
-
-    //  a handle for our reference
-    test_E2eMessenger *e2e = new test_E2eMessenger;
-
-    Cti::Messaging::Rfn::gE2eMessenger.reset(e2e);
-
-    test_RfnRequestManager mgr;
 
     const CtiTime now   { CtiDate(25, 7, 2018), 10, 17 };
     const CtiTime begin { CtiDate(18, 7, 2018),  0,  0 };
@@ -479,5 +530,81 @@ BOOST_AUTO_TEST_CASE(test_cmd_rfn_blockContinuation)
     }
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+BOOST_AUTO_TEST_CASE(test_meter_programming_progress)
+{
+    Cti::Test::Override_DynamicPaoInfoManager overrideDpi;
 
+    const Cti::RfnIdentifier rfnId{ "JIMMY", "JOHNS", "TURKEY TOM" };
+    const std::string guid = "4ba2c048-c933-4bf1-b225-25d3d97e5557";
+
+    mgr.e2e.id = 0x7301;
+
+    mgr.start();
+
+    //  Set the device as uploading
+    auto rfnDevice = mgr.devMgr.getDeviceByRfnIdentifier(rfnId);
+    rfnDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, 0.0);
+    rfnDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, guid);
+
+    //  Helper lambda to create and send the indication, then tick the manager
+    const auto ingestInbound = [e2e=this->e2e, &mgr=this->mgr, rfnId](Cti::Test::byte_str inboundPayload) {
+        Cti::Messaging::Rfn::E2eMessenger::Indication indication;
+
+        indication.rfnIdentifier = rfnId;
+        indication.payload.assign(inboundPayload.begin(), inboundPayload.end());
+
+        e2e->indicationHandler(indication);
+
+        mgr.tick();
+    };
+
+    //  Initial request
+    ingestInbound(
+        "42 01 e7 6e e9 a8 bd 00 6d 65  74 65 72 50 72 6f 67 72 61 6d "
+        "73 0d 17 34 62 61 32 63 30 34  38 2d 63 39 33 33 2d 34 62 66 "
+        "31 2d 62 32 32 35 2d 32 35 64  33 64 39 37 65 35 35 35 37");
+
+    {
+        auto results = std::exchange(mgr.mpsArchiveMsgs, {});
+
+        BOOST_REQUIRE_EQUAL(results.size(), 1);
+
+        const auto& result = results[0];
+
+        BOOST_CHECK_EQUAL("R" + guid, result.configurationId);
+        BOOST_CHECK_EQUAL(0, result.error);
+        BOOST_CHECK_EQUAL(rfnId, result.rfnIdentifier);
+        BOOST_CHECK_EQUAL(Cti::Messaging::Pil::ProgrammingStatus::Uploading, result.status);  //  Uploading
+        //BOOST_CHECK_EQUAL("", result.timeStamp);
+    }
+
+    //  Next block request
+    ingestInbound(
+        "42 01 e7 6e e9 a8 bd 00 6d 65  74 65 72 50 72 6f 67 72 61 6d "
+        "73 0d 17 34 62 61 32 63 30 34  38 2d 63 39 33 33 2d 34 62 66 "
+        "31 2d 62 32 32 35 2d 32 35 64  33 64 39 37 65 35 35 35 37 c1 16");
+
+    {
+        auto results = std::exchange(mgr.mpsArchiveMsgs, {});
+
+        BOOST_REQUIRE_EQUAL(results.size(), 1);
+
+        const auto& result = results[0];
+
+        BOOST_CHECK_EQUAL("R" + guid, result.configurationId);
+        BOOST_CHECK_EQUAL(0, result.error);
+        BOOST_CHECK_EQUAL(rfnId, result.rfnIdentifier);
+        BOOST_CHECK_EQUAL(Cti::Messaging::Pil::ProgrammingStatus::Uploading, result.status);  //  Uploading
+        //BOOST_CHECK_EQUAL("", result.timeStamp);
+    }
+
+    //  Repeat block request
+    ingestInbound(
+        "42 01 e7 6e e9 a8 bd 00 6d 65  74 65 72 50 72 6f 67 72 61 6d "
+        "73 0d 17 34 62 61 32 63 30 34  38 2d 63 39 33 33 2d 34 62 66 "
+        "31 2d 62 32 32 35 2d 32 35 64  33 64 39 37 65 35 35 35 37 c1 16");
+
+    BOOST_CHECK_EQUAL(mgr.mpsArchiveMsgs.empty(), true);
+}
+
+BOOST_AUTO_TEST_SUITE_END()

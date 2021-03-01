@@ -23,7 +23,7 @@ public:
     std::string getAssignedGuid(RfnIdentifier rfnIdentifier);
     ErrorOr<size_t> getProgramSize(const std::string guid);
 
-    bool isAssigned(const RfnIdentifier rfnIdentifier, const std::string guid);
+    virtual bool isAssigned(const RfnIdentifier rfnIdentifier, const std::string guid);
 
     double calculateMeterProgrammingProgress(RfnIdentifier rfnIdentifier, std::string guid, size_t size);
 
@@ -37,13 +37,12 @@ protected:
         Bytes password;
     };
     virtual ErrorOr<RawProgram> loadRawProgram(const std::string guid);
+    virtual Bytes convertRawProgram(const RawProgram& raw, const std::string guid);
 
 private:
 
     ErrorOr<Bytes> loadProgram(const std::string guid);
     
-    Bytes convertRawProgram(const RawProgram& raw, const std::string guid);
-
     std::map<std::string, Bytes> _programs;
 };
 

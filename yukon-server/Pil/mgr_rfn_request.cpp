@@ -26,10 +26,9 @@ using Cti::Devices::Commands::DeviceCommand;
 using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnCommandResultList;
 using Cti::Logging::Vector::Hex::operator<<;
+using Cti::Messaging::Pil::ProgrammingStatus;
 using Cti::Messaging::Rfn::E2eMessenger;
 
-using namespace Cti::Messaging;
-using namespace Cti::Messaging::Pil;
 using namespace Cti::Messaging::ActiveMQ::Queues;
 
 using namespace std::chrono_literals;
@@ -164,7 +163,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
     return completedDevices;
 }
 
-void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::string& guid, const size_t totalSent)
+void RfnRequestManager::updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::string& guid, const size_t totalSent)
 {
     constexpr auto YukonPrefix = static_cast<char>(Cti::MeterProgramming::GuidPrefixes::YukonProgrammed);
     double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnDevice.getRfnIdentifier(), guid, totalSent);
@@ -190,6 +189,11 @@ void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::st
             programmingStatus,
             ClientErrors::None,
             std::chrono::system_clock::now() });
+}
+
+void RfnRequestManager::sendMeterProgramStatusUpdate(Messaging::Pil::MeterProgramStatusArchiveRequestMsg msg)
+{
+    Messaging::Pil::sendMeterProgramStatusUpdate(std::move(msg));
 }
 
 
