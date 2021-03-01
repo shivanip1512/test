@@ -17,14 +17,15 @@
 namespace Cti {
     std::ostream& operator<<(std::ostream& os, const RfnIdentifier rfnId);
 }
-namespace Cti::Messaging::Pil {
+namespace Cti::Messaging::Rfn {
     std::ostream& operator<<(std::ostream& os, const ProgrammingStatus s) {
         return os << "[ProgrammingStatus " << as_underlying(s) << "]";
     }
 }
 
 using Cti::Messaging::Rfn::E2eDataRequestMsg;
-using Cti::Messaging::Pil::MeterProgramStatusArchiveRequestMsg;
+using Cti::Messaging::Rfn::MeterProgramStatusArchiveRequestMsg;
+using Cti::Messaging::Rfn::ProgrammingStatus;
 
 struct test_E2eMessenger : Cti::Messaging::Rfn::E2eMessenger
 {
@@ -574,7 +575,7 @@ BOOST_AUTO_TEST_CASE(test_meter_programming_progress)
         BOOST_CHECK_EQUAL("R" + guid, result.configurationId);
         BOOST_CHECK_EQUAL(0, result.error);
         BOOST_CHECK_EQUAL(rfnId, result.rfnIdentifier);
-        BOOST_CHECK_EQUAL(Cti::Messaging::Pil::ProgrammingStatus::Uploading, result.status);  //  Uploading
+        BOOST_CHECK_EQUAL(ProgrammingStatus::Uploading, result.status);  //  Uploading
         //BOOST_CHECK_EQUAL("", result.timeStamp);
     }
 
@@ -594,7 +595,7 @@ BOOST_AUTO_TEST_CASE(test_meter_programming_progress)
         BOOST_CHECK_EQUAL("R" + guid, result.configurationId);
         BOOST_CHECK_EQUAL(0, result.error);
         BOOST_CHECK_EQUAL(rfnId, result.rfnIdentifier);
-        BOOST_CHECK_EQUAL(Cti::Messaging::Pil::ProgrammingStatus::Uploading, result.status);  //  Uploading
+        BOOST_CHECK_EQUAL(ProgrammingStatus::Uploading, result.status);  //  Uploading
         //BOOST_CHECK_EQUAL("", result.timeStamp);
     }
 
@@ -615,7 +616,7 @@ BOOST_AUTO_TEST_CASE(test_meter_programming_progress)
         BOOST_CHECK_EQUAL("R" + guid, result.configurationId);
         BOOST_CHECK_EQUAL(0, result.error);
         BOOST_CHECK_EQUAL(rfnId, result.rfnIdentifier);
-        BOOST_CHECK_EQUAL(Cti::Messaging::Pil::ProgrammingStatus::Uploading, result.status);  //  Uploading
+        BOOST_CHECK_EQUAL(ProgrammingStatus::Uploading, result.status);  //  Uploading
         //BOOST_CHECK_EQUAL("", result.timeStamp);  //  Can't check updated timestamp since it uses system_clock at the moment
     }
 }

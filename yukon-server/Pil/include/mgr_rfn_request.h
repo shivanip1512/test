@@ -12,7 +12,7 @@
 
 #include <chrono>
 
-namespace Cti::Messaging::Pil {
+namespace Cti::Messaging::Rfn {
     struct MeterProgramStatusArchiveRequestMsg;
 }
 
@@ -117,7 +117,7 @@ protected:
     virtual Bytes createE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const RfnIdentifier endpointId, const Token token);
     virtual Bytes createE2eDtReply(const unsigned short id, const Bytes& payload, const Token token);
     virtual Bytes createE2eDtBlockReply(const unsigned short id, const Bytes& payload, const Token token, Block block);
-    virtual void sendMeterProgramStatusUpdate(Messaging::Pil::MeterProgramStatusArchiveRequestMsg msg);
+    virtual void sendMeterProgramStatusUpdate(Messaging::Rfn::MeterProgramStatusArchiveRequestMsg msg);
 
 private:
 

@@ -26,10 +26,8 @@ using Cti::Devices::Commands::DeviceCommand;
 using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnCommandResultList;
 using Cti::Logging::Vector::Hex::operator<<;
-using Cti::Messaging::Pil::ProgrammingStatus;
+using Cti::Messaging::Rfn::ProgrammingStatus;
 using Cti::Messaging::Rfn::E2eMessenger;
-
-using namespace Cti::Messaging::ActiveMQ::Queues;
 
 using namespace std::chrono_literals;
 
@@ -191,9 +189,9 @@ void RfnRequestManager::updateMeterProgrammingProgress(Devices::RfnDevice& rfnDe
             std::chrono::system_clock::now() });
 }
 
-void RfnRequestManager::sendMeterProgramStatusUpdate(Messaging::Pil::MeterProgramStatusArchiveRequestMsg msg)
+void RfnRequestManager::sendMeterProgramStatusUpdate(Messaging::Rfn::MeterProgramStatusArchiveRequestMsg msg)
 {
-    Messaging::Pil::sendMeterProgramStatusUpdate(std::move(msg));
+    Messaging::Rfn::sendMeterProgramStatusUpdate(std::move(msg));
 }
 
 
