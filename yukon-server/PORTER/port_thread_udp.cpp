@@ -471,8 +471,7 @@ YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
 {
     Endpoint endpoint = getDeviceSocketAddress( dr );
 
-    string  device_ip   = std::get<0>( endpoint );
-    u_short device_port = std::get<1>( endpoint );
+    const auto [ device_ip, device_port ] = endpoint;
 
     if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
@@ -935,7 +934,9 @@ bool UdpPortHandler::isPostCommWaitComplete(device_record &dr, ULONG postCommWai
 {
     if ( auto tp = mapFind( _last_endpoint_send_time, getDeviceSocketAddress( dr ) ) )
     {
-        return std::chrono::high_resolution_clock::now() >= ( *tp + std::chrono::milliseconds( postCommWait ) );
+        using namespace std::chrono;
+
+        return high_resolution_clock::now() >= ( *tp + milliseconds( postCommWait ) );
     }
 
     return true;
@@ -948,7 +949,7 @@ void UdpPortHandler::setDeviceActive(device_record *dr)
 
 bool UdpPortHandler::isDeviceActive(device_record *dr)
 {
-    return _last_endpoint_send_time.find( getDeviceSocketAddress( *dr ) ) != _last_endpoint_send_time.end();
+    return _last_endpoint_send_time.count( getDeviceSocketAddress( *dr ) );
 }
 
 void UdpPortHandler::clearActiveDevice(device_record *dr)
