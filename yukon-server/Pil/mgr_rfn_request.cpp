@@ -165,13 +165,13 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
 void RfnRequestManager::updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::string& guid, const size_t totalSent)
 {
-    constexpr auto YukonPrefix = static_cast<char>(Cti::MeterProgramming::GuidPrefixes::YukonProgrammed);
-    double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnDevice.getRfnIdentifier(), guid, totalSent);
+    constexpr auto YukonPrefix = as_underlying(Cti::MeterProgramming::GuidPrefixes::YukonProgrammed);
+    const double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnDevice.getRfnIdentifier(), guid, totalSent);
 
-    auto oldProgress = rfnDevice.findDynamicInfo<double>(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
+    const auto oldProgress = rfnDevice.findDynamicInfo<double>(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
 
-    //  If it's the same progress as the last one we sent, don't send the update again
-    if( fabs(progress - oldProgress.value_or(0.0)) < 1 )
+    //  If this progress update is less than the previous, do not sent an update
+    if( (progress + 0.1) < oldProgress.value_or(0.0) )
     {
         return;
     }

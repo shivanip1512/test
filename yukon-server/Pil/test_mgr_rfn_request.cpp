@@ -604,7 +604,20 @@ BOOST_AUTO_TEST_CASE(test_meter_programming_progress)
         "73 0d 17 34 62 61 32 63 30 34  38 2d 63 39 33 33 2d 34 62 66 "
         "31 2d 62 32 32 35 2d 32 35 64  33 64 39 37 65 35 35 35 37 c1 16");
 
-    BOOST_CHECK_EQUAL(mgr.mpsArchiveMsgs.empty(), true);
+    //  Repeated update message
+    {
+        auto results = std::exchange(mgr.mpsArchiveMsgs, {});
+
+        BOOST_REQUIRE_EQUAL(results.size(), 1);
+
+        const auto& result = results[0];
+
+        BOOST_CHECK_EQUAL("R" + guid, result.configurationId);
+        BOOST_CHECK_EQUAL(0, result.error);
+        BOOST_CHECK_EQUAL(rfnId, result.rfnIdentifier);
+        BOOST_CHECK_EQUAL(Cti::Messaging::Pil::ProgrammingStatus::Uploading, result.status);  //  Uploading
+        //BOOST_CHECK_EQUAL("", result.timeStamp);  //  Can't check updated timestamp since it uses system_clock at the moment
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
