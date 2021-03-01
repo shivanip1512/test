@@ -28,7 +28,7 @@
 
     <tags:nameValueContainer2 tableClass="stacked">
         <%-- Zone Name --%>
-        <tags:inputNameValue path="name" nameKey=".label.name" size="25"/>
+        <tags:inputNameValue path="name" nameKey=".label.name" size="25" maxlength="30"/>
 
         <%-- Zone Type --%>
         <tags:nameValue2 nameKey=".label.zoneType">
