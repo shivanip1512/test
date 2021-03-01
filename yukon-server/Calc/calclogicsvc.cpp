@@ -1065,6 +1065,7 @@ void CtiCalcLogicService::pauseInputThread()
         while ( ! _inputFunc.isWaiting() )
         {
             // spin until the thread hits the waitForResume()...  then we know for sure that we've paused
+            Sleep(0);
         }
     }
     catch(...)

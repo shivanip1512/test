@@ -1348,12 +1348,14 @@ void CtiCalculateThread::pauseThreads()
         while ( ! _onUpdateThreadFunc.isWaiting() )
         {
             // spin until the thread hits the waitForResume()...  then we know for sure that we've paused
+            Sleep(0);
         }
 
         _periodicThreadFunc.pause();
         while ( ! _periodicThreadFunc.isWaiting() )
         {
             // spin until the thread hits the waitForResume()...  then we know for sure that we've paused
+            Sleep(0);
         }
 
         if (_historicalThreadFunc.isRunning())
@@ -1362,6 +1364,7 @@ void CtiCalculateThread::pauseThreads()
             while ( ! _historicalThreadFunc.isWaiting() )
             {
                 // spin until the thread hits the waitForResume()...  then we know for sure that we've paused
+                Sleep(0);
             }
         }
 
@@ -1371,6 +1374,7 @@ void CtiCalculateThread::pauseThreads()
             while ( ! _baselineThreadFunc.isWaiting() )
             {
                 // spin until the thread hits the waitForResume()...  then we know for sure that we've paused
+                Sleep(0);
             }
         }
     }
