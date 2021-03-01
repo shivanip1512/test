@@ -17,8 +17,7 @@
             <span class="fl">
                 <span class="vat"><i:inline key="yukon.common.filterBy"/>&nbsp;</span>
                 <cti:msg2 var="selectConfigPlaceholder" key=".selectConfigurations"/>
-                <form:select id="selectedConfigurations" path="configurationIds" size="1" cssStyle="width:300px" 
-                    data-placeholder="${selectConfigPlaceholder}">
+                <form:select id="selectedConfigurations" path="configurationIds" size="1" cssClass="w300" data-placeholder="${selectConfigPlaceholder}">
                     <form:option value="-999"><i:inline key=".configurations.unassigned"/></form:option>
                     <form:option value="-998"><i:inline key=".configurations.all"/></form:option>
                     <c:forEach var="configuration" items="${configurations}">

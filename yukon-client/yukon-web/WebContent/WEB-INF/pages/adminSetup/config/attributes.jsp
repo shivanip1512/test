@@ -132,14 +132,16 @@
                         <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
                         
                         <cti:msg2 var="allAttributes" key=".allAttributes"/>&nbsp;
-                        <select name="selectedAttributes" class="js-selected-attributes" multiple="multiple" data-placeholder="${allAttributes}">
+                        <select name="selectedAttributes" class="js-selected-attributes" multiple="multiple" size="1" 
+                            data-placeholder="${allAttributes}" style="width:350px;">
                             <c:forEach var="attribute" items="${attributes}">
                                 <option value="${attribute.customAttributeId}">${fn:escapeXml(attribute.name)}</option>
                             </c:forEach>
                         </select>
                         
                         <cti:msg2 var="allDeviceTypes" key=".allDeviceTypes"/>&nbsp;
-                        <select name="selectedDeviceTypes" class="js-selected-device-types" multiple="multiple" data-placeholder="${allDeviceTypes}">
+                        <select name="selectedDeviceTypes" class="js-selected-device-types" multiple="multiple" size="1" 
+                            data-placeholder="${allDeviceTypes}" size="width:350px;">
                             <c:forEach var="type" items="${deviceTypes}">
                                 <option value="${type}"><i:inline key="${type.formatKey}"/></option>
                             </c:forEach>
