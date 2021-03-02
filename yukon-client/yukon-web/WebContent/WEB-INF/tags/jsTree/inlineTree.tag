@@ -57,7 +57,6 @@
         
         <c:choose>
             <c:when test="${not empty pageScope.highlightNodePath}">
-                debugger;
                 var highlight = '${highlightNodePath}'.split('/');
                 var initially_select = highlight[highlight.length-1];
             </c:when>
@@ -77,14 +76,11 @@
             minExpandLevel: 2,    //prevent the top level elements (visually - dynatree has 1 hidden root by default) from expanding/collapsing
             onPostInit: function(isReloading, isError) {
                 //show the initially selected item
-                debugger;
-                console.log("Initially select is " + initially_select);
 
                 if (initially_select) {        
                     this.selectKey(initially_select);
                     var node = this.getNodeByKey(initially_select);
                     if (node) {
-                        console.log("Found node");
                         node.makeVisible();
                     }
                     <c:if test="${not empty pageScope.scrollToHighlighted and scrollToHighlighted}">
