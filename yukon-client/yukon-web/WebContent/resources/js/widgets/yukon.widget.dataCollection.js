@@ -104,7 +104,6 @@ yukon.widget.dataCollection = (function () {
                 chart = $(item).find('.js-pie-chart'),
                 errorMessage = $(item).find('.user-message'),
                 errorMessageFound = errorMessage.is(":visible");
-           // alert(deviceGroup);
             if (deviceGroup && (!errorMessageFound || newSelection)) {
                 $.ajax({
                     url: yukon.url('/amr/dataCollection/updateChart'),
@@ -201,10 +200,10 @@ yukon.widget.dataCollection = (function () {
 
             _initialized = true;
         },
-        setSelectedDeviceGroup : function() {
-            var changedGroupName = $('#changedGroupName').val();
-            $('#changeDeviceGroupLink').html(changedGroupName);
-            $('#groupName').val(changedGroupName);
+        setSelectedDeviceGroup : function(uniqueId) {
+            var changedGroupName = $('#changedGroupName_' + uniqueId).val();
+            $('#changeDeviceGroupLink_' + uniqueId).html(changedGroupName);
+            $('#groupName_' + uniqueId).val(changedGroupName);
             _update(true);
         },
         

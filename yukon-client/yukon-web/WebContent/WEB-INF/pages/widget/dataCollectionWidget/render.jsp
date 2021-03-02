@@ -1,10 +1,10 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:uniqueIdentifier var="id" />
 
@@ -12,14 +12,18 @@
 
 <div class="js-data-collection-widget">
 
+    <cti:uniqueIdentifier var="uniqueId"/>
+
     <c:forEach var="range" items="${rangeTypes}">
         <input type="hidden" class="js-${range}" value="<cti:msg2 key="yukon.web.modules.amr.dataCollection.detail.rangeType.${range}"/>"></input>
     </c:forEach>
+    
+    <c:set var="selectedGroup" value="${fn:escapeXml(deviceGroup)}"/>
 
      <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".widgetParameter.deviceGroup">
-             <a href="javascript:void(0);" id="changeDeviceGroupLink">${deviceGroup}</a>
-             <input class="js-group-name" type="hidden" id="groupName" name="groupName" value="${deviceGroup}">
+             <a href="javascript:void(0);" id="changeDeviceGroupLink_${uniqueId}">${selectedGroup}</a>
+             <input type="hidden" id="groupName_${uniqueId}" name="groupName" value="${selectedGroup}">
         </tags:nameValue2>
     </tags:nameValueContainer2>
     
@@ -39,19 +43,20 @@
     <cti:msg2 var="cancelButton" key="yukon.common.cancel"/>
     <cti:msg2 var="popupTitle" key="yukon.common.selectGroup.title"/>
     
-    
-    <jsTree:nodeValueSelectingPopupTree fieldId="changedGroupName"
-        fieldName="changedGroupName"
-        fieldValue="${deviceGroup}"
+    <jsTree:nodeValueSelectingPopupTree 
+        fieldId="changedGroupName_${uniqueId}"
+        fieldName="changedGroupName_${uniqueId}"
+        fieldValue="${selectedGroup}"
         nodeValueName="groupName"
-        highlightNodePath = "${deviceGroup}"
+        highlightNodePath="${selectedGroup}"
         submitButtonText="${okButton}"
         cancelButtonText="${cancelButton}"
-        id="changeDeviceGroupTree"
-        triggerElement="changeDeviceGroupLink"
+        id="changeDeviceGroupTree_${uniqueId}"
+        triggerElement="changeDeviceGroupLink_${uniqueId}"
+        loadDataOnTrigger="true"
         dataUrl="${groupDataUrl}"
         title="${popupTitle}"
-        submitCallback="yukon.widget.dataCollection.setSelectedDeviceGroup();"
+        submitCallback="yukon.widget.dataCollection.setSelectedDeviceGroup(${uniqueId});"
         includeControlBar="true" />
 </div>
 

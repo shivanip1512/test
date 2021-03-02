@@ -22,10 +22,10 @@ public class DeviceGroupPickerValidator implements WidgetInputValidator {
     public void validate(String inputName, Object inputValue, WidgetInputType type)
             throws WidgetParameterValidationException, WidgetMissingParameterException {
         DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-        //if (deviceGroupService.findGroupName(inputValue.toString()) == null) {
+        if (deviceGroupService.findGroupName(inputValue.toString()) == null) {
             String message = "Valid Device group selection is required.";
             throw new WidgetParameterValidationException(message, inputName, "deviceGroup.required", inputName);
-       // }
+        }
     }
 
 }
