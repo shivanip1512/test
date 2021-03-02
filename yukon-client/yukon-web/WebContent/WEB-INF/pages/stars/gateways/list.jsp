@@ -36,9 +36,9 @@
         </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
             <li class="divider"></li>
-            <cti:url var="manageCertificate" value="/stars/gateways/certificateUpdates"/>
+            <cti:url var="manageCertificate" value="/stars/gateways/manageCertificates"/>
             <cm:dropdownOption icon="icon-drive-go" key=".manageCertificates" href="${manageCertificate}"/>
-            <cti:url var="manageFirmware" value="/stars/gateways/firmwareDetails"/>
+            <cti:url var="manageFirmware" value="/stars/gateways/manageFirmware"/>
             <cm:dropdownOption icon="icon-drive-go" key=".manageFirmware" href="${manageFirmware}"/>
         </cti:checkRolesAndProperties>
     </div>
