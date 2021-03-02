@@ -1736,12 +1736,12 @@ Metric IDs:
     71:  { name: "Q Q1 + Q4",                            Unit: *Q,      Modifiers: [ *Q1, *Q4                              ] }
     72:  { name: "Q Q2 + Q3",                            Unit: *Q,      Modifiers: [ *Q2, *Q3                              ] }
     # ------     
-    78:  { name: "Power Factor",                         Unit: *PF,     Modifiers: [ *Q1, *Q4                              ] }
-    79:  { name: "Power Factor",                         Unit: *PF,     Modifiers: [ *Q2, *Q3                              ] }
+    78:  { name: "Power Factor Delivered",               Unit: *PF,     Modifiers: [ *Q1, *Q4                              ] }
+    79:  { name: "Power Factor Received",                Unit: *PF,     Modifiers: [ *Q2, *Q3                              ] }
     80:  { name: "Power Factor",                         Unit: *PF,     Modifiers: [                                       ] }
-    81:  { name: "Power Factor",                         Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q4                         ] }
-    82:  { name: "Power Factor",                         Unit: *PF,     Modifiers: [ *Q2, *Q3, *Q4                         ] }
-    83:  { name: "Power Factor",                         Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4                    ] }
+    81:  { name: "Power Factor Q1 + Q1 + Q4",            Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q4                         ] }
+    82:  { name: "Power Factor Q2 + Q3 + Q4",            Unit: *PF,     Modifiers: [ *Q2, *Q3, *Q4                         ] }
+    83:  { name: "Power Factor Q1 + Q2 + Q3 + Q4",       Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4                    ] }
     84:  { name: "Power Factor, peak",                   Unit: *PF,     Modifiers: [ *Max                                  ] }
     85:  { name: "Power Factor Q1 + Q2 + Q4, peak",      Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q4, *Max                   ] }
     86:  { name: "Power Factor Q2 + Q3 + Q4, peak",      Unit: *PF,     Modifiers: [ *Q2, *Q3, *Q4, *Max                   ] }
