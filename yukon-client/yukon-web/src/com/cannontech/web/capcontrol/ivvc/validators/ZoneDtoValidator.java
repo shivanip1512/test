@@ -22,9 +22,10 @@ public class ZoneDtoValidator extends SimpleValidator<AbstractZone> {
 
     @Override
     protected void doValidation(AbstractZone zoneDto, Errors errors) {
-        
+
         YukonValidationUtils.rejectIfEmpty(errors,"name","yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.zoneName");
-        
+        YukonValidationUtils.checkExceedsMaxLength(errors, "name", zoneDto.getName(), 60);
+
         if (zoneDto instanceof AbstractZoneNotThreePhase) {
             if (((AbstractZoneNotThreePhase)zoneDto).getRegulator().getRegulatorId() == 0) {
                 errors.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulator");
