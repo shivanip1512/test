@@ -150,9 +150,7 @@ yukon.widget.dataCollection = (function () {
             clearTimeout(_updateTimeout);
         }
         _updateTimeout = setTimeout(_update, yg._updateInterval);
-        
-        
-        
+            
     },
     
     mod = {

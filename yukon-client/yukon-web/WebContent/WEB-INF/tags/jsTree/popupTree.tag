@@ -28,7 +28,7 @@
 
 <c:if test="${!empty pageScope.treeCss}"><cti:includeCss link="${treeCss}"/></c:if>
 
-<div id="window_${id}" class="dn" data-url=${dataUrl}>
+<div id="window_${id}" class="dn" data-url="${dataUrl}">
         <jsTree:inlineTree id="${id}"
              treeCss="${treeCss}"
              treeParameters="${treeParameters}"
@@ -93,9 +93,7 @@
                         tree.dynatree('option', 'initAjax', {
                             url: dialog.data('url')
                         });
-                        console.log("Reloading tree");
                         tree.dynatree('getTree').reload();
-                        //tree.dynatree('getTree').postInit();
                         dialog.data('initialized', 'true');
                     }
                 }
