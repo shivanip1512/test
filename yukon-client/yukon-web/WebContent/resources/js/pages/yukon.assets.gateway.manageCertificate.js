@@ -1,7 +1,7 @@
 yukon.namespace('yukon.assets.gateway.manageCertificate');
 
 /**
- * Module that handles the behavior on the gateway manage certificate page (localhost:8080/yukon/stars/gateways/certificateUpdates).
+ * Module that handles the behavior on the gateway manage certificate page (localhost:8080/yukon/stars/gateways/manageCertificates).
  * @module yukon.assets.gateway.manageCertificate
  * @requires JQUERY
  * @requires MOMENT

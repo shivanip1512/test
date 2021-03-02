@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="operator" page="gateways.certificateUpdates">
+<cti:standardPage module="operator" page="gateways.manageCertificates">
     <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
         <div id="gateway-cert-popup"
              class="dn"
