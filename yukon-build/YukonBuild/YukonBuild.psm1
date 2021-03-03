@@ -76,7 +76,7 @@ Function Update-Signing () {
 
     $signingCommand = ("$ENV:SIGNSERVER_HOME\bin\signclient.cmd signdocument -clientside " +
     "-workername SW-Yukon-MSAuth-CMS -servlet /signserver/worker/SW-Yukon-MSAuth-CMS -infile 'yukon-artifact\YukonInstall\SetupUnsigned.exe' " +
-    "-host signserverp1.tcc.etn.com,signserverp2.tcc.etn.com -port 8443 -username $ENV:bamboo_secretlogin -outfile 'yukon-artifact\YukonInstall\Setup.exe' -digestalgorithm SHA-256 " +
+    "-host signserverp1.tcc.etn.com -port 8443 -username $ENV:bamboo_secretlogin -outfile 'yukon-artifact\YukonInstall\Setup.exe' -digestalgorithm SHA-256 " +
     "-truststore %SIGNSERVER_HOME%\eaton-truststore.jks -truststorepwd eaton -password $ENV:bamboo_secretpassword")
 
     Invoke-Expression -Command $signingCommand
