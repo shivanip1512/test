@@ -36,7 +36,7 @@
         <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-update-data-collection"></cti:button>
     </span>
 
-	<cti:url var="groupDataUrl" value="/group/editor/allGroupsJson"/>
+	<cti:url var="groupDataUrl" value="/group/editor/allGroupsJson?groupName=${selectedGroup}"/>
     <cti:msg2 var="okButton" key="yukon.common.okButton"/>
     <cti:msg2 var="cancelButton" key="yukon.common.cancel"/>
     <cti:msg2 var="popupTitle" key="yukon.common.selectGroup.title"/>
@@ -46,7 +46,6 @@
         fieldName="changedGroupName_${uniqueId}"
         fieldValue="${selectedGroup}"
         nodeValueName="groupName"
-        highlightNodePath="${selectedNodeId}"
         submitButtonText="${okButton}"
         cancelButtonText="${cancelButton}"
         id="changeDeviceGroupTree_${uniqueId}"

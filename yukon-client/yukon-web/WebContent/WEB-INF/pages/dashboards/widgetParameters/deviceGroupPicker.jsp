@@ -38,7 +38,7 @@ function setSelectedDeviceGroup(uniqueId) {
            <c:set var="linkText" value="${group}"/>
         </c:if>
         <a href="javascript:void(0);" id="changeDeviceGroupLink_${uniqueId}">${linkText}</a>
-        <cti:url var="groupDataUrl" value="/group/editor/allGroupsJson"/>
+        <cti:url var="groupDataUrl" value="/group/editor/allGroupsJson?groupName=${group}"/>
     </tags:nameValue2>
 
     <input type="hidden" id="groupName_${uniqueId}" name="${param.path}.parameters['${param.parameterName}']" value="${group}">
@@ -47,7 +47,6 @@ function setSelectedDeviceGroup(uniqueId) {
         fieldName="changedGroupName_${uniqueId}"
         fieldValue="${group}"
         nodeValueName="groupName"
-        highlightNodePath="${group}"
         submitButtonText="${okButton}"
         cancelButtonText="${cancelButton}"
         id="changeDeviceGroupTree_${uniqueId}"

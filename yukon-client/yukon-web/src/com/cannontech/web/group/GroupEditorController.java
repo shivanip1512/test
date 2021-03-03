@@ -67,6 +67,7 @@ import com.cannontech.web.util.JsTreeNode;
 import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 
 @RequestMapping("/editor/*")
 @Controller
@@ -251,13 +252,63 @@ public class GroupEditorController {
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         
         // ALL GROUPS TREE JSON
-        HighlightSelectedGroupNodeAttributeSettingCallback callback = new HighlightSelectedGroupNodeAttributeSettingCallback(rootGroup);
-        JsTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(allGroupsGroupHierarchy, groupsLabel, callback);
+        HighlightSelectedGroupNodeAttributeSettingCallback highlightCallback = new HighlightSelectedGroupNodeAttributeSettingCallback(rootGroup);
+        Set<? extends NodeAttributeSettingCallback<DeviceGroup>> callbacks = Set.of(highlightCallback);
+        
+        //get selected device group if provided
+        DeviceGroup group = getSelectedDeviceGroup(request);
+        
+        if (group != null) {
+            Map<DeviceGroup,DeviceGroup> groupsToExpand = getGroupsToExpand(Collections.singletonList(group));
+            
+            NodeAttributeSettingCallback<DeviceGroup> selectedCallback = new NodeAttributeSettingCallback<DeviceGroup>() {   
+                @Override
+                public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
+                    
+                    if (groupsToExpand.containsKey(deviceGroup)) {
+                        node.setAttribute("expand", true);
+                    }
+                    
+                    // selects current group
+                    if (group.equals(deviceGroup)) {
+                        node.setAttribute("select", true);
+                    }
+                }
+            };
+            callbacks = Set.of(highlightCallback, selectedCallback);
+        }
+        
+
+        JsTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(allGroupsGroupHierarchy, groupsLabel, callbacks);
         
         String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap(), true);
         
         resp.setContentType("application/json");
         resp.getWriter().write(allGroupsDataJson);
+    }
+    
+    /**
+     * This method finds all the groups to expand and their parent groups.
+     */
+    private Map<DeviceGroup,DeviceGroup> getGroupsToExpand(List<DeviceGroup> currentGroups){
+        
+        Map<DeviceGroup,DeviceGroup> groupsToExpand = Maps.newHashMap();
+        DeviceGroup parentGroup = null;
+        
+        for (DeviceGroup currentGroup:currentGroups) {
+            
+            parentGroup = currentGroup.getParent();
+            
+            while(!groupsToExpand.containsKey(parentGroup)){
+                groupsToExpand.put(parentGroup, parentGroup);
+                if(parentGroup != null){
+                    parentGroup = parentGroup.getParent();
+                }
+            }
+            groupsToExpand.put(currentGroup, currentGroup);
+        }
+        
+        return groupsToExpand; 
     }
     
     @GetMapping("copyGroupJson")

@@ -82,10 +82,11 @@
             //click a button, get the window
             $(document).on('click', '#${triggerElement}', function () {
                 var maxHeight,
-                    dialog = $('#' + 'window_${id}')
+                    dialog = $('#' + 'window_${id}'),
                     windowHeight = $(window).height(),
                     dialogMaxHeight = windowHeight * 0.70,
                     divHeigth = windowHeight * 0.50;
+
                 
                 if ('${!empty pageScope.loadDataOnTrigger}' === 'true') {
                     if (!dialog.data('initialized')) {
@@ -93,11 +94,20 @@
                         tree.dynatree('option', 'initAjax', {
                             url: dialog.data('url')
                         });
+                        tree.dynatree('option', 'onPostInit', function(isReloading, isError) {
+                            dialog.dialog({
+                                position: {
+                                    my: 'center',
+                                    at: 'center',
+                                    of: window
+                                }
+                            })
+                        });
                         tree.dynatree('getTree').reload();
                         dialog.data('initialized', 'true');
                     }
                 }
-                
+
                 // prevents double scrollbars on tree container
                 dialog.css('overflow', 'hidden');
 

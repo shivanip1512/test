@@ -9,8 +9,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -21,7 +19,6 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 @Controller
 @RequestMapping("/dataCollectionWidget")
 public class DataCollectionWidget extends AdvancedWidgetControllerBase {
-    @Autowired DeviceGroupService deviceGroupService;
     
     @Autowired
     public DataCollectionWidget(@Qualifier("widgetInput.deviceGroup") SimpleWidgetInput simpleWidgetInput) {
@@ -31,11 +28,7 @@ public class DataCollectionWidget extends AdvancedWidgetControllerBase {
         
     @RequestMapping("render")
     public String render(ModelMap model, HttpServletRequest request) throws Exception {
-        String deviceGroup = WidgetParameterHelper.getStringParameter(request, "deviceGroup");
-        DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
-        String selectedNodeId = deviceGroupService.getNodeId(group);
-        
-        model.addAttribute("selectedNodeId", selectedNodeId);        
+        String deviceGroup = WidgetParameterHelper.getStringParameter(request, "deviceGroup");    
         model.addAttribute("deviceGroup", deviceGroup);
         
         Boolean includeDisabled = WidgetParameterHelper.getBooleanParameter(request, "includeDisabled", true);

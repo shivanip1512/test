@@ -32,11 +32,6 @@ public interface DeviceGroupService {
     public DeviceGroup resolveGroupName(String groupName) throws NotFoundException;
     
     /**
-     * Get nodeId for a device group
-     */
-    public String getNodeId(DeviceGroup deviceGroup);
-    
-    /**
      * Attempt to resolve the DeviceGroup for the given name. If the group cannot be found, null is returned.
      * resolveGroupName() is appropriate for most cases where a group is expected to exist.
      * This method is shortcut to catching the NotFoundException thrown by resolveGroupName() and returning a null.
