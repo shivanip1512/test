@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -41,6 +42,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.JsTreeBuilderUtil;
 import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -251,6 +253,12 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     @Override
     public String getFullPath(SystemGroupEnum systemGroupEnum) {
         return deviceGroupEditorDao.getFullPath(systemGroupEnum);
+    }
+    
+    @Override
+    public String getNodeId(DeviceGroup deviceGroup) {
+        String nodeId = JsTreeBuilderUtil.createUniqueNodeId(deviceGroup.getFullName(), new HashMap<String, Integer>());
+        return nodeId;
     }
     
     @Override

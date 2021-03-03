@@ -6,8 +6,6 @@
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:uniqueIdentifier var="id" />
-
 <cti:msgScope paths="modules.dashboard,widgets.dataCollectionWidget">
 
 <div class="js-data-collection-widget">
@@ -42,13 +40,13 @@
     <cti:msg2 var="okButton" key="yukon.common.okButton"/>
     <cti:msg2 var="cancelButton" key="yukon.common.cancel"/>
     <cti:msg2 var="popupTitle" key="yukon.common.selectGroup.title"/>
-    
+
     <jsTree:nodeValueSelectingPopupTree 
         fieldId="changedGroupName_${uniqueId}"
         fieldName="changedGroupName_${uniqueId}"
         fieldValue="${selectedGroup}"
         nodeValueName="groupName"
-        highlightNodePath="${selectedGroup}"
+        highlightNodePath="${selectedNodeId}"
         submitButtonText="${okButton}"
         cancelButtonText="${cancelButton}"
         id="changeDeviceGroupTree_${uniqueId}"
