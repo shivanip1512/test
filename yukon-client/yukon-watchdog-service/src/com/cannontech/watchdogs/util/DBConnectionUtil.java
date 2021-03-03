@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.watchdogs.impl.DBName;
@@ -16,8 +17,7 @@ public class DBConnectionUtil {
 
     public static boolean isDBConnected(DBName dbName) {
         try {
-            YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
-            Connection connection = jdbcTemplate.getDataSource().getConnection();
+            Connection connection = PoolManager.getYukonConnection();
             if (connection == null || connection.isClosed()) {
                 return false;
             }
