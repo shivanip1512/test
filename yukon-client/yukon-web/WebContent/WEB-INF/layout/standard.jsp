@@ -81,7 +81,13 @@
         </div>
         
         <div class="yukon-page">
+                    <div class="js-react-component" data-url="http://localhost:3000/navigation">
+<%--                                   <iframe src="http://localhost:3000/navigation" frameBorder="0" scrolling="no" 
+                        style="width:100%;border:0;overflow:visible"></iframe> --%>
+            </div>
             <header class="yukon-header" style="background-color:white">
+
+
 <%--                 <div class="js-navigation">
                 <iframe src="http://localhost:3000/navigation" frameBorder="0" scrolling="no" allowTransparency="true" 
                         style="width:100%;height:100%;border:0;background-color:transparent"></iframe>
