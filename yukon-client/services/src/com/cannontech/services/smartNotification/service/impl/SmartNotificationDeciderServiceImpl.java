@@ -72,8 +72,8 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
     private void schedule(SmartNotificationDecider decider, WaitTime waitTime) {
         decider.setWaitTime(waitTime);
         DateTime nextRun = waitTime.getRunTime();
-        logInfo("Scheduling new decider to run at " + nextRun, decider);
         long delay = nextRun.getMillis() - Instant.now().getMillis();
+        logInfo("Scheduling new decider to run at " + nextRun.toString("MM-dd-yyyy HH:mm:ss"), decider);
         scheduledExecutor.schedule(() -> runDecider(decider), delay, TimeUnit.MILLISECONDS);
     }
     
@@ -111,24 +111,31 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             });
         } 
     }
-    
-   private void putMessagesOnAssemblerQueue(SmartNotificationDecider decider, List<SmartNotificationMessageParameters> messages, int interval) {
+
+    private void putMessagesOnAssemblerQueue(SmartNotificationDecider decider, List<SmartNotificationMessageParameters> messages,
+            int interval) {
         if (!messages.isEmpty()) {
             SmartNotificationMessageParametersMulti msg = new SmartNotificationMessageParametersMulti(messages, interval, false);
-            logInfo("Prepared message to send: "+ msg, decider);
+            logInfo("Interval:" + getIntervalInfo(interval) + " Total:" + messages.size() + " Put on assembler queue: " + msg,
+                    decider);
             jmsTemplate.convertAndSend(new SmartNotificationMessageParametersMulti(messages, interval, false));
         }
     }
-    
-    
+
     @Override
     public void putMessagesOnAssemblerQueue(List<SmartNotificationMessageParameters> messages, int interval,
             boolean sendAllInOneEmail, String digestTime) {
         if (!messages.isEmpty()) {
-            SmartNotificationMessageParametersMulti msg = new SmartNotificationMessageParametersMulti(messages, interval, sendAllInOneEmail);
-            logInfo("Digest Time:" + digestTime + " One email:" + sendAllInOneEmail + " Prepared message to send: " + msg, this);
+            SmartNotificationMessageParametersMulti msg = new SmartNotificationMessageParametersMulti(messages, interval,
+                    sendAllInOneEmail);
+            logInfo("Interval:" + getIntervalInfo(interval) + " Total:" + messages.size() + " Digest Time:" + digestTime
+                    + " One email:" + sendAllInOneEmail + " Put on assembler queue: " + msg, this);
             jmsTemplate.convertAndSend(new SmartNotificationMessageParametersMulti(messages, interval, sendAllInOneEmail));
         }
+    }
+
+    private String getIntervalInfo(int interval) {
+        return interval + " of " + intervals;
     }
     
 }

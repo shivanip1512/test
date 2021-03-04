@@ -56,7 +56,6 @@ public class SmartNotifDeviceDataMonitorDecider extends SmartNotificationDecider
                 monitorIdToSubscription.get(monitorId).forEach(s -> subscriptions.put(s, e));
             }
         });
-        
         return subscriptions;
     }
     

@@ -18,7 +18,7 @@ import org.joda.time.Instant;
 public class SmartNotificationEvent implements Serializable {
     private final static long serialVersionUID = 1L;
     private int eventId;
-    private final Instant timestamp;
+    private Instant timestamp;
     private Instant groupProcessTime;
     private Instant immediateProcessTime;
     private Map<String, Object> parameters = new HashMap<>();
@@ -70,6 +70,10 @@ public class SmartNotificationEvent implements Serializable {
 
     public void setImmediateProcessTime(Instant immediateProcessTime) {
         this.immediateProcessTime = immediateProcessTime;
+    }
+    
+    public void setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
     }
     
     @Override

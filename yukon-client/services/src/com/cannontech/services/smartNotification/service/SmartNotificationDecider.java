@@ -126,8 +126,8 @@ public abstract class SmartNotificationDecider implements MessageListener {
         if (!coalescing.isEmpty()) {
             if (isScheduledToRunInTheFuture()) {
                 result.setReschedule(false);
-                deciderService.logInfo("unable to process " + Sets.newHashSet(coalescing.values()).size()
-                    + " events. The events will be processed at " + waitTime, result.getDecider());
+                deciderService.logInfo(Sets.newHashSet(coalescing.values()).size()
+                    + " coalescing events scheduled to be processed at " + waitTime, result.getDecider());
             } else {
                 if (waitTime == null && deciderService.getFirstInterval() != 0) {
                     // user wants to wait before getting his first notification
@@ -187,7 +187,7 @@ public abstract class SmartNotificationDecider implements MessageListener {
                 if (object instanceof SmartNotificationEventMulti) {
                     SmartNotificationEventMulti event = (SmartNotificationEventMulti) object;
                     ProcessorResult result = process(Instant.now(), event.getEvents());
-                    deciderService.logInfo("Processing message:" + event + " Processor result:" + result, result.getDecider());
+                    deciderService.logInfo("Received event: " + event + " Processor result:" + result, result.getDecider());
                     deciderService.send(result);
                 }
             }

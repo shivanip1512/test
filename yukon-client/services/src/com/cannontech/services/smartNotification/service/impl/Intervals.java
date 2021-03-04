@@ -78,4 +78,9 @@ public final class Intervals {
     public Integer getFirstInterval() {
         return intervals.iterator().next();
     }
+    
+    @Override
+    public String toString() {
+        return intervals.toString();
+    }
 }
