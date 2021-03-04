@@ -7,8 +7,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.watchdogs.impl.DBName;
 
 public class DBConnectionUtil {
