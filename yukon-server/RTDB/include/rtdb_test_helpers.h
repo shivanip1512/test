@@ -506,10 +506,11 @@ struct test_Mct470Device : test_PlcDevice<Cti::Devices::Mct470Device, TYPEMCT470
 template <typename BaseDevice, DeviceTypes type>
 struct test_RfnDevice : BaseDevice
 {
-    test_RfnDevice(const std::string name)
+    test_RfnDevice(int deviceId, const RfnIdentifier rfnId)
     {
-        _name = name;
+        _name = rfnId.manufacturer + " " + rfnId.model + " " + rfnId.serialNumber + " (" + std::to_string(deviceId) + ")";
         setDeviceType(type);
+        _rfnId = rfnId;
     }
 };
     
@@ -599,10 +600,10 @@ struct test_DeviceManager : CtiDeviceManager
     static constexpr int MCT410CD_ID = 511;
 
     std::map<int, Cti::Devices::RfnDeviceSPtr> rfnDevices {
-        { 123, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS GARGANTUAN (123)"s) },
-        {  49, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS VITO (49)"s) },
-        { 499, boost::make_shared<test_Rfn430sl1Device>("JIMMY JOHNS TURKEY TOM (499)"s) },
-        { 500, boost::make_shared<test_Rfn510flDevice>("JIMMY JOHNS ITALIAN NIGHT CLUB (500)"s) },
+        { 123, boost::make_shared<test_Rfn410flDevice> (123, RfnIdentifier { "JIMMY", "JOHNS", "GARGANTUAN"         }) },
+        {  49, boost::make_shared<test_Rfn410flDevice> ( 49, RfnIdentifier { "JIMMY", "JOHNS", "VITO"               }) },
+        { 499, boost::make_shared<test_Rfn430sl1Device>(499, RfnIdentifier { "JIMMY", "JOHNS", "TURKEY TOM"         }) },
+        { 500, boost::make_shared<test_Rfn510flDevice> (500, RfnIdentifier { "JIMMY", "JOHNS", "ITALIAN NIGHT CLUB" }) },
         { 501, boost::make_shared<test_RfBatteryNodeDevice>("JIMMY JOHNS ULTIMATE PORKER (501)"s) } };
 
     std::map<int, ptr_type> otherDevices {

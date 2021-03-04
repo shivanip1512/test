@@ -55,7 +55,7 @@ public:
 };
 
 template<class Enum>
-std::underlying_type_t<Enum> as_underlying(Enum value)
+constexpr std::underlying_type_t<Enum> as_underlying(Enum value)
 {
     return static_cast<std::underlying_type_t<Enum>>(value);
 }

@@ -8,7 +8,7 @@
 
 #include "error.h"
 
-using namespace Cti::Messaging::Pil;
+using namespace Cti::Messaging::Rfn;
 
 namespace Cti::Devices {
 

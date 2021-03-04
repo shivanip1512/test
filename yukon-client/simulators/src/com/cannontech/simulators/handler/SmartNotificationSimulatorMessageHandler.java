@@ -36,10 +36,6 @@ public class SmartNotificationSimulatorMessageHandler extends SimulatorMessageHa
                         return smartNotificationSimulatorService.createEvents(request.getWaitTime(),
                                                                               request.getEventsPerMessage(), 
                                                                               request.getNumberOfMessages());
-                    case SAVE_SUBSCRIPTION:
-                        return smartNotificationSimulatorService.saveSubscription(request.getSubscription(), request.getUserGroupId(), 
-                                                                                  request.isGenerateTestEmailAddresses(),
-                                                                                  request.getUserContext());
                     case START_DAILY_DIGEST:
                         return smartNotificationSimulatorService.startDailyDigest(request.getDailyDigestHour());
                     default:
