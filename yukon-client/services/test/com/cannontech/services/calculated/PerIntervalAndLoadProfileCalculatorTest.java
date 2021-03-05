@@ -1,11 +1,19 @@
 package com.cannontech.services.calculated;
 
 import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.easymock.IAnswer;
 import org.joda.time.Instant;
 import org.junit.Assert;
@@ -24,6 +32,7 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointValue;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -425,5 +434,28 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         calculationDateValues.put(new Instant(1472275387787l), 1); // Date -2016-08-27T05:23:07.787Z
         
         checkNumberOfMessages(12, PAO_POINT_IDENTIFIER, calculationDateValues);
+    }
+
+    @Test
+    public void validCalcuableAttributeUpToDate() throws IOException {
+        InputStream in = this.getClass().getResourceAsStream("/com/cannontech/services/rfn/rfnMeteringContext.xml");
+
+        String xmlString = IOUtils.toString(in, StandardCharsets.UTF_8.name());
+
+        Properties namespaces = new Properties();
+        namespaces.put("b", "http://www.springframework.org/schema/beans");
+        SimpleXPathTemplate template = new SimpleXPathTemplate();
+        template.setContext(xmlString);
+        template.setNamespaces(namespaces);
+
+        List<String> applicationContextAttributes = template.evaluateAsStringList("//b:property[@name='basedOn']/@value");
+        Set<String> calcuableAttributes = BuiltInAttribute.getCalculableAttributes()
+                                                           .stream()
+                                                           .map(attr -> attr.name())
+                                                           .collect(Collectors.toSet());
+        List<String> attributesNotCalcuable = applicationContextAttributes.stream()
+                                              .filter(attr -> !calcuableAttributes.contains(attr))
+                                              .collect(Collectors.toList());
+        assertTrue(attributesNotCalcuable.isEmpty());
     }
 }
