@@ -13,7 +13,7 @@
 <c:set var="isIE" value="${fn:contains(browser, 'MSIE') ? 'ie' : 'no-ie'}"/>
 
 <!DOCTYPE html>
-<html dir="ltr" class="${module.moduleName}-module ${isIE} no-js">
+<html dir="ltr" class="${module.moduleName}-module ${isIE} no-js" style="height:100%;">
 <head>
 
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -62,7 +62,7 @@
 <script src="<c:url value="/resources/js/common/yukon.navigation.js"/>"></script>
 
 </head>
-<body>
+<body style="height:100%;">
     <audio id="alert-audio">
         <source src="<cti:url value="/WebConfig/yukon/audio/beep1-shortened.mp3"/>" type="audio/mpeg">
     </audio>
@@ -80,20 +80,16 @@
             </div>
         </div>
         
-        <div class="yukon-page">
-                    <div class="js-react-component" data-url="http://localhost:3000/navigation">
-<%--                                   <iframe src="http://localhost:3000/navigation" frameBorder="0" scrolling="no" 
-                        style="width:100%;border:0;overflow:visible"></iframe> --%>
+        <div class="yukon-page" style="height:100%;width:100%;">
+            
+            <div class="js-navigation" style="position:relative;overflow:visible;height:100%;">
+                <iframe src="http://localhost:3000/navigation" style="width:100%;height:100%;border:0;z-index:900;"></iframe>
             </div>
+                
+            <div style="position:absolute;z-index:1;top:65px;left:57px;width:97%;">
+                
             <header class="yukon-header" style="background-color:white">
 
-
-<%--                 <div class="js-navigation">
-                <iframe src="http://localhost:3000/navigation" frameBorder="0" scrolling="no" allowTransparency="true" 
-                        style="width:100%;height:100%;border:0;background-color:transparent"></iframe>
-                    <iframe src="http://localhost:3000/navigation" frameBorder="0" scrolling="no" 
-                        style="width:100%;height:45px;border:0;overflow:visible"></iframe>
-                </div> --%>
 <%--                 <div class="toolbar-outer">
                     <div class="toolbar-inner">
                         <div class="toolbar">
@@ -284,6 +280,8 @@
                 </div>
             </footer> --%>
             
+        </div>
+
         </div>
     </cti:msgScope>
     <c:if test="${!empty info.smartNotificationsEvent}">
