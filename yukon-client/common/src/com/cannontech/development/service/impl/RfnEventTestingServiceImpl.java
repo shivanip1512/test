@@ -230,6 +230,19 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         groupedMeterTypesBuilder.put("Relays", ImmutableList.of(
             RfnManufacturerModel.RFN_RELAY));
         
+        groupedMeterTypesBuilder.put("RFN-1200", ImmutableList.of(
+            RfnManufacturerModel.RFN_1200_CPS_CBC8000,
+            RfnManufacturerModel.RFN_1200_CPS_CBCGEN,
+            RfnManufacturerModel.RFN_1200_CPS_VRCL7,
+            RfnManufacturerModel.RFN_1200_CPS_VRGEN,
+            RfnManufacturerModel.RFN_1200_CPS_RECLF4D,
+            RfnManufacturerModel.RFN_1200_CPS_RECLGEN,
+            RfnManufacturerModel.RFN_1200_CPS_GENDA,
+            RfnManufacturerModel.RFN_1200_NONCPS_CBCGEN,
+            RfnManufacturerModel.RFN_1200_NONCPS_VRGEN,
+            RfnManufacturerModel.RFN_1200_NONCPS_RECLGEN,
+            RfnManufacturerModel.RFN_1200_NONCPS_GENDA));
+        
         groupedMeterTypes = Collections.unmodifiableMap(groupedMeterTypesBuilder);
     }
 

@@ -45,7 +45,8 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
             
             // Only process events for meters at this time
             if (device.getPaoIdentifier().getPaoType().isMeter() ||
-                    device.getPaoIdentifier().getPaoType().isRfRelay()) {
+                    device.getPaoIdentifier().getPaoType().isRfRelay() || 
+                    device.getPaoIdentifier().getPaoType().isRfda()) {
                 List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
                 rfnMeterEventService.processEvent(device, eventRequest.getEvent(), messagesToSend);
     
