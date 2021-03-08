@@ -437,7 +437,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
     }
 
     @Test
-    public void validCalcuableAttributeUpToDate() throws IOException {
+    public void validCalculableAttributeUpToDate() throws IOException {
         InputStream in = this.getClass().getResourceAsStream("/com/cannontech/services/rfn/rfnMeteringContext.xml");
 
         String xmlString = IOUtils.toString(in, StandardCharsets.UTF_8.name());
@@ -449,13 +449,13 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         template.setNamespaces(namespaces);
 
         List<String> applicationContextAttributes = template.evaluateAsStringList("//b:property[@name='basedOn']/@value");
-        Set<String> calcuableAttributes = BuiltInAttribute.getCalculableAttributes()
+        Set<String> calculableAttributes = BuiltInAttribute.getCalculableAttributes()
                                                            .stream()
                                                            .map(attr -> attr.name())
                                                            .collect(Collectors.toSet());
-        List<String> attributesNotCalcuable = applicationContextAttributes.stream()
-                                              .filter(attr -> !calcuableAttributes.contains(attr))
+        List<String> attributesNotCalculable = applicationContextAttributes.stream()
+                                              .filter(attr -> !calculableAttributes.contains(attr))
                                               .collect(Collectors.toList());
-        assertTrue(attributesNotCalcuable.isEmpty());
+        assertTrue(attributesNotCalculable.isEmpty());
     }
 }
