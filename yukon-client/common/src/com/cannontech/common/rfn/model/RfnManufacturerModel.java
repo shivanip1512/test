@@ -1,6 +1,7 @@
 package com.cannontech.common.rfn.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -14,7 +15,6 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.database.db.device.RfnAddress;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
@@ -144,15 +144,10 @@ public enum RfnManufacturerModel {
     private final static ImmutableSet<RfnManufacturerModel> rfnLcrModels;
 
     static {
-        ImmutableList.Builder<RfnManufacturerModel> builder = ImmutableList.builder();
-
-        for (RfnManufacturerModel manufacturerModel1200 : values()) {
-            if (manufacturerModel1200.type == PaoType.RFN_1200) {
-                builder.add(manufacturerModel1200);
-            }
-        }
-
-        manufacturerModel1200 = builder.build();
+        manufacturerModel1200 = 
+                Arrays.stream(values())
+                    .filter(manufacturerModel -> manufacturerModel.type == PaoType.RFN_1200)
+                    .collect(Collectors.toList());
 
         rfnLcrModels = ImmutableSet.of(RFN_LCR_6200, RFN_LCR_6600, RFN_LCR_6700);
     }
@@ -228,7 +223,7 @@ public enum RfnManufacturerModel {
                 });
     }
 
-    public static List<RfnManufacturerModel> getManufacturerModel1200() {
+    public static List<RfnManufacturerModel> getRfn1200Models() {
         return  manufacturerModel1200;
     }
     

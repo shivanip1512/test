@@ -42,8 +42,7 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
         @Override
         protected Optional<String> processData(RfnDevice device, RfnEventArchiveRequest eventRequest) {
             Optional<String> trackingIds = Optional.empty();
-            
-            // Only process events for meters at this time
+           
             if (device.getPaoIdentifier().getPaoType().isMeter() ||
                     device.getPaoIdentifier().getPaoType().isRfRelay() || 
                     device.getPaoIdentifier().getPaoType().isRfda()) {
