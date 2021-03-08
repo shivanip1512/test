@@ -850,6 +850,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public boolean isCcu() {
         return ccuTypes.contains(this);
     }
+    
+    public boolean isRfda() {
+        return rfDaTypes.contains(this);
+    }
 
     public boolean isTcu() {
         return tcuTypes.contains(this);

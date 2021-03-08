@@ -1,7 +1,7 @@
 package com.cannontech.development.service.impl;
 
-import static com.cannontech.common.stream.StreamUtils.*;
-import static java.util.stream.Collectors.*;
+import static com.cannontech.common.stream.StreamUtils.not;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -230,6 +230,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         groupedMeterTypesBuilder.put("Relays", ImmutableList.of(
             RfnManufacturerModel.RFN_RELAY));
         
+        groupedMeterTypesBuilder.put("RFN-1200", RfnManufacturerModel.getRfn1200Models());
+          
         groupedMeterTypes = Collections.unmodifiableMap(groupedMeterTypesBuilder);
     }
 
