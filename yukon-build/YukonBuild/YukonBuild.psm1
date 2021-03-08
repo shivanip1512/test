@@ -70,9 +70,6 @@ Function Update-Signing () {
     Rename-Item -Path "yukon-artifact\YukonInstall\Setup.exe" -NewName "SetupUnsigned.exe"
     Write-Host "Path"
     $ENV:Path
-    Write-Host "Printing bamboo secret password"
-    $ENV:bamboo_secretpassword
-    $ENV:bamboo_secretlogin
 
     $signingCommand = ("$ENV:SIGNSERVER_HOME\bin\signclient.cmd signdocument -clientside " +
     "-workername SW-Yukon-MSAuth-CMS -servlet /signserver/worker/SW-Yukon-MSAuth-CMS -infile 'yukon-artifact\YukonInstall\SetupUnsigned.exe' " +
