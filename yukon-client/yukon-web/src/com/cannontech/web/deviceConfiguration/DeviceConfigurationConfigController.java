@@ -563,6 +563,9 @@ public class DeviceConfigurationConfigController {
         //Add attributes needed for RFN Metrology Configuration
         model.addAttribute("rfnMetrologyConfigurationType", CategoryType.RFN_METROLOGY_CONFIGURATION.value());
         model.addAttribute("displayRfnMetrologyWarning", !RfnFeatureHelper.isSupported(RfnFeature.METROLOGY_ENABLE_DISABLE, configurationSource));
+        
+        model.addAttribute("touConfigurationType", CategoryType.TOU.value());
+        model.addAttribute("demandFreezeConfigurationType", CategoryType.DEMAND_FREEZE.value());
     }
     
     private Map<String, Collection<PaoType>> collectCategoryMap(Collection<Entry<ConfigurationCategory, PaoType>> categoryTypeLists) {
