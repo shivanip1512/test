@@ -772,7 +772,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     COMMS_LOSS_COUNT("Comms Loss Count", AttributeGroup.SYSTEM),
     FIRMWARE_UPDATE_STATUS("Firmware Update Status", AttributeGroup.SYSTEM),
     FREQUENCY("Frequency", AttributeGroup.OTHER),
-    RELAY_1_ACTIVATION_STATUS("Relay 1 Activation Status", AttributeGroup.RELAY)
+    RELAY_1_ACTIVATION_STATUS("Relay 1 Activation Status", AttributeGroup.RELAY),
+    RELAY_2_ACTIVATION_STATUS("Relay 2 Activation Status", AttributeGroup.RELAY),
+    RELAY_3_ACTIVATION_STATUS("Relay 3 Activation Status", AttributeGroup.RELAY),
+    RELAY_4_ACTIVATION_STATUS("Relay 4 Activation Status", AttributeGroup.RELAY)
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
