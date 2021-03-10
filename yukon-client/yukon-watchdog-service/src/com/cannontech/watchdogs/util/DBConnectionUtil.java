@@ -21,6 +21,7 @@ public class DBConnectionUtil {
             if (connection == null || connection.isClosed()) {
                 return false;
             }
+            connection.close();
         } catch (SQLException | RuntimeException e) {
             log.error("Error Connecting " + dbName + " database.", e);
             return false;

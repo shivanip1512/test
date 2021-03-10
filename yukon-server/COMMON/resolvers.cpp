@@ -425,6 +425,7 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "rfn-440-2132td",
         "rfn-440-2133td",
         "rfw-meter",
+        "virtual meter",
         "lcr-6200 rfn",
         "lcr-6600 rfn",
         "lcr-6700 rfn",

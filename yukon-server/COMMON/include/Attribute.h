@@ -757,6 +757,9 @@ public:
     static const Attribute  FirmwareUpdateStatus;
     static const Attribute  Frequency;
     static const Attribute  Relay1ActivationStatus;
+    static const Attribute  Relay2ActivationStatus;
+    static const Attribute  Relay3ActivationStatus;
+    static const Attribute  Relay4ActivationStatus;
 };
 
 

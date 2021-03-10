@@ -69,11 +69,6 @@
     <property name="vm_template" value="${env.VM_TEMPLATE}"/>
     <property name="guest_name" value="${env.VM_GUEST_NAME}"/>
 
-    <!-- Sonar properties -->
-    <property name="sonar_vm_host_prefix" value="${env.SONAR_VM_HOST_NAME_PREFIX}"/>
-    <property name="sonar_guest_userid" value="${sonar_vm_host_prefix}+${guest_username}" if:set="env.SONAR_VM_HOST_NAME_PREFIX"/>
-    <property name="sonar_guest_address" value="${sonar_vm_host_prefix}.${vmdomain}" if:set="env.SONAR_VM_HOST_NAME_PREFIX"/>
-
     <target name="targets">
         <echo message="The following targets are available"/>
         <echo message=" callall               - calls all targets in specific order"/>
@@ -793,17 +788,6 @@
                             username="${guest_userid}"
                             password="${guest_password}"
                             command="powershell c:/YukonUpgradeWithDBRestore.ps1 -databaseType ${db.type}"/>
-    </target>
-
-    <target name="copy_coverage_report_file" depends="find_guestid">
-        <sshexec host="${guest_address}"
-                            trust="true"
-                            username="${guest_userid}"
-                            password="${guest_password}"
-                            command="ant -f C:/install.xml copy_coverage_report_files
-                                    -Dsonar_guest_userid=${sonar_guest_userid}
-                                    -Dguest_password=${guest_password}
-                                    -Dsonar_guest_address=${sonar_guest_address}"/>
     </target>
 
     <target name="populate_oracle_db" depends="find_guestid">

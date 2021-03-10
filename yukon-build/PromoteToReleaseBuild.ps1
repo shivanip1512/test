@@ -21,5 +21,6 @@ Import-Module $PSScriptRoot\YukonBuild
 
 Expand-Artifact
 Store-Symbols
+Update-Signing
 Remove-Files
 Artifact-Binaries

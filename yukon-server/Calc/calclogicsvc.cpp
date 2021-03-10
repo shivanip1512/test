@@ -607,21 +607,20 @@ void CtiCalcLogicService::_inputThread( void )
         {
             boost::scoped_ptr<CtiMessage> incomingMsg;
 
-            //  while i'm not getting anything
-            while( ! incomingMsg )
+            incomingMsg.reset( dispatchConnection->ReadConnQue( 1000 ));
+
+            if ( incomingMsg )
             {
-                incomingMsg.reset( dispatchConnection->ReadConnQue( 1000 ));
-
                 mc.increment();
+            }
 
-                if(!_shutdownOnThreadTimeout)
-                {
-                    threadStatus.monitorCheck();
-                }
-                else
-                {
-                    threadStatus.monitorCheck(&CtiCalcLogicService::sendUserQuit);
-                }
+            if(!_shutdownOnThreadTimeout)
+            {
+                threadStatus.monitorCheck();
+            }
+            else
+            {
+                threadStatus.monitorCheck(&CtiCalcLogicService::sendUserQuit);
             }
 
             _inputFunc.waitForResume();
@@ -1062,6 +1061,12 @@ void CtiCalcLogicService::pauseInputThread()
     try
     {
         _inputFunc.pause();
+
+        while ( ! _inputFunc.isWaiting() )
+        {
+            // spin until the thread hits the waitForResume()...  then we know for sure that we've paused
+            Sleep(0);
+        }
     }
     catch(...)
     {
