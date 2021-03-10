@@ -751,4 +751,5 @@
     <entry key="yukon.common.unitOfMeasure.CUBIC_METERS">m^3</entry>
     <entry key="yukon.common.unitOfMeasure.MEGABYTES">MB</entry>
     <entry key="yukon.common.unitOfMeasure.DBM">dBm</entry>
+    <entry key="yukon.common.unitOfMeasure.THM">thm</entry>
 </properties>

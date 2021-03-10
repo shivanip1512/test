@@ -197,6 +197,7 @@
             <xs:enumeration value="CUBIC_METERS" />
             <xs:enumeration value="MEGABYTES" />
             <xs:enumeration value="DBM" />
+            <xs:enumeration value="THM"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>
