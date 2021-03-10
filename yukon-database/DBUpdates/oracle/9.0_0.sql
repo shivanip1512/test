@@ -262,6 +262,12 @@ InventoryID ASC
 INSERT INTO DBUpdates VALUES ('YUK-23267', '9.0.0', SYSDATE);
 /* @end YUK-23267 */
 
+/* @start YUK-23969 */
+INSERT INTO UnitMeasure VALUES (58, 'Therms', 0, 'Therms', '(none)');
+
+INSERT INTO DBUpdates VALUES ('YUK-23969', '9.0.0', SYSDATE);
+/* @end YUK-23969 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
