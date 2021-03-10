@@ -61,6 +61,11 @@ bool RfnDevice::areAggregateCommandsSupported() const
     return hasRfnFirmwareSupportIn( 9.0 );
 }
 
+bool RfnDevice::isE2eServerDisabled() const
+{
+    return gConfigParms.isTrue("E2E_SERVER_DISABLED");
+}
+
 
 std::unique_ptr<CtiReturnMsg> RfnDevice::makeReturnMsg(const CtiRequestMsg& req, const std::string result, YukonError_t nRet)
 {

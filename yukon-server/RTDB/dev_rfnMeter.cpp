@@ -216,6 +216,13 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiR
     auto behavior    = BehaviorManager::getBehaviorForPao   <RfnDataStreamingBehavior>(getID());
     auto deviceState = BehaviorManager::getDeviceStateForPao<RfnDataStreamingBehavior>(getID());
 
+    if( isE2eServerDisabled() )
+    {
+        CTILOG_INFO(dout, "E2E server disabled, disallowing data streaming request for device " << getName());
+
+        return ClientErrors::NoMethod;
+    }
+
     if( ! behavior )
     {
         //  No assigned behavior, disable on the device.
@@ -223,14 +230,18 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiR
                 std::make_unique<RfnDataStreamingSetMetricsCommand>(
                         getDeviceType(), 
                         RfnDataStreamingSetMetricsCommand::StreamingDisabled));
+
+        return ClientErrors::None;
     }
-    else if( behavior->channels.empty() )
+    
+    if( behavior->channels.empty() )
     {
         CTILOG_ERROR(dout, "Empty channel list for Data Streaming behavior");
 
         return ClientErrors::InvalidConfigData;
     }
-    else if( ! deviceState )
+    
+    if( ! deviceState )
     {
         //  We have an assigned behavior, but we have no device state - so just enable the requested channels as a best-effort attempt.
         rfnRequests.push_back(
@@ -238,95 +249,95 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiR
                         getDeviceType(), 
                         boost::copy_range<MetricList>(
                                 behavior->channels | channelToEnabledMetric)));
+
+        return ClientErrors::None;
     }
-    else 
+
+    //  We have an assigned behavior, and we have a (complete) device state to compare against.
+	const auto getAttribute = transformed([](const Channel& c) { return c.attribute; });
+    const auto getAttributeName = transformed([](const Attribute& a) { return a.getName(); }); 
+
+    boost::range::sort(behavior->channels);
+    boost::range::sort(deviceState->channels);
+
+    //  Check to make sure the device supports all of the channels we're trying to enable
+    if( ! boost::range::includes(deviceState->channels | getAttribute, behavior->channels | getAttribute) )
     {
-        //  We have an assigned behavior, and we have a (complete) device state to compare against.
-		const auto getAttribute = transformed([](const Channel& c) { return c.attribute; });
-        const auto getAttributeName = transformed([](const Attribute& a) { return a.getName(); }); 
-
-        boost::range::sort(behavior->channels);
-        boost::range::sort(deviceState->channels);
-
-        //  Check to make sure the device supports all of the channels we're trying to enable
-        if( ! boost::range::includes(deviceState->channels | getAttribute, behavior->channels | getAttribute) )
-        {
-            std::vector<std::string> unsupportedAttributes;
-
-            boost::range::set_difference(
-                    behavior->channels    | getAttribute | getAttributeName, 
-                    deviceState->channels | getAttribute | getAttributeName, 
-                    std::back_inserter(unsupportedAttributes));
-
-            Cti::FormattedList details;
-
-            details.add("Device name") << getName();
-            details.add("Device id") << getID();
-            details.add("Device channels") << deviceState->channels;
-            details.add("Behavior channels") << behavior->channels;
-            details.add("Unsupported channels") << Cti::join(unsupportedAttributes, ",");
-
-            CTILOG_ERROR(dout, "Device does not support the specified channels." << details);
-
-            return ClientErrors::InvalidConfigData;
-        }
-
-        //  Get the entries from the behavior that don't match the entries in the device.
-        ChannelList toConfigure;
+        std::vector<std::string> unsupportedAttributes;
 
         boost::range::set_difference(
-                behavior->channels,
-                deviceState->channels,
-                std::back_inserter(toConfigure));
+                behavior->channels    | getAttribute | getAttributeName, 
+                deviceState->channels | getAttribute | getAttributeName, 
+                std::back_inserter(unsupportedAttributes));
 
-        const auto isChannelEnabled = filtered([](const Channel& c) { return c.interval != 0min; });
+        Cti::FormattedList details;
 
-        //  Get the list of attributes enabled on the device that do not exist in the behavior
-        //    so we can disable them.
-        std::vector<Attribute> toDisable;
+        details.add("Device name") << getName();
+        details.add("Device id") << getID();
+        details.add("Device channels") << deviceState->channels;
+        details.add("Behavior channels") << behavior->channels;
+        details.add("Unsupported channels") << Cti::join(unsupportedAttributes, ",");
 
-        boost::range::set_difference(
-                deviceState->channels | isChannelEnabled | getAttribute, 
-                behavior->channels | getAttribute,
-                std::back_inserter(toDisable));
+        CTILOG_ERROR(dout, "Device does not support the specified channels." << details);
 
-        //  Check to see if the device matches and if it's already enabled
-        if( toConfigure.empty() && toDisable.empty() && deviceState->enabled )
-        {
-            Cti::FormattedList details;
-
-            details.add("Device name") << getName();
-            details.add("Device id") << getID();
-            details.add("Device channels") << deviceState->channels;
-            details.add("Behavior channels") << behavior->channels;
-
-            Cti::StreamBuffer buf;
-
-            buf << "Device already matches behavior." << details;
-
-            auto msg = buf.extractToString();
-
-            CTILOG_INFO(dout, msg);
-
-            returnMsgs.emplace_back(
-                makeReturnMsg(
-                    req,
-                    msg,
-                    ClientErrors::None));
-
-            return ClientErrors::None;  //  do not return ConfigCurrent - we want it to be Success for now (until YUK-17192).
-        }
-
-        MetricList metrics;
-
-        boost::range::copy(toConfigure | channelToEnabledMetric,    std::back_inserter(metrics));
-        boost::range::copy(toDisable   | attributeToDisabledMetric, std::back_inserter(metrics));
-
-        rfnRequests.push_back(
-                std::make_unique<RfnDataStreamingSetMetricsCommand>(
-                        getDeviceType(), 
-                        std::move(metrics)));
+        return ClientErrors::InvalidConfigData;
     }
+
+    //  Get the entries from the behavior that don't match the entries in the device.
+    ChannelList toConfigure;
+
+    boost::range::set_difference(
+            behavior->channels,
+            deviceState->channels,
+            std::back_inserter(toConfigure));
+
+    const auto isChannelEnabled = filtered([](const Channel& c) { return c.interval != 0min; });
+
+    //  Get the list of attributes enabled on the device that do not exist in the behavior
+    //    so we can disable them.
+    std::vector<Attribute> toDisable;
+
+    boost::range::set_difference(
+            deviceState->channels | isChannelEnabled | getAttribute, 
+            behavior->channels | getAttribute,
+            std::back_inserter(toDisable));
+
+    //  Check to see if the device matches and if it's already enabled
+    if( toConfigure.empty() && toDisable.empty() && deviceState->enabled )
+    {
+        Cti::FormattedList details;
+
+        details.add("Device name") << getName();
+        details.add("Device id") << getID();
+        details.add("Device channels") << deviceState->channels;
+        details.add("Behavior channels") << behavior->channels;
+
+        Cti::StreamBuffer buf;
+
+        buf << "Device already matches behavior." << details;
+
+        auto msg = buf.extractToString();
+
+        CTILOG_INFO(dout, msg);
+
+        returnMsgs.emplace_back(
+            makeReturnMsg(
+                req,
+                msg,
+                ClientErrors::None));
+
+        return ClientErrors::None;  //  do not return ConfigCurrent - we want it to be Success for now (until YUK-17192).
+    }
+
+    MetricList metrics;
+
+    boost::range::copy(toConfigure | channelToEnabledMetric,    std::back_inserter(metrics));
+    boost::range::copy(toDisable   | attributeToDisabledMetric, std::back_inserter(metrics));
+
+    rfnRequests.push_back(
+            std::make_unique<RfnDataStreamingSetMetricsCommand>(
+                    getDeviceType(), 
+                    std::move(metrics)));
 
     return ClientErrors::None;
 }

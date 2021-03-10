@@ -8,7 +8,8 @@
 
 #include "error.h"
 
-using namespace Cti::Messaging::Rfn;
+using Cti::Messaging::Rfn::MeterProgramStatusArchiveRequestMsg;
+using Cti::Messaging::Rfn::ProgrammingStatus;
 
 namespace Cti::Devices {
 
@@ -30,6 +31,13 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg* pReq, CtiComma
 
     if( containsString(parse.getCommandStr(), meterProgrammingCmd + " cancel") )
     {
+        if( isE2eServerDisabled() )
+        {
+            CTILOG_INFO(dout, "E2E server is disabled, disallowing meter programming request for device " << getName());
+
+            return ClientErrors::NoMethod;
+        }
+
         if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress) )
         {
             std::string guid;
@@ -58,8 +66,16 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg* pReq, CtiComma
 
         return ClientErrors::None;
     }
-    else if( containsString(parse.getCommandStr(), meterProgrammingCmd) )
+    
+    if( containsString(parse.getCommandStr(), meterProgrammingCmd) )
     {
+        if( isE2eServerDisabled() )
+        {
+            CTILOG_INFO(dout, "E2E server is disabled, disallowing meter programming request for device " << getName());
+
+            return ClientErrors::NoMethod;
+        }
+
         const auto guid = MeterProgramming::gMeterProgrammingManager->getAssignedGuid(getRfnIdentifier());
         if( guid.empty() )
         {
@@ -100,6 +116,12 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg* pReq, CtiComma
 
     return RfnMeterDevice::executePutConfig(pReq, parse, returnMsgs, requestMsgs, rfnRequests);
 }
+
+void RfnCommercialDevice::sendMeterProgramStatusUpdate(MeterProgramStatusArchiveRequestMsg msg)
+{
+    Messaging::Rfn::sendMeterProgramStatusUpdate(std::move(msg));
+}
+
 
 YukonError_t RfnCommercialDevice::executeGetConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {

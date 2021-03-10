@@ -800,6 +800,28 @@ BOOST_AUTO_TEST_CASE( putconfig_install_channel_verify_uninitialized )
     }
 }
 
+BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_e2e_server_disabled )
+{
+    Cti::Test::Override_BehaviorManager b;
+
+    struct : test_RfnMeterDevice {
+        bool isE2eServerDisabled() const override {  return true;  }
+    } dut;
+
+    CtiCommandParser parse("putconfig behavior rfndatastreaming");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_CHECK_EQUAL(true, rfnRequests.empty());
+
+    {
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 202);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "No Method or Invalid Command.");
+    }
+}
+
 BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
 {
     Cti::Test::Override_BehaviorManager b;

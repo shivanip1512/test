@@ -119,6 +119,8 @@ protected:
     virtual Bytes createE2eDtBlockReply(const unsigned short id, const Bytes& payload, const Token token, Block block);
     virtual void sendMeterProgramStatusUpdate(Messaging::Rfn::MeterProgramStatusArchiveRequestMsg msg);
 
+    virtual bool isE2eServerDisabled() const;
+
 private:
 
     using RfnIdentifierSet = std::set<RfnIdentifier>;
