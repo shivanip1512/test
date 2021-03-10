@@ -3,7 +3,6 @@
 #include "mgr_device.h"
 #include "mgr_route.h"
 #include "mgr_point.h"
-#include "mgr_config.h"
 #include "mgr_dyn_paoinfo.h"
 //  for test_DevicePointHelper
 #include "desolvers.h"
@@ -26,6 +25,8 @@
 #include "std_helper.h"
 
 #include "boost_test_helpers.h"
+#include "deviceconfig_test_helpers.h"
+
 #include <boost/algorithm/cxx11/all_of.hpp>
 #include <boost/range/algorithm/count.hpp>
 #include <boost/test/unit_test.hpp>
@@ -38,49 +39,6 @@ namespace {
 
 using std::to_string;
     
-struct test_DeviceConfig : public Config::DeviceConfig
-{
-    test_DeviceConfig() : DeviceConfig( 271828 ) {}
-
-    using DeviceConfig::insertValue;
-    using DeviceConfig::findValue;
-    using DeviceConfig::addCategory;
-};
-
-struct test_ConfigManager : ConfigManager
-{
-    const Config::DeviceConfigSPtr config;
-
-    test_ConfigManager( Config::DeviceConfigSPtr config_ )
-        : config( config_ )
-    {
-    }
-
-    virtual Config::DeviceConfigSPtr fetchConfig( const long deviceID, const DeviceTypes deviceType )
-    {
-        return config;
-    }
-};
-
-class Override_ConfigManager
-{
-    std::unique_ptr<ConfigManager> _oldConfigManager;
-
-public:
-
-    Override_ConfigManager(Config::DeviceConfigSPtr config)
-    {
-        _oldConfigManager = std::move(gConfigManager);
-
-        gConfigManager = std::move(std::make_unique<test_ConfigManager>(config));
-    }
-
-    ~Override_ConfigManager()
-    {
-        gConfigManager = std::move(_oldConfigManager);
-    }
-};
-
 struct test_DynamicPaoInfoManager : DynamicPaoInfoManager
 {
     void loadInfo(const long id) override
@@ -697,7 +655,6 @@ struct test_PointManager : CtiPointManager
         return nullptr;
     }
 };
-
 
 /**
 Runs through a list of return messages, comparing them to the oracle expected messages, as well 
