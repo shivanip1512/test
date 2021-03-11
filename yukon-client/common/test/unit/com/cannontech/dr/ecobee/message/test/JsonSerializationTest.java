@@ -23,6 +23,7 @@ import com.cannontech.dr.ecobee.message.MoveDeviceRequest;
 import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
+import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
 import com.cannontech.dr.ecobee.message.partial.Selection;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
@@ -36,6 +37,14 @@ public class JsonSerializationTest {
     public void test_AuthenticationRequest() throws IOException {
         AuthenticationRequest request = new AuthenticationRequest("abcd", "1234");
         AuthenticationRequest testRequest = testSerialization(request);
+
+        Assert.assertEquals(request, testRequest);
+    }
+    
+    @Test
+    public void test_ZeusAuthenticationRequest() throws IOException {
+        ZeusAuthenticationRequest request = new ZeusAuthenticationRequest("abcd", "1234", "util");
+        ZeusAuthenticationRequest testRequest = testSerialization(request);
 
         Assert.assertEquals(request, testRequest);
     }
