@@ -61,7 +61,7 @@ bool WorkerThread::isFailedTermination()
 
 std::ostringstream printable(boost::thread::id thread_id)
 {
-    return std::ostringstream{} << "(id " << thread_id << ")";
+    return std::ostringstream{} << "[0x" << std::setfill('0') << std::setw(8) << thread_id << "]";
 }
 
 /**
