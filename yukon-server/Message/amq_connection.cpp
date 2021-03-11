@@ -792,7 +792,7 @@ void ActiveMQConnectionManager::enqueueOutgoingReply(
 
     emplaceTask(_newTasks.outgoingReplies, Reply { message, std::move(dest) });
 
-    kickstart();
+    //kickstart();  //  Unnecessary, since this is a reply.  We were already running in order to receive the request message.
 }
 
 
