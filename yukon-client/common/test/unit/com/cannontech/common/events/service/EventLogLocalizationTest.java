@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -22,10 +21,6 @@ public class EventLogLocalizationTest {
 
     private static final String eventsXmlResourcePath = "com/cannontech/yukon/common/events.xml";
     private static final String packageSearchPath = "classpath*:com/cannontech/common/events/loggers/*.class";
-
-    private static final Set<String> knownAbsentEntries = Set.of(
-
-    );
 
     @Test
     public void testLocalizationEntry() throws InvalidPropertiesFormatException, IOException, ClassNotFoundException {
@@ -59,7 +54,6 @@ public class EventLogLocalizationTest {
 
         var missing = eventLogMethods.stream()
                 .filter(Predicate.not(localizationEntries::containsKey))
-                .filter(Predicate.not(knownAbsentEntries::contains))
                 .sorted()
                 .collect(Collectors.toList());
 
