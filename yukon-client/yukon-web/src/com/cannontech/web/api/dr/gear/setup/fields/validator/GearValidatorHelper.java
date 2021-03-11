@@ -28,7 +28,7 @@ public class GearValidatorHelper {
     public void checkHowToStopControl(HowToStopControl howToStopControl, GearControlMethod gearType, Errors errors) {
         lmValidatorHelper.checkIfFieldRequired("howToStopControl", errors, howToStopControl, "How To Stop Control");
         if (!errors.hasFieldErrors("howToStopControl")) {
-            if (!gearValidatorHelperCommon.checkValidHowToStopControl(howToStopControl, gearType, errors)) {
+            if (!gearValidatorHelperCommon.checkValidHowToStopControl(howToStopControl, gearType)) {
                 errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
             }
         }
@@ -182,7 +182,7 @@ public class GearValidatorHelper {
     public void checkCommandResendRate(Integer sendRate, Errors errors) {
         lmValidatorHelper.checkIfFieldRequired("sendRate", errors, sendRate, "Command Resend Rate");
         if (!errors.hasFieldErrors("sendRate")) {
-            if (!gearValidatorHelperCommon.validCommandResendRate(sendRate, errors)) {
+            if (!gearValidatorHelperCommon.validCommandResendRate(sendRate)) {
                 errors.rejectValue("sendRate", invalidKey, new Object[] { "Command Resend Rate" }, "");
             }
         }

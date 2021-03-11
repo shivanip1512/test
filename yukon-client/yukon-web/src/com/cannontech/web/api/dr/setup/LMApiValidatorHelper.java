@@ -7,7 +7,7 @@ import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -29,7 +29,7 @@ public class LMApiValidatorHelper {
     public void validateName(String paoName, Errors errors, String fieldName) {
         checkIfFieldRequired("name", errors, paoName, fieldName);
         if (!errors.hasFieldErrors("name")) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
+            YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
             if (!lmValidatorHelperCommon.isValidPaoName(paoName)) {
                 errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
             }
@@ -51,7 +51,7 @@ public class LMApiValidatorHelper {
         if (!errors.hasFieldErrors("name")) {
             String paoId = ServletUtils.getPathVariable("id");
             // Check if pao name already exists
-            if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equalsIgnoreCase(paoName)))) {
+            if (lmValidatorHelperCommon.isPaoNameUnique(paoName, type)) {
                 validateUniquePaoName(paoName, type, errors, fieldName);
             }
         }
@@ -71,7 +71,7 @@ public class LMApiValidatorHelper {
     public void validateRoute(Errors errors, Integer routeId) {
         checkIfFieldRequired("routeId", errors, routeId, "Route Id");
         if (!errors.hasFieldErrors("routeId")) {
-            if (lmValidatorHelperCommon.validateRoute(routeId)) {
+            if (!lmValidatorHelperCommon.validateRoute(routeId)) {
                 errors.rejectValue("routeId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { routeId }, "");
             }
         }

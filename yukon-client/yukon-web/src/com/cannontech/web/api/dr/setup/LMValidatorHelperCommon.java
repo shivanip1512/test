@@ -6,6 +6,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -31,9 +32,16 @@ public class LMValidatorHelperCommon {
         return (unique != null) ? true : false;
     }
 
+    public boolean isPaoNameUnique(String paoName, PaoType type) {
+        String paoId = ServletUtils.getPathVariable("id");
+        // Check if pao name already exists
+        return (type != null
+                && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equalsIgnoreCase(paoName)))) ? true : false;
+    }
+
     public boolean validateRoute(Integer routeId) {
         LiteYukonPAObject liteRoute = serverDatabaseCache.getAllRoutesMap().get(routeId);
-        return (liteRoute == null) ? true : false;
+        return (liteRoute == null) ? false : true;
     }
 
 }

@@ -60,7 +60,7 @@ public class LMValidatorHelper {
         if (!errors.hasFieldErrors("name")) {
             String paoId = ServletUtils.getPathVariable("id");
             // Check if pao name already exists
-            if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equalsIgnoreCase(paoName)))) {
+            if (lmValidatorHelperCommon.isPaoNameUnique(paoName, type)) {
                 validateUniquePaoName(paoName, type, errors, fieldName);
             }
         }
@@ -80,7 +80,7 @@ public class LMValidatorHelper {
     public void validateRoute(Errors errors, Integer routeId) {
         checkIfFieldRequired("routeId", errors, routeId, "Route Id");
         if (!errors.hasFieldErrors("routeId")) {
-            if (lmValidatorHelperCommon.validateRoute(routeId)) {
+            if (!lmValidatorHelperCommon.validateRoute(routeId)) {
                 errors.rejectValue("routeId", key + "routeId.doesNotExist");
             }
         }

@@ -28,10 +28,9 @@ public class GearApiValidatorHelper {
     public void checkHowToStopControl(HowToStopControl howToStopControl, GearControlMethod gearType, Errors errors) {
         lmApiValidatorHelper.checkIfFieldRequired("howToStopControl", errors, howToStopControl, "How To Stop Control");
         if (!errors.hasFieldErrors("howToStopControl")) {
-            if (!gearValidatorHelperCommon.checkValidHowToStopControl(howToStopControl, gearType, errors)) {
+            if (!gearValidatorHelperCommon.checkValidHowToStopControl(howToStopControl, gearType)) {
                 errors.rejectValue("howToStopControl", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                        new Object[] { "How To Stop Control" },
-                        "");
+                        new Object[] { "How To Stop Control" }, "");
             }
         }
     }
@@ -47,8 +46,7 @@ public class GearApiValidatorHelper {
             if (!errors.hasFieldErrors("stopOrder")) {
                 if (gearValidatorHelperCommon.checkStopControlAndOrder(howToStopControl)) {
                     errors.rejectValue("howToStopControl", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                            new Object[] { "How To Stop Control" },
-                            "");
+                            new Object[] { "How To Stop Control" }, "");
                 }
             }
         }
@@ -76,11 +74,10 @@ public class GearApiValidatorHelper {
      */
     public void checkGroupCapacityReduction(Integer groupCapacityReduction, Errors errors) {
         lmApiValidatorHelper.checkIfFieldRequired("capacityReduction", errors, groupCapacityReduction,
-            "Group Capacity Reduction");
+                "Group Capacity Reduction");
         if (!errors.hasFieldErrors("capacityReduction")) {
             YukonApiValidationUtils.checkRange(errors, "capacityReduction", groupCapacityReduction, 0, 100, false);
         }
-
     }
 
     public void checkSetpointOffset(Integer setpointOffset, Errors errors) {

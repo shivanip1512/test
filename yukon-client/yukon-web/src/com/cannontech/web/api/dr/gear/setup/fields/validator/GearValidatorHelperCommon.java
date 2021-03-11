@@ -1,25 +1,18 @@
 package com.cannontech.web.api.dr.gear.setup.fields.validator;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.Errors;
-
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.util.TimeIntervals;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 /**
  * Helper class for LM Gear validation
  */
 public class GearValidatorHelperCommon {
 
-    @Autowired private LMValidatorHelper lmValidatorHelper;
-
     /**
      * Check for How To Stop Control
      */
-    public boolean checkValidHowToStopControl(HowToStopControl howToStopControl, GearControlMethod gearType, Errors errors) {
+    public boolean checkValidHowToStopControl(HowToStopControl howToStopControl, GearControlMethod gearType) {
             if (gearType == GearControlMethod.SmartCycle || gearType == GearControlMethod.TrueCycle
                 || gearType == GearControlMethod.MagnitudeCycle || gearType == GearControlMethod.TargetCycle) {
                 if (howToStopControl != HowToStopControl.StopCycle && howToStopControl != HowToStopControl.Restore) {
@@ -46,24 +39,9 @@ public class GearValidatorHelperCommon {
     }
 
     /**
-     * Check for Check for Cycle Period
-     */
-    public void checkCyclePeriod(Integer cyclePeriodInMinutes, GearControlMethod gearType, Errors errors) {
-        lmValidatorHelper.checkIfFieldRequired("cyclePeriodInMinutes", errors, cyclePeriodInMinutes, "Cycle Period");
-        if (!errors.hasFieldErrors("cyclePeriodInMinutes")) {
-            if (gearType != GearControlMethod.MasterCycle) {
-                YukonValidationUtils.checkRange(errors, "cyclePeriodInMinutes", cyclePeriodInMinutes, 1, 945, false);
-            } else {
-                YukonValidationUtils.checkRange(errors, "cyclePeriodInMinutes", cyclePeriodInMinutes, 5, 945, false);
-            }
-
-        }
-    }
-
-    /**
      * Check for Command Resend Rate
      */
-    public boolean validCommandResendRate(Integer sendRate, Errors errors) {
+    public boolean validCommandResendRate(Integer sendRate) {
         TimeIntervals commandResendRate = TimeIntervals.fromSeconds(sendRate);
         return (!TimeIntervals.getCommandResendRate().contains(commandResendRate)) ? false : true;
     }
