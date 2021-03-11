@@ -2,7 +2,6 @@ package com.cannontech.multispeak.service.v3;
 
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 
@@ -59,7 +58,6 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
     private ImmutableMap<OutageActionType, OutageEventType> outageMap = ImmutableMap.of();
     private static final Logger log = YukonLogManager.getLogger(OutageJmsMessageListener.class);
     private ImmutableList<MultispeakVendor> vendorsToSendOutageMsg = ImmutableList.of();
-    private AtomicLong atomicLong = new AtomicLong();
 
     @PostConstruct
     public void initialize() {
@@ -128,12 +126,10 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
             log.info("Sending ODEventNotification ("+ endpointUrl + "): ObjectID: " + outageDetectionEvent.getObjectID() + " Type: " + outageDetectionEvent.getOutageEventType());
             
             try {
-                String transactionId = String.valueOf(atomicLong.getAndIncrement());
                 ODEventNotification odEventNotification = objectFactory.createODEventNotification();
                 ArrayOfOutageDetectionEvent odEvents = objectFactory.createArrayOfOutageDetectionEvent();
                 List<OutageDetectionEvent> listOfODEvents = odEvents.getOutageDetectionEvent();
                 listOfODEvents.add(outageDetectionEvent);
-                odEventNotification.setTransactionID(transactionId);
                 odEventNotification.setODEvents(odEvents);
                 ODEventNotificationResponse odEventNotificationResponse = oaClient.odEventNotification(mspVendor,
                                                                                                        endpointUrl,
