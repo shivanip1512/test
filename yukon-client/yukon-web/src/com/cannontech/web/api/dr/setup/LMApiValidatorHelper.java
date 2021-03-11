@@ -1,13 +1,9 @@
 package com.cannontech.web.api.dr.setup;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.pao.PaoType;
@@ -17,23 +13,17 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
- * Helper class for LM validation
+ * Helper class for LM API validation
  */
-public class LMValidatorHelper {
-    private final static String key = "yukon.web.modules.dr.setup.error.";
+public class LMApiValidatorHelper {
     @Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private LMValidatorHelperCommon lmValidatorHelperCommon;
 
     public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
         if (lmValidatorHelperCommon.checkIfFieldRequired(fieldValue)) {
-            errors.rejectValue(field, key + "required", new Object[] { fieldName }, "");
+            errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { fieldName }, "");
         }
-    }
-
-    // Type
-    public void checkIfEmptyPaoType(Errors errors) {
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", key + "required", new Object[] { "Type" });
     }
 
     public void validateName(String paoName, Errors errors, String fieldName) {
@@ -41,7 +31,7 @@ public class LMValidatorHelper {
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
             if (!lmValidatorHelperCommon.isValidPaoName(paoName)) {
-                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+                errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
             }
         }
     }
@@ -51,7 +41,8 @@ public class LMValidatorHelper {
      */
     private void validateUniquePaoName(String paoName, PaoType type, Errors errors, String fieldName) {
         if (lmValidatorHelperCommon.validateUniquePaoName(paoName, type)) {
-            errors.rejectValue("name", key + "unique", new Object[] { fieldName }, "");
+            errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { fieldName },
+                    "");
         }
     }
 
@@ -81,16 +72,9 @@ public class LMValidatorHelper {
         checkIfFieldRequired("routeId", errors, routeId, "Route Id");
         if (!errors.hasFieldErrors("routeId")) {
             if (lmValidatorHelperCommon.validateRoute(routeId)) {
-                errors.rejectValue("routeId", key + "routeId.doesNotExist");
+                errors.rejectValue("routeId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { routeId }, "");
             }
         }
-    }
-
-    /**
-     * Find duplicate entries from list and returns set of entries which are duplicate.
-     */
-    public Set<Integer> findDuplicates(List<Integer> list) {
-        return list.stream().filter(e -> Collections.frequency(list, e) > 1).collect(Collectors.toSet());
     }
 
     /**
