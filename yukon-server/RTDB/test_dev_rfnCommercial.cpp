@@ -1379,8 +1379,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
     resetTestState();
 
     dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, { 1 } );
-//    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, { 1, 3 } );
-//    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, { 3 } );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, { 1 } );    // not match an empty collection
 
     {
         dut.purgeDynamicPaoInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered );
@@ -1430,8 +1429,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
     // test the cases where we have channel related dynamic pao info and it matches the config
 
     dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, { 1, 2 } );
-//    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, { 1, 2, 3, 4, 5 } );
-//    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, { 3, 4, 5 } );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, { } );
 
     resetTestState();
 
@@ -1446,10 +1444,8 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
 
         const auto & returnMsg = *returnMsgs.back();
 
-//        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
-//        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
     }
 
     {
@@ -1463,10 +1459,8 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
 
         const auto & returnMsg = *returnMsgs.back();
 
-//        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
-//        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
     }
 
     {
