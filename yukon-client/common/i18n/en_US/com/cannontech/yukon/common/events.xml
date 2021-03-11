@@ -825,6 +825,7 @@
     <entry key="yukon.common.events.multispeak.deviceTypeUpdated.1">Old Device Type</entry>
     <entry key="yukon.common.events.multispeak.enableDevice">Enabled meter {1}: {2}. {3} by {4}.</entry>
     <entry key="yukon.common.events.multispeak.disableDevice">Disabled meter {1}: {2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.removeDevice">Removed meter {1}: {2}. {3} by {4}</entry>
 
     <entry key="yukon.common.events.multispeak.notificationResponse">{1} initiated for meter number {3}; TransactionId: {2}, Comments: {4}, Errors received: {7}, Url: {5}.</entry>
     <entry key="yukon.common.events.multispeak.notificationResponse.2">TransactionId</entry>
@@ -928,17 +929,23 @@
 
     <entry key="yukon.common.events.endpoint.device.changeInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.device.changeCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.device.changeCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.endpoint.device.changeTypeInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.device.changeTypeCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.device.changeTypeCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.endpoint.device.deleteInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.device.deleteCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.device.deleteCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     
     <entry key="yukon.common.events.endpoint.point.pointsCreateInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsCreateCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.point.pointsCreateCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsUpdateInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsUpdateCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.point.pointsUpdateCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsDeleteInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsDeleteCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.point.pointsDeleteCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
 
     <entry key="yukon.common.events.system.rfn.dataStreaming.configDataStreamingInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.configDataStreamingCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
@@ -964,7 +971,7 @@
     <entry key="yukon.common.events.dr.itron.addProgram">Program {1} with program ID {7} creation request sent.</entry>
     <entry key="yukon.common.events.dr.itron.addProgram.7">Program Id</entry>
     
-    <entry key="yukon.common.events.dr.itron.addMacAddressesToGroup">Mac Address: {1} has been added to group: {2}.</entry>
+    <entry key="yukon.common.events.dr.itron.addMacAddressToGroup">Mac Address: {1} has been added to group: {2}.</entry>
     <entry key="yukon.common.events.dr.itron.getGroupIdFromItron">Retrieving Itron Group Id from group: {1}.</entry>
     <entry key="yukon.common.events.dr.itron.optOut">Opt out for Load Group Id: {7} with Mac Address: {2} sent by Account Number: {1}.</entry>
     <entry key="yukon.common.events.dr.itron.sendEnrollmentRequest">Sending enrollment request for account: {1} for Itron Program Id: {7}.</entry>

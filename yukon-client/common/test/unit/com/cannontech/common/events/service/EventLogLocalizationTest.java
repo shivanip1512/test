@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
+
 import com.cannontech.common.events.YukonEventLog;
 
 public class EventLogLocalizationTest {
@@ -23,14 +24,8 @@ public class EventLogLocalizationTest {
     private static final String packageSearchPath = "classpath*:com/cannontech/common/events/loggers/*.class";
 
     private static final Set<String> knownAbsentEntries = Set.of(
-            "yukon.common.events.dr.itron.addMacAddressToGroup",
-            "yukon.common.events.endpoint.device.changeCancelled",
-            "yukon.common.events.endpoint.device.changeTypeCancelled",
-            "yukon.common.events.endpoint.device.deleteCancelled",
-            "yukon.common.events.endpoint.point.pointsCreateCancelled",
-            "yukon.common.events.endpoint.point.pointsDeleteCancelled",
-            "yukon.common.events.endpoint.point.pointsUpdateCancelled",
-            "yukon.common.events.multispeak.removeDevice");
+
+    );
 
     @Test
     public void testLocalizationEntry() throws InvalidPropertiesFormatException, IOException, ClassNotFoundException {
