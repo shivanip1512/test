@@ -72,7 +72,7 @@ public class LMApiValidatorHelper {
         checkIfFieldRequired("routeId", errors, routeId, "Route Id");
         if (!errors.hasFieldErrors("routeId")) {
             if (!lmValidatorHelperCommon.validateRoute(routeId)) {
-                errors.rejectValue("routeId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { routeId }, "");
+                errors.rejectValue("routeId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { "Route Id" }, "");
             }
         }
     }
