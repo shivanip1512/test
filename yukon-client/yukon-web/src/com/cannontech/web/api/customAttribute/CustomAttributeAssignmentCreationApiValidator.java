@@ -27,12 +27,8 @@ public class CustomAttributeAssignmentCreationApiValidator extends SimpleValidat
 
         YukonApiValidationUtils.checkIsFieldValueGreaterThenTargetValueInt("attributeId", assignment.getAttributeId(), 0, errors);
 
-        if (assignment.getPointType() == PointType.CalcAnalog || assignment.getPointType() == PointType.CalcStatus) {
-            YukonApiValidationUtils.checkIsPositiveInt(errors, "offset", assignment.getOffset());
-        } else {
-            YukonApiValidationUtils.checkIsFieldValueGreaterThenTargetValueInt("offset", assignment.getOffset(), 0, errors);
-        }
-        
+        int min = assignment.getPointType() == PointType.CalcAnalog || assignment.getPointType() == PointType.CalcStatus ? 0 : 1;
+        YukonApiValidationUtils.checkRange(errors, "offset", assignment.getOffset(), min, 99999999, true);
         if (!attributeService.isValidAttributeId(assignment.getAttributeId())) {
             errors.rejectValue("attributeId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { assignment.getAttributeId() }, "");
         }
