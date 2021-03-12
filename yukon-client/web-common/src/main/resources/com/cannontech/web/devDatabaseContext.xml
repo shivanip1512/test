@@ -35,4 +35,5 @@
     <bean class="com.cannontech.web.dev.service.SystemHealthMetricSimulatorService"/>
     <bean class="com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings"/>
     <bean class="com.cannontech.web.dev.NestSimulatorConfiguration"/>
+    <bean class="com.cannontech.web.dev.MockZeusAuthenticationHelper"/>
 </beans>

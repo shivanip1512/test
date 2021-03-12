@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +31,8 @@ import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusResponse;
 import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
+import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
+import com.cannontech.dr.ecobee.message.ZeusAuthenticationResponse;
 import com.cannontech.dr.ecobee.message.partial.Status;
 import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -40,6 +44,7 @@ import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 public class EcobeeMockApiController {
     @Autowired private EcobeeMockApiService ecobeeMockApiService;
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
+    @Autowired private MockZeusAuthenticationHelper helper;
 
     @IgnoreCsrfCheck
     @RequestMapping(value = "hierarchy/set", method = RequestMethod.POST)
@@ -115,5 +120,30 @@ public class EcobeeMockApiController {
         RuntimeReportJobStatusRequest request = JsonUtils.fromJson(bodyJson, RuntimeReportJobStatusRequest.class);
         RuntimeReportJobStatusResponse response = ecobeeMockApiService.getRuntimeJobStatus(request.getJobId());
         return response;
+    }
+
+    @IgnoreCsrfCheck
+    @PostMapping("auth")
+    public ResponseEntity<ZeusAuthenticationResponse> auth(@RequestBody ZeusAuthenticationRequest request) {
+        int authenticationCode = ecobeeDataConfiguration.getAuthenticate();
+        if (authenticationCode == 0) {
+            return new ResponseEntity<>(helper.login(request), HttpStatus.OK);
+        }
+        if (authenticationCode == 1) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @IgnoreCsrfCheck
+    @GetMapping("auth/refresh")
+    public ResponseEntity<ZeusAuthenticationResponse> refresh(@RequestParam("refresh_token") String refreshToken) {
+        ZeusAuthenticationResponse response = null;
+        if (helper.isInvalidRefreshToken(refreshToken)) {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        helper.refresh(refreshToken);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
