@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -17,6 +19,7 @@ import com.cannontech.user.YukonUserContext;
 public class CustomAttributeApiValidator extends SimpleValidator<CustomAttribute> {
 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private AttributeServiceImpl attributeService;
     private MessageSourceAccessor accessor;
 
     @PostConstruct
@@ -31,11 +34,15 @@ public class CustomAttributeApiValidator extends SimpleValidator<CustomAttribute
     @Override
     protected void doValidation(CustomAttribute attribute, Errors errors) {
         String nameI18nText = accessor.getMessage("yukon.web.modules.adminSetup.config.attributes.attributeName");
+        String attributeNameWithoutSpace = attribute.getName().trim();
         YukonApiValidationUtils.checkIsBlank(errors, "name", attribute.getName(), nameI18nText, false);
 
         if (!errors.hasFieldErrors("name")) {
             YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", attribute.getName(), 60);
             YukonApiValidationUtils.checkBlacklistedCharacter(errors, "name", attribute.getName(), nameI18nText);
+            if (attributeService.isAttributeNameConflict(attributeNameWithoutSpace)) {
+                errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { attributeNameWithoutSpace }, "");
+            }
         }
     }
 }

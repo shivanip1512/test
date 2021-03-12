@@ -71,6 +71,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
@@ -180,6 +181,18 @@ public class AttributeServiceImpl implements AttributeService {
                 .findFirst()
                 .orElse(null)
                 .getPaoType();
+    }
+
+    public boolean isAttributeNameConflict(String attributeName) {
+        Optional<CustomAttribute> customAttribute = customAttributes.asMap()
+                .values()
+                .stream()
+                .filter(attr -> attr.getName().equalsIgnoreCase(attributeName))
+                .findFirst();
+        if (customAttribute.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -848,5 +861,19 @@ public class AttributeServiceImpl implements AttributeService {
         } catch (IllegalArgumentException e) {
             return findCustomAttribute(Integer.valueOf(attribute));
         }
+    }
+
+    public boolean isDuplicate(Integer attributeId, PointType pointType, PaoType paoType, Integer offset) {
+        Optional<AttributeAssignment> customAttribute = customAttributeAssignments.asMap()
+                .values().stream()
+                .filter(attr -> attr.getAttributeId() == attributeId
+                        && attr.getPaoType() == paoType
+                        && attr.getPointType() == pointType
+                        && attr.getOffset() == offset)
+                .findFirst();
+        if (customAttribute.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 }
