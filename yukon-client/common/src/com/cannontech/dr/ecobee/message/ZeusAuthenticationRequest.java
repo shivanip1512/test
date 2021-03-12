@@ -56,14 +56,16 @@ public final class ZeusAuthenticationRequest {
             if (other.password != null) {
                 return false;
             }
-        } else if (!password.equals(other.password))
+        } else if (!password.equals(other.password)) {
             return false;
+        }
         if (scope == null) {
             if (other.scope != null) {
                 return false;
             }
-        } else if (!scope.equals(other.scope))
+        } else if (!scope.equals(other.scope)) {
             return false;
+        }
         if (username == null) {
             if (other.username != null) {
                 return false;
