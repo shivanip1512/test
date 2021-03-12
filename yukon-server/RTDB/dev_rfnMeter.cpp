@@ -646,9 +646,9 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
             }
         }
 
-        {
-            const PaoMetricIds cfgMidnightMetrics = makeMetricIdsDynamicInfo( midnightMetrics );
+        const PaoMetricIds cfgMidnightMetrics = makeMetricIdsDynamicInfo(midnightMetrics);
 
+        {
             boost::optional<PaoMetricIds> paoMidnightMetrics = findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics );
 
             const bool is_mismatched = [ &, this ]
@@ -701,7 +701,7 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
 
                 if ( const auto is_filtered = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered ) )
                 {
-                    const bool cfg_is_filtered = ! cfgIntervalMetrics.empty();
+                    const bool cfg_is_filtered = !cfgMidnightMetrics.empty();   // yes - config midnight metrics, not interval
 
                     return ( *is_filtered )
                         ? metric_mismatch || ! cfg_is_filtered
