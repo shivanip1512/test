@@ -21,13 +21,11 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         restTemplateMock = new RestTemplate();
         impl = new EcobeeZeusAuthTokenServiceImpl(restTemplateMock);
         Class<EcobeeZeusAuthTokenServiceImpl> implClass = EcobeeZeusAuthTokenServiceImpl.class;
-        Method method = implClass.getDeclaredMethod("shouldCancelScheduler", String.class);
+        Method method = implClass.getDeclaredMethod("isExpiredAuthToken", String.class);
         method.setAccessible(true);
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
         DateTime beforeTime = DateTime.now(DateTimeZone.UTC).minusHours(1);
-        System.out.println(formatter.print(beforeTime));
         DateTime afterTime = DateTime.now(DateTimeZone.UTC).plusHours(1);
-        System.out.println(formatter.print(afterTime));
         assertTrue("Must be true", (boolean) method.invoke(impl, formatter.print(beforeTime)));
         assertFalse("Must be false", (boolean) method.invoke(impl, formatter.print(afterTime)));
     }

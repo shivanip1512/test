@@ -135,7 +135,7 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
                 String ecobeeServerURL = globalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
                 ZeusEcobeeAuthTokenResponse authTokenResponse = ecobeeAuthTokenResponseCache.getIfPresent(responseCacheKey);
 
-                if (shouldCancelScheduler(authTokenResponse.getExpiryTimestamp())) {
+                if (isExpiredAuthToken(authTokenResponse.getExpiryTimestamp())) {
                     schedulerFuture.cancel(true);
                 }
                 String refreshToken = authTokenResponse.getRefreshToken();
@@ -159,9 +159,9 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
     }
 
     /**
-     * Cancel the scheduler if current time is after expire time.
+     * Return true if the token is expired i.e current time is after expire time.
      */
-    private boolean shouldCancelScheduler(String expiryTimestamp) {
+    private boolean isExpiredAuthToken(String expiryTimestamp) {
         DateTime currentTime = DateTime.now(DateTimeZone.UTC);
         DateTime expiryTime = formatter.parseDateTime(expiryTimestamp);
         return currentTime.isAfter(expiryTime);

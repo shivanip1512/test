@@ -35,6 +35,7 @@ public final class ZeusAuthenticationRequest {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((password == null) ? 0 : password.hashCode());
+        result = prime * result + ((scope == null) ? 0 : scope.hashCode());
         result = prime * result + ((username == null) ? 0 : username.hashCode());
         return result;
     }
@@ -55,9 +56,14 @@ public final class ZeusAuthenticationRequest {
             if (other.password != null) {
                 return false;
             }
-        } else if (!password.equals(other.password)) {
+        } else if (!password.equals(other.password))
             return false;
-        }
+        if (scope == null) {
+            if (other.scope != null) {
+                return false;
+            }
+        } else if (!scope.equals(other.scope))
+            return false;
         if (username == null) {
             if (other.username != null) {
                 return false;
@@ -67,5 +73,4 @@ public final class ZeusAuthenticationRequest {
         }
         return true;
     }
-
 }
