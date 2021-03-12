@@ -34,13 +34,13 @@ public class CustomAttributeApiValidator extends SimpleValidator<CustomAttribute
     @Override
     protected void doValidation(CustomAttribute attribute, Errors errors) {
         String nameI18nText = accessor.getMessage("yukon.web.modules.adminSetup.config.attributes.attributeName");
-        String attributeNameWithoutSpace = attribute.getName().trim();
         YukonApiValidationUtils.checkIsBlank(errors, "name", attribute.getName(), nameI18nText, false);
 
         if (!errors.hasFieldErrors("name")) {
+            String attributeNameWithoutSpace = attribute.getName().trim();
             YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", attribute.getName(), 60);
             YukonApiValidationUtils.checkBlacklistedCharacter(errors, "name", attribute.getName(), nameI18nText);
-            if (attributeService.isAttributeNameConflict(attributeNameWithoutSpace)) {
+            if (attributeService.isAttributeNameExist(attributeNameWithoutSpace)) {
                 errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { attributeNameWithoutSpace }, "");
             }
         }

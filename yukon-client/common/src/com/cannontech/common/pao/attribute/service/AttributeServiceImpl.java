@@ -35,6 +35,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
+import com.cannontech.common.pao.attribute.model.Assignment;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
@@ -71,7 +72,6 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
@@ -181,18 +181,6 @@ public class AttributeServiceImpl implements AttributeService {
                 .findFirst()
                 .orElse(null)
                 .getPaoType();
-    }
-
-    public boolean isAttributeNameConflict(String attributeName) {
-        Optional<CustomAttribute> customAttribute = customAttributes.asMap()
-                .values()
-                .stream()
-                .filter(attr -> attr.getName().equalsIgnoreCase(attributeName))
-                .findFirst();
-        if (customAttribute.isEmpty()) {
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -863,13 +851,26 @@ public class AttributeServiceImpl implements AttributeService {
         }
     }
 
-    public boolean isDuplicate(Integer attributeId, PointType pointType, PaoType paoType, Integer offset) {
-        Optional<AttributeAssignment> customAttribute = customAttributeAssignments.asMap()
-                .values().stream()
-                .filter(attr -> attr.getAttributeId() == attributeId
-                        && attr.getPaoType() == paoType
-                        && attr.getPointType() == pointType
-                        && attr.getOffset() == offset)
+    public boolean isAssignmentExists(Assignment assignment) {
+        Optional<AttributeAssignment> attributeAssignment = customAttributeAssignments.asMap()
+                .values()
+                .stream()
+                .filter(attr -> attr.getAttributeId() == assignment.getAttributeId()
+                        && attr.getPaoType() == assignment.getPaoType()
+                        && attr.getPointType() == assignment.getPointType()
+                        && attr.getOffset() == assignment.getOffset())
+                .findFirst();
+        if (attributeAssignment.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isAttributeNameExist(String attributeNameWithoutSpace) {
+        Optional<CustomAttribute> customAttribute = customAttributes.asMap()
+                .values()
+                .stream()
+                .filter(attr -> attr.getName().equalsIgnoreCase(attributeNameWithoutSpace))
                 .findFirst();
         if (customAttribute.isEmpty()) {
             return false;

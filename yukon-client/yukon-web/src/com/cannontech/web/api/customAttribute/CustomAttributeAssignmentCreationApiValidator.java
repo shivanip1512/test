@@ -32,8 +32,7 @@ public class CustomAttributeAssignmentCreationApiValidator extends SimpleValidat
         if (!attributeService.isValidAttributeId(assignment.getAttributeId())) {
             errors.rejectValue("attributeId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { assignment.getAttributeId() }, "");
         }
-        if (!attributeService.isDuplicate(assignment.getAttributeId(), assignment.getPointType(), assignment.getPaoType(),
-                assignment.getOffset())) {
+        if (!attributeService. isAssignmentExists(assignment)) {
             errors.rejectValue("attributeId", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { assignment.getAttributeId() }, "");
         }
     }
