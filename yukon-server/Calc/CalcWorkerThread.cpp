@@ -6,7 +6,7 @@
 namespace Cti {
 namespace CalcLogic {
 
-CalcWorkerThread::CalcWorkerThread( const Function & function )
+CalcWorkerThread::CalcWorkerThread( const FunctionImpl & function )
     :   WorkerThread( function ),
         _name( function._name ),
         _isPaused( false ),

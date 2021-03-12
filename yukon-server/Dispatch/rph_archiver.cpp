@@ -31,7 +31,7 @@ namespace Cti {
 namespace Dispatch {
 
 RawPointHistoryArchiver::RawPointHistoryArchiver(const bool &shutdownOnThreadTimeout, void (*shutdownFunc)(const std::string& who))
-    :   _archiverThread { [this]{ mainThread(); } },
+    :   _archiverThread { WorkerThread::Function([this]{ mainThread(); }).name("RawPointHistory archiver thread") },
         ShutdownOnThreadTimeout(shutdownOnThreadTimeout),
         ShutdownFunc(shutdownFunc)
 {}
