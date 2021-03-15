@@ -8,6 +8,7 @@ import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.StopOrder;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.common.dr.gear.setup.fields.WhenToChangeFields;
+import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.web.api.dr.setup.LMValidatorHelper;
@@ -17,9 +18,7 @@ import com.cannontech.web.api.dr.setup.LMValidatorHelper;
  */
 public class GearValidatorHelper {
 
-    @Autowired private GearValidatorHelperCommon gearValidatorHelperCommon;
     @Autowired private LMValidatorHelper lmValidatorHelper;
-
     private final static String invalidKey = "yukon.web.modules.dr.setup.error.invalid";
 
     /**
@@ -28,8 +27,20 @@ public class GearValidatorHelper {
     public void checkHowToStopControl(HowToStopControl howToStopControl, GearControlMethod gearType, Errors errors) {
         lmValidatorHelper.checkIfFieldRequired("howToStopControl", errors, howToStopControl, "How To Stop Control");
         if (!errors.hasFieldErrors("howToStopControl")) {
-            if (!gearValidatorHelperCommon.checkValidHowToStopControl(howToStopControl, gearType)) {
-                errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+            if (gearType == GearControlMethod.SmartCycle || gearType == GearControlMethod.TrueCycle
+                || gearType == GearControlMethod.MagnitudeCycle || gearType == GearControlMethod.TargetCycle) {
+                if (howToStopControl != HowToStopControl.StopCycle && howToStopControl != HowToStopControl.Restore) {
+                    errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+                }
+            } else if (gearType == GearControlMethod.EcobeeCycle || gearType == GearControlMethod.HoneywellCycle
+                || gearType == GearControlMethod.ItronCycle) {
+                if (howToStopControl != HowToStopControl.Restore) {
+                    errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+                }
+            } else {
+                if (howToStopControl != HowToStopControl.TimeIn && howToStopControl != HowToStopControl.Restore) {
+                    errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+                }
             }
         }
     }
@@ -43,7 +54,7 @@ public class GearValidatorHelper {
             || howToStopControl == HowToStopControl.RampOutTimeIn)) {
             lmValidatorHelper.checkIfFieldRequired("stopOrder", errors, stopOrder, "Stop Order");
             if (!errors.hasFieldErrors("stopOrder")) {
-                if (gearValidatorHelperCommon.checkStopControlAndOrder(howToStopControl)) {
+                if (howToStopControl == HowToStopControl.StopCycle) {
                     errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
                 }
             }
@@ -182,7 +193,8 @@ public class GearValidatorHelper {
     public void checkCommandResendRate(Integer sendRate, Errors errors) {
         lmValidatorHelper.checkIfFieldRequired("sendRate", errors, sendRate, "Command Resend Rate");
         if (!errors.hasFieldErrors("sendRate")) {
-            if (!gearValidatorHelperCommon.validCommandResendRate(sendRate)) {
+            TimeIntervals commandResendRate = TimeIntervals.fromSeconds(sendRate);
+            if (!TimeIntervals.getCommandResendRate().contains(commandResendRate)) {
                 errors.rejectValue("sendRate", invalidKey, new Object[] { "Command Resend Rate" }, "");
             }
         }
@@ -192,7 +204,8 @@ public class GearValidatorHelper {
      * Check for Stop Command Repeat
      */
     public void checkStopCommandRepeat(Integer stopCommandRepeat, GearControlMethod gearType, Errors errors) {
-        if (gearValidatorHelperCommon.supportedGear(gearType)) {
+        if (gearType == GearControlMethod.SmartCycle || gearType == GearControlMethod.TrueCycle
+            || gearType == GearControlMethod.TimeRefresh) {
             lmValidatorHelper.checkIfFieldRequired("stopCommandRepeat", errors, stopCommandRepeat,
                 "Stop Command Repeat");
             if (!errors.hasFieldErrors("stopCommandRepeat")) {

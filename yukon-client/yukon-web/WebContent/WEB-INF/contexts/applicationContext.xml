@@ -1425,7 +1425,6 @@
     <bean class="com.cannontech.web.api.ApiRequestHelper"/>
     <bean class="com.cannontech.web.api.dr.setup.LMValidatorHelper"/>
     <bean class="com.cannontech.web.api.dr.setup.LMApiValidatorHelper"/>
-    <bean class="com.cannontech.web.api.dr.setup.LMValidatorHelperCommon"/>
     <bean class="com.cannontech.common.validator.YukonApiValidationUtils"/>
     <bean class="com.cannontech.common.validator.YukonValidationUtilsCommon"/>
     <bean class="com.cannontech.dr.controlscenario.service.impl.ControlScenarioServiceImpl">
@@ -1458,7 +1457,6 @@
 
     <bean class="com.cannontech.web.api.dr.gear.setup.fields.validator.GearValidatorHelper"/>
     <bean class="com.cannontech.web.api.dr.gear.setup.fields.validator.GearApiValidatorHelper"/>
-    <bean class="com.cannontech.web.api.dr.gear.setup.fields.validator.GearValidatorHelperCommon"/>
     <bean id="eatonCloudCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EatonCloudCycleGearFieldsValidator"/>
     <bean id="MeterDisconnectGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MeterDisconnectGearFieldsValidator"/>
     <bean id="honeywellCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellCycleGearFieldsValidator"/>

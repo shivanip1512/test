@@ -11,8 +11,11 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.validator.YukonValidationUtilsCommon;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -23,10 +26,8 @@ public class LMValidatorHelper {
     private final static String key = "yukon.web.modules.dr.setup.error.";
     @Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache serverDatabaseCache;
-    @Autowired private LMValidatorHelperCommon lmValidatorHelperCommon;
-
     public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
-        if (lmValidatorHelperCommon.checkIfFieldRequired(fieldValue)) {
+        if (YukonValidationUtilsCommon.checkIfFieldRequired(fieldValue)) {
             errors.rejectValue(field, key + "required", new Object[] { fieldName }, "");
         }
     }
@@ -40,18 +41,9 @@ public class LMValidatorHelper {
         checkIfFieldRequired("name", errors, paoName, fieldName);
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
-            if (!lmValidatorHelperCommon.isValidPaoName(paoName)) {
+            if (!PaoUtils.isValidPaoName(paoName)) {
                 errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
             }
-        }
-    }
-
-    /**
-     * Checks whether the Pao name is unique or not
-     */
-    private void validateUniquePaoName(String paoName, PaoType type, Errors errors, String fieldName) {
-        if (lmValidatorHelperCommon.validateUniquePaoName(paoName, type)) {
-            errors.rejectValue("name", key + "unique", new Object[] { fieldName }, "");
         }
     }
 
@@ -60,7 +52,7 @@ public class LMValidatorHelper {
         if (!errors.hasFieldErrors("name")) {
             String paoId = ServletUtils.getPathVariable("id");
             // Check if pao name already exists
-            if (lmValidatorHelperCommon.isPaoNameUnique(paoName, type)) {
+            if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equalsIgnoreCase(paoName)))) {
                 validateUniquePaoName(paoName, type, errors, fieldName);
             }
         }
@@ -77,10 +69,21 @@ public class LMValidatorHelper {
         }
     }
 
+    /**
+     * Checks whether the Pao name is unique or not
+     */
+    private void validateUniquePaoName(String paoName, PaoType type, Errors errors, String fieldName) {
+        LiteYukonPAObject unique = paoDao.findUnique(paoName, type);
+        if (unique != null) {
+            errors.rejectValue("name", key + "unique", new Object[] {fieldName}, "");
+        }
+    }
+
     public void validateRoute(Errors errors, Integer routeId) {
         checkIfFieldRequired("routeId", errors, routeId, "Route Id");
         if (!errors.hasFieldErrors("routeId")) {
-            if (!lmValidatorHelperCommon.validateRoute(routeId)) {
+            LiteYukonPAObject liteRoute = serverDatabaseCache.getAllRoutesMap().get(routeId);
+            if (liteRoute == null) {
                 errors.rejectValue("routeId", key + "routeId.doesNotExist");
             }
         }
@@ -90,7 +93,7 @@ public class LMValidatorHelper {
      * Find duplicate entries from list and returns set of entries which are duplicate.
      */
     public Set<Integer> findDuplicates(List<Integer> list) {
-        return list.stream().filter(e -> Collections.frequency(list, e) > 1).collect(Collectors.toSet());
+        return list.stream().filter(e -> Collections.frequency(list, e) >1).collect(Collectors.toSet());
     }
 
     /**
