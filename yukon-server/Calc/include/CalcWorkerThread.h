@@ -9,7 +9,7 @@ class CalcWorkerThread : public WorkerThread
 {
 public:
 
-    CalcWorkerThread( const Function & function );
+    CalcWorkerThread( const FunctionImpl & function );
 
     virtual ~CalcWorkerThread();
 
