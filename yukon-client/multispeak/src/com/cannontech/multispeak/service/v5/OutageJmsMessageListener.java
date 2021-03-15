@@ -3,7 +3,6 @@ package com.cannontech.multispeak.service.v5;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 import javax.xml.namespace.QName;
@@ -54,7 +53,6 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private ImmutableList<MultispeakVendor> vendorsToSendOutageMsg = ImmutableList.of();
-    private AtomicLong atomicLong = new AtomicLong();
     private ImmutableMap<OutageActionType, EndDeviceStateKind> outageMap = ImmutableMap.of();
     private static final Logger log = YukonLogManager.getLogger(OutageJmsMessageListener.class);
 
@@ -138,12 +136,10 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
                 + deviceState.getReferableID() + " Type: " + deviceState.getDeviceState().getValue());
 
             try {
-                String transactionId = String.valueOf(atomicLong.getAndIncrement());
                 EndDeviceStatesNotification endDeviceStatesNotification = objectFactory.createEndDeviceStatesNotification();
                 ArrayOfEndDeviceState arrayOfEndDeviceState = new ArrayOfEndDeviceState();
                 List<EndDeviceState> endDeviceStateList = arrayOfEndDeviceState.getEndDeviceState();
                 endDeviceStateList.add(deviceState);
-                endDeviceStatesNotification.setTransactionID(transactionId);
                 endDeviceStatesNotification.setArrayOfEndDeviceState(arrayOfEndDeviceState);
                 notClient.endDeviceStatesNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_STR, endDeviceStatesNotification);
 
