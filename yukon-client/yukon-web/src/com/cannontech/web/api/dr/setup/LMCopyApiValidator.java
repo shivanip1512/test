@@ -7,10 +7,12 @@ import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationHelper;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class LMCopyApiValidator extends SimpleValidator<LMCopy> {
     @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
     @Autowired private YukonApiValidationHelper yukonApiValidationHelper;
+    @Autowired private IDatabaseCache serverDatabaseCache;
 
     public LMCopyApiValidator() {
         super(LMCopy.class);
@@ -21,9 +23,8 @@ public class LMCopyApiValidator extends SimpleValidator<LMCopy> {
 
         // Group Name
         String paoId = ServletUtils.getPathVariable("id");
-        yukonApiValidationHelper.validatePaoName(lmCopy.getName(), null, errors, "Name", paoId);
-        
-        //lmApiValidatorHelper.validateCopyPaoName(lmCopy.getName(), errors, "Name");
+        yukonApiValidationHelper.validatePaoName(lmCopy.getName(),
+                serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(paoId)).getPaoType(), errors, "Name", paoId);
 
         // Validate routeId if present.
         lmApiValidatorHelper.validateRouteId(lmCopy, errors, "RouteId");
