@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/10/2021 9:35:40 AM                         */
+/* Created on:     3/16/2021 4:05:03 AM                         */
 /*==============================================================*/
 
 
@@ -9997,7 +9997,7 @@ INSERT INTO UnitMeasure VALUES ( 54,'UNDEF', 0,'Undefined','(none)' );
 INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
 INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
-INSERT INTO UnitMeasure VALUES ( 58,'thm', 0, 'Therms', '(none)');
+INSERT INTO UnitMeasure VALUES ( 58,'Therms', 0, 'Therms', '(none)');
 
 /*==============================================================*/
 /* Table: UsageThresholdReport                                  */
