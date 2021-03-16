@@ -26,7 +26,7 @@ public class EatonCloudMessageListener {
         log.debug("LM Eaton Cloud Command - Group Id: {}, startTime: {}, endTime: {}, Duty Cycle Percent: {}", groupId, startTime, endTime, dutyCyclePercent);
 
         recentEventParticipationService.createDeviceControlEvent(0, // ProgramId - I don't think we get/have this
-                                                                 0, // EventId - I don't think we get/have this
+                                                                 null, // EventId - I don't think we get/have this
                                                                  groupId,
                                                                  startTime,
                                                                  endTime);

@@ -87,7 +87,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     }
 
     @Override
-    public void createNewEventMapping(int programId, long eventId, int groupId, Instant startTime, Instant stopTime) {
+    public void createNewEventMapping(int programId, long eventId, int groupId, Instant startTime, Instant stopTime, String externalEventId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink p = sql.insertInto("ControlEvent");
         p.addValue("ControlEventId", eventId);
@@ -95,6 +95,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         p.addValue("StartTime", startTime);
         p.addValue("ScheduledStopTime", stopTime);
         p.addValue("ProgramId", programId);
+        p.addValue("ExternalEventId", externalEventId);
         jdbcTemplate.update(sql);
 
     }
@@ -193,9 +194,10 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 Instant startTime = rs.getInstant("StartTime");
                 int numConfirmed = rs.getInt("Confirmed");
                 int numUnknowns = rs.getInt("Unknown");
+                String ExternalEventId = rs.getString("ExternalEventId");
                 RecentEventParticipationStats recentEventParticipationStats =
                     new RecentEventParticipationStats(controlEventId, programName, loadGroupName, startTime, numConfirmed,
-                        numUnknowns);
+                        numUnknowns, ExternalEventId);
                 return recentEventParticipationStats;
             }
         };
@@ -208,7 +210,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY EventId DESC");
         sql.append("    ) AS RowNumber, EventId, Program, LoadGroup, StartTime, Unknown, Confirmed ");
         sql.append("    FROM (");
-        sql.append("        SELECT ce.ControlEventId AS EventId, pgypo.PAOName AS Program, lgypo.PAOName AS LoadGroup, ce.StartTime AS StartTime,");
+        sql.append("        SELECT ce.ControlEventId AS EventId, pgypo.PAOName AS Program, lgypo.PAOName AS LoadGroup, ce.StartTime AS StartTime, ce.ExternalEventId AS ExternalEventId");
         sql.append("          SUM(CASE WHEN ced.Result").eq_k(UNKNOWN).append("THEN 1 ELSE 0 END) Unknown,");
         sql.append("          SUM(CASE WHEN ced.Result").in_k(ControlEventDeviceStatus.getAllDeviceStatus()).append("THEN 1 ELSE 0 END) Confirmed");
         sql.append("        FROM ControlEvent ce");
@@ -238,8 +240,9 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 String groupName = rs.getString("LoadGroup");
                 Instant startTime = rs.getInstant("StartTime");
                 Instant stopTime = rs.getInstant("StopTime");
+                String externalEventId = rs.getString("ExternalEventId");
                 RecentEventParticipationDetail recentEventParticipationDetail =
-                    new RecentEventParticipationDetail(eventId, programName, groupName, startTime, stopTime, null);
+                    new RecentEventParticipationDetail(eventId, programName, groupName, startTime, stopTime, null, externalEventId);
                 return recentEventParticipationDetail;
             }
         };
@@ -302,6 +305,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     private SqlFragmentSource getControlAuditBaseQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT ce.ControlEventId AS EventId, ce.StartTime, ce.ScheduledStopTime AS StopTime, ");
+        sql.append("ce.ExternalEventId AS ExternalEventId, ");
         sql.append("lgypo.PAOName AS LoadGroup, pgypo.PAOName AS ProgramName");
         sql.append("FROM ControlEvent ce");
         sql.append("  JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
