@@ -102,8 +102,7 @@
                     </form:select>&nbsp;
                 </tags:nameValue2>
                 
-                <c:set var="classes" value="${exportField.field.plainTextType ? 'dn' : ''}"/>
-                <tags:nameValue2 rowId="field-size" nameKey=".fieldSize" rowClass="${classes}">
+                <tags:nameValue2 rowId="field-size" nameKey=".fieldSize">
                     <cti:msg2 var="fieldSizeMsg" key=".fieldSizeMax"/>
                     <tags:input id="max-length" path="maxLength" size="5" maxlength="5" units="${fieldSizeMsg}"/>
                 </tags:nameValue2>
@@ -140,10 +139,9 @@
             
         </tags:sectionContainer2>
         
-        <c:set var="classes" value=""/>
-        <c:if test="${exportField.field.plainTextType}"><c:set var="classes" value="dn"/></c:if>
-        <c:if test="${exportField.field.deviceType}"><c:set var="classes" value="dn"/></c:if>
-        <c:if test="${exportField.field.runtimeType}"><c:set var="classes" value="dn"/></c:if>
+        <c:set var="classes" value="${exportField.field.plainTextType ? 'dn' : ''}"/>
+        <c:set var="classes" value="${exportField.field.deviceType ? 'dn' : ''}"/>
+        <c:set var="classes" value="${exportField.field.runtimeType ? 'dn' : ''}"/>
         <tags:sectionContainer2 id="other-options" nameKey="otherOptions" styleClass="${classes}">
         
             <tags:nameValueContainer2 tableClass="with-form-controls">
