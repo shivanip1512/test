@@ -179,7 +179,14 @@ public class ListController {
                 listDefinitions.remove(YukonDefinition.DEV_TYPE_NON_YUKON_METER);
             }
         }
-        
+
+        //Used to remove the LCR-6200C from the Admin EC > Lists > Device Type YUK-23498
+        listDefinitions.remove(YukonDefinition.DEV_TYPE_LCR_6200C);
+        //Used to remove the LCR-6600C from the Admin EC > Lists > Device Type YUK-23498
+        listDefinitions.remove(YukonDefinition.DEV_TYPE_LCR_6600C);
+        //Used to remove the LCR_DISCONNECT_C from the Admin EC > Lists > Device Type YUK-23498
+        listDefinitions.remove(YukonDefinition.DEV_TYPE_LCR_DISCONNECT_C);
+
         if (!configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
             //Used to remove the Nest Thermostat from the Admin EC > Lists > Device Type YUK-19820
             listDefinitions.remove(YukonDefinition.DEV_TYPE_NEST_THERMOSTAT);

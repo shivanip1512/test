@@ -160,8 +160,9 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
 
         service.doValidation(command, errors);
+        // Error Count was changed to 3 from 4 as part of YUK-23498
         assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.DR ,
-            errors.getErrorCount() == 4);
+            errors.getErrorCount() == 3);
         
         
         command = new GlobalSettingsEditorBean();
@@ -175,8 +176,9 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
 
         service.doValidation(command, errors);
+        // Error Count was changed to 3 from 4 as part of YUK-23498
         assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.DR ,
-            errors.getErrorCount() == 4);
+            errors.getErrorCount() == 3);
 
         // InValid Runtime Calculation Value
         command = new GlobalSettingsEditorBean();

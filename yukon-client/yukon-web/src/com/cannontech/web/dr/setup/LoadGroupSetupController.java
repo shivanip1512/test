@@ -83,6 +83,9 @@ public class LoadGroupSetupController {
     @GetMapping("/create")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+        // Remove Eaton Cloud Load Group from creation drop down YUK-23498
+        switchTypes.remove(PaoType.LM_GROUP_EATON_CLOUD);
+        
         model.addAttribute("mode", PageEditMode.CREATE);
         LoadGroupBase loadGroup = new LoadGroupBase();
         if (model.containsAttribute("loadGroup")) {
