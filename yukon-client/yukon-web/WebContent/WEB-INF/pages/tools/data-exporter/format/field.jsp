@@ -144,6 +144,7 @@
         <c:if test="${exportField.field.plainTextType}"><c:set var="classes" value="dn"/></c:if>
         <c:if test="${exportField.field.deviceType}"><c:set var="classes" value="dn"/></c:if>
         <c:if test="${exportField.field.runtimeType}"><c:set var="classes" value="dn"/></c:if>
+         <tags:sectionContainer2 id="other-options" nameKey="otherOptions" styleClass="${classes}">
         
             <tags:nameValueContainer2 tableClass="with-form-controls">
             
