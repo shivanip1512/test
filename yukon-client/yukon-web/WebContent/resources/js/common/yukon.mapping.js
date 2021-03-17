@@ -607,13 +607,13 @@ yukon.mapping = (function () {
         },
         
         getPaoIdFromData: function(node) {
-          if (node.data != null) {
+          if (node != null && node.data != null) {
               return Object.keys(node.data)[0];
           }  
         },
         
         getFeatureFromData: function(node) {
-            if (node.data != null) {
+            if (node != null && node.data != null) {
                 var nodeData = Object.keys(node.data).map(function (key) {
                     return node.data[key];
                 });
@@ -709,7 +709,7 @@ yukon.mapping = (function () {
             yukon.ui.block(mapContainer);
             $.getJSON(yukon.url('/stars/comprehensiveMap/networkTree') + '?' + $.param({ deviceId: deviceId }))
             .done(function (json) {
-                if (json.tree) {
+                if (json.tree.length > 0) {
                     var gatewayNode = json.tree[0],
                         paoId = yukon.mapping.getPaoIdFromData(gatewayNode);
                     //first check if device is gateway.
@@ -720,6 +720,8 @@ yukon.mapping = (function () {
                     } else {
                         yukon.mapping.drawAllDescendants(deviceId, gatewayNode);
                     }
+                } else {
+                    $('.js-no-descendants-message').removeClass('dn');
                 }
                 if (json.errorMsg) {
                     yukon.ui.alertError(json.errorMsg);
@@ -826,7 +828,9 @@ yukon.mapping = (function () {
             var iconLayer = yukon.mapping.getIconLayer(),
                 source = iconLayer.getSource();
             _descendantIcons.forEach(function (icon) {
-                source.removeFeature(icon);
+                if (source.getFeatureById(icon.getId()) != null) {
+                    source.removeFeature(icon);
+                }
             });
             _descendantLines.forEach(function (line) {
                 _map.removeLayer(line);

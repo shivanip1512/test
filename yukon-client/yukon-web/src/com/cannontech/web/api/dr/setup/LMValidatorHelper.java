@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.setup.LMCopy;
@@ -14,6 +13,7 @@ import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.validator.YukonValidationUtilsCommon;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.util.ServletUtils;
@@ -27,7 +27,7 @@ public class LMValidatorHelper {
     @Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache serverDatabaseCache;
     public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
-        if (fieldValue == null || !StringUtils.hasText(fieldValue.toString())) {
+        if (YukonValidationUtilsCommon.checkIfFieldRequired(fieldValue)) {
             errors.rejectValue(field, key + "required", new Object[] { fieldName }, "");
         }
     }

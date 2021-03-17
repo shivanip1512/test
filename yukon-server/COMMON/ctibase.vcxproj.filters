@@ -284,9 +284,6 @@
     <ClInclude Include="include\BeatThePeakAlertLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\boost_test_helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\boost_time.h">
       <Filter>Header Files</Filter>
     </ClInclude>

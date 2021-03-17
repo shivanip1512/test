@@ -20,7 +20,7 @@ public:
 
     ErrorOr<Bytes> getProgram(const std::string guid);
 
-    std::string getAssignedGuid(RfnIdentifier rfnIdentifier);
+    virtual std::string getAssignedGuid(RfnIdentifier rfnIdentifier);
     ErrorOr<size_t> getProgramSize(const std::string guid);
 
     virtual bool isAssigned(const RfnIdentifier rfnIdentifier, const std::string guid);

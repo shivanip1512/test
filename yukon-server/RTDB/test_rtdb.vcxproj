@@ -340,6 +340,7 @@
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\rtdb_test_helpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\COMMON\boost_assert.cpp" />
