@@ -21,11 +21,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationResponse;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 public class EcobeeZeusAuthTokenServiceImplTest {
     private RestTemplate restTemplateMock;
@@ -53,7 +54,7 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         assertFalse("Must be false", (boolean) method.invoke(impl, formatter.print(afterTime)));
     }
 
-    @Test
+    @Test(expected = InvalidCacheLoadException.class)
     public void test_authenticate_emptyConfigurations() throws Exception {
         GlobalSettingDao mockGlobalSettingDao = EasyMock.createMock(GlobalSettingDao.class);
         EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL)).andReturn(StringUtils.EMPTY);
@@ -65,8 +66,7 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         EasyMock.replay(mockGlobalSettingDao);
         ReflectionTestUtils.setField(impl, "globalSettingDao", mockGlobalSettingDao);
 
-        ZeusEcobeeAuthTokenResponse response = impl.authenticate();
-        assertTrue("Response must be null when any of the configurations is empty", response == null);
+        impl.authenticate();
     }
 
     @Test
@@ -91,7 +91,7 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         assertTrue("Expiry timestamp should match: ", response.getExpiryTimestamp().equals("2021-03-12T21:13:44Z"));
     }
 
-    @Test
+    @Test(expected = InvalidCacheLoadException.class)
     public void test_authenticate_unAuthorized() throws Exception {
         setupRequiredFields();
 
@@ -102,12 +102,10 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         EasyMock.replay(restTemplateMock);
         ReflectionTestUtils.setField(impl, "restTemplate", restTemplateMock);
 
-        ZeusEcobeeAuthTokenResponse response = impl.authenticate();
-
-        assertTrue("Response must be null: ", response == null);
+        impl.authenticate();
     }
 
-    @Test(expected = EcobeeCommunicationException.class)
+    @Test(expected = UncheckedExecutionException.class)
     public void test_authenticate_badRequest() throws Exception {
         setupRequiredFields();
 

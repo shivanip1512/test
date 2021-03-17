@@ -44,6 +44,7 @@ import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 public class EcobeeMockApiController {
     @Autowired private EcobeeMockApiService ecobeeMockApiService;
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
+    @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
     @Autowired private MockZeusAuthenticationHelper helper;
 
     @IgnoreCsrfCheck
@@ -125,7 +126,7 @@ public class EcobeeMockApiController {
     @IgnoreCsrfCheck
     @PostMapping("auth")
     public ResponseEntity<ZeusAuthenticationResponse> auth(@RequestBody ZeusAuthenticationRequest request) {
-        int authenticationCode = ecobeeDataConfiguration.getAuthenticate();
+        int authenticationCode = zeusEcobeeDataConfiguration.getAuthenticate();
         if (authenticationCode == 0) {
             return new ResponseEntity<>(helper.login(request), HttpStatus.OK);
         }
