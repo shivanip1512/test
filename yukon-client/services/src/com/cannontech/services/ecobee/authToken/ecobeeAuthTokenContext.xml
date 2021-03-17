@@ -43,8 +43,6 @@
     </bean>
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="destinationName" value="yukon.ecobee.auth.token.ZeusEcobeeAuthTokenRequest"/>
-        <property name="pubSubDomain" value="false"/>
-        <property name="concurrentConsumers" value="1"/>
         <property name="connectionFactory" ref="connectionFactory"/>
         <property name="messageListener" ref="zeusEcobeeAuthTokenListener"/>
     </bean> 
