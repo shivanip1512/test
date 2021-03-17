@@ -1,5 +1,6 @@
 package com.cannontech.services.ecobee.authToken.service.impl;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -37,8 +38,9 @@ import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRespo
 import com.cannontech.services.ecobee.authToken.service.EcobeeZeusAuthTokenService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenService, MessageListener {
     private static final Logger log = YukonLogManager.getLogger(EcobeeZeusAuthTokenServiceImpl.class);
@@ -48,8 +50,14 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
 
     // Cache with expire time 1439 minutes because refresh token is valid for 24 Hours.
-    private Cache<String, ZeusEcobeeAuthTokenResponse> ecobeeAuthTokenResponseCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(1439, TimeUnit.MINUTES).build();
+    private LoadingCache<String, ZeusEcobeeAuthTokenResponse> ecobeeAuthTokenResponseCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(1439, TimeUnit.MINUTES)
+            .build(new CacheLoader<String, ZeusEcobeeAuthTokenResponse>() {
+                @Override
+                public ZeusEcobeeAuthTokenResponse load(String responseCacheKey) throws Exception {
+                    return generateEcobeeAuthTokenResponse();
+                };
+            });
     private ScheduledFuture<?> schedulerFuture;
     private RestTemplate restTemplate;
     private static final String responseCacheKey = "responseCacheKey";
@@ -72,67 +80,69 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
 
     @Override
     public ZeusEcobeeAuthTokenResponse authenticate() {
-
-        ZeusEcobeeAuthTokenResponse ecobeeAuthTokenResponse = new ZeusEcobeeAuthTokenResponse();
-        ResponseEntity<ZeusAuthenticationResponse> authenticationResponse = null;
-        if (ecobeeAuthTokenResponseCache.getIfPresent(responseCacheKey) == null) {
-            if (ecobeeAuthTokenResponseCache.getIfPresent(responseCacheKey) == null) {
-                try {
-                    String ecobeePassword = globalSettingDao.getString(GlobalSettingType.ECOBEE_PASSWORD);
-                    String ecobeeUsername = globalSettingDao.getString(GlobalSettingType.ECOBEE_USERNAME);
-                    String ecobeeServerURL = globalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
-                    // Check if username, password and Ecobee URL available in global settings or not.
-                    if (StringUtils.isEmpty(ecobeeUsername) || StringUtils.isEmpty(ecobeePassword)
-                            || StringUtils.isEmpty(ecobeeServerURL)) {
-                        throw new EcobeeAuthenticationException("One or more ecobee configuration settings is empty.");
-                    }
-
-                    String url = ecobeeServerURL + authUrlPart;
-                    log.debug("Attempting login with ecobeeUsername " + ecobeeUsername + " URL: " + url);
-
-                    ZeusAuthenticationRequest authRequest = new ZeusAuthenticationRequest(ecobeeUsername, ecobeePassword, scope);
-
-                    authenticationResponse = restTemplate.postForEntity(url, authRequest, ZeusAuthenticationResponse.class);
-
-                    // if HttpStatus.OK, API call successful Update the cache and start scheduler for refreshing auth token.
-                    if (authenticationResponse.getStatusCode() == HttpStatus.OK) {
-                        log.info("Successfully logged in to Ecobee.");
-                        ZeusAuthenticationResponse response = authenticationResponse.getBody();
-                        ecobeeAuthTokenResponse.setAuthToken(response.getAuthToken());
-                        ecobeeAuthTokenResponse.setRefreshToken(response.getRefreshToken());
-                        ecobeeAuthTokenResponse.setExpiryTimestamp(response.getExpiryTimestamp());
-                        ecobeeAuthTokenResponseCache.put(responseCacheKey, ecobeeAuthTokenResponse);
-
-                        // Cancel the previous scheduler if its running then schedule a fresh scheduler for refreshing the auth
-                        // token in every 60 minutes.
-                        if (schedulerFuture != null) {
-                            schedulerFuture.cancel(true);
-                        }
-                        scheduleRefreshAuthToken();
-                    } else if (authenticationResponse.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                        // Authentication failed throw EcobeeAuthenticationException.
-                        throw new EcobeeAuthenticationException(ecobeeUsername,
-                                authenticationResponse.getStatusCode().toString());
-                    } else {
-                        throw new EcobeeCommunicationException(
-                                "Unable to communicate with Ecobee API." + authenticationResponse.getStatusCode().toString());
-                    }
-                } catch (RestClientException e) {
-                    throw new EcobeeCommunicationException("Unable to communicate with Ecobee API.", e);
-                } catch (EcobeeAuthenticationException e) {
-                    log.warn("Caught exception in authenticate", e);
-                }
-            }
+        try {
+            return ecobeeAuthTokenResponseCache.get(responseCacheKey);
+        } catch (ExecutionException e) {
+            throw new EcobeeCommunicationException("Unable to communicate with Ecobee API.", e);
         }
-        return ecobeeAuthTokenResponseCache.getIfPresent(responseCacheKey);
     }
 
-    private void scheduleRefreshAuthToken() {
+    /**
+     * Make API call to Ecobee, Populate the cache and update/schedule the scheduler for refreshing the auth token before 1 hour.
+     */
+    private ZeusEcobeeAuthTokenResponse generateEcobeeAuthTokenResponse() {
+        try {
+            String ecobeePassword = globalSettingDao.getString(GlobalSettingType.ECOBEE_PASSWORD);
+            String ecobeeUsername = globalSettingDao.getString(GlobalSettingType.ECOBEE_USERNAME);
+            String ecobeeServerURL = globalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
+            // Check if username, password and Ecobee URL available in global settings or not.
+            if (StringUtils.isEmpty(ecobeeUsername) || StringUtils.isEmpty(ecobeePassword)
+                    || StringUtils.isEmpty(ecobeeServerURL)) {
+                throw new EcobeeAuthenticationException("One or more ecobee configuration settings is empty.");
+            }
+
+            String url = ecobeeServerURL + authUrlPart;
+            log.debug("Attempting login with ecobeeUsername " + ecobeeUsername + " URL: " + url);
+
+            ZeusAuthenticationRequest authRequest = new ZeusAuthenticationRequest(ecobeeUsername, ecobeePassword, scope);
+
+            ResponseEntity<ZeusAuthenticationResponse> authenticationResponse = restTemplate.postForEntity(url, authRequest,
+                    ZeusAuthenticationResponse.class);
+
+            // if HttpStatus.OK, API call successful Update the cache and start scheduler for refreshing auth token.
+            if (authenticationResponse.getStatusCode() == HttpStatus.OK) {
+                log.info("Successfully logged in to Ecobee.");
+                ZeusAuthenticationResponse response = authenticationResponse.getBody();
+                ZeusEcobeeAuthTokenResponse ecobeeAuthTokenResponse = buildZeusEcobeeAuthTokenResponse(response);
+                ecobeeAuthTokenResponse.setRefreshToken(response.getRefreshToken());
+                // Cancel the previous scheduler if its running then schedule a fresh scheduler for refreshing the auth token in
+                // every 60 minutes.
+                if (schedulerFuture != null) {
+                    schedulerFuture.cancel(true);
+                }
+                scheduleRefreshAuthToken(ecobeeServerURL);
+                return ecobeeAuthTokenResponse;
+            } else if (authenticationResponse.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                // Authentication failed throw EcobeeAuthenticationException.
+                throw new EcobeeAuthenticationException(ecobeeUsername,
+                        authenticationResponse.getStatusCode().toString());
+            } else {
+                throw new EcobeeCommunicationException(
+                        "Unable to communicate with Ecobee API." + authenticationResponse.getStatusCode().toString());
+            }
+        } catch (RestClientException e) {
+            throw new EcobeeCommunicationException("Unable to communicate with Ecobee API.", e);
+        } catch (EcobeeAuthenticationException e) {
+            log.warn("Caught exception in authenticate", e);
+            return null;
+        }
+    }
+
+    private void scheduleRefreshAuthToken(String ecobeeServerURL) {
         log.info("Scheduling Auth token refresh API call to run before every hour.");
         schedulerFuture = scheduledExecutor.scheduleAtFixedRate(() -> {
             try {
                 log.info("trying ecobee refresh");
-                String ecobeeServerURL = globalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
                 ZeusEcobeeAuthTokenResponse authTokenResponse = ecobeeAuthTokenResponseCache.getIfPresent(responseCacheKey);
 
                 if (isExpiredAuthToken(authTokenResponse.getExpiryTimestamp())) {
@@ -146,8 +156,7 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
                         ZeusAuthenticationResponse.class);
 
                 if (authenticationResponse.getStatusCode() == HttpStatus.OK) {
-                    authTokenResponse.setAuthToken(authenticationResponse.getBody().getAuthToken());
-                    authTokenResponse.setExpiryTimestamp(authenticationResponse.getBody().getExpiryTimestamp());
+                    authTokenResponse = buildZeusEcobeeAuthTokenResponse(authenticationResponse.getBody());
                 } else {
                     throw new EcobeeCommunicationException(
                             "Unable to communicate with Ecobee API." + authenticationResponse.getStatusCode().toString());
@@ -156,6 +165,16 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
                 throw new EcobeeCommunicationException("Unable to communicate with Ecobee API.", e);
             }
         }, 59, 60, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Build ZeusEcobeeAuthTokenResponse from ZeusAuthenticationResponse.
+     */
+    private ZeusEcobeeAuthTokenResponse buildZeusEcobeeAuthTokenResponse(ZeusAuthenticationResponse response) {
+        ZeusEcobeeAuthTokenResponse ecobeeAuthTokenResponse = new ZeusEcobeeAuthTokenResponse();
+        ecobeeAuthTokenResponse.setAuthToken(response.getAuthToken());
+        ecobeeAuthTokenResponse.setExpiryTimestamp(response.getExpiryTimestamp());
+        return ecobeeAuthTokenResponse;
     }
 
     /**
