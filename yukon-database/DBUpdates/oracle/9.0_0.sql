@@ -262,6 +262,19 @@ InventoryID ASC
 INSERT INTO DBUpdates VALUES ('YUK-23267', '9.0.0', SYSDATE);
 /* @end YUK-23267 */
 
+/* @start YUK-23591 */
+ALTER TABLE ControlEvent
+ADD ExternalEventId varchar(36);
+
+UPDATE ControlEvent
+SET ExternalEventId = ControlEventId
+WHERE ProgramId IN
+    (SELECT DISTINCT PAObjectId from YukonPAObject
+     WHERE Type IN ('HONEYWELL PROGRAM', 'ITRON PROGRAM'));
+
+INSERT INTO DBUpdates VALUES ('YUK-23591', '9.0.0', SYSDATE);
+/* @end YUK-23591 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
