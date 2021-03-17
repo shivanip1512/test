@@ -202,6 +202,12 @@ bool isUploading(const Devices::RfnDevice& rfnDevice, const std::string& guid)
 }
 
 
+bool RfnRequestManager::isE2eServerDisabled() const
+{
+    return gConfigParms.isTrue("E2E_SERVER_DISABLED");
+}
+
+
 void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rfnIdentifier, const EndpointMessage & message, const ApplicationServiceIdentifiers asid)
 {
     std::string meterProgramsPrefix = "/meterPrograms/";
@@ -210,6 +216,13 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
     {
         if( boost::algorithm::starts_with(message.path, meterProgramsPrefix) )
         {
+            if( isE2eServerDisabled() )
+            {
+                CTILOG_WARN(dout, "E2E server disabled, ignoring Meter Programming request for device " << rfnIdentifier);
+
+                return;
+            }
+
             if( ! message.token )
             {
                 sendE2eDataAck(message.id, AckType::BadRequest, asid, PriorityClass::MeterProgramming, rfnIdentifier);
@@ -356,6 +369,13 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             if( message.confirmable )
             {
+                if( isE2eServerDisabled() )
+                {
+                    CTILOG_WARN(dout, "E2E server disabled, not sending ack for unsolicited report from device " << rfnIdentifier);
+
+                    return;
+                }
+
                 sendE2eDataAck(message.id, AckType::Success, asid, PriorityClass::DeviceConfiguration, rfnIdentifier);
 
                 stats.incrementAcks(rfnIdentifier, Now);

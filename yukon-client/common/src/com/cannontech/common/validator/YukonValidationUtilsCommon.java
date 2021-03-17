@@ -111,7 +111,7 @@ public class YukonValidationUtilsCommon extends ValidationUtils {
 
     /* Validate field is required */
     public static boolean checkIfFieldRequired(Object fieldValue) {
-        return (fieldValue == null) ? true : false;
+        return (fieldValue == null || StringUtils.isBlank(fieldValue.toString())) ? true : false;
     }
 
     /**

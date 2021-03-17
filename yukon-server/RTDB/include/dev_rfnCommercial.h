@@ -6,6 +6,8 @@
 #include "cmd_rfn_TouConfiguration.h"
 #include "cmd_rfn_OvUvConfiguration.h"
 
+#include "MeterProgramStatusArchiveRequestMsg.h"
+
 namespace Cti::Devices {
 
 class IM_EX_DEVDB RfnCommercialDevice
@@ -18,6 +20,8 @@ protected:
 
     YukonError_t executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
     YukonError_t executeReadDemandFreezeInfo (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
+
+    virtual void sendMeterProgramStatusUpdate(Messaging::Rfn::MeterProgramStatusArchiveRequestMsg msg);
 };
 
 typedef RfnCommercialDevice Rfn430a3dDevice;
