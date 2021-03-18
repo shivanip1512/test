@@ -264,7 +264,7 @@ INSERT INTO DBUpdates VALUES ('YUK-23267', '9.0.0', SYSDATE);
 
 /* @start YUK-23591 */
 ALTER TABLE ControlEvent
-ADD ExternalEventId varchar(36);
+ADD ExternalEventId varchar2(36);
 
 UPDATE ControlEvent
 SET ExternalEventId = ControlEventId
