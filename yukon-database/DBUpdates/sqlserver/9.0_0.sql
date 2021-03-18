@@ -287,6 +287,12 @@ WHERE ProgramId IN
 INSERT INTO DBUpdates VALUES ('YUK-23591', '9.0.0', GETDATE());
 /* @end YUK-23591 */
 
+/* @start YUK-23969 */
+INSERT INTO UnitMeasure VALUES (58, 'Therms', 0, 'Therms', '(none)');
+
+INSERT INTO DBUpdates VALUES ('YUK-23969', '9.0.0', GETDATE());
+/* @end YUK-23969 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

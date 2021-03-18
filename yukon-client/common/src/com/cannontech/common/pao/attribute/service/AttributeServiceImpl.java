@@ -75,8 +75,6 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -107,8 +105,6 @@ public class AttributeServiceImpl implements AttributeService {
     
     private Set<DbChangeType> addType = EnumSet.of(DbChangeType.ADD, DbChangeType.UPDATE);
     private Set<DbChangeType> deleteType = EnumSet.of(DbChangeType.DELETE);
-    private Cache<Integer, CustomAttribute> customAttributes = CacheBuilder.newBuilder().build();
-    private Cache<Integer, AttributeAssignment> customAttributeAssignments = CacheBuilder.newBuilder().build();
     
     @PostConstruct
     public void init() {   

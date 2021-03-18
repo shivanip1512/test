@@ -26,5 +26,24 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="ecobeeAuthTokenListener"/>
     </bean>
-    
+
+    <bean id="zeusEcobeeAuthTokenListener" class="com.cannontech.services.ecobee.authToken.service.impl.EcobeeZeusAuthTokenServiceImpl">
+        <constructor-arg name="proxiedTemplate">
+            <bean class="org.springframework.web.client.RestTemplate">
+                <property name="messageConverters">
+                    <list>
+                        <ref bean="jacksonHttpMessageConverter"/>
+                    </list>
+                </property>
+                <property name="errorHandler">
+                    <bean class="com.cannontech.dr.ecobee.service.EcobeeErrorHandler"/>
+                </property>
+            </bean>
+        </constructor-arg>
+    </bean>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.ecobee.auth.token.ZeusEcobeeAuthTokenRequest"/>
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageListener" ref="zeusEcobeeAuthTokenListener"/>
+    </bean> 
 </beans>
