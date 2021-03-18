@@ -135,6 +135,8 @@ import com.cannontech.message.porter.message.MeterProgramValidationResponse;
 import com.cannontech.services.configurationSettingMessage.model.ConfigurationSettings;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
+import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRequest;
+import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
@@ -1099,7 +1101,20 @@ public final class JmsApiDirectory {
             .sender(YUKON_SERVICE_MANAGER)
             .receiver(YUKON_SERVICE_MANAGER)
             .build();
-    
+    public static final JmsApi<ZeusEcobeeAuthTokenRequest, ?, ZeusEcobeeAuthTokenResponse> ZEUS_ECOBEE_AUTH_TOKEN = 
+            JmsApi.builder(ZeusEcobeeAuthTokenRequest.class, ZeusEcobeeAuthTokenResponse.class)
+            .name("Zeus Ecobee Auth Token")
+            .description("Sent from Service Manager and Webserver and received by Service manager to generate Zeus Ecobee Auth Token")
+            .communicationPattern(REQUEST_RESPONSE)
+            .queue(new JmsQueue("yukon.ecobee.auth.token.ZeusEcobeeAuthTokenRequest"))
+            .responseQueue(JmsQueue.TEMP_QUEUE)
+            .requestMessage(ZeusEcobeeAuthTokenRequest.class)
+            .responseMessage(ZeusEcobeeAuthTokenResponse.class)
+            .sender(YUKON_WEBSERVER)
+            .sender(YUKON_SERVICE_MANAGER)
+            .receiver(YUKON_SERVICE_MANAGER)
+            .build();
+
     public static final JmsApi<AlarmArchiveRequest,?,AlarmArchiveResponse> NM_ALARM =
             JmsApi.builder(AlarmArchiveRequest.class, AlarmArchiveResponse.class)
             .name("NM Gateway Alarms")
@@ -1397,7 +1412,8 @@ public final class JmsApiDirectory {
                 PX_MW_AUTH_TOKEN,
                 RF_SUPPORT_BUNDLE,
                 RFN_DEVICE_CREATION_ALERT,
-                SYSTEM_DATA);
+                SYSTEM_DATA,
+                ZEUS_ECOBEE_AUTH_TOKEN);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 
