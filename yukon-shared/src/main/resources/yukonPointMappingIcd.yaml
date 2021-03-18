@@ -1083,7 +1083,6 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateA                                      ], Models: *____-____-650 }
     - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateA                                      ], Models: *____-____-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA                            ], Models: *A_TR-R_TR-650 }
-    - Net Watthours:                              { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA                      ], Models: *____-____-___ }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateA                                           ], Models: *____-____-650, Mapped: false }
     - Q2 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q2, *RateA                                           ], Models: *____-____-650, Mapped: false }
     - Q3 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q3, *RateA                                           ], Models: *____-____-650, Mapped: false }
@@ -1181,7 +1180,6 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateB                                      ], Models: *____-____-650 }
     - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateB                                      ], Models: *____-____-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB                            ], Models: *A_TR-R_TR-650 }
-    - Net Watthours:                              { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB                      ], Models: *____-____-___ }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateB                                           ], Models: *____-____-650, Mapped: false }
     - Q2 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q2, *RateB                                           ], Models: *____-____-650, Mapped: false }
     - Q3 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q3, *RateB                                           ], Models: *____-____-650, Mapped: false }
@@ -1279,7 +1277,6 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateC                                      ], Models: *____-____-650 }
     - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateC                                      ], Models: *____-____-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC                            ], Models: *A_TR-R_TR-650 }
-    - Net Watthours:                              { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC                      ], Models: *____-____-___ }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateC                                           ], Models: *____-____-650, Mapped: false }
     - Q2 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q2, *RateC                                           ], Models: *____-____-650, Mapped: false }
     - Q3 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q3, *RateC                                           ], Models: *____-____-650, Mapped: false }
@@ -1377,7 +1374,6 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateD                                      ], Models: *____-____-650 }
     - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateD                                      ], Models: *____-____-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD                            ], Models: *A_TR-R_TR-650 }
-    - Net Watthours:                              { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD                      ], Models: *____-____-___ }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateD                                           ], Models: *____-____-650, Mapped: false }
     - Q2 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q2, *RateD                                           ], Models: *____-____-650, Mapped: false }
     - Q3 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q3, *RateD                                           ], Models: *____-____-650, Mapped: false }
