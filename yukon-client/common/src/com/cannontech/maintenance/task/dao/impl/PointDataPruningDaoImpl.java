@@ -156,7 +156,9 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
         sql.append("SET @TotalDeleted = 0;");
         sql.append(    "IF OBJECT_ID('#TempRph', 'U') IS NOT NULL");
         sql.append(    "DROP TABLE #TempRph");
-        sql.append(    "SELECT CHANGEID INTO #TempRph");
+        sql.append(    "SELECT TOP ( ");
+        sql.append(       BATCH_SIZE);
+        sql.append(    ") CHANGEID INTO #TempRph");
         sql.append(    "FROM (");
         sql.append(        "SELECT CHANGEID, ROW_NUMBER()");
         sql.append(        "OVER (PARTITION BY PointId, Value, Timestamp, Quality ORDER BY ChangeId) RN");
