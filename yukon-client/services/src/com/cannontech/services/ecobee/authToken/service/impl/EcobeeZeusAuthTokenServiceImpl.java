@@ -114,12 +114,7 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
                 log.info("Successfully logged in to Ecobee.");
                 ZeusAuthenticationResponse response = authenticationResponse.getBody();
                 ZeusEcobeeAuthTokenResponse ecobeeAuthTokenResponse = buildZeusEcobeeAuthTokenResponse(response);
-                ecobeeAuthTokenResponse.setRefreshToken(response.getRefreshToken());
-                // Cancel the previous scheduler if its running then schedule a fresh scheduler for refreshing the auth token in
-                // every 60 minutes.
-                if (schedulerFuture != null) {
-                    schedulerFuture.cancel(true);
-                }
+
                 scheduleRefreshAuthToken(ecobeeServerURL);
                 return ecobeeAuthTokenResponse;
             } else if (authenticationResponse.getStatusCode() == HttpStatus.UNAUTHORIZED) {
@@ -139,15 +134,17 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
     }
 
     private void scheduleRefreshAuthToken(String ecobeeServerURL) {
+        // Cancel the previous scheduler if its running.
+        cancelExistingScheduler();
         log.info("Scheduling Auth token refresh API call to run before every hour.");
         schedulerFuture = scheduledExecutor.scheduleAtFixedRate(() -> {
             try {
                 log.info("trying ecobee refresh");
                 ZeusEcobeeAuthTokenResponse authTokenResponse = ecobeeAuthTokenResponseCache.getIfPresent(responseCacheKey);
 
-                if (isExpiredAuthToken(authTokenResponse.getExpiryTimestamp())) {
-                    schedulerFuture.cancel(true);
-                }
+                //As refresh token is valid for 24 hours and our cache also get invalidated after 1439 minutes. We should cancel this scheduler after that.
+                cancelRunningScheduler(authTokenResponse.getExpiryTimestamp());
+
                 String refreshToken = authTokenResponse.getRefreshToken();
                 String url = ecobeeServerURL + refreshUrlPart + refreshToken;
 
@@ -168,11 +165,33 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
     }
 
     /**
+     * Cancel the previous schedulers if its running. It is used to cancel the scheduler when user make a call to /auth API after
+     * 24 hours. After 24 hours, ecobeeAuthTokenResponseCache will be invalidated so a fresh call will be made. So here we have to
+     * cancel the previous scheduler.
+     */
+    private void cancelExistingScheduler() {
+        if (schedulerFuture != null) {
+            schedulerFuture.cancel(true);
+        }
+    }
+
+    /**
+     * Cancel the running schedulers after 24 hours. After 24 hours if there are no activity in Ecobee modules, we should cancel
+     * the scheduler. Fresh scheduler will be scheduled for subsequent Ecobee call.
+     */
+    private void cancelRunningScheduler(String getExpiryTimestamp) {
+        if (isExpiredAuthToken(getExpiryTimestamp)) {
+            schedulerFuture.cancel(true);
+        }
+    }
+
+    /**
      * Build ZeusEcobeeAuthTokenResponse from ZeusAuthenticationResponse.
      */
     private ZeusEcobeeAuthTokenResponse buildZeusEcobeeAuthTokenResponse(ZeusAuthenticationResponse response) {
         ZeusEcobeeAuthTokenResponse ecobeeAuthTokenResponse = new ZeusEcobeeAuthTokenResponse();
         ecobeeAuthTokenResponse.setAuthToken(response.getAuthToken());
+        ecobeeAuthTokenResponse.setRefreshToken(response.getRefreshToken());
         ecobeeAuthTokenResponse.setExpiryTimestamp(response.getExpiryTimestamp());
         return ecobeeAuthTokenResponse;
     }
