@@ -100,9 +100,12 @@ public class SystemDataFieldType implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         SystemDataFieldType other = (SystemDataFieldType) obj;
-        if (stringValue != other.stringValue)
-            return false;
         if (fieldType != other.fieldType)
+            return false;
+        if (stringValue == null) {
+            if (other.stringValue != null)
+                return false;
+        } else if (!stringValue.equals(other.stringValue))
             return false;
         return true;
     }
