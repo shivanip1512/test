@@ -60,6 +60,15 @@
 </c:if>
 
 <script src="<c:url value="/resources/js/common/yukon.navigation.js"/>"></script>
+<script src="<c:url value="/resources/js/lib/iframeResizer/iframeResizer.contentWindow.min.js"/>"></script>
+
+<script>
+    window.iFrameResizer = {
+        readyCallback: function(){
+            window.parentIFrame.sendMessage(location.href);
+        }
+    }
+</script>
 
 </head>
 <body style="height:100%;">
@@ -81,12 +90,13 @@
         </div>
         
         <div class="yukon-page" style="height:100%;width:100%;">
+<%--         <div class="yukon-page"> --%>
             
-            <div class="js-navigation" style="position:relative;overflow:visible;height:100%;">
+<%--             <div class="js-navigation" style="position:relative;overflow:visible;height:100%;">
                 <iframe src="http://localhost:3000/navigation" style="width:100%;height:100%;border:0;z-index:900;"></iframe>
             </div>
                 
-            <div style="position:absolute;z-index:1;top:65px;left:57px;width:97%;">
+            <div style="position:absolute;z-index:1;top:65px;left:57px;width:97%;"> --%>
                 
             <header class="yukon-header" style="background-color:white">
 
@@ -280,7 +290,7 @@
                 </div>
             </footer> --%>
             
-        </div>
+<%--         </div> --%>
 
         </div>
     </cti:msgScope>
