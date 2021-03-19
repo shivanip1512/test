@@ -194,10 +194,10 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 Instant startTime = rs.getInstant("StartTime");
                 int numConfirmed = rs.getInt("Confirmed");
                 int numUnknowns = rs.getInt("Unknown");
-                String ExternalEventId = rs.getString("ExternalEventId");
+                String externalEventId = rs.getString("ExternalEventId");
                 RecentEventParticipationStats recentEventParticipationStats =
                     new RecentEventParticipationStats(controlEventId, programName, loadGroupName, startTime, numConfirmed,
-                        numUnknowns, ExternalEventId);
+                        numUnknowns, externalEventId);
                 return recentEventParticipationStats;
             }
         };
