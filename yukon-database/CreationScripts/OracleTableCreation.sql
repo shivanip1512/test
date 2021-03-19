@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/16/2021 10:40:09 AM                        */
+/* Created on:     3/19/2021 11:09:53 AM                        */
 /*==============================================================*/
 
 
@@ -2008,7 +2008,7 @@ create table ControlEvent  (
    ScheduledStopTime    DATE                            not null,
    GroupId              NUMBER                          not null,
    LMControlHistoryId   NUMBER,
-   ProgramId            NUMBER,
+   ProgramId            NUMBER                         default 0 not null,
    ExternalEventId      VARCHAR2(36),
    constraint PK_ControlEvent primary key (ControlEventId)
 );
