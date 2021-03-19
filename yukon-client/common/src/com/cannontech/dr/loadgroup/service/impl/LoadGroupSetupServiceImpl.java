@@ -65,6 +65,9 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         SimpleDevice device = SimpleDevice.of(lmGroup.getPAObjectID(), lmGroup.getPaoType());
         paoCreationHelper.addDefaultPointsToPao(device);
         loadGroup.buildModel(lmGroup);
+        if (loadGroup instanceof LoadGroupRoute) {
+            setRouteName((LoadGroupRoute) loadGroup);
+        }
         logService.loadGroupCreated(loadGroup.getName(), loadGroup.getType(), liteYukonUser);
         return loadGroup;
     }
@@ -83,6 +86,9 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         loadGroup.buildDBPersistent(lmGroup);
         dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
         loadGroup.buildModel(lmGroup);
+        if (loadGroup instanceof LoadGroupRoute) {
+            setRouteName((LoadGroupRoute) loadGroup);
+        }
         logService.loadGroupUpdated(loadGroup.getName(), loadGroup.getType(), liteYukonUser);
         return loadGroup;
     }
