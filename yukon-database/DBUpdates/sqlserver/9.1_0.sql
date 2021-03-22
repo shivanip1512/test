@@ -5,7 +5,7 @@
 /* @start YUK-23591 */
 ALTER TABLE ControlEvent
 ADD ExternalEventId varchar(36);
-GO;
+GO
 
 UPDATE ControlEvent
 SET ExternalEventId = ControlEventId
