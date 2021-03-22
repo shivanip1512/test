@@ -11,30 +11,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PxMWCredentialsV1 implements Serializable {
-    private final String user;
-    private final String password;
-    private final String applicationId;
+    private final String serviceAccountId;
+    private final String secret;
 
     @JsonCreator
-    public PxMWCredentialsV1(@JsonProperty("user") String user, @JsonProperty("password") String password,
-            @JsonProperty("applicationId") String applicationId) {
-        this.user = user;
-        this.password = password;
-        this.applicationId = applicationId;
+    public PxMWCredentialsV1(@JsonProperty("serviceAccountId") String serviceAccountId, @JsonProperty("secret") String secret) {
+        this.serviceAccountId = serviceAccountId;
+        this.secret = secret;
     }
 
-    @JsonProperty("user")
-    public String getUser() {
-        return user;
+    @JsonProperty("serviceAccountId")
+    public String getServiceAccountId() {
+        return serviceAccountId;
     }
 
-    @JsonProperty("password")
-    public String getPassword() {
-        return password;
-    }
-
-    @JsonProperty("applicationId")
-    public String getApplicationId() {
-        return applicationId;
+    @JsonProperty("secret")
+    public String getSecret() {
+        return secret;
     }
 }
