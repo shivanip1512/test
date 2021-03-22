@@ -255,6 +255,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     ECOBEE_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.ecobee.mockTest.pageName", "/dev/ecobee/viewBase",
                     MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
+    ZEUS_ECOBEE_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.ecobee.mockTest.pageName", "/dev/ecobee/zeus/viewBase",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     EIM_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.webServices.eimTest.pageName", "/dev/eimTest/main",
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE, MasterConfigBoolean.ENABLE_WEB_DEBUG_PAGES),
     LOAD_CONTROL_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.webServices.loadControl.pageName", "/debug/loadControlService/inputs/home",
