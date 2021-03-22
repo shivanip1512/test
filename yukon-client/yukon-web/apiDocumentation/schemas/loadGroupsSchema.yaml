@@ -478,60 +478,6 @@ LM_GROUP_MCT:
             - RELAY_3
             - RELAY_4
   
-LM_GROUP_RIPPLE:
-  title: LM_GROUP_RIPPLE
-  required:
-    - LM_GROUP_RIPPLE
-  type: object
-  properties:
-    LM_GROUP_RIPPLE:
-      required:
-        - type
-        - name
-        - kWCapacity
-        - routeId
-        - control
-        - restore
-        - shedTime
-      type: object
-      properties:
-        name:
-          type: string
-          maxLength: 60
-          description: 'Name for the load group.'
-        type:
-          type: string
-          enum:
-            - LM_GROUP_RIPPLE
-          description: 'Type of load group.'
-        kWCapacity:
-          type: number
-          minimum: 0.0
-          maximum: 99999.999
-          description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
-        disableGroup:
-          type: boolean
-          default: false
-          description: 'Flag to disable the load group.'
-        disableControl:
-          type: boolean
-          default: false
-          description: 'Flag to disable control of the load group.'
-        routeId:
-          type: integer
-          description: 'Route Id. Route or route macro used to communicate with the devices in this load group.'
-        control:
-          type: string
-          maxLength: 50
-          description: '50 bit message that causes the relay to control. Set a control message using the Control push buttons that matches the control message programmed into the device.'
-        restore:
-          type: string
-          maxLength: 50
-          description: '50 bit message that causes the relay to restore. Set a restore message using the Restore push buttons that matches the restore message programmed into the device.'
-        shedTime:
-          type: integer
-          description: 'Number of minutes a relay controls when a control command is sent. A shed time of Continuous Latch controls until a restore command is sent.'
-        
 LM_GROUP_EXPRESSCOMM:
   title: LM_GROUP_EXPRESSCOMM
   required:
@@ -1120,19 +1066,6 @@ components:
           disableGroup: true
           disableControl: false
         
-    Ripple Group:
-      value: 
-        LM_GROUP_RIPPLE:
-          name: Ripple LoadGroup Test
-          type: LM_GROUP_RIPPLE
-          disableGroup: false
-          disableControl: false
-          routeId: 1
-          control: '00000000000000000000000011111110111010101010101010'
-          restore: '00000000000000000000000011111110111010101010101010'
-          shedTime: 450
-          kWCapacity: 4
-              
     Expresscomm Group:
       value:  
         LM_GROUP_EXPRESSCOMM:
