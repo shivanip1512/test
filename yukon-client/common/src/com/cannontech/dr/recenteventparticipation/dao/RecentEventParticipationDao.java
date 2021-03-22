@@ -18,7 +18,7 @@ public interface RecentEventParticipationDao {
     /**
      * Creates new control event associated with the specified load program & group
      */
-    public void createNewEventMapping(int programId, long eventId, int groupId, Instant startTime, Instant stopTime);
+    public void createNewEventMapping(int programId, long eventId, int groupId, Instant startTime, Instant stopTime, String externalEventId);
 
     /**
      * Update device status (({@link ControlEventDeviceStatus}, deviceReceivedTime)) for which response is

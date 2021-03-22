@@ -2,6 +2,7 @@ package com.cannontech.system;
 
 import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
@@ -23,6 +24,7 @@ import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSetMultimap.Builder;
+import com.google.common.collect.Multimaps;
 
 public enum GlobalSettingType implements DisplayableEnum {
 
@@ -132,9 +134,8 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_SFTP_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PRIVATE_KEY_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     RUNTIME_CALCULATION_INTERVAL_HOURS(GlobalSettingSubCategory.DR, 2, Range.inclusive(1, 24)),
-    PX_MIDDLEWARE_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
-    PX_MIDDLEWARE_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
-    PX_MIDDLEWARE_SITE_GUID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
+    PX_MIDDLEWARE_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
+    PX_MIDDLEWARE_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
     PX_MIDDLEWARE_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
 
     // Web Server
@@ -228,11 +229,14 @@ public enum GlobalSettingType implements DisplayableEnum {
     private final static ImmutableList<GlobalSettingType> sensitiveSettings;
 
     static {
-        final Builder<GlobalSettingSubCategory, GlobalSettingType> b = ImmutableSetMultimap.builder();
-        for (GlobalSettingType globalSettingType : values()) {
-            b.put(globalSettingType.getCategory(), globalSettingType);
-        }
-        categoryMapping = b.build();
+        // Remove ADMIN -> CONFIG -> DR PXMW entries for YUK-23498
+        var excluded = EnumSet.of(
+                GlobalSettingType.PX_MIDDLEWARE_PASSWORD,
+                GlobalSettingType.PX_MIDDLEWARE_SITE_GUID,
+                GlobalSettingType.PX_MIDDLEWARE_URL,
+                GlobalSettingType.PX_MIDDLEWARE_USERNAME);
+        categoryMapping = ImmutableSetMultimap
+                .copyOf(Multimaps.index(EnumSet.complementOf(excluded), GlobalSettingType::getCategory));
         
         sensitiveSettings = ImmutableList.of(
             ECOBEE_PASSWORD,
@@ -255,8 +259,8 @@ public enum GlobalSettingType implements DisplayableEnum {
             ITRON_SFTP_PRIVATE_KEY_PASSWORD,
             NETWORK_MANAGER_DB_PASSWORD,
             CLOUD_IOT_HUB_CONNECTION_STRING,
-            PX_MIDDLEWARE_USERNAME,
-            PX_MIDDLEWARE_PASSWORD);
+            PX_MIDDLEWARE_SERVICE_ACCOUNT_ID,
+            PX_MIDDLEWARE_SECRET);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {

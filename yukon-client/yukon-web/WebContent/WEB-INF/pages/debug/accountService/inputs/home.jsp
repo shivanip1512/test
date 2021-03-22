@@ -14,13 +14,13 @@
             
             <c:forEach items="${errorReasons}" var="errorReason">
                 <tags:nameValue2 nameKey=".error">
-                    <div class="error">${errorReason}</div>
+                    <div class="error">${fn:escapeXml(errorReason)}</div>
                 </tags:nameValue2>
             </c:forEach>
             
             <c:forEach items="${results}" var="result">
                 <tags:nameValue2 nameKey=".result">
-                    <div class="success">${result}</div>
+                    <div class="success">${fn:escapeXml(result)}</div>
                 </tags:nameValue2>
             </c:forEach>
         

@@ -52,20 +52,20 @@ public class PxMWAuthTokenServiceV1 implements MessageListener {
                     PxMWCredentialsV1 credentials = getCredentials();
                     if(((PxMWAuthTokenRequestV1) objMessage.getObject()).isClearCache()) {
                         log.error("Recieved message from the simulator to invalidate Eaton Cloud token cache");
-                        tokenCache.invalidate(credentials.getUser());
+                        tokenCache.invalidate(credentials.getServiceAccountId());
                         sendResponse(message, null, null);
                         return;
                     }
-                    PxMWTokenV1 cachedToken = tokenCache.getIfPresent(credentials.getUser());
+                    PxMWTokenV1 cachedToken = tokenCache.getIfPresent(credentials.getServiceAccountId());
                     if ((cachedToken != null)) {
                         sendResponse(message, cachedToken, null);
                     } else {
                         String url = PxMWRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, log, restTemplate);
-                        log.info("Retrieving {} new Eaton Cloud token for {}.", url, credentials.getUser());
+                        log.info("Retrieving {} new Eaton Cloud token for {}.", url, credentials.getServiceAccountId());
                         try {
                             PxMWTokenV1 newToken = restTemplate.postForObject(url, credentials, PxMWTokenV1.class);
-                            log.info("Retrieved new Eaton Cloud token for {}.", credentials.getUser());
-                            tokenCache.put(credentials.getUser(), newToken);
+                            log.info("Retrieved new Eaton Cloud token for {}.", credentials.getServiceAccountId());
+                            tokenCache.put(credentials.getServiceAccountId(), newToken);
                             sendResponse(message, newToken, null);
                         } catch (PxMWCommunicationExceptionV1 e) {
                             sendResponse(message, null, e);
@@ -95,9 +95,8 @@ public class PxMWAuthTokenServiceV1 implements MessageListener {
     }
 
     private PxMWCredentialsV1 getCredentials() {
-        String userName = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_USERNAME);
-        String password = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_PASSWORD);
-        String guid = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SITE_GUID);
-        return new PxMWCredentialsV1(userName, password, guid);
+        String serviceAccountId = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
+        String secret = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SECRET);
+        return new PxMWCredentialsV1(serviceAccountId, secret);
     }
 }

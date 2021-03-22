@@ -88,7 +88,9 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
             Range<Instant> dateRange = Range.inclusive(toTimestamp, fromTimestamp);
             int rowsDeleted = pointDataPruningDao.deleteDuplicatePointData(dateRange, noLockRequired);
             totalRowsdeleted = totalRowsdeleted + rowsDeleted;
-            fromTimestamp = toTimestamp;
+            if (rowsDeleted == 0) {
+                fromTimestamp = toTimestamp;
+            }
         }
         Instant finish = new Instant();
         Seconds secondsTaken = Seconds.secondsBetween(start, finish);

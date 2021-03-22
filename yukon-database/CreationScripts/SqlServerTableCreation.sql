@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/18/2021 5:24:27 AM                         */
+/* Created on:     3/19/2021 11:10:47 AM                        */
 /*==============================================================*/
 
 
@@ -2151,6 +2151,7 @@ create table ControlEvent (
    GroupId              numeric              not null,
    LMControlHistoryId   numeric              null,
    ProgramId            numeric              not null default 0,
+   ExternalEventId      varchar(36)          null,
    constraint PK_ControlEvent primary key (ControlEventId)
 )
 go
@@ -9997,6 +9998,7 @@ INSERT INTO UnitMeasure VALUES ( 54,'UNDEF', 0,'Undefined','(none)' );
 INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
 INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
+INSERT INTO UnitMeasure VALUES ( 58,'Therms', 0, 'Therms', '(none)');
 
 /*==============================================================*/
 /* Table: UsageThresholdReport                                  */

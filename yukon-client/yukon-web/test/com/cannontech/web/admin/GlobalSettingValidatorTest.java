@@ -125,7 +125,7 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES, 15);
         globalSettings.put(GlobalSettingType.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS, 120);
         globalSettings.put(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS, 2);
-        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_SITE_GUID, "fcbd4387-886b-4f89-98d0-7801ff7b75e3");
+        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID, "fcbd4387-886b-4f89-98d0-7801ff7b75e3");
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
@@ -153,15 +153,16 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.HONEYWELL_SERVER_URL, "htt://127.0.0.1");
 //        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "htt://127.0.0.1");
         globalSettings.put(GlobalSettingType.ITRON_HCM_API_URL, "htt://127.0.0.1");
-        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_SITE_GUID, "fcbd4387-886b-4f89-98d0-7801ff7b75e30");
+        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID, "fcbd4387-886b-4f89-98d0-7801ff7b75e30");
         
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
 
         service.doValidation(command, errors);
+        // Error Count was changed to 3 from 4 as part of YUK-23498
         assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.DR ,
-            errors.getErrorCount() == 4);
+            errors.getErrorCount() == 3);
         
         
         command = new GlobalSettingsEditorBean();
@@ -175,8 +176,9 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
 
         service.doValidation(command, errors);
+        // Error Count was changed to 3 from 4 as part of YUK-23498
         assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.DR ,
-            errors.getErrorCount() == 4);
+            errors.getErrorCount() == 3);
 
         // InValid Runtime Calculation Value
         command = new GlobalSettingsEditorBean();
