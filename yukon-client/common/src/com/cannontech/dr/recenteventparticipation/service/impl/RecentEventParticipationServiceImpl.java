@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.util.Range;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
 import com.cannontech.dr.itron.service.impl.ItronLoadControlEventStatus;
 import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
@@ -20,6 +21,8 @@ import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipati
 import com.google.common.collect.ImmutableList;
 
 public class RecentEventParticipationServiceImpl implements RecentEventParticipationService {
+    
+    @Autowired NextValueHelper nextValueHelper;
     @Autowired RecentEventParticipationDao recentEventParticipationDao;
 
     @Override
@@ -50,8 +53,9 @@ public class RecentEventParticipationServiceImpl implements RecentEventParticipa
     
     @Override
     @Transactional
-    public void createDeviceControlEvent(int programId, long eventId, int groupId, Instant startTime, Instant stopTime) {
-        recentEventParticipationDao.createNewEventMapping(programId, eventId, groupId, startTime, stopTime);
+    public void createDeviceControlEvent(int programId, String externalEventId, int groupId, Instant startTime, Instant stopTime) {
+        long eventId = nextValueHelper.getNextValue("ControlEvent");
+        recentEventParticipationDao.createNewEventMapping(programId, eventId, groupId, startTime, stopTime, externalEventId);
         recentEventParticipationDao.insertDeviceControlEvent(eventId, groupId, startTime);
     }
 

@@ -448,5 +448,8 @@
         <table name="CustomAttribute" identitycolumn="AttributeId" initsequence="true"/>
         <table name="AttributeAssignment" identitycolumn="AttributeAssignmentId" initsequence="true"/>
       </sequence>
+      <sequence name="ControlEvent">
+        <table name="ControlEvent" identitycolumn="ControlEventId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>
