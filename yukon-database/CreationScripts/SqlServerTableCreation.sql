@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/16/2021 4:05:03 AM                         */
+/* Created on:     3/19/2021 11:10:47 AM                        */
 /*==============================================================*/
 
 
@@ -2151,6 +2151,7 @@ create table ControlEvent (
    GroupId              numeric              not null,
    LMControlHistoryId   numeric              null,
    ProgramId            numeric              not null default 0,
+   ExternalEventId      varchar(36)          null,
    constraint PK_ControlEvent primary key (ControlEventId)
 )
 go
