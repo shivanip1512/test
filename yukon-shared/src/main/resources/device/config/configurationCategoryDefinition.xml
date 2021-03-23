@@ -381,7 +381,7 @@
     <category type="regulatorCategory">
         <float field="voltageChangePerTap" default="0.75" minValue="0" />
         <enum field="voltageControlMode" type="VoltageControlMode" />
-        <enum field="installOrientation" type="RegulatorInstallOrientation" />
+        <enum field="installOrientation" type="RegulatorInstallOrientation" default="FORWARD" />
     </category>
 
     <category type="regulatorHeartbeat">
