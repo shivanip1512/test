@@ -81,8 +81,6 @@ public class LoadProgramSetupControllerHelper {
 
     public void buildProgramModelMap(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
             LoadProgram loadProgram) {
-        // Remove Eaton Cloud Load Program from creation drop down YUK-23498
-        switchTypes.remove(PaoType.LM_EATON_CLOUD_PROGRAM);
 
         retrieveProgramConstraints(model, request, userContext);
         if (loadProgram.getType() == PaoType.LM_NEST_PROGRAM) {
