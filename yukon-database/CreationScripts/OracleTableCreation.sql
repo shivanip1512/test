@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/18/2021 8:51:55 AM                         */
+/* Created on:     3/19/2021 11:09:53 AM                        */
 /*==============================================================*/
 
 
@@ -2009,6 +2009,7 @@ create table ControlEvent  (
    GroupId              NUMBER                          not null,
    LMControlHistoryId   NUMBER,
    ProgramId            NUMBER                         default 0 not null,
+   ExternalEventId      VARCHAR2(36),
    constraint PK_ControlEvent primary key (ControlEventId)
 );
 
@@ -9398,6 +9399,7 @@ INSERT INTO UnitMeasure VALUES ( 54,'UNDEF', 0,'Undefined','(none)' );
 INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
 INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
+INSERT INTO UnitMeasure VALUES ( 58,'Therms', 0, 'Therms', '(none)');
 
 /*==============================================================*/
 /* Table: UsageThresholdReport                                  */

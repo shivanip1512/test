@@ -51,7 +51,7 @@ public class HoneywellWifiMessageListener {
 
             // Send DR message to HoneywellWifi server
             honeywellCommunicationService.sendDRDutyCycleEventForGroup(parameters);
-            recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), parameters.getEventId(), parameters.getGroupId(),
+            recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), Integer.toString(parameters.getEventId()), parameters.getGroupId(),
                 parameters.getStartTime(), parameters.getEndTime());
             // Store the most recent dr handle for each group, so we can cancel
             groupToEventIdMap.put(parameters.getGroupId(), parameters.getEventId());
@@ -86,7 +86,7 @@ public class HoneywellWifiMessageListener {
             
             // Send DR message to HoneywellWifi server
             honeywellCommunicationService.sendDRSetpointEventForGroup(parameters);
-            recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), parameters.getEventId(), parameters.getGroupId(),
+            recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), Integer.toString(parameters.getEventId()), parameters.getGroupId(),
                 parameters.getStartTime(), parameters.getStopTime());
             // Store the most recent dr handle for each group, so we can cancel
             groupToEventIdMap.put(parameters.getGroupId(), parameters.getEventId());
