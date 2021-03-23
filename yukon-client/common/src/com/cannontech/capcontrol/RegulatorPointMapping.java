@@ -24,6 +24,8 @@ public enum RegulatorPointMapping implements DisplayableEnum {
     REVERSE_BANDWIDTH("Reverse Bandwidth", PointType.Analog, PointType.CalcAnalog),
     REVERSE_SET_POINT("Reverse Set Point", PointType.Analog, PointType.CalcAnalog),
     REVERSE_FLOW_INDICATOR("Reverse Flow Indicator", PointType.Status, PointType.CalcStatus),
+    POWER_FLOW_INDETERMINATE("Power Flow Indeterminate", PointType.Status, PointType.CalcStatus),
+    CONTROL_POWER_FLOW_REVERSE("Control Power Flow Reverse", PointType.Status, PointType.CalcStatus),
     CONTROL_MODE("Control Mode", PointType.Analog, PointType.CalcAnalog),
     ;
     
@@ -44,6 +46,8 @@ public enum RegulatorPointMapping implements DisplayableEnum {
         b.add(REVERSE_BANDWIDTH);
         b.add(REVERSE_SET_POINT);
         b.add(REVERSE_FLOW_INDICATOR);
+        b.add(POWER_FLOW_INDETERMINATE);
+        b.add(CONTROL_POWER_FLOW_REVERSE);
         b.add(CONTROL_MODE);
         ltcRegulatorMappings = b.build();
         

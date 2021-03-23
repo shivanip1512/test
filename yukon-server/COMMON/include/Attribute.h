@@ -743,6 +743,8 @@ public:
     static const Attribute  ReverseBandwidth;
     static const Attribute  ReverseSetPoint;
     static const Attribute  ReverseFlowIndicator;
+    static const Attribute  PowerFlowIndeterminate;
+    static const Attribute  ControlPowerFlowReverse;
 
     static const Attribute  ConfigurationUpdatedHash;
     static const Attribute  EventCancelled;

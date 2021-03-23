@@ -963,6 +963,8 @@
     <li>Reverse Set Point - REVERSE_SET_POINT</li>
     <li>Reverse Bandwidth - REVERSE_BANDWIDTH</li>
     <li>Reverse Flow Indicator - REVERSE_FLOW_INDICATOR</li>
+    <li>Power Flow Indeterminate - POWER_FLOW_INDETERMINATE</li>
+    <li>Control Power Flow Reverse - CONTROL_POWER_FLOW_REVERSE</li>
     <li>Control Mode - CONTROL_MODE</li>
     </ul>
     ]]></entry>
