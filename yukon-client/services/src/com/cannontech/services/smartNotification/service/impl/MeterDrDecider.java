@@ -49,16 +49,14 @@ public class MeterDrDecider extends SmartNotificationDecider {
         });
         return subscriptions;
     }
-
+    
     @Override
     protected List<SmartNotificationEvent> getUnprocessedGroupedEvents(String cacheKey) {
-        // TODO Auto-generated method stub
-        return null;
+       return eventDao.getUnprocessedGroupedEvents(eventType);
     }
 
     @Override
     protected String getCacheKey(SmartNotificationSubscription subscription) {
-        // TODO Auto-generated method stub
-        return null;
+        return eventType.toString();
     }
 }
