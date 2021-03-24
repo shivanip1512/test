@@ -771,6 +771,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_BANDWIDTH">Reverse Bandwidth</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_SET_POINT">Reverse Set Point</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_FLOW_INDICATOR">Reverse Flow Indicator</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.POWER_FLOW_INDETERMINATE">Power Flow Indeterminate</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CONTROL_POWER_FLOW_REVERSE">Control Power Flow Reverse</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOTAL_LOF_COUNT">Total LOF Event Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOTAL_LOV_COUNT">Total LOV Event Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOF_TRIGGER">LOF Trigger</entry>
