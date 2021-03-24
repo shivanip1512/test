@@ -181,7 +181,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             if (message instanceof ObjectMessage) {
                 object = objMessage.getObject();
                 if (object instanceof SmartNotificationEventMulti) {
-                    // in there is no schedule to check every minute if there are additional messages to process create a
+                    // if there is no schedule to check every minute if there are additional messages to process create a
                     // schedule.
                     scheduleIntervalProcessing();
                     SmartNotificationEventMulti event = (SmartNotificationEventMulti) object;

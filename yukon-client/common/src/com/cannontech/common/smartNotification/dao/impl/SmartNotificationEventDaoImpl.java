@@ -277,10 +277,6 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         return events;
     }
     
-    
-   /* select * from SmartNotificationEvent e JOIN SmartNotificationEventParam p ON e.EventId = p.EventId
-            WHERE p.Name = 'monitorId' and p.Value = '1682'*/
-
     private void addParameters(List<SmartNotificationEvent> events) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
