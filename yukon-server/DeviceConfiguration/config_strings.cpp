@@ -370,6 +370,7 @@ const string RegulatorStrings::voltageChangePerTap = "voltageChangePerTap";
 const string RegulatorStrings::heartbeatPeriod     = "regulatorHeartbeatPeriod";
 const string RegulatorStrings::heartbeatValue      = "regulatorHeartbeatValue";
 const string RegulatorStrings::heartbeatMode       = "regulatorHeartbeatMode";
+const string RegulatorStrings::installOrientation  = "installOrientation";
 
 // CBC
 const string CbcStrings::cbcHeartbeatPeriod     = "cbcHeartbeatPeriod";
