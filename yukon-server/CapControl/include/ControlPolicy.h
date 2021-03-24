@@ -38,6 +38,9 @@ struct ControlPolicy : Policy
 
     bool inReverseFlow() const;
 
+    bool isPowerFlowIndeterminate() const;
+    bool isControlPowerFlowReverse() const;
+
     Attribute getSetPointAttribute();
     Attribute getBandwidthAttribute();
 };

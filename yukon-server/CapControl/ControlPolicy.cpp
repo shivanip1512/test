@@ -79,6 +79,34 @@ catch ( FailedAttributeLookup & )
     return false;
 }
 
+bool ControlPolicy::isPowerFlowIndeterminate() const
+try
+{
+    return getValueByAttribute( Attribute::PowerFlowIndeterminate ) > 0.0;
+}
+catch ( UninitializedPointValue & )
+{
+    return false;
+}
+catch ( FailedAttributeLookup & )
+{
+    return false;
+}
+
+bool ControlPolicy::isControlPowerFlowReverse() const
+try
+{
+    return getValueByAttribute( Attribute::ControlPowerFlowReverse ) > 0.0;
+}
+catch ( UninitializedPointValue & )
+{
+    return false;
+}
+catch ( FailedAttributeLookup & )
+{
+    return false;
+}
+
 Attribute ControlPolicy::getSetPointAttribute()
 {
     switch ( getControlMode() )
