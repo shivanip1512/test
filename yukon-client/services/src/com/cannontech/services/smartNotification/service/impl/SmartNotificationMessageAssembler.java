@@ -58,7 +58,7 @@ public class SmartNotificationMessageAssembler implements MessageListener {
             if (builder == null) {
                 throw new NotFoundException("Unable to send notification - unsupported media type: " + parametersMulti.getMedia());
             }
-            deciderService.logInfo("Sending messages in combined email. Message parameters: " + parametersMulti, this);
+            deciderService.logInfo("Sending messages in combined email. Message parameters: " + parametersMulti.loggingString(commslogger.getLevel()), this);
             builder.buildMultiAndSend(parametersMulti);
         } else {
             // Process each parameters object individually
@@ -68,7 +68,7 @@ public class SmartNotificationMessageAssembler implements MessageListener {
                 if (builder == null) {
                     throw new NotFoundException("Unable to send notification - unsupported media type: " + parametersMulti.getMedia());
                 }
-                deciderService.logInfo("Sending individual messages for interval:" + intervalMinutes + ". Message parameters: " + parametersMulti, this);
+                deciderService.logInfo("Sending individual messages for interval:" + intervalMinutes + ". Message parameters: " + parametersMulti.loggingString(commslogger.getLevel()), this);
                 builder.buildAndSend(parameters, intervalMinutes);
             }
         }

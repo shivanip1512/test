@@ -1,60 +1,33 @@
 package com.cannontech.services.smartNotification.service.impl;
 
-import org.joda.time.DateTime;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 
-public final class WaitTime {
-    private static Intervals intervals;
-    
-    /**
-     * This should be set before any instances of WaitTime are used.
-     */
-    public static void setIntervals(Intervals intervals) {
-        WaitTime.intervals = intervals;
-    }
-    
-    /**
-     * Returns first run time info.
-     */
-    public static WaitTime getFirst(Instant now) {
-        int newInterval = intervals.getFirstInterval();
-        DateTime newRunTime = now.toDateTime().plusMinutes(newInterval);
-        return new WaitTime(newInterval, 0, newRunTime);
-    }
+public class WaitTime {
     
     private int interval;
-    private int previousInterval;
-    private DateTime runTime;
-
-    public WaitTime(int interval, int previousInterval, DateTime runTime) {
-        this.interval = interval;
-        this.previousInterval = previousInterval;
-        this.runTime = runTime;
+    private Instant runTime;
+    
+    public Instant getRunTime() {
+        return runTime;
     }
-
-    public int getInterval() {
+    
+    public int getCurrentInterval() {
         return interval;
     }
 
-    public int getPreviousInterval() {
-        return previousInterval;
-    }
-    
-    public DateTime getRunTime() {
-        return runTime;
-    }
-
-    /**
-     * Returns next run time info.
-     */
-    public WaitTime getNext(Instant now) {
-        int newInterval = intervals.getNextInterval(interval);
-        DateTime newRunTime = now.toDateTime().plusMinutes(newInterval);
-        return new WaitTime(newInterval, interval, newRunTime);
+    public WaitTime(Instant runTime, int interval) {
+        this.runTime = runTime;
+        this.interval = interval;
     }
     
     @Override
-    public String toString(){
-        return "[Run Time="+runTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss")+" - Interval="+interval+" minutes]";
+    public String toString() {
+        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        tsb.appendSuper(super.toString());
+        tsb.append("interval", interval);
+        tsb.append("runTime", runTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
+        return tsb.toString();
     }
 }

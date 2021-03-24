@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.logging.log4j.Level;
 
 import com.google.common.collect.ImmutableList;
 
@@ -59,13 +60,68 @@ public class SmartNotificationMessageParameters implements Serializable {
     
     @Override
     public String toString() {
+        ToStringBuilder tsb =  getLogMsg();
+        tsb.append("events", events);
+        return tsb.toString();
+    }
+    
+    public String loggingString(Level level) {
+        if (level.isMoreSpecificThan(Level.INFO)) {
+            return getLogMsg().toString();
+        } else {
+            return toString();
+        }
+    }
+    
+    private ToStringBuilder getLogMsg() {        
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
         tsb.appendSuper(super.toString());
         tsb.append("type", type);
         tsb.append("media", media);
         tsb.append("verbosity", verbosity);
         tsb.append("recipients", recipients);
-        tsb.append("events", events);
-        return tsb.toString();
+        tsb.append("events total", events.size());
+        return tsb;
+    }
+    
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((events == null) ? 0 : events.hashCode());
+        result = prime * result + ((media == null) ? 0 : media.hashCode());
+        result = prime * result + ((recipients == null) ? 0 : recipients.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((verbosity == null) ? 0 : verbosity.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SmartNotificationMessageParameters other = (SmartNotificationMessageParameters) obj;
+        if (events == null) {
+            if (other.events != null)
+                return false;
+        } else if (!events.equals(other.events))
+            return false;
+        if (media != other.media)
+            return false;
+        if (recipients == null) {
+            if (other.recipients != null)
+                return false;
+        } else if (!recipients.equals(other.recipients))
+            return false;
+        if (type != other.type)
+            return false;
+        if (verbosity != other.verbosity)
+            return false;
+        return true;
     }   
 }

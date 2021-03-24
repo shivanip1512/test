@@ -39,12 +39,14 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.google.common.base.Functions;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -218,20 +220,66 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
             Arrays.asList(frequency).forEach(f -> chunkingTemplate.update(new ProcessedTimeUpdater(processedTime, f), eventsIds));
         }
     }
-
+    
     @Override
-    public List<SmartNotificationEvent> getUnprocessedEvents(SmartNotificationEventType type) {
+    public Multimap<SmartNotificationEventType, SmartNotificationEvent> getUnprocessedEvents(boolean isGrouped) {
+        String processTime = isGrouped? "GroupProcessTime":"ImmediateProcessTime";
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EventId, Timestamp, GroupProcessTime, ImmediateProcessTime");
+        sql.append("SELECT EventId, Timestamp, GroupProcessTime, ImmediateProcessTime, Type");
         sql.append("FROM  SmartNotificationEvent sne");
-        sql.append("WHERE Type").eq_k(type);
-        sql.append("AND (GroupProcessTime IS NULL OR ImmediateProcessTime IS NULL)");
+        sql.append("WHERE").append(processTime).append("IS NULL");
+
+        Multimap<SmartNotificationEventType, SmartNotificationEvent> events = HashMultimap.create(); 
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                SmartNotificationEventType type = rs.getEnum("Type", SmartNotificationEventType.class);
+                SmartNotificationEvent event = eventMapper.mapRow(rs);
+                events.put(type, event);
+            }
+        });
+        
+        if (!events.isEmpty()) {
+            addParameters(new ArrayList<>(events.values()));
+        }
+        return events;
+    }
+    
+    @Override
+    public List<SmartNotificationEvent> getUnprocessedGroupedEvents(SmartNotificationEventType type, String name, String value) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT sne.EventId, Timestamp, GroupProcessTime, ImmediateProcessTime");
+        sql.append("FROM  SmartNotificationEvent sne JOIN SmartNotificationEventParam p ON sne.EventId = p.EventId");
+        sql.append("WHERE").append("GroupProcessTime IS NULL");
+        sql.append("AND sne.Type").eq_k(type);
+        sql.append("AND p.Name").eq(name);
+        sql.append("AND p.Value").eq(value);
+
         List<SmartNotificationEvent> events = jdbcTemplate.query(sql, eventMapper);
         if (!events.isEmpty()) {
             addParameters(events);
         }
         return events;
     }
+    
+    @Override
+    public List<SmartNotificationEvent> getUnprocessedGroupedEvents(SmartNotificationEventType type) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EventId, Timestamp, GroupProcessTime, ImmediateProcessTime");
+        sql.append("FROM  SmartNotificationEvent");
+        sql.append("WHERE").append("GroupProcessEvent IS NULL");
+        sql.append("AND Type").eq_k(type);
+
+        List<SmartNotificationEvent> events = jdbcTemplate.query(sql, eventMapper);
+        if (!events.isEmpty()) {
+            addParameters(events);
+        }
+        return events;
+    }
+    
+    
+   /* select * from SmartNotificationEvent e JOIN SmartNotificationEventParam p ON e.EventId = p.EventId
+            WHERE p.Name = 'monitorId' and p.Value = '1682'*/
 
     private void addParameters(List<SmartNotificationEvent> events) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
