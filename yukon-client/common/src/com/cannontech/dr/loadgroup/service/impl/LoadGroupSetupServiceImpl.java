@@ -68,6 +68,19 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         if (loadGroup instanceof LoadGroupRoute) {
             setRouteName((LoadGroupRoute) loadGroup);
         }
+        if (loadGroup instanceof LoadGroupPoint) {
+
+            LMGroupPoint lmGroupPoint = (LMGroupPoint) lmGroup;
+            LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroup;
+            String deviceUsageName = (dbCache.getAllPaosMap().get(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage())).getPaoName();
+            String pointUsageName = pointDao.getPointName(lmGroupPoint.getLMGroupPoint().getPointIDUsage());
+            String rawStateName = stateGroupDao.getRawStateName(lmGroupPoint.getLMGroupPoint().getPointIDUsage(),
+                    lmGroupPoint.getLMGroupPoint().getStartControlRawState());
+            loadGroupPoint.setDeviceUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage(), deviceUsageName));
+            loadGroupPoint.setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), pointUsageName));
+            loadGroupPoint.setStartControlRawState(new LMDto(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
+
+        }
         logService.loadGroupCreated(loadGroup.getName(), loadGroup.getType(), liteYukonUser);
         return loadGroup;
     }
@@ -88,6 +101,19 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         loadGroup.buildModel(lmGroup);
         if (loadGroup instanceof LoadGroupRoute) {
             setRouteName((LoadGroupRoute) loadGroup);
+        }
+        if (loadGroup instanceof LoadGroupPoint) {
+
+            LMGroupPoint lmGroupPoint = (LMGroupPoint) lmGroup;
+            LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroup;
+            String deviceUsageName = (dbCache.getAllPaosMap().get(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage())).getPaoName();
+            String pointUsageName = pointDao.getPointName(lmGroupPoint.getLMGroupPoint().getPointIDUsage());
+            String rawStateName = stateGroupDao.getRawStateName(lmGroupPoint.getLMGroupPoint().getPointIDUsage(),
+                    lmGroupPoint.getLMGroupPoint().getStartControlRawState());
+            loadGroupPoint.setDeviceUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage(), deviceUsageName));
+            loadGroupPoint.setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), pointUsageName));
+            loadGroupPoint.setStartControlRawState(new LMDto(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
+
         }
         logService.loadGroupUpdated(loadGroup.getName(), loadGroup.getType(), liteYukonUser);
         return loadGroup;
