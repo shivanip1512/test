@@ -105,7 +105,7 @@
             <cti:item value="${program.programType.name}"/>
         </cti:list>
         <h3><i:inline key=".messagedetail" arguments="${arguments}"/></h3>
-        <b><i:inline key=".confirmation.parameters"/></b>
+        <br><b><i:inline key=".confirmation.parameters"/></b></br>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".notificationTime">
                 <cti:formatDate type="FULL" value="${event.notificationTime}"/>
@@ -114,7 +114,7 @@
                 <cti:formatDate type="FULL" value="${event.startTime}"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".stopTime">
-                <cti:formatDate type="FULL" value="${event.stopTime}"/>
+                <cti:formatDate type="FULL" value="${event.stopTimeInMinutes}"/>
             </tags:nameValue2>
             <c:if test="${event.eventType.accounting or event.eventType.notification}">
                 <tags:nameValue2 nameKey=".confirmation.duration">
