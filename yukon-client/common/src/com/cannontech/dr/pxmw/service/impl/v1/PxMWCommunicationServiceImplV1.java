@@ -42,6 +42,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -188,6 +189,12 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
         } catch (Exception e) {
             throw new PxMWException("Exception occured while getting channel values", e);
         }
+    }
+    
+    @Override
+    public void getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, String startTime, String stopTime) {
+        // Work in progress
+
     }
     
     @Override

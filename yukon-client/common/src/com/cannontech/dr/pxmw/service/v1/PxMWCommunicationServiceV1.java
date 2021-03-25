@@ -9,6 +9,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 
 /**
@@ -58,6 +59,11 @@ public interface PxMWCommunicationServiceV1 {
     List<PxMWChannelValueV1> getChannelValues(String deviceGuid, List<String> tags)
             throws PxMWCommunicationExceptionV1, PxMWException;
 
+    /**
+     * Stuff
+     */
+    void getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, String startTime,
+            String stopTime);
     /**
      * Enables or disables a device on the IoTHub
      * The value "true" enables the device and the "false" disables the device.
