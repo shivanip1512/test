@@ -69,7 +69,7 @@ public:
         Inclusive
     };
 
-    enum InstallOrientation
+    enum class InstallOrientation
     {
         Forward,
         Reverse

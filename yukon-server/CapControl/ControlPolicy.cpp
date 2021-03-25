@@ -66,45 +66,32 @@ catch ( FailedAttributeLookup & )
         This maintains backwards compatibility with 6.X versions.
 */ 
 bool ControlPolicy::inReverseFlow() const
-try
 {
-    return getValueByAttribute( Attribute::ReverseFlowIndicator ) > 0.0;
-}
-catch ( UninitializedPointValue & )
-{
-    return false;
-}
-catch ( FailedAttributeLookup & )
-{
-    return false;
+    return getStatusPointValue( Attribute::ReverseFlowIndicator, false );
 }
 
 bool ControlPolicy::isPowerFlowIndeterminate() const
-try
 {
-    return getValueByAttribute( Attribute::PowerFlowIndeterminate ) > 0.0;
-}
-catch ( UninitializedPointValue & )
-{
-    return false;
-}
-catch ( FailedAttributeLookup & )
-{
-    return false;
+    return getStatusPointValue( Attribute::PowerFlowIndeterminate, false );
 }
 
 bool ControlPolicy::isControlPowerFlowReverse() const
+{
+    return getStatusPointValue( Attribute::ControlPowerFlowReverse, false );
+}
+
+bool ControlPolicy::getStatusPointValue( const Attribute & attribute, const bool defaultValue ) const
 try
 {
-    return getValueByAttribute( Attribute::ControlPowerFlowReverse ) > 0.0;
+    return getValueByAttribute( attribute ) > 0.0;
 }
 catch ( UninitializedPointValue & )
 {
-    return false;
+    return defaultValue;
 }
 catch ( FailedAttributeLookup & )
 {
-    return false;
+    return defaultValue;
 }
 
 Attribute ControlPolicy::getSetPointAttribute()

@@ -107,7 +107,7 @@ VoltageRegulator::VoltageRegulator()
     _recentTapOperation(false),
     _keepAlivePeriod( 0 ),
     _keepAliveValue( 0 ),
-    _installOrientation( Forward ),
+    _installOrientation( InstallOrientation::Forward ),
     _controlPolicy( std::make_unique<StandardControlPolicy>() ),
     _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
     _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
@@ -128,7 +128,7 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     _recentTapOperation(false),
     _keepAlivePeriod( 0 ),
     _keepAliveValue( 0 ),
-    _installOrientation( Forward ),
+    _installOrientation( InstallOrientation::Forward ),
     _controlPolicy( std::make_unique<StandardControlPolicy>() ),
     _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
     _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
@@ -479,12 +479,12 @@ VoltageRegulator::InstallOrientation VoltageRegulator::getInstallOrientation() c
         {
             if ( *orientation == "REVERSE" )
             {
-                return Reverse;
+                return InstallOrientation::Reverse;
             }
         }
     }
 
-    return Forward;
+    return InstallOrientation::Forward;
 }
 
 
