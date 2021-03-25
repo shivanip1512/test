@@ -56,7 +56,7 @@ public abstract class SmartNotificationDecider {
      * 
      * If there is no unprocessed events on the 1 interval, the key is removed from cached and the next event will be processed with interval 0.
      * 
-     * Each decider is responsible for the creating is own cache key, see SmartNotifInfrastructureWarningsDecider vs SmartNotifDeviceDataMonitorDecider getCacheKey method
+     * Each decider is responsible for the creating it's own cache key, see SmartNotifInfrastructureWarningsDecider vs SmartNotifDeviceDataMonitorDecider getCacheKey method
      * 
      * A subclass does not inherit the private members of its parent class. Cache is only 1 copy.
      */
@@ -137,7 +137,7 @@ public abstract class SmartNotificationDecider {
             // the time have passed
             if (currentInterval.getRunTime().isEqualNow() || currentInterval.getRunTime().isBeforeNow()) {
                 // start processing
-                logInfo("Cache key:" + cacheKey + " In Progress:" + currentInterval);
+                logInfo("Processing cache key:" + cacheKey + "/" + currentInterval);
                 
                 //replace current interval with the next interval
                 WaitTime newInterval = replaceCachedInterval(cacheKey, currentInterval);
@@ -171,7 +171,7 @@ public abstract class SmartNotificationDecider {
                 } else {
                     // if there is no events to process, remove the key from cache
                     intervalCache.remove(cacheKey);
-                    logInfo("Removed from cache (No unprocessed events):" + cacheKey + "/" + newInterval + " all:" + intervals);
+                    logInfo("Removed from cache (No unprocessed events):" + cacheKey + "/" + newInterval + " all intevals:" + intervals);
                 }
             } else {
                 // It is not time to process events yet

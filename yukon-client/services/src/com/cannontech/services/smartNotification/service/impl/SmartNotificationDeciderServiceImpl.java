@@ -181,9 +181,10 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             if (message instanceof ObjectMessage) {
                 object = objMessage.getObject();
                 if (object instanceof SmartNotificationEventMulti) {
-                    // if there is no schedule to check every minute if there are additional messages to process create a
-                    // schedule.
+                    
+                    // create new schedule for processing of coalesced events
                     scheduleIntervalProcessing();
+                    
                     SmartNotificationEventMulti event = (SmartNotificationEventMulti) object;
                     //For received event find decider
                     SmartNotificationDecider decider = deciders.get(event.getEventType());
@@ -196,9 +197,9 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
                         logInfo("Received event: " + event + " Immediate result:"
                                 + immediate.loggingString(commsLogger.getLevel()) + " Grouped result:"
                                 + grouped.loggingString(commsLogger.getLevel()), this);
-                        //Send results from immediate subscriptions
+                        //Send results for immediate subscriptions
                         send(immediate);
-                        //Send results from grouped subscriptions (interval 0)
+                        //Send results for grouped subscriptions in interval is 0
                         send(grouped);
                     } else {
                         commsLogger.error("Decider for {} doesn't exist", event.getEventType());
