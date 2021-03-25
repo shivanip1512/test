@@ -107,6 +107,7 @@ VoltageRegulator::VoltageRegulator()
     _recentTapOperation(false),
     _keepAlivePeriod( 0 ),
     _keepAliveValue( 0 ),
+    _installOrientation( InstallOrientation::Forward ),
     _controlPolicy( std::make_unique<StandardControlPolicy>() ),
     _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
     _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
@@ -127,6 +128,7 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     _recentTapOperation(false),
     _keepAlivePeriod( 0 ),
     _keepAliveValue( 0 ),
+    _installOrientation( InstallOrientation::Forward ),
     _controlPolicy( std::make_unique<StandardControlPolicy>() ),
     _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
     _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
@@ -146,7 +148,9 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     _lastCommandedOperatingMode(toCopy._lastCommandedOperatingMode),
     _recentTapOperation(toCopy._recentTapOperation),
     _keepAlivePeriod( toCopy._keepAlivePeriod ),
-    _keepAliveValue( toCopy._keepAliveValue )
+    _keepAliveValue( toCopy._keepAliveValue ),
+    _installOrientation( toCopy._installOrientation )
+
 {
     // empty...
 }
@@ -250,6 +254,8 @@ void VoltageRegulator::loadAttributes( AttributeService * service )
 
     _keepAlivePeriod = getKeepAliveTimer();
     _keepAliveValue  = getKeepAliveConfig();
+
+    _installOrientation = getInstallOrientation();
 
     _keepAlivePolicy = resolveKeepAlivePolicy( getHeartbeatMode(), getControlMode() );
     _scanPolicy = resolveScanPolicy( getPaoType() );
@@ -459,6 +465,26 @@ std::string VoltageRegulator::getHeartbeatMode() const
     }
 
     return "NONE";
+}
+
+
+VoltageRegulator::InstallOrientation VoltageRegulator::getInstallOrientation() const
+{
+    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
+
+    if ( deviceConfig )
+    {
+        if ( boost::optional<std::string>   orientation =
+             deviceConfig->findValue<std::string>( Config::RegulatorStrings::installOrientation ) )
+        {
+            if ( *orientation == "REVERSE" )
+            {
+                return InstallOrientation::Reverse;
+            }
+        }
+    }
+
+    return InstallOrientation::Forward;
 }
 
 
