@@ -19,6 +19,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteDevice;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
@@ -38,11 +39,14 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
+    @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
     private final Map<Integer, String> inventoryIdToSerialNumber = new HashMap<>();
     
     @Override
     public void createDevice(Hardware hardware) {
         createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
+        //For Zeus API call createZeusDevice().
+        //createZeusDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
     }
     
     public PaoIdentifier createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
@@ -64,7 +68,31 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
             throw new DeviceCreationException(e.getMessage(), "invalidDeviceCreation", e);
         }
     }
-    
+
+    /**
+     * Create a Ecobee device if the provided thermostat serial number is valid and the its already enrolled.
+     */
+    public PaoIdentifier createZeusDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
+        try {
+            boolean shouldCreateDevice = ecobeeZeusCommunicationService.createZeusDevice(serialNumber);
+            if (shouldCreateDevice) {
+                CompleteDevice ecobeePao = new CompleteDevice();
+                ecobeePao.setPaoName(serialNumber);
+                paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, hardwareTypeToPaoType.get(hardwareType));
+                // Update the Stars table with the device id
+                inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, ecobeePao.getPaObjectId());
+                return ecobeePao.getPaoIdentifier();
+            } else {
+                log.error("Not creating the device as the provided thermostat serrial number is invalid or thermostat is"
+                        + " not enrolled yet.");
+                throw new DeviceCreationException("Thermostat not registered registered in Ecobee portal or it's yet to be enrolled.");
+            }
+        } catch (Exception e) {
+            log.error("Unable to create device.", e);
+            throw new DeviceCreationException(e.getMessage(), "invalidDeviceCreation", e);
+        }
+    }
+
     @Override
     public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
         //Get the inventory, while it still exists, and cache the serial number so we can send the ecobee delete request.
