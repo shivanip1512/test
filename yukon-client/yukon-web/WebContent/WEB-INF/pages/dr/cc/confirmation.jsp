@@ -114,7 +114,7 @@
                 <cti:formatDate type="FULL" value="${event.startTime}"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".stopTime">
-                <cti:formatDate type="FULL" value="${event.stopTimeInMinutes}"/>
+                <cti:formatDate type="FULL" value="${event.stopTime}"/>
             </tags:nameValue2>
             <c:if test="${event.eventType.accounting or event.eventType.notification}">
                 <tags:nameValue2 nameKey=".confirmation.duration">
