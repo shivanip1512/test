@@ -34,8 +34,8 @@
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Clock Error" attributes="CLOCK_ERROR"/>
         <pointInfo name="Current" attributes="CURRENT,CURRENT_PHASE_A"/>
-        <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY,MAXIMUM_VOLTAGE"/>
-        <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY,MINIMUM_VOLTAGE"/>
+        <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY"/>
+        <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY"/>
         <pointInfo name="kVAh Lagging" attributes="DELIVERED_KVAH_LAGGING"/>
         <pointInfo name="Delivered kVAh (Rate A kVAh)" attributes="KVAH_RATE_A"/>
         <pointInfo name="Delivered kVAh (Rate B kVAh)" attributes="KVAH_RATE_B"/>
@@ -65,9 +65,9 @@
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Invalid Service" attributes="INVALID_SERVICE"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
-        <pointInfo name="Max Voltage"/>
+        <pointInfo name="Max Voltage" attributes="MAXIMUM_VOLTAGE"/>
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
-        <pointInfo name="Min Voltage"/>
+        <pointInfo name="Min Voltage" attributes="MINIMUM_VOLTAGE"/>
         <pointInfo name="Net kVAh" attributes="NET_KVAH"/>
         <pointInfo name="Net kVAh (Rate A kVAh)" attributes="NET_KVAH_RATE_A"/>
         <pointInfo name="Net kVAh (Rate B kVAh)" attributes="NET_KVAH_RATE_B"/>
