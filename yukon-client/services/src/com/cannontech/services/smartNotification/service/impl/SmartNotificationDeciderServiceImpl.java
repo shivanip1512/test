@@ -82,9 +82,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
     @PostConstruct
     private void init() {
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_MESSAGE_PARAMETERS);
-        scheduledExecutor.execute(() -> {
-            processOnStartup();
-        });
+        scheduledExecutor.execute(this::processOnStartup);
     }
 
     /**
@@ -92,9 +90,9 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
      */
     private void processOnStartup() {
         // grouped subscriptions        
-        processOnStartup(eventDao.getUnprocessedEvents(true), SmartNotificationFrequency.COALESCING);
+        processOnStartup(eventDao.getUnprocessedEvents(SmartNotificationFrequency.COALESCING), SmartNotificationFrequency.COALESCING);
         // immediate subscriptions
-        processOnStartup(eventDao.getUnprocessedEvents(false), SmartNotificationFrequency.IMMEDIATE);
+        processOnStartup(eventDao.getUnprocessedEvents(SmartNotificationFrequency.IMMEDIATE), SmartNotificationFrequency.IMMEDIATE);
     }
 
     private void processOnStartup(Multimap<SmartNotificationEventType, SmartNotificationEvent> unprocessed,

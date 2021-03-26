@@ -67,9 +67,9 @@ public class SmartNotificationMessageParameters implements Serializable {
     
     public String loggingString(Level level) {
         if (level.isMoreSpecificThan(Level.INFO)) {
-            return getLogMsg().toString();
-        } else {
             return toString();
+        } else {
+            return getLogMsg().toString();
         }
     }
     

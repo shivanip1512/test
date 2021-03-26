@@ -105,9 +105,9 @@ public interface SmartNotificationEventDao {
     int getAssetImportEventCount(DateTime from, DateTime to, AssetImportResultType assetImportResultType);
 
     /**
-     * Returns events that have not been processed. If isGrouped is true returns grouped events otherwise returns immediate events
+     * Returns events that have not been processed for frequency.
      */
-    Multimap<SmartNotificationEventType, SmartNotificationEvent> getUnprocessedEvents(boolean isGrouped);
+    Multimap<SmartNotificationEventType, SmartNotificationEvent> getUnprocessedEvents(SmartNotificationFrequency frequency);
 
     /**
      * Returns events that have not been processed by event type.

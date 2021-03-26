@@ -222,14 +222,15 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
     }
     
     @Override
-    public Multimap<SmartNotificationEventType, SmartNotificationEvent> getUnprocessedEvents(boolean isGrouped) {
-        String processTime = isGrouped? "GroupProcessTime":"ImmediateProcessTime";
+    public Multimap<SmartNotificationEventType, SmartNotificationEvent> getUnprocessedEvents(
+            SmartNotificationFrequency frequency) {
+        String processTime = SmartNotificationFrequency.COALESCING == frequency ? "GroupProcessTime" : "ImmediateProcessTime";
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EventId, Timestamp, GroupProcessTime, ImmediateProcessTime, Type");
         sql.append("FROM  SmartNotificationEvent sne");
         sql.append("WHERE").append(processTime).append("IS NULL");
 
-        Multimap<SmartNotificationEventType, SmartNotificationEvent> events = HashMultimap.create(); 
+        Multimap<SmartNotificationEventType, SmartNotificationEvent> events = HashMultimap.create();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
@@ -238,7 +239,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
                 events.put(type, event);
             }
         });
-        
+
         if (!events.isEmpty()) {
             addParameters(new ArrayList<>(events.values()));
         }
