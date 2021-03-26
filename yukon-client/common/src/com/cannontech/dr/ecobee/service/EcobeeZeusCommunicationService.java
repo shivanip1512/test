@@ -3,9 +3,8 @@ package com.cannontech.dr.ecobee.service;
 public interface EcobeeZeusCommunicationService {
 
     /**
-     * Create a Ecobee device if the provided thermostat serial number is registered in Ecobee portal and its already
-     * enrolled.
+     * Check whether the provided thermostat serial number is registered in Ecobee portal and its already connected.
      */
-    boolean createZeusDevice(String serialNumber);
+    boolean isDeviceRegistered(String serialNumber);
 
 }

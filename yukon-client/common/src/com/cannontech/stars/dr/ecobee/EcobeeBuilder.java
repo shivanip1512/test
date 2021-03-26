@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
@@ -36,6 +38,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
             .put(HardwareType.ECOBEE_SMART, PaoType.ECOBEE_SMART)
             .build();
     
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
@@ -44,9 +47,11 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(Hardware hardware) {
-        createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
-        //For Zeus API call createZeusDevice().
-        //createZeusDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
+        if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
+            createZeusDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
+        } else {
+            createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
+        }
     }
     
     public PaoIdentifier createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
@@ -74,7 +79,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
      */
     public PaoIdentifier createZeusDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
         try {
-            boolean shouldCreateDevice = ecobeeZeusCommunicationService.createZeusDevice(serialNumber);
+            boolean shouldCreateDevice = ecobeeZeusCommunicationService.isDeviceRegistered(serialNumber);
             if (shouldCreateDevice) {
                 CompleteDevice ecobeePao = new CompleteDevice();
                 ecobeePao.setPaoName(serialNumber);
@@ -84,8 +89,8 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
                 return ecobeePao.getPaoIdentifier();
             } else {
                 log.error("Not creating the device as the provided thermostat serrial number is invalid or thermostat is"
-                        + " not enrolled yet.");
-                throw new DeviceCreationException("Thermostat not registered registered in Ecobee portal or it's yet to be enrolled.");
+                        + " not connected yet.");
+                throw new DeviceCreationException("Thermostat not registered in Ecobee portal or it's yet to be connected.");
             }
         } catch (Exception e) {
             log.error("Unable to create device.", e);
