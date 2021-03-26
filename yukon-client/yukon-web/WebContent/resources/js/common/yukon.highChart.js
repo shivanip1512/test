@@ -60,7 +60,7 @@ yukon.highChart = (function () {
                     }
                 },
                 xAxis: {
-                    type: 'datetime',
+                    type: jsonResponse.xaxis.type,
                     dateTimeLabelFormats: {
                         millisecond: '%H:%M:%S.%L',
                         second: '%H:%M:%S',
@@ -79,6 +79,10 @@ yukon.highChart = (function () {
                 tooltip: {
                     shared: true,
                     useHTML: true,
+                    outside: true,
+                    style: {
+                        fontSize: "10px"
+                    },
                     formatter: function () {
                         var tooltipHtml = '',
                             pointsArray = this.points;

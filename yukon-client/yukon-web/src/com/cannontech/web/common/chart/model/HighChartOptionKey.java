@@ -12,11 +12,13 @@ public enum HighChartOptionKey {
     DATE_TIME_FORMAT_HOUR_MINUTE("%H:%M"),
     DATE_TIME_FORMAT_DATE_MONTH_HOUR_MINUTE("%b %e %H:%M"),
     FILL_OPACITY("fillOpacity"),
+    FROM("from"),
     GRID_LINE_WIDTH("gridLineWidth"),
     MARKER("marker"),
     MIN("min"),
     MAX("max"),
     OPPOSITE("opposite"),
+    PLOT_BANDS("plotBands"),
     POINT_TOOLTIP("tooltip"), // This is our custom option and not a standard highchart option.
     POINT_WIDTH("pointWidth"),
     ROTATION("rotation"),
@@ -32,6 +34,8 @@ public enum HighChartOptionKey {
     THRESHOLD("threshold"),
     TICK_AMOUNT("tickAmount"),
     TITLE("title"),
+    TO("to"),
+    TYPE("type"),
     X_AXIS("xaxis"),
     Y_AXIS("yaxis")
     ;

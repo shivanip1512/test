@@ -3,6 +3,7 @@
 <%@ taglib prefix="fancyTree" tagdir="/WEB-INF/tags/fancyTree" %>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="highChart" tagdir="/WEB-INF/tags/highChart" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -135,15 +136,18 @@
                 <cti:msg2 var="tabName" key=".voltageProfile.title" />
                 <cti:tab title="${tabName}">
                     <c:set var="chartId" value="sub_${subBusId}_chart" />
-                    <flot:ivvcChart chartId="${chartId}"
+                    <highChart:ivvcChart chartId="${chartId}"
                         jsonDataAndOptions="${graphAsJSON}"
                         title="${fn:escapeXml(graphSettings.graphTitle)}" />
+<%--                     <flot:ivvcChart chartId="${chartId}"
+                        jsonDataAndOptions="${graphAsJSON}"
+                        title="${fn:escapeXml(graphSettings.graphTitle)}" /> --%>
                     <cti:url var="url" value="/capcontrol/ivvc/bus/chart">
                         <cti:param name="subBusId" value="${subBusId}" />
                     </cti:url>
-                    <cti:dataUpdaterCallback 
+<%--                     <cti:dataUpdaterCallback 
                         function="yukon.flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${url}'})"
-                        initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
+                        initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/> --%>
                 </cti:tab>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
                 <cti:tab title="${voltagePointsTab}">
