@@ -179,7 +179,7 @@ public abstract class SmartNotificationDecider {
                 } else {
                     // if there is no events to process, remove the key from cache
                     intervalCache.remove(cacheKey);
-                    logInfo("Removed from cache (No unprocessed events):" + cacheKey + "/" + newInterval + " all intevals:"
+                    logInfo("Removed from cache (No unprocessed events):" + cacheKey + "/" + newInterval + " all intervals:"
                             + intervals + " " + getStatistics(cacheKey));
 
                 }
