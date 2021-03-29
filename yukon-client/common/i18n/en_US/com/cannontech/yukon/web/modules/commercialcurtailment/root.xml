@@ -224,7 +224,7 @@
     <entry key="yukon.web.modules.dr.cc.init.confirmation.confirm.label">Confirm</entry>
     
     <!--  Confirm popup -->
-    <entry key="yukon.web.modules.dr.cc.init.confirmationPopup.title">Start Event</entry>
+    <entry key="yukon.web.modules.dr.cc.init.confirmationPopup.title">Confirm Event Start</entry>
     <entry key="yukon.web.modules.dr.cc.init.messagedetail">Are you sure you want to start event {0} Event ({1})?</entry>
     <!-- pricing.jsp (init step 2) -->
     <entry key="yukon.web.modules.dr.cc.init.pricing.pageTitle">Event Setup</entry>
