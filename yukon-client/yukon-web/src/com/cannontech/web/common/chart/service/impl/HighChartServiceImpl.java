@@ -161,6 +161,7 @@ public class HighChartServiceImpl implements HighChartService {
 
         /* data */
         boolean noData = graph.getLines().isEmpty();
+        List<String> lineNames = new ArrayList<String>();
 
         for (VfLine line : graph.getLines()) {
             List<Object> linesArray = new ArrayList<>();
@@ -180,24 +181,28 @@ public class HighChartServiceImpl implements HighChartService {
                 linesArray.add(map);
             }
             Map<String, Object> dataObj = new HashMap<>();
+
             if (includeTitles && labelPoint != null) {
-                dataObj.put("title", line.getZoneName());
+/*                dataObj.put("title", line.getZoneName());
                 dataObj.put("titleXPos", labelPoint.getX());
-                dataObj.put("titleYPos", labelPoint.getY());
+                dataObj.put("titleYPos", labelPoint.getY());*/
             }
-            
-            dataObj.put("lineName", line.getLineName());
+                        
             dataObj.put("data", linesArray);
             dataObj.put("color", line.getSettings().getColor());
-            dataObj.put("phase", line.getPhase());
+            dataObj.put("name", line.getLineName());
+            dataObj.put("id", line.getLineName());
+            if (lineNames.contains(line.getLineName())) {
+                dataObj.put("linkedTo", line.getLineName());
+            }
             jsonDataContainer.add(dataObj);
+            lineNames.add(line.getLineName());
         }
         /* if we have no data, then add an empty array to jsonData so a blank graph is displayed properly */
         if (noData) {
             jsonDataContainer.add(Collections.emptyList());
         }
 
-        /* options */
         Map<String, Object> xAxis = new HashMap<>();
         xAxis.put(HighChartOptionKey.TYPE.getKey(), "linear");
 
@@ -216,7 +221,6 @@ public class HighChartServiceImpl implements HighChartService {
         yAxis.put(HighChartOptionKey.MAX.getKey(), graph.getSettings().getyMax());
         yAxis.put(HighChartOptionKey.START_ON_TICK.getKey(), false);
         yAxis.put(HighChartOptionKey.END_ON_TICK.getKey(), false);
-        yAxis.put(HighChartOptionKey.ALIGN_TICKS.getKey(), true);
 
         List<Object> markingsArray = new ArrayList<>();
 
@@ -235,10 +239,6 @@ public class HighChartServiceImpl implements HighChartService {
         yAxis.put(HighChartOptionKey.PLOT_BANDS.getKey(), markingsArray);
         
         options.put(HighChartOptionKey.Y_AXIS.getKey(), yAxis);
-        
-        Map<String, Object> lines = ImmutableMap.of("fill", false);
-        Map<String, Object> series = ImmutableMap.of("lines", lines);
-        options.put("series", series);
 
         Map<String, Object> dataAndOptions = Maps.newHashMapWithExpectedSize(3);
         dataAndOptions.put("seriesDetails", jsonDataContainer);

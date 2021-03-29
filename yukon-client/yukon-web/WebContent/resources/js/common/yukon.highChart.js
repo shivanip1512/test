@@ -45,8 +45,7 @@ yukon.highChart = (function () {
                     height: chartHeight,
                     zoomType: 'x',
                     plotBorderWidth: 2,
-                },
-                yaxesOptions = [];
+                };
             
             chartContainer.highcharts({
                 credits: yg.highcharts_options.disable_credits,
@@ -106,6 +105,10 @@ yukon.highChart = (function () {
                             inactive: {
                                 opacity: 1
                             }
+                        },
+                        marker: {
+                            symbol: 'circle',
+                            enabled: true
                         }
                     },
                     column: {
