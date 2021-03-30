@@ -149,21 +149,24 @@ yukon.mapping = (function () {
               source: new ol.source.XYZ({ name: 'mqosm',
                   url: yg.map_devices_street_url,
                   attributions: _attributionText,
-                  tileSize: 512
+                  tileSize: 512,
+                  transition: 0
               })
           }),
           new ol.layer.Tile({ name: 'mqsat', visible: false,
               source: new ol.source.XYZ({ name: 'mqsat', 
                 url: yg.map_devices_satellite_url,
                 attributions: _attributionText,
-                tileSize: 512
+                tileSize: 512,
+                transition: 0
               })
           }),
           new ol.layer.Tile({ name: 'hybrid', visible: false,
               source: new ol.source.XYZ({ name: 'hybrid', 
                 url: yg.map_devices_hybrid_url,
                 attributions: _attributionText,
-                tileSize: 512
+                tileSize: 512,
+                transition: 0
               })
           })
     ],
@@ -466,17 +469,28 @@ yukon.mapping = (function () {
             if (checked) {
                 button.removeClass('on');
                 map.removeLayer(_elevationLayer);
+                _map.getLayers().forEach(function (layer) {
+                    if (layer.get('name') === 'mqsat' || layer.get('name') === 'hybrid') {
+                        layer.setOpacity(1);
+                    }
+                });
             } else {
-                _elevationLayer = new ol.layer.VectorTile({
-                    declutter: true,
-                    opacity: 0.6,
-                    source: new ol.source.VectorTile({
-                        format: new ol.format.MVT(),
-                        url: yg.map_devices_elevation_url
-                    }),
-                })
+                _elevationLayer = new ol.layer.Tile({ name: 'ele',
+                    source: new ol.source.XYZ({ name: 'ele',
+                        url: yg.map_devices_elevation_url,
+                        attributions: _attributionText,
+                        tileSize: 512,
+                        transition: 0
+                    })
+                });
+                _elevationLayer.setZIndex(500);
                 button.addClass('on');
                 map.addLayer(_elevationLayer);
+                _map.getLayers().forEach(function (layer) {
+                    if (layer.get('name') === 'mqsat' || layer.get('name') === 'hybrid') {
+                        layer.setOpacity(0.4);
+                    }
+                });
             }
         },
         

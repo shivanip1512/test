@@ -55,9 +55,9 @@ public class CiInitEventModel {
     }
     
     public DateTime getStopTime() {
-        return startTime.plus(Duration.standardHours(duration));
+        return startTime.plus(Duration.standardMinutes(duration));
     }
-    
+
     public void setStartTime(DateTime startTime) {
         this.startTime = startTime;
     }

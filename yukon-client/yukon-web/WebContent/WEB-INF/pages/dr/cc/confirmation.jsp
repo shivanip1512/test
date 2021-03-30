@@ -105,7 +105,7 @@
             <cti:item value="${program.programType.name}"/>
         </cti:list>
         <h3><i:inline key=".messagedetail" arguments="${arguments}"/></h3>
-        <b><i:inline key=".confirmation.parameters"/></b>
+        <br><b><i:inline key=".confirmation.parameters"/></b></br>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".notificationTime">
                 <cti:formatDate type="FULL" value="${event.notificationTime}"/>
