@@ -38,7 +38,8 @@ import com.google.common.collect.Multimap;
 
 
 /**TODO
- * Figure out how to to prove that this is sending correct number of emails to correct people on correct intervals with multiple subscriptions. Use data monitors and infra. warnings - requires simulator fix.
+ * Figure out how to to prove that this is sending correct number of emails to correct people on correct intervals 
+ * with multiple subscriptions. Use data monitors and infra. warnings - requires simulator fix.
  */
 
 /**Additional TODO
@@ -50,7 +51,6 @@ import com.google.common.collect.Multimap;
  * 6. Fix Smart notification simulator to send to all types. Re-test the simulator - currently tested only with device data monitors
  * 7. Create confluence page describing how to use simulator, and how logging works
  * 8. Document for QA what should be tested
- * 9. Fix unit test if applicable
  * 10. Test - Unsubscribe from subscription while events are coalescing 
  * 11. Test - Processing on start-up
  * 12. Change simulator to use only enabled monitors (send to all case)

@@ -91,7 +91,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
                 if (type == SmartNotificationEventType.METER_DR) {
                     createMeterDrEvents();
                 } else if (type == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
-                    createInfrastructureWaringEvent(settings);
+                    createInfrastructureWarningEvent(settings);
                 } else if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
                     createDeviceDataMonitorEvents(settings);
                 } else {
@@ -102,7 +102,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
         return new SimulatorResponseBase(true);
     }
 
-    private void createInfrastructureWaringEvent(SmartNotificationSimulatorSettings settings) {
+    private void createInfrastructureWarningEvent(SmartNotificationSimulatorSettings settings) {
         if (settings.isAllTypes() || settings.getType() == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
             List<InfrastructureWarningType> types = Lists.newArrayList(InfrastructureWarningType.values());
             List<SmartNotificationEvent> events = new ArrayList<>();
