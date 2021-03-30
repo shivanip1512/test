@@ -145,9 +145,9 @@
                     <cti:url var="url" value="/capcontrol/ivvc/bus/chart">
                         <cti:param name="subBusId" value="${subBusId}" />
                     </cti:url>
-<%--                     <cti:dataUpdaterCallback 
-                        function="yukon.flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${url}'})"
-                        initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/> --%>
+                    <cti:dataUpdaterCallback 
+                        function="yukon.highChart.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${url}'})"
+                        initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
                 </cti:tab>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
                 <cti:tab title="${voltagePointsTab}">

@@ -13,25 +13,15 @@ import com.cannontech.web.common.chart.service.impl.GraphDetail;
 public interface HighChartService {
     
     /**
-     * Returns a Map to be converted to json and consumed by TODO:Add doc here
-     * The format of this object is as follows:
-     * 
-     * (if the format of this is changed, please update this comment)
-     * TODO: Add json object format here.
-     * 
-     *  @return JSONObject
+     * Returns a Map to be converted to json and consumed by yukon.highChart.js (our implementation of HighCharts)
+     * Json represents the Meter Trends chart 
      */
     Map<String, Object> getMeterGraphData(List<GraphDetail> graphDetails, Instant start, Instant stop, Double yMin, Double yMax,
             GraphType graphType, YukonUserContext userContext);
 
     /**
-     * Returns a Map to be converted to json and consumed by TODO:Add doc here
-     * The format of this object is as follows:
-     * 
-     * (if the format of this is changed, please update this comment)
-     * TODO: Add json object format here.
-     * 
-     *  @return JSONObject
+     * Returns a Map to be converted to json and consumed by yukon.highChart.js (our implementation of HighCharts)
+     * Json represents the IVVC Chart that is used on the IVVC Bus and Zone detail pages.
      */
     Map<String, Object> getIVVCGraphData(VfGraph graph, boolean includeTitles);
 }

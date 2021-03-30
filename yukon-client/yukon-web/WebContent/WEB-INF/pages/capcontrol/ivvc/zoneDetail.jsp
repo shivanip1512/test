@@ -55,7 +55,7 @@
                     <highChart:ivvcChart chartId="${chartId}"
                         jsonDataAndOptions="${graphAsJSON}"
                         title="${fn:escapeXml(graphSettings.graphTitle)}" />
-                    <cti:dataUpdaterCallback function="yukon.flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
+                    <cti:dataUpdaterCallback function="yukon.highChart.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
                         initialize="false" largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
                 </cti:tab>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />

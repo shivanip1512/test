@@ -314,7 +314,7 @@ public class ZoneDetailController {
                                                       userContext.getYukonUser());
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
-            Map<String, Object> graphAsJSON = flotChartService.getIVVCGraphData(graph, false);
+            Map<String, Object> graphAsJSON = highChartService.getIVVCGraphData(graph, false);
             return graphAsJSON;
         }
         return Collections.emptyMap();

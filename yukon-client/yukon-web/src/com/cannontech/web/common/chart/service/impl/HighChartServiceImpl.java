@@ -24,11 +24,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.models.VfLine;
 import com.cannontech.web.capcontrol.ivvc.models.VfPoint;
-import com.cannontech.web.common.chart.model.FlotOptionKey;
 import com.cannontech.web.common.chart.model.HighChartOptionKey;
 import com.cannontech.web.common.chart.service.ChartService;
 import com.cannontech.web.common.chart.service.HighChartService;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -166,34 +164,40 @@ public class HighChartServiceImpl implements HighChartService {
         for (VfLine line : graph.getLines()) {
             List<Object> linesArray = new ArrayList<>();
             VfPoint labelPoint = null;
+            //find label point
+            for (VfPoint point : line.getPoints()) {
+                if (includeTitles && point.isRegulator() && line.getZoneName() != null
+                    && (labelPoint == null || labelPoint.getY() < point.getY())) {
+                    labelPoint = point;
+                }
+            }
             for (VfPoint point : line.getPoints()) {
                 Map<String, Object> map = Maps.newHashMap();
                 map.put(HighChartOptionKey.SERIES_X_COORDINATE.getKey(), point.getX());
                 map.put(HighChartOptionKey.SERIES_Y_COORDINATE.getKey(), point.getY());
-
-                if (includeTitles && point.isRegulator() && line.getZoneName() != null
-                    && (labelPoint == null || labelPoint.getY() < point.getY())) {
-                    labelPoint = point;
+                
+                if (includeTitles && labelPoint != null && labelPoint == point) {
+                    Map<String, Object> dataLabel = new HashMap<>();
+                    dataLabel.put(HighChartOptionKey.FORMAT.getKey(), line.getZoneName());
+                    dataLabel.put(HighChartOptionKey.ENABLED.getKey(), true);
+                    Map<String, Object> format = new HashMap<>();
+                    format.put(HighChartOptionKey.FONT_WEIGHT.getKey(), "normal");
+                    dataLabel.put(HighChartOptionKey.STYLE.getKey(), format);
+                    map.put(HighChartOptionKey.DATA_LABELS.getKey(), dataLabel);
                 }
                 
                 map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), point.getDescription());
                 map.put("ignore", point.isIgnore());
                 linesArray.add(map);
             }
-            Map<String, Object> dataObj = new HashMap<>();
-
-            if (includeTitles && labelPoint != null) {
-/*                dataObj.put("title", line.getZoneName());
-                dataObj.put("titleXPos", labelPoint.getX());
-                dataObj.put("titleYPos", labelPoint.getY());*/
-            }
-                        
-            dataObj.put("data", linesArray);
-            dataObj.put("color", line.getSettings().getColor());
-            dataObj.put("name", line.getLineName());
-            dataObj.put("id", line.getLineName());
+            
+            Map<String, Object> dataObj = new HashMap<>();    
+            dataObj.put(HighChartOptionKey.SERIES_DATA.getKey(), linesArray);
+            dataObj.put(HighChartOptionKey.COLOR.getKey(), line.getSettings().getColor());
+            dataObj.put(HighChartOptionKey.NAME.getKey(), line.getLineName());
+            dataObj.put(HighChartOptionKey.ID.getKey(), line.getLineName());
             if (lineNames.contains(line.getLineName())) {
-                dataObj.put("linkedTo", line.getLineName());
+                dataObj.put(HighChartOptionKey.LINKED_TO.getKey(), line.getLineName());
             }
             jsonDataContainer.add(dataObj);
             lineNames.add(line.getLineName());
@@ -205,6 +209,8 @@ public class HighChartServiceImpl implements HighChartService {
 
         Map<String, Object> xAxis = new HashMap<>();
         xAxis.put(HighChartOptionKey.TYPE.getKey(), "linear");
+        xAxis.put(HighChartOptionKey.MIN_PADDING.getKey(), 0.1);
+        xAxis.put(HighChartOptionKey.MAX_PADDING.getKey(), 0.1);
 
         if (noData) {
             xAxis.put(HighChartOptionKey.MIN.getKey(), 0);
@@ -242,7 +248,7 @@ public class HighChartServiceImpl implements HighChartService {
 
         Map<String, Object> dataAndOptions = Maps.newHashMapWithExpectedSize(3);
         dataAndOptions.put("seriesDetails", jsonDataContainer);
-        dataAndOptions.put("type", GraphType.LINE.getFlotType());
+        dataAndOptions.put(HighChartOptionKey.TYPE.getKey(), GraphType.LINE.getHighChartType());
         dataAndOptions.putAll(options);
 
         return dataAndOptions;
