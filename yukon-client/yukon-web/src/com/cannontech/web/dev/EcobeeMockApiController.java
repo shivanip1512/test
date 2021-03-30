@@ -1,6 +1,9 @@
 package com.cannontech.web.dev;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -8,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +37,8 @@ import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationResponse;
+import com.cannontech.dr.ecobee.message.ZeusThermostatState;
+import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
 import com.cannontech.dr.ecobee.message.partial.Status;
 import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -129,8 +135,7 @@ public class EcobeeMockApiController {
         int authenticationCode = zeusEcobeeDataConfiguration.getAuthenticate();
         if (authenticationCode == 0) {
             return new ResponseEntity<>(helper.login(request), HttpStatus.OK);
-        }
-        if (authenticationCode == 1) {
+        } else if (authenticationCode == 1) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -146,5 +151,32 @@ public class EcobeeMockApiController {
         }
         helper.refresh(refreshToken);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @IgnoreCsrfCheck
+    @GetMapping("programs/{programId}")
+    public ResponseEntity<Object> programs(@PathVariable String programId) {
+        Map<String, Object> responseMap = new HashMap<String, Object>();
+        Map<String, String> thermostatIdMap = new HashMap<String, String>();
+        thermostatIdMap.put("root_tstatgroup_id", "i89uUYUuioyhyu36hsidch9s8NUYGUA");
+        responseMap.put("program", thermostatIdMap);
+        return new ResponseEntity<>(responseMap, HttpStatus.OK);
+    }
+
+    @IgnoreCsrfCheck
+    @GetMapping("tstatgroups/{thermostatGroupID}/thermostats")
+    public ResponseEntity<ZeusThermostatsResponse> retrieveThermostats(@PathVariable String thermostatGroupID,
+            @RequestParam(name = "enrollment_state") ZeusThermostatState state,
+            @RequestParam(name = "thermostat_ids") List<String> thermostatIds) {
+        int createDeviceCode = zeusEcobeeDataConfiguration.getCreateDevice();
+        if (createDeviceCode == 0) {
+            return new ResponseEntity<>(helper.retrieveThermostats(thermostatIds), HttpStatus.OK);
+        } else if (createDeviceCode == 1) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } else if (createDeviceCode == 3) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 }
