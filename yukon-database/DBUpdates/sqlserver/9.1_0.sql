@@ -51,7 +51,7 @@ INSERT INTO State VALUES(-32, 4, 'Regulate in Reverse', 4, 6, 0);
 INSERT INTO State VALUES(-32, 5, 'Distributed Generation', 5, 6, 0);
 INSERT INTO State VALUES(-32, 7, 'Auto Determination', 7, 6, 0);
 
-INSERT INTO DBUpdates VALUES ('YUK-23951', '9.0.0', SYSDATE);
+INSERT INTO DBUpdates VALUES ('YUK-23951', '9.0.0', GETDATE());
 /* @end YUK-23951 */
 
 /**************************************************************/
