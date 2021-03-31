@@ -21,11 +21,7 @@ yukon.rfSupportBundle = (function () {
             
         	$(function() {
         	    checkUpdate();
-
-        	    $("#ftpUploadBtn").click(function() {
-        	        var chosenBundle = $("input[name=fileName]", "#uploadForm").val();
-        	        openFtpPopup(chosenBundle);
-        	    });
+   
         	});
 
     
@@ -38,7 +34,7 @@ function checkUpdate(){
         if(json.inProgress) {
             setTimeout(checkUpdate,1000);
         } else{
-            $("input[name=fileName]", "#uploadForm").val(json.fileName);
+           
             $("#submit :button").removeAttr("busy");
         }
     });
