@@ -1,27 +1,27 @@
 package com.cannontech.web.support;
 
-import com.cannontech.common.util.DateRange;
+import java.util.Date;
 
 public class RfSupportBundle {
    
     private String customerName;
   
-    private DateRange date = new DateRange();
+    private Date date = new Date();
  
     public String getCustomerName() {
         return customerName;
     }
 
-    public DateRange getDate() {
+    public void setCustomerName(String rfCustomerName) {
+        this.customerName = rfCustomerName;
+    }
+
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(DateRange date) {
+    public void setDate(Date date) {
         this.date = date;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
     }
 
 }
