@@ -46,6 +46,11 @@ public enum PxMWRetrievalUrl {
             // INTERNAL_SERVER_ERROR returned in response body
             // For the simulator we are not returning 400 as BAD_REQUEST but as a 200 with 400 in the response body
             ImmutableMap.of("Device Guid", "c2c6460b-3a2a-48c5-af03-4326d6598284", "List of Channel Tags", "1123,1124")),
+    TREND_DATA_RETRIEVAL(PxMWVersion.V1, "/api/v1/devices/timeseries/",
+            "https://eas-all-apim-eus-dev.developer.azure-api.net/api-details#api=devices&operation=post-gettimeseriesdata",
+            // 200, 400, 401
+            List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED),
+            ImmutableMap.of("Device Guid", "3b4dd0db-2144-4fb2-a819-99f7f0a4d5cf", "List of Channel Tags", "10230,10231")),
     CLOUD_ENABLE(PxMWVersion.V1, "/api/v1/devices/cloudenable",
             "http://wordpress-prod.tcc.etn.com/wordpress/wp-content/docs/RestApi/IoT.html#device-device-put-1",
             // 200, 404

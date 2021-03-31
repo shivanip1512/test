@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PxMWTimeSeriesResultV1 {
-    public String tag;
-    public String trait;
-    public List<PxMWTimeSeriesValueV1> values;
+    private String tag;
+    private String trait;
+    private List<PxMWTimeSeriesValueV1> values;
 
     @JsonCreator
     public PxMWTimeSeriesResultV1(@JsonProperty("tag") String tag, @JsonProperty("trait") String trait,

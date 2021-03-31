@@ -6,22 +6,22 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PxMWTimeSeriesValueV1 implements Serializable {
-    public int t;
-    public String v;
+    private int timestamp;
+    private String value;
 
     @JsonCreator
-    public PxMWTimeSeriesValueV1(@JsonProperty("t") int t, @JsonProperty("v") String v) {
-        this.t = t;
-        this.v = v;
+    public PxMWTimeSeriesValueV1(@JsonProperty("t") int timestamp, @JsonProperty("v") String value) {
+        this.timestamp = timestamp;
+        this.value = value;
     }
 
     @JsonProperty("t")
-    public int getT() {
-        return t;
+    public int getTimestamp() {
+        return timestamp;
     }
 
     @JsonProperty("v")
-    public String getV() {
-        return v;
+    public String getValue() {
+        return value;
     }
 }

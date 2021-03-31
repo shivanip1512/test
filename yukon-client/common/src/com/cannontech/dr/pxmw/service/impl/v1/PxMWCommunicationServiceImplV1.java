@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +43,8 @@ import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
@@ -190,11 +193,24 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
             throw new PxMWException("Exception occured while getting channel values", e);
         }
     }
-    
-    @Override
-    public void getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, String startTime, String stopTime) {
-        // Work in progress
 
+    @Override
+    public PxMWTimeSeriesDataResponseV1 getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Instant startTime,
+            Instant stopTime) {
+        URI uri = getUri(PxMWRetrievalUrl.TREND_DATA_RETRIEVAL);
+        try {
+            PxMWTimeSeriesDataRequestV1 request = new PxMWTimeSeriesDataRequestV1(deviceList, startTime, stopTime);
+            HttpEntity<PxMWTimeSeriesDataRequestV1> requestEntity = getRequestWithAuthHeaders(request);
+            ResponseEntity<PxMWTimeSeriesDataResponseV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
+                    PxMWTimeSeriesDataResponseV1.class);
+            log.debug("Getting time series data for {}, from Start: {} to Stop: {}, Result:{}", deviceList, startTime, stopTime,
+                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
+            return response.getBody();
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PxMWException("Exception occured while getting time series data", e);
+        }
     }
     
     @Override

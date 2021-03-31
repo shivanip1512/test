@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PxMWTimeSeriesDeviceResultV1 {
-    public String deviceId;
-    public List<PxMWTimeSeriesResultV1> results;
+    private String deviceId;
+    private List<PxMWTimeSeriesResultV1> results;
     
     @JsonCreator
     public PxMWTimeSeriesDeviceResultV1(@JsonProperty("device_id") String deviceId, @JsonProperty("results") List<PxMWTimeSeriesResultV1> results) {

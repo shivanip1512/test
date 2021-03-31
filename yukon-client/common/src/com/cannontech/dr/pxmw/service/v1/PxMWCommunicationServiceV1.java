@@ -2,6 +2,8 @@ package com.cannontech.dr.pxmw.service.v1;
 
 import java.util.List;
 
+import org.joda.time.Instant;
+
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
@@ -9,6 +11,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 
@@ -60,10 +63,18 @@ public interface PxMWCommunicationServiceV1 {
             throws PxMWCommunicationExceptionV1, PxMWException;
 
     /**
-     * Stuff
+     * @param token
+     * @param deviceList - List of TimeSeries devices that you want results for (required)
+     * @param startTime  - Start of time period you want data on (required)
+     * @param stopTime   - End of time period you want data on (required)
+     * @return TimeSeries data for a set of devices over an interval
+     * @throws PxMWCommunicationExceptionV1
+     * 
+     *         400 Invalid input parameter / Bad Request
+     *         401 User is not authorized to send the command
      */
-    void getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, String startTime,
-            String stopTime);
+    PxMWTimeSeriesDataResponseV1 getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Instant startTime,
+            Instant stopTime);
     /**
      * Enables or disables a device on the IoTHub
      * The value "true" enables the device and the "false" disables the device.

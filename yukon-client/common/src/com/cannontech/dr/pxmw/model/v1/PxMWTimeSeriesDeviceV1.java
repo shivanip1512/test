@@ -4,18 +4,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PxMWTimeSeriesDeviceV1 {
-    public String deviceId;
-    public String tagTrait;
+    private String deviceGuid;
+    private String tagTrait;
 
     @JsonCreator
-    public PxMWTimeSeriesDeviceV1(@JsonProperty("device_id") String deviceId, @JsonProperty("tag_trait") String tagTrait) {
-        this.deviceId = deviceId;
+    public PxMWTimeSeriesDeviceV1(@JsonProperty("device_id") String deviceGuid, @JsonProperty("tag_trait") String tagTrait) {
+        this.deviceGuid = deviceGuid;
         this.tagTrait = tagTrait;
     }
 
     @JsonProperty("device_id")
-    public String getDeviceId() {
-        return deviceId;
+    public String getDeviceGuid() {
+        return deviceGuid;
     }
 
     @JsonProperty("tag_trait")
