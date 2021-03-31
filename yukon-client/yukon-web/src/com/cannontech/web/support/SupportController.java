@@ -48,6 +48,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.support.service.SupportBundleService;
@@ -90,7 +91,7 @@ public class SupportController {
     
     @RequestMapping(value={"","/support"})
     public String support(ModelMap model, YukonUserContext context) {
-        return supportBundle(model, new SupportBundle(), context);
+        return supportBundle(model, new SupportBundle(), new RfSupportBundle(), context);
     }
 
     @RequestMapping("/manual")
@@ -155,7 +156,18 @@ public class SupportController {
             }
         }        model.addAttribute("supportPages", supportPages);
     }
-
+    
+    private void setUpRfSupportBundle(ModelMap model, RfSupportBundle rfbundle) {
+        model.addAttribute("rfSupportBundle", rfbundle);
+        
+        List<String> previousBundles = new ArrayList<>();
+        for(File f : bundleService.getBundles()){
+            previousBundles.add(f.getName());
+        }
+        model.addAttribute("bundleList", previousBundles);
+     
+    }
+    
     /**
      * Adds names of manuals found in Yukon/Manuals to the model
      */
@@ -173,10 +185,11 @@ public class SupportController {
         model.addAttribute("manuals", fileNames);
     }
 
-    private String supportBundle(ModelMap model, SupportBundle bundle, YukonUserContext context) {
+    private String supportBundle(ModelMap model, SupportBundle bundle, RfSupportBundle rfbundle, YukonUserContext context) {
         setUpLogsAndInfo(model, context);
         setUpLinks(model, context);
         setUpManuals(model);
+        setUpRfSupportBundle(model, rfbundle);
         
         List<String> previousBundles = new ArrayList<>();
         for(File f : bundleService.getBundles()){
@@ -210,11 +223,12 @@ public class SupportController {
     @RequestMapping(value="createBundle", method = RequestMethod.POST)
     public String createBundle(
             ModelMap model, 
-            @ModelAttribute SupportBundle bundle,
+            @ModelAttribute SupportBundle bundle, RfSupportBundle rfbundle,
+                
             BindingResult result, 
             FlashScope flash, 
             YukonUserContext userContext) {
-
+       
         rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
         detailsValidator.validate(bundle, result);
 
@@ -222,7 +236,7 @@ public class SupportController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
 
-            return supportBundle(model, bundle, userContext);
+            return supportBundle(model, bundle, rfbundle, userContext);
         }
 
         model.addAttribute("writerList", writerList);
@@ -245,6 +259,56 @@ public class SupportController {
         return "redirect:viewBundleProgress";
     }
 
+    private Validator detailsRfValidator = new SimpleValidator<RfSupportBundle>(RfSupportBundle.class) {
+        @Override
+        public void doValidation(RfSupportBundle rfBundle, Errors errors) {
+            ValidationUtils.rejectIfEmpty(errors, "customerName", baseKey + ".errorMsg.empty");
+            YukonValidationUtils.checkExceedsMaxLength(errors,  "customerName",
+                    rfBundle.getCustomerName(), 40);
+
+            Pattern validCharacters = Pattern.compile("^[a-zA-Z0-9_\\-\\(\\)&%.# ]*$");
+            YukonValidationUtils.regexCheck(errors,
+                                            "customerName",
+                                            rfBundle.getCustomerName(),
+                                            validCharacters,
+                                            baseKey + ".errorMsg.invalidCharacters");
+        }
+
+      
+    };     
+    
+    
+    @RequestMapping(value="createRfBundle", method = RequestMethod.POST)
+    public String createRFBundle(
+            ModelMap model, 
+            @ModelAttribute SupportBundle bundle, RfSupportBundle rfSupportBundle,
+            BindingResult result, 
+            FlashScope flash, 
+            YukonUserContext userContext) {
+
+        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
+        detailsRfValidator.validate(rfSupportBundle, result);
+
+        if (result.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            flash.setMessage(messages, FlashScopeMessageType.ERROR);
+
+            return supportBundle(model, bundle, rfSupportBundle, userContext);
+        }
+
+        flash.setMessage(YukonMessageSourceResolvable.createDefaultWithoutCode("Message has been sent to NM "), FlashScopeMessageType.SUCCESS);
+       
+        List<String> previousBundles = new ArrayList<>();
+        for(File f : bundleService.getBundles()){
+            previousBundles.add(f.getName());
+        }
+        
+       supportBundle(model, bundle, rfSupportBundle, userContext);
+      
+        return "support.jsp";
+    }
+
+    
     @RequestMapping(value="viewBundleProgress")
     public String viewBundleProgress(YukonUserContext userContext) {
         rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
@@ -262,15 +326,30 @@ public class SupportController {
         }
         return json;
     }
-
-    @RequestMapping(value="getBundleProgress")
-    public String getBundleProgress(ModelMap model, YukonUserContext userContext) {
+    
+    @RequestMapping(value = "rfbundleInProgress", method = RequestMethod.GET)
+    public @ResponseBody Map<String, Object> rfBundleInProgress(YukonUserContext userContext) {
         rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
-        Map<String, Boolean> thingsDoneMap = supportBundleService.getWritersDone();
+        Map<String, Object> json = new HashMap<>();
+        
+        // TO-DO
+        /*boolean inProgress = supportBundleService.isInProgress();
+        json.put("inProgress", inProgress);
+        if (!inProgress) {
+            json.put("fileName", supportBundleService.getMostRecentBundle().getName());
+        }*/
+        return json;
+    }
+
+
+    @RequestMapping(value="getRfBundleProgress")
+    public String getRfBundleProgress(ModelMap model, YukonUserContext userContext) {
+        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
+       /* Map<String, Boolean> thingsDoneMap = supportBundleService.getWritersDone();
         model.addAttribute("thingsDoneMap", thingsDoneMap);
         model.addAttribute("inProgress", supportBundleService.isInProgress());
         model.addAttribute("writerList", writerList);
-
+*/
         return "supportBundle/buildStatus.jsp";
     }
 
