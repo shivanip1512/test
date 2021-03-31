@@ -251,7 +251,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT sne.EventId, Timestamp, GroupProcessTime, ImmediateProcessTime");
         sql.append("FROM  SmartNotificationEvent sne JOIN SmartNotificationEventParam p ON sne.EventId = p.EventId");
-        sql.append("WHERE GroupProcessEvent IS NULL");
+        sql.append("WHERE GroupProcessTime IS NULL");
         sql.append("AND sne.Type").eq_k(type);
         sql.append("AND p.Name").eq(name);
         sql.append("AND p.Value").eq(value);
@@ -267,8 +267,8 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
     public List<SmartNotificationEvent> getUnprocessedGroupedEvents(SmartNotificationEventType type) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EventId, Timestamp, GroupProcessTime, ImmediateProcessTime");
-        sql.append("FROM  SmartNotificationEvent");
-        sql.append("WHERE GroupProcessEvent IS NULL");
+        sql.append("FROM SmartNotificationEvent");
+        sql.append("WHERE GroupProcessTime IS NULL");
         sql.append("AND Type").eq_k(type);
 
         List<SmartNotificationEvent> events = jdbcTemplate.query(sql, eventMapper);

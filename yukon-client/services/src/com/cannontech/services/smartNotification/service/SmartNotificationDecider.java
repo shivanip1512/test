@@ -143,12 +143,10 @@ public abstract class SmartNotificationDecider {
             // the time have passed
             if (currentInterval.getRunTime().isEqualNow() || currentInterval.getRunTime().isBeforeNow()) {
                 // start processing
-                logInfo("Processing cache key:" + cacheKey + "/" + currentInterval);
-
                 // replace current interval with the next interval
                 WaitTime newInterval = replaceCachedInterval(cacheKey, currentInterval);
 
-                logInfo("Updated cache for key:" + cacheKey + " to:" + newInterval + " from:" + currentInterval);
+                logInfo("UPDATING cache for key:" + cacheKey + " to:" + newInterval + " from:" + currentInterval);
 
                 // all unprocessed events
                 List<SmartNotificationEvent> unprocessed = getUnprocessedGroupedEvents(cacheKey);
@@ -163,10 +161,13 @@ public abstract class SmartNotificationDecider {
                     if (subscriptionsToEvents.isEmpty()) {
                         // if there is no events to process, remove the key from cache
                         intervalCache.remove(cacheKey);
-                        logInfo("Removed from cache (No subscriptions for events):" + cacheKey + "/" + newInterval + " all:"
+                        logInfo("REMOVING from cache (No subscriptions for events):" + cacheKey + "/" + newInterval + " all:"
                                 + intervals + " " + getStatistics(cacheKey));
 
                     } else {
+                        logInfo("PROCESSING cache key:" + cacheKey + "/" + currentInterval + " events:"
+                                + subscriptionsToEvents.values().size() + " subscriptions:"
+                                + subscriptionsToEvents.keys().stream().distinct().count());
                         // subscription found add info used to create email message
                         result.addMessageParameters(
                                 MessageParametersHelper.getMessageParameters(eventType, subscriptionsToEvents,
@@ -179,13 +180,13 @@ public abstract class SmartNotificationDecider {
                 } else {
                     // if there is no events to process, remove the key from cache
                     intervalCache.remove(cacheKey);
-                    logInfo("Removed from cache (No unprocessed events):" + cacheKey + "/" + newInterval + " all intervals:"
+                    logInfo("REMOVING from cache (No unprocessed events):" + cacheKey + "/" + newInterval + " all intervals:"
                             + intervals + " " + getStatistics(cacheKey));
 
                 }
             } else {
                 // It is not time to process events yet
-                logInfo("Not Processed (not time to run yet) Cache key:" + cacheKey + " Next run:" + currentInterval + " Now:"
+                logInfo("WAITING TO PROCESS Cache key:" + cacheKey + " Next run:" + currentInterval + " Now:"
                         + new DateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
             }
         });

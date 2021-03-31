@@ -38,12 +38,6 @@ import com.google.common.collect.Multimap;
 
 
 /**TODO
- * Figure out how to to prove that this is sending correct number of emails to correct people on correct intervals 
- * with multiple subscriptions. Use data monitors and infra. warnings - requires simulator fix.
- */
-
-/**Additional TODO
- * 1. Test with intervals that do not start with 0 (currently tested with SMART_NOTIFICATION_INTERVALS: 0,1,2)
  * 2. Test with SMART_NOTIFICATION_INTERVALS: 0,1,3,5,15,30
  * 3. Daily Digest, doesn't log correctly and needs to be re-tested 
  * 4. Test all smart notification types
@@ -52,7 +46,6 @@ import com.google.common.collect.Multimap;
  * 7. Create confluence page describing how to use simulator, and how logging works
  * 8. Document for QA what should be tested
  * 10. Test - Unsubscribe from subscription while events are coalescing 
- * 11. Test - Processing on start-up
  * 12. Change simulator to use only enabled monitors (send to all case)
  */
 
