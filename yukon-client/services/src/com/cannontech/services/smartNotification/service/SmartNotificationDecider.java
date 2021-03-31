@@ -81,17 +81,21 @@ public abstract class SmartNotificationDecider {
     public ProcessorResult processOnStartup(List<SmartNotificationEvent> unprocessed, SmartNotificationFrequency frequency) {
         Instant now = Instant.now();
         ProcessorResult result = new ProcessorResult(this, now, new WaitTime(now, 0));
-        eventDao.markEventsAsProcessed(unprocessed, result.getProcessedTime(), frequency);
-        // match only valid events to subscriptions
-        SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptions = getSubscriptionsForEvents(
-                validate(unprocessed), frequency);
+        try {
+            eventDao.markEventsAsProcessed(unprocessed, result.getProcessedTime(), frequency);
+            // match only valid events to subscriptions
+            SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptions = getSubscriptionsForEvents(
+                    validate(unprocessed), frequency);
 
-        if (!subscriptions.isEmpty()) {
-            result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, subscriptions, 0));
-            logInfo("On Startup found: " + unprocessed.size() + " " + frequency + " events. Result:"
-                    + result.loggingString(commsLogger.getLevel()));
-        } else {
-            logInfo("On Startup didn't find any unprocessed events for frequency: " + frequency);
+            if (!subscriptions.isEmpty()) {
+                result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, subscriptions, 0));
+                logInfo("On Startup found: " + unprocessed.size() + " " + frequency + " events. Result:"
+                        + result.loggingString(commsLogger.getLevel()));
+            } else {
+                logInfo("On Startup didn't find any unprocessed events for frequency: " + frequency);
+            }
+        } catch (Exception e) {
+            commsLogger.error("Exception processing event on startup", e);
         }
 
         return result;
@@ -136,60 +140,64 @@ public abstract class SmartNotificationDecider {
      */
     public List<ProcessorResult> processOnInterval() {
         List<ProcessorResult> results = new ArrayList<>();
-        // For each key in cache
-        intervalCache.keySet().forEach(cacheKey -> {
-            // get time when it supposed to be processed
-            WaitTime currentInterval = intervalCache.get(cacheKey);
-            // the time have passed
-            if (currentInterval.getRunTime().isEqualNow() || currentInterval.getRunTime().isBeforeNow()) {
-                // start processing
-                // replace current interval with the next interval
-                WaitTime newInterval = replaceCachedInterval(cacheKey, currentInterval);
+        try {
+            // For each key in cache
+            intervalCache.keySet().forEach(cacheKey -> {
+                // get time when it supposed to be processed
+                WaitTime currentInterval = intervalCache.get(cacheKey);
+                // the time have passed
+                if (currentInterval.getRunTime().isEqualNow() || currentInterval.getRunTime().isBeforeNow()) {
+                    // start processing
+                    // replace current interval with the next interval
+                    WaitTime newInterval = replaceCachedInterval(cacheKey, currentInterval);
 
-                logInfo("UPDATING cache for key:" + cacheKey + " to:" + newInterval + " from:" + currentInterval);
+                    logInfo("UPDATING cache for key:" + cacheKey + " to:" + newInterval + " from:" + currentInterval);
 
-                // all unprocessed events
-                List<SmartNotificationEvent> unprocessed = getUnprocessedGroupedEvents(cacheKey);
-                if (!unprocessed.isEmpty()) {
-                    // get subscriptions for events
-                    SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionsToEvents = getSubscriptionsForEvents(
-                            validate(unprocessed), COALESCING);
+                    // all unprocessed events
+                    List<SmartNotificationEvent> unprocessed = getUnprocessedGroupedEvents(cacheKey);
+                    if (!unprocessed.isEmpty()) {
+                        // get subscriptions for events
+                        SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionsToEvents = getSubscriptionsForEvents(
+                                validate(unprocessed), COALESCING);
 
-                    ProcessorResult result = new ProcessorResult(this, Instant.now(), currentInterval);
+                        ProcessorResult result = new ProcessorResult(this, Instant.now(), currentInterval);
 
-                    // no subscriptions found
-                    if (subscriptionsToEvents.isEmpty()) {
+                        // no subscriptions found
+                        if (subscriptionsToEvents.isEmpty()) {
+                            // if there is no events to process, remove the key from cache
+                            intervalCache.remove(cacheKey);
+                            logInfo("REMOVING from cache (No subscriptions for events):" + cacheKey + "/" + newInterval + " all:"
+                                    + intervals + " " + getStatistics(cacheKey));
+
+                        } else {
+                            logInfo("PROCESSING cache key:" + cacheKey + "/" + currentInterval + " events:"
+                                    + subscriptionsToEvents.values().size() + " subscriptions:"
+                                    + subscriptionsToEvents.keys().stream().distinct().count());
+                            // subscription found add info used to create email message
+                            result.addMessageParameters(
+                                    MessageParametersHelper.getMessageParameters(eventType, subscriptionsToEvents,
+                                            result.getInterval()));
+
+                            cacheStatistics(cacheKey, result);
+                        }
+                        eventDao.markEventsAsProcessed(unprocessed, result.getProcessedTime(), COALESCING);
+                        results.add(result);
+                    } else {
                         // if there is no events to process, remove the key from cache
                         intervalCache.remove(cacheKey);
-                        logInfo("REMOVING from cache (No subscriptions for events):" + cacheKey + "/" + newInterval + " all:"
+                        logInfo("REMOVING from cache (No unprocessed events):" + cacheKey + "/" + newInterval + " all intervals:"
                                 + intervals + " " + getStatistics(cacheKey));
 
-                    } else {
-                        logInfo("PROCESSING cache key:" + cacheKey + "/" + currentInterval + " events:"
-                                + subscriptionsToEvents.values().size() + " subscriptions:"
-                                + subscriptionsToEvents.keys().stream().distinct().count());
-                        // subscription found add info used to create email message
-                        result.addMessageParameters(
-                                MessageParametersHelper.getMessageParameters(eventType, subscriptionsToEvents,
-                                        result.getInterval()));
-
-                        cacheStatistics(cacheKey, result);
                     }
-                    eventDao.markEventsAsProcessed(unprocessed, result.getProcessedTime(), COALESCING);
-                    results.add(result);
                 } else {
-                    // if there is no events to process, remove the key from cache
-                    intervalCache.remove(cacheKey);
-                    logInfo("REMOVING from cache (No unprocessed events):" + cacheKey + "/" + newInterval + " all intervals:"
-                            + intervals + " " + getStatistics(cacheKey));
-
+                    // It is not time to process events yet
+                    logInfo("WAITING TO PROCESS Cache key:" + cacheKey + " Next run:" + currentInterval + " Now:"
+                            + new DateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
                 }
-            } else {
-                // It is not time to process events yet
-                logInfo("WAITING TO PROCESS Cache key:" + cacheKey + " Next run:" + currentInterval + " Now:"
-                        + new DateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
-            }
-        });
+            });
+        } catch (Exception e) {
+            commsLogger.error("Exception processing on interval", e);
+        }
         return results;
     }
 

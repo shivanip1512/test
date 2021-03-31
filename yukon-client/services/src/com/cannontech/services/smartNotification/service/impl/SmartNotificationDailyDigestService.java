@@ -82,7 +82,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
     private List<SmartNotificationMessageParameters> getMessageParameters(SmartNotificationDecider decider,
             Set<SmartNotificationSubscription> subscriptions) {
         
-        Instant now = Instant.now();
+        Instant now = new DateTime().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0).toInstant();
         Instant oneDayAgo = now.minus(Duration.standardDays(1));
         List<SmartNotificationEvent> events = getEvents(decider, new Range<>(oneDayAgo, false, now, true)); //retrieved events correctly
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionsToEvents =
