@@ -36,9 +36,8 @@ import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusResponse;
 import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
-import com.cannontech.dr.ecobee.message.ZeusAuthenticationResponse;
+import com.cannontech.dr.ecobee.message.ZeusErrorResponse;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
-import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
 import com.cannontech.dr.ecobee.message.partial.Status;
 import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -131,26 +130,24 @@ public class EcobeeMockApiController {
 
     @IgnoreCsrfCheck
     @PostMapping("auth")
-    public ResponseEntity<ZeusAuthenticationResponse> auth(@RequestBody ZeusAuthenticationRequest request) {
+    public ResponseEntity<Object> auth(@RequestBody ZeusAuthenticationRequest request) {
         int authenticationCode = zeusEcobeeDataConfiguration.getAuthenticate();
         if (authenticationCode == 0) {
             return new ResponseEntity<>(helper.login(request), HttpStatus.OK);
         } else if (authenticationCode == 1) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @IgnoreCsrfCheck
     @GetMapping("auth/refresh")
-    public ResponseEntity<ZeusAuthenticationResponse> refresh(@RequestParam("refresh_token") String refreshToken) {
-        ZeusAuthenticationResponse response = null;
+    public ResponseEntity<Object> refresh(@RequestParam("refresh_token") String refreshToken) {
         if (helper.isInvalidRefreshToken(refreshToken)) {
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }
-        helper.refresh(refreshToken);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(helper.refresh(refreshToken), HttpStatus.OK);
     }
 
     @IgnoreCsrfCheck
@@ -165,18 +162,39 @@ public class EcobeeMockApiController {
 
     @IgnoreCsrfCheck
     @GetMapping("tstatgroups/{thermostatGroupID}/thermostats")
-    public ResponseEntity<ZeusThermostatsResponse> retrieveThermostats(@PathVariable String thermostatGroupID,
+    public ResponseEntity<Object> retrieveThermostats(@PathVariable String thermostatGroupID,
             @RequestParam(name = "enrollment_state") ZeusThermostatState state,
             @RequestParam(name = "thermostat_ids") List<String> thermostatIds) {
         int createDeviceCode = zeusEcobeeDataConfiguration.getCreateDevice();
         if (createDeviceCode == 0) {
             return new ResponseEntity<>(helper.retrieveThermostats(thermostatIds), HttpStatus.OK);
         } else if (createDeviceCode == 1) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else if (createDeviceCode == 3) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    /**
+     * Response for UNAUTHORIZED status code
+     */
+    private ZeusErrorResponse getUnauthorizedResponse() {
+        return new ZeusErrorResponse("access_denied", "Invalid Credentials or Supplied authorization token is invalid");
+    }
+
+    /**
+     * Response for NOT_FOUND status code
+     */
+    private ZeusErrorResponse getNotFoundResponse() {
+        return new ZeusErrorResponse("not_found", "Object not found.");
+    }
+
+    /**
+     * Response for BAD_REQUEST status code
+     */
+    private ZeusErrorResponse getBadRequestResponse() {
+        return new ZeusErrorResponse("bad_request", "Supplied request is not well formed.");
     }
 }
