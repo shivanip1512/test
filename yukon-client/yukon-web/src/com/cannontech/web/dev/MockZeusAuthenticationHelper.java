@@ -14,6 +14,7 @@ import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationResponse;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
+import com.cannontech.dr.ecobee.message.ZeusThermostatsDeletionResponse;
 import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -57,6 +58,12 @@ public class MockZeusAuthenticationHelper {
         thermostats.add(thermostat);
         ZeusThermostatsResponse response = new ZeusThermostatsResponse();
         response.setThermostats(thermostats);
+        return response;
+    }
+    
+    public ZeusThermostatsDeletionResponse deleteThermostats(List<String> thermostatGroupIDs) {
+        ZeusThermostatsDeletionResponse response = new ZeusThermostatsDeletionResponse();
+        response.setDeletedThermostatsCount(thermostatGroupIDs.size());
         return response;
     }
 }

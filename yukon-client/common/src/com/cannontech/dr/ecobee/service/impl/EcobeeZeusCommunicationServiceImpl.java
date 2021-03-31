@@ -42,6 +42,22 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     /**
+     * Removes the thermostat(s) from the specified thermostat group. When a thermostat is deleted from a group, 
+     * it's state changes to "REMOVED".
+     */
+    @Override
+    public void deleteDevice(String serialNumber) {
+        try {
+            String thermostatGroupID = retrieveThermostatGroupID();
+            String deleteThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats?thermostat_ids=" + serialNumber;
+
+            requestHelper.callEcobeeAPIForObject(deleteThermostatsURL, HttpMethod.DELETE, Object.class);
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+    }
+
+    /**
      * Retrieve root_tstatgroup_id from Ecobee by using programID.
      */
     @SuppressWarnings("unchecked")

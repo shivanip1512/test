@@ -4,30 +4,30 @@ public class ZeusEcobeeDataConfiguration {
 
     private int authenticate;
     private int createDevice;
+    private int deleteDevice;
 
-    public ZeusEcobeeDataConfiguration(int authenticate, int createDevice) {
+    public ZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice) {
         this.authenticate = authenticate;
         this.createDevice = createDevice;
+        this.deleteDevice = deleteDevice;
+    }
+
+    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice) {
+        this.authenticate = authenticate;
+        this.createDevice = createDevice;
+        this.deleteDevice = deleteDevice;
+    }
+
+    public int getDeleteDevice() {
+        return deleteDevice;
     }
 
     public int getAuthenticate() {
         return authenticate;
     }
 
-    public void setAuthenticate(int authenticate) {
-        this.authenticate = authenticate;
-    }
-
     public int getCreateDevice() {
         return createDevice;
     }
 
-    public void setCreateDevice(int createDevice) {
-        this.createDevice = createDevice;
-    }
-
-    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice) {
-        this.authenticate = authenticate;
-        this.createDevice = createDevice;
-    }
 }

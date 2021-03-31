@@ -7,4 +7,8 @@ public interface EcobeeZeusCommunicationService {
      */
     boolean isDeviceRegistered(String serialNumber);
 
+    /**
+     * Deletes the specified thermostat from a program's root group and deletes from all child groups.
+     */
+    void deleteDevice(String serialNumber);
 }

@@ -47,7 +47,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(Hardware hardware) {
-        if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
+        if (isEcobeeZeusEnabled()) {
             createZeusDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
         } else {
             createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
@@ -112,7 +112,11 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
         }
         // Inventory has been deleted, so get the serial number from the cache and send the ecobee delete request.
         String serialNumber = inventoryIdToSerialNumber.remove(inventoryId.getInventoryId());
-        ecobeeCommunicationService.deleteDevice(serialNumber);
+        if (isEcobeeZeusEnabled()) {
+            ecobeeZeusCommunicationService.deleteDevice(serialNumber);
+        } else {
+            ecobeeCommunicationService.deleteDevice(serialNumber);
+        }
     }
 
     @Override
@@ -138,5 +142,11 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     @Override
     public void validateDevice(Hardware hardware, Errors errors) {
         // Nothing extra to do
+    }
+    /**
+     * Check Zesus is enabled through master config.
+     */
+    private boolean isEcobeeZeusEnabled() {
+        return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED);
     }
 }
