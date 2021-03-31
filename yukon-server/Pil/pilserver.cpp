@@ -865,22 +865,21 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler, Devices::Commands::Rfn
             {
                 retMsg->setExpectMore(true);
             }
-            else
+            else if( retMsg->Status() == ClientErrors::None )
             {
-                //  This is the last return message - check to see if it was a get/putconfig install that needs a verify
+                //  This is the last return message, and is successful - check to see if it was a get/putconfig install that needs a verify
                 CtiCommandParser parse{ requestParameters.commandString };
 
-                if( (parse.getCommand() == GetConfigRequest 
-                        && parse.isKeyValid("install")
-                        && retMsg->Status() == ClientErrors::None)
-                        //  The "getconfig install all" is the Config Notification read in FW 9.0, so it will
-                        //    succeed or fail as a single request.  We can issue a Verify if the read succeeds.
-                        //  If we are not FW 9.0, we suffer from the same shortfall as PLC (see handleInMessageResult near line 682).
-                    || (parse.getCommand() == PutConfigRequest
-                        && parse.isKeyValid("install")
-                        && ! parse.isKeyValid("verify")) )
-                        //  The "putconfig install all" is likely to be an aggregate message, but we can issue a 
-                        //    Verify in all cases, since any mismatch that was not written will still be a mismatch.
+                //  The "getconfig install all" is the Config Notification read in FW 9.0, so it will
+                //    succeed or fail as a single request.  We can issue a Verify if the read succeeds.
+                //  If we are not FW 9.0, we suffer from the same shortfall as PLC (see handleInMessageResult near line 704).
+                const bool isGetConfigInstall = parse.getCommand() == GetConfigRequest && parse.isKeyValid("install");
+
+                //  The "putconfig install all" is likely to be an aggregate message, but we can issue a 
+                //    Verify in all successful cases, since any mismatch that was not written will still be a mismatch.
+                const bool isPutConfigInstall = parse.getCommand() == PutConfigRequest && parse.isKeyValid("install") && ! parse.isKeyValid("verify");
+
+                if( isGetConfigInstall || isPutConfigInstall )
                 {
                     auto verifyMsg =
                         makeVerifyMsg(
