@@ -254,18 +254,10 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult_no_putconfig_verify_on_putconfig
         { parameters, 9999, std::make_unique<Cti::Devices::Commands::RfnImmediateDemandFreezeCommand>() },
         { { "This was a failure. I'm making a note here: HUGE DUMPSTER FIRE.", ClientErrors::Abnormal } } });
 
-    BOOST_REQUIRE_EQUAL(2, pilServer.retList.size());
+    BOOST_REQUIRE_EQUAL(1, pilServer.retList.size());
 
     auto retList_itr = pilServer.retList.cbegin();
 
-    {
-        auto reqMsg = dynamic_cast<CtiRequestMsg*>(retList_itr++->get());
-
-        BOOST_REQUIRE(reqMsg);
-
-        BOOST_CHECK_EQUAL(reqMsg->CommandString(), "putconfig install all verify");
-        BOOST_CHECK_EQUAL(reqMsg->UserMessageId(), UserMessageId);
-    }
     {
         auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
 
@@ -273,7 +265,7 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult_no_putconfig_verify_on_putconfig
 
         BOOST_CHECK_EQUAL(retMsg->ResultString(), "This was a failure. I'm making a note here: HUGE DUMPSTER FIRE.");
         BOOST_CHECK_EQUAL(retMsg->Status(), 1);
-        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
     }
 
     BOOST_CHECK_EQUAL(0, devSingle->getGroupMessageCount(UserMessageId, handle));
