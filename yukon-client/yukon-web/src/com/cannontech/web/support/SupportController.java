@@ -91,7 +91,7 @@ public class SupportController {
     
     @RequestMapping(value={"","/support"})
     public String support(ModelMap model, YukonUserContext context) {
-        return supportBundle(model, new SupportBundle(), new RfSupportBundle(), context);
+        return supportBundle(model, new SupportBundle(), context);
     }
 
     @RequestMapping("/manual")
@@ -156,17 +156,7 @@ public class SupportController {
             }
         }        model.addAttribute("supportPages", supportPages);
     }
-    
-    private void setUpRfSupportBundle(ModelMap model, RfSupportBundle rfbundle) {
-        model.addAttribute("rfSupportBundle", rfbundle);
-        
-        List<String> previousBundles = new ArrayList<>();
-        for(File f : bundleService.getBundles()){
-            previousBundles.add(f.getName());
-        }
-        model.addAttribute("bundleList", previousBundles);
-     
-    }
+   
     
     /**
      * Adds names of manuals found in Yukon/Manuals to the model
@@ -185,12 +175,11 @@ public class SupportController {
         model.addAttribute("manuals", fileNames);
     }
 
-    private String supportBundle(ModelMap model, SupportBundle bundle, RfSupportBundle rfbundle, YukonUserContext context) {
+    private String supportBundle(ModelMap model, SupportBundle bundle, YukonUserContext context) {
         setUpLogsAndInfo(model, context);
         setUpLinks(model, context);
         setUpManuals(model);
-        setUpRfSupportBundle(model, rfbundle);
-        
+      
         List<String> previousBundles = new ArrayList<>();
         for(File f : bundleService.getBundles()){
             previousBundles.add(f.getName());
@@ -223,8 +212,7 @@ public class SupportController {
     @RequestMapping(value="createBundle", method = RequestMethod.POST)
     public String createBundle(
             ModelMap model, 
-            @ModelAttribute SupportBundle bundle, RfSupportBundle rfbundle,
-                
+            @ModelAttribute SupportBundle bundle,
             BindingResult result, 
             FlashScope flash, 
             YukonUserContext userContext) {
@@ -236,7 +224,7 @@ public class SupportController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
 
-            return supportBundle(model, bundle, rfbundle, userContext);
+            return supportBundle(model, bundle, userContext);
         }
 
         model.addAttribute("writerList", writerList);
@@ -279,33 +267,24 @@ public class SupportController {
     
     
     @RequestMapping(value="createRfBundle", method = RequestMethod.POST)
-    public String createRFBundle(
+    public @ResponseBody Map<String, Object> createRFBundle(
             ModelMap model, 
-            @ModelAttribute SupportBundle bundle, RfSupportBundle rfSupportBundle,
+            @ModelAttribute RfSupportBundle rfSupportBundle,
             BindingResult result, 
-            FlashScope flash, 
             YukonUserContext userContext) {
 
         rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
         detailsRfValidator.validate(rfSupportBundle, result);
-
+        Map<String, Object> json = new HashMap<>();
         if (result.hasErrors()) {
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
-            flash.setMessage(messages, FlashScopeMessageType.ERROR);
-
-            return supportBundle(model, bundle, rfSupportBundle, userContext);
+            String errorMessage = "Error found.";
+            json.put("error", errorMessage);
+            return json;
         }
-
-        flash.setMessage(YukonMessageSourceResolvable.createDefaultWithoutCode("Message has been sent to NM "), FlashScopeMessageType.SUCCESS);
-       
-        List<String> previousBundles = new ArrayList<>();
-        for(File f : bundleService.getBundles()){
-            previousBundles.add(f.getName());
-        }
-        
-       supportBundle(model, bundle, rfSupportBundle, userContext);
-      
-        return "support.jsp";
+        // Invoke Service to start support bundle. bundle.start(rfSupportBundle);
+        json.put("isSuccess", true);
+        // Flash a success message here.
+        return json;
     }
 
     

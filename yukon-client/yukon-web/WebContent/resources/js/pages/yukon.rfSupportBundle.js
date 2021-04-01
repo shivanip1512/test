@@ -1,7 +1,7 @@
 yukon.namespace('yukon.rfSupportBundle');
 
 /**
- * Module for the Infrastructure Warnings Detail page
+ * Module for the RF support bundle page
  * @module yukon.infrastructurewarnings.detail
  * @requires JQUERY
  * @requires yukon

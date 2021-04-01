@@ -28,10 +28,8 @@
                         <div class="page-action-area"> 
                             <c:if test="${!inProgress}">
                                 <cti:button nameKey="supportBundle.createBundleBtn" type="submit" classes="primary action js-execute-command" busy="true"/>
-                              
                             </c:if>
                           
-                               
                             <c:if test="${inProgress}">
                               
                                 <i:inline key=".supportBundle.bundleInProgressMsg"/>
@@ -40,30 +38,7 @@
                         </div>
                     </form:form>
                 </cti:tab>
-                <cti:msg2 key='.supportBundle.previousHeading' var="previousHeading"/>
-                <cti:url value="/support/downloadBundle" var="downloadBundleURl"/>
-                <cti:tab title="${previousHeading}" >
-                    <form id="previousBundlesForm" action="${downloadBundleURl}" method="POST">
-                        <cti:csrfToken/>
-                        <c:if test="${empty bundleList}">
-                            <span class="empty-list"><i:inline key=".supportBundle.noPreviousBundlesLbl"/></span>
-                        </c:if>
-                        <c:if test="${not empty bundleList}">
-                            <ul class="simple-list">
-                                <c:forEach var="bundleName" varStatus="status" items="${bundleList}">
-                                    <li>
-                                        <c:if test="${status.first}"><c:set var="checked">checked="checked"</c:set></c:if>
-                                        <c:if test="${!status.first}"><c:set var="checked"></c:set></c:if>
-                                        <label><input type="radio" name="fileName" value="${bundleName}" ${checked}>${fn:escapeXml(bundleName)}</label>
-                                    </li>
-                                </c:forEach>
-                            </ul>
-                        </c:if>
-                        <div class="page-action-area">
-                            <cti:button nameKey="supportBundle.downloadBtn" type="submit" disabled="${empty bundleList}" icon="icon-download"/>
-                        </div>
-                    </form>
-                </cti:tab>
+               
             </cti:tabs>
         </tags:sectionContainer2>
     </div>
