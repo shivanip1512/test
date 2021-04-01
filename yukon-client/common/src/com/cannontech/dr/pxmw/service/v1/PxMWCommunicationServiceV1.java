@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
+import com.cannontech.common.util.Range;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
@@ -65,16 +66,14 @@ public interface PxMWCommunicationServiceV1 {
     /**
      * @param token
      * @param deviceList - List of TimeSeries devices that you want results for (required)
-     * @param startTime  - Start of time period you want data on (required)
-     * @param stopTime   - End of time period you want data on (required)
+     * @param range  - Range for the Start and End time period you want data on (required)
      * @return TimeSeries data for a set of devices over an interval
      * @throws PxMWCommunicationExceptionV1
      * 
      *         400 Invalid input parameter / Bad Request
      *         401 User is not authorized to send the command
      */
-    PxMWTimeSeriesDataResponseV1 getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Instant startTime,
-            Instant stopTime);
+    PxMWTimeSeriesDataResponseV1 getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Range<Instant> range);
     /**
      * Enables or disables a device on the IoTHub
      * The value "true" enables the device and the "false" disables the device.

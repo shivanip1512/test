@@ -21,6 +21,9 @@ import com.cannontech.dr.pxmw.model.v1.PxMWErrorV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorsV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
 
@@ -180,7 +183,30 @@ public class PxMWDataV1 extends PxMWDataGenerator {
 
         return new PxMWSimulatorResponse(new PxMWChannelValuesV1("200", null, dataList), status);
     }
-    
+
+    public PxMWSimulatorResponse getTrendDataV1(PxMWTimeSeriesDataRequestV1 pxMWTimeSeriesDataRequestV1) {
+        List<PxMWTimeSeriesDeviceResultV1> resultList = null;
+        // 200
+        if (status == HttpStatus.OK.value()) {
+            return new PxMWSimulatorResponse(
+                    new PxMWTimeSeriesDataResponseV1(resultList),
+                    status);
+        }
+        // 400
+        else if (status == HttpStatus.BAD_REQUEST.value()) {
+            // change to throw error
+            return new PxMWSimulatorResponse(new PxMWTimeSeriesDataResponseV1(resultList), 200);
+        }
+        // 401
+        else if (status == HttpStatus.UNAUTHORIZED.value()) {
+            return new PxMWSimulatorResponse(new PxMWErrorsV1(List.of(new PxMWErrorV1(
+                    "Authorization has been denied for this request",
+                    "Verify the user has permission to execute the GetTimeSeriesData operation for the site where the device is registered"))),
+                    status);
+        }
+        return null;
+    }
+
     public PxMWSimulatorResponse sendCommandV1(String id, String command_instance_id, PxMWCommandRequestV1 pxMWCommandRequestV1) {
         if (status == HttpStatus.OK.value()) {
             return new PxMWSimulatorResponse(

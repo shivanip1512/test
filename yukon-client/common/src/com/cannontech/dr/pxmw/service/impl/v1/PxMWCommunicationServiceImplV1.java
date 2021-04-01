@@ -24,6 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
@@ -195,9 +196,10 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
 
     @Override
-    public PxMWTimeSeriesDataResponseV1 getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Instant startTime,
-            Instant stopTime) {
+    public PxMWTimeSeriesDataResponseV1 getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Range<Instant> range) {
         URI uri = getUri(PxMWRetrievalUrl.TREND_DATA_RETRIEVAL);
+        Instant startTime = range.getMin();
+        Instant stopTime = range.getMax();
         try {
             PxMWTimeSeriesDataRequestV1 request = new PxMWTimeSeriesDataRequestV1(deviceList, startTime, stopTime);
             HttpEntity<PxMWTimeSeriesDataRequestV1> requestEntity = getRequestWithAuthHeaders(request);

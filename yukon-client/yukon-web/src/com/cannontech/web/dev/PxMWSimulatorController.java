@@ -28,6 +28,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -137,6 +138,9 @@ public class PxMWSimulatorController {
                 } catch (JsonProcessingException e) {
                     json.put("alertError", e.getMessage());
                 }
+            } else if (endpoint == PxMWRetrievalUrl.TREND_DATA_RETRIEVAL) {
+                List<PxMWTimeSeriesDeviceV1> deviceList = null;
+                pxMWCommunicationServiceV1.getTimeSeriesValues(deviceList, null);
             }
         } catch (PxMWCommunicationExceptionV1 e) {
             processError(json, e);
