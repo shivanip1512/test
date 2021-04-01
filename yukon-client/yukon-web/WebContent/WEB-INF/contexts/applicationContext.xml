@@ -1275,7 +1275,6 @@
     <!-- Contextual Menu Beans (end) -->
 
     <bean class="com.cannontech.web.common.chart.service.impl.ChartServiceImpl"/>
-    <bean class="com.cannontech.web.common.chart.service.impl.FlotChartServiceImpl"/>
     <bean class="com.cannontech.web.common.chart.service.impl.HighChartServiceImpl"/>
 
     <bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>

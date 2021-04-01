@@ -22,7 +22,6 @@ public enum CssLibrary {
     SPECTRUM("/resources/js/lib/spectrum/spectrum.css"), // see JsLibrary.JQUERY_SPECTRUM
     CHOSEN("/resources/js/lib/chosen/chosen.min.css"), // see JsLibrary.JQUERY_CHOSEN
     TIME_PICKER("/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.css"), // see JsLibrary.JQUERY_UI_TIME_PICKER
-    FLOTCHARTS("/WebConfig/yukon/styles/flotChart.css"), // http://www.flotcharts.org/
     
     JQUERY_UI("/resources/js/lib/jquery-ui/jquery-ui.css"), // http://jqueryui.com/
     JQUERY_UI_MIN("/resources/js/lib/jquery-ui/jquery-ui.min.css"), // http://jqueryui.com/

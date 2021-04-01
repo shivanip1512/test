@@ -11,8 +11,6 @@
 
 <cti:standardPage module="dr" page="rf.details">
     
-    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
-
     <div class="clearfix column-16-8 stacked">
         <div class="column one">
             <form action="<cti:url value="/dr/rf/details"/>">
