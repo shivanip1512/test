@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,7 +51,7 @@ public class EcobeeMockApiController {
     @Autowired private EcobeeMockApiService ecobeeMockApiService;
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
-    @Autowired private MockZeusAuthenticationHelper helper;
+    @Autowired private MockZeusResponseFactory responseFactory;
 
     @IgnoreCsrfCheck
     @RequestMapping(value = "hierarchy/set", method = RequestMethod.POST)
@@ -133,7 +134,7 @@ public class EcobeeMockApiController {
     public ResponseEntity<Object> auth(@RequestBody ZeusAuthenticationRequest request) {
         int authenticationCode = zeusEcobeeDataConfiguration.getAuthenticate();
         if (authenticationCode == 0) {
-            return new ResponseEntity<>(helper.login(request), HttpStatus.OK);
+            return new ResponseEntity<>(responseFactory.login(request), HttpStatus.OK);
         } else if (authenticationCode == 1) {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else {
@@ -144,10 +145,10 @@ public class EcobeeMockApiController {
     @IgnoreCsrfCheck
     @GetMapping("auth/refresh")
     public ResponseEntity<Object> refresh(@RequestParam("refresh_token") String refreshToken) {
-        if (helper.isInvalidRefreshToken(refreshToken)) {
+        if (responseFactory.isInvalidRefreshToken(refreshToken)) {
             return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(helper.refresh(refreshToken), HttpStatus.OK);
+        return new ResponseEntity<>(responseFactory.refresh(refreshToken), HttpStatus.OK);
     }
 
     @IgnoreCsrfCheck
@@ -167,10 +168,26 @@ public class EcobeeMockApiController {
             @RequestParam(name = "thermostat_ids") List<String> thermostatIds) {
         int createDeviceCode = zeusEcobeeDataConfiguration.getCreateDevice();
         if (createDeviceCode == 0) {
-            return new ResponseEntity<>(helper.retrieveThermostats(thermostatIds), HttpStatus.OK);
+            return new ResponseEntity<>(responseFactory.retrieveThermostats(thermostatIds), HttpStatus.OK);
         } else if (createDeviceCode == 1) {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else if (createDeviceCode == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @IgnoreCsrfCheck
+    @DeleteMapping("tstatgroups/{thermostatGroupID}/thermostats")
+    public ResponseEntity<Object> deleteThermostats(@PathVariable String thermostatGroupID,
+            @RequestParam(name = "thermostat_ids") List<String> thermostatIds) {
+        int deleteDeviceCode = zeusEcobeeDataConfiguration.getDeleteDevice();
+        if (deleteDeviceCode == 0) {
+            return new ResponseEntity<>(responseFactory.deleteThermostats(thermostatIds), HttpStatus.OK);
+        } else if (deleteDeviceCode == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (deleteDeviceCode == 3) {
             return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);

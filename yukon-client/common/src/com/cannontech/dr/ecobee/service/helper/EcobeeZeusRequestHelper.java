@@ -87,7 +87,8 @@ public class EcobeeZeusRequestHelper {
                 log.debug("Successfully logged in");
             }
         } catch (Exception e) {
-            log.debug("Error getting authToken", e);
+            log.error("Error getting authToken", e);
+            throw new EcobeeAuthenticationException("Unable to receive authToken message");
         }
         return authToken;
     }
