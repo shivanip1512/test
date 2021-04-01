@@ -144,7 +144,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
         // Nothing extra to do
     }
     /**
-     * Check Zesus is enabled through master config.
+     * Check Zeus is enabled through master config.
      */
     private boolean isEcobeeZeusEnabled() {
         return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED);

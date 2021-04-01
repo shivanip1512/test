@@ -19,7 +19,7 @@ import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-public class MockZeusAuthenticationHelper {
+public class MockZeusResponseFactory {
 
     private Cache<String, ZeusAuthenticationResponse> mockEcobeeAuthTokenResponseCache = CacheBuilder.newBuilder()
             .expireAfterWrite(1440, TimeUnit.MINUTES).build();
