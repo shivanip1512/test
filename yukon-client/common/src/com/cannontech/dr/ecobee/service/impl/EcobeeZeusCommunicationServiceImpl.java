@@ -34,20 +34,27 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
             ResponseEntity<ZeusThermostatsResponse> responseEntity = (ResponseEntity<ZeusThermostatsResponse>) requestHelper
                     .callEcobeeAPIForObject(listThermostatsURL, HttpMethod.GET, ZeusThermostatsResponse.class);
-            if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                ZeusThermostatsResponse response = responseEntity.getBody();
-                if (CollectionUtils.isNotEmpty(response.getThermostats())) {
-                    return response.getThermostats().stream()
-                            .filter(stats -> stats.getSerialNumber() == serialNumber
-                                    && stats.getState() == ZeusThermostatState.ENROLLED)
-                            .findAny()
-                            .isPresent();
-                }
-            }
+            return responseEntity.getStatusCode() == HttpStatus.OK
+                    && CollectionUtils.isNotEmpty(responseEntity.getBody().getThermostats());
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
-        return false;
+    }
+
+    /**
+     * Removes the thermostat(s) from the specified thermostat group. When a thermostat is deleted from a group, 
+     * it's state changes to "REMOVED".
+     */
+    @Override
+    public void deleteDevice(String serialNumber) {
+        try {
+            String thermostatGroupID = retrieveThermostatGroupID();
+            String deleteThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats?thermostat_ids=" + serialNumber;
+
+            requestHelper.callEcobeeAPIForObject(deleteThermostatsURL, HttpMethod.DELETE, Object.class);
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
     }
 
     /**
