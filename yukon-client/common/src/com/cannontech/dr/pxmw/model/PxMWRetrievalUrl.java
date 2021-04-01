@@ -50,13 +50,12 @@ public enum PxMWRetrievalUrl {
             "https://eas-all-apim-eus-dev.developer.azure-api.net/api-details#api=devices&operation=post-gettimeseriesdata",
             // 200, 400, 401
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED),
-            ImmutableMap.of("Device Guid", "3b4dd0db-2144-4fb2-a819-99f7f0a4d5cf", 
-                    "Request", "{" +
-                               "&quot;devices&quot;:[{&quot;device_id&quot;:`12345678-1234-1234-1234-123456789123`," +
-                               "&quot;tag_trait&quot;:`123,456,789`}]," +
-                               "&quot;start_time&quot;:`2018-05-01T00:00Z`," +
-                               "&quot;end_time&quot;:`2018-05-04T00:55Z`" +
-                               "}")),
+            ImmutableMap.of("Request Json", "{" +
+                    "&quot;devices&quot;:[{&quot;device_id&quot;:`12345678-1234-1234-1234-123456789123`," +
+                    "&quot;tag_trait&quot;:`123,456,789`}]," +
+                    "&quot;start_time&quot;:`2018-05-01T00:00Z`," +
+                    "&quot;end_time&quot;:`2018-05-04T00:55Z`" +
+                    "}")),
     CLOUD_ENABLE(PxMWVersion.V1, "/api/v1/devices/cloudenable",
             "http://wordpress-prod.tcc.etn.com/wordpress/wp-content/docs/RestApi/IoT.html#device-device-put-1",
             // 200, 404

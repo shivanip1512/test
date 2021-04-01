@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.util.Range;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
@@ -28,6 +30,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
@@ -139,8 +142,15 @@ public class PxMWSimulatorController {
                     json.put("alertError", e.getMessage());
                 }
             } else if (endpoint == PxMWRetrievalUrl.TREND_DATA_RETRIEVAL) {
-                List<PxMWTimeSeriesDeviceV1> deviceList = null;
-                pxMWCommunicationServiceV1.getTimeSeriesValues(deviceList, null);
+                try {
+                    PxMWTimeSeriesDataRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWTimeSeriesDataRequestV1.class);
+                    Range<Instant> timeRange = new Range<Instant>(Instant.now().minus(60000), false, Instant.now(), false);
+                    pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(), timeRange);
+                } catch (JsonProcessingException e) {
+                    json.put("alertError", e.getMessage());
+                }
+
+
             }
         } catch (PxMWCommunicationExceptionV1 e) {
             processError(json, e);

@@ -204,7 +204,8 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                     "Verify the user has permission to execute the GetTimeSeriesData operation for the site where the device is registered"))),
                     status);
         }
-        return null;
+        return new PxMWSimulatorResponse(new PxMWErrorsV1(List.of(new PxMWErrorV1(
+                "Something went wrong", "Bad Status returned"))), status);
     }
 
     public PxMWSimulatorResponse sendCommandV1(String id, String command_instance_id, PxMWCommandRequestV1 pxMWCommandRequestV1) {
