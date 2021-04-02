@@ -16,6 +16,19 @@ WHERE ProgramId IN
 INSERT INTO DBUpdates VALUES ('YUK-23591', '9.1.0', GETDATE());
 /* @end YUK-23591 */
 
+/* @start YUK-23949 */
+INSERT INTO DeviceConfigCategoryItem
+SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryID) 
+           + (SELECT ISNULL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+       DeviceConfigCategoryID,
+       'installOrientation',
+       'FORWARD'
+FROM DeviceConfigCategory 
+WHERE CategoryType = 'regulatorCategory';
+
+INSERT INTO DBUpdates VALUES ('YUK-23949', '9.1.0', GETDATE());
+/* @end YUK-23949 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
