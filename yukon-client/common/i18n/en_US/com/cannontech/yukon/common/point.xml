@@ -827,9 +827,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_UPDATE_STATUS">Firmware Update Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FREQUENCY">Frequency</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_ACTIVATION_STATUS">Relay 1 Activation Status</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_ACTIVATION_STATUS">Relay 2 Activation Status</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_ACTIVATION_STATUS">Relay 3 Activation Status</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_ACTIVATION_STATUS">Relay 4 Activation Status</entry>
 
     <!-- BuiltInAttribute see note above about changing values -->
 
