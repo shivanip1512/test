@@ -84,7 +84,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionActionCancellationService {
-    private final static Logger log = YukonLogManager.getLogger(DeviceConfigServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(DeviceConfigServiceImpl.class);
 
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceConfigEventLogService eventLogService;
@@ -226,8 +226,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
      */
     private DeviceRequestType getRequestTypeByCommand(String commandString) {
         String formattedString = commandString
-                .replaceAll("update", "")
-                .replaceAll("noqueue", "")
+                .replace("update", "")
+                .replace("noqueue", "")
                 .strip()
                 .replaceAll("\\s{2,}"," ");
         return commands.inverse().get(formattedString);
@@ -261,13 +261,24 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
             devicesToVerify = getDevicesToVerify(allDevices, deviceToState, List.of(UNASSIGNED));
         }
         
-        log.debug("{}",
+        if (log.isDebugEnabled()) {
+            log.debug("{}",
                 states.stream().map(newState -> "Device:" + dbCache.getAllPaosMap().get(newState.getDeviceId()).getPaoName()
                                 + " New State:" + newState + " CurrentState:" + deviceToState.get(newState.getDeviceId()))
                         .collect(Collectors.joining("|")));
+        }
         
         if (!devicesToVerify.isEmpty()) {
             VerifyConfigCommandResult verifResult = verifyConfigs(devicesToVerify, user);
+            
+            verifResult.getVerifyResultsMap()
+                .forEach((device, verifyResult) ->
+                    updateState(
+                            DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, 
+                            verifyResult.getError(), 
+                            device, 
+                            deviceToState.get(device.getDeviceId())));
+
             log.info("Verified devices:{}",verifResult.getVerifyResultsMap().size());
         }
         
@@ -284,7 +295,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     }
 
     private Set<DeviceConfigState> buildNewStatesForAssignAction(List<SimpleDevice> enabledDevices,
-            Map<Integer, DeviceConfigState> deviceToState, Instant stopTime, Instant startTime,
+            Map<Integer, DeviceConfigState> deviceToState, Instant startTime, Instant stopTime,
             List<SimpleDevice> disabledDevices) {
         Set<DeviceConfigState> states = new HashSet<>();
         if (!disabledDevices.isEmpty()) {
@@ -679,13 +690,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
             @Override
             public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                 SimpleDevice device = command.getDevice();
-                result.addError(device, error.getPorter());
+                result.addDiscrepancy(device, error.getPorter());
             }
 
             @Override
             public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                // This was commented out to prevent adding the final summary result status message to the out-of-sync parts list
-                // result.addError(device, error.getPorter());
+                //  Ignore error.getPorter() here - do not add the final summary result status message to the out-of-sync parts list
+                result.setError(command.getDevice(), error.getDeviceError());
                 logCompleted(command.getDevice(), LogAction.VERIFY, false);
             }
             
@@ -699,11 +710,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
             public void receivedLastResultString(CommandRequestDevice command, String value) {
                 SimpleDevice device = command.getDevice();
                 result.addResultString(device, value);
-                if (result.getVerifyResultsMap().get(device).getDiscrepancies().isEmpty()) {
-                    logCompleted(command.getDevice(), LogAction.VERIFY, true);
-                } else {
-                    logCompleted(command.getDevice(), LogAction.VERIFY, false);
-                }
+                var successful = result.getVerifyResultsMap().get(device).getDiscrepancies().isEmpty();
+                logCompleted(command.getDevice(), LogAction.VERIFY, successful);
             }
         };
     }
