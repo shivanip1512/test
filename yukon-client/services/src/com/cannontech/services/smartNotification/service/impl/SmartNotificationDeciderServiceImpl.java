@@ -38,15 +38,11 @@ import com.google.common.collect.Multimap;
 
 
 /**TODO
- * 2. Test with SMART_NOTIFICATION_INTERVALS: 0,1,3,5,15,30
  * 4. Test all smart notification types
  * 5. Cache asset import per import result type, not per smart notification type
- * 6. Fix Smart notification simulator to send to all types. Re-test the simulator - currently tested only with device data monitors
  * 7. Create confluence page describing how to use simulator, and how logging works
  * 8. Document for QA what should be tested
  * 10. Test - Unsubscribe from subscription while events are coalescing 
- * 12. Change simulator to use only enabled monitors (send to all case)
- * 13. Test Single Notification for all Daily Digests vs multiple notifications
  */
 
 /**

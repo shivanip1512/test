@@ -46,7 +46,7 @@ public class SmartNotificationsTestingController {
                 (SmartNotificationSimulatorResponse) getSimulatorResponse(new SmartNotificationSimulatorRequest(GET_SETTINGS));
         model.addAttribute("smartNotificationSimulatorSettings", response.getSettings());
         model.addAttribute("eventTypes", SmartNotificationEventType.values());
-        model.addAttribute("deviceDataMonitors", monitorCacheService.getDeviceDataMonitors());
+        model.addAttribute("deviceDataMonitors", monitorCacheService.getEnabledDeviceDataMonitors());
         model.addAttribute("assetImportTypes", AssetImportResultType.values());
         model.addAttribute("ddmType", SmartNotificationEventType.DEVICE_DATA_MONITOR);
         model.addAttribute("assetImportType", SmartNotificationEventType.ASSET_IMPORT);

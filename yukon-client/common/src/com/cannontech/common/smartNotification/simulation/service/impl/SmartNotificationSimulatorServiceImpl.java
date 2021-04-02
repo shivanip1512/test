@@ -89,7 +89,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
         types.forEach(type -> {
             executor.execute(() -> {
                 if (type == SmartNotificationEventType.METER_DR) {
-                    createMeterDrEvents();
+                    //createMeterDrEvents();
                 } else if (type == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
                     createInfrastructureWarningEvent(settings);
                 } else if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
@@ -104,12 +104,18 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
 
     private void createInfrastructureWarningEvent(SmartNotificationSimulatorSettings settings) {
         if (settings.isAllTypes() || settings.getType() == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
-            List<InfrastructureWarningType> types = Lists.newArrayList(InfrastructureWarningType.values());
             List<SmartNotificationEvent> events = new ArrayList<>();
             int totalMsgs = settings.getEventsPerType() * settings.getEventsPerMessage();
             for (int i = 0; i < totalMsgs; i++) {
-                int index = rand.nextInt(types.size());
-                InfrastructureWarning warning = infrastructureWarningsGeneratorService.generate(types.get(index));
+                InfrastructureWarning warning = null;
+                if (i % 3 == 0) {
+                    warning = infrastructureWarningsGeneratorService
+                            .generate(InfrastructureWarningType.GATEWAY_DATA_STREAMING_LOAD);
+                } else if (i % 2 == 0) {
+                    warning = infrastructureWarningsGeneratorService.generate(InfrastructureWarningType.GATEWAY_FAILSAFE);
+                } else {
+                    warning = infrastructureWarningsGeneratorService.generate(InfrastructureWarningType.GATEWAY_CONNECTED_NODES);
+                }
                 events.add(InfrastructureWarningsEventAssembler.assemble(Instant.now(), warning));
             }
             if (settings.getWaitTimeSec() > 0) {
@@ -117,43 +123,50 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
                         settings.getWaitTimeSec());
             } else {
                 eventCreationService.send(SmartNotificationEventType.INFRASTRUCTURE_WARNING, events);
-                log.info("Completed sending events:{} all at once for:{}", events.size(),
-                        SmartNotificationEventType.INFRASTRUCTURE_WARNING);
+                log.info("{} Completed sending events:{}", SmartNotificationEventType.INFRASTRUCTURE_WARNING, events.size());
             }
         }
     }
 
     private void createDeviceDataMonitorEvents(SmartNotificationSimulatorSettings settings) {
         if (settings.isAllTypes() || settings.getType() == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
-            List<SmartNotificationEvent> events = new ArrayList<>();
-            List<DeviceDataMonitor> monitors = new ArrayList<>(monitorCacheService.getDeviceDataMonitors());
-            if(!settings.isAllTypes()) {
+          
+            List<DeviceDataMonitor> monitors = monitorCacheService.getEnabledDeviceDataMonitors();
+            try {
                 monitors.removeIf(m -> m.getId() != Integer.parseInt(settings.getParameter()));
+            } catch (NumberFormatException e) {
+                // user selected all monitors
             }
+            
            
-            int totalMsgs = settings.getEventsPerMessage() * settings.getEventsPerType();
-
             monitors.forEach(monitor -> {
-                List<Integer> allIds = new ArrayList<Integer>(deviceGroupService.getDeviceIds(List.of(monitor.getGroup())));
-                for (int i = 0; i < totalMsgs; i++) {
-                    int index = rand.nextInt(allIds.size());
-                    events.add(DeviceDataMonitorEventAssembler.assemble(Instant.now(), monitor.getId(),
-                            monitor.getName(), MonitorState.IN_VIOLATION, allIds.get(index)));
-                }
+                executor.execute(() -> {
+                    int totalMsgs = settings.getEventsPerMessage() * settings.getEventsPerType();
+                    List<SmartNotificationEvent> events = new ArrayList<>();
+                    List<Integer> allIds = new ArrayList<Integer>(deviceGroupService.getDeviceIds(List.of(monitor.getGroup())));
+                    for (int i = 0; i < totalMsgs; i++) {
+                        int index = rand.nextInt(allIds.size());
+                        events.add(DeviceDataMonitorEventAssembler.assemble(Instant.now(), monitor.getId(),
+                                monitor.getName(), MonitorState.IN_VIOLATION, allIds.get(index)));
+                    }
+                    if (settings.getWaitTimeSec() > 0) {
+                        send(events, SmartNotificationEventType.DEVICE_DATA_MONITOR, settings.getEventsPerMessage(),
+                                settings.getWaitTimeSec());
+                    } else {
+                        eventCreationService.send(SmartNotificationEventType.DEVICE_DATA_MONITOR, events);
+                        log.info("Monitor {}: Completed sending events:{}", events.size(), monitor.getName());
+                    }
+                });
             });
-            if (settings.getWaitTimeSec() > 0) {
-                send(events, SmartNotificationEventType.DEVICE_DATA_MONITOR, settings.getEventsPerMessage(),
-                        settings.getWaitTimeSec());
-            } else {
-                eventCreationService.send(SmartNotificationEventType.DEVICE_DATA_MONITOR, events);
-                log.info("Completed sending events:{} all at once for:{}", events.size(),
-                        SmartNotificationEventType.DEVICE_DATA_MONITOR);
-            }
         }
     }
     
-    
     private void send(List<SmartNotificationEvent> events, SmartNotificationEventType type, int eventsPerMessage, int waitTime) {
+        send(events, type, eventsPerMessage, waitTime, "");
+    }
+
+    
+    private void send(List<SmartNotificationEvent> events, SmartNotificationEventType type, int eventsPerMessage, int waitTime, String info) {
         for (List<SmartNotificationEvent> part : Lists.partition(events, eventsPerMessage)) {
             try {
                 part.forEach(p -> p.setTimestamp(Instant.now()));
@@ -164,7 +177,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
                 log.error("InterruptedException", e);
             }
         }
-        log.info("Complete:{} Events:{}", type, events.size());
+        log.info("Complete {} {} Events:{}", type, info, events.size());
     }
 
     private void createMeterDrEvents() {

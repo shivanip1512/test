@@ -3,10 +3,10 @@ package com.cannontech.services.smartNotification.service;
 import static com.cannontech.common.smartNotification.model.SmartNotificationFrequency.COALESCING;
 import static com.cannontech.common.smartNotification.model.SmartNotificationFrequency.IMMEDIATE;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -138,11 +138,13 @@ public abstract class SmartNotificationDecider {
     /**
      * This method is called every minute from the schedule
      */
-    public List<ProcessorResult> processOnInterval() {
+    public synchronized List<ProcessorResult> processOnInterval() {
         List<ProcessorResult> results = new ArrayList<>();
         try {
+            Iterator<String> iter = intervalCache.keySet().iterator();
             // For each key in cache
-            intervalCache.keySet().forEach(cacheKey -> {
+            while (iter.hasNext()) {
+                String cacheKey = iter.next();
                 // get time when it supposed to be processed
                 WaitTime currentInterval = intervalCache.get(cacheKey);
                 // the time have passed
@@ -165,7 +167,7 @@ public abstract class SmartNotificationDecider {
                         // no subscriptions found
                         if (subscriptionsToEvents.isEmpty()) {
                             // if there is no events to process, remove the key from cache
-                            intervalCache.remove(cacheKey);
+                            iter.remove();
                             logInfo("REMOVING from cache (No subscriptions for events):" + cacheKey + "/" + newInterval + " all:"
                                     + intervals + " " + getStatistics(cacheKey));
 
@@ -184,7 +186,7 @@ public abstract class SmartNotificationDecider {
                         results.add(result);
                     } else {
                         // if there is no events to process, remove the key from cache
-                        intervalCache.remove(cacheKey);
+                        iter.remove();
                         logInfo("REMOVING from cache (No unprocessed events):" + cacheKey + "/" + newInterval + " all intervals:"
                                 + intervals + " " + getStatistics(cacheKey));
 
@@ -194,7 +196,7 @@ public abstract class SmartNotificationDecider {
                     logInfo("WAITING TO PROCESS Cache key:" + cacheKey + " Next run:" + currentInterval + " Now:"
                             + new DateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
                 }
-            });
+            }
         } catch (Exception e) {
             commsLogger.error("Exception processing on interval", e);
         }
@@ -232,8 +234,7 @@ public abstract class SmartNotificationDecider {
                     .collect(Collectors.summingInt(Integer::intValue));
         }
     
-        return "STATISTICS Events processed:" + total + " Details:" + stats
-                + " (Only grouped events, excluded the first event if it was sent immediately)";
+        return "STATISTICS Events processed:" + total + " Details:" + stats;
     }
 
     private class Statistics {
@@ -284,7 +285,7 @@ public abstract class SmartNotificationDecider {
     /**
      * Process all immediate subscriptions when event is received
      */
-    public ProcessorResult processImmediateSubscriptions(List<SmartNotificationEvent> events) {
+    public synchronized ProcessorResult processImmediateSubscriptions(List<SmartNotificationEvent> events) {
         Instant now = Instant.now();
         eventDao.markEventsAsProcessed(events, now, IMMEDIATE);
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> immediate = getSubscriptionsForEvents(
@@ -338,6 +339,7 @@ public abstract class SmartNotificationDecider {
             if (!subscriptionsToEvents.isEmpty()) {
                 result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, subscriptionsToEvents, 0));
             }
+            cacheStatistics(cacheKey, result);
             eventDao.markEventsAsProcessed(new ArrayList<>(subscriptionsToEvents.values()), result.getProcessedTime(),
                     COALESCING);
         } else {
