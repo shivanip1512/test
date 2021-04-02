@@ -146,8 +146,8 @@ public class PxMWSimulatorController {
             } else if (endpoint == PxMWRetrievalUrl.TREND_DATA_RETRIEVAL) {
                 try {
                     PxMWTimeSeriesDataRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWTimeSeriesDataRequestV1.class);
-                    String startTime = "2018-05-01T00:00Z";
-                    String stopTime = "2018-05-04T00:55Z";
+                    String startTime = request.getStartTime();
+                    String stopTime = request.getEndTime();
                     DateTimeFormatter parser = ISODateTimeFormat.dateTime();
                     DateTime startDateTime = parser.parseDateTime(startTime);
                     DateTime stopDateTime = parser.parseDateTime(stopTime);
