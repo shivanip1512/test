@@ -1,6 +1,6 @@
 package com.cannontech.common.chart.model;
 
-public class FlotLineOptions {
+public class ChartLineOptions {
 
     private boolean show;
     private boolean fill;

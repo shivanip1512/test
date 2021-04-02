@@ -76,7 +76,7 @@ const MetricInfo metricInfos[] = {
         {  52,  TouRates,  "VA received, peak demand"              },
         {  53,  TouRates,  "VA delivered, peak demand (Frozen)"    },
         {  54,  TouRates,  "VA received, peak demand (Frozen)"     },
-        {  55,  None,      "VA lagging, peak demand"               },
+        {  55,  TouRates,  "VA lagging, peak demand"               },
 
         {  61,  TouRates,  "Q hour delivered"                      },
         {  62,  TouRates,  "Q hour received"                       },

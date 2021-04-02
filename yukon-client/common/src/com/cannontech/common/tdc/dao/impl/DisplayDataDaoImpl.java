@@ -207,7 +207,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
             data.setPointName(point.getPointName());
             Cog cog = new Cog();
             data.setCog(cog);
-            // status points are not supported by the flot tag
+            // status points are not supported by the highcharts tag
             cog.setTrend(!data.getPointType().isStatus());
             long tags = pointValue.getTags();
             boolean inService = !TagUtils.isDeviceOutOfService(tags) && !TagUtils.isPointOutOfService(tags);

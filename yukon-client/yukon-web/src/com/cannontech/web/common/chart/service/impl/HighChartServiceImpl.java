@@ -1,5 +1,6 @@
 package com.cannontech.web.common.chart.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.TimeZone;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.chart.model.ChartColorsEnum;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.Graph;
@@ -19,6 +21,9 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
+import com.cannontech.web.capcontrol.ivvc.models.VfLine;
+import com.cannontech.web.capcontrol.ivvc.models.VfPoint;
 import com.cannontech.web.common.chart.model.HighChartOptionKey;
 import com.cannontech.web.common.chart.service.ChartService;
 import com.cannontech.web.common.chart.service.HighChartService;
@@ -89,6 +94,7 @@ public class HighChartServiceImpl implements HighChartService {
         long xAxisMax = stop.getMillis() + TimeZone.getDefault().getOffset(stop.getMillis());
         xaxisOptions.put(HighChartOptionKey.MIN.getKey(), xAxisMin);
         xaxisOptions.put(HighChartOptionKey.MAX.getKey(), xAxisMax);
+        xaxisOptions.put(HighChartOptionKey.TYPE.getKey(), "datetime");
 
         Map<String, Object> dataAndOptions = Maps.newHashMap();
         dataAndOptions.put("seriesDetails", seriesList);
@@ -145,5 +151,106 @@ public class HighChartServiceImpl implements HighChartService {
         LitePoint lPoint = pointDao.getLitePoint(pointId);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(lPoint.getPaobjectID());
         return pao.getPaoType() == PaoType.WEATHER_LOCATION;
+    }
+    
+    @Override
+    public Map<String, Object> getIVVCGraphData(VfGraph graph, boolean includeTitles) {
+        List<Object> jsonDataContainer = new ArrayList<>();
+
+        /* data */
+        boolean noData = graph.getLines().isEmpty();
+        List<String> lineNames = new ArrayList<String>();
+
+        for (VfLine line : graph.getLines()) {
+            List<Object> linesArray = new ArrayList<>();
+            VfPoint labelPoint = null;
+            //find label point
+            for (VfPoint point : line.getPoints()) {
+                if (includeTitles && point.isRegulator() && line.getZoneName() != null
+                    && (labelPoint == null || labelPoint.getY() < point.getY())) {
+                    labelPoint = point;
+                }
+            }
+            for (VfPoint point : line.getPoints()) {
+                Map<String, Object> map = Maps.newHashMap();
+                map.put(HighChartOptionKey.SERIES_X_COORDINATE.getKey(), point.getX());
+                map.put(HighChartOptionKey.SERIES_Y_COORDINATE.getKey(), point.getY());
+                
+                if (includeTitles && labelPoint != null && labelPoint == point) {
+                    Map<String, Object> dataLabel = new HashMap<>();
+                    dataLabel.put(HighChartOptionKey.FORMAT.getKey(), line.getZoneName());
+                    dataLabel.put(HighChartOptionKey.ENABLED.getKey(), true);
+                    Map<String, Object> format = new HashMap<>();
+                    format.put(HighChartOptionKey.FONT_WEIGHT.getKey(), "normal");
+                    dataLabel.put(HighChartOptionKey.STYLE.getKey(), format);
+                    map.put(HighChartOptionKey.DATA_LABELS.getKey(), dataLabel);
+                }
+                
+                map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), point.getDescription());
+                map.put("ignore", point.isIgnore());
+                linesArray.add(map);
+            }
+            
+            Map<String, Object> dataObj = new HashMap<>();    
+            dataObj.put(HighChartOptionKey.SERIES_DATA.getKey(), linesArray);
+            dataObj.put(HighChartOptionKey.COLOR.getKey(), line.getSettings().getColor());
+            dataObj.put(HighChartOptionKey.NAME.getKey(), line.getLineName());
+            dataObj.put(HighChartOptionKey.ID.getKey(), line.getLineName());
+            if (lineNames.contains(line.getLineName())) {
+                dataObj.put(HighChartOptionKey.LINKED_TO.getKey(), line.getLineName());
+            }
+            jsonDataContainer.add(dataObj);
+            lineNames.add(line.getLineName());
+        }
+        /* if we have no data, then add an empty array to jsonData so a blank graph is displayed properly */
+        if (noData) {
+            jsonDataContainer.add(Collections.emptyList());
+        }
+
+        Map<String, Object> xAxis = new HashMap<>();
+        xAxis.put(HighChartOptionKey.TYPE.getKey(), "linear");
+        xAxis.put(HighChartOptionKey.MIN_PADDING.getKey(), 0.1);
+        xAxis.put(HighChartOptionKey.MAX_PADDING.getKey(), 0.1);
+
+        if (noData) {
+            xAxis.put(HighChartOptionKey.MIN.getKey(), 0);
+        }
+
+        Map<String, Object> options = new HashMap<>();
+        options.put(HighChartOptionKey.X_AXIS.getKey(), xAxis);
+        
+        Map<String, Object> yAxis = new HashMap<>();
+        Map<String, Object> titleOptions = new HashMap<>();
+        titleOptions.put(HighChartOptionKey.TEXT.getKey(), graph.getSettings().getYAxisLabel());
+        yAxis.put(HighChartOptionKey.TITLE.getKey(), titleOptions);
+        yAxis.put(HighChartOptionKey.MIN.getKey(), graph.getSettings().getyMin());
+        yAxis.put(HighChartOptionKey.MAX.getKey(), graph.getSettings().getyMax());
+        yAxis.put(HighChartOptionKey.START_ON_TICK.getKey(), false);
+        yAxis.put(HighChartOptionKey.END_ON_TICK.getKey(), false);
+
+        List<Object> markingsArray = new ArrayList<>();
+
+        Map<String, Object> markingStrategyHigh = Maps.newHashMapWithExpectedSize(2);
+        markingStrategyHigh.put(HighChartOptionKey.COLOR.getKey(), YukonColorPalette.SILVER.getHexValue());
+        markingStrategyHigh.put(HighChartOptionKey.FROM.getKey(), graph.getSettings().getyMax());
+        markingStrategyHigh.put(HighChartOptionKey.TO.getKey(), graph.getSettings().getYUpperBound());
+        markingsArray.add(markingStrategyHigh);
+
+        Map<String, Object> markingStrategyLow = Maps.newHashMapWithExpectedSize(2);
+        markingStrategyLow.put(HighChartOptionKey.COLOR.getKey(), YukonColorPalette.SILVER.getHexValue());
+        markingStrategyLow.put(HighChartOptionKey.FROM.getKey(), graph.getSettings().getyMin());
+        markingStrategyLow.put(HighChartOptionKey.TO.getKey(), graph.getSettings().getYLowerBound());
+        markingsArray.add(markingStrategyLow);
+        
+        yAxis.put(HighChartOptionKey.PLOT_BANDS.getKey(), markingsArray);
+        
+        options.put(HighChartOptionKey.Y_AXIS.getKey(), yAxis);
+
+        Map<String, Object> dataAndOptions = Maps.newHashMapWithExpectedSize(3);
+        dataAndOptions.put("seriesDetails", jsonDataContainer);
+        dataAndOptions.put(HighChartOptionKey.TYPE.getKey(), GraphType.LINE.getHighChartType());
+        dataAndOptions.putAll(options);
+
+        return dataAndOptions;
     }
 }

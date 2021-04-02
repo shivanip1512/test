@@ -196,7 +196,7 @@ public class ChartServiceImpl implements ChartService {
                                                     && currentValue.getTime() > oldValue.getTime();
     }
     /**
-     * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
+     * flot does not support time zones and always displays UTC time. This will be looked at in YUK-23405
      * Here we fake it out by adding the server timezone offset to the timestamp
      * so the times line up between the plot and the data.
      */

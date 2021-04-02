@@ -24,6 +24,11 @@ yukon.highChart = (function () {
         });
     },
     
+    _validateReloadParams = function(params) {
+        if (typeof params.chartId === 'undefined') throw "no chartId specified";
+        if (typeof params.dataUrl === 'undefined') throw "no dataUrl specified";
+    },
+    
     mod = {
     
         reloadChartAtInterval: function (parameters) {
@@ -45,8 +50,7 @@ yukon.highChart = (function () {
                     height: chartHeight,
                     zoomType: 'x',
                     plotBorderWidth: 2,
-                },
-                yaxesOptions = [];
+                };
             
             chartContainer.highcharts({
                 credits: yg.highcharts_options.disable_credits,
@@ -60,7 +64,7 @@ yukon.highChart = (function () {
                     }
                 },
                 xAxis: {
-                    type: 'datetime',
+                    type: jsonResponse.xaxis.type,
                     dateTimeLabelFormats: {
                         millisecond: '%H:%M:%S.%L',
                         second: '%H:%M:%S',
@@ -74,11 +78,17 @@ yukon.highChart = (function () {
                     min: jsonResponse.xaxis.min,
                     max: jsonResponse.xaxis.max,
                     gridLineWidth: gridLineWidth,
-                    tickWidth: 0
+                    tickWidth: 0,
+                    minPadding: jsonResponse.xaxis.minPadding,
+                    maxPadding: jsonResponse.xaxis.maxPadding
                 },
                 tooltip: {
                     shared: true,
                     useHTML: true,
+                    outside: true,
+                    style: {
+                        fontSize: "10px"
+                    },
                     formatter: function () {
                         var tooltipHtml = '',
                             pointsArray = this.points;
@@ -102,6 +112,10 @@ yukon.highChart = (function () {
                             inactive: {
                                 opacity: 1
                             }
+                        },
+                        marker: {
+                            symbol: 'circle',
+                            enabled: true
                         }
                     },
                     column: {
@@ -145,7 +159,44 @@ yukon.highChart = (function () {
             
             dialog.height(dialog.parent().height()-dialog.prev('.ui-dialog-titlebar').height()-34);
             dialog.width(dialog.prev('.ui-dialog-titlebar').width());
+        },
+        
+        /**
+         * Method that is meant to work with the cti:dataUpdaterCallback tag
+         * 
+         * Required parameters: chartId, dataUrl
+         */
+        reloadChartIfExpired: function(params) {
+            var chartId,
+                dataUrl,
+                newLargestTime;
+            /* validation */
+            _validateReloadParams(params);
+            chartId = params.chartId;
+            dataUrl = params.dataUrl;
+            //assumes data is of type Hash
+            return function(data) {
+                newLargestTime = data.largestTime;
+                var chartContainer = $('#js-chart-container-' + chartId),
+                    chart = chartContainer.highcharts();
+                if (typeof chart.mostRecentPointTime === 'undefined') {
+                    chart.mostRecentPointTime = newLargestTime;
+                }
+                if (chart.mostRecentPointTime > 0 &&
+                    newLargestTime > chart.mostRecentPointTime) {
+                    chart.mostRecentPointTime = newLargestTime;
+                    var parameters = {
+                        containerIdentifier: '#js-chart-container-' + chartId,
+                        title: chart.title.textStr,
+                        height: chart.chartHeight,
+                        width: chart.chartWidth,
+                        chartUrl: dataUrl
+                    };
+                    _buildChart(parameters);
+                }
+            };
         }
+        
     };
  
     return mod;
