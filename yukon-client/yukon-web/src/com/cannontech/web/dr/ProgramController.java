@@ -387,7 +387,8 @@ public class ProgramController extends ProgramControllerBase {
         if (result.getDisconnectTime() != null) {
             json.put("time", result.getDisconnectTime().getMillis());
         }
-    
+    }
+  
     public enum DisconnectSortBy implements DisplayableEnum {
 
         device,
