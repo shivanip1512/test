@@ -7,12 +7,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PxMWTimeSeriesDeviceV1 {
     private String deviceGuid;
-    private List<String> tagTrait;
+    private String tagTrait;
 
     @JsonCreator
-    public PxMWTimeSeriesDeviceV1(@JsonProperty("device_id") String deviceGuid, @JsonProperty("tag_trait") List<String> tagTrait) {
+    public PxMWTimeSeriesDeviceV1(@JsonProperty("device_id") String deviceGuid, @JsonProperty("tag_trait") List<String> tagTraitList) {
         this.deviceGuid = deviceGuid;
-        this.tagTrait = tagTrait;
+        this.tagTrait = String.join(",", tagTraitList);
     }
 
     @JsonProperty("device_id")
@@ -21,7 +21,7 @@ public class PxMWTimeSeriesDeviceV1 {
     }
 
     @JsonProperty("tag_trait")
-    public List<String> getTagTrait() {
+    public String getTagTrait() {
         return tagTrait;
     }
 }

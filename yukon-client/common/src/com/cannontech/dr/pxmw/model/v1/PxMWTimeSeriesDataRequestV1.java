@@ -3,8 +3,6 @@ package com.cannontech.dr.pxmw.model.v1;
 import java.io.Serializable;
 import java.util.List;
 
-import org.joda.time.Instant;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,10 +14,10 @@ public class PxMWTimeSeriesDataRequestV1 implements Serializable {
 
     @JsonCreator
     public PxMWTimeSeriesDataRequestV1(@JsonProperty("devices") List<PxMWTimeSeriesDeviceV1> devices,
-            @JsonProperty("start_time") Instant startTime, @JsonProperty("end_time") Instant endTime) {
+            @JsonProperty("start_time") String startTime, @JsonProperty("end_time") String endTime) {
         this.devices = devices;
-        this.startTime = startTime.toDateTime().toString();
-        this.endTime = endTime.toDateTime().toString();
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     @JsonProperty("devices")

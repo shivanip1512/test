@@ -198,8 +198,8 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     @Override
     public PxMWTimeSeriesDataResponseV1 getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Range<Instant> range) {
         URI uri = getUri(PxMWRetrievalUrl.TREND_DATA_RETRIEVAL);
-        Instant startTime = range.getMin();
-        Instant stopTime = range.getMax();
+        String startTime = range.getMin().toDateTime().toString();
+        String stopTime = range.getMax().toDateTime().toString();
         try {
             PxMWTimeSeriesDataRequestV1 request = new PxMWTimeSeriesDataRequestV1(deviceList, startTime, stopTime);
             HttpEntity<PxMWTimeSeriesDataRequestV1> requestEntity = getRequestWithAuthHeaders(request);

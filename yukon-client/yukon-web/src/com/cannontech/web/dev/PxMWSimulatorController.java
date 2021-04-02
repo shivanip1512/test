@@ -9,7 +9,10 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -31,7 +34,6 @@ import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -144,7 +146,13 @@ public class PxMWSimulatorController {
             } else if (endpoint == PxMWRetrievalUrl.TREND_DATA_RETRIEVAL) {
                 try {
                     PxMWTimeSeriesDataRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWTimeSeriesDataRequestV1.class);
-                    Range<Instant> timeRange = new Range<Instant>(Instant.now().minus(60000), false, Instant.now(), false);
+                    String startTime = "2018-05-01T00:00Z";
+                    String stopTime = "2018-05-04T00:55Z";
+                    DateTimeFormatter parser = ISODateTimeFormat.dateTime();
+                    DateTime startDateTime = parser.parseDateTime(startTime);
+                    DateTime stopDateTime = parser.parseDateTime(stopTime);
+                            
+                    Range<Instant> timeRange = new Range<Instant>(startDateTime.toInstant(), false, stopDateTime.toInstant(), false);
                     pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(), timeRange);
                 } catch (JsonProcessingException e) {
                     json.put("alertError", e.getMessage());
