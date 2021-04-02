@@ -65,9 +65,9 @@
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Invalid Service" attributes="INVALID_SERVICE"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
-        <pointInfo name="Max Voltage" attributes="MAXIMUM_VOLTAGE"/>
+        <pointInfo name="Max Voltage" attributes="MAXIMUM_VOLTAGE_PHASE_A"/>
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
-        <pointInfo name="Min Voltage" attributes="MINIMUM_VOLTAGE"/>
+        <pointInfo name="Min Voltage" attributes="MINIMUM_VOLTAGE_PHASE_A"/>
         <pointInfo name="Net kVAh" attributes="NET_KVAH"/>
         <pointInfo name="Net kVAh (Rate A kVAh)" attributes="NET_KVAH_RATE_A"/>
         <pointInfo name="Net kVAh (Rate B kVAh)" attributes="NET_KVAH_RATE_B"/>
