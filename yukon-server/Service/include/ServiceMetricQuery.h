@@ -9,11 +9,11 @@ namespace Cti {
 struct processTimes_t {
     //  system_clock::duration uses 100 ns increments
 
-    std::chrono::system_clock::time_point creationTime;
-    std::chrono::system_clock::time_point currentTime;
-    std::chrono::system_clock::time_point exitTime;
-    std::chrono::system_clock::duration kernelTime;
-    std::chrono::system_clock::duration userTime;
+    std::chrono::steady_clock::time_point creationTime;
+    std::chrono::steady_clock::time_point currentTime;
+    std::chrono::steady_clock::time_point exitTime;
+    std::chrono::steady_clock::duration kernelTime;
+    std::chrono::steady_clock::duration userTime;
 };
 
 class ServiceMetricQuery

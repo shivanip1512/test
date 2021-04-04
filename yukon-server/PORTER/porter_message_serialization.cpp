@@ -73,7 +73,7 @@ std::set<Key> translateKeys(std::string type, const std::set<ThriftKey>& thriftK
     return output;
 }
 
-long long as_milliseconds(std::chrono::system_clock::time_point tp)
+long long as_milliseconds(std::chrono::steady_clock::time_point tp)
 {
     return std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch()).count();
 }

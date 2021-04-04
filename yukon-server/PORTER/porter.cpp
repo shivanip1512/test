@@ -1092,7 +1092,7 @@ auto PorterDynamicPaoInfoService(const amq_cm::MessageDescriptor& md) -> std::un
             {
                 //  presumably all timestamp values are stored as CtiTimes
                 rsp.timestampValues.emplace(key,
-                        std::chrono::system_clock::time_point(
+                        std::chrono::steady_clock::time_point(
                                 std::chrono::seconds(timeValue.seconds())));
             }
         }

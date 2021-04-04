@@ -43,17 +43,17 @@ long long ServiceMetricQuery::getPrivateBytes()
     return memoryCounters.PrivateUsage;
 }
 
-std::chrono::system_clock::duration toDuration(const FILETIME filetime)
+std::chrono::steady_clock::duration toDuration(const FILETIME filetime)
 {
     ULARGE_INTEGER ularge;
     ularge.LowPart = filetime.dwLowDateTime;
     ularge.HighPart = filetime.dwHighDateTime;
-    return std::chrono::system_clock::duration(ularge.QuadPart);  //  FILETIME uses 100 ns increments, same as system_clock::duration
+    return std::chrono::steady_clock::duration(ularge.QuadPart);  //  FILETIME uses 100 ns increments, same as system_clock::duration
 }
 
-std::chrono::system_clock::time_point toTimePoint(const FILETIME filetime)
+std::chrono::steady_clock::time_point toTimePoint(const FILETIME filetime)
 {
-    return std::chrono::system_clock::time_point(toDuration(filetime));
+    return std::chrono::steady_clock::time_point(toDuration(filetime));
 }
 
 processTimes_t ServiceMetricQuery::getProcessTimes()
