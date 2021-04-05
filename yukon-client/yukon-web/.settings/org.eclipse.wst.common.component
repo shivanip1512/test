@@ -112,24 +112,18 @@
         <dependent-module archiveName="commons-el-1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/commons-el-1.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="xalan-2.7.2.jar.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/xalan-2.7.2.jar.jar">
+        <dependent-module archiveName="taglibs-standard-jstlel-1.2.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/taglibs-standard-jstlel-1.2.5.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="servlet-api-2.5.jar.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/servlet-api-2.5.jar.jar">
+        <dependent-module archiveName="taglibs-standard-compat-1.2.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/taglibs-standard-compat-1.2.5.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="serializer-2.7.2.jar.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/serializer-2.7.2.jar.jar">
+        <dependent-module archiveName="taglibs-standard-spec-1.2.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/taglibs-standard-spec-1.2.5.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jstl-api-1.2.jar.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/jstl-api-1.2.jar.jar">
+        <dependent-module archiveName="taglibs-standard-impl-1.2.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/taglibs-standard-impl-1.2.5.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jsp-api-2.1.jar.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/jsp-api-2.1.jar.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="javax.servlet.jsp.jstl-1.2.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/javax.servlet.jsp.jstl-1.2.5.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>        
         <dependent-module archiveName="jaxm-api.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jaxm-api.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
