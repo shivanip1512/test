@@ -67,9 +67,9 @@ public class DeviceConfigAssignServiceImpl implements DeviceConfigAssignService 
     public void assign(int configuration, SimpleDevice device, YukonUserContext userContext) {
         DeviceCollection deviceCollection = getDeviceCollection(device);
         CollectionActionResult result = assign(configuration, deviceCollection, userContext);
-        while(result.isComplete()) {
+        while(!result.isComplete()) {
             //wait for completion
-            break;
+            Thread.onSpinWait();
         }
     }
     
@@ -102,8 +102,8 @@ public class DeviceConfigAssignServiceImpl implements DeviceConfigAssignService 
         DeviceCollection deviceCollection = getDeviceCollection(device);
         CollectionActionResult result = unassign(deviceCollection, userContext);
         //wait for completion
-        while(result.isComplete()) {
-            break;
+        while(!result.isComplete()) {
+            Thread.onSpinWait();
         }
     }
     
@@ -115,8 +115,8 @@ public class DeviceConfigAssignServiceImpl implements DeviceConfigAssignService 
         
         @Override
         public void processingSucceeded() {
-            super.processingSucceeded();
             deviceConfigService.updateConfigStateForAssignAndUnassign(result);
+            super.processingSucceeded();
         }
     }
     
