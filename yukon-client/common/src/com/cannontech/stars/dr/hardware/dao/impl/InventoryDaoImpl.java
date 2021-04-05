@@ -981,7 +981,7 @@ public class InventoryDaoImpl implements InventoryDao {
             whereClause.add(new SqlStatementBuilder("IB.AlternateTrackingNumber").startsWith(inventorySearch.getAltTrackingNumber()));
         }
         sql.append(whereClause);
-        if(useMacAddress) {
+        if (useMacAddress) {
             sql.append("AND");
             // When MAC address is provided add this clause. As MAC address is there in 3 tables, use OR clause within the tables.
             SqlFragmentCollection orWhereClause = SqlFragmentCollection.newOrCollection();
