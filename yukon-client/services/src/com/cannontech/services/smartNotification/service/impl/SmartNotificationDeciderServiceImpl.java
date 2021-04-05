@@ -38,11 +38,8 @@ import com.google.common.collect.Multimap;
 
 
 /**TODO
- * 4. Test all smart notification types
- * 5. Cache asset import per import result type, not per smart notification type
  * 7. Create confluence page describing how to use simulator, and how logging works
  * 8. Document for QA what should be tested
- * 10. Test - Unsubscribe from subscription while events are coalescing 
  */
 
 /**

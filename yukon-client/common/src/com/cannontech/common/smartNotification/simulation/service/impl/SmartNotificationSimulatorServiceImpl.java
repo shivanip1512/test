@@ -89,7 +89,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
         types.forEach(type -> {
             executor.execute(() -> {
                 if (type == SmartNotificationEventType.METER_DR) {
-                    //createMeterDrEvents();
+                    createMeterDrEvents();
                 } else if (type == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
                     createInfrastructureWarningEvent(settings);
                 } else if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
@@ -126,6 +126,37 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
                 log.info("{} Completed sending events:{}", SmartNotificationEventType.INFRASTRUCTURE_WARNING, events.size());
             }
         }
+    }
+
+    private void createMeterDrEvents() {
+        if ( !settings.isAllTypes() && settings.getType() == SmartNotificationEventType.METER_DR) {
+            List<SmartNotificationEvent> events = new ArrayList<>();
+            int totalMsgs = settings.getEventsPerType() * settings.getEventsPerMessage();
+            for (int i = 0; i < totalMsgs; i++) {
+                Map<String, Long> statistics = getStatistics();
+                events.add(MeterDrEventAssembler.assemble(statistics, "Test Program #" + i));
+            }
+
+            if (settings.getWaitTimeSec() > 0) {
+                send(events, SmartNotificationEventType.METER_DR, settings.getEventsPerMessage(),
+                        settings.getWaitTimeSec());
+            } else {
+                eventCreationService.send(SmartNotificationEventType.METER_DR, events);
+                log.info("{} Completed sending events:{}", SmartNotificationEventType.METER_DR, events.size());
+            }
+        }
+    }
+
+    private Map<String, Long> getStatistics() {
+        Map<String, Long> statistics = new HashMap<>();
+        List<String> statuses = Lists.newArrayList(DrMeterControlStatus.FAILED_ARMED.name(),
+                DrMeterControlStatus.CONTROL_CONFIRMED.name(), DrMeterControlStatus.CONTROL_FAILED.name(),
+                DrMeterControlStatus.CONTROL_FAILED.name(), DrMeterControlStatus.CONTROL_UNKNOWN.name());
+        for (int i = 0; i < 10; i++) {
+            String randomElement = statuses.get(rand.nextInt(statuses.size()));
+            statistics.compute(randomElement, (key, value) -> value == null ? 1 : value + 1);
+        }
+        return statistics;
     }
 
     private void createDeviceDataMonitorEvents(SmartNotificationSimulatorSettings settings) {
@@ -178,23 +209,6 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
             }
         }
         log.info("Complete {} {} Events:{}", type, info, events.size());
-    }
-
-    private void createMeterDrEvents() {
-        if (settings.isAllTypes() || settings.getType() == SmartNotificationEventType.METER_DR) {
-            List<SmartNotificationEvent> events = new ArrayList<>();
-            Map<String, Long> statistics = new HashMap<>();
-            List<String> statuses = Lists.newArrayList(DrMeterControlStatus.FAILED_ARMED.name(),
-                    DrMeterControlStatus.CONTROL_CONFIRMED.name(), DrMeterControlStatus.CONTROL_FAILED.name(),
-                    DrMeterControlStatus.CONTROL_FAILED.name(), DrMeterControlStatus.CONTROL_UNKNOWN.name());
-            for (int i = 0; i < 10; i++) {
-                String randomElement = statuses.get(rand.nextInt(statuses.size()));
-                statistics.compute(randomElement, (key, value) -> value == null ? 1 : value + 1);
-            }
-            events.add(MeterDrEventAssembler.assemble(statistics, "Test Program"));
-            eventCreationService.send(SmartNotificationEventType.METER_DR, events);
-            log.info("Sending events:{} for:{}", events.size());
-        }
     }
     
     @Override 

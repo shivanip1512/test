@@ -75,16 +75,6 @@ public class SmartNotificationsTestingController {
         return "redirect:smartNotificationsSimulator";
     }
     
-    @RequestMapping("createRealEvents")
-    public String createRealEvents(FlashScope flash) {
-        monitorCacheService.getDeviceDataMonitors().forEach(m -> {
-            monitorService.recaclulate(m);
-        });
-        infrastructureWarningsWidgetService.initiateRecalculation();
-        flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Requested recalculation."));
-        return "redirect:smartNotificationsSimulator";
-    }
-    
     @PostMapping("createEvents")
     public String createEvents(@ModelAttribute SmartNotificationSimulatorSettings settings, FlashScope flash) {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_ALL_EVENT_TYPES, settings.isAllTypes());
