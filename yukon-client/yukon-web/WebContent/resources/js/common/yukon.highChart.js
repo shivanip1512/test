@@ -91,15 +91,23 @@ yukon.highChart = (function () {
                     },
                     formatter: function () {
                         var tooltipHtml = '',
+                            firstPoint = true,
                             pointsArray = this.points;
-                        
+                    
                         $.each(pointsArray, function(index, item) {
-                            tooltipHtml += item.point.tooltip;
-                            if (pointsArray.length > 1 && index !== pointsArray.length-1) {
-                                tooltipHtml += "<br>";
-                            }
+                            //check for more points in series with same x
+                            var seriesPoints = item.series.data;
+                            $.each(seriesPoints, function(i, seriesPoint) {
+                                if (seriesPoint.x == item.point.x) {
+                                    if (!firstPoint) {
+                                        tooltipHtml += "<br>";
+                                    }
+                                    tooltipHtml += seriesPoint.tooltip;
+                                    firstPoint = false;
+                                }
+                            });
                         });
-
+    
                         return tooltipHtml;
                     },
                 },
