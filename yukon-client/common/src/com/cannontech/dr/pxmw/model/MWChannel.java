@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 //TODO YUK-23414 Add New/Existing BuiltInAttributes to MWChannel for LCR 6600
@@ -61,6 +62,7 @@ public enum MWChannel {
     private BuiltInAttribute builtInAttribute;
 
     private static Map<Integer, MWChannel> channelLookup = Maps.uniqueIndex(Arrays.asList(values()), MWChannel::getChannelId);
+    private static Map<BuiltInAttribute, MWChannel> attributeChannelLookup = Maps.uniqueIndex(Arrays.asList(values()), MWChannel::getBuiltInAttribute);
     private static List<BuiltInAttribute> attributeList = Arrays.stream(MWChannel.values())
                                                                   .map(MWChannel::getBuiltInAttribute)
                                                                   .collect(Collectors.toList());
@@ -77,6 +79,10 @@ public enum MWChannel {
     
     public static List<BuiltInAttribute> getAttributeList() {
         return attributeList;
+    }
+
+    public static Map<BuiltInAttribute, MWChannel> getAttributeChannelLookup() {
+        return attributeChannelLookup;
     }
 
     public Integer getChannelId() {
@@ -99,4 +105,5 @@ public enum MWChannel {
             throw new TypeNotSupportedException(mWChannelJsonString + " mWChannel is not valid.");
         }
     }
+
 }
