@@ -165,6 +165,20 @@ public:
     double getSetPointValue() const;
     Policy::Action setSetPointValue( const double newSetPoint );
 
+    std::string detailedDescription();
+
+    enum class PowerFlowSituations
+    {
+        OK,
+        IndeterminateFlow,
+        ReverseInstallation,
+        ReverseFlow,
+        ReverseControlPowerFlow,
+        UnsupportedMode
+    };
+
+    PowerFlowSituations determinePowerFlowSituation();
+
 protected:
 
     bool            _recentTapOperation;

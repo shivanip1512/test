@@ -291,158 +291,6 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
     return false;
 }
 
-/* 
-    According to EASPRO-504 we want to disable the bus under a variety of conditions listed below.
- 
-    Operating Mode 1 (Locked Forward): A supported operating mode in Direct Tap or Set Point Control modes. If the
-        REVERSE FLOW STATUS is FALSE then Yukon should issue heartbeats (if configured), execute IVVC analysis and issue
-        Tap Raise/Lower or FORWARD SET POINT control commands. If the REVERSE FLOW STATUS is TRUE then Yukon should disable
-        the associated bus.
- 
-    Operating Mode 2 (Locked Reverse): A supported operating mode in Set Point Control mode. If the REVERSE FLOW STATUS
-        is TRUE then Yukon should issue heartbeats (if configured), execute IVVC analysis and issue REVERSE SET POINT control
-        commands. A Regulator could be installed Backwards accidentally or could be installed on a permanently moved
-        switchable feeder section resulting in a change in flow direction. CRITICALLY, the associated regulator point
-        mapping has to place the right load and source side reg voltages in the correct voltage control zone. If the
-        REVERSE FLOW STATUS is FALSE then Yukon should disable the associated bus.
- 
-    Operating Mode 3 (Reverse Idle): A supported operating mode in Set Point Control mode. If the REVERSE FLOW STATUS
-        is FALSE then Yukon should issue heartbeats (if configured), execute IVVC analysis and issue FORWARD SET POINT
-        control commands. If the REVERSE FLOW STATUS is TRUE then Yukon should disable the associated bus.
- 
-    Operating Mode 4 (Neutral Idle Mode): A supported operating mode in Set Point Control mode. If the REVERSE FLOW STATUS
-        is FALSE then Yukon should issue heartbeats (if configured), execute IVVC analysis and issue control commands. If
-        the REVERSE FLOW STATUS is TRUE then Yukon should disable the associated bus.
- 
-    Operating Mode 5 (Bi-Directional): A supported operating mode in Set Point Control mode. The orientation of the
-        regulator is key. IF the regulator is installed Source to Load and the REVERSE FLOW STATUS is FALSE then Yukon
-        should issue heartbeats (if configured), execute IVVC analysis and issue control commands. IF the regulator is
-        installed Load to Source and the REVERSE FLOW STATUS is TRUE then Yukon should issue heartbeats (if configured),
-        execute IVVC analysis and issue control commands. CRITICALLY, the associated regulator point mapping has to place
-        the right load and source side reg voltages in the correct voltage control zone. A Regulator could be installed
-        Backwards accidentally or permanently reconfigured.
- 
-    Operating Mode 6 (Cogeneration): A supported operating mode in Set Point Control mode. If the REVERSE FLOW
-        STATUS is FALSE then Yukon should issue heartbeats (if configured), execute IVVC analysis and issue FORWARD
-        SET POINT control commands. If the REVERSE FLOW STATUS is TRUE then Yukon should issue heartbeats (if configured),
-        execute IVVC analysis and issue REVERSE SET POINT control commands.
- 
-    Operating Mode 7 (Reactive Bi-directional): Not supported by Yukon.
- 
-    Operating Mode 8 (Auto Determination): Not supported by Yukon. 
-*/ 
-std::string IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
-{
-    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-    ZoneManager & zoneManager       = store->getZoneManager();
-    Zone::IdSet subbusZoneIds       = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
-
-    for ( const auto ID : subbusZoneIds )
-    {
-        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
-
-        using namespace Cti::CapControl;
-
-        for ( const auto & mapping : zone->getRegulatorIds() )
-        {
-            try
-            {
-                VoltageRegulatorManager::SharedPtr regulator =
-                        store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
-
-                const ControlPolicy::ControlModes  configMode = regulator->getConfigurationMode();
-
-                if ( regulator->getControlMode() == VoltageRegulator::ManualTap )
-                {
-                    switch ( configMode )
-                    {
-                        case ControlPolicy::LockedForward:
-                        {
-                            if ( regulator->isReverseFlowDetected() )
-                            {
-                                return "ManualTap Regulator: "
-                                            + regulator->getPaoName()
-                                            + ", in "
-                                            + resolveControlMode( configMode )
-                                            + " mode, detecting Reverse Flow.";
-                            }
-                            break;
-                        }
-                        default:
-                        {
-                            return "ManualTap Regulator: "
-                                        + regulator->getPaoName()
-                                        + " in "
-                                        + resolveControlMode( configMode )
-                                        + " mode, is unsupported by IVVC.";
-                        }
-                    }
-                }
-                else    // regulator is in SetPoint mode
-                {
-                    switch ( configMode )
-                    {
-                        case ControlPolicy::LockedForward:
-                        case ControlPolicy::ReverseIdle:
-                        case ControlPolicy::NeutralIdle:
-                        case ControlPolicy::Bidirectional:
-                        {
-                            if ( regulator->isReverseFlowDetected() )
-                            {
-                                return "SetPoint Regulator: "
-                                            + regulator->getPaoName()
-                                            + ", in "
-                                            + resolveControlMode( configMode )
-                                            + " mode, detecting Reverse Flow.";
-                            }
-                            break;
-                        }
-                        case ControlPolicy::LockedReverse:
-                        {
-                            if ( ! regulator->isReverseFlowDetected() )
-                            {
-                                return "SetPoint Regulator: "
-                                            + regulator->getPaoName()
-                                            + ", in "
-                                            + resolveControlMode( configMode )
-                                            + " mode, detecting Forward Flow.";
-                            }
-                            break;
-                        }
-                        case ControlPolicy::Cogeneration:
-                        {
-                            // this mode doesn't depend on Reverse Flow
-
-                            break;
-                        }
-                        default:
-                        {
-                            return "SetPoint Regulator: "
-                                        + regulator->getPaoName()
-                                        + " in "
-                                        + resolveControlMode( configMode )
-                                        + " mode, is unsupported by IVVC.";
-                        }
-                    }
-                }
-            }
-            catch ( const NoVoltageRegulator & noRegulator )
-            {
-                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
-            }
-            catch ( const MissingAttribute & missingAttribute )
-            {
-                if (missingAttribute.complain())
-                {
-                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
-                }
-            }
-        }
-    }
-
-    return "";
-}
-
 /*
     Get all the controllable (switched) banks on the bus and make sure they belong to one of the zones.
         If they don't, then disable them.
@@ -4938,10 +4786,64 @@ void WritePowerFlowEventLog( CtiCCSubstationBusPtr subbus, bool properFlowDirect
 
 bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubstationBusPtr subbus )
 {
-    if ( const auto reason = handleReverseFlow( subbus );
-            ! reason.empty() )
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+    ZoneManager & zoneManager       = store->getZoneManager();
+    Zone::IdSet subbusZoneIds       = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+
+    struct
     {
-        CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Improper Power Flow.\n" << reason );
+        int errorCount;     // fatal error - we want to release the bus
+        int pauseCount;     // non-fatal error - we do not want to release the bus completely, just about this analysis interval
+    }
+    counts = { 0, 0 };
+   
+    for ( const auto ID : subbusZoneIds )
+    {
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        using namespace Cti::CapControl;
+
+        for ( const auto & mapping : zone->getRegulatorIds() )
+        {
+            try
+            {
+                VoltageRegulatorManager::SharedPtr regulator =
+                        store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                auto retCode = regulator->determinePowerFlowSituation();
+
+                if ( retCode == VoltageRegulator::PowerFlowSituations::OK )
+                {
+                    // do nothing
+                }
+                else if ( retCode == VoltageRegulator::PowerFlowSituations::IndeterminateFlow )
+                {
+                    counts.pauseCount++;
+                }
+                else    // all other codes are error conditions where we'd want to release control of the bus
+                {
+                    counts.errorCount++;
+                }
+            }
+            catch ( const NoVoltageRegulator & noRegulator )
+            {
+                counts.errorCount++;
+                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
+            }
+            catch ( const MissingAttribute & missingAttribute )
+            {
+                counts.errorCount++;
+                if (missingAttribute.complain())
+                {
+                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
+                }
+            }
+        }
+    }
+
+    if ( counts.errorCount > 0 )
+    {
+        CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Improper Power Flow." );
 
         if ( state->powerFlow.valid )   // transition from good to bad
         {
@@ -4951,6 +4853,12 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
 
             WritePowerFlowEventLog( subbus, state->powerFlow.valid );
         }
+
+        return true;
+    }
+    else if ( counts.pauseCount > 0 )
+    {
+        CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Indeterminate Power Flow. Aborting current analysis interval." );
 
         return true;
     }

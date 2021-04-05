@@ -22,6 +22,8 @@ struct ControlPolicy : Policy
         ReverseCogeneration
     };
 
+    ControlPolicy();
+
     virtual Action TapUp() = 0;
     virtual Action TapDown() = 0;
 
@@ -45,6 +47,12 @@ struct ControlPolicy : Policy
 
     Attribute getSetPointAttribute();
     Attribute getBandwidthAttribute();
+
+    void setInstalledInReverse();
+
+private:
+
+    bool _installedInReverse;
 };
 
 std::string resolveControlMode( ControlPolicy::ControlModes mode );
