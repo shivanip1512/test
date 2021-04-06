@@ -22,6 +22,7 @@ import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelValuesRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCredentialsV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.service.impl.v1.PxMWCommunicationServiceImplV1;
 import com.cannontech.simulators.message.request.PxMWSimulatorRequest;
 import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
@@ -56,7 +57,7 @@ public class PxMWSimulatorApiControllerV1 {
                             new Class[] { String.class }, new Object[] { id }), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
-            log.error(e);
+            log.error("Error", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -71,7 +72,7 @@ public class PxMWSimulatorApiControllerV1 {
                             new Object[] { id, recursive, includeDetail }), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
-            log.error(e);
+            log.error("Error", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -84,7 +85,7 @@ public class PxMWSimulatorApiControllerV1 {
                             new Class[] { String.class, String.class }, new Object[] { id, tags }), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
-            log.error(e);
+            log.error("Error", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -97,7 +98,7 @@ public class PxMWSimulatorApiControllerV1 {
                             new Class[] { String.class, List.class }, new Object[] { id, pxMWChannelValuesRequestV1.getTags() }), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
-            log.error(e);
+            log.error("Error", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -110,7 +111,7 @@ public class PxMWSimulatorApiControllerV1 {
                             new Class[] {}, new Object[] {}), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
-            log.error(e);
+            log.error("Error", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -124,7 +125,7 @@ public class PxMWSimulatorApiControllerV1 {
                             new Object[] { id, state }), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
-            log.error(e);
+            log.error("Error", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -140,7 +141,22 @@ public class PxMWSimulatorApiControllerV1 {
                             PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
-            log.error(e);
+            log.error("Error", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/devices/timeseries/")
+    public ResponseEntity<Object> timeseries(@RequestBody PxMWTimeSeriesDataRequestV1 pxMWTimeSeriesDataRequestV1) {
+        try {
+            PxMWSimulatorResponse response = simulatorsCommunicationService
+                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.TREND_DATA_RETRIEVAL, "timeseries",
+                            new Class[] { PxMWTimeSeriesDataRequestV1.class },
+                            new Object[] { pxMWTimeSeriesDataRequestV1 }),
+                            PxMWSimulatorResponse.class);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
+        } catch (Exception e) {
+            log.error("Error", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
