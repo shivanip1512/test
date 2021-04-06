@@ -34,6 +34,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -106,7 +107,12 @@ public class PxMWSimulatorController {
             return json;
         }
         try {
-            String jsonParam = params.substring(params.indexOf("{"), params.lastIndexOf("}") + 1);
+            String jsonParam = "";
+            try {
+                jsonParam = params.substring(params.indexOf("{"), params.lastIndexOf("}") + 1);
+            } catch (Exception e) {
+
+            }
             if(!StringUtils.isEmpty(jsonParam)) {
                 log.info(jsonParam);
                 params = StringUtils.replace(params, jsonParam, "");
@@ -148,12 +154,13 @@ public class PxMWSimulatorController {
                     PxMWTimeSeriesDataRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWTimeSeriesDataRequestV1.class);
                     String startTime = request.getStartTime();
                     String stopTime = request.getEndTime();
-                    DateTimeFormatter parser = ISODateTimeFormat.dateTime();
+                    DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
                     DateTime startDateTime = parser.parseDateTime(startTime);
                     DateTime stopDateTime = parser.parseDateTime(stopTime);
                             
                     Range<Instant> timeRange = new Range<Instant>(startDateTime.toInstant(), false, stopDateTime.toInstant(), false);
-                    pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(), timeRange);
+                    PxMWTimeSeriesDataResponseV1 response = pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(), timeRange);
+                    processSuccess(params, json, getFormattedJson(response));
                 } catch (JsonProcessingException e) {
                     json.put("alertError", e.getMessage());
                 }

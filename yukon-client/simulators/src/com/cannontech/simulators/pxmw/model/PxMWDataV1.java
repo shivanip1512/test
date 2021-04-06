@@ -186,7 +186,22 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         return new PxMWSimulatorResponse(new PxMWChannelValuesV1("200", null, dataList), status);
     }
 
-    public PxMWSimulatorResponse getTrendDataV1(PxMWTimeSeriesDataRequestV1 pxMWTimeSeriesDataRequestV1) {
+    public PxMWSimulatorResponse timeseries(PxMWTimeSeriesDataRequestV1 pxMWTimeSeriesDataRequestV1) {
+
+        if (status == HttpStatus.BAD_REQUEST.value()) {
+            return new PxMWSimulatorResponse(new PxMWErrorsV1(List.of(new PxMWErrorV1(
+                    "Authorization has been denied for this request",
+                    "Verify the user has permission to execute the GetTimeSeriesData operation for the site where the device is registered"))),
+                    status);
+        }
+        // 401
+        else if (status == HttpStatus.UNAUTHORIZED.value()) {
+            return new PxMWSimulatorResponse(new PxMWErrorsV1(List.of(new PxMWErrorV1(
+                    "Authorization has been denied for this request",
+                    "Verify the user has permission to execute the GetTimeSeriesData operation for the site where the device is registered"))),
+                    status);
+        }
+        
         PxMWTimeSeriesValueV1 timeSeriesValue1= new PxMWTimeSeriesValueV1(1613402541, "True");
         List<PxMWTimeSeriesValueV1> values1 = new ArrayList<PxMWTimeSeriesValueV1>();
         values1.add(0, timeSeriesValue1);
@@ -202,26 +217,6 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         List<PxMWTimeSeriesDeviceResultV1> resultList = new ArrayList<PxMWTimeSeriesDeviceResultV1>();
         resultList.add(0, deviceResults);
         PxMWTimeSeriesDataResponseV1 response = new PxMWTimeSeriesDataResponseV1(resultList);
-        
-        // 200
-        if (status == HttpStatus.OK.value()) {
-            return new PxMWSimulatorResponse(response, status);
-        }
-        // 400
-        else if (status == HttpStatus.BAD_REQUEST.value()) {
-            // change to throw error
-            return new PxMWSimulatorResponse(new PxMWTimeSeriesDataResponseV1(resultList), 400);
-        }
-        // 401
-        else if (status == HttpStatus.UNAUTHORIZED.value()) {
-            return new PxMWSimulatorResponse(new PxMWErrorsV1(List.of(new PxMWErrorV1(
-                    "Authorization has been denied for this request",
-                    "Verify the user has permission to execute the GetTimeSeriesData operation for the site where the device is registered"))),
-                    status);
-        }
-        
-        // THis should be the success, remove the Top status OK
-        // POPUlATE actual DeviceREsult
         return new PxMWSimulatorResponse(response, status);
     }
 

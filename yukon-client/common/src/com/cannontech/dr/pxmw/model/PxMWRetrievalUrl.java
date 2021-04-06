@@ -52,9 +52,9 @@ public enum PxMWRetrievalUrl {
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED),
             ImmutableMap.of("Request Json", "{" +
                     "&quot;devices&quot;:[{&quot;device_id&quot;:&quot;12343adc-567e-4321-9700-e4ca684e1234&quot;," +
-                    "&quot;tag_trait&quot;:[&quot;110739,110595&quot;]}]," +
-                    "&quot;start_time&quot;:&quot;2018-05-01T00:00Z&quot;," +
-                    "&quot;end_time&quot;:&quot;2018-05-04T00:55Z&quot;" +
+                    "&quot;tag_trait&quot;:&quot;110739,110595&quot;}]," +
+                    "&quot;start_time&quot;:&quot;2018-05-01T00:00:00Z&quot;," +
+                    "&quot;end_time&quot;:&quot;2018-05-04T00:00:00Z&quot;" +
                     "}")),
     CLOUD_ENABLE(PxMWVersion.V1, "/api/v1/devices/cloudenable",
             "http://wordpress-prod.tcc.etn.com/wordpress/wp-content/docs/RestApi/IoT.html#device-device-put-1",

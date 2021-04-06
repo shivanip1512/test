@@ -1,11 +1,12 @@
 package com.cannontech.dr.pxmw.model.v1;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PxMWTimeSeriesResultV1 {
+public class PxMWTimeSeriesResultV1 implements Serializable{
     private String tag;
     private String trait;
     private List<PxMWTimeSeriesValueV1> values;

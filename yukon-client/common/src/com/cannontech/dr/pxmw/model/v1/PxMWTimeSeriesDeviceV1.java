@@ -1,18 +1,18 @@
 package com.cannontech.dr.pxmw.model.v1;
 
-import java.util.List;
+import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PxMWTimeSeriesDeviceV1 {
+public class PxMWTimeSeriesDeviceV1 implements Serializable{
     private String deviceGuid;
     private String tagTrait;
 
     @JsonCreator
-    public PxMWTimeSeriesDeviceV1(@JsonProperty("device_id") String deviceGuid, @JsonProperty("tag_trait") List<String> tagTraitList) {
+    public PxMWTimeSeriesDeviceV1(@JsonProperty("device_id") String deviceGuid, @JsonProperty("tag_trait") String tagTrait) {
         this.deviceGuid = deviceGuid;
-        this.tagTrait = String.join(",", tagTraitList);
+        this.tagTrait = tagTrait;
     }
 
     @JsonProperty("device_id")

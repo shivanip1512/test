@@ -10,6 +10,8 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -198,14 +200,18 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     @Override
     public PxMWTimeSeriesDataResponseV1 getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Range<Instant> range) {
         URI uri = getUri(PxMWRetrievalUrl.TREND_DATA_RETRIEVAL);
-        String startTime = range.getMin().toDateTime().toString();
-        String stopTime = range.getMax().toDateTime().toString();
+        DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+        String startTime = fmt.print(range.getMin());
+        String stopTime = fmt.print(range.getMax());
         try {
             PxMWTimeSeriesDataRequestV1 request = new PxMWTimeSeriesDataRequestV1(deviceList, startTime, stopTime);
             HttpEntity<PxMWTimeSeriesDataRequestV1> requestEntity = getRequestWithAuthHeaders(request);
+            log.debug("Getting time series data. Request:{} Start:{} Stop:{} URL:{}",
+                    new GsonBuilder().setPrettyPrinting().create().toJson(request), startTime, stopTime, uri);
             ResponseEntity<PxMWTimeSeriesDataResponseV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
                     PxMWTimeSeriesDataResponseV1.class);
-            log.debug("Getting time series data for {}, from Start: {} to Stop: {}, Result:{}", deviceList, startTime, stopTime,
+            log.debug("Get time series data. Request:{} Start:{} Stop:{} URL:{} Result:{}",
+                    new GsonBuilder().setPrettyPrinting().create().toJson(request), startTime, stopTime, uri,
                     new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
             return response.getBody();
         } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
