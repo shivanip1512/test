@@ -300,14 +300,14 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public Set<BuiltInAttribute> getAvailableAttributes(YukonPao pao) {
+    public Set<Attribute> getAvailableAttributes(YukonPao pao) {
         return getAvailableAttributes(pao.getPaoIdentifier().getPaoType());
     }
 
     @Override
-    public Set<BuiltInAttribute> getAvailableAttributes(PaoType paoType) {
+    public Set<Attribute> getAvailableAttributes(PaoType paoType) {
         
-        Set<BuiltInAttribute> result = new HashSet<>();
+        Set<Attribute> result = new HashSet<>();
         for (AttributeDefinition attributeDefinition : paoDefinitionDao.getDefinedAttributes(paoType)) {
             result.add(attributeDefinition.getAttribute());
         }

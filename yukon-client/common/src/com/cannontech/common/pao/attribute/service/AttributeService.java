@@ -88,7 +88,7 @@ public interface AttributeService {
      * @param pao - The pao to get attributes for
      * @return An immutable set of all attributes available for this pao
      */
-    Set<BuiltInAttribute> getAvailableAttributes(YukonPao pao);
+    Set<Attribute> getAvailableAttributes(YukonPao pao);
 
     /**
      * Method to get a set of attributes available for the given PaoType
@@ -96,7 +96,7 @@ public interface AttributeService {
      * @param paoType - The PaoType to get attributes for
      * @return An immutable set of all attributes available for this paoType
      */
-    Set<BuiltInAttribute> getAvailableAttributes(PaoType paoType);
+    Set<Attribute> getAvailableAttributes(PaoType paoType);
 
     /**
      * Method to get a set of all attributes from the set of desired attributes for a given pao.

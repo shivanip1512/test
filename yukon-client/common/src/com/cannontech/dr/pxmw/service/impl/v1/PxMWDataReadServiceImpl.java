@@ -14,10 +14,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.jfree.util.Log;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
@@ -27,6 +31,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
@@ -45,47 +50,62 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
     @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
 
     @Override
-    public void collectDataForRead(int deviceId) {
+    public void collectDataForRead(List<Integer> deviceIds) {
         //1. Get GUID
         //2. Get all tags for device
         //3. Ask Johns thing for data
         //4. Update data in dispatch
         //5. Update recent participation
         //6. Update asset availability
-        String deviceGuid = deviceDao.getGuid(deviceId);
-        YukonPao pao = paoDao.getYukonPao(deviceId);
-        Map<BuiltInAttribute, Integer> attributeToPoint = new HashMap<BuiltInAttribute, Integer>();
-        for (AttributeDefinition attributeDefinition : paoDefinitionDao.getDefinedAttributes(pao.getPaoIdentifier().getPaoType())) {
-            BuiltInAttribute builtInAttribute = attributeDefinition.getAttribute();
-            Integer pointId = attributeDefinition.getPointId(pao);
-            attributeToPoint.put(builtInAttribute, pointId);
+        BidiMap<Integer, String> deviceIdGuid = new DualHashBidiMap<Integer, String>();
+        Map<Integer, LiteYukonPAObject> deviceToPao = new HashMap<Integer, LiteYukonPAObject>();
+        List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaos(deviceIds);
+        Map<PaoType, List<BuiltInAttribute>> paoTypeToAttributes = new HashMap<PaoType, List<BuiltInAttribute>>();
+        Map<Integer, Map<BuiltInAttribute, Integer>> deviceToAttributeToPointId = new HashMap<Integer, Map<BuiltInAttribute, Integer>>();
+        Set<PaoType> paoTypes = new HashSet<PaoType>();
+        Set<Integer> pointIds = new HashSet<Integer>();
+        List<PxMWTimeSeriesDeviceV1> timeSeriesDevice = new ArrayList<PxMWTimeSeriesDeviceV1>();
+
+        for (LiteYukonPAObject pao : paos) {
+            int paoId = pao.getPaoIdentifier().getPaoId();
+            deviceIdGuid.put(paoId, deviceDao.getGuid(paoId));
+            deviceToPao.put(paoId, pao);
+            paoTypes.add(pao.getPaoType());
+            for (AttributeDefinition attributeDefinition : paoDefinitionDao.getDefinedAttributes(pao.getPaoType())) {
+                BuiltInAttribute builtInAttribute = attributeDefinition.getAttribute();
+                Integer pointId = attributeDefinition.getPointId(pao);
+                if (!deviceToAttributeToPointId.containsKey(paoId)) {
+                    deviceToAttributeToPointId.put(paoId, new HashMap<BuiltInAttribute, Integer>());
+                }
+                deviceToAttributeToPointId.get(paoId).put(builtInAttribute, pointId);
+                pointIds.add(pointId);
+            }
         }
 
         Date startTime = new Date();
-
-        Set<? extends PointValueQualityHolder> pointDatas = dispatchData.getPointValues(new HashSet<Integer>(attributeToPoint.values()));
+        Set<? extends PointValueQualityHolder> pointDatas = dispatchData.getPointValues(pointIds);
         if (pointDatas.isEmpty()) {
-            try {
-                startTime = dateFormat.parse("2010-01-01T00:00:00-06:00"); // Date is arbitrary in the past, intended to get all data if none exists
-            } catch (ParseException e) {
-                Log.error(e);
-            }
+            startTime = new Date(System.currentTimeMillis() - (3600 * 24 * 1000));
         }
         for (PointValueQualityHolder pointData : pointDatas) {
             Date pointDate = pointData.getPointDataTimeStamp();
-            if (pointDate.before(startTime)) {
+            if (pointDate.after(startTime)) {
                 startTime = pointDate;
             }
         }
-
         Instant queryEndTime = new Instant();
         Instant queryStartTime = new Instant(startTime);
 
-        List<String> tags = attributeToPoint.keySet().stream()
-                .map(attribute -> MWChannel.getAttributeChannelLookup().get(attribute).getChannelId().toString())
-                .collect(Collectors.toList());
+        for (Integer deviceId : deviceIds) {
+            List<String> tags = deviceToAttributeToPointId.get(deviceId).keySet().stream()
+                    .map(attribute -> MWChannel.getAttributeChannelLookup().get(attribute).getChannelId().toString())
+                    .collect(Collectors.toList());
+            String guid = deviceIdGuid.get(deviceId);
+            PxMWTimeSeriesDeviceV1 pxmwTimeSeriesDevice = new PxMWTimeSeriesDeviceV1(guid, tags);
+            timeSeriesDevice.add(pxmwTimeSeriesDevice);
+        }
 
-        List<PxMWTimeSeriesDeviceV1> timeSeriesDevice = Arrays.asList(new PxMWTimeSeriesDeviceV1(deviceGuid, tags));
+        
         Range<Instant> queryRange = new Range<Instant>(queryStartTime, false, queryEndTime, true);
         PxMWTimeSeriesDataResponseV1 response = pxMWCommunicationService.getTimeSeriesValues(timeSeriesDevice, queryRange);
         

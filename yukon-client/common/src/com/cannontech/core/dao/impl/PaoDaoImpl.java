@@ -32,6 +32,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -45,6 +46,7 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteEatonCloudPAObject;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -68,6 +70,33 @@ public final class PaoDaoImpl implements PaoDao {
         + "LEFT OUTER JOIN deviceroutes dr ON y.paobjectid = dr.deviceid ";
 
     private final RowMapper<LiteYukonPAObject> litePaoRowMapper = new LitePaoRowMapper();
+    
+    private final static YukonRowMapper<LiteEatonCloudPAObject> LITE_EATON_CLOUD_ROW_MAPPER = new YukonRowMapper<LiteEatonCloudPAObject>() {
+        @Override
+        public LiteEatonCloudPAObject mapRow(YukonResultSet rs) throws SQLException {
+            int paoID = rs.getInt("PAObjectID");
+            String paoCategory = rs.getString("Category").trim();
+            String paoName = rs.getString("PAOName").trim();
+            String paoType = rs.getString("Type").trim();
+            String paoClass = rs.getString("PAOclass").trim();
+            String paoDescription = rs.getString("Description").trim();
+            String guid = rs.getString("GUID");
+            if (CtiUtilities.STRING_NONE.equals(paoDescription)) {
+                paoDescription = paoDescription.intern();
+            }
+            String paoDisableFlag = rs.getString("DisableFlag").trim().intern();
+
+            LiteYukonPAObject pao = new LiteYukonPAObject(paoID,
+                                                          paoName,
+                                                          PaoCategory.getForDbString(paoCategory),
+                                                          PaoClass.getForDbString(paoClass),
+                                                          PaoType.getForDbString(paoType),
+                                                          paoDescription,
+                                                          paoDisableFlag);
+            
+            return new LiteEatonCloudPAObject(pao, guid);
+        }
+    };
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private IDatabaseCache databaseCache;
@@ -676,6 +705,16 @@ public final class PaoDaoImpl implements PaoDao {
         LitePoint litePoint = pointDao.getLitePoint(pointId);
         LiteYukonPAObject yukonPao = databaseCache.getAllPaosMap().get(litePoint.getPaobjectID());
         return yukonPao;
+    }
+
+    @Override
+    public List<LiteEatonCloudPAObject> getLiteEatonCloudPAObjects(Iterable<Integer> ids) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT y.PAObjectID, y.Category, y.PAOName, "
+        + "y.Type, y.PAOClass, y.Description, y.DisableFlag, DG.DeviceGuid "
+        + "FROM yukonpaobject y LEFT OUTER JOIN DeviceGuid DG ON DG.DeviceId = y.PAObjectId");
+        sql.append("WHERE y.PAObjectId").in(ids);
+        return jdbcTemplate.query(sql, LITE_EATON_CLOUD_ROW_MAPPER);
     }
 
 }

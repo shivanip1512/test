@@ -13,6 +13,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.service.impl.PaoLoader;
+import com.cannontech.database.data.lite.LiteEatonCloudPAObject;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface PaoDao {
@@ -198,4 +199,9 @@ public interface PaoDao {
      * This method returns LiteYukonPAObject for the pointId passed as a parameter.
      * */
     LiteYukonPAObject getLiteYukonPaoByPointId(int pointId);
+
+    /**
+     * Returns a list of LiteEatonCloudObject for the ids provided
+     */
+    List<LiteEatonCloudPAObject> getLiteEatonCloudPAObjects(Iterable<Integer> ids);
 }

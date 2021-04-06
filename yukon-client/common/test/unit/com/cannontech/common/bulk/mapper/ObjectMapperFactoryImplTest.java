@@ -27,6 +27,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.database.data.lite.LiteEatonCloudPAObject;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 import junit.framework.TestCase;
@@ -358,6 +359,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         @Override
         public LiteYukonPAObject getLiteYukonPaoByPointId(int pointId) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public List<LiteEatonCloudPAObject> getLiteEatonCloudPAObjects(Iterable<Integer> ids) {
             throw new UnsupportedOperationException("Method not implemented");
         }
     }
