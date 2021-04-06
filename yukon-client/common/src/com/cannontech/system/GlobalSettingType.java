@@ -132,9 +132,8 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_SFTP_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PRIVATE_KEY_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     RUNTIME_CALCULATION_INTERVAL_HOURS(GlobalSettingSubCategory.DR, 2, Range.inclusive(1, 24)),
-    PX_MIDDLEWARE_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
-    PX_MIDDLEWARE_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
-    PX_MIDDLEWARE_SITE_GUID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
+    PX_MIDDLEWARE_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
+    PX_MIDDLEWARE_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
     PX_MIDDLEWARE_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
 
     // Web Server
@@ -233,7 +232,7 @@ public enum GlobalSettingType implements DisplayableEnum {
             b.put(globalSettingType.getCategory(), globalSettingType);
         }
         categoryMapping = b.build();
-        
+
         sensitiveSettings = ImmutableList.of(
             ECOBEE_PASSWORD,
             ECOBEE_USERNAME,
@@ -255,8 +254,8 @@ public enum GlobalSettingType implements DisplayableEnum {
             ITRON_SFTP_PRIVATE_KEY_PASSWORD,
             NETWORK_MANAGER_DB_PASSWORD,
             CLOUD_IOT_HUB_CONNECTION_STRING,
-            PX_MIDDLEWARE_USERNAME,
-            PX_MIDDLEWARE_PASSWORD);
+            PX_MIDDLEWARE_SERVICE_ACCOUNT_ID,
+            PX_MIDDLEWARE_SECRET);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {

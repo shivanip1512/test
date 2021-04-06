@@ -1,5 +1,7 @@
 package com.cannontech.infrastructure.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public enum InfrastructureWarningSeverity {
     LOW,
     HIGH,
@@ -8,6 +10,6 @@ public enum InfrastructureWarningSeverity {
     
     @Override
     public String toString() {
-        return name().toLowerCase();
+        return StringUtils.capitalize(name().toLowerCase());
     }
 }

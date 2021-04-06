@@ -83,7 +83,7 @@ void PortThread(void *pid)
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
 
     bool           profiling = (portid == gConfigParms.getValueAsULong("PORTER_PORT_PROFILING"));
-    LONG           expirationRate = gConfigParms.getValueAsULong("QUEUE_EXPIRE_TIMES_PER_DAY", 0);
+    LONG           expirationRate = gConfigParms.getValueAsULong("QUEUE_EXPIRE_TIMES_PER_DAY", 6);
     DWORD          ticks = 0;
 
     CtiDeviceSPtr  Device;

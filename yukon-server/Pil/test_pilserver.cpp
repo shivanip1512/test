@@ -11,6 +11,11 @@
 
 #include <boost/algorithm/cxx11/all_of.hpp>
 
+namespace Cti {
+    //  defined in pil/test_main.cpp
+    std::ostream& operator<<(std::ostream& o, const ConnectionHandle& h);
+}
+
 BOOST_AUTO_TEST_SUITE( test_pilserver )
 
 using namespace std;
@@ -122,7 +127,7 @@ struct pilEnvironment
 };
 
 
-BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
+BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult_expectMore)
 {
     Test_PilServer pilServer;
 
@@ -162,6 +167,108 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
     }
 
     BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(11235, handle));
+}
+
+
+BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult_putconfig_verify_on_putconfig_install_success)
+{
+    Test_PilServer pilServer;
+    constexpr auto UserMessageId = 11235;
+    const Cti::ConnectionHandle handle { 55441 };
+
+    CtiDeviceManager::ptr_type dev = pilServer.dev_mgr.getDeviceByID(123);
+
+    BOOST_REQUIRE(dev);
+
+    CtiDeviceSingle* devSingle = dynamic_cast<CtiDeviceSingle*>(dev.get());
+
+    BOOST_REQUIRE(devSingle);
+
+    devSingle->incrementGroupMessageCount(UserMessageId, handle);
+
+    BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(UserMessageId, handle));
+
+    Cti::Pil::RfnDeviceRequest::Parameters parameters;
+
+    parameters.deviceId = 123;
+    parameters.userMessageId = UserMessageId;
+    parameters.connectionHandle = handle;
+    parameters.commandString = "putconfig install bananaphone";
+
+    pilServer.handleRfnDeviceResult({
+        { parameters, 9999, std::make_unique<Cti::Devices::Commands::RfnImmediateDemandFreezeCommand>() },
+        { { "This was a triumph. I'm making a note here: HUGE SUCCESS." } } });
+
+    BOOST_REQUIRE_EQUAL(2, pilServer.retList.size());
+
+    auto retList_itr = pilServer.retList.cbegin();
+
+    {
+        auto reqMsg = dynamic_cast<CtiRequestMsg*>(retList_itr++->get());
+
+        BOOST_REQUIRE(reqMsg);
+
+        BOOST_CHECK_EQUAL(reqMsg->CommandString(), "putconfig install all verify");
+        BOOST_CHECK_EQUAL(reqMsg->UserMessageId(), UserMessageId);
+    }
+    {
+        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
+
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK_EQUAL(retMsg->ResultString(), "This was a triumph. I'm making a note here: HUGE SUCCESS.");
+        BOOST_CHECK_EQUAL(retMsg->Status(), 0);
+        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+    }
+
+    BOOST_CHECK_EQUAL(0, devSingle->getGroupMessageCount(UserMessageId, handle));
+}
+
+
+BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult_no_putconfig_verify_on_putconfig_install_failure)
+{
+    Test_PilServer pilServer;
+    constexpr auto UserMessageId = 11235;
+    const Cti::ConnectionHandle handle { 55441 };
+
+    CtiDeviceManager::ptr_type dev = pilServer.dev_mgr.getDeviceByID(123);
+
+    BOOST_REQUIRE(dev);
+
+    CtiDeviceSingle* devSingle = dynamic_cast<CtiDeviceSingle*>(dev.get());
+
+    BOOST_REQUIRE(devSingle);
+
+    devSingle->incrementGroupMessageCount(UserMessageId, handle);
+
+    BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(UserMessageId, handle));
+
+    Cti::Pil::RfnDeviceRequest::Parameters parameters;
+
+    parameters.deviceId = 123;
+    parameters.userMessageId = UserMessageId;
+    parameters.connectionHandle = handle;
+    parameters.commandString = "putconfig install bananaphone";
+
+    pilServer.handleRfnDeviceResult({
+        { parameters, 9999, std::make_unique<Cti::Devices::Commands::RfnImmediateDemandFreezeCommand>() },
+        { { "This was a failure. I'm making a note here: HUGE DUMPSTER FIRE.", ClientErrors::Abnormal } } });
+
+    BOOST_REQUIRE_EQUAL(1, pilServer.retList.size());
+
+    auto retList_itr = pilServer.retList.cbegin();
+
+    {
+        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
+
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK_EQUAL(retMsg->ResultString(), "This was a failure. I'm making a note here: HUGE DUMPSTER FIRE.");
+        BOOST_CHECK_EQUAL(retMsg->Status(), 1);
+        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+    }
+
+    BOOST_CHECK_EQUAL(0, devSingle->getGroupMessageCount(UserMessageId, handle));
 }
 
 
@@ -272,8 +379,8 @@ BOOST_AUTO_TEST_CASE(test_rfnExpectMore)
         BOOST_REQUIRE(reqMsg);
 
         BOOST_CHECK_EQUAL(reqMsg->CommandString(), "putconfig install all verify");
-        BOOST_CHECK(reqMsg->getConnectionHandle(), handle);
-        BOOST_CHECK(reqMsg->UserMessageId(), UserMessageId);
+        BOOST_CHECK_EQUAL(reqMsg->getConnectionHandle(), handle);
+        BOOST_CHECK_EQUAL(reqMsg->UserMessageId(), UserMessageId);
     }
 }
 

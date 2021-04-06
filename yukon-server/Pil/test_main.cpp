@@ -3,6 +3,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include "amq_connection.h"
+#include "connectionHandle.h"
+#include "rfn_identifier.h"
 
 #include "test_main.hpp"
 
@@ -19,6 +21,17 @@ ostream &operator<<( ostream &os, const unsigned char &uc ) {
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 namespace Cti {
+
+std::ostream& operator<<(std::ostream& o, const ConnectionHandle& ch)
+{
+    return o << ch.toString();
+}
+
+std::ostream& operator<<(std::ostream& os, const RfnIdentifier rfnId)
+{
+    return os << rfnId.toString();
+}
+
 namespace Messaging {
 
 extern IM_EX_MSG std::unique_ptr<ActiveMQConnectionManager> gActiveMQConnection;

@@ -9,8 +9,8 @@ public class RecentEventParticipationStats extends RecentEventParticipationBase 
     private final RecentEventParticipationEventStats eventStats;
 
     public RecentEventParticipationStats(int controlEventId, String programName, String groupName, Instant startTime,
-            int numConfirmed, int numUnknowns) {
-        super(controlEventId, programName, groupName, startTime);
+            int numConfirmed, int numUnknowns, String externalEventId) {
+        super(controlEventId, programName, groupName, startTime, externalEventId);
         this.numConfirmed = numConfirmed;
         this.numUnknowns = numUnknowns;
         this.eventStats = new RecentEventParticipationEventStats(numConfirmed, numUnknowns);

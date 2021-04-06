@@ -1,6 +1,7 @@
 package com.cannontech.common.rfn.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -8,7 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -116,8 +116,20 @@ public enum RfnManufacturerModel {
     RFN_530S4RD(PaoType.RFN530S4ERX, "LGYR", "S4-RD"),
     RFN_530S4RT(PaoType.RFN530S4ERXR, "LGYR", "S4-RT"),
     RFN_530S4RR(PaoType.RFN530S4ERXR, "LGYR", "S4-RR"),
-    RFN_RELAY(PaoType.RFN_RELAY, "EATON", "RFRelay")
+    RFN_RELAY(PaoType.RFN_RELAY, "EATON", "RFRelay"),
     
+    RFN_1200_CPS_CBC8000(PaoType.RFN_1200, "CPS", "CBC-8000"),
+    RFN_1200_CPS_CBCGEN(PaoType.RFN_1200, "CPS", "CBC-GEN"),
+    RFN_1200_CPS_VRCL7(PaoType.RFN_1200, "CPS", "VR-CL7"),
+    RFN_1200_CPS_VRGEN(PaoType.RFN_1200, "CPS", "VR-GEN"),
+    RFN_1200_CPS_RECLF4D(PaoType.RFN_1200, "CPS", "RECL-F4D"),
+    RFN_1200_CPS_RECLGEN(PaoType.RFN_1200, "CPS", "RECL-GEN"),
+    RFN_1200_CPS_GENDA(PaoType.RFN_1200, "CPS", "GEN-DA"),
+    RFN_1200_NONCPS_CBCGEN(PaoType.RFN_1200, "NON-CPS", "CBC-GEN"),
+    RFN_1200_NONCPS_VRGEN(PaoType.RFN_1200, "NON-CPS", "VR-GEN"),
+    RFN_1200_NONCPS_RECLGEN(PaoType.RFN_1200, "NON-CPS", "RECL-GEN"),
+    RFN_1200_NONCPS_GENDA(PaoType.RFN_1200, "NON-CPS", "GEN-DA")
+   
     /* For documentation only */
     // RFN_GATEWAY(PaoType.RFN_GATEWAY, "EATON", "RFGateway"),
     // GWY_800(PaoType.GWY800, "EATON", "GWY800"),
@@ -128,22 +140,15 @@ public enum RfnManufacturerModel {
     ;
     
     //https://jira-prod.tcc.etn.com/browse/YUK-17425
-    private static List<Pair<String, String>> manufacturerModel1200 = new ArrayList<>();
+    private static List<RfnManufacturerModel> manufacturerModel1200;
     private final static ImmutableSet<RfnManufacturerModel> rfnLcrModels;
 
     static {
-        manufacturerModel1200.add(Pair.of("CPS", "CBC-8000"));
-        manufacturerModel1200.add(Pair.of("CPS", "CBC-GEN"));
-        manufacturerModel1200.add(Pair.of("CPS", "VR-CL7"));
-        manufacturerModel1200.add(Pair.of("CPS", "VR-GEN"));
-        manufacturerModel1200.add(Pair.of("CPS", "RECL-F4D"));
-        manufacturerModel1200.add(Pair.of("CPS", "RECL-GEN"));
-        manufacturerModel1200.add(Pair.of("CPS", "GEN-DA"));
-        manufacturerModel1200.add(Pair.of("NON-CPS", "CBC-GEN"));
-        manufacturerModel1200.add(Pair.of("NON-CPS", "VR-GEN"));
-        manufacturerModel1200.add(Pair.of("NON-CPS", "RECL-GEN"));
-        manufacturerModel1200.add(Pair.of("NON-CPS", "GEN-DA"));
-        
+        manufacturerModel1200 = 
+                Arrays.stream(values())
+                    .filter(manufacturerModel -> manufacturerModel.type == PaoType.RFN_1200)
+                    .collect(Collectors.toList());
+
         rfnLcrModels = ImmutableSet.of(RFN_LCR_6200, RFN_LCR_6600, RFN_LCR_6700);
     }
     
@@ -212,12 +217,16 @@ public enum RfnManufacturerModel {
      */
     public static boolean is1200(RfnIdentifier identifier) {
         return manufacturerModel1200.stream()
-            .anyMatch(pair -> {
-                Pair<String, String> newPair = Pair.of(identifier.getSensorManufacturer().toUpperCase(), identifier.getSensorModel().toUpperCase());
-                return pair.equals(newPair);
-            });
+                .anyMatch(rfn1200 -> {
+                    return (identifier.getSensorManufacturer().toUpperCase().equals(rfn1200.getManufacturer()) &&
+                            identifier.getSensorModel().toUpperCase().equals(rfn1200.getModel()));
+                });
     }
 
+    public static List<RfnManufacturerModel> getRfn1200Models() {
+        return  manufacturerModel1200;
+    }
+    
     public static ImmutableSet<RfnManufacturerModel> getRfnLcrModels() {
         return rfnLcrModels;
     }

@@ -149,21 +149,24 @@ yukon.mapping = (function () {
               source: new ol.source.XYZ({ name: 'mqosm',
                   url: yg.map_devices_street_url,
                   attributions: _attributionText,
-                  tileSize: 512
+                  tileSize: 512,
+                  transition: 0
               })
           }),
           new ol.layer.Tile({ name: 'mqsat', visible: false,
               source: new ol.source.XYZ({ name: 'mqsat', 
                 url: yg.map_devices_satellite_url,
                 attributions: _attributionText,
-                tileSize: 512
+                tileSize: 512,
+                transition: 0
               })
           }),
           new ol.layer.Tile({ name: 'hybrid', visible: false,
               source: new ol.source.XYZ({ name: 'hybrid', 
                 url: yg.map_devices_hybrid_url,
                 attributions: _attributionText,
-                tileSize: 512
+                tileSize: 512,
+                transition: 0
               })
           })
     ],
@@ -466,17 +469,28 @@ yukon.mapping = (function () {
             if (checked) {
                 button.removeClass('on');
                 map.removeLayer(_elevationLayer);
+                _map.getLayers().forEach(function (layer) {
+                    if (layer.get('name') === 'mqsat' || layer.get('name') === 'hybrid') {
+                        layer.setOpacity(1);
+                    }
+                });
             } else {
-                _elevationLayer = new ol.layer.VectorTile({
-                    declutter: true,
-                    opacity: 0.6,
-                    source: new ol.source.VectorTile({
-                        format: new ol.format.MVT(),
-                        url: yg.map_devices_elevation_url
-                    }),
-                })
+                _elevationLayer = new ol.layer.Tile({ name: 'ele',
+                    source: new ol.source.XYZ({ name: 'ele',
+                        url: yg.map_devices_elevation_url,
+                        attributions: _attributionText,
+                        tileSize: 512,
+                        transition: 0
+                    })
+                });
+                _elevationLayer.setZIndex(500);
                 button.addClass('on');
                 map.addLayer(_elevationLayer);
+                _map.getLayers().forEach(function (layer) {
+                    if (layer.get('name') === 'mqsat' || layer.get('name') === 'hybrid') {
+                        layer.setOpacity(0.4);
+                    }
+                });
             }
         },
         
@@ -607,13 +621,13 @@ yukon.mapping = (function () {
         },
         
         getPaoIdFromData: function(node) {
-          if (node.data != null) {
+          if (node != null && node.data != null) {
               return Object.keys(node.data)[0];
           }  
         },
         
         getFeatureFromData: function(node) {
-            if (node.data != null) {
+            if (node != null && node.data != null) {
                 var nodeData = Object.keys(node.data).map(function (key) {
                     return node.data[key];
                 });
@@ -709,7 +723,7 @@ yukon.mapping = (function () {
             yukon.ui.block(mapContainer);
             $.getJSON(yukon.url('/stars/comprehensiveMap/networkTree') + '?' + $.param({ deviceId: deviceId }))
             .done(function (json) {
-                if (json.tree) {
+                if (json.tree.length > 0) {
                     var gatewayNode = json.tree[0],
                         paoId = yukon.mapping.getPaoIdFromData(gatewayNode);
                     //first check if device is gateway.
@@ -720,6 +734,8 @@ yukon.mapping = (function () {
                     } else {
                         yukon.mapping.drawAllDescendants(deviceId, gatewayNode);
                     }
+                } else {
+                    $('.js-no-descendants-message').removeClass('dn');
                 }
                 if (json.errorMsg) {
                     yukon.ui.alertError(json.errorMsg);
@@ -826,7 +842,9 @@ yukon.mapping = (function () {
             var iconLayer = yukon.mapping.getIconLayer(),
                 source = iconLayer.getSource();
             _descendantIcons.forEach(function (icon) {
-                source.removeFeature(icon);
+                if (source.getFeatureById(icon.getId()) != null) {
+                    source.removeFeature(icon);
+                }
             });
             _descendantLines.forEach(function (line) {
                 _map.removeLayer(line);

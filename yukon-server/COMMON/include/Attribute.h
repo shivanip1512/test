@@ -152,6 +152,10 @@ public:
     static const Attribute  PeakkVAFrozenRateD;
     static const Attribute  PeakkVACoincidental;
     static const Attribute  DeliveredPeakkVALagging;
+    static const Attribute  PeakkVALaggingRateA;
+    static const Attribute  PeakkVALaggingRateB;
+    static const Attribute  PeakkVALaggingRateC;
+    static const Attribute  PeakkVALaggingRateD;
     static const Attribute  ReceivedPeakkVA;
     static const Attribute  ReceivedPeakkVARateA;
     static const Attribute  ReceivedPeakkVARateB;
@@ -757,6 +761,9 @@ public:
     static const Attribute  FirmwareUpdateStatus;
     static const Attribute  Frequency;
     static const Attribute  Relay1ActivationStatus;
+    static const Attribute  Relay2ActivationStatus;
+    static const Attribute  Relay3ActivationStatus;
+    static const Attribute  Relay4ActivationStatus;
 };
 
 

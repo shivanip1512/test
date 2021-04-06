@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/18/2021 5:24:27 AM                         */
+/* Created on:     3/30/2021 1:53:52 PM                         */
 /*==============================================================*/
 
 
@@ -2151,6 +2151,7 @@ create table ControlEvent (
    GroupId              numeric              not null,
    LMControlHistoryId   numeric              null,
    ProgramId            numeric              not null default 0,
+   ExternalEventId      varchar(36)          null,
    constraint PK_ControlEvent primary key (ControlEventId)
 )
 go
@@ -3237,12 +3238,13 @@ INSERT INTO DeviceConfigCategoryItem VALUES (5, 0, 'enableUnsolicitedMessagesCla
 INSERT INTO DeviceConfigCategoryItem VALUES (6, 0, 'enableUnsolicitedMessagesClass3', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (7, 1, 'voltageChangePerTap', '0.75');
 INSERT INTO DeviceConfigCategoryItem VALUES (8, 1, 'voltageControlMode', 'DIRECT_TAP');
-INSERT INTO DeviceConfigCategoryItem VALUES (9, 2, 'regulatorHeartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (10, 2, 'regulatorHeartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (11, 2, 'regulatorHeartbeatMode', 'NONE');
-INSERT INTO DeviceConfigCategoryItem VALUES (12, 3, 'cbcHeartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (13, 3, 'cbcHeartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (14, 3, 'cbcHeartbeatMode', 'DISABLED');
+INSERT INTO DeviceConfigCategoryItem VALUES (9, 1, 'installOrientation', 'FORWARD');
+INSERT INTO DeviceConfigCategoryItem VALUES (10, 2, 'regulatorHeartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (11, 2, 'regulatorHeartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (12, 2, 'regulatorHeartbeatMode', 'NONE');
+INSERT INTO DeviceConfigCategoryItem VALUES (13, 3, 'cbcHeartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (14, 3, 'cbcHeartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (15, 3, 'cbcHeartbeatMode', 'DISABLED');
 
 alter table DeviceConfigCategoryItem
    add constraint AK_DevConCatItem_CatIdItemName unique (DeviceConfigCategoryId, ItemName)
@@ -9282,6 +9284,23 @@ create table State (
 )
 go
 
+INSERT INTO State VALUES(-32, 0, 'Reverse Block', 0, 6, 0);
+INSERT INTO State VALUES(-32, 1, 'Regulate Reverse', 1, 6, 0);
+INSERT INTO State VALUES(-32, 2, 'Regulator Forward', 2, 6, 0);
+INSERT INTO State VALUES(-32, 3, 'Return to Neutral', 3, 6, 0);
+INSERT INTO State VALUES(-32, 4, 'Regulate in Reverse', 4, 6, 0);
+INSERT INTO State VALUES(-32, 5, 'Distributed Generation', 5, 6, 0);
+INSERT INTO State VALUES(-32, 7, 'Auto Determination', 7, 6, 0);
+INSERT INTO State VALUES(-31, 0, 'Locked Forward', 0, 6, 0);
+INSERT INTO State VALUES(-31, 1, 'Locked Reverse', 1, 6, 0);
+INSERT INTO State VALUES(-31, 2, 'Reverse Idle', 2, 6, 0);
+INSERT INTO State VALUES(-31, 3, 'Bidirectional', 3, 6, 0);
+INSERT INTO State VALUES(-31, 4, 'Neutral Idle', 4, 6, 0);
+INSERT INTO State VALUES(-31, 5, 'Cogeneration', 5, 6, 0);
+INSERT INTO State VALUES(-31, 6, 'Reactive Bidirectional', 7, 6, 0);
+INSERT INTO State VALUES(-31, 7, 'Bias Bidirectional', 8, 6, 0);
+INSERT INTO State VALUES(-31, 8, 'Bias Cogeneration', 9, 6, 0);
+INSERT INTO State VALUES(-31, 9, 'Reverse Cogeneration', 10, 6, 0);
 INSERT INTO State VALUES(-30, 0, 'Received and Waiting', 7, 6, 0);
 INSERT INTO State VALUES(-30, 1, 'Nothing Pending', 9, 6, 0);
 INSERT INTO State VALUES(-30, 2, 'Success', 0, 6, 0);
@@ -9470,6 +9489,8 @@ create table StateGroup (
 )
 go
 
+INSERT INTO StateGroup VALUES(-32, 'Beckwith Regulator Control Mode', 'Status');
+INSERT INTO StateGroup VALUES(-31, 'Eaton Regulator Control Mode', 'Status');
 INSERT INTO StateGroup VALUES(-30, 'LCR Firmware Update Status', 'Status');
 INSERT INTO StateGroup VALUES(-29, 'Meter Programming', 'Status');
 INSERT INTO StateGroup VALUES(-28, 'RelayState', 'Status');
@@ -9997,6 +10018,7 @@ INSERT INTO UnitMeasure VALUES ( 54,'UNDEF', 0,'Undefined','(none)' );
 INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
 INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
+INSERT INTO UnitMeasure VALUES ( 58,'Therms', 0, 'Therms', '(none)');
 
 /*==============================================================*/
 /* Table: UsageThresholdReport                                  */

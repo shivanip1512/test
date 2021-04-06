@@ -75,7 +75,7 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
      * entries in the log file for the same devices.
      */
     private Cache<Integer, Set<CollectionActionLogDetail>> cache =
-        CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.DAYS).build();
+        CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build();
 
     /**
      * Point id -> Point name

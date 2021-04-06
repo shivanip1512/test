@@ -27,9 +27,7 @@ for %%x in (%*) do (
   if "%%x" == "clean" set clean=/t:clean
   if "%%x" == "debug" set conf=/p:Configuration=Debug
   if "%%x" == "Win64" set plat=/p:Platform=Win64
-  if "%%x" == "diag" set verbose=/v:diag
-  if "%%x" == "diag" set verbose=/v:diag
-  if "%%x" == "single" set mp=
+  if "%%x" == "single" set mp= & echo Building single-threaded
   if "%%x" == "quiet" set verbose=/v:q
   if "%%x" == "min" set verbose=/v:m
   if "%%x" == "norm" set verbose=/v:n

@@ -3,6 +3,7 @@
 #include "cmd_device.h"
 
 #include "rfn_asid.h"
+#include "rfn_priority.h"
 
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
@@ -163,6 +164,7 @@ public:
     using ASID = Messaging::Rfn::ApplicationServiceIdentifiers;
 
     virtual ASID getApplicationServiceId() const;
+    virtual auto getPriorityClass() const -> Messaging::Rfn::PriorityClass;
 
     virtual std::string getCommandName() const = 0;
 

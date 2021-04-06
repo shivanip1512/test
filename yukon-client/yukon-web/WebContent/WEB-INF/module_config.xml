@@ -1318,10 +1318,10 @@
                         </pages>
                     </page>
                     <page name="gateways.manageFirmware" type="BASIC">
-                        <link>/stars/gateways/firmwareDetails</link>
+                        <link>/stars/gateways/manageFirmware</link>
                     </page>
-                    <page name="gateways.certificateUpdates" type="BASIC">
-                        <link>/stars/gateways/certificateUpdates</link>
+                    <page name="gateways.manageCertificates" type="BASIC">
+                        <link>/stars/gateways/manageCertificates</link>
                     </page>
                 </pages>
             </page>

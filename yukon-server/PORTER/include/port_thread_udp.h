@@ -82,7 +82,8 @@ private:
 
     OutboundDestination getDestinationForAddress(const AddrInfo& address);
 
-    std::map<AddrInfo, std::chrono::high_resolution_clock::time_point> _last_endpoint_send_time;
+    using Endpoint = std::tuple<std::string, u_short>;
+    std::map<Endpoint, std::chrono::high_resolution_clock::time_point> _last_endpoint_send_time;
 
 protected:
 
@@ -94,7 +95,7 @@ protected:
     virtual unsigned getDeviceTimeout( const device_record &dr ) const;
     virtual bool collectInbounds( const Cti::Timing::MillisecondTimer & timer, const unsigned long until);
 
-    AddrInfo getDeviceSocketAddress(device_record &dr) const;
+    Endpoint getDeviceSocketAddress(device_record &dr) const;
     bool isPostCommWaitComplete(device_record &dr, ULONG postCommWait) const override;
 
     virtual void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices);

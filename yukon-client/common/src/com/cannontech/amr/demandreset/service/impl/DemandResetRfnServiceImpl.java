@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -229,7 +230,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                     // devices will timeout and the code will work correctly.
                     // The exception should not happen. To test: run demand reset on the same group
                     // of devices multiple times with a couple of seconds between each run
-                    log.error(e);
+                    log.error("Error in TimeoutChecker", e);
                 }
             }
         }

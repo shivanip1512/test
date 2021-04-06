@@ -65,6 +65,14 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         SimpleDevice device = SimpleDevice.of(lmGroup.getPAObjectID(), lmGroup.getPaoType());
         paoCreationHelper.addDefaultPointsToPao(device);
         loadGroup.buildModel(lmGroup);
+        if (loadGroup instanceof LoadGroupRoute) {
+            setRouteName((LoadGroupRoute) loadGroup);
+        }
+        if (loadGroup instanceof LoadGroupPoint) {
+            LMGroupPoint lmGroupPoint = (LMGroupPoint) lmGroup;
+            LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroup;
+            updateLoadGroupPoint(lmGroupPoint, loadGroupPoint);
+        }
         logService.loadGroupCreated(loadGroup.getName(), loadGroup.getType(), liteYukonUser);
         return loadGroup;
     }
@@ -83,6 +91,14 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         loadGroup.buildDBPersistent(lmGroup);
         dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
         loadGroup.buildModel(lmGroup);
+        if (loadGroup instanceof LoadGroupRoute) {
+            setRouteName((LoadGroupRoute) loadGroup);
+        }
+        if (loadGroup instanceof LoadGroupPoint) {
+            LMGroupPoint lmGroupPoint = (LMGroupPoint) lmGroup;
+            LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroup;
+            updateLoadGroupPoint(lmGroupPoint, loadGroupPoint);
+        }
         logService.loadGroupUpdated(loadGroup.getName(), loadGroup.getType(), liteYukonUser);
         return loadGroup;
     }
@@ -100,18 +116,9 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
             setRouteName((LoadGroupRoute)loadGroupBase);
         }
         if (loadGroupBase instanceof LoadGroupPoint) {
-
             LMGroupPoint lmGroupPoint = (LMGroupPoint) loadGroup;
             LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroupBase;
-            String deviceUsageName = (dbCache.getAllPaosMap().get(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage())).getPaoName();
-            String pointUsageName = pointDao.getPointName(lmGroupPoint.getLMGroupPoint().getPointIDUsage());
-            String rawStateName = stateGroupDao.getRawStateName(lmGroupPoint.getLMGroupPoint().getPointIDUsage(),
-                    lmGroupPoint.getLMGroupPoint().getStartControlRawState());
-            loadGroupPoint.setDeviceUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage(), deviceUsageName));
-            loadGroupPoint.setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), pointUsageName));
-            loadGroupPoint.setStartControlRawState(
-                    new LMDto(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
-
+            updateLoadGroupPoint(lmGroupPoint, loadGroupPoint);
         }
         return loadGroupBase;
     }
@@ -213,5 +220,18 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
      */
     public static boolean isValidPointGroupRawState(LiteState liteState) {
         return (liteState.getStateRawState() == 0 || liteState.getStateRawState() == 1);
+    }
+
+    /**
+     * Update deviceUsageName,pointUsageName and rawStateName
+     */
+    private void updateLoadGroupPoint(LMGroupPoint lmGroupPoint, LoadGroupPoint loadGroupPoint) {
+        String deviceUsageName = (dbCache.getAllPaosMap().get(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage())).getPaoName();
+        String pointUsageName = pointDao.getPointName(lmGroupPoint.getLMGroupPoint().getPointIDUsage());
+        String rawStateName = stateGroupDao.getRawStateName(lmGroupPoint.getLMGroupPoint().getPointIDUsage(),
+                lmGroupPoint.getLMGroupPoint().getStartControlRawState());
+        loadGroupPoint.setDeviceUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage(), deviceUsageName));
+        loadGroupPoint.setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), pointUsageName));
+        loadGroupPoint.setStartControlRawState(new LMDto(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
     }
 }

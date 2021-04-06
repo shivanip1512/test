@@ -14,6 +14,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
@@ -27,6 +28,8 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.core.dao.NotFoundException;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Multimap;
 
@@ -320,4 +323,7 @@ public interface AttributeService {
      * @throws NotFoundException
      */
     CustomAttribute getCustomAttribute(int attributeId);
+    
+    Cache<Integer, CustomAttribute> customAttributes = CacheBuilder.newBuilder().build();
+    Cache<Integer, AttributeAssignment> customAttributeAssignments = CacheBuilder.newBuilder().build();
 }

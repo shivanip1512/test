@@ -54,6 +54,12 @@ public:
     }
 };
 
+template<class Enum>
+constexpr std::underlying_type_t<Enum> as_underlying(Enum value)
+{
+    return static_cast<std::underlying_type_t<Enum>>(value);
+}
+
 template <class Map>
 boost::optional<typename Map::mapped_type> mapFind( const Map &m, const typename Map::key_type &key )
 {

@@ -30,7 +30,7 @@ extern Serialization::MessageFactory<Rfn::E2eMsg>        e2eMessageFactory;
 extern Serialization::MessageFactory<NetworkManagerBase> nmMessageFactory;
 
 E2eMessenger::E2eMessenger() :
-    _timeoutProcessor{ [this]{ processTimeouts(); } }
+    _timeoutProcessor{ WorkerThread::Function([this]{ processTimeouts(); }).name("E2eMessenger timeout processor") }
 {
     // empty
 }
@@ -137,8 +137,6 @@ void E2eMessenger::setE2eDtHandler(Indication::Callback callback)
             {
                 handleNetworkManagerResponseMsg(md.msg, md.type);
             });
-
-    ActiveMQConnectionManager::start();
 }
 
 
@@ -389,7 +387,7 @@ E2eDataRequestMsg E2eMessenger::createMessageFromRequest(const Request& req, con
     E2eDataRequestMsg msg;
 
     msg.applicationServiceId = asid;
-    msg.highPriority  = req.priority > 7;
+    msg.highPriority  = as_underlying(req.priorityClass);
     msg.rfnIdentifier = req.rfnIdentifier;
     msg.protocol      = E2eMsg::Application;
     msg.payload       = req.payload;

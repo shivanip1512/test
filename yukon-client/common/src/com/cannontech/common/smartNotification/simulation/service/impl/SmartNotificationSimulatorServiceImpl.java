@@ -204,8 +204,9 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
     public void saveSettings(SmartNotificationSimulatorSettings settings) {
         log.debug("Saving SmartNotificationSimlatorSettings to YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_DAILY_DIGEST_HOUR, settings.getDailyDigestHour());
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_USER_GROUP_ID, settings.getUserGroupId());
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_GENERATE_TEST_EMAIL, settings.isGenerateTestEmail());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_ALL_EVENT_TYPES, settings.isAllTypes());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_EVENT_TYPE, settings.getType());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_EVENT_PARAMETER, settings.getParameter());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_EVENTS_PER_TYPE, settings.getEventsPerType());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_EVENTS_PER_MESSAGE, settings.getEventsPerMessage());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_WAIT_TIME_SEC, settings.getWaitTimeSec());
@@ -216,8 +217,9 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
         log.debug("Getting SmartNotificationSimlatorSettings from db.");
         return new SmartNotificationSimulatorSettings(
             yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_DAILY_DIGEST_HOUR),
-            yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_USER_GROUP_ID),
-            yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_GENERATE_TEST_EMAIL),
+            yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_ALL_EVENT_TYPES),
+            SmartNotificationEventType.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_EVENT_TYPE)),
+            yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_EVENT_PARAMETER),
             yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_EVENTS_PER_TYPE),
             yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_EVENTS_PER_MESSAGE),
             yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.SMART_NOTIFICATION_SIM_WAIT_TIME_SEC));

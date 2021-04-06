@@ -5,8 +5,20 @@
 #include "cmd_rfn_Aggregate.h"  //  to reset the global counter
 #include "cmd_rfn_ConfigNotification.h"
 #include "config_data_rfn.h"
+
+#include "deviceconfig_test_helpers.h"
+#include "message_test_helpers.h"
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
+
+namespace Cti {
+    std::ostream& operator<<(std::ostream& os, const RfnIdentifier rfnId);  //  defined in RTDB/test_main.cpp
+}
+namespace Cti::Messaging::Rfn {
+    std::ostream& operator<<(std::ostream& os, const ProgrammingStatus s) {
+        return os << "[ProgrammingStatus " << as_underlying(s) << "]";
+    }
+}
 
 using namespace Cti::Devices;
 using namespace Cti::Config;
@@ -14,10 +26,23 @@ using namespace Cti::Config;
 struct test_RfnCommercialDevice : RfnCommercialDevice
 {
     using CtiDeviceBase::setDeviceType;
+    using MpsArchiveMsg = Cti::Messaging::Rfn::MeterProgramStatusArchiveRequestMsg;
+    std::vector<MpsArchiveMsg> mpsArchiveMessages;
 
-    bool areAggregateCommandsSupported() const override
-    {
+    bool e2eServerDisabled = false;
+
+    test_RfnCommercialDevice() {
+        _rfnId = { "TEST", "RFN", "COMMERCIAL" };
+    }
+
+    bool areAggregateCommandsSupported() const override {
         return false;
+    }
+    bool isE2eServerDisabled() const override {
+        return e2eServerDisabled;
+    }
+    virtual void sendMeterProgramStatusUpdate(Cti::Messaging::Rfn::MeterProgramStatusArchiveRequestMsg msg) {
+        mpsArchiveMessages.emplace_back(std::move(msg));
     }
 };
 
@@ -665,6 +690,168 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_aggregate)
     }
 }
 
+BOOST_AUTO_TEST_CASE( test_putconfig_meter_programming )
+{
+    const Cti::Test::Override_MeterProgrammingManager overrideMeterProgrammingManager;
+        
+    test_RfnCommercialDevice dut;
+
+    BOOST_CHECK_EQUAL(false, dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress));
+    BOOST_CHECK_EQUAL(false, dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID));
+
+    CtiCommandParser    parse("putconfig meter programming");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    {
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+    }
+
+    {
+        auto& command = rfnRequests.front();
+
+        // execute message and check request bytes
+
+        std::vector<unsigned char> exp {
+            0x90,
+            0x02,
+            0x01,
+                0x00, 0x04,
+                    0x00, 0x00, 0x06, 0xd0,
+            0x02,
+                0x00, 0x33 };
+        const std::string uri = "/meterPrograms/CBF44FB5-FEBB-451B-9E97-3504A902D0E1";
+        exp.insert(exp.end(), uri.begin(), uri.end());
+
+        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
+    }
+
+    {
+        double progress;
+        BOOST_CHECK_EQUAL(true, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, progress));
+        BOOST_CHECK_EQUAL(0.0, progress);
+
+        std::string configId;
+        BOOST_CHECK_EQUAL(true, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, configId));
+        BOOST_CHECK_EQUAL("CBF44FB5-FEBB-451B-9E97-3504A902D0E1", configId);
+
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_meter_programming_e2e_server_disabled )
+{
+    const Cti::Test::Override_MeterProgrammingManager overrideMeterProgrammingManager;
+
+    test_RfnCommercialDevice dut;
+    dut.e2eServerDisabled = true;
+
+    CtiCommandParser    parse("putconfig meter programming");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_CHECK_EQUAL(true, rfnRequests.empty());
+
+    {
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 202);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "No Method or Invalid Command.");
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_meter_programming_cancel )
+{
+    test_RfnCommercialDevice dut;
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, 0.0);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, "this-doesn't-matter-for-the-cancel");
+
+    CtiCommandParser    parse("putconfig meter programming cancel");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_CHECK_EQUAL(true, rfnRequests.empty());
+
+    {
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Meter programming canceled");
+    }
+
+    BOOST_CHECK_EQUAL(false, dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress));
+    BOOST_CHECK_EQUAL(false, dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID));
+
+    BOOST_CHECK_EQUAL(1, dut.mpsArchiveMessages.size());
+    {
+        const auto& result = dut.mpsArchiveMessages.front();
+
+        BOOST_CHECK_EQUAL("Rthis-doesn't-matter-for-the-cancel", result.configurationId);
+        BOOST_CHECK_EQUAL(0, result.error);
+        const auto rfnId = Cti::RfnIdentifier{ "TEST", "RFN", "COMMERCIAL" };
+        BOOST_CHECK_EQUAL(rfnId, result.rfnIdentifier);
+        BOOST_CHECK_EQUAL(Cti::Messaging::Rfn::ProgrammingStatus::Canceled, result.status);
+        //BOOST_CHECK_EQUAL("", result.timeStamp);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_putconfig_meter_programming_cancel_not_in_progress)
+{
+    test_RfnCommercialDevice dut;
+
+    //  Do not set the Meter Programming dynamicPaoInfo entries
+    //dut->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, 0.0);
+    //dut->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, guid);
+
+    CtiCommandParser    parse("putconfig meter programming cancel");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_CHECK_EQUAL(true, rfnRequests.empty());
+
+    {
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Meter programming not in progress");
+    }
+
+    BOOST_CHECK_EQUAL(true, dut.mpsArchiveMessages.empty());
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_meter_programming_cancel_e2e_server_disabled )
+{
+    const Cti::Test::Override_MeterProgrammingManager overrideMeterProgrammingManager;
+
+    test_RfnCommercialDevice dut;
+    dut.e2eServerDisabled = true;
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, 0.0);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, "this doesn't matter for the cancel");
+
+    CtiCommandParser    parse("putconfig meter programming cancel");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_CHECK_EQUAL(true, rfnRequests.empty());
+
+    {
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 202);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "No Method or Invalid Command.");
+    }
+
+    BOOST_CHECK_EQUAL(true, dut.mpsArchiveMessages.empty());
+}
+
 BOOST_AUTO_TEST_CASE( test_config_notification )
 {
     auto cmd = Cti::Devices::Commands::RfnCommand::handleUnsolicitedReport(execute_time, test_cmd_rfn_ConfigNotification::payload);
@@ -687,6 +874,8 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
 
         { PI::Key_RFN_RecordingIntervalSeconds,  7200 },
         { PI::Key_RFN_ReportingIntervalSeconds, 86400 },
+
+        { PI::Key_RFN_MetrologyLibraryEnabled, false },
     };
 
     BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries[-1].size(), std::size(dpiExpected));
@@ -1106,5 +1295,188 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
     }
 }
 
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configuration_verify_alpha_filtering_channel_config_midnight_channels_only )
+{
+    using CC = RfnStrings::ChannelConfiguration;
+
+    test_RfnCommercialDevice dut;
+    dut.setDeviceType(TYPE_RFN430A3K);
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    const std::map<std::string, std::string> configItems
+    {
+        { CC::EnabledChannels_Prefix,   "2" },
+        { CC::EnabledChannels_Prefix + ".0." + CC::EnabledChannels::Attribute, "DELIVERED_KWH" },
+        { CC::EnabledChannels_Prefix + ".0." + CC::EnabledChannels::Read,      "MIDNIGHT" },
+        { CC::EnabledChannels_Prefix + ".1." + CC::EnabledChannels::Attribute, "RECEIVED_KWH" },
+        { CC::EnabledChannels_Prefix + ".1." + CC::EnabledChannels::Read,      "MIDNIGHT" },
+        { CC::RecordingIntervalMinutes, "123" },
+        { CC::ReportingIntervalMinutes, "456" }
+    };
+
+    cfg.addCategory(
+            Cti::Config::Category::ConstructCategory(
+                    "rfnChannelConfiguration",
+                    configItems));
+
+    // set up dynamic pao info
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60 );
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60 );
+    }
+
+    // test the cases where we have no channel related dynamic pao info
+
+    {
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    resetTestState();
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, true );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    resetTestState();
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, false );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    // test the cases where we have channel related dynamic pao info, but it doesn't match the config
+
+    resetTestState();
+
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, { 1 } );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, { 1 } );    // not match an empty collection
+
+    {
+        dut.purgeDynamicPaoInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, true );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, false );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+
+    // test the cases where we have channel related dynamic pao info and it matches the config
+
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, { 1, 2 } );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, { } );
+
+    resetTestState();
+
+    {
+        dut.purgeDynamicPaoInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, true );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is current." );
+    }
+
+    {
+        dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ChannelConfigFiltered, false );
+
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+
+        BOOST_REQUIRE( returnMsgs.size() > 0 );
+
+        const auto & returnMsg = *returnMsgs.back();
+
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config channelconfig is NOT current." );
+    }
+}
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -26,11 +26,8 @@ using Cti::Devices::Commands::DeviceCommand;
 using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnCommandResultList;
 using Cti::Logging::Vector::Hex::operator<<;
+using Cti::Messaging::Rfn::ProgrammingStatus;
 using Cti::Messaging::Rfn::E2eMessenger;
-
-using namespace Cti::Messaging;
-using namespace Cti::Messaging::Pil;
-using namespace Cti::Messaging::ActiveMQ::Queues;
 
 using namespace std::chrono_literals;
 
@@ -164,15 +161,15 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
     return completedDevices;
 }
 
-void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::string& guid, const size_t totalSent)
+void RfnRequestManager::updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::string& guid, const size_t totalSent)
 {
-    constexpr auto YukonPrefix = static_cast<char>(Cti::MeterProgramming::GuidPrefixes::YukonProgrammed);
-    double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnDevice.getRfnIdentifier(), guid, totalSent);
+    constexpr auto YukonPrefix = as_underlying(Cti::MeterProgramming::GuidPrefixes::YukonProgrammed);
+    const double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnDevice.getRfnIdentifier(), guid, totalSent);
 
-    auto oldProgress = rfnDevice.findDynamicInfo<double>(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
+    const auto oldProgress = rfnDevice.findDynamicInfo<double>(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
 
-    //  If it's the same progress as the last one we sent, don't send the update again
-    if( fabs(progress - oldProgress.value_or(0.0)) < 1 )
+    //  If this progress update is less than the previous, do not sent an update
+    if( (progress + 0.1) < oldProgress.value_or(0.0) )
     {
         return;
     }
@@ -192,11 +189,22 @@ void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::st
             std::chrono::system_clock::now() });
 }
 
+void RfnRequestManager::sendMeterProgramStatusUpdate(Messaging::Rfn::MeterProgramStatusArchiveRequestMsg msg)
+{
+    Messaging::Rfn::sendMeterProgramStatusUpdate(std::move(msg));
+}
+
 
 bool isUploading(const Devices::RfnDevice& rfnDevice, const std::string& guid)
 {
     return rfnDevice.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress)
         && MeterProgramming::gMeterProgrammingManager->isAssigned(rfnDevice.getRfnIdentifier(), guid);
+}
+
+
+bool RfnRequestManager::isE2eServerDisabled() const
+{
+    return gConfigParms.isTrue("E2E_SERVER_DISABLED");
 }
 
 
@@ -208,9 +216,16 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
     {
         if( boost::algorithm::starts_with(message.path, meterProgramsPrefix) )
         {
+            if( isE2eServerDisabled() )
+            {
+                CTILOG_WARN(dout, "E2E server disabled, ignoring Meter Programming request for device " << rfnIdentifier);
+
+                return;
+            }
+
             if( ! message.token )
             {
-                sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
+                sendE2eDataAck(message.id, AckType::BadRequest, asid, PriorityClass::MeterProgramming, rfnIdentifier);
 
                 CTILOG_ERROR(dout, "Meter programming request received with no token for device " << rfnIdentifier);
 
@@ -221,7 +236,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             if( ! rfnDevice )
             {
-                sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
+                sendE2eDataAck(message.id, AckType::BadRequest, asid, PriorityClass::MeterProgramming, rfnIdentifier);
 
                 CTILOG_ERROR(dout, "Meter programming request received for unknown device " << rfnIdentifier);
 
@@ -232,7 +247,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             if( ! isUploading(*rfnDevice, guid) )
             {
-                sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
+                sendE2eDataAck(message.id, AckType::BadRequest, asid, PriorityClass::MeterProgramming, rfnIdentifier);
 
                 CTILOG_WARN(dout, "Meter program request received, but device is not uploading" << FormattedList::of(
                     "GUID", guid,
@@ -249,7 +264,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                     "GUID", guid,
                     "RfnIdentifier", rfnIdentifier));
 
-                sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
+                sendE2eDataAck(message.id, AckType::BadRequest, asid, PriorityClass::MeterProgramming, rfnIdentifier);
 
                 return;
             }
@@ -259,7 +274,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             if( program->size() < block.start() )
             {
-                sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
+                sendE2eDataAck(message.id, AckType::BadRequest, asid, PriorityClass::MeterProgramming, rfnIdentifier);
 
                 CTILOG_WARN(dout, "Meter program request block beyond end of program for device " << rfnIdentifier);
 
@@ -354,7 +369,14 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             if( message.confirmable )
             {
-                sendE2eDataAck(message.id, AckType::Success, asid, rfnIdentifier);
+                if( isE2eServerDisabled() )
+                {
+                    CTILOG_WARN(dout, "E2E server disabled, not sending ack for unsolicited report from device " << rfnIdentifier);
+
+                    return;
+                }
+
+                sendE2eDataAck(message.id, AckType::Success, asid, PriorityClass::DeviceConfiguration, rfnIdentifier);
 
                 stats.incrementAcks(rfnIdentifier, Now);
             }
@@ -420,6 +442,7 @@ void RfnRequestManager::handleBlockContinuation(const CtiTime Now, const RfnIden
         sendE2eDataRequestPacket(
             createE2eDtBlockContinuation(block.blockSize, block.num + 1, rfnIdentifier, token),
             activeRequest.request.command->getApplicationServiceId(),
+            activeRequest.request.command->getPriorityClass(),
             activeRequest.request.parameters.rfnIdentifier,
             activeRequest.request.parameters.priority,
             activeRequest.request.parameters.groupMessageId,
@@ -643,6 +666,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                             sendE2eDataRequestPacket(
                                 activeRequest.currentPacket.payloadSent,
                                 activeRequest.request.command->getApplicationServiceId(),
+                                activeRequest.request.command->getPriorityClass(),
                                 activeRequest.request.parameters.rfnIdentifier,
                                 E2EDT_RETRANSMIT_PRIORITY,
                                 activeRequest.request.parameters.groupMessageId,
@@ -812,6 +836,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
                     sendE2eDataRequestPacket(
                             e2ePacket,
                             request.command->getApplicationServiceId(),
+                            request.command->getPriorityClass(),
                             request.parameters.rfnIdentifier,
                             request.parameters.priority,
                             request.parameters.groupMessageId,
@@ -993,6 +1018,7 @@ RfnRequestManager::PacketInfo
     RfnRequestManager::sendE2eDataRequestPacket(
         const Bytes& e2ePacket,
         const ApplicationServiceIdentifiers &asid,
+        const PriorityClass priorityClass,
         const RfnIdentifier &rfnIdentifier,
         const unsigned priority,
         const long groupMessageId,
@@ -1002,6 +1028,7 @@ RfnRequestManager::PacketInfo
 
     msg.rfnIdentifier = rfnIdentifier;
     msg.payload       = e2ePacket;
+    msg.priorityClass = priorityClass;
     msg.priority      = clamp<1, MAXPRIORITY>(priority);
     msg.expiration    = expiration;
     msg.groupId       = groupMessageId;
@@ -1041,6 +1068,7 @@ void RfnRequestManager::sendE2eDataAck(
         const unsigned short id,
         const AckType ackType,
         const ApplicationServiceIdentifiers &asid,
+        const PriorityClass priorityClass,
         const RfnIdentifier &rfnIdentifier)
 {
     E2eMessenger::Request msg;
@@ -1052,6 +1080,7 @@ void RfnRequestManager::sendE2eDataAck(
     msg.rfnIdentifier = rfnIdentifier;
     msg.payload       = ackMessage;
     msg.priority      = E2EDT_ACK_PRIORITY;
+    msg.priorityClass = priorityClass;
     msg.expiration    = CtiTime::now() + E2EDT_CON_RETX_TIMEOUT;
 
     //  ignore the confirm and timeout callbacks - this is fire and forget, even if we don't hear back from NM
@@ -1082,6 +1111,7 @@ void RfnRequestManager::sendMeterProgrammingBlock(
     msg.rfnIdentifier = rfnIdentifier;
     msg.payload = dataMessage;
     msg.priority = E2EDT_ACK_PRIORITY;
+    msg.priorityClass = PriorityClass::MeterProgramming;
     msg.expiration = CtiTime::now() + gConfigParms.getValueAsDuration("E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT", E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT);
 
     //  ignore the confirm and timeout callbacks - let the existing Meter Programming timeout handle the expiration

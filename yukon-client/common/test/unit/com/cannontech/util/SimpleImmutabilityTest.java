@@ -253,6 +253,8 @@ import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
 import com.cannontech.dr.ecobee.message.StandardResponse;
+import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
+import com.cannontech.dr.ecobee.message.ZeusAuthenticationResponse;
 import com.cannontech.dr.ecobee.message.partial.DemandResponseRef;
 import com.cannontech.dr.ecobee.message.partial.Status;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
@@ -509,7 +511,9 @@ public class SimpleImmutabilityTest {
             Status.class,
             ThermostatRampRateValues.class,
             RfnLcrTlvPointDataType.class,
-            RfnLcr6700RelayMap.class
+            RfnLcr6700RelayMap.class,
+            ZeusAuthenticationRequest.class,
+            ZeusAuthenticationResponse.class
         );
          // @formatter:on
     }

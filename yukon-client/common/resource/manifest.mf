@@ -80,7 +80,7 @@ Class-Path: ./
  hawtbuf-1.11.jar 
  log4j-slf4j-impl-2.14.0.jar 
  geronimo-j2ee-management_1.1_spec-1.0.1.jar 
- slf4j-api-1.7.25.jar 
+ slf4j-api-1.7.30.jar 
  org.osgi.core-4.1.0.jar 
  spring-integration-core-5.3.2.RELEASE.jar 
  spring-integration-jms-5.3.2.RELEASE.jar 

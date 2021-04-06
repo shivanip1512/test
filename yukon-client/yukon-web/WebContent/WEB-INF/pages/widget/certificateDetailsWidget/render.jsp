@@ -1,6 +1,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<cti:msgScope paths="yukon.web.modules.operator.gateways.certificateUpdates, yukon.web.modules.operator.gateways.list">
+<cti:msgScope paths="yukon.web.modules.operator.gateways.manageCertificates, yukon.web.modules.operator.gateways.list">
     <div id="gateway-cert-details-popup" class="dn"></div>
 
     <div data-url="<cti:url value="/stars/gateways/certificateDetailsList"/>">

@@ -31,6 +31,7 @@ fields:
     pattern: 'yyyyMMddHHmm'
   - field:
       type: METER_NUMBER
+    missingAttribute: LEAVE_BLANK
   - field:
       type: PLAIN_TEXT
     pattern: 'OK'
@@ -39,7 +40,8 @@ fields:
     pattern: 'E'
   - field:
       type: ATTRIBUTE_NAME
-    fieldValue: CMEP  
+    fieldValue: CMEP
+    missingAttribute: LEAVE_BLANK
   - field:
       type: PLAIN_TEXT
     pattern: '1'
@@ -52,6 +54,7 @@ fields:
   - field:
       type: POINT_TIMESTAMP
     pattern: 'yyyyMMddHHmm'
+    missingAttribute: LEAVE_BLANK
   - field:
       type: PLAIN_TEXT
     pattern: 'R'
@@ -59,3 +62,4 @@ fields:
       type: POINT_VALUE
     pattern: '###.###'
     roundingMode: DOWN
+    missingAttribute: LEAVE_BLANK

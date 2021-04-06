@@ -499,6 +499,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_Q12_RATE_B">Peak kVA (Quadrants 1 2) Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_Q12_RATE_C">Peak kVA (Quadrants 1 2) Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_Q12_RATE_D">Peak kVA (Quadrants 1 2) Rate D</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_LAGGING_RATE_A">Peak kVA Lagging Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_LAGGING_RATE_B">Peak kVA Lagging Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_LAGGING_RATE_C">Peak kVA Lagging Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_LAGGING_RATE_D">Peak kVA Lagging Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_KVA_LAGGING">Delivered Peak kVA Lagging</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA">Received Peak kVA</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_RATE_A">Received Peak kVA Rate A</entry>
@@ -823,6 +827,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_UPDATE_STATUS">Firmware Update Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FREQUENCY">Frequency</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_ACTIVATION_STATUS">Relay 1 Activation Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_ACTIVATION_STATUS">Relay 2 Activation Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_ACTIVATION_STATUS">Relay 3 Activation Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_ACTIVATION_STATUS">Relay 4 Activation Status</entry>
 
     <!-- BuiltInAttribute see note above about changing values -->
 

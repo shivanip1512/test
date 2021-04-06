@@ -2457,18 +2457,18 @@ Java :
     jira : YUK-23077
     notes : Tomcat Servlet API
   
-  - filename : slf4j-api-1.7.25.jar
+  - filename : slf4j-api-1.7.30.jar
     yukon group : Log4j
     project : Simple Logging Facade for Java API
-    version : 1.7.25
+    version : 1.7.30
     project URL : "https://www.slf4j.org/"
     license : MIT
     license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/org.slf4j/slf4j-api/1.7.25"
-    md5 : caafe376afb7086dcbee79f780394ca3
-    sha1 : da76ca59f6a57ee3102f8f9bd9cee742973efa8a
-    updated : 2018-04-25
-    jira : YUK-18100
+    maven URL : "https://mvnrepository.com/artifact/org.slf4j/slf4j-api/1.7.30"
+    md5 : f8be00da99bc4ab64c79ab1e2be7cb7c
+    sha1 : b5a4b6d16ab13e34a88fae84c35cd5d68cac922c
+    updated : 2021-02-24
+    jira : YUK-23771
     notes : 
   
   
@@ -4530,6 +4530,20 @@ Network Manager :
     updated : 2021-02-10
     jira : NM-1908
     notes : Jackson Databind
+    
+  - filename : jackson-datatype-joda-2.12.1.jar
+    yukon group : Jackson
+    project : Jackson
+    version : 2.12.1
+    project URL : "https://github.com/FasterXML/jackson"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-joda/2.12.1"
+    md5 : 8461dd73c521b761fe789f6d024497a4
+    sha1 : d35d1de7d9651e849dfd76c602e0f4d19f68603d
+    updated : 2021-03-11
+    jira : NM-1985
+    notes : Jackson Datatype Joda
 
   - filename : jakarta-regexp-1.3.jar
     yukon group : IzPack
@@ -4937,18 +4951,18 @@ Network Manager :
     jira : NM-706 NM-1575
     notes : Apache Commons Logging Bridge for Log4j
 
-  - filename : log4j-slf4j-impl-2.13.1.jar
+  - filename : log4j-slf4j-impl-2.14.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.13.1
+    version : 2.14.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.13.1"
-    md5 : f84462cbd50370f984992a25cf3f6dc0
-    sha1 : 79e92fe5b6c30cc4c8a52893378d4d130e298c65
-    updated : 2020-08-06
-    jira : NM-1696
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.14.0"
+    md5 : 0fecb509f39c3de5f481b6c33f8cfa5e
+    sha1 : 79f3b3b85a8e75663f843c1ad14d94c1d6c65269
+    updated : 2021-03-02
+    jira : NM-1957
     notes : The Apache Log4j SLF4J API binding to Log4j 2 Core
 
   - filename : looks.jar
@@ -5634,18 +5648,6 @@ JavaScript :
     updated : 2020-03-11
     notes : The jquery.iframe-transport.js and jquery.ui.widget.js files comes along with this package. It is used for file Upload widget with multiple file selection and drag&drop support for jQuery in Yukon.
 
-  - project : flotcharts
-    version : 1.8.1?
-    project URL : "http://www.flotcharts.org/"
-    license : MIT
-    license URLs : "https://github.com/flot/flot/blob/7f5f90384ed6d6c30b232580d358c84e355919ab/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/flot-latest"
-    md5 : a3bc777fbb2d1483e3afbfc25b527da8
-    sha1 : 403b09446b2baa5f122ee40e61a27c1b9c30f883
-    jira : YUK-13033
-    updated : 2014-02-17
-    notes : Minified, cannot determine version
-
   - project : form
     version : 4.3.0
     project URL : "http://malsup.com/jquery/form/"
@@ -5966,13 +5968,13 @@ C++ :
     project URL : "https://www.boost.org/"
     license : Boost
     license URLs : "https://www.boost.org/users/license.html"
-    md5 : a9f4bf3096dc571006feb2e4dbec4709
-    sha1 : df11c4cf079ae0ca3f668d093d0280ecc239447f
+    md5 : 3573db1bdd88d1790c3982b95bedcf13
+    sha1 : 6022cee21c964206c1bf207cb5eca8616f92ef22
     fileCount : 14827
-    totalSize : 220779001
-    updated : 2021-01-07
-    jira : YUK-22174
-    notes : 
+    totalSize : 220779008
+    updated : 2021-03-23
+    jira : YUK-24063
+    notes : Concept check fix applied
 
   - project : Microsoft Debug Help 
     path : DBGHELP

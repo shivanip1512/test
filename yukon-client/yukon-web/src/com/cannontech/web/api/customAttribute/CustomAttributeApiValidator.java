@@ -1,13 +1,17 @@
 package com.cannontech.web.api.customAttribute;
 
+import java.util.Optional;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -34,8 +38,18 @@ public class CustomAttributeApiValidator extends SimpleValidator<CustomAttribute
         YukonApiValidationUtils.checkIsBlank(errors, "name", attribute.getName(), nameI18nText, false);
 
         if (!errors.hasFieldErrors("name")) {
+            String attributeNameWithoutSpace = attribute.getName().trim();
             YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", attribute.getName(), 60);
             YukonApiValidationUtils.checkBlacklistedCharacter(errors, "name", attribute.getName(), nameI18nText);
+            Optional<CustomAttribute> customAttribute = AttributeService.customAttributes.asMap()
+                                                                        .values()
+                                                                        .stream()
+                                                                        .filter(attr -> attr.getName().equalsIgnoreCase(attributeNameWithoutSpace))
+                                                                        .findFirst();
+            if (customAttribute.isPresent()) {
+                errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                        new Object[] { attributeNameWithoutSpace }, "");
+            }
         }
     }
 }

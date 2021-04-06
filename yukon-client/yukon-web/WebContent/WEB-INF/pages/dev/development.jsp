@@ -52,6 +52,7 @@
                     <li><a href="<cti:url value="/dev/ivvc/ivvcSimulator"/>">IVVC Test</a></li>
                     <li><a href="<cti:url value="/dev/js-testing"/>">JS Testing</a></li>
                     <li><a href="<cti:url value="/dev/ecobee/viewBase"/>">Ecobee Test</a></li>
+                    <li><a href="<cti:url value="/dev/ecobee/zeus/viewBase"/>">Zeus Ecobee Test</a></li>
                     <li><a href="<cti:url value="/dev/systemHealthMetricSimulator/home"/>">Fake System Health Metrics</a></li>
                     <li><a href="<cti:url value="/dev/paoDefinition"/>">Pao Definition Testing</a></li>
                     <li><a href="<cti:url value="/dev/smartNotificationsSimulator"/>">Smart Notifications Testing</a></li>

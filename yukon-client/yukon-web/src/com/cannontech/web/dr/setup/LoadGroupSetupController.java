@@ -83,6 +83,7 @@ public class LoadGroupSetupController {
     @GetMapping("/create")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+
         model.addAttribute("mode", PageEditMode.CREATE);
         LoadGroupBase loadGroup = new LoadGroupBase();
         if (model.containsAttribute("loadGroup")) {

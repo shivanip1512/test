@@ -89,7 +89,7 @@ yukon.widget.dataCollection = (function () {
         
         chart.removeClass('js-initialize');
     },
-    
+
     /** Update the existing pie chart. */
     _updateChart = function (chart, data) {
         chart.find('.highcharts-legend-item').remove();
@@ -150,7 +150,7 @@ yukon.widget.dataCollection = (function () {
             clearTimeout(_updateTimeout);
         }
         _updateTimeout = setTimeout(_update, yg._updateInterval);
-        
+            
     },
     
     mod = {
@@ -197,6 +197,12 @@ yukon.widget.dataCollection = (function () {
             });
 
             _initialized = true;
+        },
+        setSelectedDeviceGroup : function(uniqueId) {
+            var changedGroupName = $('#changedGroupName_' + uniqueId).val();
+            $('#changeDeviceGroupLink_' + uniqueId).html(changedGroupName);
+            $('#groupName_' + uniqueId).val(changedGroupName);
+            _update(true);
         },
         
         buildChart : function (chart, data) {

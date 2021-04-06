@@ -32,7 +32,10 @@
         <constructor-arg index="9" value="0" />
         <constructor-arg index="10" value="0" />
     </bean>
+    <bean class="com.cannontech.web.dev.ZeusEcobeeDataConfiguration"/>
+    
     <bean class="com.cannontech.web.dev.service.SystemHealthMetricSimulatorService"/>
     <bean class="com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings"/>
     <bean class="com.cannontech.web.dev.NestSimulatorConfiguration"/>
+    <bean class="com.cannontech.web.dev.MockZeusResponseFactory"/>
 </beans>

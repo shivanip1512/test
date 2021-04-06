@@ -53,6 +53,7 @@ import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
+import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
 import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
 import com.google.common.collect.ForwardingList;
 import com.google.common.collect.ForwardingMap;
@@ -83,6 +84,10 @@ public class SimpleEqualsTest {
     @Test
     public void test_AuthenticationRequest() {
         testEqualsAndHashCode(AuthenticationRequest.class, true);
+    }
+    @Test
+    public void test_ZeusAuthenticationRequest() {
+        testEqualsAndHashCode(ZeusAuthenticationRequest.class, true);
     }
 
     @Test

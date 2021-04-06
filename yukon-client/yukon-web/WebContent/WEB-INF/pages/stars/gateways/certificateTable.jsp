@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="yukon.web.modules.operator.gateways.certificateUpdates, yukon.web.modules.operator.gateways.list, yukon.web.modules.operator.gateways">
+<cti:msgScope paths="yukon.web.modules.operator.gateways.manageCertificates, yukon.web.modules.operator.gateways.list, yukon.web.modules.operator.gateways">
     <table id="cert-table" class="compact-results-table">
         <thead>
             <tr>
@@ -53,6 +53,6 @@
         </tbody>
     </table>
     <c:if test="${empty certUpdates}">
-        <span class="empty-list compact-results-table"><i:inline key=".certificateUpdates.cert.updates.none"/></span>
+        <span class="empty-list compact-results-table"><i:inline key=".manageCertificates.cert.updates.none"/></span>
     </c:if>
 </cti:msgScope>

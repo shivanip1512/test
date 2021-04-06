@@ -73,7 +73,6 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
         builder.add(timestampPattern);
         builder.add(padSide);
         builder.add(maxLength);
-        builder.add(missingAttribute);
         defaultedFieldNames = builder.build();
     }
 
@@ -237,22 +236,27 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                         continue;
                     }
 
-                    if (applicableFieldList.contains(fieldName) && (fieldName.equals(padSide) || fieldName.equals(padChar))) {
-                        if (exportField.getPadSide() != PadSide.NONE && exportField.getPadChar() == null) {
-                            if (!errors.hasFieldErrors(padChar)) {
+                    if (applicableFieldList.contains(fieldName) && fieldName.equals(padChar)) {
+                        // If padSide is not NONE, padChar is required else it is not applicable.
+                        if (exportField.getPadSide() != PadSide.NONE) {
+                            if (exportField.getPadChar() == null && !errors.hasFieldErrors(padChar)) {
                                 errors.rejectValue(padChar, requiredKey, new Object[] { padChar, type }, "");
                             }
+                        } else if (exportField.getPadChar() != null) {
+                            errors.rejectValue(padChar, notApplicableKey, new Object[] { padChar, type }, "");
                         }
                         continue;
                     }
-                    if (applicableFieldList.contains(fieldName)
-                            && (fieldName.equals(missingAttribute) || fieldName.equals(missingAttributeValue))) {
-                        if (exportField.getMissingAttribute() == MissingAttribute.FIXED_VALUE
-                                && exportField.getMissingAttributeValue() == null) {
-                            if (!errors.hasFieldErrors(missingAttributeValue)) {
+                    if (applicableFieldList.contains(fieldName) && fieldName.equals(missingAttributeValue)) {
+                        // If missingAttribute is FIXED_VALUE, missingAttributeValue is required else it is not applicable.
+                        if (exportField.getMissingAttribute() == MissingAttribute.FIXED_VALUE) {
+                            if (exportField.getMissingAttributeValue() == null && !errors.hasFieldErrors(missingAttributeValue)) {
                                 errors.rejectValue(missingAttributeValue, requiredKey,
                                         new Object[] { missingAttributeValue, type }, "");
                             }
+                        } else if (exportField.getMissingAttributeValue() != null) {
+                            errors.rejectValue(missingAttributeValue, notApplicableKey,
+                                    new Object[] { missingAttributeValue, type }, "");
                         }
                         continue;
                     }
@@ -310,9 +314,6 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                 return false;
             }
             if (fieldValue instanceof Integer && Integer.valueOf(fieldValue.toString()) == 0) {
-                return false;
-            }
-            if (fieldValue instanceof MissingAttribute && (MissingAttribute) fieldValue == MissingAttribute.LEAVE_BLANK) {
                 return false;
             }
         }

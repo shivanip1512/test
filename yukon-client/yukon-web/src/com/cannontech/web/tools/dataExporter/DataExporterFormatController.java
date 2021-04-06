@@ -170,7 +170,7 @@ public class DataExporterFormatController {
         if (useTemplate) {
             try {
                 exportFormat = parseAndValidateTemplate(fileName, flashScope, result, userContext);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 log.error("Error occurred while parsing the template file", e);
                 flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.error"));
                 exportFormat = setExportFormatForErrorScenario();

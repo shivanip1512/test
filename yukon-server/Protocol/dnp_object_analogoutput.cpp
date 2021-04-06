@@ -2,6 +2,7 @@
 
 #include "dnp_object_analogoutput.h"
 #include "logger.h"
+#include "std_helper.h"
 
 #include <boost/cstdint.hpp>
 
@@ -478,7 +479,7 @@ void AnalogOutput::setControl(double value)
 
 void AnalogOutput::setStatus(ControlStatus status)
 {
-    _status = static_cast<unsigned char>(status);
+    _status = as_underlying(status);
 }
 
 }

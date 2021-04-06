@@ -89,6 +89,9 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
      * Adds an entry in rfnLogger
      */
     private void log(String text) {
+        if(commsLogger == null) {
+            return;
+        }
         if (!internalMessage && commsLogger.isInfoEnabled()) {
             commsLogger.info(text);
         } else if (internalMessage && commsLogger.isDebugEnabled()) {

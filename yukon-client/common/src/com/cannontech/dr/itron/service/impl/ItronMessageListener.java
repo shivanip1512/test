@@ -53,7 +53,7 @@ public class ItronMessageListener {
                 RecentEventParticipationItronData data = itronCommunicationService.sendDREventForGroup(groupId, dutyCycleType, dutyCyclePercent, dutyCyclePeriod, criticality,
                     rampIn, rampOut, controlDuration);
                 recentEventParticipationService.createDeviceControlEvent(data.getProgramId(), 
-                                                                         data.getEventId(), 
+                                                                         Long.toString(data.getEventId()), 
                                                                          groupId,
                                                                          startTime, 
                                                                          endTime);

@@ -1,5 +1,7 @@
 package com.cannontech.dr.eatonCloud;
 
+import java.util.UUID;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -25,8 +27,10 @@ public class EatonCloudMessageListener {
 
         log.debug("LM Eaton Cloud Command - Group Id: {}, startTime: {}, endTime: {}, Duty Cycle Percent: {}", groupId, startTime, endTime, dutyCyclePercent);
 
+        String guid = UUID.randomUUID().toString();
+
         recentEventParticipationService.createDeviceControlEvent(0, // ProgramId - I don't think we get/have this
-                                                                 0, // EventId - I don't think we get/have this
+                                                                 guid,
                                                                  groupId,
                                                                  startTime,
                                                                  endTime);

@@ -75,7 +75,8 @@
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".primaryGateway">
                         <cti:msg2 var="gatewayPlaceholder" key=".selectGateways"/>
-                        <select id="selectedGatewayIds" name="selectedGatewayIds" class="js-primary-gateway-select" multiple="multiple" data-placeholder="${gatewayPlaceholder}">
+                        <select id="selectedGatewayIds" name="selectedGatewayIds" class="js-primary-gateway-select w300" multiple="multiple" 
+                            data-placeholder="${gatewayPlaceholder}" size="1">
                             <c:forEach var="gateway" items="${gateways}">
                                 <c:set var="checked" value="${false}"/>
                                 <c:forEach var="selectedGateway" items="${selectedGateways}">

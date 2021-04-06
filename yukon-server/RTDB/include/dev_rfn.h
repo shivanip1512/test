@@ -45,6 +45,8 @@ protected:
 
     virtual bool areAggregateCommandsSupported() const;
 
+    virtual bool isE2eServerDisabled() const;
+
     std::unique_ptr<CtiReturnMsg> makeReturnMsg(const CtiRequestMsg& req, const std::string result, YukonError_t nRet);
 
     YukonError_t executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod );

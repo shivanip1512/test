@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -48,6 +49,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
     
     private final Logger log = YukonLogManager.getLogger(SiteSearchServiceImpl.class);
     private final static Analyzer analyzer = new YukonObjectSearchAnalyzer();
+    private final static String macAddressPatternRegex = "^[a-zA-Z0-9:]*$";
 
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private SiteSearchIndexManager siteSearchIndexManager;
@@ -56,7 +58,15 @@ public class SiteSearchServiceImpl implements SiteSearchService {
 
     @Override
     public String sanitizeQuery(String query) {
-        return query == null ? "" : query.replaceAll("[^\\p{Alnum}]+", " ").trim();
+        if (query == null) {
+            return StringUtils.EMPTY;
+            // If matching regex(multiple set of 2 alphanumeric and :), the update query to support MAC address search.
+            //Valid Strings example: AA:, 11:, 1A:, 1A:2B . Invalid String example: AAA:,111:, 1:, A:
+        } else if (query.matches(macAddressPatternRegex)) {
+            return query.replace(":", "\\:").trim();
+        } else {
+            return query.replaceAll("[^\\p{Alnum}]+", " ").trim();
+        }
     }
 
     /**
