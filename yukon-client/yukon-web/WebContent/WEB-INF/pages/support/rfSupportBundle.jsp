@@ -26,9 +26,9 @@
                     
                         </tags:nameValueContainer2>
                         <div class="page-action-area"> 
-                            <c:if test="${!inProgress}">
+                          
                                 <cti:button nameKey="supportBundle.createBundleBtn" type="submit" classes="primary action js-execute-command" busy="true"/>
-                            </c:if>
+                       
                           
                             <c:if test="${inProgress}">
                               

@@ -169,7 +169,7 @@
 <cti:includeScript link="/resources/js/pages/yukon.rfSupportBundle.js"/>
 
     <script>
-        yukon.smart.notifications.init();
+       yukon.rfSupportBundle.init();
     </script>
     
 </cti:standardPage>
