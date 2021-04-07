@@ -311,12 +311,12 @@ public class SupportController {
         rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
         Map<String, Object> json = new HashMap<>();
         
-        // TO-DO
-        /*boolean inProgress = supportBundleService.isInProgress();
-        json.put("inProgress", inProgress);
-        if (!inProgress) {
-            json.put("fileName", supportBundleService.getMostRecentBundle().getName());
-        }*/
+        // TO-DO Invoke Service to check progress of rf support bundle. bundle.inProgress(rfSupportBundle); 
+        //boolean inProgress = supportBundleService.isInProgress();
+        json.put("inProgress", true);
+        if (!true) {
+           // json.put("fileName", supportBundleService.getMostRecentBundle().getName());
+        }
         return json;
     }
 

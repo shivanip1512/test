@@ -32,14 +32,11 @@ yukon.rfSupportBundle = (function () {
             		});
             		});
                 
-               /* $(document).on('click', '.js-execute-command', function() {
-                	alert("Hi");
-                    var controlWindowRow = $(this).closest('tr'),
-                        useControlWindow = controlWindowRow.find('.switch-btn-checkbox').prop('checked');
-                    $('#dailyStartTimeInMinutes').prop('disabled', !useControlWindow);
-                    $('#dailyStopTimeInMinutes').prop('disabled', !useControlWindow);
+                $(document).on('click', '.js-execute-command', function() {
+                	
+                	checkUpdate(); 
                 });
-                */
+                
                 
                 _initialized = true;
             }
@@ -47,7 +44,17 @@ yukon.rfSupportBundle = (function () {
 
         return mod;
     })();
-
+function checkUpdate(){
+    $.getJSON(yukon.url("/support/rfbundleInProgress")).done(function(json) {
+        refreshContent();
+        if(json.inProgress) {
+            setTimeout(checkUpdate,1000);
+        } else{
+           
+            $("#createRfBundleForm :button").removeAttr("disabled");
+        }
+    });
+}
 $(function() {
 	yukon.rfSupportBundle.init();
 });

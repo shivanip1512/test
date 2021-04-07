@@ -27,15 +27,8 @@
                     
                         </tags:nameValueContainer2>
                         <div class="page-action-area"> 
-                          
-                                <cti:button nameKey="supportBundle.createBundleBtn" type="submit" classes="primary action js-execute-command" busy="true"/>
-                       
-                          
-                            <c:if test="${inProgress}">
-                              
-                                <i:inline key=".supportBundle.bundleInProgressMsg"/>
-                                <cti:button id="viewProgress" nameKey="supportBundle.viewProgressBtn" href="${viewBundleProgressURL}" />
-                            </c:if>
+                            <cti:button nameKey="supportBundle.createBundleBtn" type="submit" classes="primary action js-execute-command" busy="true"/>
+                            <cti:button nameKey="supportBundle.downloadBtn" type="submit" disabled="true" name="download" icon="icon-download"/>
                         </div>
                     </form:form>
                 </cti:tab>
