@@ -25,7 +25,7 @@ public class SmartNotifDeviceDataMonitorDecider extends SmartNotificationDecider
     }
     
     @Autowired private MonitorCacheService monitorCacheService;
-
+    
     @Override
     public List<SmartNotificationEvent> validate(List<SmartNotificationEvent> events) {
         return events.stream().
@@ -40,7 +40,7 @@ public class SmartNotifDeviceDataMonitorDecider extends SmartNotificationDecider
         if(allEvents.isEmpty()){
             return subscriptions;
         }
-        Set<Object> monitorIds = allEvents.stream().map(e -> DeviceDataMonitorEventAssembler.getMonitorId(e.getParameters())).collect(
+        Set<Integer> monitorIds = allEvents.stream().map(e -> DeviceDataMonitorEventAssembler.getMonitorId(e.getParameters())).collect(
                 Collectors.toSet());         
         List<SmartNotificationSubscription> allSubscriptions = subscriptionDao.getSubscriptions(eventType,
             DeviceDataMonitorEventAssembler.MONITOR_ID, new ArrayList<>(monitorIds), frequency);
@@ -56,7 +56,6 @@ public class SmartNotifDeviceDataMonitorDecider extends SmartNotificationDecider
                 monitorIdToSubscription.get(monitorId).forEach(s -> subscriptions.put(s, e));
             }
         });
-        
         return subscriptions;
     }
     
@@ -87,5 +86,15 @@ public class SmartNotifDeviceDataMonitorDecider extends SmartNotificationDecider
             subscriptions.putAll(sub, deviceDataMonitorMap.get(monitorId));
         });
         return subscriptions;
+    }
+
+    @Override
+    protected List<SmartNotificationEvent> getUnprocessedGroupedEvents(String cacheKey) {
+        return eventDao.getUnprocessedGroupedEvents(eventType, "monitorId", cacheKey.replace(eventType + "_", ""));
+    }
+
+    @Override
+    protected String getCacheKey(SmartNotificationSubscription subscription) {
+        return eventType + "_" + DeviceDataMonitorEventAssembler.getMonitorId(subscription.getParameters());
     }
 }

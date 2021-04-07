@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -41,27 +40,22 @@ public class SmartNotificationDailyDigestService implements MessageListener {
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private List<SmartNotificationDecider> deciders;
     @Autowired private SmartNotificationDeciderService deciderService;
-    
-    private static final Logger log = YukonLogManager.getLogger(SmartNotificationDailyDigestService.class);
+    private static Logger commsLogger = YukonLogManager.getCommsLogger();
    
     @PostConstruct
     private void scheduleDailyDigest() {
-        log.info("Scheduling Daily Digest");
         int minutesToNextRun = 60 - DateTime.now().getMinuteOfHour();
-        
+        deciderService.logInfo("Scheduling Daily Digest. Minutes to the next run:"+ minutesToNextRun, this);
         scheduledExecutor.scheduleWithFixedDelay(() -> doDailyDigest(DateTime.now()), minutesToNextRun, 60, TimeUnit.MINUTES);
     }
     
     private void doDailyDigest(DateTime now) {
         try {
-            log.info("Running Daily Digest for "+ now.toString("MM-dd-yyyy HH:mm:ss"));
-            String digestTime = now.withMinuteOfHour(0).toString("H:mm"); //Digest should always be on the hour
-            log.debug("Digest time: " + digestTime);
-            
+            String digestTime = now.withMinuteOfHour(0).toString("H:mm"); //Digest should always be on the hour            
             doDailyDigestGrouped(digestTime);
             doDailyDigestUngrouped(digestTime);
         } catch (Exception e) {
-            log.error("Unexpected exception occurred while processing Smart Notification Daily Digest.", e);
+            commsLogger.error("Unexpected exception occurred while processing Smart Notification Daily Digest.", e);
         }
     }
     
@@ -73,7 +67,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
                 getMessageParameters(getDecider(type), combinedSubscriptions.get(type));
             allMessages.addAll(messageParameters);
         }
-        deciderService.putMessagesOnAssemblerQueue(allMessages, 0, true);
+        deciderService.putMessagesOnAssemblerQueue(allMessages, 0, true, digestTime);
     }
     
     private void doDailyDigestUngrouped(String digestTime) {
@@ -81,14 +75,14 @@ public class SmartNotificationDailyDigestService implements MessageListener {
         for (SmartNotificationEventType type : subscriptionsPerEventType.keySet()) {
             List<SmartNotificationMessageParameters> messageParameters =
                 getMessageParameters(getDecider(type), subscriptionsPerEventType.get(type));
-            deciderService.putMessagesOnAssemblerQueue(messageParameters, 0, false);
+            deciderService.putMessagesOnAssemblerQueue(messageParameters, 0, false, digestTime);
         }
     }
     
     private List<SmartNotificationMessageParameters> getMessageParameters(SmartNotificationDecider decider,
             Set<SmartNotificationSubscription> subscriptions) {
         
-        Instant now = Instant.now();
+        Instant now = new DateTime().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0).toInstant();
         Instant oneDayAgo = now.minus(Duration.standardDays(1));
         List<SmartNotificationEvent> events = getEvents(decider, new Range<>(oneDayAgo, false, now, true)); //retrieved events correctly
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionsToEvents =
@@ -120,10 +114,8 @@ public class SmartNotificationDailyDigestService implements MessageListener {
                     doDailyDigest(digestTime);
                 }
             }
-        } catch (JMSException e) {
-            log.error("Unable to extract message", e);
         } catch (Exception e) {
-            log.error("Unable to process message", e);
+            commsLogger.error("Unable to process message", e);
         }
     }
 }

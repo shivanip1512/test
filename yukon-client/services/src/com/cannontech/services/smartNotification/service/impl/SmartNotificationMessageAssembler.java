@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -17,11 +16,14 @@ import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.common.stream.StreamUtils;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.services.smartNotification.service.SmartNotificationDeciderService;
 import com.cannontech.services.smartNotification.service.SmartNotificationMessageParametersHandler;
 
 public class SmartNotificationMessageAssembler implements MessageListener {
-    private static final Logger log = YukonLogManager.getLogger(SmartNotificationMessageAssembler.class);
+    private static final Logger commslogger = YukonLogManager.getCommsLogger();
     private Map<SmartNotificationMedia, SmartNotificationMessageParametersHandler> mediaHandlers;
+    @Autowired private SmartNotificationDeciderService deciderService;
     
     @Autowired
     public SmartNotificationMessageAssembler(List<SmartNotificationMessageParametersHandler> messageParametersHandlers) {
@@ -40,10 +42,8 @@ public class SmartNotificationMessageAssembler implements MessageListener {
                     handle((SmartNotificationMessageParametersMulti) object);
                 }
             }
-        } catch (JMSException e) {
-            log.error("Unable to extract message", e);
         } catch (Exception e) {
-            log.error("Unable to process message", e);
+            commslogger.error("Unable to process message", e);
         }
     }
     
@@ -51,15 +51,14 @@ public class SmartNotificationMessageAssembler implements MessageListener {
      * Receives a message parameters object and passes it to the appropriate handler method for processing.
      */
     public void handle(SmartNotificationMessageParametersMulti parametersMulti) {
-        log.debug("Processing message: " + parametersMulti);
         if (parametersMulti.isSendAllInOneEmail()) {
             // This could be coalesced notifications of a single type, or a combined digest of different types.
             // Build all these parameter objects into a single email
             SmartNotificationMessageParametersHandler builder = mediaHandlers.get(parametersMulti.getMedia());
             if (builder == null) {
-                log.error("Unable to send notification - unsupported media type: " + parametersMulti.getMedia());
-                log.debug(parametersMulti);
+                throw new NotFoundException("Unable to send notification - unsupported media type: " + parametersMulti.getMedia());
             }
+            deciderService.logInfo("Sending messages in combined email. Message parameters: " + parametersMulti.loggingString(commslogger.getLevel()), this);
             builder.buildMultiAndSend(parametersMulti);
         } else {
             // Process each parameters object individually
@@ -67,9 +66,9 @@ public class SmartNotificationMessageAssembler implements MessageListener {
             for(SmartNotificationMessageParameters parameters : parametersMulti.getMessageParameters()) {
                 SmartNotificationMessageParametersHandler builder = mediaHandlers.get(parameters.getMedia());
                 if (builder == null) {
-                    log.error("Unable to send notification - unsupported media type: " + parameters.getMedia());
-                    log.debug(parameters);
+                    throw new NotFoundException("Unable to send notification - unsupported media type: " + parametersMulti.getMedia());
                 }
+                deciderService.logInfo("Sending individual messages for interval:" + intervalMinutes + ". Message parameters: " + parametersMulti.loggingString(commslogger.getLevel()), this);
                 builder.buildAndSend(parameters, intervalMinutes);
             }
         }

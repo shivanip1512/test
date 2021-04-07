@@ -77,4 +77,14 @@ public class SmartNotificationDataImportDecider extends SmartNotificationDecider
                                     .filter(entry -> entry.getKey().equalsIgnoreCase(DataImportAssembler.FILES_WITH_ERROR))
                                     .anyMatch(entry -> StringUtils.isNotBlank(entry.getValue().toString()));
     }
+    
+    @Override
+    protected List<SmartNotificationEvent> getUnprocessedGroupedEvents(String cacheKey) {
+       return eventDao.getUnprocessedGroupedEvents(eventType);
+    }
+
+    @Override
+    protected String getCacheKey(SmartNotificationSubscription subscription) {
+        return eventType.toString();
+    }
 }
