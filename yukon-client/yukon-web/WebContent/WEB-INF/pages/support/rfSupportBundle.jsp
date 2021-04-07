@@ -9,6 +9,7 @@
 <cti:url value="/support/createRfBundle" var="createRfBundleURL"/>
 <cti:url value="/support/viewBundleProgress" var="viewBundleProgressURL"/>    
     <div class="column one">
+    <tags:alertBox type="warning">Run RF Network Data Collection outside business hour. It will take more than 15 min to generate the data.</tags:alertBox>
         <tags:sectionContainer2 nameKey="rfSupportBundle">
             <cti:tabs>
                 <cti:msg2 key=".supportBundle.createNewHeading" var="createNewHeading"/>
