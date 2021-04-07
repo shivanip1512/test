@@ -2,6 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -77,6 +78,15 @@ public final class DeviceDaoImpl implements DeviceDao {
         PaoIdentifier paoIdentifier = rs.getPaoIdentifier("DeviceId", "Type");
         String macAddress = rs.getString("MacAddress");
         return new PaoMacAddress(paoIdentifier, macAddress);
+    };
+    
+    public static final YukonRowMapper<Entry<Integer, String>> DEVICEID_GUID_ROW_MAPPER = new YukonRowMapper<>() {
+        @Override
+        public Entry<Integer, String> mapRow(YukonResultSet rs) throws SQLException {
+            Integer deviceId = rs.getInt("DeviceId");
+            String guid = rs.getString("Guid");
+            return new AbstractMap.SimpleEntry<Integer, String>(deviceId, guid);
+        }
     };
     
     @PostConstruct
@@ -653,5 +663,17 @@ public final class DeviceDaoImpl implements DeviceDao {
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Guid is not found for device id " + deviceId, e);
         }
+    }
+
+    @Override
+    public Map<Integer, String> getGuids(Iterable<Integer> deviceIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("Select DeviceId, Guid");
+        sql.append("FROM DeviceGuid");
+        sql.append("WHERE DeviceId").in(deviceIds);
+        List<Entry<Integer, String>> entries = jdbcTemplate.query(sql, DEVICEID_GUID_ROW_MAPPER);
+        Map<Integer, String> deviceToGuid = new HashMap<>();
+        entries.stream().forEach(entry -> deviceToGuid.put(entry.getKey(), entry.getValue()));
+        return deviceToGuid;
     }
 }

@@ -1,11 +1,10 @@
 package com.cannontech.dr.pxmw.service.impl.v1;
 
 import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
+import com.cannontech.message.dispatch.message.PointData;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,22 +15,21 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import org.jfree.util.Log;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
@@ -50,14 +48,14 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
     @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
 
     @Override
-    public void collectDataForRead(List<Integer> deviceIds) {
+    public void collectDataForRead(Set<Integer> deviceIds) {
         //1. Get GUID
         //2. Get all tags for device
         //3. Ask Johns thing for data
         //4. Update data in dispatch
         //5. Update recent participation
         //6. Update asset availability
-        BidiMap<Integer, String> deviceIdGuid = new DualHashBidiMap<Integer, String>();
+        BidiMap<Integer, String> deviceIdGuid = new DualHashBidiMap<Integer, String>(deviceDao.getGuids(deviceIds));
         Map<Integer, LiteYukonPAObject> deviceToPao = new HashMap<Integer, LiteYukonPAObject>();
         List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaos(deviceIds);
         Map<PaoType, List<BuiltInAttribute>> paoTypeToAttributes = new HashMap<PaoType, List<BuiltInAttribute>>();
@@ -68,12 +66,12 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
 
         for (LiteYukonPAObject pao : paos) {
             int paoId = pao.getPaoIdentifier().getPaoId();
-            deviceIdGuid.put(paoId, deviceDao.getGuid(paoId));
             deviceToPao.put(paoId, pao);
             paoTypes.add(pao.getPaoType());
             for (AttributeDefinition attributeDefinition : paoDefinitionDao.getDefinedAttributes(pao.getPaoType())) {
                 BuiltInAttribute builtInAttribute = attributeDefinition.getAttribute();
                 Integer pointId = attributeDefinition.getPointId(pao);
+                PointType pointType = attributeDefinition.getPointTemplate().getPointIdentifier().getPointType();
                 if (!deviceToAttributeToPointId.containsKey(paoId)) {
                     deviceToAttributeToPointId.put(paoId, new HashMap<BuiltInAttribute, Integer>());
                 }
@@ -111,10 +109,16 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         
         List<PxMWTimeSeriesDeviceResultV1> devices = response.getMsg();
         for (PxMWTimeSeriesDeviceResultV1 deviceResult : devices) {
+            Integer deviceId = deviceIdGuid.getKey(deviceResult.getDeviceId());
             for (PxMWTimeSeriesResultV1 result : deviceResult.getResults()) {
                 String tag = result.getTag();
                 BuiltInAttribute attribute = MWChannel.getChannelLookup().get(Integer.parseInt(tag)).getBuiltInAttribute();
-                
+                Integer pointId = deviceToAttributeToPointId.get(deviceId).get(attribute);
+                PointData pointData = new PointData();
+                pointData.setId(pointId);
+                pointData.setPointQuality(PointQuality.Normal);
+                pointData.setType();
+                pointData.setTagsPointMustArchive(true);
             }
         }
         
