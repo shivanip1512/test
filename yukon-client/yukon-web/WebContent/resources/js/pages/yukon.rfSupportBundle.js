@@ -20,7 +20,6 @@ yukon.rfSupportBundle = (function () {
             		var date = $("input[name=date]", "#createRfBundleForm").val();
             		var customerName = $("input[name=customerName]", "#createRfBundleForm").val();
             	
-            		var customerName , date;
             		$.ajax({
             		url: yukon.url('/support/createRfBundle'),
             		type: "POST",
