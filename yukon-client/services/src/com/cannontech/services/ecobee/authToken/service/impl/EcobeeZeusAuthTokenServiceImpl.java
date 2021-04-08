@@ -75,6 +75,7 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         YukonHttpProxy.fromGlobalSetting(globalSettingDao)
                 .ifPresent(httpProxy -> factory.setProxy(httpProxy.getJavaHttpProxy()));
+        factory.setOutputStreaming(false);
         restTemplate.setRequestFactory(factory);
     }
 

@@ -49,6 +49,7 @@ public class EcobeeZeusRequestHelper {
         YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
             factory.setProxy(httpProxy.getJavaHttpProxy());
         });
+        factory.setOutputStreaming(false);
         restTemplate.setRequestFactory(factory);
     }
 
