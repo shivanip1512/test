@@ -20,7 +20,8 @@ public class MappingServiceImpl implements MappingService {
     private final static String mappingStreetUrl = "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=";
     private final static String mappingSatelliteUrl = "https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=";
     private final static String mappingHybridUrl = "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/{z}/{x}/{y}?access_token=";
-    private final static String mappingElevationUrl = "https://{a-d}.tiles.mapbox.com/v4/mapbox.mapbox-terrain-v2/{z}/{x}/{y}.mvt?access_token=";
+    private final static String mappingElevationDevUrl = "https://api.mapbox.com/styles/v1/easyukondev/ckmnibfyr2ayn17ql60zx1344/tiles/{z}/{x}/{y}?access_token=";
+    private final static String mappingElevationProdUrl = "https://api.mapbox.com/styles/v1/easyukon/ckmp61na924tb17prrl0yj9kw/tiles/{z}/{x}/{y}?access_token=";
     private final static String mappingDevKey = "pk.eyJ1IjoiZWFzeXVrb25kZXYiLCJhIjoiY2lydzVjbnNyMGo3eHQxbmtidGVoNWt5bSJ9.ddhkDSTm2ONf47E9DVaNFw";
     private final static String mappingProdKey = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2tqbXlkY3p1OHV3dzMycnhxOWVsNGpsMyJ9.Dy3cOKkuRPlezMn5IClEnw";
 
@@ -31,7 +32,8 @@ public class MappingServiceImpl implements MappingService {
         String streetUrl = configSource.getString(MasterConfigString.MAP_DEVICES_STREET_URL_2, mappingStreetUrl);
         String satelliteUrl = configSource.getString(MasterConfigString.MAP_DEVICES_SATELLITE_URL_2, mappingSatelliteUrl);
         String hybridUrl = configSource.getString(MasterConfigString.MAP_DEVICES_HYBRID_URL_2, mappingHybridUrl);
-        String elevationUrl = configSource.getString(MasterConfigString.MAP_DEVICES_ELEVATION_URL_2, mappingElevationUrl);
+        String elevationDevUrl = configSource.getString(MasterConfigString.MAP_DEVICES_ELEVATION_URL_2, mappingElevationDevUrl);
+        String elevationProdUrl = configSource.getString(MasterConfigString.MAP_DEVICES_ELEVATION_URL_2, mappingElevationProdUrl);
         String devMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, mappingDevKey);
         String prodMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, mappingProdKey);
         
@@ -41,15 +43,18 @@ public class MappingServiceImpl implements MappingService {
         
         String mappingUrl = "";
         String key = prodMappingKey;
+        String elevationUrl = elevationProdUrl;
 
         try {
             boolean mapDevicesDevMode = configSource.getRequiredBoolean(MasterConfigBoolean.MAP_DEVICES_DEV_MODE);
             if (mapDevicesDevMode) {
                 key = devMappingKey;
+                elevationUrl = elevationDevUrl;
             }
         } catch (UnknownKeyException e) {
             if (devMode || disableAnalytics) {
                 key = devMappingKey;
+                elevationUrl = elevationDevUrl;
             }
         }
         

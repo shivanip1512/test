@@ -1,3 +1,0 @@
-<a href="javascript:void(0);" class="show_all dn"><cti:msg2 key="yukon.common.showAll"/></a>
-<h3 class="xaxis axis_label">${pageScope.title}</h3>
-<div id="${chartId}" class="flotchart"></div>

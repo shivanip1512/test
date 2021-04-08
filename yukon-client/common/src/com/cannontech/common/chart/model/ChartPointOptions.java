@@ -1,6 +1,6 @@
 package com.cannontech.common.chart.model;
 
-public class FlotPointOptions {
+public class ChartPointOptions {
 
     private boolean show;
 

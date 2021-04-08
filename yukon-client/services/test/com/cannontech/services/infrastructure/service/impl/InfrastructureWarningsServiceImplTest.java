@@ -201,38 +201,23 @@ public class InfrastructureWarningsServiceImplTest {
         
         // There should be 2 events for new Infrastructure Warnings
         Assert.assertEquals("Incorrect number of infrastructure warning smart notification events", 4, events.size());
-        
+                
         // Check that warning 4 is present with appropriate parameters
-        SmartNotificationEvent device4event = new SmartNotificationEvent(now);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.PAO_ID, 4);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.ARGUMENT_1, (short) 3);
+        SmartNotificationEvent device4event = InfrastructureWarningsEventAssembler.assemble(now,  warning4);
         Assert.assertTrue("Event for device 4 is missing", events.contains(device4event));
         
         // Check that warning 5 is present with appropriate parameters
-        SmartNotificationEvent device5event = new SmartNotificationEvent(now);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.PAO_ID, 5);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.ARGUMENT_1, (short) 3);
+        SmartNotificationEvent device5event = InfrastructureWarningsEventAssembler.assemble(now,  warning5);
         Assert.assertTrue("Event for device 5 is missing", events.contains(device5event));
-        
-        // Check that warning 8 is present with appropriate parameters
-        SmartNotificationEvent device8event = new SmartNotificationEvent(now);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.PAO_ID, 8);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.ARGUMENT_1, (short) 3);
-        Assert.assertTrue("Event for device 8 is missing", events.contains(device8event));
-        
+
         // Check that warning 9 is present with appropriate parameters
-        SmartNotificationEvent device9event = new SmartNotificationEvent(now);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.PAO_ID, 9);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.ARGUMENT_1, (short) 3);
+        SmartNotificationEvent device9event = InfrastructureWarningsEventAssembler.assemble(now,  warning10);
         Assert.assertTrue("Event for device 9 is missing", events.contains(device9event));
+        
+        // Check that warning 10 is present with appropriate parameters
+        SmartNotificationEvent device10event = InfrastructureWarningsEventAssembler.assemble(now,  warning11);
+        Assert.assertTrue("Event for device 10 is missing", events.contains(device10event));
+        
     }
 
 }

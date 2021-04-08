@@ -36,8 +36,8 @@
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Clock Error" attributes="CLOCK_ERROR"/>
         <pointInfo name="Current" attributes="CURRENT,CURRENT_PHASE_A"/>
-        <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY,MAXIMUM_VOLTAGE"/>
-        <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY,MINIMUM_VOLTAGE"/>
+        <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY"/>
+        <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY"/>
         <pointInfo name="kVAh Lagging" attributes="DELIVERED_KVAH_LAGGING"/>
         <pointInfo name="Delivered kVAh (Rate A kVAh)" attributes="KVAH_RATE_A"/>
         <pointInfo name="Delivered kVAh (Rate B kVAh)" attributes="KVAH_RATE_B"/>
@@ -52,10 +52,10 @@
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
-        <pointInfo name="Delivered Peak kVA (Quadrants 1 2) (Rate A kVA)" attributes="PEAK_KVA_Q12_RATE_A"/>
-        <pointInfo name="Delivered Peak kVA (Quadrants 1 2) (Rate B kVA)" attributes="PEAK_KVA_Q12_RATE_B"/>
-        <pointInfo name="Delivered Peak kVA (Quadrants 1 2) (Rate C kVA)" attributes="PEAK_KVA_Q12_RATE_C"/>
-        <pointInfo name="Delivered Peak kVA (Quadrants 1 2) (Rate D kVA)" attributes="PEAK_KVA_Q12_RATE_D"/>
+        <pointInfo name="Peak kVA Lagging Rate A" attributes="PEAK_KVA_LAGGING_RATE_A"/>
+        <pointInfo name="Peak kVA Lagging Rate B" attributes="PEAK_KVA_LAGGING_RATE_B"/>
+        <pointInfo name="Peak kVA Lagging Rate C" attributes="PEAK_KVA_LAGGING_RATE_C"/>
+        <pointInfo name="Peak kVA Lagging Rate D" attributes="PEAK_KVA_LAGGING_RATE_D"/>
         <pointInfo name="Delivered Peak kVAr" attributes="PEAK_KVAR"/>
         <pointInfo name="Delivered Peak kVAr (Rate A kVAr)" attributes="PEAK_KVAR_RATE_A"/>
         <pointInfo name="Delivered Peak kVAr (Rate B kVAr)" attributes="PEAK_KVAR_RATE_B"/>
@@ -69,9 +69,9 @@
         <pointInfo name="Invalid Service" attributes="INVALID_SERVICE"/>
         <pointInfo name="Load Side Voltage Detected While Disconnected" attributes="LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
-        <pointInfo name="Max Voltage"/>
+        <pointInfo name="Max Voltage" attributes="MAXIMUM_VOLTAGE_PHASE_A"/>
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
-        <pointInfo name="Min Voltage"/>
+        <pointInfo name="Min Voltage" attributes="MINIMUM_VOLTAGE_PHASE_A"/>
         <pointInfo name="Net kVAh" attributes="NET_KVAH"/>
         <pointInfo name="Net kVAh (Rate A kVAh)" attributes="NET_KVAH_RATE_A"/>
         <pointInfo name="Net kVAh (Rate B kVAh)" attributes="NET_KVAH_RATE_B"/>

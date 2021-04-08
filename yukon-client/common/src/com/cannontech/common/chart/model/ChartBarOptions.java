@@ -1,14 +1,14 @@
 package com.cannontech.common.chart.model;
 
-public class FlotBarOptions {
+public class ChartBarOptions {
     private boolean show;
     private String align;
     private boolean fill;
     private String fillColor;
     
     
-    public FlotBarOptions() {}
-    public FlotBarOptions(boolean show, String align, boolean fill, String fillColor) {
+    public ChartBarOptions() {}
+    public ChartBarOptions(boolean show, String align, boolean fill, String fillColor) {
         super();
         this.show = show;
         this.align = align;

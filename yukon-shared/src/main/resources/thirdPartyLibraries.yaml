@@ -5648,18 +5648,6 @@ JavaScript :
     updated : 2020-03-11
     notes : The jquery.iframe-transport.js and jquery.ui.widget.js files comes along with this package. It is used for file Upload widget with multiple file selection and drag&drop support for jQuery in Yukon.
 
-  - project : flotcharts
-    version : 1.8.1?
-    project URL : "http://www.flotcharts.org/"
-    license : MIT
-    license URLs : "https://github.com/flot/flot/blob/7f5f90384ed6d6c30b232580d358c84e355919ab/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/flot-latest"
-    md5 : a3bc777fbb2d1483e3afbfc25b527da8
-    sha1 : 403b09446b2baa5f122ee40e61a27c1b9c30f883
-    jira : YUK-13033
-    updated : 2014-02-17
-    notes : Minified, cannot determine version
-
   - project : form
     version : 4.3.0
     project URL : "http://malsup.com/jquery/form/"

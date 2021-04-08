@@ -380,12 +380,15 @@ public class ProgramController extends ProgramControllerBase {
         if (StringUtils.isNotEmpty(result.getProcessingException())) {
             json.put("errors", result.getProcessingException());
         }
-        
+
+        log.debug("Adding Disconnect Status Result: {} to model.", result);
         json.put("success", result.isSuccess());
         json.put("status", accessor.getMessage(result.getState().getFormatKey()));
-        json.put("time", result.getDisconnectTime().getMillis());
+        if (result.getDisconnectTime() != null) {
+            json.put("time", result.getDisconnectTime().getMillis());
+        }
     }
-    
+  
     public enum DisconnectSortBy implements DisplayableEnum {
 
         device,

@@ -2,13 +2,13 @@ package com.cannontech.web.common.chart.service.impl;
 
 import java.util.List;
 
-import com.cannontech.common.chart.model.FlotBarOptions;
-import com.cannontech.common.chart.model.FlotLineOptions;
-import com.cannontech.common.chart.model.FlotPointOptions;
+import com.cannontech.common.chart.model.ChartBarOptions;
+import com.cannontech.common.chart.model.ChartLineOptions;
+import com.cannontech.common.chart.model.ChartPointOptions;
 
 public class TrendData {
-    public TrendData(List<Object> data, int yaxis, String color, FlotBarOptions bars, FlotLineOptions lines
-            , FlotPointOptions points) {
+    public TrendData(List<Object> data, int yaxis, String color, ChartBarOptions bars, ChartLineOptions lines
+            , ChartPointOptions points) {
         super();
         this.data = data;
         this.yaxis = yaxis;
@@ -21,9 +21,9 @@ public class TrendData {
     private List<Object> data;
     private int yaxis;
     private String color;
-    private FlotBarOptions bars;
-    private FlotLineOptions lines;
-    private FlotPointOptions points;
+    private ChartBarOptions bars;
+    private ChartLineOptions lines;
+    private ChartPointOptions points;
 
     public List<Object> getData() {
         return data;
@@ -49,36 +49,36 @@ public class TrendData {
         this.color = color;
     }
 
-    public FlotBarOptions getBars() {
+    public ChartBarOptions getBars() {
         if(bars == null) {
-            bars = new FlotBarOptions();
+            bars = new ChartBarOptions();
         }
         return bars;
     }
 
-    public void setBars(FlotBarOptions bars) {
+    public void setBars(ChartBarOptions bars) {
         this.bars = bars;
     }
 
-    public FlotLineOptions getLines() {
+    public ChartLineOptions getLines() {
         if(lines == null) {
-            lines = new FlotLineOptions();
+            lines = new ChartLineOptions();
         }
         return lines;
     }
 
-    public void setLines(FlotLineOptions lines) {
+    public void setLines(ChartLineOptions lines) {
         this.lines = lines;
     }
 
-    public FlotPointOptions getPoints() {
+    public ChartPointOptions getPoints() {
         if (points == null) {
-            points = new FlotPointOptions();
+            points = new ChartPointOptions();
         }
         return points;
     }
 
-    public void setPoints(FlotPointOptions points) {
+    public void setPoints(ChartPointOptions points) {
         this.points = points;
     }
 }

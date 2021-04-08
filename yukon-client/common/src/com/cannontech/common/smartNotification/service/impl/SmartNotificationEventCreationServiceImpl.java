@@ -1,7 +1,6 @@
 package com.cannontech.common.smartNotification.service.impl;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -9,6 +8,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
@@ -18,33 +18,17 @@ import com.cannontech.common.smartNotification.service.SmartNotificationEventCre
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 public class SmartNotificationEventCreationServiceImpl implements SmartNotificationEventCreationService {
-    private static final Logger log = YukonLogManager.getLogger(SmartNotificationEventCreationServiceImpl.class);
+    private static Logger commsLogger = YukonLogManager.getCommsLogger();
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    private YukonJmsTemplate template;
 
-    private Map<SmartNotificationEventType, YukonJmsTemplate> queues;
 
     @PostConstruct
     public void init() {
-        queues = ImmutableMap.of(
-                SmartNotificationEventType.INFRASTRUCTURE_WARNING,
-                jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT),
-
-                SmartNotificationEventType.DEVICE_DATA_MONITOR,
-                jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT),
-
-                SmartNotificationEventType.YUKON_WATCHDOG,
-                jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT),
-
-                SmartNotificationEventType.ASSET_IMPORT,
-                jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_DATA_IMPORT_EVENT),
-
-                SmartNotificationEventType.METER_DR,
-                jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_METER_DR_EVENT));
-
+        template = jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_EVENT);
     }
 
     private Executor executor = Executors.newCachedThreadPool();
@@ -60,11 +44,10 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
         if (!events.isEmpty()) {
             executor.execute(() -> {
                 try {
-                    log.debug(type + " Saving Smart Notification events " + events.size());
                     eventsDao.save(type, events);
                     sendEvents(type, events);
                 } catch (Exception e) {
-                    log.error("Exception sending smart notification event", e);
+                    commsLogger.error("Exception sending smart notification event", e);
                 }
             });
         }
@@ -77,13 +60,10 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
     
     private void sendEvents(SmartNotificationEventType type, List<SmartNotificationEvent> events) {
         if (!events.isEmpty()) {
-            if (log.isTraceEnabled()) {
-                for (SmartNotificationEvent event : events) {
-                    log.trace(event);
-                }
-            }
-            log.debug(type + " Sending Smart Notification events " + events.size());
-            queues.get(type).convertAndSend(new SmartNotificationEventMulti(type, events));
+            SmartNotificationEventMulti msg = new SmartNotificationEventMulti(type, events);
+            commsLogger.info("[SN:SmartNotificationEventCreationServiceImpl:{}] Sending Smart Notification {}", type,
+                    msg.loggingString(commsLogger.getLevel()));
+            template.convertAndSend(msg);
         }
     }
 }
