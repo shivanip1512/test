@@ -36,15 +36,15 @@ public class MacsTimeFieldTest {
             return List.of(
                     new Object[] { "00:00:00", 0, 0, Am },
                     new Object[] { "00:01:00", 0, 1, Am },
-                    new Object[] { "12:00:00", 12, 0, Am },
-                    new Object[] { "12:34:00", 12, 34, Am },
+                    new Object[] { "00:00:00", 12, 0, Am },
+                    new Object[] { "00:34:00", 12, 34, Am },
                     new Object[] { "11:59:00", 11, 59, Am },
 
-                    new Object[] { "00:00:00", 0, 0, Pm },
-                    new Object[] { "00:01:00", 0, 1, Pm },
+                    new Object[] { "12:00:00", 0, 0, Pm },
+                    new Object[] { "12:01:00", 0, 1, Pm },
                     new Object[] { "12:00:00", 12, 0, Pm },
                     new Object[] { "12:34:00", 12, 34, Pm },
-                    new Object[] { "11:59:00", 11, 59, Pm }
+                    new Object[] { "23:59:00", 11, 59, Pm }
                     );
         }
     
@@ -76,7 +76,7 @@ public class MacsTimeFieldTest {
             assertEquals(12, m.getHours());
             assertEquals(0, m.getMinutes());
             assertEquals(AmPmOptionEnum.AM, m.getAmPm());
-            assertEquals("12:00:00", m.getTimeString());
+            assertEquals("00:00:00", m.getTimeString());
         }
     
         @Test
