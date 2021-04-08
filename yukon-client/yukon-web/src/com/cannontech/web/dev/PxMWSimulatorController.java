@@ -110,7 +110,7 @@ public class PxMWSimulatorController {
             } catch (Exception e) {
 
             }
-            if(!StringUtils.isEmpty(jsonParam)) {
+            if (!StringUtils.isEmpty(jsonParam)) {
                 log.info(jsonParam);
                 params = StringUtils.replace(params, jsonParam, "");
             }
@@ -125,35 +125,26 @@ public class PxMWSimulatorController {
                 PxMWTokenV1 token = pxMWCommunicationServiceV1.getToken();
                 processSuccess(params, json, getFormattedJson(token));
             } else if (endpoint == PxMWRetrievalUrl.COMMANDS) {
-                try {
-                    PxMWCommandRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWCommandRequestV1.class);
-                    pxMWCommunicationServiceV1.sendCommand(paramList.get(0), paramList.get(1), request);
-                } catch (JsonProcessingException e) {
-                    json.put("alertError", e.getMessage());
-                }
+                PxMWCommandRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWCommandRequestV1.class);
+                pxMWCommunicationServiceV1.sendCommand(paramList.get(0), paramList.get(1), request);
             } else if (endpoint == PxMWRetrievalUrl.TREND_DATA_RETRIEVAL) {
-                try {
-                    PxMWTimeSeriesDataRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWTimeSeriesDataRequestV1.class);
-                    String startTime = request.getStartTime();
-                    String stopTime = request.getEndTime();
-                    DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
-                    DateTime startDateTime = parser.parseDateTime(startTime);
-                    DateTime stopDateTime = parser.parseDateTime(stopTime);
-                            
-                    Range<Instant> timeRange = new Range<Instant>(startDateTime.toInstant(), false, stopDateTime.toInstant(), false);
-                    PxMWTimeSeriesDataResponseV1 response = pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(), timeRange);
-                    processSuccess(params, json, getFormattedJson(response));
-                } catch (JsonProcessingException e) {
-                    json.put("alertError", e.getMessage());
-                }
+                PxMWTimeSeriesDataRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWTimeSeriesDataRequestV1.class);
+                String startTime = request.getStartTime();
+                String stopTime = request.getEndTime();
+                DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
+                DateTime startDateTime = parser.parseDateTime(startTime);
+                DateTime stopDateTime = parser.parseDateTime(stopTime);
 
-
+                Range<Instant> timeRange = new Range<Instant>(startDateTime.toInstant(), false, stopDateTime.toInstant(), false);
+                PxMWTimeSeriesDataResponseV1 response = pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(),
+                        timeRange);
+                processSuccess(params, json, getFormattedJson(response));
             }
         } catch (PxMWCommunicationExceptionV1 e) {
             processError(json, e);
-        } catch (PxMWException e) {
+        } catch (PxMWException | JsonProcessingException e) {
             json.put("alertError", e.getMessage());
-        }
+        } 
         return json;
     }
 
