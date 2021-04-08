@@ -12,16 +12,16 @@ public class RfSupportBundle {
         return customerName;
     }
 
+    public void setCustomerName(String rfCustomerName) {
+        this.customerName = rfCustomerName;
+    }
+
     public Date getDate() {
         return date;
     }
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
     }
 
 }
