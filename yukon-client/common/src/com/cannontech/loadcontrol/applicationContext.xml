@@ -101,8 +101,23 @@
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeQueryCountDaoImpl"/>
 
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceImpl"/>
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusCommunicationServiceImpl"/>
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceHelper"/>
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeePointUpdateServiceImpl"/>
+    <bean class="com.cannontech.dr.ecobee.service.helper.EcobeeZeusRequestHelper">
+            <constructor-arg name="restTemplate">
+            <bean class="org.springframework.web.client.RestTemplate">
+                <property name="messageConverters">
+                    <list>
+                        <ref bean="jacksonHttpMessageConverter"/>
+                    </list>
+                </property>
+                <property name="errorHandler">
+                    <bean class="com.cannontech.dr.ecobee.service.EcobeeErrorHandler"/>
+                </property>
+            </bean>
+        </constructor-arg>
+    </bean>
 
     <bean class="com.cannontech.dr.recenteventparticipation.dao.impl.RecentEventParticipationDaoImpl"/>
     <bean class="com.cannontech.dr.recenteventparticipation.service.impl.RecentEventParticipationServiceImpl"/>

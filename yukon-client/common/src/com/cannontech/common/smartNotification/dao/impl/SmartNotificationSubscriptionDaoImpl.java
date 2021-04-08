@@ -125,7 +125,6 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
     public List<SmartNotificationSubscription> getAllSubscriptions() {
         SqlStatementBuilder sql = new SqlStatementBuilder(baseSubscriptionSql.getSql());
         List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
-        log.debug(sql.getDebugSql());
         addParameters(subscriptions);
         
         return subscriptions;

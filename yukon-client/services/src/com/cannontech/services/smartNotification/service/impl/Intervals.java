@@ -62,20 +62,25 @@ public final class Intervals {
      * @return The next interval value after the specified current value, if the current value is less than the last
      * value in the series. Otherwise, the last value is returned.
      */
-    public Integer getNextInterval(int currentInterval) {
+    public int getNextInterval(int currentInterval) {
         Set<Integer> allIntervals = new TreeSet<>(intervals);
         allIntervals.removeIf(interval -> interval <= currentInterval);
         if (allIntervals.isEmpty()) {
-            return Iterables.getLast(intervals);
+            return Iterables.getLast(intervals).intValue();
         } else {
-            return allIntervals.iterator().next();
+            return allIntervals.iterator().next().intValue();
         }
     }
     
     /**
      * Get the first interval value in the series.
      */
-    public Integer getFirstInterval() {
-        return intervals.iterator().next();
+    public int getFirstInterval() {
+        return intervals.iterator().next().intValue();
+    }
+    
+    @Override
+    public String toString() {
+        return intervals.toString();
     }
 }

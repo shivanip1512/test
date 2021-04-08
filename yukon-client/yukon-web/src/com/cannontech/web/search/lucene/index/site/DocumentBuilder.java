@@ -37,7 +37,7 @@ public final class DocumentBuilder {
      * The maximum number of summary arguments are ever used.  This should be incremented if
      * {@link #summaryArgs(String...)} is ever called with more arguments than specified here.
      */
-    public final static int MAX_SUMMARY_ARGS = 6;
+    public final static int MAX_SUMMARY_ARGS = 9;
     
     private final static Joiner searchStringJoiner = Joiner.on(" ").skipNulls();
     

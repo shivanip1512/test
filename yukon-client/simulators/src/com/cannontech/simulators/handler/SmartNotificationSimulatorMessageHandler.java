@@ -33,11 +33,9 @@ public class SmartNotificationSimulatorMessageHandler extends SimulatorMessageHa
                     case CLEAR_ALL_EVENTS:
                         return smartNotificationSimulatorService.clearAllEvents();
                     case CREATE_EVENTS:
-                        return smartNotificationSimulatorService.createEvents(request.getWaitTime(),
-                                                                              request.getEventsPerMessage(), 
-                                                                              request.getNumberOfMessages());
+                        return smartNotificationSimulatorService.createEvents();
                     case START_DAILY_DIGEST:
-                        return smartNotificationSimulatorService.startDailyDigest(request.getDailyDigestHour());
+                        return smartNotificationSimulatorService.startDailyDigest();
                     default:
                         SimulatorResponseBase response = new SimulatorResponseBase(false);
                         response.setException(new Exception("Unsupported request action in a SmartNotificationSimulatorRequest: " + request.getRequestAction()));
