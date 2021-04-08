@@ -9,7 +9,8 @@
 <cti:url value="/support/createRfBundle" var="createRfBundleURL"/>
 <cti:url value="/support/viewBundleProgress" var="viewBundleProgressURL"/>    
     <div class="column one">
-    <tags:alertBox type="warning">Run RF Network Data Collection outside business hour. It will take more than 15 min to generate the data.</tags:alertBox>
+    <tags:alertBox type="warning" key=".rfSupportBundle.warning"/>
+    
         <tags:sectionContainer2 nameKey="rfSupportBundle">
             <cti:tabs>
                 <cti:msg2 key=".supportBundle.createNewHeading" var="createNewHeading"/>
@@ -27,7 +28,7 @@
                     
                         </tags:nameValueContainer2>
                         <div class="page-action-area"> 
-                            <cti:button nameKey="supportBundle.createBundleBtn" type="submit" classes="primary action js-execute-command" busy="true"/>
+                            <cti:button nameKey="supportBundle.createBundleBtn" classes="primary action js-execute-command-rf" busy="true"/>
                             <cti:button nameKey="supportBundle.downloadBtn" type="submit" disabled="true" name="download" icon="icon-download"/>
                         </div>
                     </form:form>

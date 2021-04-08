@@ -16,7 +16,7 @@ yukon.rfSupportBundle = (function () {
     mod = {
             init : function() {
             	
-            	$(document).on('click', '.js-execute-command', function() {
+            	$(document).on('click', '.js-execute-command-rf', function() {
             		var date = $("input[name=date]", "#createRfBundleForm").val();
             		var customerName = $("input[name=customerName]", "#createRfBundleForm").val();
             	
@@ -27,15 +27,11 @@ yukon.rfSupportBundle = (function () {
             		data: {customerName: customerName , date: date}
             		}).done( function(data){
             		yukon.ui.alertSuccess(data);
+            		checkUpdate(); 
             		}).fail(function(data){
             		yukon.ui.alertError(data);
             		});
             		});
-                
-                $(document).on('click', '.js-execute-command', function() {
-                	
-                	checkUpdate(); 
-                });
                 
                 
                 _initialized = true;
@@ -55,6 +51,11 @@ function checkUpdate(){
         }
     });
 }
+
+function refreshContent(){
+    $("#section-container").load(yukon.url("/support/getBundleProgress"));
+}
+
 $(function() {
 	yukon.rfSupportBundle.init();
 });

@@ -321,6 +321,17 @@ public class SupportController {
     }
 
 
+    @RequestMapping(value="getBundleProgress")
+    public String getBundleProgress(ModelMap model, YukonUserContext userContext) {
+        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
+        Map<String, Boolean> thingsDoneMap = supportBundleService.getWritersDone();
+        model.addAttribute("thingsDoneMap", thingsDoneMap);
+        model.addAttribute("inProgress", supportBundleService.isInProgress());
+        model.addAttribute("writerList", writerList);
+
+        return "supportBundle/buildStatus.jsp";
+    }
+    
     @RequestMapping(value="getRfBundleProgress")
     public String getRfBundleProgress(ModelMap model, YukonUserContext userContext) {
         rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
