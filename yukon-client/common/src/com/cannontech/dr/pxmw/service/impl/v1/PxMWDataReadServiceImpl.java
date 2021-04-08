@@ -2,6 +2,8 @@ package com.cannontech.dr.pxmw.service.impl.v1;
 
 import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
 import com.cannontech.message.dispatch.message.PointData;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,8 +20,10 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.point.PointQuality;
@@ -28,6 +32,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.pxmw.model.MWChannel;
@@ -35,6 +40,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesValueV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 
 public class PxMWDataReadServiceImpl implements PxMWDataReadService {
@@ -42,6 +48,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
     SimpleDateFormat dateFormat = new SimpleDateFormat();
 
     @Autowired private AsyncDynamicDataSource dispatchData;
+    @Autowired private AttributeService attributeService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
@@ -55,55 +62,30 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         //4. Update data in dispatch
         //5. Update recent participation
         //6. Update asset availability
+
+        
+    }
+    
+    private Multimap<PaoIdentifier, PointValueQualityHolder> parsePointData(Iterable<Integer> deviceIds) {
+        Multimap<PaoIdentifier, PointValueQualityHolder> newPaoPointMap = HashMultimap.create();
         BidiMap<Integer, String> deviceIdGuid = new DualHashBidiMap<Integer, String>(deviceDao.getGuids(deviceIds));
         Map<Integer, LiteYukonPAObject> deviceToPao = new HashMap<Integer, LiteYukonPAObject>();
         List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaos(deviceIds);
-        Map<PaoType, List<BuiltInAttribute>> paoTypeToAttributes = new HashMap<PaoType, List<BuiltInAttribute>>();
-        Map<Integer, Map<BuiltInAttribute, Integer>> deviceToAttributeToPointId = new HashMap<Integer, Map<BuiltInAttribute, Integer>>();
-        Set<PaoType> paoTypes = new HashSet<PaoType>();
-        Set<Integer> pointIds = new HashSet<Integer>();
         List<PxMWTimeSeriesDeviceV1> timeSeriesDevice = new ArrayList<PxMWTimeSeriesDeviceV1>();
 
         for (LiteYukonPAObject pao : paos) {
             int paoId = pao.getPaoIdentifier().getPaoId();
             deviceToPao.put(paoId, pao);
-            paoTypes.add(pao.getPaoType());
-            for (AttributeDefinition attributeDefinition : paoDefinitionDao.getDefinedAttributes(pao.getPaoType())) {
-                BuiltInAttribute builtInAttribute = attributeDefinition.getAttribute();
-                Integer pointId = attributeDefinition.getPointId(pao);
-                PointType pointType = attributeDefinition.getPointTemplate().getPointIdentifier().getPointType();
-                if (!deviceToAttributeToPointId.containsKey(paoId)) {
-                    deviceToAttributeToPointId.put(paoId, new HashMap<BuiltInAttribute, Integer>());
-                }
-                deviceToAttributeToPointId.get(paoId).put(builtInAttribute, pointId);
-                pointIds.add(pointId);
-            }
-        }
-
-        Date startTime = new Date();
-        Set<? extends PointValueQualityHolder> pointDatas = dispatchData.getPointValues(pointIds);
-        if (pointDatas.isEmpty()) {
-            startTime = new Date(System.currentTimeMillis() - (3600 * 24 * 1000));
-        }
-        for (PointValueQualityHolder pointData : pointDatas) {
-            Date pointDate = pointData.getPointDataTimeStamp();
-            if (pointDate.after(startTime)) {
-                startTime = pointDate;
-            }
-        }
-        Instant queryEndTime = new Instant();
-        Instant queryStartTime = new Instant(startTime);
-
-        for (Integer deviceId : deviceIds) {
-            List<String> tags = deviceToAttributeToPointId.get(deviceId).keySet().stream()
-                    .map(attribute -> MWChannel.getAttributeChannelLookup().get(attribute).getChannelId().toString())
+            List<String> tags = paoDefinitionDao.getDefinedAttributes(pao.getPaoType()).stream()
+                    .map(attribute -> MWChannel.getAttributeChannelLookup().get(attribute.getAttribute()).getChannelId().toString())
                     .collect(Collectors.toList());
-            String guid = deviceIdGuid.get(deviceId);
+            String guid = deviceIdGuid.get(pao.getPaoIdentifier().getPaoId());
             PxMWTimeSeriesDeviceV1 pxmwTimeSeriesDevice = new PxMWTimeSeriesDeviceV1(guid, tags);
             timeSeriesDevice.add(pxmwTimeSeriesDevice);
         }
 
-        
+        Instant queryEndTime = new Instant();
+        Instant queryStartTime = new Instant(System.currentTimeMillis() - (3600 * 24 * 7 * 1000));
         Range<Instant> queryRange = new Range<Instant>(queryStartTime, false, queryEndTime, true);
         PxMWTimeSeriesDataResponseV1 response = pxMWCommunicationService.getTimeSeriesValues(timeSeriesDevice, queryRange);
         
@@ -113,15 +95,19 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
             for (PxMWTimeSeriesResultV1 result : deviceResult.getResults()) {
                 String tag = result.getTag();
                 BuiltInAttribute attribute = MWChannel.getChannelLookup().get(Integer.parseInt(tag)).getBuiltInAttribute();
-                Integer pointId = deviceToAttributeToPointId.get(deviceId).get(attribute);
-                PointData pointData = new PointData();
-                pointData.setId(pointId);
-                pointData.setPointQuality(PointQuality.Normal);
-                pointData.setType();
-                pointData.setTagsPointMustArchive(true);
+                LitePoint holder = attributeService.findPointForAttribute(deviceToPao.get(deviceId), attribute);
+                for (PxMWTimeSeriesValueV1 value : result.getValues()) {
+                    PointData newPoint = new PointData();
+                    newPoint.setId(holder.getPointID());
+                    newPoint.setPointQuality(PointQuality.Normal);
+                    newPoint.setType(holder.getPointType());
+                    newPoint.setValue(Double.parseDouble(value.getValue()));
+                    newPaoPointMap.put(deviceToPao.get(deviceId).getPaoIdentifier(), newPoint);
+                }
             }
         }
         
+        return newPaoPointMap;
     }
 
 }
