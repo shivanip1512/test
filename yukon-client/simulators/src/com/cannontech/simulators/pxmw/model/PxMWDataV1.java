@@ -24,6 +24,8 @@ import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesValueV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
 
@@ -185,17 +187,30 @@ public class PxMWDataV1 extends PxMWDataGenerator {
     }
 
     public PxMWSimulatorResponse getTrendDataV1(PxMWTimeSeriesDataRequestV1 pxMWTimeSeriesDataRequestV1) {
-        List<PxMWTimeSeriesDeviceResultV1> resultList = null;
+        PxMWTimeSeriesValueV1 timeSeriesValue1= new PxMWTimeSeriesValueV1(1613402541, "True");
+        List<PxMWTimeSeriesValueV1> values1 = new ArrayList<PxMWTimeSeriesValueV1>();
+        values1.add(0, timeSeriesValue1);
+        PxMWTimeSeriesValueV1 timeSeriesValue2= new PxMWTimeSeriesValueV1(1613402541, "False");
+        List<PxMWTimeSeriesValueV1> values2 = new ArrayList<PxMWTimeSeriesValueV1>();
+        values2.add(0, timeSeriesValue2);
+        PxMWTimeSeriesResultV1 timeSeriesResult1 = new PxMWTimeSeriesResultV1("110739", "v", values1);
+        PxMWTimeSeriesResultV1 timeSeriesResult2 = new PxMWTimeSeriesResultV1("110595", "v", values2);
+        List<PxMWTimeSeriesResultV1> results = new ArrayList<PxMWTimeSeriesResultV1>();
+        results.add(0, timeSeriesResult1);
+        results.add(1, timeSeriesResult2);
+        PxMWTimeSeriesDeviceResultV1 deviceResults = new PxMWTimeSeriesDeviceResultV1("12343adc-567e-4321-9700-e4ca684e1234", results);
+        List<PxMWTimeSeriesDeviceResultV1> resultList = new ArrayList<PxMWTimeSeriesDeviceResultV1>();
+        resultList.add(0, deviceResults);
+        PxMWTimeSeriesDataResponseV1 response = new PxMWTimeSeriesDataResponseV1(resultList);
+        
         // 200
         if (status == HttpStatus.OK.value()) {
-            return new PxMWSimulatorResponse(
-                    new PxMWTimeSeriesDataResponseV1(resultList),
-                    status);
+            return new PxMWSimulatorResponse(response, status);
         }
         // 400
         else if (status == HttpStatus.BAD_REQUEST.value()) {
             // change to throw error
-            return new PxMWSimulatorResponse(new PxMWTimeSeriesDataResponseV1(resultList), 200);
+            return new PxMWSimulatorResponse(new PxMWTimeSeriesDataResponseV1(resultList), 400);
         }
         // 401
         else if (status == HttpStatus.UNAUTHORIZED.value()) {
@@ -204,7 +219,10 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                     "Verify the user has permission to execute the GetTimeSeriesData operation for the site where the device is registered"))),
                     status);
         }
-        return new PxMWSimulatorResponse(null, status);
+        
+        // THis should be the success, remove the Top status OK
+        // POPUlATE actual DeviceREsult
+        return new PxMWSimulatorResponse(response, status);
     }
 
     public PxMWSimulatorResponse sendCommandV1(String id, String command_instance_id, PxMWCommandRequestV1 pxMWCommandRequestV1) {

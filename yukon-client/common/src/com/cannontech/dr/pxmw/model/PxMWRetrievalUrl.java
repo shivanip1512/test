@@ -51,8 +51,8 @@ public enum PxMWRetrievalUrl {
             // 200, 400, 401
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED),
             ImmutableMap.of("Request Json", "{" +
-                    "&quot;devices&quot;:[{&quot;device_id&quot;:&quot;12345678-1234-1234-1234-123456789123&quot;," +
-                    "&quot;tag_trait&quot;:[&quot;123,456,789&quot;]}]," +
+                    "&quot;devices&quot;:[{&quot;device_id&quot;:&quot;12343adc-567e-4321-9700-e4ca684e1234&quot;," +
+                    "&quot;tag_trait&quot;:[&quot;110739,110595&quot;]}]," +
                     "&quot;start_time&quot;:&quot;2018-05-01T00:00Z&quot;," +
                     "&quot;end_time&quot;:&quot;2018-05-04T00:55Z&quot;" +
                     "}")),
