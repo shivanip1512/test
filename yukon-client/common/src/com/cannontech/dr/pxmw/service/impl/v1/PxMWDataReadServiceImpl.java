@@ -6,11 +6,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,30 +18,24 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.buf.StringUtils;
-import org.jfree.util.Log;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointType;
-import com.cannontech.dr.itron.service.impl.ItronDeviceDataParser;
+import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
+import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
@@ -57,16 +49,13 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
     @Autowired private AsyncDynamicDataSource dispatchData;
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
     @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
 
     @Override
-    public void collectDataForRead(Set<Integer> deviceIds) {
-        //1. Get GUID
-        //2. Get all tags for device
-        //3. Ask Johns thing for data
-        //4. Update data in dispatch
+    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds) {
         //5. Update recent participation
         //6. Update asset availability
         
@@ -74,6 +63,10 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         
         Multimap<PaoIdentifier, PointData> recievedPoints = retrievePointData(deviceIds);
         dispatchData.putValues(recievedPoints.values());
+        
+        updateAssetAvaiability(recievedPoints);
+        
+        return recievedPoints;
     }
 
     private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<Integer> deviceIds) {
@@ -133,6 +126,9 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         double pointValue;
 
         if (MWChannel.getBooleanChannels().contains(channel)) {
+            if (!pxReturnedValue.toLowerCase().equals("true") && !pxReturnedValue.toLowerCase().equals("false")) {
+                log.info("Unexpected Value {} for channel {}. Discarding value", pxReturnedValue, channel);
+            }
             pointValue = Boolean.parseBoolean(pxReturnedValue) ? 1 : 0;
             pointData.setValue(pointValue);
         } else if (MWChannel.getIntegerChannels().contains(channel)) {
@@ -140,7 +136,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         } else if (MWChannel.getFloatChannels().contains(channel)) {
             pointValue = Double.parseDouble(pxReturnedValue);
         } else {
-            log.info("Channel {} is a type that cannot be parsed into point data");
+            log.info("Channel {} is a type that cannot be parsed into point data. Disarding received value: {}", pxReturnedValue);
             return null;
         }
 
@@ -174,6 +170,16 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         Instant queryEndTime = new Instant();
         Instant queryStartTime = new Instant(System.currentTimeMillis() - (3600 * 24 * 7 * 1000)); // previous week
         return new Range<Instant>(queryStartTime, false, queryEndTime, true);
+    }
+    
+    private void updateAssetAvaiability(Multimap<PaoIdentifier, PointData> pointUpdates) {
+        for (PaoIdentifier pao : pointUpdates.keySet()) {
+            for (PointData pointData : pointUpdates.get(pao)) {
+                AssetAvailabilityPointDataTimes time = new AssetAvailabilityPointDataTimes(pao.getPaoId());
+                time.setLastCommunicationTime(new Instant(pointData.getTimeStamp()));
+                dynamicLcrCommunicationsDao.insertData(time);
+            }
+        }
     }
 
 }
