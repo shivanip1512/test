@@ -70,6 +70,8 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         //5. Update recent participation
         //6. Update asset availability
         
+        log.info("Data read called for device IDs: {}", deviceIds);
+        
         Multimap<PaoIdentifier, PointData> recievedPoints = retrievePointData(deviceIds);
         dispatchData.putValues(recievedPoints.values());
     }
@@ -86,6 +88,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
             List<String> tags = paoDefinitionDao.getDefinedAttributes(pao.getPaoType()).stream()
                     .map(attribute -> MWChannel.getAttributeChannelLookup().get(attribute.getAttribute()).getChannelId().toString())
                     .collect(Collectors.toList());
+            log.debug("Updating tags: {}, for PAO: {}", tags, pao);
 
             String guid = deviceIdGuid.get(pao.getPaoIdentifier().getPaoId());
             PxMWTimeSeriesDeviceV1 pxmwTimeSeriesDevice = new PxMWTimeSeriesDeviceV1(guid, buildTagString(tags));
@@ -123,8 +126,10 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
      */
     private PointData parseValueDataToPoint(MWChannel channel, PxMWTimeSeriesValueV1 value) {
         PointData pointData = new PointData();
+        log.debug("Attempting to parse point data from message: {}", value);
         pointData.setTime(new Date(value.getTimestamp()));
         String pxReturnedValue = value.getValue();
+
         double pointValue;
 
         if (MWChannel.getBooleanChannels().contains(channel)) {
