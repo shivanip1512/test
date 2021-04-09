@@ -62,12 +62,24 @@
 <script src="<c:url value="/resources/js/common/yukon.navigation.js"/>"></script>
 <script src="<c:url value="/resources/js/lib/iframeResizer/iframeResizer.contentWindow.min.js"/>"></script>
 
+<script src="<c:url value="/resources/js/lib/react/react.development.js"/>"></script>
+<script src="<c:url value="/resources/js/lib/react/react-dom.development.js"/>"></script>
+<script src="<c:url value="/resources/js/lib/babel/babel.min.js"/>"></script>
+
+<script src="<c:url value="/resources/js/common/NavigationDrawer.js"/>"></script>
+<script src="<c:url value="/resources/js/common/NavigationMenu.js"/>"></script>
+
 <script>
     window.iFrameResizer = {
         readyCallback: function(){
             window.parentIFrame.sendMessage(location.href);
         }
     }
+</script>
+
+<script type="text/babel">
+debugger;
+    ReactDOM.render(NavigationMenu, document.getElementById('navigation'));
 </script>
 
 </head>
@@ -90,13 +102,15 @@
         </div>
         
         <div class="yukon-page" style="height:100%;width:100%;">
+        
+<%--             <div class="js-react-component" data-url="http://localhost:8080/yukon-react"></div> --%>
 <%--         <div class="yukon-page"> --%>
             
-<%--             <div class="js-navigation" style="position:relative;overflow:visible;height:100%;">
-                <iframe src="http://localhost:3000/navigation" style="width:100%;height:100%;border:0;z-index:900;"></iframe>
+            <div id="navigation" class="js-navigation" style="position:relative;overflow:visible;height:100%;">
+<%--                 <iframe src="http://localhost:3000/navigation" style="width:100%;height:100%;border:0;z-index:900;"></iframe> --%>
             </div>
                 
-            <div style="position:absolute;z-index:1;top:65px;left:57px;width:97%;"> --%>
+            <div style="position:absolute;z-index:1;top:65px;left:57px;width:97%;">
                 
             <header class="yukon-header" style="background-color:white">
 

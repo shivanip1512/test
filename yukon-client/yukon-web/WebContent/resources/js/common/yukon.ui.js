@@ -584,11 +584,12 @@ yukon.ui = (function () {
     var getReactComponents = function () {
         $('.js-react-component').each(function (i, reactDiv) {
             var url = $(this).data('url');
+            jQuery.support.cors = true;
             $.ajax({
                 type: 'get',
                 url: url
             }).done(function (component) {
-                reactDiv.html(component);
+                reactDiv.innerHTML = component;
             });
 
         });

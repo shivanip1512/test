@@ -26,6 +26,7 @@ public enum ContentSecurityPolicyFilterType {
     CONNECT_SRC("connect-src 'self' 'unsafe-inline' " 
         + "https://api.mapbox.com "
         + "https://*.tiles.mapbox.com " 
+        + "http://localhost:3000 "              //Needed to render react components via ajax
         + "https://www.google.com/recaptcha/ ;"),
     IMG_SRC("img-src 'self' data: Access-Control-Allow-Origin: * " // Access-Control-Allow-Origin: * used for cross origin resource sharing for map images
         + "http://www.google-analytics.com "
