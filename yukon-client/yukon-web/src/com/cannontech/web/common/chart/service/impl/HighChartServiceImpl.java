@@ -1,15 +1,21 @@
 package com.cannontech.web.common.chart.service.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.logging.log4j.core.Logger;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.chart.model.ChartColorsEnum;
 import com.cannontech.common.chart.model.ChartValue;
@@ -17,6 +23,7 @@ import com.cannontech.common.chart.model.Graph;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -35,11 +42,14 @@ public class HighChartServiceImpl implements HighChartService {
     @Autowired private ChartService chartService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private PointDao pointDao;
+    @Autowired private SystemDateFormattingService systemDateFormattingService;
+
+    private static final Logger log = YukonLogManager.getLogger(HighChartServiceImpl.class);
 
     @Override
     public Map<String, Object> getMeterGraphData(List<GraphDetail> graphDetails, Instant start, Instant stop, Double yMin,
             Double yMax, GraphType graphType, YukonUserContext userContext) {
-        // TODO: Ensure that adjustForFlotTimezone() is not called. These adjustments will be removed in YUK-23405.
+
         List<Graph<ChartValue<Double>>> graphs = chartService.getGraphs(graphDetails, start.toDate(), stop.toDate(), userContext,
                 graphType);
 
@@ -89,11 +99,8 @@ public class HighChartServiceImpl implements HighChartService {
 
         Map<String, Object> xaxisOptions = Maps.newHashMap();
 
-        // TODO: These adjustments will be removed in YUK-23405.
-        long xAxisMin = start.getMillis() + TimeZone.getDefault().getOffset(start.getMillis());
-        long xAxisMax = stop.getMillis() + TimeZone.getDefault().getOffset(stop.getMillis());
-        xaxisOptions.put(HighChartOptionKey.MIN.getKey(), xAxisMin);
-        xaxisOptions.put(HighChartOptionKey.MAX.getKey(), xAxisMax);
+        xaxisOptions.put(HighChartOptionKey.MIN.getKey(), start.toDateTime());
+        xaxisOptions.put(HighChartOptionKey.MAX.getKey(), stop.toDateTime());
         xaxisOptions.put(HighChartOptionKey.TYPE.getKey(), "datetime");
 
         Map<String, Object> dataAndOptions = Maps.newHashMap();
@@ -140,13 +147,36 @@ public class HighChartServiceImpl implements HighChartService {
             StringBuilder tooltipBuilder = new StringBuilder();
             tooltipBuilder
                     .append("<span style='color:" + graph.getColor().getColorHex() + "'>\u25CF</span>&nbsp;" + graphDetail.getSeriesName());
-            tooltipBuilder.append(chartValue.getFormattedDescription());
+            tooltipBuilder.append(getFormattedDescription(chartValue));
             map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), tooltipBuilder.toString());
             jsonArrayContainer.add(map);
         }
         return jsonArrayContainer;
     }
     
+    /**
+     * Method to retrieve the formatted date description from chart value.
+     */
+    private String getFormattedDescription(ChartValue<Double> chartValue) {
+
+        StringBuilder descriptionBuilder = new StringBuilder();
+        descriptionBuilder.append("<div>" + chartValue.getFormattedValue() + " " + chartValue.getUnits() + "</div>");
+        DateTimeZone zone = DateTimeZone.forTimeZone(systemDateFormattingService.getSystemTimeZone());
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
+        timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date utcDate = null;
+        try {
+            utcDate = timeFormat.parse(chartValue.getFormattedTime());
+            timeFormat.setTimeZone(zone.toTimeZone());
+            descriptionBuilder.append("<div>" + timeFormat.format(utcDate) + "</div>");
+        } catch (ParseException e) {
+            log.error("Unable to parse the formatted date time", e);
+        }
+
+        return descriptionBuilder.toString();
+    }
+
     private boolean isTemperaturePoint(int pointId) {
         LitePoint lPoint = pointDao.getLitePoint(pointId);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(lPoint.getPaobjectID());

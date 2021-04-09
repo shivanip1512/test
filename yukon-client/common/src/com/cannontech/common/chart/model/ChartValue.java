@@ -75,6 +75,10 @@ public class ChartValue<T> {
         this.units = units;
     }
 
+    public String getUnits() {
+        return units;
+    }
+
     /**
      * @param pointName will be used as part of description:
      * {@code <div>units</div><div>time</div><div>pointName</div>optionalData}
@@ -113,7 +117,7 @@ public class ChartValue<T> {
     
     public String getFormattedTime() {
         long timeStamp = time;
-        timeStamp -= TimeZone.getDefault().getOffset(timeStamp);
+        timeStamp -= TimeZone.getTimeZone("UTC").getOffset(timeStamp);
         return timeFormat.format(timeStamp);
     }
 
@@ -121,11 +125,5 @@ public class ChartValue<T> {
     public String toString() {
         return "(Value:" + formattedValue + ", Time:" + new DateTime(time).toString(DateTimeFormat.mediumDateTime()) + ")";
     }
-    
-    public String getFormattedDescription () {
-        StringBuilder descriptionBuilder = new StringBuilder();
-        descriptionBuilder.append("<div>" + formattedValue + " " + units + "</div>");
-        descriptionBuilder.append("<div>" + getFormattedTime() + "</div>");
-        return descriptionBuilder.toString();
-    }
+
 }
