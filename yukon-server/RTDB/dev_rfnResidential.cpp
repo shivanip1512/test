@@ -112,6 +112,28 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(InstallType ins
     return m;
 }
 
+/* 
+    If the device doesn't support metrology, then send the config part.  This preserves existing behavior as much as is possible. 
+    If the device supports metrology, then we only want to send the config part if the metrology library is
+        actually enabled.
+*/
+bool RfnResidentialDevice::dependsOnMetrologyLibrary( Config::DeviceConfigSPtr deviceConfig )
+{
+    if ( hasMetrologyLibrarySupport() )
+    {
+        const auto configMetrologyLibraryEnabled 
+            = deviceConfig->findValue<bool>( Config::RfnStrings::MetrologyLibraryEnabled );
+
+        if ( ! configMetrologyLibraryEnabled.is_initialized()   // optional, but not included -OR-
+             || *configMetrologyLibraryEnabled == false )       //  present, but disabled
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 YukonError_t RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     rfnRequests.push_back(
@@ -142,6 +164,11 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
         if( ! deviceConfig )
         {
             return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
+        }
+
+        if ( dependsOnMetrologyLibrary( deviceConfig ) )
+        {
+            return ClientErrors::NoMethod;
         }
 
         const unsigned char configFreezeDay               = getConfigData   <unsigned char> ( deviceConfig, Config::RfnStrings::demandFreezeDay );
@@ -456,6 +483,11 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
             return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
+        if ( dependsOnMetrologyLibrary( deviceConfig ) )
+        {
+            return ClientErrors::NoMethod;
+        }
+
         const bool sendForced = parse.isKeyValid("force");
 
         std::map<std::string, std::string> configMap;
@@ -762,6 +794,11 @@ try
     if( ! deviceConfig )
     {
         return reportConfigErrorDetails(ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs);
+    }
+
+    if ( dependsOnMetrologyLibrary( deviceConfig ) )
+    {
+        return ClientErrors::NoMethod;
     }
 
     const bool sendForced = parse.isKeyValid("force");
