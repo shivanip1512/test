@@ -1,23 +1,22 @@
 package com.cannontech.dr.pxmw.model.v1;
 
 import java.io.Serializable;
-import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PxMWTimeSeriesValueV1 implements Serializable {
-    private int timestamp;
+    private long timestamp;
     private String value;
 
     @JsonCreator
-    public PxMWTimeSeriesValueV1(@JsonProperty("t") int timestamp, @JsonProperty("v") String value) {
+    public PxMWTimeSeriesValueV1(@JsonProperty("t") long timestamp, @JsonProperty("v") String value) {
         this.timestamp = timestamp;
         this.value = value;
     }
 
     @JsonProperty("t")
-    public int getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 

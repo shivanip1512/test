@@ -16,7 +16,7 @@
         <br/>
         <br/>
         <br/>Configure the PX URL - Admin/Configuration/Demand Response
-        <br/>PX URL:https://adopteriotwebapi.eaton.com
+        <br/>PX URL:https://eas-all-apim-eus-dev.developer.azure-api.net
         <br/>Simulator URL: http://localhost:8080/yukon/dev/pxMiddleware
         <br/>
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}

@@ -19,57 +19,48 @@ public enum PxMWRetrievalUrl {
             "https://eas-all-apim-eus-dev.azure-api.net/api/security/serviceAccount/token",
             // 200,401
             List.of(HttpStatus.OK, HttpStatus.UNAUTHORIZED),
-            ImmutableMap.of()),
+            ImmutableMap.of(),
+            false),
     DEVICES_BY_SITE_V1(PxMWVersion.V1, "/api/v1/sites/{id}/devices",
             "https://eas-all-apim-eus-dev.developer.azure-api.net/api-details#api=devices&operation=get-getsitedevices",
             // 200, 400, 401
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED),
             ImmutableMap.of("Site Guid", "dd5bf079-b8ea-430c-ad94-1cf54124fc02", "Recursive* (true, false)", "false",
-                    "Include Detail* (true, false)", "false")),
+                    "Include Detail* (true, false)", "false"),
+            false),
     TREND_DATA_RETRIEVAL(PxMWVersion.V1, "/api/v1/devices/timeseries/",
             "https://eas-all-apim-eus-dev.developer.azure-api.net/api-details#api=devices&operation=post-gettimeseriesdata",
             // 200, 400, 401
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED),
-            ImmutableMap.of("Request Json", "{" +
-                    "&quot;devices&quot;:[{&quot;device_id&quot;:&quot;12343adc-567e-4321-9700-e4ca684e1234&quot;," +
-                    "&quot;tag_trait&quot;:&quot;110739,110595&quot;}]," +
-                    "&quot;start_time&quot;:&quot;2018-05-01T00:00:00Z&quot;," +
-                    "&quot;end_time&quot;:&quot;2018-05-04T00:00:00Z&quot;" +
-                    "}")),
+            ImmutableMap.of(),
+            true),
     COMMANDS(PxMWVersion.V1, "/api/v1/devices/{id}/commands/{command_instance_id}",
             "https://adopteriotwebapi.eaton.com/swagger/ui/index#!/Command/Command_GenericDeviceCommand",
             //200, 400, 401, 404
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
             ImmutableMap.of("Device Guid", "821d549c-c1b7-469e-bbf5-9d9d401883b2",
                     "Command Guid (Unique command instance id used to differentiate every command issued)",
-                    "ba84bae0-2e69-4367-9162-6a14039f9bec",
-                    "Command Json", "{" +
-                            "&quot;method&quot;:&quot;LCR_Control&quot;," +
-                            "&quot;params&quot;:{" +
-                            "&quot;vrelay&quot;:&quot;1&quot;," +
-                            "&quot;cycle percent&quot;:50," +
-                            "&quot;cycle period&quot;:30," +
-                            "&quot;cycle count&quot;:4," +
-                            "&quot;start time&quot;:1599137389," +
-                            "&quot;event ID&quot;:1234," +
-                            "&quot;criticality&quot;:3," +
-                            "&quot;randomization&quot;:2," +
-                            "&quot;flags&quot;:0" +
-                            "}" +
-                            "}"));
+                    "ba84bae0-2e69-4367-9162-6a14039f9bec"),
+            true);
     private PxMWVersion version;
     private String suffix;
     private String doc;
     private List<HttpStatus> statuses;
     private Map<String, String> params;
+    private boolean hasJsonParam;
 
-    PxMWRetrievalUrl(PxMWVersion version, String suffix, String doc, List<HttpStatus> statuses, Map<String, String> params) {
+    PxMWRetrievalUrl(PxMWVersion version, String suffix, String doc, List<HttpStatus> statuses, Map<String, String> params, boolean hasJsonParam) {
         this.suffix = suffix;
         this.doc = doc;
         this.statuses = statuses;
         this.version = version;
         // * - optional, in () value examples
         this.params = params;
+        this.hasJsonParam = hasJsonParam;
+    }
+    
+    public boolean hasJsonParam() {
+        return hasJsonParam;
     }
     
     public String getSuffix() {
