@@ -6,13 +6,13 @@ package com.cannontech.dr.pxmw.model.v1;
  */
 public class PxMWCommunicationExceptionV1 extends RuntimeException {
     private final int status;
-    private final PxMWErrorsV1 errors;
+    private final PxMWErrorV1 errors;
     
     public PxMWCommunicationExceptionV1(int status) {
         this(status, null);
     }
     
-    public PxMWCommunicationExceptionV1(int status, PxMWErrorsV1 errors) {
+    public PxMWCommunicationExceptionV1(int status, PxMWErrorV1 errors) {
         this.status = status;
         this.errors = errors;
     }
@@ -21,7 +21,7 @@ public class PxMWCommunicationExceptionV1 extends RuntimeException {
         return status;
     }
     
-    public PxMWErrorsV1 getErrorMessage() {
+    public PxMWErrorV1 getErrorMessage() {
         return errors;
     }
 }
