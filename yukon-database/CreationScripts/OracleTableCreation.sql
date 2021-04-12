@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/30/2021 1:55:01 PM                         */
+/* Created on:     4/12/2021 5:27:44 AM                         */
 /*==============================================================*/
 
 
@@ -6748,6 +6748,16 @@ create table LMGroupVersacom  (
 );
 
 /*==============================================================*/
+/* Table: LMGroupZeusMapping                                    */
+/*==============================================================*/
+create table LMGroupZeusMapping  (
+   DeviceID             NUMBER                          not null,
+   EcobeeGroupId        VARCHAR2(32)                    not null,
+   EcobeeEventId        VARCHAR2(50),
+   constraint PK_LMGROUPZEUSMAPPING primary key (DeviceID, EcobeeGroupId)
+);
+
+/*==============================================================*/
 /* Table: LMHardwareBase                                        */
 /*==============================================================*/
 create table LMHardwareBase  (
@@ -10935,6 +10945,15 @@ create table ZBGatewayToDeviceMapping  (
 );
 
 /*==============================================================*/
+/* Table: ZeusGroupInventoryMapping                             */
+/*==============================================================*/
+create table ZeusGroupInventoryMapping  (
+   InventoryID          NUMBER                          not null,
+   EcobeeGroupId        VARCHAR2(32)                    not null,
+   constraint PK_ZEUSGROUPINVENTORYMAPPING primary key (InventoryID, EcobeeGroupId)
+);
+
+/*==============================================================*/
 /* Table: Zone                                                  */
 /*==============================================================*/
 create table Zone  (
@@ -13290,6 +13309,10 @@ alter table LMGroupVersacom
    add constraint FK_LMGrp_LMGrpVers foreign key (DEVICEID)
       references LMGroup (DeviceID);
 
+alter table LMGroupZeusMapping
+   add constraint FK_LMGroupZeusMapping_LMGroup foreign key (DeviceID)
+      references LMGroup (DeviceID);
+
 alter table LMHardwareBase
    add constraint FK_LMHrdB_Rt foreign key (RouteID)
       references Route (RouteID);
@@ -14203,6 +14226,10 @@ alter table ZBGatewayToDeviceMapping
    add constraint FK_ZBGateDeviceMap_ZBGate foreign key (GatewayId)
       references ZBGateway (DeviceId)
       on delete cascade;
+
+alter table ZeusGroupInventoryMapping
+   add constraint FK_ZeusGroupIM_IBase foreign key (InventoryID)
+      references InventoryBase (InventoryID);
 
 alter table Zone
    add constraint FK_ZONE_CapContSubBus foreign key (SubstationBusId)
