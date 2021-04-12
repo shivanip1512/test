@@ -1,6 +1,5 @@
 package com.cannontech.web.dev;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.logging.log4j.core.Logger;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
-import com.cannontech.dr.pxmw.model.v1.PxMWChannelValuesRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCredentialsV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
@@ -49,19 +47,6 @@ public class PxMWSimulatorApiControllerV1 {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     private static final Logger log = YukonLogManager.getLogger(PxMWCommunicationServiceImplV1.class);
     
-    @GetMapping("/deviceprofile/{id}")
-    public ResponseEntity<Object> deviceprofileV1(@PathVariable String id) {
-        try {
-            PxMWSimulatorResponse response = simulatorsCommunicationService
-                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICE_PROFILE_BY_GUID_V1, "deviceProfileV1",
-                            new Class[] { String.class }, new Object[] { id }), PxMWSimulatorResponse.class);
-            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
-        } catch (ExecutionException e) {
-            log.error("Error", e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-    
     @GetMapping("/sites/{id}/devices")
     public ResponseEntity<Object> devicesV1(@PathVariable String id, @RequestParam(required=false) Boolean recursive,
             @RequestParam(required=false) Boolean includeDetail) {
@@ -77,52 +62,12 @@ public class PxMWSimulatorApiControllerV1 {
         }
     }
     
-    @GetMapping("/devices/{id}/timeseries/latest")
-    public ResponseEntity<Object> timeseriesLatestV1(@PathVariable String id, @RequestParam String tags) {
-        try {
-            PxMWSimulatorResponse response = simulatorsCommunicationService
-                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICE_TIMESERIES_LATEST, "getTimeseriesLatestV1",
-                            new Class[] { String.class, String.class }, new Object[] { id, tags }), PxMWSimulatorResponse.class);
-            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
-        } catch (ExecutionException e) {
-            log.error("Error", e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-    
-    @PutMapping("/devices/{id}/commands/getchannelvalues")
-    public ResponseEntity<Object> getChannelValuesV1(@PathVariable String id, @RequestBody PxMWChannelValuesRequestV1 pxMWChannelValuesRequestV1) {
-        try {
-            PxMWSimulatorResponse response = simulatorsCommunicationService
-                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICE_GET_CHANNEL_VALUES_V1, "getChannelValuesV1",
-                            new Class[] { String.class, List.class }, new Object[] { id, pxMWChannelValuesRequestV1.getTags() }), PxMWSimulatorResponse.class);
-            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
-        } catch (ExecutionException e) {
-            log.error("Error", e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-    
     @PostMapping("/security/token")
     public ResponseEntity<Object> token(@RequestBody PxMWCredentialsV1  pxMWCredentialsV1) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
                     .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.SECURITY_TOKEN, "token",
                             new Class[] {}, new Object[] {}), PxMWSimulatorResponse.class);
-            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
-        } catch (ExecutionException e) {
-            log.error("Error", e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-    
-    @PutMapping("/devices/cloudenable")
-    public ResponseEntity<Object> cloudEnableV1(@RequestParam String id, @RequestParam Boolean state) {
-        try {
-            PxMWSimulatorResponse response = simulatorsCommunicationService
-                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.CLOUD_ENABLE, "cloudEnableV1",
-                            new Class[] { String.class, Boolean.class},
-                            new Object[] { id, state }), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
             log.error("Error", e);

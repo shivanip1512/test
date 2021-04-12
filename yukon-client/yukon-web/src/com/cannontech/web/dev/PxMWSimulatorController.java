@@ -27,11 +27,8 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
-import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
@@ -120,28 +117,13 @@ public class PxMWSimulatorController {
             List<String> paramList = Stream.of(params.split(","))
                     .map(String::trim)
                     .collect(Collectors.toList());
-            if (endpoint == PxMWRetrievalUrl.DEVICE_PROFILE_BY_GUID_V1) {
-                PxMWDeviceProfileV1 profile = pxMWCommunicationServiceV1.getDeviceProfile(paramList.get(0));
-                processSuccess(params, json, getFormattedJson(profile));
-            } else if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
-                PxMWSiteV1 site = pxMWCommunicationServiceV1.getSite(paramList.get(0), parseBoolean(paramList, 1),
+            if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
+                PxMWSiteV1 site = pxMWCommunicationServiceV1.getSiteDevices(paramList.get(0), parseBoolean(paramList, 1),
                         parseBoolean(paramList, 2));
                 processSuccess(params, json, getFormattedJson(site));
-            } else if (endpoint == PxMWRetrievalUrl.DEVICE_TIMESERIES_LATEST) {
-                String deviceGuid = paramList.get(0);
-                paramList.remove(deviceGuid);
-                PxMWDeviceTimeseriesLatestV1 details = pxMWCommunicationServiceV1.getTimeseriesLatest(deviceGuid, paramList);
-                processSuccess(params, json, getFormattedJson(details));
             } else if (endpoint == PxMWRetrievalUrl.SECURITY_TOKEN) {
                 PxMWTokenV1 token = pxMWCommunicationServiceV1.getToken();
                 processSuccess(params, json, getFormattedJson(token));
-            } else if (endpoint == PxMWRetrievalUrl.DEVICE_GET_CHANNEL_VALUES_V1) {
-                String deviceGuid = paramList.get(0);
-                paramList.remove(deviceGuid);
-                List<PxMWChannelValueV1> values = pxMWCommunicationServiceV1.getChannelValues(paramList.get(0), paramList);
-                processSuccess(params, json, getFormattedJson(values));
-            } else if (endpoint == PxMWRetrievalUrl.CLOUD_ENABLE) {
-                pxMWCommunicationServiceV1.cloudEnable(paramList.get(0), parseBoolean(paramList, 1));
             } else if (endpoint == PxMWRetrievalUrl.COMMANDS) {
                 try {
                     PxMWCommandRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWCommandRequestV1.class);
