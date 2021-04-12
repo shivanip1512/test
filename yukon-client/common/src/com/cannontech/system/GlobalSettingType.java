@@ -132,6 +132,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_SFTP_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PRIVATE_KEY_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     RUNTIME_CALCULATION_INTERVAL_HOURS(GlobalSettingSubCategory.DR, 2, Range.inclusive(1, 24)),
+    PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL(GlobalSettingSubCategory.DR, 1440, Range.inclusive(0,10080)),
     PX_MIDDLEWARE_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
     PX_MIDDLEWARE_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
     PX_MIDDLEWARE_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
