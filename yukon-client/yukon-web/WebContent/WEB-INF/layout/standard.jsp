@@ -66,8 +66,8 @@
 <script src="<c:url value="/resources/js/lib/react/react-dom.development.js"/>"></script>
 <script src="<c:url value="/resources/js/lib/babel/babel.min.js"/>"></script>
 
-<script src="<c:url value="/resources/js/common/NavigationDrawer.js"/>"></script>
-<script src="<c:url value="/resources/js/common/NavigationMenu.js"/>"></script>
+<script type="text/babel" src="<c:url value="/resources/js/common/NavigationDrawer.js"/>"></script>
+<script type="text/babel" src="<c:url value="/resources/js/common/NavigationMenu.js"/>"></script>
 
 <script>
     window.iFrameResizer = {
@@ -79,7 +79,9 @@
 
 <script type="text/babel">
 debugger;
-    ReactDOM.render(NavigationMenu, document.getElementById('navigation'));
+    var reactElement = React.createElement(NavigationDrawer, null, null);
+
+    ReactDOM.render(reactElement, document.getElementById('navigation'));
 </script>
 
 </head>
