@@ -117,7 +117,7 @@ public class ChartValue<T> {
     
     public String getFormattedTime() {
         long timeStamp = time;
-        timeStamp -= TimeZone.getTimeZone("UTC").getOffset(timeStamp);
+        timeStamp -= TimeZone.getDefault().getOffset(timeStamp);
         return timeFormat.format(timeStamp);
     }
 

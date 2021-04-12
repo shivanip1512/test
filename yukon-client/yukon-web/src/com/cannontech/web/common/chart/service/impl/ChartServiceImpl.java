@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.chart.model.ChartInterval;
@@ -92,7 +90,7 @@ public class ChartServiceImpl implements ChartService {
                 if (graphDetail.getInterval().getMillis() >= ChartInterval.DAY.getMillis()) {
                     axisChartData = getXAxisMinMaxValues(graphDetail.getInterval(), chartData, graphDetail.isMin());
                 } else {
-                    axisChartData = chartData.stream().collect(Collectors.toList());
+                    axisChartData = chartData;
                 }
                 graph.setLines(graphDetail.getLines());
                 graph.setPoints(graphDetail.getPoints());

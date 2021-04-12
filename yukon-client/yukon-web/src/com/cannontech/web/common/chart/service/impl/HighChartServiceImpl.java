@@ -1,6 +1,5 @@
 package com.cannontech.web.common.chart.service.impl;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,14 +7,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
-
-import org.apache.logging.log4j.core.Logger;
-import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.chart.model.ChartColorsEnum;
 import com.cannontech.common.chart.model.ChartValue;
@@ -23,7 +17,6 @@ import com.cannontech.common.chart.model.Graph;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -42,9 +35,6 @@ public class HighChartServiceImpl implements HighChartService {
     @Autowired private ChartService chartService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private PointDao pointDao;
-    @Autowired private SystemDateFormattingService systemDateFormattingService;
-
-    private static final Logger log = YukonLogManager.getLogger(HighChartServiceImpl.class);
 
     @Override
     public Map<String, Object> getMeterGraphData(List<GraphDetail> graphDetails, Instant start, Instant stop, Double yMin,
@@ -56,7 +46,7 @@ public class HighChartServiceImpl implements HighChartService {
         List<Map<String, Object>> seriesList = Lists.newArrayList();
         graphs.forEach(graph -> {
             GraphDetail graphDetail = graphDetails.stream().filter(gd -> gd.getChartColors() == graph.getColor()).findFirst().orElse(null);
-            seriesList.add(getSeriesDetails(graph, graphType, graphDetail));
+            seriesList.add(getSeriesDetails(graph, graphType, graphDetail, userContext));
         });
 
         boolean isTemperatureAxisDetailsAdded = false;
@@ -111,9 +101,9 @@ public class HighChartServiceImpl implements HighChartService {
         return dataAndOptions;
     }
 
-    private Map<String, Object> getSeriesDetails(Graph<ChartValue<Double>> graph, GraphType graphType, GraphDetail graphDetail) {
+    private Map<String, Object> getSeriesDetails(Graph<ChartValue<Double>> graph, GraphType graphType, GraphDetail graphDetail, YukonUserContext userContext) {
         Map<String, Object> seriesDetails = Maps.newHashMap();
-        seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph, graphDetail));
+        seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph, graphDetail, userContext));
         seriesDetails.put(HighChartOptionKey.SHOW_IN_LEGEND.getKey(), false);
         seriesDetails.put(HighChartOptionKey.BORDER_COLOR.getKey(), ChartColorsEnum.GREEN);
         if (isTemperaturePoint(graph.getPointId())) {
@@ -138,7 +128,7 @@ public class HighChartServiceImpl implements HighChartService {
         return seriesDetails;
     }
 
-    private List<Map<String, Object>> getDataArray(Graph<ChartValue<Double>> graph, GraphDetail graphDetail) {
+    private List<Map<String, Object>> getDataArray(Graph<ChartValue<Double>> graph, GraphDetail graphDetail, YukonUserContext userContext) {
         List<Map<String, Object>> jsonArrayContainer = Lists.newArrayList();
         for (ChartValue<Double> chartValue : graph.getChartData()) {
             Map<String, Object> map = Maps.newHashMap();
@@ -147,33 +137,23 @@ public class HighChartServiceImpl implements HighChartService {
             StringBuilder tooltipBuilder = new StringBuilder();
             tooltipBuilder
                     .append("<span style='color:" + graph.getColor().getColorHex() + "'>\u25CF</span>&nbsp;" + graphDetail.getSeriesName());
-            tooltipBuilder.append(getFormattedDescription(chartValue));
+            tooltipBuilder.append(getFormattedDescription(chartValue, userContext));
             map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), tooltipBuilder.toString());
             jsonArrayContainer.add(map);
         }
         return jsonArrayContainer;
     }
-    
+
     /**
      * Method to retrieve the formatted date description from chart value.
      */
-    private String getFormattedDescription(ChartValue<Double> chartValue) {
-
+    private String getFormattedDescription(ChartValue<Double> chartValue, YukonUserContext userContext) {
         StringBuilder descriptionBuilder = new StringBuilder();
         descriptionBuilder.append("<div>" + chartValue.getFormattedValue() + " " + chartValue.getUnits() + "</div>");
-        DateTimeZone zone = DateTimeZone.forTimeZone(systemDateFormattingService.getSystemTimeZone());
-
         SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
-        timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date utcDate = null;
-        try {
-            utcDate = timeFormat.parse(chartValue.getFormattedTime());
-            timeFormat.setTimeZone(zone.toTimeZone());
-            descriptionBuilder.append("<div>" + timeFormat.format(utcDate) + "</div>");
-        } catch (ParseException e) {
-            log.error("Unable to parse the formatted date time", e);
-        }
-
+        timeFormat.setTimeZone(userContext.getTimeZone());
+        Date date = new Date(chartValue.getTime());
+        descriptionBuilder.append("<div>" + timeFormat.format(date) + "</div>");
         return descriptionBuilder.toString();
     }
 
