@@ -14,32 +14,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.Hardware;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWSiteDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.services.pxmw.creation.service.PxMWDeviceCreationService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.user.YukonUserContext;
 
-public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService{
+public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService {
     private static final Logger log = YukonLogManager.getLogger(PxMWDeviceCreationServiceImpl.class);
     private static int runFrequencyMinutes = 15;
-    
+
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private HardwareUiService hardwareUiService;
-    // I dont think this will work
-//    @Autowired private YukonUserDao yukonUserDao;
-    
     @Autowired PxMWCommunicationServiceV1 pxMWCommunicationServiceV1;
 
     private static AtomicBoolean isRunning = new AtomicBoolean();
@@ -50,19 +47,18 @@ public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService{
      * The thread where the calculation is done.
      */
     private final Runnable autoCreateCloudLCRThread = this::autoCreateCloudLCR;
-    
+
     /**
      * Schedule the calculation thread to run periodically.
      */
     @PostConstruct
     public void init() {
-//        systemMessageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         runFrequencyMinutes = getDeviceCreationInterval();
-        log.info("Auto creation of Eaton cloud LCRs will run every {} minutes and begin 5 minutes after startup", runFrequencyMinutes);
+        log.info("Auto creation of Eaton cloud LCRs will run every {} minutes and begin 5 minutes after startup",
+                runFrequencyMinutes);
         executor.scheduleAtFixedRate(autoCreateCloudLCRThread, 5, runFrequencyMinutes, TimeUnit.MINUTES);
-//        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.INFRASTRUCTURE_WARNINGS_CACHE_REFRESH);
     }
-    
+
     /**
      * Device Auto Creation runs on the interval specified in the settings with a default of 24 hours
      */
@@ -75,23 +71,27 @@ public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService{
                 return;
             }
             log.info("Beginning Eaton Cloud LCR auto creation");
-            
-            // get list of Yukon devices (LCR6200C, 6600C)
+
+            // get list of Yukon devices (LCR6200C, 6600C) from DeviceGuid
             List<String> yukonGUIDs = deviceDao.getGuids();
-            
-            // get devices from GetSiteDevice api, put in list
-            List<String> siteDeviceGUIDs = pxMWCommunicationServiceV1.getSiteDevices(getSiteGuid(), null, null).getDevices()
-                                           .stream()
-                                           .map(siteDevice -> siteDevice.getDeviceUuid())
-                                           .collect(Collectors.toList());;
-            
+
+            // get siteDevices with details
+            List<PxMWSiteDeviceV1> siteDevicesWithDetails = pxMWCommunicationServiceV1.getSiteDevices(getSiteGuid(), null, true)
+                    .getDevices();
+
+            // build list of siteDeviceGUIDs
+            List<String> siteDeviceGUIDs = siteDevicesWithDetails.stream()
+                    .map(siteDevice -> siteDevice.getDeviceGuid())
+                    .collect(Collectors.toList());
+            ;
+
             // Remove YukonGUIDs from siteDeviceGUIDs
             siteDeviceGUIDs.removeAll(yukonGUIDs);
 
             // Create object list using 11074 mFreq channel
             List<PxMWTimeSeriesDeviceV1> devicesToRequestDataFor = siteDeviceGUIDs.stream()
-                                                                                  .map(p -> new PxMWTimeSeriesDeviceV1(p, "110741"))
-                                                                                  .collect(Collectors.toList());
+                    .map(p -> new PxMWTimeSeriesDeviceV1(p, "110741"))
+                    .collect(Collectors.toList());
 
             // Calculate TimeStamps to get previous 1 day
             DateTime today = new DateTime(Instant.now());
@@ -99,30 +99,49 @@ public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService{
             Range<Instant> timeRange = new Range<Instant>(yesterday.toInstant(), false, today.toInstant(), false);
 
             // Request data for devices
-            PxMWTimeSeriesDataResponseV1 timeSeriesDataResponse = pxMWCommunicationServiceV1.getTimeSeriesValues(devicesToRequestDataFor, timeRange);
-            
-            // For everything with data, request device details required for creation
-            // I don't think this is implemented yet
-            
+            List<String> timeSeriesDataResponseDeviceIDs = pxMWCommunicationServiceV1
+                    .getTimeSeriesValues(devicesToRequestDataFor, timeRange).getMsg()
+                    .stream()
+                    .filter(deviceResult -> deviceResult.getResults() != null)
+                    .map(deviceID -> deviceID.getDeviceId())
+                    .collect(Collectors.toList());
+
+            // Filter out devices that won't be created
+            List<PxMWSiteDeviceV1> siteDevicesToCreate = siteDevicesWithDetails.stream()
+                    .filter(detailDevices -> timeSeriesDataResponseDeviceIDs.contains(detailDevices.getDeviceGuid()))
+                    .collect(Collectors.toList());
+
+            // Get Yukon User
+            LiteYukonUser yukonUser = YukonUserContext.system.getYukonUser();
             // create yukon devices for all positive responses
-            // Dont know if I can use this method or need to rip out some for just this service
-            hardwareUiService.createHardware(new Hardware(), new LiteYukonUser());
+            siteDevicesToCreate.stream()
+                    .map(device -> buildEatonCloudHardware(device.getDeviceGuid(), device.getName(), device.getModel()))
+                    .map(hardware -> hardwareUiService.createHardware(hardware, yukonUser));
             // log creation in the event logs
-            
+
             isRunning.set(false);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Unexpected exception: ", e);
             isRunning.set(false);
         }
     }
-    
+
     private int getDeviceCreationInterval() {
         int deviceCreationInterval = settingDao.getInteger(GlobalSettingType.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL);
         return deviceCreationInterval;
     }
-    
+
     private String getSiteGuid() {
         String siteGuid = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
         return siteGuid;
+    }
+
+    private Hardware buildEatonCloudHardware(String guid, String displayName, String model) {
+        Hardware hardware = new Hardware();
+        hardware.setGuid(guid);
+        hardware.setDisplayName(displayName);
+        hardware.setHardwareType(HardwareType.valueOf(model));
+
+        return hardware;
     }
 }
