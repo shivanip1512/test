@@ -25,6 +25,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -48,6 +49,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.support.service.SupportBundleService;
@@ -60,6 +62,7 @@ import com.cannontech.web.support.SiteMapHelper.SiteMapWrapper;
 import com.cannontech.web.support.SupportBundle.BundleRangeSelection;
 import com.cannontech.web.support.logging.LogExplorerController;
 import com.cannontech.web.support.logging.LogExplorerController.LogFile;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -80,6 +83,7 @@ public class SupportController {
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ServerDatabaseCache serverDatabaseCache;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping(value="info")
     public String info(ModelMap model){
@@ -155,7 +159,8 @@ public class SupportController {
             }
         }        model.addAttribute("supportPages", supportPages);
     }
-
+   
+    
     /**
      * Adds names of manuals found in Yukon/Manuals to the model
      */
@@ -177,7 +182,7 @@ public class SupportController {
         setUpLogsAndInfo(model, context);
         setUpLinks(model, context);
         setUpManuals(model);
-        
+      
         List<String> previousBundles = new ArrayList<>();
         for(File f : bundleService.getBundles()){
             previousBundles.add(f.getName());
@@ -214,7 +219,7 @@ public class SupportController {
             BindingResult result, 
             FlashScope flash, 
             YukonUserContext userContext) {
-
+       
         rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
         detailsValidator.validate(bundle, result);
 
@@ -245,6 +250,57 @@ public class SupportController {
         return "redirect:viewBundleProgress";
     }
 
+    private Validator detailsRfValidator = new SimpleValidator<RfSupportBundle>(RfSupportBundle.class) {
+        @Override
+        public void doValidation(RfSupportBundle rfBundle, Errors errors) {
+            ValidationUtils.rejectIfEmpty(errors, "customerName", baseKey + ".errorMsg.empty");
+            YukonValidationUtils.checkExceedsMaxLength(errors, "customerName",
+                    rfBundle.getCustomerName(), 40);
+
+            Pattern validCharacters = Pattern.compile("^[a-zA-Z0-9_\\-\\(\\)&%.# ]*$");
+            YukonValidationUtils.regexCheck(errors,
+                    "customerName",
+                    rfBundle.getCustomerName(),
+                    validCharacters,
+                    baseKey + ".errorMsg.invalidCharacters");
+        }
+    };
+   
+    @RequestMapping(value = "createRfBundle", method = RequestMethod.POST)
+    public @ResponseBody Map<String, Object> createRFBundle(
+            ModelMap model,
+            @ModelAttribute RfSupportBundle rfSupportBundle,
+            BindingResult result,
+            FlashScope flash,
+            YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
+        detailsRfValidator.validate(rfSupportBundle, result);
+        Map<String, Object> json = new HashMap<>();
+
+        if (result.hasErrors()) {
+            json.put("isFieldError", true);
+            json.put("message", accessor.getMessage("yukon.web.error.fieldErrorsExist"));
+
+            // field errors
+            Iterable<ObjectError> fieldErrors = Iterables.filter(result.getFieldErrors(), ObjectError.class);
+            for (ObjectError objectError : fieldErrors) {
+                YukonMessageSourceResolvable fieldError = new YukonMessageSourceResolvable(objectError.getCodes(),
+                        objectError.getArguments(),
+                        objectError.getDefaultMessage());
+                json.put("fieldError", accessor.getMessage(fieldError));
+            }
+            return json;
+        }
+
+        // TODO: Invoke Service to start support bundle. bundle.start(rfSupportBundle);
+        json.put("isSuccess", true);
+        json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success"));
+        return json;
+    }
+
+    
     @RequestMapping(value="viewBundleProgress")
     public String viewBundleProgress(YukonUserContext userContext) {
         rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
@@ -262,6 +318,20 @@ public class SupportController {
         }
         return json;
     }
+    
+    @RequestMapping(value = "rfBundleInProgress", method = RequestMethod.GET)
+    public @ResponseBody Map<String, Object> rfBundleInProgress(YukonUserContext userContext) {
+        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
+        Map<String, Object> json = new HashMap<>();
+
+        // TODO: Invoke Service to check progress of rf support bundle. bundle.inProgress(rfSupportBundle);
+        boolean inProgress = false;
+        json.put("inProgress", inProgress);
+        if (!inProgress) {
+            // TODO: call bundleservice() to download RF Network support bundle
+        }
+        return json;
+    }
 
     @RequestMapping(value="getBundleProgress")
     public String getBundleProgress(ModelMap model, YukonUserContext userContext) {
@@ -273,7 +343,8 @@ public class SupportController {
 
         return "supportBundle/buildStatus.jsp";
     }
-
+    
+  
     @RequestMapping(value="infoOnBundle")
     public @ResponseBody Map<String, String> infoOnBundle(String fileName, YukonUserContext userContext) {
         rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
