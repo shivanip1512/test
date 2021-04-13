@@ -56,7 +56,7 @@ public class PxMWMessageHandler extends SimulatorMessageHandler {
                         return (PxMWSimulatorResponse) method.invoke(generator, request.getParamValues());
                     } catch (Exception e) {
                         throw new IllegalArgumentException(
-                                "Unable to use reflection to call method " + request.getMethod() + " to get data");
+                                "Unable to use reflection to call method " + request.getMethod() + " to get data", e);
                     }
                 }
             } else if (simulatorRequest instanceof PxMWSimulatorSettingsUpdateRequest) {

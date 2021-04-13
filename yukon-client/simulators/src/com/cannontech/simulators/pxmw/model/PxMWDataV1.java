@@ -91,9 +91,9 @@ public class PxMWDataV1 extends PxMWDataGenerator {
             return new PxMWTimeSeriesDeviceResultV1(d.getDeviceGuid(), result);
         }).collect(Collectors.toList());
         
+        //create bad data to test the parser
         if(pxMWTimeSeriesDataRequestV1.getStartTime() == null) {
-            //to test bad data we will setup 
-           // timeseriesData.messupTheData(resultList);
+             timeseriesData.messupTheData(resultList);
         }
 
         return new PxMWSimulatorResponse(resultList.toArray(), status);

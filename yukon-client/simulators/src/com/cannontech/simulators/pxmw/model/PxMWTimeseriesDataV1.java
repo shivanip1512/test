@@ -51,14 +51,14 @@ public class PxMWTimeseriesDataV1 {
             }
         }
         
-        log.info("Parsed size:{} channels:{}", parsedChannels.size(), parsedChannels.keySet());
+        log.info("Parsed {} channels:{}", parsedChannels.size(), parsedChannels.keySet().stream().collect(Collectors.joining(",")));
         List<String> allChannels = Arrays.asList(MWChannel.values()).stream().map(value -> value.getChannelId().toString())
                 .collect(Collectors.toList());
-        log.info("Required size:{} channels:{}", allChannels.size(), allChannels);
+        log.info("Required {} channels:{}", allChannels.size(), allChannels.stream().collect(Collectors.joining(",")));
         Set<String> missingChannels = new HashSet<>(); 
         missingChannels.addAll(allChannels);
         missingChannels.removeAll(parsedChannels.keySet());
-        log.info("Missing size:{} channels:{}", missingChannels.size(), missingChannels);
+        log.info("Missing{} channels:{}", missingChannels.size(), missingChannels.stream().collect(Collectors.joining(",")));
     }
     
     /**
@@ -100,7 +100,13 @@ public class PxMWTimeseriesDataV1 {
         
         PxMWTimeSeriesResultV1 detail = result.getResults().get(0);
         
-        //add random values
+        List<PxMWTimeSeriesValueV1> badValues = detail.getValues().stream().map(v -> new PxMWTimeSeriesValueV1(0, "Test"))
+                .collect(Collectors.toList());
+        detail.getValues().clear();
+        detail.getValues().addAll(badValues);
         
+        
+        results.add(new PxMWTimeSeriesDeviceResultV1("Test", new ArrayList<>()));
+       
     }
 }
