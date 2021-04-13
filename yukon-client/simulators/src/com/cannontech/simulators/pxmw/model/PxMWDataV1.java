@@ -14,7 +14,6 @@ import com.cannontech.dr.pxmw.model.v1.PxMWErrorV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
@@ -97,7 +96,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
            // timeseriesData.messupTheData(resultList);
         }
 
-        return new PxMWSimulatorResponse(new PxMWTimeSeriesDataResponseV1(resultList), status);
+        return new PxMWSimulatorResponse(resultList.toArray(), status);
     }
 
     public PxMWSimulatorResponse sendCommandV1(String id, String command_instance_id, PxMWCommandRequestV1 pxMWCommandRequestV1) {
