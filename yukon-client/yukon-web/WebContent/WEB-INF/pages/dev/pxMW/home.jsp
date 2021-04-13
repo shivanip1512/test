@@ -17,6 +17,7 @@
 </c:if>
      <div class="notes">
         <br/>For the Endpoint you would like to test using simulator, select the Status to be returned and enter any parameters that are needed as a comma separated string.
+        <br/>Default JSON values are defined in yukon.dev.simulators.pxMWSimulator.js
         <br/>Click on the Test button to test the Endpoint and the JSON result will be displayed below.
         <br/>The Clear Cache button will clear the cache.
         <br/>
