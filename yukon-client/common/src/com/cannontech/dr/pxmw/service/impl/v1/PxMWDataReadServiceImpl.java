@@ -18,11 +18,13 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.buf.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.point.PointQuality;
@@ -56,15 +58,14 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
 
     @Override
     public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds) {
-        //5. Update recent participation
-        //6. Update asset availability
-        
         log.info("Data read called for device IDs: {}", deviceIds);
         
         Multimap<PaoIdentifier, PointData> recievedPoints = retrievePointData(deviceIds);
-        dispatchData.putValues(recievedPoints.values());
         
-        updateAssetAvaiability(recievedPoints);
+        if (!recievedPoints.isEmpty()) {
+            dispatchData.putValues(recievedPoints.values());
+            updateAssetAvaiability(recievedPoints);
+        }
         
         return recievedPoints;
     }
@@ -76,16 +77,18 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         List<PxMWTimeSeriesDeviceV1> timeSeriesDevices = new ArrayList<PxMWTimeSeriesDeviceV1>();
 
         for (LiteYukonPAObject pao : paoDao.getLiteYukonPaos(deviceIds)) {
-            deviceIdToPao.put(pao.getPaoIdentifier().getPaoId(), pao);
-
-            List<String> tags = paoDefinitionDao.getDefinedAttributes(pao.getPaoType()).stream()
-                    .map(attribute -> MWChannel.getAttributeChannelLookup().get(attribute.getAttribute()).getChannelId().toString())
-                    .collect(Collectors.toList());
-            log.debug("Updating tags: {}, for PAO: {}", tags, pao);
-
-            String guid = deviceIdGuid.get(pao.getPaoIdentifier().getPaoId());
-            PxMWTimeSeriesDeviceV1 pxmwTimeSeriesDevice = new PxMWTimeSeriesDeviceV1(guid, buildTagString(tags));
-            timeSeriesDevices.add(pxmwTimeSeriesDevice);
+            if (pao.getPaoType().isRfLcr()) {
+                deviceIdToPao.put(pao.getPaoIdentifier().getPaoId(), pao);
+    
+                List<String> tags = paoDefinitionDao.getDefinedAttributes(pao.getPaoType()).stream()
+                        .map(attribute -> MWChannel.getAttributeChannelLookup().get(attribute.getAttribute()).getChannelId().toString())
+                        .collect(Collectors.toList());
+                log.debug("Updating tags: {}, for PAO: {}", tags, pao);
+    
+                String guid = deviceIdGuid.get(pao.getPaoIdentifier().getPaoId());
+                PxMWTimeSeriesDeviceV1 pxmwTimeSeriesDevice = new PxMWTimeSeriesDeviceV1(guid, buildTagString(tags));
+                timeSeriesDevices.add(pxmwTimeSeriesDevice);
+            }
         }
 
         List<PxMWTimeSeriesDeviceResultV1> devices = chunkAndProcessRequests(timeSeriesDevices);
@@ -120,7 +123,11 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
     private PointData parseValueDataToPoint(MWChannel channel, PxMWTimeSeriesValueV1 value) {
         PointData pointData = new PointData();
         log.debug("Attempting to parse point data from message: {}", value);
-        pointData.setTime(new Date(value.getTimestamp()));
+        
+        try {
+            pointData.setTime(new Date(value.getTimestamp()));
+        }
+        
         String pxReturnedValue = value.getValue();
 
         double pointValue;
@@ -128,19 +135,29 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         if (MWChannel.getBooleanChannels().contains(channel)) {
             if (!pxReturnedValue.toLowerCase().equals("true") && !pxReturnedValue.toLowerCase().equals("false")) {
                 log.info("Unexpected Value {} for channel {}. Discarding value", pxReturnedValue, channel);
+                return null;
             }
             pointValue = Boolean.parseBoolean(pxReturnedValue) ? 1 : 0;
             pointData.setValue(pointValue);
         } else if (MWChannel.getIntegerChannels().contains(channel)) {
-            pointValue = Integer.parseInt(pxReturnedValue);
+            try {
+                pointValue = Integer.parseInt(pxReturnedValue);
+            } catch (NullPointerException | NumberFormatException e) {
+                log.error("Error processing ");
+                return null;
+            }
         } else if (MWChannel.getFloatChannels().contains(channel)) {
-            pointValue = Double.parseDouble(pxReturnedValue);
+            try {
+                pointValue = Double.parseDouble(pxReturnedValue);
+            } catch (NullPointerException | NumberFormatException e) {
+                log.error(e);
+                return null;
+            }
         } else {
             log.info("Channel {} is a type that cannot be parsed into point data. Disarding received value: {}", pxReturnedValue);
             return null;
         }
 
-        pointData.setValue(pointValue);
         return pointData;
     }
 
@@ -150,11 +167,12 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
      */
     private List<PxMWTimeSeriesDeviceResultV1> chunkAndProcessRequests(List<PxMWTimeSeriesDeviceV1> requests) {
         List<PxMWTimeSeriesDeviceResultV1> responses = new ArrayList<>();
+        Range<Instant> queryRange = getQueryRange();
 
         List<List<PxMWTimeSeriesDeviceV1>> partitionedRequests = Lists.partition(requests, 10);
         for (List<PxMWTimeSeriesDeviceV1> request : partitionedRequests) {
             try {
-                responses.addAll(pxMWCommunicationService.getTimeSeriesValues(request, getQueryRange()).getMsg());
+                responses.addAll(pxMWCommunicationService.getTimeSeriesValues(request, queryRange).getMsg());
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.error("An error occurred processing requests: {}", request);
             }
@@ -167,11 +185,11 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
      * Currently just returns a range of the last week
      */
     private Range<Instant> getQueryRange() {
-        Instant queryEndTime = new Instant();
-        Instant queryStartTime = new Instant(System.currentTimeMillis() - (3600 * 24 * 7 * 1000)); // previous week
-        return new Range<Instant>(queryStartTime, false, queryEndTime, true);
+        DateTime queryEndTime = new DateTime();
+        DateTime queryStartTime = queryEndTime.minusDays(7);
+        return new Range<Instant>(queryStartTime.toInstant(), false, queryEndTime.toInstant(), true);
     }
-    
+
     private void updateAssetAvaiability(Multimap<PaoIdentifier, PointData> pointUpdates) {
         for (PaoIdentifier pao : pointUpdates.keySet()) {
             for (PointData pointData : pointUpdates.get(pao)) {

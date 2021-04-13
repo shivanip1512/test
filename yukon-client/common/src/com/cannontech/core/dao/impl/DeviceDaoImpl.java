@@ -2,7 +2,6 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +52,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
@@ -85,7 +85,7 @@ public final class DeviceDaoImpl implements DeviceDao {
         public Entry<Integer, String> mapRow(YukonResultSet rs) throws SQLException {
             Integer deviceId = rs.getInt("DeviceId");
             String guid = rs.getString("Guid");
-            return new AbstractMap.SimpleEntry<Integer, String>(deviceId, guid);
+            return Maps.immutableEntry(deviceId, guid);
         }
     };
     
@@ -667,13 +667,22 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public Map<Integer, String> getGuids(Iterable<Integer> deviceIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("Select DeviceId, Guid");
-        sql.append("FROM DeviceGuid");
-        sql.append("WHERE DeviceId").in(deviceIds);
-        List<Entry<Integer, String>> entries = jdbcTemplate.query(sql, DEVICEID_GUID_ROW_MAPPER);
-        Map<Integer, String> deviceToGuid = new HashMap<>();
-        entries.stream().forEach(entry -> deviceToGuid.put(entry.getKey(), entry.getValue()));
-        return deviceToGuid;
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("Select DeviceId, Guid");
+                sql.append("FROM DeviceGuid");
+                sql.append("WHERE DeviceId").in(deviceIds);
+                return sql;
+            }
+        };
+
+        Map<Integer, String> values = template.mappedQuery(sqlGenerator, 
+                                                           deviceIds, 
+                                                           DEVICEID_GUID_ROW_MAPPER,
+                                                           Functions.identity());
+        return values;
     }
 }
