@@ -137,7 +137,7 @@ public class HighChartServiceImpl implements HighChartService {
             StringBuilder tooltipBuilder = new StringBuilder();
             tooltipBuilder
                     .append("<span style='color:" + graph.getColor().getColorHex() + "'>\u25CF</span>&nbsp;" + graphDetail.getSeriesName());
-            tooltipBuilder.append(getFormattedDescription(chartValue, userContext));
+            tooltipBuilder.append(getChartTooltip(chartValue, userContext));
             map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), tooltipBuilder.toString());
             jsonArrayContainer.add(map);
         }
@@ -147,7 +147,7 @@ public class HighChartServiceImpl implements HighChartService {
     /**
      * Method to retrieve the formatted date description from chart value.
      */
-    private String getFormattedDescription(ChartValue<Double> chartValue, YukonUserContext userContext) {
+    private String getChartTooltip(ChartValue<Double> chartValue, YukonUserContext userContext) {
         StringBuilder descriptionBuilder = new StringBuilder();
         descriptionBuilder.append("<div>" + chartValue.getFormattedValue() + " " + chartValue.getUnits() + "</div>");
         SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");

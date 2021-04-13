@@ -1,13 +1,9 @@
 package com.cannontech.common.chart.model;
 
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
 public class ChartValue<T> {
-    private static SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
 
     private long id = 0;
     private T value = null;
@@ -97,28 +93,6 @@ public class ChartValue<T> {
      */
     public void setOptionalData(String optionalData) {
         this.optionalData = optionalData;
-    }
-
-    /**
-     * Returns the html formatted description with formattedValue prepended.
-     */
-    public String getDescription() {
-        return "<div>" + formattedValue + "</div>" + getDescriptionWithoutFormattedVal();
-    }
-
-    /**
-     * Returns the html formatted description using chartValue meta-data.
-     * {@code <div>units</div><div>time</div><div>pointName</div>optionalData}
-     */
-    public String getDescriptionWithoutFormattedVal() {
-        return "<div>" + units + "</div><div>" + getFormattedTime() + "</div><div>" + pointName + "</div>" +
-                (optionalData != null ? optionalData : "");
-    }
-    
-    public String getFormattedTime() {
-        long timeStamp = time;
-        timeStamp -= TimeZone.getDefault().getOffset(timeStamp);
-        return timeFormat.format(timeStamp);
     }
 
     @Override
