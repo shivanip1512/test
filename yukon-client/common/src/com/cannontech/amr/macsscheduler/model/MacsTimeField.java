@@ -1,8 +1,6 @@
 package com.cannontech.amr.macsscheduler.model;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
+import java.text.MessageFormat;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -50,24 +48,23 @@ public class MacsTimeField {
     }
 
     /**
-     * Returns time in 00:00:00 format.
+     * Returns time in 24 hour HH:mm:00 format as required by MACS messaging.
      */
     public String getTimeString() {
-        NumberFormat formatter = new DecimalFormat("00");
-        // 00:00:00 AM
-        String timeString = formatter.format(getHours()) + ":" + formatter.format(getMinutes()) + ":00 " + getAmPm();
-        DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss a");
-        String dateTimeString = DateTime.now().toString("MM/dd/yyyy") + " " + timeString;
-        DateTime date = dateFormatter.parseDateTime(dateTimeString);
-        return date.toString("HH:mm:ss");
+        int hours = getHours() % 12;
+        
+        if (getAmPm() == AmPmOptionEnum.PM) {
+            hours += 12;
+        }
+
+        return MessageFormat.format("{0,number,00}:{1,number,00}:00", hours, getMinutes());
     }
     
     static MacsTimeField getTimeField(DateTime parsedDate){
         MacsTimeField timeField = new MacsTimeField();
         timeField.setAmPm(AmPmOptionEnum.valueOf(parsedDate.toString("a")));
         int hours = parsedDate.getHourOfDay();
-        hours = hours > 12 ? hours - 12 : hours;
-        hours = hours == 0 ? hours = 12 : hours;
+        hours = (hours + 11) % 12 + 1;
         timeField.setHours(hours);
         timeField.setMinutes(parsedDate.getMinuteOfHour());
         return timeField;

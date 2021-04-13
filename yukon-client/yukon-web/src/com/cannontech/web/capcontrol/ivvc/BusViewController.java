@@ -47,7 +47,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.IvvcHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
-import com.cannontech.web.common.chart.service.FlotChartService;
+import com.cannontech.web.common.chart.service.HighChartService;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.JsTreeNode;
 import com.google.common.collect.Lists;
@@ -65,7 +65,7 @@ public class BusViewController {
     @Autowired private StrategyDao strategyDao;
     @Autowired private VoltageFlatnessGraphService voltageFlatness;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
-    @Autowired private FlotChartService flotChartService;
+    @Autowired private HighChartService highChartService;
     @Autowired private UserPreferenceService userPreferenceService;
     @Autowired private IvvcHelper ivvcHelper;
     
@@ -123,7 +123,7 @@ public class BusViewController {
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatness.getSubBusGraph(userContext, subBusId);
             Map<String, Object> graphAsJson = 
-                    flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextBusGraph());
+                    highChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextBusGraph());
             return graphAsJson;
         }
         
@@ -172,7 +172,7 @@ public class BusViewController {
         if (zoneAttributesExist) {
             graph = voltageFlatness.getSubBusGraph(userContext, subBusId);
             Map<String, Object> graphAsJSON = 
-                    flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextBusGraph());
+                    highChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextBusGraph());
             model.addAttribute("graphAsJSON", graphAsJSON);
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());

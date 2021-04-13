@@ -10,49 +10,45 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PxMWSiteV1 implements Serializable {
     private String siteGuid;
-    private String adopterGuid;
     private String name;
     private String description;
     private String contact;
     private String email;
     private String phone;
-    private List<PxMWSiteDeviceV1> devices;
     private String createdTime;
     private String createdByUser;
     private String modifiedTime;
     private String modifiedByUser;
+    private List<PxMWSiteDeviceV1> devices;
 
     @JsonCreator
-    public PxMWSiteV1(@JsonProperty("id") String siteGuid, @JsonProperty("adopterId") String adopterGuid,
+    public PxMWSiteV1(@JsonProperty("id") String siteGuid,
             @JsonProperty("name") String name,
-            @JsonProperty("description") String description, @JsonProperty("contact") String contact,
+            @JsonProperty("description") String description, 
+            @JsonProperty("contact") String contact,
             @JsonProperty("email") String email,
-            @JsonProperty("phone") String phone, @JsonProperty("devices") List<PxMWSiteDeviceV1> devices,
-            @JsonProperty("created") String createdTime, @JsonProperty("created_by") String createdByUser,
+            @JsonProperty("phone") String phone,
+            @JsonProperty("created") String createdTime, 
+            @JsonProperty("created_by") String createdByUser,
             @JsonProperty("modified") String modifiedTime,
-            @JsonProperty("modified_by") String modifiedByUser) {
+            @JsonProperty("modified_by") String modifiedByUser,
+            @JsonProperty("devices") List<PxMWSiteDeviceV1> devices) {
         this.siteGuid = siteGuid;
-        this.adopterGuid = adopterGuid;
         this.name = name;
         this.description = description;
         this.contact = contact;
         this.email = email;
         this.phone = phone;
-        this.devices = devices;
         this.createdTime = createdTime;
         this.createdByUser = createdByUser;
         this.modifiedTime = modifiedTime;
         this.modifiedByUser = modifiedByUser;
+        this.devices = devices;
     }
 
     @JsonProperty("id")
     public String getSiteGuid() {
         return siteGuid;
-    }
-
-    @JsonProperty("adopterId")
-    public String getAdopterGuid() {
-        return adopterGuid;
     }
 
     @JsonProperty("name")
@@ -80,11 +76,6 @@ public class PxMWSiteV1 implements Serializable {
         return phone;
     }
 
-    @JsonProperty("devices")
-    public List<PxMWSiteDeviceV1> getDevices() {
-        return devices;
-    }
-
     @JsonProperty("created")
     public String getCreatedTime() {
         return createdTime;
@@ -103,5 +94,10 @@ public class PxMWSiteV1 implements Serializable {
     @JsonProperty("modified_by")
     public String getModifiedByUser() {
         return modifiedByUser;
+    }
+    
+    @JsonProperty("devices")
+    public List<PxMWSiteDeviceV1> getDevices() {
+        return devices;
     }
 }

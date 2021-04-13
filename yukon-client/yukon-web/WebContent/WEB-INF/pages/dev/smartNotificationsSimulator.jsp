@@ -62,7 +62,7 @@
             <tags:hidden path="dailyDigestHour"/>
             <input type="hidden" id="ddmType" value="${ddmType}"/>
             <input type="hidden" id="assetImportType" value="${assetImportType}"/>
-    
+            <tags:alertBox type="warning" classes="js-all-types-warning">Only Device Data Monitor and Infrastructure Warning events will be created when All Event Types is selected.</tags:alertBox>
             <tags:nameValueContainer tableClass="natural-width">
                 <tags:nameValue name="All Event Types">
                     <tags:checkbox path="allTypes" styleClass="js-all-types"/>
@@ -89,7 +89,6 @@
             </tags:nameValueContainer>
             
             <div class="page-action-area">
-                <cti:button label="Create Real Events" type="button" href="createRealEvents" busy="true"/>
                 <cti:button label="Create Test Events" type="submit" busy="true"/>
                 <cti:button label="Clear All Events" type="button" href="clearAllEvents" busy="true"/>
             </div>

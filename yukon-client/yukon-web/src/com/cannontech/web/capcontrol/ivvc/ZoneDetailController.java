@@ -69,7 +69,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.IvvcHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
-import com.cannontech.web.common.chart.service.FlotChartService;
+import com.cannontech.web.common.chart.service.HighChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.PaoIdentifierPropertyEditor;
@@ -88,7 +88,7 @@ public class ZoneDetailController {
     @Autowired private CapControlCommandExecutor executor;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     @Autowired private FilterCacheFactory filterCacheFactory;
-    @Autowired private FlotChartService flotChartService;
+    @Autowired private HighChartService highChartService;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PointDao pointDao;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -312,7 +312,7 @@ public class ZoneDetailController {
                                                       userContext.getYukonUser());
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
-            Map<String, Object> graphAsJSON = flotChartService.getIVVCGraphData(graph, false);
+            Map<String, Object> graphAsJSON = highChartService.getIVVCGraphData(graph, false);
             return graphAsJSON;
         }
         return Collections.emptyMap();
@@ -371,7 +371,7 @@ public class ZoneDetailController {
         VfGraph graph = null;
         if (zoneAttributesExist) {
             graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
-            Map<String, Object> graphAsJSON = flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextZoneGraph());
+            Map<String, Object> graphAsJSON = highChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextZoneGraph());
             model.addAttribute("graphAsJSON", graphAsJSON);
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());

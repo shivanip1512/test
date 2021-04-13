@@ -2,6 +2,9 @@ package com.cannontech.infrastructure.model;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 
 public class SmartNotificationSimulatorSettings implements Serializable {
@@ -69,6 +72,11 @@ public class SmartNotificationSimulatorSettings implements Serializable {
 
     public void setAllTypes(boolean allTypes) {
         this.allTypes = allTypes;
+    }
+    
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            + System.getProperty("line.separator");
     }
  
 }

@@ -43,15 +43,7 @@ public enum JsLibrary {
     JQUERY_UI_TIME_PICKER("/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.js"), // https://github.com/trentrichardson/jQuery-Timepicker-Addon
     JQUERY_UI_WIDGET("/resources/js/lib/fileupload/jquery.ui.widget.js"), // https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
 
-    YUKON_FLOTCHARTS("/resources/js/common/yukon.flot.js"), //in-house
     YUKON_HIGHCHART("/resources/js/common/yukon.highChart.js"), //in-house
-    JQUERY_FLOTCHARTS("/resources/js/lib/flotcharts/jquery.flot.min.js"), // http://www.flotcharts.org/
-    JQUERY_FLOTCHARTS_PIE("/resources/js/lib/flotcharts/jquery.flot.pie.min.js"), // http://www.flotcharts.org/
-    JQUERY_FLOTCHARTS_SELECTION("/resources/js/lib/flotcharts/jquery.flot.selection.min.js"), // http://www.flotcharts.org/
-    JQUERY_FLOTCHARTS_AXIS_LABEL("/resources/js/lib/flotcharts/jquery.flot.axislabels.js"), // https://github.com/markrcote/flot-axislabels
-    JQUERY_FLOTCHARTS_RESIZE("/resources/js/lib/flotcharts/jquery.flot.resize.min.js"), // http://www.flotcharts.org/
-    JQUERY_FLOTCHARTS_TIME("/resources/js/lib/flotcharts/jquery.flot.time.min.js"), // http://www.flotcharts.org/
-    JQUERY_EXCANVAS("/resources/js/lib/flotcharts/excanvas.min.js"), // http://www.flotcharts.org/
     JQUERY_SCROLL_TABLE_BODY("/resources/js/lib/scrollTableBody/jquery.scrollTableBody.js"), // https://github.com/nheldman/jquery.scrollTableBody/
 
     HIGH_STOCK("/resources/js/lib/highstock/highstock.js",

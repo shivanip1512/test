@@ -2,8 +2,8 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="highChart" tagdir="/WEB-INF/tags/highChart" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="capcontrol" page="ivvc.zoneDetail">
@@ -46,12 +46,11 @@
                     <c:set var="chartId" value="zone_${zoneId}_chart" />
                     <cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/zone/chart">
                         <cti:param name="zoneId" value="${zoneId}" />
-                    </cti:url>
-                    <flot:ivvcChart chartId="${chartId}"
+                    </cti:url>       
+                    <highChart:ivvcChart chartId="${chartId}"
                         jsonDataAndOptions="${graphAsJSON}"
                         title="${fn:escapeXml(graphSettings.graphTitle)}" />
-    
-                    <cti:dataUpdaterCallback function="yukon.flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
+                    <cti:dataUpdaterCallback function="yukon.highChart.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
                         initialize="false" largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
                 </cti:tab>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />

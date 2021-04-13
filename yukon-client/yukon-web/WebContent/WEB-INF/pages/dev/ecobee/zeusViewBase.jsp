@@ -16,10 +16,16 @@
     }
 
      $(function() {
-         $('#authenticate').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice').click(function () {
          switch(this.name){
              case 'authenticate' : {
-                 enabledSelectedOption(authenticate,authenticateOp);
+                 enabledSelectedOption(authenticate, authenticateOp);
+             } break;
+             case 'createDevice' : {
+                 enabledSelectedOption(createDevice, createDeviceOp);
+             } break;
+             case 'deleteDevice' : {
+                 enabledSelectedOption(deleteDevice, deleteDeviceOp);
              } break;
          }
          });
@@ -40,6 +46,18 @@
                                 <i:inline key=".authenticate" />
                             </label>
                         </li>
+                        <li>
+                            <label> 
+                                <input id="createDevice" type="checkbox" name="createDevice"> 
+                                <i:inline key=".createDevice" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="deleteDevice" type="checkbox" name="deleteDevice"> 
+                                <i:inline key=".deleteDevice" />
+                            </label>
+                        </li>
                     </ul>
                 </tags:sectionContainer>
             </div>
@@ -54,6 +72,22 @@
                                     </c:forEach>
                                 </select>
                                 <input type="hidden" name="authenticateOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="createDeviceOp" name="createDeviceOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="createDeviceOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="deleteDeviceOp" name="deleteDeviceOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="deleteDeviceOp" value="0" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>
