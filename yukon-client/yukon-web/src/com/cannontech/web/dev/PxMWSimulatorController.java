@@ -101,12 +101,12 @@ public class PxMWSimulatorController {
         Map<String, Object> json = new HashMap<>();
         List<String> paramList = new ArrayList<>();
 
-        if (StringUtils.isEmpty(params) && StringUtils.isEmpty(jsonParam)) {
+       /* if (StringUtils.isEmpty(params) && StringUtils.isEmpty(jsonParam)) {
             json.put("alertError", "Unable to parse parameters, please see parameter help text.");
             return json;
-        }
+        }*/
         try {
-            if (params != null) {
+            if (!StringUtils.isEmpty(params)) {
                 paramList = Stream.of(params.split(","))
                         .map(String::trim)
                         .collect(Collectors.toList());

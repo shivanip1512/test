@@ -54,7 +54,9 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                     status);
         } 
         
-        PxMWSiteDeviceV1 siteDevice = new PxMWSiteDeviceV1("e0824ba4-d832-49d6-ab60-6212a63bcd10", "Test Device");
+        PxMWSiteDeviceV1 siteDevice = new PxMWSiteDeviceV1("e0824ba4-d832-49d6-ab60-6212a63bcd10",
+                "72358726-1ed0-485b-8beb-6a27a27b58e8", "Test device", "...", "...", "...", "...", "...", "...", "...", "...", "...",
+                "...");
         List<PxMWSiteDeviceV1> siteDeviceList = new ArrayList<PxMWSiteDeviceV1>();
         siteDeviceList.add(siteDevice);
         PxMWSiteV1 site = new PxMWSiteV1(id,
