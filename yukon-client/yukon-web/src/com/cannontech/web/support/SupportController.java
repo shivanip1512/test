@@ -46,14 +46,17 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
+import com.cannontech.support.rfn.message.RfnSupportBundleRequest;
+import com.cannontech.support.rfn.message.RfnSupportBundleResponseType;
+import com.cannontech.support.rfn.message.SupportBundleRequestType;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleWriter;
+import com.cannontech.support.service.impl.RFNetworkSupportBundleService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -73,6 +76,7 @@ public class SupportController {
     private final static String baseKey = "yukon.web.modules.support.supportBundle";
     private final static String manualsFolderName = CtiUtilities.getYukonBase() + "/Manuals/";
     private final static Pattern pdfFileName = Pattern.compile("(.*)\\.pdf$");
+    @Autowired private RFNetworkSupportBundleService rfNetworkSupportBundleService;
     @Autowired private SupportBundleService supportBundleService;
     @Autowired private List<SupportBundleWriter> writerList;
     @Autowired private DateFormattingService dateFormattingService;
@@ -81,7 +85,6 @@ public class SupportController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private SiteMapHelper siteMapHelper;
     @Autowired private ObjectFormattingService objectFormattingService;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ServerDatabaseCache serverDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -265,6 +268,7 @@ public class SupportController {
     @PostMapping("createRfBundle")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
     public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle, BindingResult result,
+            RfnSupportBundleRequest rfRequest,
             YukonUserContext userContext, HttpServletResponse resp) throws Exception {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
@@ -277,7 +281,13 @@ public class SupportController {
         }
 
         // TODO: Invoke Service to start support bundle. bundle.start(rfSupportBundle);
-        json.put("isSuccess", true);
+        //RfNetworkSupportBundleRequest request = new RfNetworkSupportBundleRequest();
+        rfRequest.setFileName(rfSupportBundle.getCustomerName());
+        rfRequest.setFromTimestamp(rfSupportBundle.getDate().getTime());
+        rfRequest.setType(SupportBundleRequestType.NETWORK_DATA);
+        rfNetworkSupportBundleService.send(rfRequest);
+        RfnSupportBundleResponseType status = rfNetworkSupportBundleService.getStatus();
+        json.put("isSuccess", status);
         json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success"));
         resp.setContentType("application/json");
         JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);

@@ -7,6 +7,7 @@ public class RfnSupportBundleRequest implements Serializable {
     private static final long serialVersionUID = 1L;
     private String fileName;
     private long fromTimestamp;
+    private SupportBundleRequestType type;
 
     public String getFileName() {
         return fileName;
@@ -23,6 +24,14 @@ public class RfnSupportBundleRequest implements Serializable {
     public void setFromTimestamp(long fromTimestamp) {
         this.fromTimestamp = fromTimestamp;
     }
+    
+    public SupportBundleRequestType getType() {
+        return type;
+    }
+
+    public void setType(SupportBundleRequestType type) {
+        this.type = type;
+    }
 
     @Override
     public int hashCode() {
@@ -30,6 +39,7 @@ public class RfnSupportBundleRequest implements Serializable {
         int result = 1;
         result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
         result = prime * result + (int) (fromTimestamp ^ (fromTimestamp >>> 32));
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
 
@@ -49,11 +59,15 @@ public class RfnSupportBundleRequest implements Serializable {
             return false;
         if (fromTimestamp != other.fromTimestamp)
             return false;
+        if (type != other.type)
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return String.format("RfnSupportBundleRequest [fileName=%s, fromTimestamp=s%]", fileName, fromTimestamp);
+        return "RfnSupportBundleRequest [fileName=" + fileName + ", fromTimestamp=" + fromTimestamp + ", type=" + type
+                + "]";
     }
+
 }
