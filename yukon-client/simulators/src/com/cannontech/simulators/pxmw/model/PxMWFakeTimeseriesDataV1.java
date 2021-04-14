@@ -31,7 +31,7 @@ public class PxMWFakeTimeseriesDataV1 {
      */
     private void load() {
         if(!channels.isEmpty()) {
-           // return;
+           return;
         }
         channels.clear();
         

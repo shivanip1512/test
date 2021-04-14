@@ -103,7 +103,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         
         List<PxMWTimeSeriesDeviceResultV1> resultList = pxMWTimeSeriesDataRequestV1.getDevices().stream().map(d -> {
             List<String> tags = Arrays.asList(d.getTagTrait().split(","));
-            PaoType type = PaoType.LCR6600C;
+            PaoType type = PaoType.LCR6200C;
             
             if(guidsToIds.get(d.getDeviceGuid()) != null) {
                 type = guidsToIds.get(d.getDeviceGuid()).getDeviceType();
