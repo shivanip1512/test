@@ -5,10 +5,14 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.PxMWVersion;
 import com.cannontech.simulators.SimulatorType;
@@ -28,14 +32,20 @@ import com.cannontech.simulators.pxmw.model.PxMWDataV1;
  * PxMWVersion.V2, new PxMWv2Data() to map the new version to a new object.
  */
 public class PxMWMessageHandler extends SimulatorMessageHandler {
+    @Autowired private DeviceDao deviceDao;
     private static final Logger log = YukonLogManager.getLogger(PxMWMessageHandler.class);
 
     public PxMWMessageHandler() {
         super(SimulatorType.PX_MIDDLEWARE);
     }
 
-    private Map<PxMWVersion, PxMWDataGenerator> data = Map.of(PxMWVersion.V1, new PxMWDataV1());
+    private Map<PxMWVersion, PxMWDataGenerator> data;
     //Map.of(PxMWVersion.V2, new PxMWv2Data());
+    
+    @PostConstruct
+    void init() {
+        data = Map.of(PxMWVersion.V1, new PxMWDataV1(deviceDao));
+    }
     
     private Map<PxMWRetrievalUrl, Integer> statuses = Arrays.stream(PxMWRetrievalUrl.values())
             .collect(Collectors.toMap(v -> v, v -> HttpStatus.OK.value()));

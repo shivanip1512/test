@@ -230,4 +230,9 @@ public interface DeviceDao {
      * Returns disabled devices
      */
     List<SimpleDevice> getDisabledDevices(Iterable<Integer> ids);
+    
+    /**
+     * Returns map of guid to devices.
+     */
+    Map<String, SimpleDevice> getDeviceIds(List<String> guids);
 }

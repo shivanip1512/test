@@ -15,32 +15,43 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesValueV1;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PxMWTimeseriesDataV1 {
-    private Map<String, PxMWTimeSeriesResultV1> parsedChannels = new HashMap<>();
+public class PxMWFakeTimeseriesDataV1 {
+    private Map<PaoType, Map<String, PxMWTimeSeriesResultV1>> channels = new HashMap<>();
     private final Logger log = YukonLogManager.getLogger(PxMWDataV1.class);
     
     /**
      * Parses template with sample data
      */
     private void load() {
-        if(!parsedChannels.isEmpty()) {
-            return;
+        if(!channels.isEmpty()) {
+           // return;
         }
+        channels.clear();
+        
+        load(PaoType.LCR6200C);
+        load(PaoType.LCR6600C);
+    }
+
+    private void load(PaoType type) {
+        Map<String, PxMWTimeSeriesResultV1> parsedChannels = new HashMap<>();
+        
         int fileNum = 1;
         while (true) {
-            String path = "src/com/cannontech/simulators/pxmw/model/timeseries_data" + fileNum + ".json";
+            String path = "src/com/cannontech/simulators/pxmw/model/timeseries_data_" + type + "_" + fileNum + ".json";
             File file = new File(path);
-            if(!file.exists()) {
+            if (!file.exists()) {
                 break;
             }
             try {
-                PxMWTimeSeriesDeviceResultV1[] template = new ObjectMapper().readValue(file, PxMWTimeSeriesDeviceResultV1[].class);
+                PxMWTimeSeriesDeviceResultV1[] template = new ObjectMapper().readValue(file,
+                        PxMWTimeSeriesDeviceResultV1[].class);
                 parsedChannels.putAll(template[0].getResults()
                         .stream()
                         .collect(Collectors.toMap(t -> t.getTag(), t -> t)));
@@ -50,23 +61,26 @@ public class PxMWTimeseriesDataV1 {
                 log.info("Error parsing:" + file, e);
             }
         }
-        
-        log.info("Parsed {} channels:{}", parsedChannels.size(), parsedChannels.keySet().stream().collect(Collectors.joining(",")));
+
+        log.info("{} Parsed {} channels:{}", type, parsedChannels.size(),
+                parsedChannels.keySet().stream().collect(Collectors.joining(",")));
         List<String> allChannels = Arrays.asList(MWChannel.values()).stream().map(value -> value.getChannelId().toString())
                 .collect(Collectors.toList());
-        log.info("Required {} channels:{}", allChannels.size(), allChannels.stream().collect(Collectors.joining(",")));
-        Set<String> missingChannels = new HashSet<>(); 
+        log.info("{} Required {} channels:{}", type, allChannels.size(), allChannels.stream().collect(Collectors.joining(",")));
+        Set<String> missingChannels = new HashSet<>();
         missingChannels.addAll(allChannels);
         missingChannels.removeAll(parsedChannels.keySet());
-        log.info("Missing{} channels:{}", missingChannels.size(), missingChannels.stream().collect(Collectors.joining(",")));
+        log.info("{} Missing {} channels:{}", type, missingChannels.size(),
+                missingChannels.stream().collect(Collectors.joining(",")));
+        channels.put(type, parsedChannels);
     }
     
     /**
      * Creates result from the template
      */
-    public List<PxMWTimeSeriesResultV1> getValues(List<String> tags, String timestamp) {
+    public List<PxMWTimeSeriesResultV1> getValues(List<String> tags, String timestamp, PaoType type) {
         load();
-
+        Map<String, PxMWTimeSeriesResultV1> parsedChannels = channels.get(type);
         List<PxMWTimeSeriesResultV1> result = new ArrayList<>();
         for (String tag : tags) {
             PxMWTimeSeriesResultV1 template = parsedChannels.get(tag);
