@@ -31,7 +31,7 @@ import com.cannontech.user.YukonUserContext;
 
 public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService {
     private static final Logger log = YukonLogManager.getLogger(PxMWDeviceCreationServiceImpl.class);
-    private static int runFrequencyMinutes = 15;
+    private static int runFrequencyMinutes = 1440;
 
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired private GlobalSettingDao settingDao;
@@ -40,8 +40,6 @@ public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService 
     @Autowired PxMWCommunicationServiceV1 pxMWCommunicationServiceV1;
 
     private static AtomicBoolean isRunning = new AtomicBoolean();
-    // Idk if I will need this
-//    private MessageSourceAccessor systemMessageSourceAccessor;
 
     /**
      * The thread where the calculation is done.
@@ -100,7 +98,7 @@ public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService 
 
             // Request data for devices
             List<String> timeSeriesDataResponseDeviceIDs = pxMWCommunicationServiceV1
-                    .getTimeSeriesValues(devicesToRequestDataFor, timeRange).getMsg()
+                    .getTimeSeriesValues(devicesToRequestDataFor, timeRange)
                     .stream()
                     .filter(deviceResult -> deviceResult.getResults() != null)
                     .map(deviceID -> deviceID.getDeviceId())
@@ -113,13 +111,14 @@ public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService 
 
             // Get Yukon User
             LiteYukonUser yukonUser = YukonUserContext.system.getYukonUser();
-            // create yukon devices for all positive responses
+            // create Yukon devices for all positive responses
             siteDevicesToCreate.stream()
                     .map(device -> buildEatonCloudHardware(device.getDeviceGuid(), device.getName(), device.getModel()))
                     .map(hardware -> hardwareUiService.createHardware(hardware, yukonUser));
             // log creation in the event logs
 
             isRunning.set(false);
+            log.info("Eaton Cloud LCR auto creation completed, {} new devices created", siteDevicesToCreate.size());
         } catch (Exception e) {
             log.error("Unexpected exception: ", e);
             isRunning.set(false);

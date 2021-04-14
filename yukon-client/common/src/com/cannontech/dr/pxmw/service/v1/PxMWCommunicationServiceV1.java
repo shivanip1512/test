@@ -9,7 +9,7 @@ import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 
@@ -50,7 +50,7 @@ public interface PxMWCommunicationServiceV1 {
      *         400 Invalid input parameter / Bad Request
      *         401 User is not authorized to send the command
      */
-    PxMWTimeSeriesDataResponseV1 getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Range<Instant> range);
+    List<PxMWTimeSeriesDeviceResultV1> getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Range<Instant> range);
       /**
      * Sends a command to a device.
      * 

@@ -6,11 +6,18 @@
 
 <cti:standardPage module="dev" page="pxMWSimulator">
 
+<style>
+.w100 {
+    width:100px;
+}
+</style>
+
 <c:if test="${not empty userMessage}">
     <tags:alertBox type="success" includeCloseButton="true">${userMessage}</tags:alertBox>
 </c:if>
      <div class="notes">
         <br/>For the Endpoint you would like to test using simulator, select the Status to be returned and enter any parameters that are needed as a comma separated string.
+        <br/>Default JSON values are defined in yukon.dev.simulators.pxMWSimulator.js
         <br/>Click on the Test button to test the Endpoint and the JSON result will be displayed below.
         <br/>The Clear Cache button will clear the cache.
         <br/>
@@ -43,7 +50,7 @@
                         <td style="width:200px" class="wbba"><a href="${endpoint.doc}" target="_blank">${endpoint.suffix}</a></td>
                         <c:if test="${isLocalHost}">
 	                        <td>
-	                            <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}" inputClass="js-selected-status"/>
+	                            <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}" inputClass="js-selected-status w100"/>
 	                        </td>
 	                    </c:if>
                         <td>
@@ -78,6 +85,10 @@
                                         </c:forEach>
                                     </c:if>
                                 </div>
+                            </c:if>
+                            <c:if test="${endpoint.hasJsonParam()}">
+                                <cti:button label="Show/Hide JSON" classes="js-enter-json fn ML0" data-endpoint="${endpoint}"/>
+                                <div><textarea id="${endpoint}_json" cols="60" rows="10" class="dn js-json-text" data-endpoint="${endpoint}"></textarea></div>
                             </c:if>
                         </td>
                         <td>

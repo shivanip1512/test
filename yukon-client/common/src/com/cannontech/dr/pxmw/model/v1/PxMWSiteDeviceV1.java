@@ -9,37 +9,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PxMWSiteDeviceV1 implements Serializable {
     private String deviceGuid;
-    private String profileId;
+    private String profileGuid;
     private String name;
-    private String macAddress;
-    private String asset;
+    private String vendor;
     private String family;
-    private String hardware;
+    private String role;
     private String model;
-    private String modelLongName;
-    private String modelShortName;
+    private String modelLname;
+    private String modelSname;
+    private String hardware;
     private String software;
-    private String movendordel;
+    private String cloudEnabled;
 
     @JsonCreator
-    public PxMWSiteDeviceV1(@JsonProperty("id") String deviceGuid, @JsonProperty("profile_id") String profileId,
-            @JsonProperty("name") String name, @JsonProperty("mac_address") String macAddress,
-            @JsonProperty("asset") String asset, @JsonProperty("family") String family,
-            @JsonProperty("hardware") String hardware, @JsonProperty("model") String model,
-            @JsonProperty("model_lname") String modelLongName, @JsonProperty("model_sname") String modelShortName,
-            @JsonProperty("software") String software, @JsonProperty("movendordel") String movendordel) {
+    public PxMWSiteDeviceV1(@JsonProperty("id") String deviceGuid, @JsonProperty("profile_id") String profileGuid,
+            @JsonProperty("name") String name, @JsonProperty("vendor") String vendor,
+            @JsonProperty("family") String family, @JsonProperty("role") String role,
+            @JsonProperty("model") String model, @JsonProperty("model_lname") String modelLname,
+            @JsonProperty("model_sname") String modelSname, @JsonProperty("hardware") String hardware,
+            @JsonProperty("software") String software, @JsonProperty("cloud_enabled") String cloudEnabled) {
         this.deviceGuid = deviceGuid;
-        this.profileId = profileId;
+        this.profileGuid = profileGuid;
         this.name = name;
-        this.macAddress = macAddress;
-        this.asset = asset;
+        this.vendor = vendor;
         this.family = family;
-        this.hardware = hardware;
+        this.role = role;
         this.model = model;
-        this.modelLongName = modelLongName;
-        this.modelShortName = modelShortName;
+        this.modelLname = modelLname;
+        this.modelSname = modelSname;
+        this.hardware = hardware;
         this.software = software;
-        this.movendordel = movendordel;
+        this.cloudEnabled = cloudEnabled;
     }
 
     @JsonProperty("id")
@@ -48,8 +48,8 @@ public class PxMWSiteDeviceV1 implements Serializable {
     }
 
     @JsonProperty("profile_id")
-    public String getProfileId() {
-        return profileId;
+    public String getProfileGuid() {
+        return profileGuid;
     }
 
     @JsonProperty("name")
@@ -57,14 +57,9 @@ public class PxMWSiteDeviceV1 implements Serializable {
         return name;
     }
 
-    @JsonProperty("mac_address")
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    @JsonProperty("asset")
-    public String getAsset() {
-        return asset;
+    @JsonProperty("vendor")
+    public String getVendor() {
+        return vendor;
     }
 
     @JsonProperty("family")
@@ -72,9 +67,9 @@ public class PxMWSiteDeviceV1 implements Serializable {
         return family;
     }
 
-    @JsonProperty("hardware")
-    public String getHardware() {
-        return hardware;
+    @JsonProperty("role")
+    public String getRole() {
+        return role;
     }
 
     @JsonProperty("model")
@@ -83,13 +78,18 @@ public class PxMWSiteDeviceV1 implements Serializable {
     }
 
     @JsonProperty("model_lname")
-    public String getModelLongName() {
-        return modelLongName;
+    public String getModelLname() {
+        return modelLname;
     }
 
     @JsonProperty("model_sname")
-    public String getModelShortName() {
-        return modelShortName;
+    public String getModelSname() {
+        return modelSname;
+    }
+
+    @JsonProperty("hardware")
+    public String getHardware() {
+        return hardware;
     }
 
     @JsonProperty("software")
@@ -97,9 +97,8 @@ public class PxMWSiteDeviceV1 implements Serializable {
         return software;
     }
 
-    @JsonProperty("movendordel")
-    public String getMovendordel() {
-        return movendordel;
+    @JsonProperty("cloud_enabled")
+    public String getCloudEnabled() {
+        return cloudEnabled;
     }
-
 }

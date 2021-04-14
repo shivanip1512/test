@@ -14,7 +14,6 @@ import com.cannontech.dr.pxmw.model.v1.PxMWErrorV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
@@ -54,7 +53,8 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                     status);
         } 
         
-        PxMWSiteDeviceV1 siteDevice = new PxMWSiteDeviceV1("e0824ba4-d832-49d6-ab60-6212a63bcd10", "Test Device");
+        PxMWSiteDeviceV1 siteDevice = new PxMWSiteDeviceV1("e0824ba4-d832-49d6-ab60-6212a63bcd10",
+                "72358726-1ed0-485b-8beb-6a27a27b58e8", "Test device", "...", "...", "...", "...", "...", "...", "...", "...", "...");
         List<PxMWSiteDeviceV1> siteDeviceList = new ArrayList<PxMWSiteDeviceV1>();
         siteDeviceList.add(siteDevice);
         PxMWSiteV1 site = new PxMWSiteV1(id,
@@ -95,7 +95,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
            // timeseriesData.messupTheData(resultList);
         }
 
-        return new PxMWSimulatorResponse(new PxMWTimeSeriesDataResponseV1(resultList), status);
+        return new PxMWSimulatorResponse(resultList.toArray(), status);
     }
 
     public PxMWSimulatorResponse sendCommandV1(String id, String command_instance_id, PxMWCommandRequestV1 pxMWCommandRequestV1) {
