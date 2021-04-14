@@ -36,7 +36,7 @@ struct DynamicPaoInfoResponseMsg
     long deviceId;
 
     using DurationMap = std::map<DynamicPaoInfoDurationKeys, std::chrono::milliseconds>;
-    using TimestampMap = std::map<DynamicPaoInfoTimestampKeys, std::chrono::steady_clock::time_point>;
+    using TimestampMap = std::map<DynamicPaoInfoTimestampKeys, std::chrono::system_clock::time_point>;
     using PercentageMap = std::map<DynamicPaoInfoPercentageKeys, double>;
 
     DurationMap durationValues;
