@@ -3206,7 +3206,7 @@ R"SQUID(DATA_STREAMING_JSON{
 })SQUID");
 }
 
-BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_but_missing_confg_entry )
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_but_missing_confg_entry_no_dynamic_pao_info )
 {
     using boost::assign::list_of;
 
@@ -3328,6 +3328,348 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_but_missi
                 CategoryItems {
                     { RfnStrings::demandInterval, "13" } } }
             };
+
+    const std::vector<int> requestMsgsExp {
+            0,   // no config data                   -> no request
+            1,   // add remote disconnect config     -> +1 request
+            2,   // add demand freeze day config     -> +1 request
+            4,   // add TOU config                   -> +2 request
+            5,   // add temperature alarming config  -> +1 request
+            7,   // add channel config               -> +2 request
+            8,   // add demand interval config       -> +1 request
+            };
+
+    std::vector<int> requestMsgsRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    ////// add each configuration //////
+
+    auto & cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for( const auto & category : configurations )
+    {
+        resetTestState(); // note: reset test state does not erase the current configuration
+
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
+        
+        BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+        requestMsgsRcv.push_back( rfnRequests.size() );
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_but_missing_confg_entry_with_dynamic_pao_info_enabled )
+{
+    using boost::assign::list_of;
+
+    test_RfnResidentialDevice dut;
+    dut.setDeviceType(TYPE_RFN520FAXD);
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations {
+
+            CategoryDefinition { "rfnDisconnectConfiguration", 
+                CategoryItems {
+                    { RfnStrings::DisconnectMode, "CYCLING" },
+                    { RfnStrings::ConnectMinutes, "100" },
+                    { RfnStrings::DisconnectMinutes, "60" } } },
+
+            CategoryDefinition { "demandFreeze", 
+                CategoryItems {
+                    { RfnStrings::demandFreezeDay, "7" } } },
+
+            CategoryDefinition { "tou", 
+                CategoryItems {
+                    // SCHEDULE_1
+                    { RfnStrings::Schedule1Time0, "00:00" },
+                    { RfnStrings::Schedule1Time1, "00:01" },
+                    { RfnStrings::Schedule1Time2, "10:06" },
+                    { RfnStrings::Schedule1Time3, "12:22" },
+                    { RfnStrings::Schedule1Time4, "23:33" },
+                    { RfnStrings::Schedule1Time5, "23:44" },
+
+                    { RfnStrings::Schedule1Rate0, "A" },
+                    { RfnStrings::Schedule1Rate1, "B" },
+                    { RfnStrings::Schedule1Rate2, "C" },
+                    { RfnStrings::Schedule1Rate3, "D" },
+                    { RfnStrings::Schedule1Rate4, "A" },
+                    { RfnStrings::Schedule1Rate5, "B" },
+
+                    // SCHEDULE_2
+                    { RfnStrings::Schedule2Time0, "00:00" },
+                    { RfnStrings::Schedule2Time1, "01:23" },
+                    { RfnStrings::Schedule2Time2, "03:12" },
+                    { RfnStrings::Schedule2Time3, "04:01" },
+                    { RfnStrings::Schedule2Time4, "05:23" },
+                    { RfnStrings::Schedule2Time5, "16:28" },
+
+                    { RfnStrings::Schedule2Rate0, "D" },
+                    { RfnStrings::Schedule2Rate1, "A" },
+                    { RfnStrings::Schedule2Rate2, "B" },
+                    { RfnStrings::Schedule2Rate3, "C" },
+                    { RfnStrings::Schedule2Rate4, "D" },
+                    { RfnStrings::Schedule2Rate5, "A" },
+
+                    // SCHEDULE_3
+                    { RfnStrings::Schedule3Time0, "00:00" },
+                    { RfnStrings::Schedule3Time1, "01:02" },
+                    { RfnStrings::Schedule3Time2, "02:03" },
+                    { RfnStrings::Schedule3Time3, "04:05" },
+                    { RfnStrings::Schedule3Time4, "05:06" },
+                    { RfnStrings::Schedule3Time5, "06:07" },
+
+                    { RfnStrings::Schedule3Rate0, "C" },
+                    { RfnStrings::Schedule3Rate1, "D" },
+                    { RfnStrings::Schedule3Rate2, "A" },
+                    { RfnStrings::Schedule3Rate3, "B" },
+                    { RfnStrings::Schedule3Rate4, "C" },
+                    { RfnStrings::Schedule3Rate5, "D" },
+
+                    // SCHEDULE_4
+                    { RfnStrings::Schedule4Time0, "00:00" },
+                    { RfnStrings::Schedule4Time1, "00:01" },
+                    { RfnStrings::Schedule4Time2, "08:59" },
+                    { RfnStrings::Schedule4Time3, "12:12" },
+                    { RfnStrings::Schedule4Time4, "23:01" },
+                    { RfnStrings::Schedule4Time5, "23:55" },
+
+                    { RfnStrings::Schedule4Rate0, "B" },
+                    { RfnStrings::Schedule4Rate1, "C" },
+                    { RfnStrings::Schedule4Rate2, "D" },
+                    { RfnStrings::Schedule4Rate3, "A" },
+                    { RfnStrings::Schedule4Rate4, "B" },
+                    { RfnStrings::Schedule4Rate5, "C" },
+
+                    // day table
+                    { RfnStrings::SundaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::MondaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::TuesdaySchedule,   "SCHEDULE_3" },
+                    { RfnStrings::WednesdaySchedule, "SCHEDULE_2" },
+                    { RfnStrings::ThursdaySchedule,  "SCHEDULE_4" },
+                    { RfnStrings::FridaySchedule,    "SCHEDULE_2" },
+                    { RfnStrings::SaturdaySchedule,  "SCHEDULE_3" },
+                    { RfnStrings::HolidaySchedule,   "SCHEDULE_3" },
+
+                    // default rate
+                    { RfnStrings::DefaultTouRate, "B" },
+
+                    // set TOU enabled
+                    { RfnStrings::touEnabled, "true" } } },
+
+            CategoryDefinition { "rfnTempAlarm", 
+                CategoryItems {
+                    { RfnStrings::TemperatureAlarmEnabled,           "true" },
+                    { RfnStrings::TemperatureAlarmRepeatInterval,    "15"   },
+                    { RfnStrings::TemperatureAlarmRepeatCount,       "3"    },
+                    { RfnStrings::TemperatureAlarmHighTempThreshold, "50"   } } },
+
+            CategoryDefinition { "rfnChannelConfiguration", 
+                CategoryItems {
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+                    { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+                    { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
+
+            CategoryDefinition { "rfnDemand", 
+                CategoryItems {
+                    { RfnStrings::demandInterval, "13" } } }
+            };
+
+    // set the dynamic pao info in the device
+    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled,    1 );    // enabled
+
+    const std::vector<int> requestMsgsExp {
+            0,   // no config data                   -> no request
+            1,   // add remote disconnect config     -> +1 request
+            2,   // add demand freeze day config     -> +1 request
+            4,   // add TOU config                   -> +2 request
+            5,   // add temperature alarming config  -> +1 request
+            7,   // add channel config               -> +2 request
+            8,   // add demand interval config       -> +1 request
+            };
+
+    std::vector<int> requestMsgsRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    ////// add each configuration //////
+
+    auto & cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for( const auto & category : configurations )
+    {
+        resetTestState(); // note: reset test state does not erase the current configuration
+
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
+        
+        BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+        requestMsgsRcv.push_back( rfnRequests.size() );
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_but_missing_confg_entry_with_dynamic_pao_info_disabled )
+{
+    using boost::assign::list_of;
+
+    test_RfnResidentialDevice dut;
+    dut.setDeviceType(TYPE_RFN520FAXD);
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations {
+
+            CategoryDefinition { "rfnDisconnectConfiguration", 
+                CategoryItems {
+                    { RfnStrings::DisconnectMode, "CYCLING" },
+                    { RfnStrings::ConnectMinutes, "100" },
+                    { RfnStrings::DisconnectMinutes, "60" } } },
+
+            CategoryDefinition { "demandFreeze", 
+                CategoryItems {
+                    { RfnStrings::demandFreezeDay, "7" } } },
+
+            CategoryDefinition { "tou", 
+                CategoryItems {
+                    // SCHEDULE_1
+                    { RfnStrings::Schedule1Time0, "00:00" },
+                    { RfnStrings::Schedule1Time1, "00:01" },
+                    { RfnStrings::Schedule1Time2, "10:06" },
+                    { RfnStrings::Schedule1Time3, "12:22" },
+                    { RfnStrings::Schedule1Time4, "23:33" },
+                    { RfnStrings::Schedule1Time5, "23:44" },
+
+                    { RfnStrings::Schedule1Rate0, "A" },
+                    { RfnStrings::Schedule1Rate1, "B" },
+                    { RfnStrings::Schedule1Rate2, "C" },
+                    { RfnStrings::Schedule1Rate3, "D" },
+                    { RfnStrings::Schedule1Rate4, "A" },
+                    { RfnStrings::Schedule1Rate5, "B" },
+
+                    // SCHEDULE_2
+                    { RfnStrings::Schedule2Time0, "00:00" },
+                    { RfnStrings::Schedule2Time1, "01:23" },
+                    { RfnStrings::Schedule2Time2, "03:12" },
+                    { RfnStrings::Schedule2Time3, "04:01" },
+                    { RfnStrings::Schedule2Time4, "05:23" },
+                    { RfnStrings::Schedule2Time5, "16:28" },
+
+                    { RfnStrings::Schedule2Rate0, "D" },
+                    { RfnStrings::Schedule2Rate1, "A" },
+                    { RfnStrings::Schedule2Rate2, "B" },
+                    { RfnStrings::Schedule2Rate3, "C" },
+                    { RfnStrings::Schedule2Rate4, "D" },
+                    { RfnStrings::Schedule2Rate5, "A" },
+
+                    // SCHEDULE_3
+                    { RfnStrings::Schedule3Time0, "00:00" },
+                    { RfnStrings::Schedule3Time1, "01:02" },
+                    { RfnStrings::Schedule3Time2, "02:03" },
+                    { RfnStrings::Schedule3Time3, "04:05" },
+                    { RfnStrings::Schedule3Time4, "05:06" },
+                    { RfnStrings::Schedule3Time5, "06:07" },
+
+                    { RfnStrings::Schedule3Rate0, "C" },
+                    { RfnStrings::Schedule3Rate1, "D" },
+                    { RfnStrings::Schedule3Rate2, "A" },
+                    { RfnStrings::Schedule3Rate3, "B" },
+                    { RfnStrings::Schedule3Rate4, "C" },
+                    { RfnStrings::Schedule3Rate5, "D" },
+
+                    // SCHEDULE_4
+                    { RfnStrings::Schedule4Time0, "00:00" },
+                    { RfnStrings::Schedule4Time1, "00:01" },
+                    { RfnStrings::Schedule4Time2, "08:59" },
+                    { RfnStrings::Schedule4Time3, "12:12" },
+                    { RfnStrings::Schedule4Time4, "23:01" },
+                    { RfnStrings::Schedule4Time5, "23:55" },
+
+                    { RfnStrings::Schedule4Rate0, "B" },
+                    { RfnStrings::Schedule4Rate1, "C" },
+                    { RfnStrings::Schedule4Rate2, "D" },
+                    { RfnStrings::Schedule4Rate3, "A" },
+                    { RfnStrings::Schedule4Rate4, "B" },
+                    { RfnStrings::Schedule4Rate5, "C" },
+
+                    // day table
+                    { RfnStrings::SundaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::MondaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::TuesdaySchedule,   "SCHEDULE_3" },
+                    { RfnStrings::WednesdaySchedule, "SCHEDULE_2" },
+                    { RfnStrings::ThursdaySchedule,  "SCHEDULE_4" },
+                    { RfnStrings::FridaySchedule,    "SCHEDULE_2" },
+                    { RfnStrings::SaturdaySchedule,  "SCHEDULE_3" },
+                    { RfnStrings::HolidaySchedule,   "SCHEDULE_3" },
+
+                    // default rate
+                    { RfnStrings::DefaultTouRate, "B" },
+
+                    // set TOU enabled
+                    { RfnStrings::touEnabled, "true" } } },
+
+            CategoryDefinition { "rfnTempAlarm", 
+                CategoryItems {
+                    { RfnStrings::TemperatureAlarmEnabled,           "true" },
+                    { RfnStrings::TemperatureAlarmRepeatInterval,    "15"   },
+                    { RfnStrings::TemperatureAlarmRepeatCount,       "3"    },
+                    { RfnStrings::TemperatureAlarmHighTempThreshold, "50"   } } },
+
+            CategoryDefinition { "rfnChannelConfiguration", 
+                CategoryItems {
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+                    { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+                    { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
+
+            CategoryDefinition { "rfnDemand", 
+                CategoryItems {
+                    { RfnStrings::demandInterval, "13" } } }
+            };
+
+    // set the dynamic pao info in the device
+    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled,    0 );    // disabled
 
     const std::vector<int> requestMsgsExp {
             0,   // no config data                   -> no request

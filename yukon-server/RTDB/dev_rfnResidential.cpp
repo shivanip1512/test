@@ -115,19 +115,23 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(InstallType ins
 /* 
     If the device doesn't support metrology, then send the config part.  This preserves existing behavior as much as is possible. 
     If the device supports metrology, then we only want to send the config part if the metrology library is
-        actually enabled.
+        actually enabled in the config,  If it isn't in the config, then we check the dynamic pao info to see if
+        the device reported in.
 */
-bool RfnResidentialDevice::dependsOnMetrologyLibrary( Config::DeviceConfigSPtr deviceConfig )
+bool RfnResidentialDevice::isMetrologyLibraryDisabled( Config::DeviceConfigSPtr deviceConfig )
 {
     if ( hasMetrologyLibrarySupport() )
     {
-        const auto configMetrologyLibraryEnabled 
-            = deviceConfig->findValue<bool>( Config::RfnStrings::MetrologyLibraryEnabled );
-
-        if ( ! configMetrologyLibraryEnabled.is_initialized()   // optional, but not included -OR-
-             || *configMetrologyLibraryEnabled == false )       //  present, but disabled
+        if ( const auto configMetrologyLibraryEnabled 
+                = deviceConfig->findValue<bool>( Config::RfnStrings::MetrologyLibraryEnabled ) )
         {
-            return true;
+            return *configMetrologyLibraryEnabled == false;
+        }
+
+        if ( const auto paoinfoMetrologyLibraryEnabled
+                = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled ) )
+        {
+            return *paoinfoMetrologyLibraryEnabled == false;
         }
     }
 
@@ -166,7 +170,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
             return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
-        if ( dependsOnMetrologyLibrary( deviceConfig ) )
+        if ( isMetrologyLibraryDisabled( deviceConfig ) )
         {
             return ClientErrors::NoMethod;
         }
@@ -483,7 +487,7 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
             return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
-        if ( dependsOnMetrologyLibrary( deviceConfig ) )
+        if ( isMetrologyLibraryDisabled( deviceConfig ) )
         {
             return ClientErrors::NoMethod;
         }
@@ -796,7 +800,7 @@ try
         return reportConfigErrorDetails(ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs);
     }
 
-    if ( dependsOnMetrologyLibrary( deviceConfig ) )
+    if ( isMetrologyLibraryDisabled( deviceConfig ) )
     {
         return ClientErrors::NoMethod;
     }

@@ -66,7 +66,7 @@ protected:
 
     virtual bool isDemandIntervalConfigSupported() const;
 
-    bool dependsOnMetrologyLibrary( Config::DeviceConfigSPtr deviceConfig );
+    bool isMetrologyLibraryDisabled( Config::DeviceConfigSPtr deviceConfig );
 
 private:
 
