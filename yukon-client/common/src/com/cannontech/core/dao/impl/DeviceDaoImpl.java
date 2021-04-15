@@ -40,6 +40,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -655,7 +656,7 @@ public final class DeviceDaoImpl implements DeviceDao {
             throw new NotFoundException("Guid is not found for device id " + deviceId, e);
         }
     }
-    
+
     @Override
     public Map<String, SimpleDevice> getDeviceIds(List<String> guids) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
@@ -677,5 +678,17 @@ public final class DeviceDaoImpl implements DeviceDao {
             }
         });
         return result;
+    }
+
+    @Override
+    public List<String> getGuids(){
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Guid");
+        sql.append("FROM DeviceGuid");
+        try {
+            return jdbcTemplate.query(sql, TypeRowMapper.STRING);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No Guid's found ", e);
+        }
     }
 }

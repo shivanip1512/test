@@ -139,8 +139,13 @@
                 </cti:tab>
             </cti:tabs>
         </tags:sectionContainer2>
-    </div>
 
+        <div id="rf-support-bundle-section">
+            <jsp:include page="rfSupportBundle.jsp"/>
+        </div>
+    
+    </div>
+    
     <div class="column two nogutter">
         <cti:checkRolesAndProperties value="ADMIN_VIEW_LOGS">
         <tags:sectionContainer2 nameKey="logs">
@@ -164,4 +169,7 @@
     </div>
 </div>
 </cti:checkRolesAndProperties>
+
+<cti:includeScript link="/resources/js/pages/yukon.support.rfSupportBundle.js"/>
+
 </cti:standardPage>
