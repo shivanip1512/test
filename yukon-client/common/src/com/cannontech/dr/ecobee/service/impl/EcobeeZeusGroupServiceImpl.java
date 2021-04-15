@@ -16,8 +16,8 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     @Autowired private EcobeeZeusGroupDao ecobeeZeusGroupDao;
 
     @Override
-    public List<String> getZeusGroupIdsForLmGroup(String lmGroupId) {
-        return ecobeeZeusGroupDao.getZeusGroupIdsForLmGroup(lmGroupId);
+    public List<String> getZeusGroupIdsForLmGroup(String yukonGroupId) {
+        return ecobeeZeusGroupDao.getZeusGroupIdsForLmGroup(yukonGroupId);
     }
 
     @Override
@@ -26,20 +26,32 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public String getZeusGroupId(String lmGroupId, String inventoryId) {
-        return ecobeeZeusGroupDao.getZeusGroupId(lmGroupId, inventoryId);
+    public String getZeusGroupId(String yukonGroupId, String inventoryId) {
+        return ecobeeZeusGroupDao.getZeusGroupId(yukonGroupId, inventoryId);
     }
 
     @Override
-    public boolean mapGroupIdToZeusGroupId(String lmGroupId, String zeusGroupId) {
+    public boolean mapGroupIdToZeusGroupId(String yukonGroupId, String zeusGroupId) {
         boolean mappingSuccess = false;
         try {
-            ecobeeZeusGroupDao.mapGroupIdToZeusGroupId(lmGroupId, zeusGroupId);
+            ecobeeZeusGroupDao.mapGroupIdToZeusGroupId(yukonGroupId, zeusGroupId);
             mappingSuccess = true;
         } catch (DataAccessException e) {
             log.error("Error occurred while Inserting a mapping for Yukon group to Zeus group ID", e);
         }
         return mappingSuccess;
+    }
+
+    @Override
+    public boolean removeGroupIdForZeusGroupId(String yukonGroupId, String zeusGroupId) {
+        boolean deleteSuccess = false;
+        try {
+            ecobeeZeusGroupDao.removeGroupIdForZeusGroupId(yukonGroupId, zeusGroupId);
+            deleteSuccess = true;
+        } catch (DataAccessException e) {
+            log.error("Error occurred while removing a mapping for Yukon group to Zeus group ID", e);
+        }
+        return deleteSuccess;
     }
 
     @Override
@@ -79,7 +91,7 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public List<String> getEventIds(String lmGroupId) {
-        return ecobeeZeusGroupDao.getEventIds(lmGroupId);
+    public List<String> getEventIds(String yukonGroupId) {
+        return ecobeeZeusGroupDao.getEventIds(yukonGroupId);
     }
 }

@@ -6,7 +6,7 @@ public interface EcobeeZeusGroupDao {
     /**
      * Retrieve list of Zeus group IDs for a given Yukon LM group ID.
      */
-    List<String> getZeusGroupIdsForLmGroup(String lmGroupId);
+    List<String> getZeusGroupIdsForLmGroup(String yukonGroupId);
 
     /**
      * Retrieve list of Zeus group IDs for a given inventory ID.
@@ -16,12 +16,17 @@ public interface EcobeeZeusGroupDao {
     /**
      * Retrieve a single Zeus group ID for a given Yukon inventory ID and LM group ID.
      */
-    String getZeusGroupId(String lmGroupId, String inventoryId);
+    String getZeusGroupId(String yukonGroupId, String inventoryId);
 
     /**
      * Insert a mapping for Yukon group to Zeus group ID.
      */
-    void mapGroupIdToZeusGroupId(String lmGroupId, String zeusGroupId);
+    void mapGroupIdToZeusGroupId(String yukonGroupId, String zeusGroupId);
+
+    /**
+     * Remove a mapping for Yukon group to Zeus group ID.
+     */
+    void removeGroupIdForZeusGroupId(String yukonGroupId, String zeusGroupId);
 
     /**
      * Insert a mapping for inventory ID to Zeus group ID.
@@ -41,5 +46,5 @@ public interface EcobeeZeusGroupDao {
     /**
      * Retrieve a list of event IDs for a Yukon group ID.
      */
-    List<String> getEventIds(String lmGroupId);
+    List<String> getEventIds(String yukonGroupId);
 }

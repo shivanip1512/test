@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/12/2021 5:26:36 AM                         */
+/* Created on:     4/14/2021 11:28:36 PM                        */
 /*==============================================================*/
 
 
@@ -7153,10 +7153,10 @@ go
 /* Table: LMGroupZeusMapping                                    */
 /*==============================================================*/
 create table LMGroupZeusMapping (
-   DeviceID             numeric              not null,
+   YukonGroupId         numeric              not null,
    EcobeeGroupId        varchar(32)          not null,
    EcobeeEventId        varchar(50)          null,
-   constraint PK_LMGROUPZEUSMAPPING primary key (DeviceID, EcobeeGroupId)
+   constraint PK_LMGROUPZEUSMAPPING primary key (YukonGroupId, EcobeeGroupId)
 )
 go
 
@@ -14430,7 +14430,7 @@ alter table LMGroupVersacom
 go
 
 alter table LMGroupZeusMapping
-   add constraint FK_LMGroupZeusMapping_LMGroup foreign key (DeviceID)
+   add constraint FK_LMGroupZeusMapping_LMGroup foreign key (YukonGroupId)
       references LMGroup (DeviceID)
 go
 

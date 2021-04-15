@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/12/2021 5:27:44 AM                         */
+/* Created on:     4/14/2021 11:26:42 PM                        */
 /*==============================================================*/
 
 
@@ -6751,10 +6751,10 @@ create table LMGroupVersacom  (
 /* Table: LMGroupZeusMapping                                    */
 /*==============================================================*/
 create table LMGroupZeusMapping  (
-   DeviceID             NUMBER                          not null,
+   YukonGroupId         NUMBER                          not null,
    EcobeeGroupId        VARCHAR2(32)                    not null,
    EcobeeEventId        VARCHAR2(50),
-   constraint PK_LMGROUPZEUSMAPPING primary key (DeviceID, EcobeeGroupId)
+   constraint PK_LMGROUPZEUSMAPPING primary key (YukonGroupId, EcobeeGroupId)
 );
 
 /*==============================================================*/
@@ -13310,7 +13310,7 @@ alter table LMGroupVersacom
       references LMGroup (DeviceID);
 
 alter table LMGroupZeusMapping
-   add constraint FK_LMGroupZeusMapping_LMGroup foreign key (DeviceID)
+   add constraint FK_LMGroupZeusMapping_LMGroup foreign key (YukonGroupId)
       references LMGroup (DeviceID);
 
 alter table LMHardwareBase

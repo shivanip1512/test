@@ -56,10 +56,10 @@ INSERT INTO DBUpdates VALUES ('YUK-23951', '9.1.0', GETDATE());
 
 /* @start YUK-23903 */
 CREATE TABLE LMGroupZeusMapping (
-   DeviceID             NUMERIC              NOT NULL,
+   YukonGroupId         NUMERIC              NOT NULL,
    EcobeeGroupId        VARCHAR(32)          NOT NULL,
    EcobeeEventId        VARCHAR(50)          NULL,
-   CONSTRAINT PK_LMGROUPZEUSMAPPING PRIMARY KEY (DeviceID, EcobeeGroupId)
+   CONSTRAINT PK_LMGROUPZEUSMAPPING PRIMARY KEY (YukonGroupId, EcobeeGroupId)
 );
 GO
 
@@ -71,7 +71,7 @@ CREATE TABLE ZeusGroupInventoryMapping (
 GO
 
 ALTER TABLE LMGroupZeusMapping
-   ADD CONSTRAINT FK_LMGroupZeusMapping_LMGroup FOREIGN KEY (DeviceID)
+   ADD CONSTRAINT FK_LMGroupZeusMapping_LMGroup FOREIGN KEY (YukonGroupId)
       REFERENCES LMGroup (DeviceID);
 GO
 
