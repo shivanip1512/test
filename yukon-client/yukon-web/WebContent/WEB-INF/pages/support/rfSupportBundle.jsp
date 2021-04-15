@@ -13,6 +13,7 @@
     <c:if test="${!empty errorMessage}">
         <tags:alertBox type="error">${errorMessage}</tags:alertBox>
     </c:if>
+<<<<<<< HEAD
     
      <c:if test="${!empty failed}">
         <tags:alertBox type="error">${failed}</tags:alertBox>
@@ -25,6 +26,8 @@
     <c:if test="${!empty inProgress}">
         <tags:alertBox type="error">${inProgress}</tags:alertBox>
     </c:if>
+=======
+>>>>>>> master
 
     <tags:alertBox type="warning" key=".rfSupportBundle.warning"/>
     <tags:sectionContainer2 nameKey="rfSupportBundle">

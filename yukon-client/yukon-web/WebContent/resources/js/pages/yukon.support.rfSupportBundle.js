@@ -15,30 +15,32 @@ yukon.support.rfSupportBundle = (function() {
     _checkUpdate = function() {
         var btn = $('.js-execute-command-rf');
         $.getJSON(yukon.url("/support/rfBundleInProgress")).done(function(json) {
-            //TODO: Handle timeout and error case after backend changes.
-            if (! json.isCompleted) {
-                setTimeout(_checkUpdate, 600);
-            } else{
+            // TODO: Handle timeout and error case after backend changes.
+            
+            if (!json.isCompleted) {
+                setTimeout(_checkUpdate, 60000);
+            } else {
                 yukon.ui.unbusy(btn);
             }
         });
     },
-    
+
     mod = {
         init : function() {
             
-            if (_initialized) return;
+            if (_initialized)
+                return;
             
             $(document).on('click', '.js-execute-command-rf', function() {
                 $('#rfSupportBundle-form').ajaxSubmit({
-                    success: function (data, status, xhr, $form) {
-                        _checkUpdate();
+                    success : function(data, status, xhr, $form) {
+                        checkUpdate();
                         $('#rf-support-bundle-section').html(data);
                         yukon.ui.initContent('#rf-support-bundle-section');
                         yukon.ui.initDateTimePickers();
                         
                     },
-                    error: function (xhr, status, error, $form) {
+                    error : function(xhr, status, error, $form) {
                         $('#rf-support-bundle-section').html(xhr.responseText);
                         yukon.ui.initContent('#rf-support-bundle-section');
                         yukon.ui.initDateTimePickers();
@@ -54,4 +56,6 @@ yukon.support.rfSupportBundle = (function() {
     return mod;
 })();
 
-$(function() { yukon.support.rfSupportBundle.init(); });
+$(function() {
+    yukon.support.rfSupportBundle.init();
+});

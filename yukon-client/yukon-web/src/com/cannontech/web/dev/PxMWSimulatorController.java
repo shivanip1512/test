@@ -1,5 +1,6 @@
 package com.cannontech.web.dev;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -96,27 +97,20 @@ public class PxMWSimulatorController {
     }
 
     @GetMapping("/testEndpoint")
-    public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint, String params) {
+    public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint, String params, String jsonParam) {
         Map<String, Object> json = new HashMap<>();
+        List<String> paramList = new ArrayList<>();
 
-        if (StringUtils.isEmpty(params)) {
+       /* if (StringUtils.isEmpty(params) && StringUtils.isEmpty(jsonParam)) {
             json.put("alertError", "Unable to parse parameters, please see parameter help text.");
             return json;
-        }
+        }*/
         try {
-            String jsonParam = "";
-            try {
-                jsonParam = params.substring(params.indexOf("{"), params.lastIndexOf("}") + 1);
-            } catch (Exception e) {
-
+            if (!StringUtils.isEmpty(params)) {
+                paramList = Stream.of(params.split(","))
+                        .map(String::trim)
+                        .collect(Collectors.toList());
             }
-            if (!StringUtils.isEmpty(jsonParam)) {
-                log.info(jsonParam);
-                params = StringUtils.replace(params, jsonParam, "");
-            }
-            List<String> paramList = Stream.of(params.split(","))
-                    .map(String::trim)
-                    .collect(Collectors.toList());
             if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
                 PxMWSiteV1 site = pxMWCommunicationServiceV1.getSiteDevices(paramList.get(0), parseBoolean(paramList, 1),
                         parseBoolean(paramList, 2));
@@ -136,7 +130,7 @@ public class PxMWSimulatorController {
                 DateTime stopDateTime = parser.parseDateTime(stopTime);
 
                 Range<Instant> timeRange = new Range<Instant>(startDateTime.toInstant(), false, stopDateTime.toInstant(), false);
-                PxMWTimeSeriesDataResponseV1 response = pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(),
+                List<PxMWTimeSeriesDeviceResultV1> response = pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(),
                         timeRange);
                 processSuccess(params, json, getFormattedJson(response));
             }

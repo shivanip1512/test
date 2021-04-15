@@ -1,6 +1,7 @@
 package com.cannontech.dr.pxmw.service.impl.v1;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -40,7 +41,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataResponseV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
@@ -121,7 +122,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
    
     @Override
-    public PxMWTimeSeriesDataResponseV1 getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Range<Instant> range) {
+    public List<PxMWTimeSeriesDeviceResultV1> getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Range<Instant> range) {
         URI uri = getUri(PxMWRetrievalUrl.TREND_DATA_RETRIEVAL);
         DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
         String startTime = fmt.print(range.getMin());
@@ -131,12 +132,12 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
             HttpEntity<PxMWTimeSeriesDataRequestV1> requestEntity = getRequestWithAuthHeaders(request);
             log.debug("Getting time series data. Request:{} Start:{} Stop:{} URL:{}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(request), startTime, stopTime, uri);
-            ResponseEntity<PxMWTimeSeriesDataResponseV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
-                    PxMWTimeSeriesDataResponseV1.class);
+            ResponseEntity<PxMWTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
+                    PxMWTimeSeriesDeviceResultV1[].class);
             log.debug("Get time series data. Request:{} Start:{} Stop:{} URL:{} Result:{}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(request), startTime, stopTime, uri,
                     new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
-            return response.getBody();
+            return Arrays.asList(response.getBody());
         } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
             throw e;
         } catch (Exception e) {

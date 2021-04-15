@@ -40,7 +40,6 @@ import com.cannontech.common.userpage.model.SiteMapCategory;
 import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -267,8 +266,7 @@ public class SupportController {
    
     @PostMapping("createRfBundle")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
-    public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle,
-            ModelMap model, BindingResult result, RfnSupportBundleRequest rfRequest,
+    public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle, BindingResult result, ModelMap model, RfnSupportBundleRequest rfRequest,
             YukonUserContext userContext, HttpServletResponse resp) throws Exception {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
@@ -294,10 +292,10 @@ public class SupportController {
         } else if (status == RfnSupportBundleResponseType.TIMEOUT) {
             model.addAttribute("timeout", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout"));
         }
-        
+
         return "rfSupportBundle.jsp";
     }
-    
+
     @GetMapping("viewBundleProgress")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
     public String viewBundleProgress() {
