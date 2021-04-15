@@ -3,11 +3,15 @@ package com.cannontech.simulators.pxmw.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorV1;
@@ -20,7 +24,13 @@ import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
 
 public class PxMWDataV1 extends PxMWDataGenerator {
-    private PxMWTimeseriesDataV1 timeseriesData = new PxMWTimeseriesDataV1();
+    private PxMWFakeTimeseriesDataV1 timeseriesData = new PxMWFakeTimeseriesDataV1();
+    private DeviceDao deviceDao;
+    
+    public PxMWDataV1(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
+    }
+
     public PxMWSimulatorResponse token() {
         if (status == HttpStatus.BAD_REQUEST.value()) {
             PxMWErrorV1 error = new PxMWErrorV1(List.of("ClientId"), "The field 'ClientId' is not a valid uuid.", "f0d48574-d5f5-47c1-b817-a1042a103b29", status, "2021-02-25T07:07:03.2423402+00:00", null);
@@ -84,15 +94,27 @@ public class PxMWDataV1 extends PxMWDataGenerator {
             return new PxMWSimulatorResponse(error, status);
         }
 
+        List<String> guids = pxMWTimeSeriesDataRequestV1.getDevices().stream()
+                .map(d -> d.getDeviceGuid())
+                .collect(Collectors.toList());
+        
+        Map<String, SimpleDevice> guidsToIds = deviceDao.getDeviceIds(guids);
+        
         List<PxMWTimeSeriesDeviceResultV1> resultList = pxMWTimeSeriesDataRequestV1.getDevices().stream().map(d -> {
             List<String> tags = Arrays.asList(d.getTagTrait().split(","));
-            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(tags, pxMWTimeSeriesDataRequestV1.getEndTime());
+            PaoType type = PaoType.LCR6200C;
+            
+            if(guidsToIds.get(d.getDeviceGuid()) != null) {
+                type = guidsToIds.get(d.getDeviceGuid()).getDeviceType();
+            }
+
+            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(tags, pxMWTimeSeriesDataRequestV1.getEndTime(), type);
             return new PxMWTimeSeriesDeviceResultV1(d.getDeviceGuid(), result);
         }).collect(Collectors.toList());
         
+        //create bad data to test the parser
         if(pxMWTimeSeriesDataRequestV1.getStartTime() == null) {
-            //to test bad data we will setup 
-           // timeseriesData.messupTheData(resultList);
+             timeseriesData.messupTheData(resultList);
         }
 
         return new PxMWSimulatorResponse(resultList.toArray(), status);

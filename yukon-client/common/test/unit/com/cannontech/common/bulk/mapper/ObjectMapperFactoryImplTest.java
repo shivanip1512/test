@@ -583,6 +583,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         @Override
+        public Map<String, SimpleDevice> getDeviceIds(List<String> guids) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
         public List<String> getGuids() {
             throw new UnsupportedOperationException("Method not implemented");
         }
