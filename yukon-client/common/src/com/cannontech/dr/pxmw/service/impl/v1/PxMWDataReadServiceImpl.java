@@ -110,7 +110,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
 
         List<String> tags = getTagsForAttributes(attribtues);
         List<PxMWTimeSeriesDeviceV1> request = buildRequests(deviceIdGuid.values(), tags);
-        timeSeriesResults.addAll(pxMWCommunicationService.getTimeSeriesValues(request, queryRange).getMsg());
+        timeSeriesResults.addAll(pxMWCommunicationService.getTimeSeriesValues(request, queryRange));
 
         for (PxMWTimeSeriesDeviceResultV1 deviceResult : timeSeriesResults) {
             Integer deviceId = deviceIdGuid.getKey(deviceResult.getDeviceId());
