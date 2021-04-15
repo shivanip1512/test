@@ -1,11 +1,19 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="modules.support">
+   
+    <c:if test="${!empty successMessage}">
+        <tags:alertBox type="success">${successMessage}</tags:alertBox>
+    </c:if> 
+   
+    <c:if test="${!empty errorMessage}">
+        <tags:alertBox type="error">${errorMessage}</tags:alertBox>
+    </c:if>
 
-    <div id="rf-success-error"></div>
     <tags:alertBox type="warning" key=".rfSupportBundle.warning"/>
     <tags:sectionContainer2 nameKey="rfSupportBundle">
         <cti:tabs>

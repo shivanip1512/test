@@ -264,24 +264,23 @@ public class SupportController {
    
     @PostMapping("createRfBundle")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
-    public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle, BindingResult result,
+    public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle, ModelMap model, BindingResult result,
             YukonUserContext userContext, HttpServletResponse resp) throws Exception {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         detailsRfValidator.validate(rfSupportBundle, result);
+        model.addAttribute("rfSupportBundle", rfSupportBundle);
         Map<String, Object> json = new HashMap<>();
 
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("errorMessage", accessor.getMessage("yukon.web.error.fieldErrorsExist"));
             return "rfSupportBundle.jsp";
         }
 
         // TODO: Invoke Service to start support bundle. bundle.start(rfSupportBundle);
-        json.put("isSuccess", true);
-        json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success"));
-        resp.setContentType("application/json");
-        JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-        return null;
+         model.addAttribute("successMessage", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success"));
+        return "rfSupportBundle.jsp";
     }
     
     @GetMapping("viewBundleProgress")
