@@ -67,7 +67,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         log.info("Initiating read for all attributes on device IDs: {}", deviceIds);
 
         for (LiteYukonPAObject pao : paoDao.getLiteYukonPaos(deviceIds)) {
-            if (pao.getPaoType().isRfLcr()) {
+            if (pao.getPaoType().isCloudLcr()) {
                 paoTypeToPao.put(pao.getPaoType(), pao);
                 paos.add(pao);
             } else {
