@@ -165,7 +165,10 @@
     <entry key="yukon.web.modules.support.rfSupportBundle.warning">It is recommended to run RF Network Data Collection outside of normal business hours. This process could take more than 15 minutes to generate the data.</entry>
     <entry key="yukon.web.modules.support.rfSupportBundle.success">RF Network Data Collection request sent successfully to NM.</entry>
     <entry key="yukon.web.modules.support.rfSupportBundle.dateRange.helpText">RF Network Data Collection will collect data 14 days from the selected date.</entry>
-   
+    <entry key="yukon.web.modules.support.rfSupportBundle.failed">RF Network Data Collection request failed</entry>
+    <entry key="yukon.web.modules.support.rfSupportBundle.timeout">RF Network Data Collection request timeout</entry>
+    <entry key="yukon.web.modules.support.rfSupportBundle.started">RF Network Data Collection request is in progress</entry>
+    
     <entry key="yukon.web.startOver.testMessage">Test "startOver"</entry>
 
     <entry key="yukon.web.modules.support.localization.searchResults.title">Search Results for "{0}"</entry>

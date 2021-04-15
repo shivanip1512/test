@@ -35,57 +35,55 @@ public class RFNetworkSupportBundleService {
         JmsReplyReplyHandler<RfnSupportBundleResponse, RfnSupportBundleResponse> handler = new JmsReplyReplyHandler<>() {
 
             @Override
+            public void complete() {
+                log.info("Completed Rf network support request.");
+            }
+            
+            @Override
             public void handleException(Exception e) {
-                log.info("Inside handleException." + e);
+                log.error("Rf Network data collection failed", e);
                 responseStatus = RfnSupportBundleResponseType.FAILED;
             }
-
+            
             @Override
-            public void complete() {
-                log.info("Inside complete.");
-                responseStatus = RfnSupportBundleResponseType.COMPLETED;
+            public boolean handleReply1(RfnSupportBundleResponse statusReply) {
+                log.info(request + " - received reply1(" + statusReply.getResponseType() + ") from NM ");
+                responseStatus = statusReply.getResponseType();
+                return true;
             }
-
+            
+            @Override
+            public void handleReply2(RfnSupportBundleResponse statusReply) {
+                log.info(request + " - received reply2(" + statusReply.getResponseType() + ") from NM ");
+                responseStatus = statusReply.getResponseType();
+            }
+        
             @Override
             public void handleTimeout1() {
-                log.info("Inside handleTimeout1.");
+                log.info(request+ " - RF network data colloection request timed out.");
                 responseStatus = RfnSupportBundleResponseType.TIMEOUT;
             }
-
+            
             @Override
-            public boolean handleReply1(RfnSupportBundleResponse t) {
-                log.info("Inside handleReply1 " + t);
-                responseStatus = t.getResponseType();
-                return true;
+            public void handleTimeout2() {
+                log.info(request+ " - RF network data colloection request timed out.");
+                responseStatus = RfnSupportBundleResponseType.TIMEOUT;
             }
 
             @Override
             public Class<RfnSupportBundleResponse> getExpectedType1() {
-                log.info("Inside getExpectedType1.");
                 return RfnSupportBundleResponse.class;
-            }
-
-            @Override
-            public void handleTimeout2() {
-                log.info("Inside handleTimeout2.");
-                responseStatus = RfnSupportBundleResponseType.TIMEOUT;
-            }
-
-            @Override
-            public void handleReply2(RfnSupportBundleResponse t) {
-                log.info("Inside handleReply2." + t.getResponseType());
-                responseStatus = t.getResponseType();
             }
 
             @Override
             public Class<RfnSupportBundleResponse> getExpectedType2() {
                 return RfnSupportBundleResponse.class;
-            }};
+            }
+        };
         template.send(request, handler);
     }
     
     public RfnSupportBundleResponseType getStatus() {
         return responseStatus;
     }
-
 }

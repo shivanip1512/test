@@ -267,31 +267,35 @@ public class SupportController {
    
     @PostMapping("createRfBundle")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
-    public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle, BindingResult result,
-            RfnSupportBundleRequest rfRequest,
+    public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle,
+            ModelMap model, BindingResult result, RfnSupportBundleRequest rfRequest,
             YukonUserContext userContext, HttpServletResponse resp) throws Exception {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         detailsRfValidator.validate(rfSupportBundle, result);
-        Map<String, Object> json = new HashMap<>();
+        model.addAttribute("rfSupportBundle", rfSupportBundle);
 
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("errorMessage", accessor.getMessage("yukon.web.error.fieldErrorsExist"));
             return "rfSupportBundle.jsp";
         }
 
-        // TODO: Invoke Service to start support bundle. bundle.start(rfSupportBundle);
-        //RfNetworkSupportBundleRequest request = new RfNetworkSupportBundleRequest();
         rfRequest.setFileName(rfSupportBundle.getCustomerName());
         rfRequest.setFromTimestamp(rfSupportBundle.getDate().getTime());
         rfRequest.setType(SupportBundleRequestType.NETWORK_DATA);
         rfNetworkSupportBundleService.send(rfRequest);
         RfnSupportBundleResponseType status = rfNetworkSupportBundleService.getStatus();
-        json.put("isSuccess", status);
-        json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success"));
-        resp.setContentType("application/json");
-        JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-        return null;
+     
+        if (status == RfnSupportBundleResponseType.STARTED || status == RfnSupportBundleResponseType.INPROGRESS) {
+            model.addAttribute("inProgress", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.started"));
+        } else if (status == RfnSupportBundleResponseType.FAILED) {
+            model.addAttribute("failed", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.failed"));
+        } else if (status == RfnSupportBundleResponseType.TIMEOUT) {
+            model.addAttribute("timeout", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout"));
+        }
+        
+        return "rfSupportBundle.jsp";
     }
     
     @GetMapping("viewBundleProgress")
@@ -304,6 +308,7 @@ public class SupportController {
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
     public @ResponseBody Map<String, Object> bundleInProgress() {
         Map<String, Object> json = new HashMap<>();
+        
         boolean inProgress = supportBundleService.isInProgress();
         json.put("inProgress", inProgress);
         if (!inProgress) {
@@ -311,19 +316,29 @@ public class SupportController {
         }
         return json;
     }
-
+   
     @GetMapping("rfBundleInProgress")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
     public @ResponseBody Map<String, Object> rfBundleInProgress() {
-       Map<String, Object> json = new HashMap<>();
+        Map<String, Object> json = new HashMap<>();
 
-        // TODO: Invoke Service to check progress of rf support bundle. bundle.inProgress(rfSupportBundle);
-        boolean inProgress = false;
-        json.put("inProgress", inProgress);
-        if (!inProgress) {
-            // TODO: call bundleservice() to download RF Network support bundle
+        RfnSupportBundleResponseType status = rfNetworkSupportBundleService.getStatus();
+
+        if ((status == RfnSupportBundleResponseType.STARTED) || (status == RfnSupportBundleResponseType.INPROGRESS)) {
+            json.put("isCompleted", false);
+            return json;
+        } else if (status == RfnSupportBundleResponseType.COMPLETED) {
+            json.put("isCompleted", true);
+            return json;
+        } else if (status == RfnSupportBundleResponseType.FAILED) {
+            json.put("isCompleted", true);
+            return json;
+        } else if (status == RfnSupportBundleResponseType.TIMEOUT) {
+            json.put("isCompleted", true);
+            return json;
         }
-        return json;
+        
+        return null;
     }
 
     @GetMapping("getBundleProgress")

@@ -16,9 +16,9 @@ yukon.support.rfSupportBundle = (function() {
         var btn = $('.js-execute-command-rf');
         $.getJSON(yukon.url("/support/rfBundleInProgress")).done(function(json) {
             //TODO: Handle timeout and error case after backend changes.
-            if (json.inProgress) {
-                setTimeout(checkUpdate, 60000);
-            } else {
+            if (! json.isCompleted) {
+                setTimeout(_checkUpdate, 600);
+            } else{
                 yukon.ui.unbusy(btn);
             }
         });
@@ -32,8 +32,11 @@ yukon.support.rfSupportBundle = (function() {
             $(document).on('click', '.js-execute-command-rf', function() {
                 $('#rfSupportBundle-form').ajaxSubmit({
                     success: function (data, status, xhr, $form) {
-                        $('#rf-success-error').addMessage({message: data.message, messageClass: 'success'});
                         _checkUpdate();
+                        $('#rf-support-bundle-section').html(data);
+                        yukon.ui.initContent('#rf-support-bundle-section');
+                        yukon.ui.initDateTimePickers();
+                        
                     },
                     error: function (xhr, status, error, $form) {
                         $('#rf-support-bundle-section').html(xhr.responseText);
