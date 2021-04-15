@@ -11,6 +11,9 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -20,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.jms.JmsException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -72,10 +75,14 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
 
     @PostConstruct
     public void init() {
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        YukonHttpProxy.fromGlobalSetting(globalSettingDao)
-                .ifPresent(httpProxy -> factory.setProxy(httpProxy.getJavaHttpProxy()));
-        factory.setOutputStreaming(false);
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        YukonHttpProxy.fromGlobalSetting(globalSettingDao).ifPresent(httpProxy -> {
+            HttpHost proxyHost = new HttpHost(httpProxy.getHost(), httpProxy.getPort());
+            HttpClient httpClient = HttpClientBuilder.create()
+                    .setProxy(proxyHost)
+                    .build();
+            factory.setHttpClient(httpClient);
+        });
         restTemplate.setRequestFactory(factory);
     }
 
