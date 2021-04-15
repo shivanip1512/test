@@ -161,6 +161,10 @@ public enum MWChannel {
         return builtInAttribute;
     }
 
+    public static MWChannel getMWChannel(BuiltInAttribute attribute) {
+        return getAttributeChannelLookup().get(attribute);
+    }
+
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static MWChannel getMWChannelID(String mWChannelJsonString) {
         try {

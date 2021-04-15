@@ -80,13 +80,10 @@ public final class DeviceDaoImpl implements DeviceDao {
         return new PaoMacAddress(paoIdentifier, macAddress);
     };
     
-    public static final YukonRowMapper<Entry<Integer, String>> DEVICEID_GUID_ROW_MAPPER = new YukonRowMapper<>() {
-        @Override
-        public Entry<Integer, String> mapRow(YukonResultSet rs) throws SQLException {
-            Integer deviceId = rs.getInt("DeviceId");
-            String guid = rs.getString("Guid");
-            return Maps.immutableEntry(deviceId, guid);
-        }
+    public static final YukonRowMapper<Entry<Integer, String>> DEVICEID_GUID_ROW_MAPPER = (YukonResultSet rs) -> {
+        Integer deviceId = rs.getInt("DeviceId");
+        String guid = rs.getString("Guid");
+        return Maps.immutableEntry(deviceId, guid);
     };
     
     @PostConstruct
@@ -668,21 +665,17 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public Map<Integer, String> getGuids(Iterable<Integer> deviceIds) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
-        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
-            @Override
-            public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("Select DeviceId, Guid");
-                sql.append("FROM DeviceGuid");
-                sql.append("WHERE DeviceId").in(deviceIds);
-                return sql;
-            }
+        SqlFragmentGenerator<Integer> sqlGenerator = (List<Integer> subList) -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT DeviceId, Guid");
+            sql.append("FROM DeviceGuid");
+            sql.append("WHERE DeviceId").in(subList);
+            return sql;
         };
 
-        Map<Integer, String> values = template.mappedQuery(sqlGenerator, 
-                                                           deviceIds, 
-                                                           DEVICEID_GUID_ROW_MAPPER,
-                                                           Functions.identity());
-        return values;
+        return template.mappedQuery(sqlGenerator,
+                                    deviceIds, 
+                                    DEVICEID_GUID_ROW_MAPPER,
+                                    Functions.identity());
     }
 }
