@@ -31,7 +31,7 @@ import com.cannontech.user.YukonUserContext;
 
 public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService {
     private static final Logger log = YukonLogManager.getLogger(PxMWDeviceCreationServiceImpl.class);
-    private static int runFrequencyMinutes = 1440;
+    private static int runFrequencyHours = 24;
 
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired private GlobalSettingDao settingDao;
@@ -51,10 +51,10 @@ public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService 
      */
     @PostConstruct
     public void init() {
-        runFrequencyMinutes = getDeviceCreationInterval();
-        log.info("Auto creation of Eaton cloud LCRs will run every {} minutes and begin 5 minutes after startup",
-                runFrequencyMinutes);
-        executor.scheduleAtFixedRate(autoCreateCloudLCRThread, 5, runFrequencyMinutes, TimeUnit.MINUTES);
+        runFrequencyHours = getDeviceCreationInterval();
+        log.info("Auto creation of Eaton cloud LCRs will run every {} hours and begin 5 minutes after startup",
+                runFrequencyHours);
+        executor.scheduleAtFixedRate(autoCreateCloudLCRThread, 5, runFrequencyHours, TimeUnit.MINUTES);
     }
 
     /**
@@ -111,11 +111,10 @@ public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService 
 
             // Get Yukon User
             LiteYukonUser yukonUser = YukonUserContext.system.getYukonUser();
-            // create Yukon devices for all positive responses
+            // Create Yukon devices for all positive responses
             siteDevicesToCreate.stream()
                     .map(device -> buildEatonCloudHardware(device.getDeviceGuid(), device.getName(), device.getModel()))
                     .map(hardware -> hardwareUiService.createHardware(hardware, yukonUser));
-            // log creation in the event logs
 
             isRunning.set(false);
             log.info("Eaton Cloud LCR auto creation completed, {} new devices created", siteDevicesToCreate.size());

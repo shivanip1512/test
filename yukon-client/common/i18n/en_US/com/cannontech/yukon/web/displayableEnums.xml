@@ -452,7 +452,7 @@
     <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS">Runtime Calculation Interval</entry>
     <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS.description">The interval, in hours, at which to calculate run time and shed time for devices that do not directly report it.</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL">PX Cellular LCR auto creation interval</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL.description">The interval, in minutes of how often Yukon will try to auto create Eaton Cloud Cellular LCRs</entry>
+    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL.description">The interval, in hours of how often Yukon will try to auto create Eaton Cloud Cellular LCRs</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID">PX System Service Account Id</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID.description">Service Account Id used to access the PX middleware software</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET">PX System Secret</entry>

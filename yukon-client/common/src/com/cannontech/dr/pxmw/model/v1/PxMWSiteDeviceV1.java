@@ -15,8 +15,8 @@ public class PxMWSiteDeviceV1 implements Serializable {
     private String family;
     private String role;
     private String model;
-    private String modelLname;
-    private String modelSname;
+    private String modelLongname;
+    private String modelShortname;
     private String hardware;
     private String software;
     private String cloudEnabled;
@@ -25,8 +25,8 @@ public class PxMWSiteDeviceV1 implements Serializable {
     public PxMWSiteDeviceV1(@JsonProperty("id") String deviceGuid, @JsonProperty("profile_id") String profileGuid,
             @JsonProperty("name") String name, @JsonProperty("vendor") String vendor,
             @JsonProperty("family") String family, @JsonProperty("role") String role,
-            @JsonProperty("model") String model, @JsonProperty("model_lname") String modelLname,
-            @JsonProperty("model_sname") String modelSname, @JsonProperty("hardware") String hardware,
+            @JsonProperty("model") String model, @JsonProperty("model_lname") String modelLongname,
+            @JsonProperty("model_sname") String modelShortname, @JsonProperty("hardware") String hardware,
             @JsonProperty("software") String software, @JsonProperty("cloud_enabled") String cloudEnabled) {
         this.deviceGuid = deviceGuid;
         this.profileGuid = profileGuid;
@@ -35,8 +35,8 @@ public class PxMWSiteDeviceV1 implements Serializable {
         this.family = family;
         this.role = role;
         this.model = model;
-        this.modelLname = modelLname;
-        this.modelSname = modelSname;
+        this.modelLongname = modelLongname;
+        this.modelShortname = modelShortname;
         this.hardware = hardware;
         this.software = software;
         this.cloudEnabled = cloudEnabled;
@@ -78,13 +78,13 @@ public class PxMWSiteDeviceV1 implements Serializable {
     }
 
     @JsonProperty("model_lname")
-    public String getModelLname() {
-        return modelLname;
+    public String getModelLongname() {
+        return modelLongname;
     }
 
     @JsonProperty("model_sname")
-    public String getModelSname() {
-        return modelSname;
+    public String getModelShortname() {
+        return modelShortname;
     }
 
     @JsonProperty("hardware")
