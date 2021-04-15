@@ -1,29 +1,72 @@
 package com.cannontech.dr.pxmw.model.v1;
 
 import java.io.Serializable;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PxMWErrorV1 implements Serializable {
+    private List<String> invalidParameters;
+    @JsonAlias({"message"})
     private String message;
-    private String description;
+    private String errorId;
+    @JsonAlias({"statusCode"})
+    private Integer errorCode;
+    private String generatedTime;
+    private Integer errorNumber;
 
     @JsonCreator
-    public PxMWErrorV1(@JsonProperty("message") String message, @JsonProperty("description") String description) {
-        this.message = message;
-        this.description = description;
+    public PxMWErrorV1(@JsonProperty("InvalidParameters") List<String> invalidParameters,
+            @JsonProperty("Message") String message,
+            @JsonProperty("ErrorId") String errorId,
+            @JsonProperty("ErrorCode") Integer errorCode,
+            @JsonProperty("GeneratedTime") String generatedTime,
+            @JsonProperty("ErrorNumber") Integer errorNumber) {
+        this.invalidParameters = invalidParameters;
+        this.message =  message;
+        this.errorId = errorId;
+        this.errorCode = errorCode;
+        this.errorId = errorId;
+        this.generatedTime = generatedTime;
+        this.errorNumber = errorNumber;
+    }
+    
+    public PxMWErrorV1(Integer errorCode, String message) {
+        this.message =  message;
+        this.errorCode = errorCode;
     }
 
-    @JsonProperty("message")
+    @JsonProperty("InvalidParameters") 
+    public List<String> getInvalidParameters() {
+        return invalidParameters;
+    }
+
+    @JsonProperty("Message")
     public String getMessage() {
         return message;
     }
 
-    @JsonProperty("description")
-    public String getDescription() {
-        return description;
+    @JsonProperty("ErrorId")
+    public String getErrorId() {
+        return errorId;
+    }
+
+    @JsonProperty("ErrorCode")
+    public Integer getErrorCode() {
+        return errorCode;
+    }
+
+    @JsonProperty("GeneratedTime")
+    public String getGeneratedTime() {
+        return generatedTime;
+    }
+    
+    @JsonProperty("ErrorNumber")
+    public Integer getErrorNumber() {
+        return errorNumber;
     }
 }

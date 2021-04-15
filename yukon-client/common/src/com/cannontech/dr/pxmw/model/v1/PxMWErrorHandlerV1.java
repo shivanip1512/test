@@ -47,8 +47,8 @@ public class PxMWErrorHandlerV1 implements ResponseErrorHandler {
     /**
      * Parses error from json
      */
-    private static PxMWErrorsV1 parseErrorMessage(String errorMessageString) throws IOException {
-        return JsonUtils.fromJson(errorMessageString, PxMWErrorsV1.class);
+    private static PxMWErrorV1 parseErrorMessage(String errorMessageString) throws IOException {
+        return JsonUtils.fromJson(errorMessageString, PxMWErrorV1.class);
     }
     
 }

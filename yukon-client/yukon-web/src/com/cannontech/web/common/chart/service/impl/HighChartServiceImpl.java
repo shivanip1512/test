@@ -1,12 +1,12 @@
 package com.cannontech.web.common.chart.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
-
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,14 +39,14 @@ public class HighChartServiceImpl implements HighChartService {
     @Override
     public Map<String, Object> getMeterGraphData(List<GraphDetail> graphDetails, Instant start, Instant stop, Double yMin,
             Double yMax, GraphType graphType, YukonUserContext userContext) {
-        // TODO: Ensure that adjustForFlotTimezone() is not called. These adjustments will be removed in YUK-23405.
+
         List<Graph<ChartValue<Double>>> graphs = chartService.getGraphs(graphDetails, start.toDate(), stop.toDate(), userContext,
                 graphType);
 
         List<Map<String, Object>> seriesList = Lists.newArrayList();
         graphs.forEach(graph -> {
             GraphDetail graphDetail = graphDetails.stream().filter(gd -> gd.getChartColors() == graph.getColor()).findFirst().orElse(null);
-            seriesList.add(getSeriesDetails(graph, graphType, graphDetail));
+            seriesList.add(getSeriesDetails(graph, graphType, graphDetail, userContext));
         });
 
         boolean isTemperatureAxisDetailsAdded = false;
@@ -89,11 +89,8 @@ public class HighChartServiceImpl implements HighChartService {
 
         Map<String, Object> xaxisOptions = Maps.newHashMap();
 
-        // TODO: These adjustments will be removed in YUK-23405.
-        long xAxisMin = start.getMillis() + TimeZone.getDefault().getOffset(start.getMillis());
-        long xAxisMax = stop.getMillis() + TimeZone.getDefault().getOffset(stop.getMillis());
-        xaxisOptions.put(HighChartOptionKey.MIN.getKey(), xAxisMin);
-        xaxisOptions.put(HighChartOptionKey.MAX.getKey(), xAxisMax);
+        xaxisOptions.put(HighChartOptionKey.MIN.getKey(), start.toDateTime());
+        xaxisOptions.put(HighChartOptionKey.MAX.getKey(), stop.toDateTime());
         xaxisOptions.put(HighChartOptionKey.TYPE.getKey(), "datetime");
 
         Map<String, Object> dataAndOptions = Maps.newHashMap();
@@ -104,9 +101,9 @@ public class HighChartServiceImpl implements HighChartService {
         return dataAndOptions;
     }
 
-    private Map<String, Object> getSeriesDetails(Graph<ChartValue<Double>> graph, GraphType graphType, GraphDetail graphDetail) {
+    private Map<String, Object> getSeriesDetails(Graph<ChartValue<Double>> graph, GraphType graphType, GraphDetail graphDetail, YukonUserContext userContext) {
         Map<String, Object> seriesDetails = Maps.newHashMap();
-        seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph, graphDetail));
+        seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph, graphDetail, userContext));
         seriesDetails.put(HighChartOptionKey.SHOW_IN_LEGEND.getKey(), false);
         seriesDetails.put(HighChartOptionKey.BORDER_COLOR.getKey(), ChartColorsEnum.GREEN);
         if (isTemperaturePoint(graph.getPointId())) {
@@ -131,7 +128,7 @@ public class HighChartServiceImpl implements HighChartService {
         return seriesDetails;
     }
 
-    private List<Map<String, Object>> getDataArray(Graph<ChartValue<Double>> graph, GraphDetail graphDetail) {
+    private List<Map<String, Object>> getDataArray(Graph<ChartValue<Double>> graph, GraphDetail graphDetail, YukonUserContext userContext) {
         List<Map<String, Object>> jsonArrayContainer = Lists.newArrayList();
         for (ChartValue<Double> chartValue : graph.getChartData()) {
             Map<String, Object> map = Maps.newHashMap();
@@ -140,13 +137,26 @@ public class HighChartServiceImpl implements HighChartService {
             StringBuilder tooltipBuilder = new StringBuilder();
             tooltipBuilder
                     .append("<span style='color:" + graph.getColor().getColorHex() + "'>\u25CF</span>&nbsp;" + graphDetail.getSeriesName());
-            tooltipBuilder.append(chartValue.getFormattedDescription());
+            tooltipBuilder.append(getChartTooltip(chartValue, userContext));
             map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), tooltipBuilder.toString());
             jsonArrayContainer.add(map);
         }
         return jsonArrayContainer;
     }
-    
+
+    /**
+     * Method to retrieve the formatted date description from chart value.
+     */
+    private String getChartTooltip(ChartValue<Double> chartValue, YukonUserContext userContext) {
+        StringBuilder descriptionBuilder = new StringBuilder();
+        descriptionBuilder.append("<div>" + chartValue.getFormattedValue() + " " + chartValue.getUnits() + "</div>");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
+        timeFormat.setTimeZone(userContext.getTimeZone());
+        Date date = new Date(chartValue.getTime());
+        descriptionBuilder.append("<div>" + timeFormat.format(date) + "</div>");
+        return descriptionBuilder.toString();
+    }
+
     private boolean isTemperaturePoint(int pointId) {
         LitePoint lPoint = pointDao.getLitePoint(pointId);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(lPoint.getPaobjectID());
