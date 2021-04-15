@@ -13,11 +13,41 @@ yukon.dev.simulators.pxMWSimulator = ( function() {
 
     var 
     _initialized = false,
+    _json= {
+        TREND_DATA_RETRIEVAL: {
+            "devices": [{
+                "device_id": "12343adc-4e23-4a12-3456-e4ca684e7af5",
+                "tag_trait": "110739,110595"
+            }],
+            "start_time": "2021-02-03T00:00:00Z",
+            "end_time": "2021-02-16T00:00:00Z"
+        },
+        COMMANDS: {
+            "method": "LCR_Control",
+            "params": {
+                "vrelay": "1",
+                "cycle percent": "50",
+                "cycle period": "30",
+                "cycle count": "4",
+                "start time": "1599137389",
+                "event ID": "1234",
+                "criticality": "3",
+                "randomization": "controlled",
+                "flags": "standard"
+            }
+        }
+    },
 
     mod = {
         init : function() {
             
             if (_initialized) return;
+            
+            //prefill json data
+            $('.js-json-text').each(function(i, item) {
+                var endpoint = $(item).data('endpoint');
+                $(item).val(JSON.stringify(_json[endpoint], undefined, 4));
+            });
             
             $(document).on('change', '.js-selected-status', function () {
                 //submit all settings
@@ -26,8 +56,11 @@ yukon.dev.simulators.pxMWSimulator = ( function() {
             
             $(document).on('click', '.js-test-endpoint', function () {
                 var endpoint = $(this).data('endpoint'),
-                params = $('#' + endpoint + '_parameters').val();
-                $.getJSON(yukon.url('/dev/pxMiddleware/testEndpoint?endpoint=' + endpoint + '&params=' + encodeURIComponent(params)))
+                params = $('#' + endpoint + '_parameters').val(),
+                json = $('#' + endpoint + '_json').val(),
+                parameters = params ? '&params=' + encodeURIComponent(params) : '',
+                jsonParameters = json ? '&jsonParam=' + encodeURIComponent(json) : '';
+                $.getJSON(yukon.url('/dev/pxMiddleware/testEndpoint?endpoint=' + endpoint + parameters + jsonParameters))
                 .done(function (json) {
                     var resultJson = $('.js-test-endpoint-results');
                     if (json.testResultJson) {
@@ -56,6 +89,15 @@ yukon.dev.simulators.pxMWSimulator = ( function() {
                 });
             });
 
+            $(document).on('click', '.js-enter-json', function () {
+                var endpoint = $(this).data('endpoint'),
+                    textarea = $('#' + endpoint + '_json');
+                if (textarea.val() === '') {
+                    textarea.val(JSON.stringify(_json[endpoint], undefined, 4));
+                }
+                textarea.toggleClass('dn');
+            });
+            
             _initialized = true;
         },
 

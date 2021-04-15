@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.chart.model.ChartInterval;
@@ -93,7 +90,7 @@ public class ChartServiceImpl implements ChartService {
                 if (graphDetail.getInterval().getMillis() >= ChartInterval.DAY.getMillis()) {
                     axisChartData = getXAxisMinMaxValues(graphDetail.getInterval(), chartData, graphDetail.isMin());
                 } else {
-                    axisChartData = chartData.stream().map(e -> adjustForFlotTimezone(e)).collect(Collectors.toList());
+                    axisChartData = chartData;
                 }
                 graph.setLines(graphDetail.getLines());
                 graph.setPoints(graphDetail.getPoints());
@@ -165,7 +162,7 @@ public class ChartServiceImpl implements ChartService {
             long thisInterval = interval.roundDownToIntervalUnit(new Date(thisValue.getId())).getTime();
             if (thisInterval != currentInterval) {
                 // New interval, add last intervals min(if isMinRequired is true) , max
-                ChartValue<Double> adjustedValue = adjustForFlotTimezone(currentMinMax);
+                ChartValue<Double> adjustedValue = currentMinMax;
                 minMaxChartValues.add(adjustedValue);
                 currentMinMax = thisValue;
                 currentInterval = thisInterval;
@@ -183,7 +180,7 @@ public class ChartServiceImpl implements ChartService {
             }
         }
         // Don't forget the last one
-        minMaxChartValues.add(adjustForFlotTimezone(currentMinMax));
+        minMaxChartValues.add(currentMinMax);
         return minMaxChartValues;
     }
 
@@ -195,17 +192,5 @@ public class ChartServiceImpl implements ChartService {
         return oldValue.getValue().doubleValue() == currentValue.getValue().doubleValue()
                                                     && currentValue.getTime() > oldValue.getTime();
     }
-    /**
-     * flot does not support time zones and always displays UTC time. This will be looked at in YUK-23405
-     * Here we fake it out by adding the server timezone offset to the timestamp
-     * so the times line up between the plot and the data.
-     */
-    private ChartValue<Double> adjustForFlotTimezone(ChartValue<Double> originalChartValue) {
-        ChartValue<Double> adjusted = new ChartValue<>(originalChartValue);
-        long timeStamp = adjusted.getTime();
-        timeStamp += TimeZone.getDefault().getOffset(timeStamp);
-        adjusted.setTime(timeStamp);
-        adjusted.setId(timeStamp);
-        return adjusted;
-    }
+
 }
