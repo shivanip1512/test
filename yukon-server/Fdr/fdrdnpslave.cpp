@@ -1463,11 +1463,15 @@ ControlStatus DnpSlave::waitForResponse(const long userMessageId, const bool isP
     return ControlStatus::Undefined;
 }
 
+bool DnpSlave::validRange(unsigned low, unsigned high, unsigned x)
+{
+    return  (low <= x && x <= high);
+}
 
 DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
 {
     DnpId dnpId;
-
+    
     static const std::string dnpMasterId                     = "MasterId";
     static const std::string dnpSlaveId                      = "SlaveId";
     static const std::string dnpPointType                    = "POINTTYPE";
@@ -1493,9 +1497,22 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
         dnpId.valid = false;
         return dnpId;
     }
-
-    dnpId.MasterId  = std::stoi(masterId);
-    dnpId.SlaveId   = std::stoi(slaveId);
+    
+    try
+    {
+        dnpId.MasterId = std::stoi(masterId);
+        dnpId.SlaveId = std::stoi(slaveId);
+        dnpId.Offset = std::stoi(dnpOffset);
+        validRange(0, 65519, dnpId.MasterId);
+        validRange(0, 65519, dnpId.SlaveId);
+        validRange(0, 65535, dnpId.Offset);
+    }
+    catch(std::invalid_argument& e)
+    {
+        CTILOG_ERROR(dout, "Error: " << e.what() << " occured on the point with id: " << pointDestination.getParentPointId() << " and translation: " << pointDestination.getTranslation());
+        dnpId.valid = false;
+        return dnpId;
+    }
 
     using boost::algorithm::to_lower_copy;
 
@@ -1509,8 +1526,6 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     };
 
     dnpId.PointType = mapFindOrDefault(PointTypeNames, to_lower_copy(pointType), InvalidPointType);
-
-    dnpId.Offset = std::stoi(dnpOffset);
     dnpId.MasterServerName = pointDestination.getDestination();
 
     if (dnpMultiplier.empty())
@@ -1519,7 +1534,17 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     }
     else
     {
-        dnpId.Multiplier = std::stod(dnpMultiplier);
+        try
+        {
+            dnpId.Multiplier = std::stod(dnpMultiplier);
+        }
+        catch(std::invalid_argument& e)
+        {
+            CTILOG_ERROR(dout, "Error: " << e.what() << " occured on the point with id: " << pointDestination.getParentPointId() << " and translation: " << pointDestination.getTranslation());
+            dnpId.valid = false;
+            return dnpId;
+        }
+        
     }
     dnpId.valid = true;
 
