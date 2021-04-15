@@ -264,13 +264,12 @@ public class SupportController {
    
     @PostMapping("createRfBundle")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
-    public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle, ModelMap model, BindingResult result,
+    public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle, BindingResult result, ModelMap model,
             YukonUserContext userContext, HttpServletResponse resp) throws Exception {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         detailsRfValidator.validate(rfSupportBundle, result);
         model.addAttribute("rfSupportBundle", rfSupportBundle);
-        Map<String, Object> json = new HashMap<>();
 
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -279,10 +278,10 @@ public class SupportController {
         }
 
         // TODO: Invoke Service to start support bundle. bundle.start(rfSupportBundle);
-         model.addAttribute("successMessage", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success"));
+        model.addAttribute("successMessage", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success"));
         return "rfSupportBundle.jsp";
     }
-    
+
     @GetMapping("viewBundleProgress")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
     public String viewBundleProgress() {
