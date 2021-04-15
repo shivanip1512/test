@@ -77,16 +77,13 @@ public class PxMWDeviceCreationServiceImpl implements PxMWDeviceCreationService 
             List<PxMWSiteDeviceV1> siteDevicesWithDetails = pxMWCommunicationServiceV1.getSiteDevices(getSiteGuid(), null, true)
                     .getDevices();
 
-            // build list of siteDeviceGUIDs
+            // build list of siteDeviceGUIDs and remove YukonGUIDs from siteDeviceGUIDs
             List<String> siteDeviceGUIDs = siteDevicesWithDetails.stream()
                     .map(siteDevice -> siteDevice.getDeviceGuid())
+                    .filter(siteDeviceGuid -> yukonGUIDs.contains(siteDeviceGuid))
                     .collect(Collectors.toList());
-            ;
 
-            // Remove YukonGUIDs from siteDeviceGUIDs
-            siteDeviceGUIDs.removeAll(yukonGUIDs);
-
-            // Create object list using 11074 mFreq channel
+            // Create object list using 110741 mFreq channel
             List<PxMWTimeSeriesDeviceV1> devicesToRequestDataFor = siteDeviceGUIDs.stream()
                     .map(p -> new PxMWTimeSeriesDeviceV1(p, "110741"))
                     .collect(Collectors.toList());
