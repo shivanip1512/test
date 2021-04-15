@@ -98,11 +98,11 @@ YukonError_t DnpRtuDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
     if( parse.getCommand() == ScanRequest &&
         parse.getiValue("scantype") == ScanRateIntegrity )
     {
-        if ( _executeId )
+        if( _executeId )
         {
             const auto Now = std::chrono::steady_clock::now();
 
-            if ( _lastIntegrityScan + _childScanQuietPeriod > Now )
+            if( _lastIntegrityScan + _childScanQuietPeriod > Now )
             {
                 const auto lastScan = std::chrono::duration_cast<std::chrono::milliseconds>(Now - _lastIntegrityScan);
 
@@ -120,9 +120,8 @@ YukonError_t DnpRtuDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
         _lastIntegrityScan = std::chrono::steady_clock::now();
     }
 
-    const auto nRet = Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
+    return Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
     
-    return nRet;
 }
 
 void DnpRtuDevice::addChildDevice(const long childDeviceId)
