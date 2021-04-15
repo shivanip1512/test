@@ -232,4 +232,9 @@ public class MockDeviceDao implements DeviceDao {
     public List<SimpleDevice> getDisabledDevices(Iterable<Integer> ids) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public List<String> getGuids() {
+        throw new MethodNotImplementedException();
+    }
 }
