@@ -59,31 +59,6 @@
     <script src="<c:url value="/resources/js/pages/yukon.smart.notifications.js"/>"></script>
 </c:if>
 
-<script src="<c:url value="/resources/js/common/yukon.navigation.js"/>"></script>
-<script src="<c:url value="/resources/js/lib/iframeResizer/iframeResizer.contentWindow.min.js"/>"></script>
-
-<script src="<c:url value="/resources/js/lib/react/react.development.js"/>"></script>
-<script src="<c:url value="/resources/js/lib/react/react-dom.development.js"/>"></script>
-<script src="<c:url value="/resources/js/lib/babel/babel.min.js"/>"></script>
-
-<script type="text/babel" src="<c:url value="/resources/js/common/NavigationDrawer.js"/>"></script>
-<script type="text/babel" src="<c:url value="/resources/js/common/NavigationMenu.js"/>"></script>
-
-<script>
-    window.iFrameResizer = {
-        readyCallback: function(){
-            window.parentIFrame.sendMessage(location.href);
-        }
-    }
-</script>
-
-<script type="text/babel">
-debugger;
-    var reactElement = React.createElement(NavigationDrawer, null, null);
-
-    ReactDOM.render(reactElement, document.getElementById('navigation'));
-</script>
-
 </head>
 <body style="height:100%;">
     <audio id="alert-audio">
@@ -103,18 +78,16 @@ debugger;
             </div>
         </div>
         
-        <div class="yukon-page" style="height:100%;width:100%;">
-        
-<%--             <div class="js-react-component" data-url="http://localhost:8080/yukon-react"></div> --%>
-<%--         <div class="yukon-page"> --%>
+        <div class="yukon-page" style="height:100%;width:100%">
             
-            <div id="navigation" class="js-navigation" style="position:relative;overflow:visible;height:100%;">
-<%--                 <iframe src="http://localhost:3000/navigation" style="width:100%;height:100%;border:0;z-index:900;"></iframe> --%>
-            </div>
+            <!-- Needed to render React Navigation menu -->
+            <div id="navigation" style="position:sticky;top:0;z-index:1200"></div>
                 
-            <div style="position:absolute;z-index:1;top:65px;left:57px;width:97%;">
+<%--             <div style="position:relative;left:50px;width:95%;"> --%>
+
+            <div style="position:relative">
                 
-            <header class="yukon-header" style="background-color:white">
+            <header class="yukon-header">
 
 <%--                 <div class="toolbar-outer">
                     <div class="toolbar-inner">
@@ -309,6 +282,7 @@ debugger;
 <%--         </div> --%>
 
         </div>
+        
     </cti:msgScope>
     <c:if test="${!empty info.smartNotificationsEvent}">
        <cti:url var="subscriptionUrl" value="/notifications/subscription/existingPopup/${info.smartNotificationsEvent}">
@@ -320,5 +294,11 @@ debugger;
         data-width="600" data-load-event="yukon:notifications:load"
         data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"></div>
     </c:if>
+    
+    <!-- Renders React Navigation Menu -->
+    <script src="<c:url value="/resources/js/lib/react/react.production.min.js"/>"></script>
+    <script src="<c:url value="/resources/js/common/NavigationContainer.bundle.js"/>"></script>
+    
 </body>
+
 </html>
