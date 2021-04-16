@@ -113,7 +113,7 @@
                     </list>
                 </property>
                 <property name="errorHandler">
-                    <bean class="com.cannontech.dr.ecobee.service.EcobeeErrorHandler"/>
+                    <bean class="com.cannontech.dr.ecobee.service.EcobeeZeusErrorHandler"/>
                 </property>
             </bean>
         </constructor-arg>
