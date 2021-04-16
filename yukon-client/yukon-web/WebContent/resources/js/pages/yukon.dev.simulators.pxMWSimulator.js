@@ -105,6 +105,22 @@ yukon.dev.simulators.pxMWSimulator = ( function() {
                 }
                 textarea.toggleClass('dn');
             });
+
+            $(document).on('click', '.js-auto-creation-submit', function () {​​​​​​​
+                var form = $('#autoCreationForm');
+                $.ajax({​​​​​​​
+                    type: 'POST',
+                    data: form.serialize(),
+                    url: yukon.url('/dev/pxMiddleware/deviceAutoCreation')
+                }​​​​​​​).done(function(data) {​​​​​​​
+                    if (data.successMessage) {​​​​​​​
+                        yukon.ui.alertSuccess(data.successMessage);
+                    }​​​​​​​ else if (data.errorMessage) {​​​​​​​
+                        yukon.ui.alertError(data.errorMessage);
+                    }​​​​​​​
+                }​​​​​​​);
+            }​​​​​​​);
+
             
             _initialized = true;
         },
