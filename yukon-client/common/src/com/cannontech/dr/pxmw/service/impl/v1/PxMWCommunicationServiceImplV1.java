@@ -1,19 +1,21 @@
 package com.cannontech.dr.pxmw.service.impl.v1;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
+import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -23,6 +25,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
@@ -32,16 +35,14 @@ import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequestV1;
 import com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenResponseV1;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
-import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWChannelValuesRequestV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWChannelValuesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -96,38 +97,9 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
             throw new PxMWException("Unable to send a message to SM to clear cache", e);
         }
     }
-    
+ 
     @Override
-    public PxMWDeviceProfileV1 getDeviceProfile(String deviceProfileGuid) throws PxMWCommunicationExceptionV1, PxMWException {
-        URI uri = getUri(Map.of("id", deviceProfileGuid), PxMWRetrievalUrl.DEVICE_PROFILE_BY_GUID_V1);
-        log.debug("Getting device profile. Device Profile Guid: {} URL:{}", deviceProfileGuid, uri);
-        HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-        ResponseEntity<PxMWDeviceProfileV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
-                PxMWDeviceProfileV1.class);
-        log.debug("Got device profile. Device Profile Guid:{} Result:{}", deviceProfileGuid,
-                new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
-        return response.getBody();
-    }
-
-    @Override
-    public PxMWDeviceTimeseriesLatestV1 getTimeseriesLatest(String deviceGuid, List<String> tags)
-            throws PxMWCommunicationExceptionV1, PxMWException {
-        URI uri = getUri(Map.of("id", deviceGuid), PxMWRetrievalUrl.DEVICE_TIMESERIES_LATEST);
-        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        queryParams.add("tags", StringUtils.join(tags, ','));
-        uri = addQueryParams(queryParams, uri);
-
-        log.debug("Getting device timeseries latest. Device Guid:{} Tags:{} URL:{}", deviceGuid, tags, uri);
-        HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-        ResponseEntity<PxMWDeviceTimeseriesLatestV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
-                PxMWDeviceTimeseriesLatestV1.class);
-        log.debug("Got device timeseries latest. Device Guid:{} Tags:{} Result:{}", deviceGuid, tags,
-                new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
-        return response.getBody();
-    }
-
-    @Override
-    public PxMWSiteV1 getSite(String siteGuid, Boolean recursive, Boolean includeDetail)
+    public PxMWSiteV1 getSiteDevices(String siteGuid, Boolean recursive, Boolean includeDetail)
             throws PxMWCommunicationExceptionV1, PxMWException {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         if (recursive != null) {
@@ -148,45 +120,28 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
                 new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
         return response.getBody();
     }
-    
+   
     @Override
-    public void cloudEnable(String deviceGuid, boolean enable)
-            throws PxMWCommunicationExceptionV1, PxMWException {
-        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        queryParams.add("id", deviceGuid);
-        queryParams.add("state", String.valueOf(enable));
-
-        URI uri = getUri(PxMWRetrievalUrl.CLOUD_ENABLE);
-        uri = addQueryParams(queryParams, uri);
-
-        log.debug("Cloud enable. Device Guid: {} Enable{} URL: {}", deviceGuid, enable, uri);
-        HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
-        log.info("Cloud enable. Device Guid: {} Enable{} Result: {}", deviceGuid, response.getBody());
-    }
-    
-    @Override
-    public List<PxMWChannelValueV1> getChannelValues(String deviceGuid, List<String> tags)
-            throws PxMWCommunicationExceptionV1, PxMWException {
-        URI uri = getUri(Map.of("id", deviceGuid), PxMWRetrievalUrl.DEVICE_GET_CHANNEL_VALUES_V1);
-        log.debug("Getting device channel values. Device Guid:{} URL:{}", deviceGuid, uri);
+    public List<PxMWTimeSeriesDeviceResultV1> getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Range<Instant> range) {
+        URI uri = getUri(PxMWRetrievalUrl.TREND_DATA_RETRIEVAL);
+        DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+        String startTime = fmt.print(range.getMin());
+        String stopTime = fmt.print(range.getMax());
         try {
-            HttpEntity<PxMWChannelValuesRequestV1> requestEntity = getRequestWithAuthHeaders(
-                    new PxMWChannelValuesRequestV1(tags));
-            ResponseEntity<PxMWChannelValuesV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
-                    PxMWChannelValuesV1.class);
-            int status = Integer.parseInt(response.getBody().getStatus());
-            log.debug("Getting device channel values. Device Guid:{} Response Status:{} Result:{}", deviceGuid, status,
+            PxMWTimeSeriesDataRequestV1 request = new PxMWTimeSeriesDataRequestV1(deviceList, startTime, stopTime);
+            HttpEntity<PxMWTimeSeriesDataRequestV1> requestEntity = getRequestWithAuthHeaders(request);
+            log.debug("Getting time series data. Request:{} Start:{} Stop:{} URL:{}",
+                    new GsonBuilder().setPrettyPrinting().create().toJson(request), startTime, stopTime, uri);
+            ResponseEntity<PxMWTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
+                    PxMWTimeSeriesDeviceResultV1[].class);
+            log.debug("Get time series data. Request:{} Start:{} Stop:{} URL:{} Result:{}",
+                    new GsonBuilder().setPrettyPrinting().create().toJson(request), startTime, stopTime, uri,
                     new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
-            HttpStatus httpStatus = HttpStatus.valueOf(status);
-            if (httpStatus == HttpStatus.OK) {
-                return response.getBody().getValues();
-            }
-            throw new PxMWException(httpStatus.value(), status + ":" + response.getBody().getMsg());
+            return Arrays.asList(response.getBody());
         } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
             throw e;
         } catch (Exception e) {
-            throw new PxMWException("Exception occured while getting channel values", e);
+            throw new PxMWException("Exception occured while getting time series data", e);
         }
     }
     

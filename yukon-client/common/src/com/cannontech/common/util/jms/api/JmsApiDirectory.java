@@ -957,27 +957,12 @@ public final class JmsApiDirectory {
                   .logger(YukonLogManager.getRfnLogger())
                   .build();
     
-    public static final JmsApi<SmartNotificationEvent,?,?> SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT =
-            JmsApi.builder(SmartNotificationEvent.class)
-                  .name("Smart Notification Infrastructure Warnings Event")
-                  .description("Sent by the Infrastructure Warnings service, to the Smart Notification Infrastructure "
-                          + "Warnings decider, when an infrastructure warning occurs. The decider then determines when "
-                          + "to send a notification, who to send it to, and what form it should take.")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.infrastructureWarnings"))
-                  .requestMessage(SmartNotificationEvent.class)
-                  .sender(YUKON_SERVICE_MANAGER)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-    
-    public static final JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT= 
+    public static final JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_EVENT= 
             JmsApi.builder(SmartNotificationEventMulti.class)
-                  .name("Smart Notifications Device Data Monitor Event")
-                  .description("Sent by the Device Data Monitor service, to the Smart Notification Device Data Monitor "
-                          + "decider, when a DDM event occurs. The decider then determines when "
-                          + "to send a notification, who to send it to, and what form it should take.")
+                  .name("Smart Notifications Event")
+                  .description("Sent to Service Manager for processing")
                   .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.deviceDataMonitor"))
+                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event"))
                   .requestMessage(SmartNotificationEventMulti.class)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
@@ -996,43 +981,6 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    public static final JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT= 
-            JmsApi.builder(SmartNotificationEventMulti.class)
-                  .name("Smart Notifications Yukon Watchdog Event")
-                  .description("Sent by the yukon watchdog service, to the Smart Notification Yukon Watchdog "
-                          + "decider, when a event occurs. The decider then determines when "
-                          + "to send a notification, who to send it to, and what form it should take.")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.yukonWatchdog"))
-                  .requestMessage(SmartNotificationEventMulti.class)
-                  .sender(YUKON_SERVICE_MANAGER)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-    
-    public static final JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_METER_DR_EVENT= 
-            JmsApi.builder(SmartNotificationEventMulti.class)
-                  .name("Smart Notifications Meter Demand Response Event")
-                  .description("Sent by the MeterDisconnectMessageListener when event event was received to notify user of the results.")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.meterDr"))
-                  .requestMessage(SmartNotificationEventMulti.class)
-                  .sender(YUKON_SERVICE_MANAGER)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-    
-    public static final JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_DATA_IMPORT_EVENT= 
-            JmsApi.builder(SmartNotificationEventMulti.class)
-                  .name("Smart Notifications Data Import Event")
-                  .description("Sent by the ScheduledDataImportTask and AccountImportService, to the Smart Notification Data Import "
-                          + "decider, when data import is completed, import can be either scheduled or manual. The decider "
-                          + "then determines when to send a notification, who to send it to, and what form it should take.")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.dataImport"))
-                  .requestMessage(SmartNotificationEventMulti.class)
-                  .sender(YUKON_SERVICE_MANAGER)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-
     public static final JmsApi<DailyDigestTestParams,?,?> SMART_NOTIFICATION_DAILY_DIGEST_TEST = 
             JmsApi.builder(DailyDigestTestParams.class)
                   .name("Smart Notification Daily Digest Test")
@@ -1472,13 +1420,9 @@ public final class JmsApiDirectory {
                 SIMULATORS);
 
         addApis(jmsApis, SMART_NOTIFICATION,
-                SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT,
-                SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT,
+                SMART_NOTIFICATION_EVENT,
                 SMART_NOTIFICATION_MESSAGE_PARAMETERS,
-                SMART_NOTIFICATION_DAILY_DIGEST_TEST,
-                SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT,
-                SMART_NOTIFICATION_DATA_IMPORT_EVENT,
-                SMART_NOTIFICATION_METER_DR_EVENT);
+                SMART_NOTIFICATION_DAILY_DIGEST_TEST);
         
         addApis(jmsApis, WIDGET_REFRESH,
                 DATA_COLLECTION,

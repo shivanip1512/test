@@ -433,7 +433,6 @@
     <entry key="yukon.web.modules.dev.itronKeyPair.loadError">Error loading Itron key pair. Keys may not be set.</entry>
 
     <!-- PxMW Auth Token -->
-    <entry key="yukon.web.modules.dev.pxMWToken">PxMW Token</entry>
     <entry key="yukon.web.modules.dev.pxMWToken.pxMWAuthToken">PxMW Authorization Token</entry>
     <entry key="yukon.web.modules.dev.pxMWToken.username">PxMW Username</entry>
     <entry key="yukon.web.modules.dev.pxMWToken.password">PxMW Password</entry>

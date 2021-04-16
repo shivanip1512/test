@@ -1,5 +1,6 @@
 package com.cannontech.web.dev;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,10 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -20,14 +25,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.util.Range;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
-import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -92,57 +97,48 @@ public class PxMWSimulatorController {
     }
 
     @GetMapping("/testEndpoint")
-    public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint, String params) {
+    public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint, String params, String jsonParam) {
         Map<String, Object> json = new HashMap<>();
+        List<String> paramList = new ArrayList<>();
 
-        if (StringUtils.isEmpty(params)) {
+       /* if (StringUtils.isEmpty(params) && StringUtils.isEmpty(jsonParam)) {
             json.put("alertError", "Unable to parse parameters, please see parameter help text.");
             return json;
-        }
+        }*/
         try {
-            String jsonParam = params.substring(params.indexOf("{"), params.lastIndexOf("}") + 1);
-            if(!StringUtils.isEmpty(jsonParam)) {
-                log.info(jsonParam);
-                params = StringUtils.replace(params, jsonParam, "");
+            if (!StringUtils.isEmpty(params)) {
+                paramList = Stream.of(params.split(","))
+                        .map(String::trim)
+                        .collect(Collectors.toList());
             }
-            List<String> paramList = Stream.of(params.split(","))
-                    .map(String::trim)
-                    .collect(Collectors.toList());
-            if (endpoint == PxMWRetrievalUrl.DEVICE_PROFILE_BY_GUID_V1) {
-                PxMWDeviceProfileV1 profile = pxMWCommunicationServiceV1.getDeviceProfile(paramList.get(0));
-                processSuccess(params, json, getFormattedJson(profile));
-            } else if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
-                PxMWSiteV1 site = pxMWCommunicationServiceV1.getSite(paramList.get(0), parseBoolean(paramList, 1),
+            if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
+                PxMWSiteV1 site = pxMWCommunicationServiceV1.getSiteDevices(paramList.get(0), parseBoolean(paramList, 1),
                         parseBoolean(paramList, 2));
                 processSuccess(params, json, getFormattedJson(site));
-            } else if (endpoint == PxMWRetrievalUrl.DEVICE_TIMESERIES_LATEST) {
-                String deviceGuid = paramList.get(0);
-                paramList.remove(deviceGuid);
-                PxMWDeviceTimeseriesLatestV1 details = pxMWCommunicationServiceV1.getTimeseriesLatest(deviceGuid, paramList);
-                processSuccess(params, json, getFormattedJson(details));
             } else if (endpoint == PxMWRetrievalUrl.SECURITY_TOKEN) {
                 PxMWTokenV1 token = pxMWCommunicationServiceV1.getToken();
                 processSuccess(params, json, getFormattedJson(token));
-            } else if (endpoint == PxMWRetrievalUrl.DEVICE_GET_CHANNEL_VALUES_V1) {
-                String deviceGuid = paramList.get(0);
-                paramList.remove(deviceGuid);
-                List<PxMWChannelValueV1> values = pxMWCommunicationServiceV1.getChannelValues(paramList.get(0), paramList);
-                processSuccess(params, json, getFormattedJson(values));
-            } else if (endpoint == PxMWRetrievalUrl.CLOUD_ENABLE) {
-                pxMWCommunicationServiceV1.cloudEnable(paramList.get(0), parseBoolean(paramList, 1));
             } else if (endpoint == PxMWRetrievalUrl.COMMANDS) {
-                try {
-                    PxMWCommandRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWCommandRequestV1.class);
-                    pxMWCommunicationServiceV1.sendCommand(paramList.get(0), paramList.get(1), request);
-                } catch (JsonProcessingException e) {
-                    json.put("alertError", e.getMessage());
-                }
+                PxMWCommandRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWCommandRequestV1.class);
+                pxMWCommunicationServiceV1.sendCommand(paramList.get(0), paramList.get(1), request);
+            } else if (endpoint == PxMWRetrievalUrl.TREND_DATA_RETRIEVAL) {
+                PxMWTimeSeriesDataRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWTimeSeriesDataRequestV1.class);
+                String startTime = request.getStartTime();
+                String stopTime = request.getEndTime();
+                DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
+                DateTime startDateTime = parser.parseDateTime(startTime);
+                DateTime stopDateTime = parser.parseDateTime(stopTime);
+
+                Range<Instant> timeRange = new Range<Instant>(startDateTime.toInstant(), false, stopDateTime.toInstant(), false);
+                List<PxMWTimeSeriesDeviceResultV1> response = pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(),
+                        timeRange);
+                processSuccess(params, json, getFormattedJson(response));
             }
         } catch (PxMWCommunicationExceptionV1 e) {
             processError(json, e);
-        } catch (PxMWException e) {
+        } catch (PxMWException | JsonProcessingException e) {
             json.put("alertError", e.getMessage());
-        }
+        } 
         return json;
     }
 

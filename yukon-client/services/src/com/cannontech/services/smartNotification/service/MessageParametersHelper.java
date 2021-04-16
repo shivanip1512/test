@@ -1,6 +1,7 @@
 package com.cannontech.services.smartNotification.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,7 +38,8 @@ public class MessageParametersHelper {
             Set<SmartNotificationEvent> events = subscriptions.stream()
                     .map(subscriptionToEvent::get)
                     .flatMap(Set::stream)
-                    .collect(Collectors.toSet());
+                    .sorted((a1, a2) -> a1.getTimestamp().compareTo(a2.getTimestamp()))
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
 
             SmartNotificationMessageParameters param = new SmartNotificationMessageParameters(type, mv.media,
                 mv.verbosity, recipients, new ArrayList<>(events), eventPeriodMinutes);

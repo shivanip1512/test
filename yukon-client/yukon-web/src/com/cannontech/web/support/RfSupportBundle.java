@@ -12,8 +12,8 @@ public class RfSupportBundle {
         return customerName;
     }
 
-    public void setCustomerName(String rfCustomerName) {
-        this.customerName = rfCustomerName;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public Date getDate() {

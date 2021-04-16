@@ -113,6 +113,9 @@ yukon.highChart = (function () {
                 },
                 yAxis: jsonResponse.yaxis,
                 series: jsonResponse.seriesDetails,
+                time: {
+                    timezone: yg.timezone
+                },
                 plotOptions: {
                     series: {
                         animation: false,

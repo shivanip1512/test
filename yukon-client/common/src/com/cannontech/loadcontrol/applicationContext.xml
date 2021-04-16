@@ -99,11 +99,13 @@
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeReconciliationReportDaoImpl"/>
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeGroupDeviceMappingDaoImpl"/>
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeQueryCountDaoImpl"/>
+    <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeZeusGroupDaoImpl"/>
 
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceImpl"/>
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusCommunicationServiceImpl"/>
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceHelper"/>
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeePointUpdateServiceImpl"/>
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusGroupServiceImpl"/>
     <bean class="com.cannontech.dr.ecobee.service.helper.EcobeeZeusRequestHelper">
             <constructor-arg name="restTemplate">
             <bean class="org.springframework.web.client.RestTemplate">
@@ -113,7 +115,7 @@
                     </list>
                 </property>
                 <property name="errorHandler">
-                    <bean class="com.cannontech.dr.ecobee.service.EcobeeErrorHandler"/>
+                    <bean class="com.cannontech.dr.ecobee.service.EcobeeZeusErrorHandler"/>
                 </property>
             </bean>
         </constructor-arg>

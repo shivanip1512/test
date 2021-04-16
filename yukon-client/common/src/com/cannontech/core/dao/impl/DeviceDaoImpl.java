@@ -40,9 +40,11 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -652,6 +654,41 @@ public final class DeviceDaoImpl implements DeviceDao {
             return jdbcTemplate.queryForString(sql);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Guid is not found for device id " + deviceId, e);
+        }
+    }
+
+    @Override
+    public Map<String, SimpleDevice> getDeviceIds(List<String> guids) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<String> sqlGenerator =  (subList) -> {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT dg.DeviceId, dg.Guid, ypo.Type");
+                sql.append("FROM DeviceGuid dg JOIN YukonPAObject ypo ON dg.DeviceId = ypo.PAObjectID");
+                sql.append("WHERE Guid").in(subList);
+                return sql;
+            };
+      
+
+        Map<String, SimpleDevice> result = new HashMap<>();
+        template.query(sqlGenerator, guids, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                result.put(rs.getString("Guid"),
+                        new SimpleDevice(rs.getInt("DeviceId"), PaoType.getForDbString(rs.getString("Type"))));
+            }
+        });
+        return result;
+    }
+
+    @Override
+    public List<String> getGuids(){
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Guid");
+        sql.append("FROM DeviceGuid");
+        try {
+            return jdbcTemplate.query(sql, TypeRowMapper.STRING);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No Guid's found ", e);
         }
     }
 }
