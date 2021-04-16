@@ -208,7 +208,6 @@ public class SupportController {
             }
         };
 
-
     @PostMapping("createBundle")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
     public String createBundle(ModelMap model, @ModelAttribute SupportBundle bundle,

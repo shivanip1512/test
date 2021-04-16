@@ -13,7 +13,7 @@
 <c:set var="isIE" value="${fn:contains(browser, 'MSIE') ? 'ie' : 'no-ie'}"/>
 
 <!DOCTYPE html>
-<html dir="ltr" class="${module.moduleName}-module ${isIE} no-js" style="height:100%;">
+<html dir="ltr" class="${module.moduleName}-module ${isIE} no-js">
 <head>
 
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -60,7 +60,7 @@
 </c:if>
 
 </head>
-<body style="height:100%;">
+<body>
     <audio id="alert-audio">
         <source src="<cti:url value="/WebConfig/yukon/audio/beep1-shortened.mp3"/>" type="audio/mpeg">
     </audio>
@@ -78,15 +78,11 @@
             </div>
         </div>
         
-        <div class="yukon-page" style="height:100%;width:100%">
+        <div class="yukon-page">
             
             <!-- Needed to render React Navigation menu -->
             <div id="navigation" style="position:sticky;top:0;z-index:1200"></div>
-                
-<%--             <div style="position:relative;left:50px;width:95%;"> --%>
-
-            <div style="position:relative">
-                
+                                
             <header class="yukon-header">
 
 <%--                 <div class="toolbar-outer">
@@ -279,8 +275,6 @@
                 </div>
             </footer> --%>
             
-<%--         </div> --%>
-
         </div>
         
     </cti:msgScope>

@@ -580,28 +580,12 @@ yukon.ui = (function () {
             pageActionsButton.show();
         }
     };
-    
-    var getReactComponents = function () {
-        $('.js-react-component').each(function (i, reactDiv) {
-            var url = $(this).data('url');
-            jQuery.support.cors = true;
-            $.ajax({
-                type: 'get',
-                url: url
-            }).done(function (component) {
-                reactDiv.innerHTML = component;
-            });
-
-        });
-    };
 
     var mod = {
         
         init: function () {
             if (!initialized) {
-                
-                getReactComponents();
-                
+                                
                 _initSearch();
                 
                 addEventListeners();

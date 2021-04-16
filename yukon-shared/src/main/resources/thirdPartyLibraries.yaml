@@ -5683,18 +5683,6 @@ JavaScript :
     jira : YUK-22997
     updated : 2020-10-06
     notes : Used for charting
-    
-  - project : iframeResizer
-    version : 4.3.1
-    project URL : "https://github.com/davidjbradshaw/iframe-resizer"
-    license : MIT
-    license URLs : "https://github.com/davidjbradshaw/iframe-resizer/blob/master/LICENSE"
-    npm URL : "https://www.npmjs.com/package/iframe-resizer"
-    md5 : 14f060172457e0e9320dccd7fa583d8a
-    sha1 : d04d772a0b363aa744853fa87275a00890e329fc
-    jira : YUK-19140
-    updated : 2021-03-19
-    notes : Used with React app for rendering Yukon pages inside an IFrame
 
   - project : jqgrid
     version : 4.5.1
@@ -5792,6 +5780,18 @@ JavaScript :
     jira : YUK-22999
     updated : 2020-10-06
     notes : This library is used to display the text as a placeholder in input fields for e.g. search text is displayed in global search.
+    
+  - project : react
+    version : 17.0.2
+    project URL : "https://reactjs.org/"
+    license : MIT
+    license URLs : "https://github.com/facebook/react/blob/master/LICENSE"
+    npm URL : "https://www.npmjs.com/package/react"
+    md5 : 7d6155f06a2386cb24a7690cef48e521
+    sha1 : 94e3bc11e6e5b0b3658a76b47ec8cde73cacc4c9
+    jira : YUK-24088
+    updated : 2021-04-16
+    notes : Used for rendering the React Navigation menu
 
   - project : scroll.to
     version : 2.1.2

@@ -172,11 +172,4 @@
 
 <cti:includeScript link="/resources/js/pages/yukon.support.rfSupportBundle.js"/>
 
-<<<<<<< HEAD
-    <script>
-       yukon.rfSupportBundle.init();
-    </script>
-    
-=======
->>>>>>> refs/remotes/origin/master
 </cti:standardPage>

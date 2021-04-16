@@ -26,7 +26,6 @@ public enum ContentSecurityPolicyFilterType {
     CONNECT_SRC("connect-src 'self' 'unsafe-inline' " 
         + "https://api.mapbox.com "
         + "https://*.tiles.mapbox.com " 
-        + "http://localhost:3000 "              //Needed to render react components via ajax
         + "https://www.google.com/recaptcha/ ;"),
     IMG_SRC("img-src 'self' data: Access-Control-Allow-Origin: * " // Access-Control-Allow-Origin: * used for cross origin resource sharing for map images
         + "http://www.google-analytics.com "
@@ -45,11 +44,9 @@ public enum ContentSecurityPolicyFilterType {
         + "http://www.google.com ; "),          // Recaptcha
     FONT_SRC("font-src 'self' ;"),
     FRAME_SRC("frame-src 'self' " 
-        + "http://localhost:3000 "              //Needed if render React component inside Iframe in Yukon
         + "https://www.google.com "             // Recaptcha
         + "http://www.google.com ; "),          // Recaptcha
-    FRAME_ANCESTORS("frame-ancestors 'self' "
-        + "http://localhost:3000 ; "),         //Needed if render Yukon old page as Iframe in React
+    FRAME_ANCESTORS("frame-ancestors 'self' ;"),
     FORM_ACTION("form-action 'self' "
         + "https://export.highcharts.com ; "),
     ;
