@@ -104,25 +104,10 @@ Attribute ControlPolicy::getSetPointAttribute()
         }
         case Bidirectional:
         case BiasBidirectional:
-        {
-            if ( inReverseFlow() )
-            {
-                return Attribute::ReverseSetPoint;
-            }
-            break;
-        }
         case Cogeneration:
         case ReverseCogeneration:
         {
-            if ( inReverseFlow() ^ _installedInReverse  )   // opposite senses
-            {
-                return Attribute::ReverseSetPoint;
-            }
-            break;
-        }
-        case BiasCogeneration:
-        {
-            if ( isControlPowerFlowReverse() )
+            if ( inReverseFlow() )
             {
                 return Attribute::ReverseSetPoint;
             }
@@ -143,25 +128,10 @@ Attribute ControlPolicy::getBandwidthAttribute()
         }
         case Bidirectional:
         case BiasBidirectional:
-        {
-            if ( inReverseFlow() )
-            {
-                return Attribute::ReverseBandwidth;
-            }
-            break;
-        }
         case Cogeneration:
         case ReverseCogeneration:
         {
-            if ( inReverseFlow() ^ _installedInReverse  )   // opposite senses
-            {
-                return Attribute::ReverseBandwidth;
-            }
-            break;
-        }
-        case BiasCogeneration:
-        {
-            if ( isControlPowerFlowReverse() )
+            if ( inReverseFlow() )
             {
                 return Attribute::ReverseBandwidth;
             }
@@ -171,19 +141,6 @@ Attribute ControlPolicy::getBandwidthAttribute()
 
     return Attribute::ForwardBandwidth;
 }
-
-ControlPolicy::ControlPolicy()
-    :   Policy(),
-        _installedInReverse( false )
-{
-    // empty
-}
-
-void ControlPolicy::setInstalledInReverse()
-{
-    _installedInReverse = true;
-}
-
 
 }
 }

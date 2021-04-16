@@ -1630,6 +1630,34 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 state->_tapOpDelay = timeNow;
 
+                {
+                    Cti::FormattedList  logMessage;
+
+                    logMessage << "IVVC Algorithm: Requested Regulator voltage adjustments for bus: " << subbus->getPaoName();
+
+                    for (const auto & [ID, adjustment] : state->_tapOps )
+                    {
+                        logMessage.add("RegulatorID") << ID << "\t" << adjustment;
+                    }
+
+                    CTILOG_DEBUG( dout, logMessage );
+                }
+
+                // firstly - clear out the "paused" regulators so they don't operate
+
+                if ( ! state->pausedRegulatorIDs.empty() )
+                {
+                    CTILOG_DEBUG( dout, "IVVC Algorithm: Purging voltage adjustments for regulators with Indeterminate Power Flow." );
+
+                    for (const auto ID : state->pausedRegulatorIDs )
+                    {
+                        state->_tapOps.erase( ID );
+                        CTILOG_DEBUG( dout, "Purging ID: " << ID );
+                    }
+
+                    state->pausedRegulatorIDs.clear();
+                }
+
                 // Verify that the regulators and regulator attributes we need are available
 
                 unsigned errorCount = validateTapOpSolution( state->_tapOps );
@@ -4797,6 +4825,8 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
     }
     counts = { 0, 0 };
    
+    state->pausedRegulatorIDs.clear();
+
     for ( const auto ID : subbusZoneIds )
     {
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
@@ -4818,6 +4848,7 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
                 }
                 else if ( retCode == VoltageRegulator::PowerFlowSituations::IndeterminateFlow )
                 {
+                    state->pausedRegulatorIDs.insert( mapping.second );
                     counts.pauseCount++;
                 }
                 else    // all other codes are error conditions where we'd want to release control of the bus
@@ -4858,9 +4889,7 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
     }
     else if ( counts.pauseCount > 0 )
     {
-        CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Indeterminate Power Flow. Aborting current analysis interval." );
-
-        return true;
+        CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Indeterminate Power Flow for one or more regulators." );
     }
     else if ( ! state->powerFlow.valid )     // transition from bad to good
     {
