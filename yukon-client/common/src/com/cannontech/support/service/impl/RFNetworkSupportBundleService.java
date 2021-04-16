@@ -22,15 +22,16 @@ public class RFNetworkSupportBundleService {
 
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-    
+
     private RequestReplyReplyTemplate<RfnSupportBundleResponse, RfnSupportBundleResponse> template;
     private RfnSupportBundleResponseType responseStatus;
-    
+
     @PostConstruct
     public void initialize() {
         YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_SUPPORT_BUNDLE);
-        template = new RequestReplyReplyTemplate<>("RF_SUPPORT_BUNDLE", configurationSource, jmsTemplate); 
+        template = new RequestReplyReplyTemplate<>("RF_SUPPORT_BUNDLE", configurationSource, jmsTemplate);
     }
+
     public void send(RfnSupportBundleRequest request) {
         JmsReplyReplyHandler<RfnSupportBundleResponse, RfnSupportBundleResponse> handler = new JmsReplyReplyHandler<>() {
 
@@ -38,35 +39,38 @@ public class RFNetworkSupportBundleService {
             public void complete() {
                 log.info("Completed Rf network support request.");
             }
-            
+
             @Override
             public void handleException(Exception e) {
                 log.error("Rf Network data collection failed", e);
                 responseStatus = RfnSupportBundleResponseType.FAILED;
             }
-            
+
             @Override
             public boolean handleReply1(RfnSupportBundleResponse statusReply) {
                 log.info(request + " - received reply1(" + statusReply.getResponseType() + ") from NM ");
+                if (RfnSupportBundleResponseType.INPROGRESS == statusReply.getResponseType()) {
+                    return false;
+                }
                 responseStatus = statusReply.getResponseType();
                 return true;
             }
-            
+
             @Override
             public void handleReply2(RfnSupportBundleResponse statusReply) {
                 log.info(request + " - received reply2(" + statusReply.getResponseType() + ") from NM ");
                 responseStatus = statusReply.getResponseType();
             }
-        
+
             @Override
             public void handleTimeout1() {
-                log.info(request+ " - RF network data colloection request timed out.");
+                log.info(request + " - RF network data collection request timed out.");
                 responseStatus = RfnSupportBundleResponseType.TIMEOUT;
             }
-            
+
             @Override
             public void handleTimeout2() {
-                log.info(request+ " - RF network data colloection request timed out.");
+                log.info(request + " - RF network data collection request timed out.");
                 responseStatus = RfnSupportBundleResponseType.TIMEOUT;
             }
 
@@ -82,7 +86,7 @@ public class RFNetworkSupportBundleService {
         };
         template.send(request, handler);
     }
-    
+
     public RfnSupportBundleResponseType getStatus() {
         return responseStatus;
     }

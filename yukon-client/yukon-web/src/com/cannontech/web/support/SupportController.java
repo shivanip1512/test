@@ -283,16 +283,7 @@ public class SupportController {
         rfRequest.setFromTimestamp(rfSupportBundle.getDate().getTime());
         rfRequest.setType(SupportBundleRequestType.NETWORK_DATA);
         rfNetworkSupportBundleService.send(rfRequest);
-        RfnSupportBundleResponseType status = rfNetworkSupportBundleService.getStatus();
-     
-        if (status == RfnSupportBundleResponseType.STARTED || status == RfnSupportBundleResponseType.INPROGRESS) {
-            model.addAttribute("inProgress", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.started"));
-        } else if (status == RfnSupportBundleResponseType.FAILED) {
-            model.addAttribute("failed", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.failed"));
-        } else if (status == RfnSupportBundleResponseType.TIMEOUT) {
-            model.addAttribute("timeout", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout"));
-        }
-
+       
         return "rfSupportBundle.jsp";
     }
 
@@ -317,26 +308,34 @@ public class SupportController {
    
     @GetMapping("rfBundleInProgress")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
-    public @ResponseBody Map<String, Object> rfBundleInProgress() {
+    public @ResponseBody Map<String, Object> rfBundleInProgress(YukonUserContext userContext) {
         Map<String, Object> json = new HashMap<>();
-
         RfnSupportBundleResponseType status = rfNetworkSupportBundleService.getStatus();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-        if ((status == RfnSupportBundleResponseType.STARTED) || (status == RfnSupportBundleResponseType.INPROGRESS)) {
+        switch (status) {
+        case STARTED:
+        case INPROGRESS:
             json.put("isCompleted", false);
-            return json;
-        } else if (status == RfnSupportBundleResponseType.COMPLETED) {
+            json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.started"));
+            break;
+        case COMPLETED:
             json.put("isCompleted", true);
-            return json;
-        } else if (status == RfnSupportBundleResponseType.FAILED) {
+            json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success"));
+            break;
+        case FAILED:
             json.put("isCompleted", true);
-            return json;
-        } else if (status == RfnSupportBundleResponseType.TIMEOUT) {
+            json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.failed"));
+            break;
+        case TIMEOUT:
             json.put("isCompleted", true);
-            return json;
+            json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout"));
+            break;
+        default:
+            break;
         }
-        
-        return null;
+        json.put("status", status);
+        return json;
     }
 
     @GetMapping("getBundleProgress")
