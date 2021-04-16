@@ -1,132 +1,92 @@
 <%@ page trimDirectiveWhitespaces="true"%>
 
-<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="highChart" tagdir="/WEB-INF/tags/highChart"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="dev" page="charts">
     <tags:styleguide page="charts">
 
-        <style>
-.style-guide-example .one {
-    line-height: 26px;
-}
-
-.description {
-    line-height: 22px;
-}
+<style>     
+    .description {
+        line-height: 22px;
+    } 
 </style>
 
 <p class="description">
-    Charts like Pie chart, Bar graph, line are used for pictorial representation of data in the in the Yukon. All
-            these used highstock js library.
+    The highcharts/highstock charting library is used for any charts that are displayed within Yukon (ex: pie charts, line charts, bar charts).<br/>
+    See: <a href="https://www.highcharts.com">https://www.highcharts.com</a> for more information on the highcharts/highstock charting library. There are demos for each chart type along with the charting API for reference.<br/>
+    Yukon uses our in house JS: <b>yukon.highChart.js</b> for helper methods in building charts using highcharts/highstock. Yukon also has several common charting options defined in <b>jsGlobals.js</b> under yg.highcharts_options to provide a common look and feel for the charts used in Yukon.
 </p>
 
 <h2>Pie Chart with Sample Data</h2>
 
 <p class="description">
-    Create a pie chart component through jquery pie chart using highstock js library. this consists of data related
-    to device status . Available, Expected, Outdated, Unavailable with their device counts and its percentage.
+    The following example illustrates how a pie chart can be created using the highcharts/highstock JS library. This uses the common charting options found in jsGlobals.js to establish a common look and feel among the pie charts that are used within Yukon.
 </p>
 
 <div class="separated-sections clearfix style-guide-example">
     <div class="section"><h4 class="subtle">Example:</h4>
     <div style="max-height: 200px; max-length: 200px;" class="js-pie-chart-summary" />
     <script>
-        function _getData(data) {
-        return [
-            {
-                 name : $('.js-AVAILABLE').val(),
-                 filter : 'Available',
-                 displayPercentage : data.available.percentage < 1 && data.available.percentage != 0 ? '&lt;1%'
-                     : yukon.percent(data.available.percentage,100, 1),
-                 y : (data.available.percentage < 1 && data.available.percentage != 0 ? 1: data.available.percentage),
-                 x : data.available.deviceCount,
-                 color : yg.colors.GREEN
-            },
-            {
-                 name : $('.js-EXPECTED').val(),
-                 filter : 'Expected',
-                 displayPercentage : data.expected.percentage < 1 && data.expected.percentage != 0 ? '&lt;1%'
-                     : yukon.percent(data.expected.percentage,100, 1),
-                 y : (data.expected.percentage < 1 && data.expected.percentage != 0 ? 1 : data.expected.percentage),
-                 x : data.expected.deviceCount,
-                 color : yg.colors.BLUE
-
-             },
-             {
-                 name : $('.js-OUTDATED').val(),
-                 filter : 'Outdated',
-                 displayPercentage : data.outdated.percentage < 1 && data.outdated.percentage != 0 ? '&lt;1%'
-                     : yukon.percent(data.outdated.percentage,100, 1),
-                 y : (data.outdated.percentage < 1 && data.outdated.percentage != 0 ? 1 : data.outdated.percentage),
-                 x : data.outdated.deviceCount,
-                 color : yg.colors.ORANGE
-             },
-             {
-                 name : $('.js-UNAVAILABLE').val(),
-                 filter : 'Unavailable',
-                 displayPercentage : data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? '&lt;1%'
-                     : yukon.percent(data.unavailable.percentage,100, 1),
-                 y : (data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? 1 : data.unavailable.percentage),
-                 x : data.unavailable.deviceCount,
-                 color : yg.colors.GRAY
-             } ]
-        };
-
-        var chart = $('.js-pie-chart-summary');
-        var data = {
-                "available" : {
-                    "percentage" : 20,
-                    "deviceCount" : 40
-                 },
-                 "expected" : {
-                     "percentage" : 40,
-                     "deviceCount" : 80
-                 },
-                 "outdated" : {
-                     "percentage" : 10,
-                     "deviceCount" : 20
-                 },
-                 "unavailable" : {
-                     "percentage" : 30,
-                     "deviceCount" : 60
-                 },
-                 "totalDeviceCount" : 200,
-
-        };
-
-        var legendOptionsJSON = {
+        var chart = $('.js-pie-chart-summary'),
+            legendOptionsJSON = {
                 labelFormatter : function(point) {
-                    var legendValueText = '<span class="js-legend-value dn">' + this.filter + '</span>', 
+                    var legendValueText = '<span class="js-legend-value dn">' + this.name + '</span>', 
                         spanText = '<span class="badge" style="margin:2px;width:60px;color:white;background-color:' + this.color + '">'
                                     + this.x + '</span> ';
-                    return legendValueText + spanText + this.filter + ': ' + this.displayPercentage;
+                    return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
                 },
-            }, plotPieJSON = {
-                    className : ''
-            }, chartDimensionJSON = {
-                    width : 420,
-                    height : 200
-        };
-    
-    chart.highcharts({
-        credits : yg.highcharts_options.disable_credits,
-        chart : $.extend({},yg.highcharts_options.chart_options,chartDimensionJSON),
-        legend : $.extend({},yg.highcharts_options.pie_chart_options.legend,legendOptionsJSON),
-        title : yg.highcharts_options.pie_chart_options.title,
-        tooltip : yg.highcharts_options.pie_chart_options.tooltip,
-        plotOptions : {
-            pie : $.extend({},yg.highcharts_options.pie_chart_options.plotOptions.pie,plotPieJSON)},
+            }, 
+            chartDimensionJSON = {
+                width : 420,
+                height : 200
+            },
+            data = [
+                {
+                     name: 'Available',
+                     displayPercentage : '20%',
+                     y : 20,
+                     x : 40,
+                     color : yg.colors.GREEN
+                },
+                {
+                     name: 'Expected',
+                     displayPercentage : '40%',
+                     y : 40,
+                     x : 80,
+                     color : yg.colors.BLUE
+        
+                 },
+                 {
+                     name: 'Outdated',
+                     displayPercentage : '10%',
+                     y : 10,
+                     x : 20,
+                     color : yg.colors.ORANGE
+                 },
+                 {
+                     name: 'Unavailable',
+                     displayPercentage : '30%',
+                     y : 30,
+                     x : 60,
+                     color : yg.colors.GRAY
+                 } 
+             ];
+        
+        chart.highcharts({
+            credits : yg.highcharts_options.disable_credits,
+            chart : $.extend({},yg.highcharts_options.chart_options, chartDimensionJSON),
+            legend : $.extend({},yg.highcharts_options.pie_chart_options.legend, legendOptionsJSON),
+            title : yg.highcharts_options.pie_chart_options.title,
+            tooltip : yg.highcharts_options.pie_chart_options.tooltip,
+            plotOptions : {
+                pie : yg.highcharts_options.pie_chart_options.plotOptions.pie
+            },
             series : [ {
                 type : yg.highcharts_options.pie_chart_options.series_type_pie,
-                data : _getData(data)
+                data : data
             } ]
-       });
+           });
        </script>
     </div>
     <h4 class="subtle">Code:</h4>
@@ -134,94 +94,64 @@
     
     &lt;div style=&quot;max-height: 200px; max-length: 200px;&quot; class=&quot;js-pie-chart-summary&quot; /&gt;
     &lt;script&gt;
-        function _getData(data) {
-        return [
-            {
-                 name : $('.js-AVAILABLE').val(),
-                 filter : 'Available',
-                 displayPercentage : data.available.percentage < 1 && data.available.percentage != 0 ? '&lt;1%'
-                     : yukon.percent(data.available.percentage,100, 1),
-                 y : (data.available.percentage < 1 && data.available.percentage != 0 ? 1: data.available.percentage),
-                 x : data.available.deviceCount,
-                 color : yg.colors.GREEN
-            },
-            {
-                 name : $('.js-EXPECTED').val(),
-                 filter : 'Expected',
-                 displayPercentage : data.expected.percentage < 1 && data.expected.percentage != 0 ? '&lt;1%'
-                     : yukon.percent(data.expected.percentage,100, 1),
-                 y : (data.expected.percentage < 1 && data.expected.percentage != 0 ? 1 : data.expected.percentage),
-                 x : data.expected.deviceCount,
-                 color : yg.colors.BLUE
-
-             },
-             {
-                 name : $('.js-OUTDATED').val(),
-                 filter : 'Outdated',
-                 displayPercentage : data.outdated.percentage < 1 && data.outdated.percentage != 0 ? '&lt;1%'
-                     : yukon.percent(data.outdated.percentage,100, 1),
-                 y : (data.outdated.percentage < 1 && data.outdated.percentage != 0 ? 1 : data.outdated.percentage),
-                 x : data.outdated.deviceCount,
-                 color : yg.colors.ORANGE
-             },
-             {
-                 name : $('.js-UNAVAILABLE').val(),
-                 filter : 'Unavailable',
-                 displayPercentage : data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? '&lt;1%'
-                     : yukon.percent(data.unavailable.percentage,100, 1),
-                 y : (data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? 1 : data.unavailable.percentage),
-                 x : data.unavailable.deviceCount,
-                 color : yg.colors.GRAY
-             } ]
-        };
-
-        var chart = $('.js-pie-chart-summary');
-        var data = {
-                "available" : {
-                    "percentage" : 20,
-                    "deviceCount" : 40
-                 },
-                 "expected" : {
-                     "percentage" : 40,
-                     "deviceCount" : 80
-                 },
-                 "outdated" : {
-                     "percentage" : 10,
-                     "deviceCount" : 20
-                 },
-                 "unavailable" : {
-                     "percentage" : 30,
-                     "deviceCount" : 60
-                 },
-                 "totalDeviceCount" : 200,
-        };
-
-        var legendOptionsJSON = {
+        var chart = $('.js-pie-chart-summary'),
+            legendOptionsJSON = {
                 labelFormatter : function(point) {
-                var legendValueText = '&lt;span class=&quot;js-legend-value dn&quot;&gt;' + this.filter + '&lt;/span&gt;', 
+                var legendValueText = '&lt;span class=&quot;js-legend-value dn&quot;&gt;' + this.name + '&lt;/span&gt;', 
                 spanText = '&lt;span class=&quot;badge&quot; style=&quot;margin:2px;width:60px;color:white;background-color:' + this.color + '&quot;&gt;'
                                     + this.x + '&lt;/span&gt; ';
-                return legendValueText + spanText + this.filter + ': ' + this.displayPercentage;
+                return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
                 },
-            }, plotPieJSON = {
-                    className : ''
-            }, chartDimensionJSON = {
-                    width : 420,
-                    height : 200
-        };
+            }, 
+            chartDimensionJSON = {
+                width : 420,
+                height : 200
+            },
+            data = [
+                {
+                     name : 'Available',
+                     displayPercentage : '20%',
+                     y : 20,
+                     x : 40,
+                     color : yg.colors.GREEN
+                },
+                {
+                     name : 'Expected',
+                     displayPercentage : '40%',
+                     y : 40,
+                     x : 80,
+                     color : yg.colors.BLUE
+        
+                 },
+                 {
+                     name : 'Outdated',
+                     displayPercentage : '10%',
+                     y : 10,
+                     x : 20,
+                     color : yg.colors.ORANGE
+                 },
+                 {
+                     name : 'Unavailable',
+                     displayPercentage : '30%',
+                     y : 30,
+                     x : 60,
+                     color : yg.colors.GRAY
+                 } 
+             ];
     
     chart.highcharts({
         credits : yg.highcharts_options.disable_credits,
-        chart : $.extend({},yg.highcharts_options.chart_options,chartDimensionJSON),
-        legend : $.extend({},yg.highcharts_options.pie_chart_options.legend,legendOptionsJSON),
+        chart : $.extend({},yg.highcharts_options.chart_options, chartDimensionJSON),
+        legend : $.extend({},yg.highcharts_options.pie_chart_options.legend, legendOptionsJSON),
         title : yg.highcharts_options.pie_chart_options.title,
         tooltip : yg.highcharts_options.pie_chart_options.tooltip,
         plotOptions : {
-            pie : $.extend({},yg.highcharts_options.pie_chart_options.plotOptions.pie,plotPieJSON)},
-            series : [ {
-                type : yg.highcharts_options.pie_chart_options.series_type_pie,
-                data : _getData(data)
-            } ]
+            pie : yg.highcharts_options.pie_chart_options.plotOptions.pie
+        },
+        series : [ {
+            type : yg.highcharts_options.pie_chart_options.series_type_pie,
+            data : data
+        } ]
        });
     &lt;/script&gt;
     </pre>
@@ -229,211 +159,151 @@
     <div class="section">
         <h2>Line Graph with Sample Data</h2>
         <p class="description">
-            Create a chart component through jquery highchart chart using yukon.trends.js and highstock.js library. Insert group of
-            data for that. This data is related to trend. The chart will be build using yukon.trends.buildChart components.
+            The following example illustrates how a line graph can be created using the highcharts/highstock JS library. This uses the yukon.highChart.js buildChart method to establish a common look and feel among the line graphs that are used within Yukon.
         </p>
         <h4 class="subtle">Example:</h4>
-        <div style="max-height: 200px; max-length: 200px;" class="js-trend-chart-summary" />
-
-        <cti:includeScript link="/resources/js/common/yukon.trends.js" />
+        <div style="max-height: 300px; max-length: 470px;" class="js-chart-container" />
         
         <script>
-            var trend = {
-                    "yAxis": [
+            var data = {
+                xaxis: {
+                    max: 1613617600000,
+                    min: 1610755200000,
+                    type: 'datetime'
+                },
+                yaxis: [{
+                    alignTicks: true,
+                    endOnTick: false,
+                    gridLineWidth: 1,
+                    index: 0,
+                    min: 0,
+                    startOnTick: false,
+                    tickAmount: 6,
+                    title: {
+                        rotation: 270,
+                        text: 'kWH / day',
+                        align: 'middle'
+                    }
+                }],
+                seriesDetails: [{
+                    color: '#2ca618',
+                    borderColor: 'GREEN',
+                    fillOpacity: '0.45',
+                    marker: {enabled: true},
+                    showInLegend: false,
+                    type: 'area',
+                    yAxis: 0,
+                    data: [
                         {
-                            "opposite": false,
-                            "plotLines": [
-                                {
-                                    "color": "#e99012",
-                                    "width": 2,
-                                    "value": 1
-                                },
-                                {
-                                    "color": "#0088f2",
-                                    "width": 2,
-                                    "value": 1.8
-                                }
-                            ],
-                            "labels": {
-                                "style": {
-                                    "color": "#7b8387"
-                                }
-                            }
+                            "x": 1611100800000,
+                            "tooltip": "Delivered kWh<div>1.293 kWH / day</div><div>01/20/2021 12:00:00.000 AM</div>",
+                            "y": 1.292699999998149
                         },
                         {
-                            "opposite": true,
-                            "labels": {
-                                "style": {
-                                    "color": "#7b8387"
-                                 }
-                            }
+                            "x": 1611187200000,
+                            "tooltip": "Delivered kWh<div>1.302 kWH / day</div><div>01/21/2021 12:00:00.000 AM</div>",
+                            "y": 1.302400000004127
+                        },
+                        {
+                            "x": 1611273600000,
+                            "tooltip": "Delivered kWh<div>1.313 kWH / day</div><div>01/22/2021 12:00:00.000 AM</div>",
+                            "y": 1.3125999999974738
+                        },
+                        {
+                            "x": 1611331200000,
+                            "tooltip": "Delivered kWh<div>1.751 kWH / day</div><div>01/22/2021 04:00:00.000 PM</div>",
+                            "y": 1.7511000000031345
+                        },
+                        {
+                            "x": 1611532800000,
+                            "tooltip": "Delivered kWh<div>1.215 kWH / day</div><div>01/25/2021 12:00:00.000 AM</div>",
+                            "y": 1.215385714284951
+                        },
+                        {
+                            "x": 1611619200000,
+                            "tooltip": "Delivered kWh<div>1.358 kWH / day</div><div>01/26/2021 12:00:00.000 AM</div>",
+                            "y": 1.357800000001589
                         }
                     ],
-                    "series": [
-                        {
-                            "yAxis": 1,
-                            "data": [],
-                            "color": "#e99012",
-                            "threshold-value": 1,
-                            "name": "k0 Mark - Axis: Right",
-                            "error": "No Data available."
-                        },
-                        {
-                            "yAxis": 0,
-                            "data": [],
-                            "color": "#0088f2",
-                            "threshold-value": 1.8,
-                            "name": "0o Mark - Axis: Left",
-                            "error": "No Data available."
-                        },
-                        {
-                            "yAxis": 0,
-                            "data": [],
-                            "color": "#b2c98d",
-                            "name": "Blink Count / 101001 Date 07/06/2020 - Axis: Left",
-                            "error": "No Data available."
-                        },
-                        {
-                            "yAxis": 0,
-                            "data": [
-                                [1612901100000,83.42976251065741], [1613264700000, 99.73843874298709],
-                                [1613282700000,89.07407972561818], [1613318700000, 41.856915277772806],
-                                [1613333100000,83.42976251065741], [1613369100000, 89.07407972561818],
-                                [1613387100000,92.92465186515989], [1613592300000, 83.42976251065741],
-                                [1613628300000,89.07407972561818], [1614009900000, 41.856915277772806],
-                                [1614042300000,99.73843874298709], [1614060300000, 89.07407972561818],
-                                [1614251100000,92.92465186515989], [1614269100000, 41.856915277772806],
-                                [1614301500000,99.73843874298709], [1614319500000, 89.07407972561818],
-                                [1614355500000,41.856915277772806], [1614528300000, 41.856915277772806],
-                                [1614560700000,99.73843874298709], [1614578700000, 89.07407972561818],
-                                [1614614700000,41.856915277772806], [1614629100000, 83.42976251065741]
-                            ],
-                            "color": "#2ca618",
-                            "name": "Blink Count / 101002 Peak 02/10/2021 - Axis: Left"
-                        }
-                    ],
-                    "name": "101006 2"
-                };
-                var _trendChartContainer = $('.js-trend-chart-summary');
-                var trendChartOptions = {
-                    rangeSelector: {
-                        inputEnabled: true,
-                        inputStyle : {
-                            color: yg.colors.BLACK
-                        }
-                    },
-                    chartWidth : null, //When null the width is calculated from the offset width of the containing element.
-                    chartHeight : 675,
-                    animateSeriesPloting: true
-                };
-                var highChartOptions = {};
-                    
-                if (_trendChartContainer.exists()) {
-                    yukon.trends.buildChart(_trendChartContainer, trend, trendChartOptions, highChartOptions);
-                }
-            </script>
-        </div>
+                }]
+            };
+            
+            yukon.highChart.buildChart($(".js-chart-container"), data, "Previous Month's Midnight Reading Usage Reading", "300", "470");
 
-        </div>
+        </script>
+
+    </div>
+        
         <h4 class="subtle">Code:</h4>
         <pre class="code prettyprint">
-        &lt;div style=&quot;max-height: 200px; max-length: 200px;&quot; class=&quot;js-trend-chart-summary&quot; /&gt;
-        &lt;cti:includeScript link=&quot;/resources/js/common/yukon.trends.js&quot; /&gt;
+        &lt;div style=&quot;max-height: 300px; max-length: 470px;&quot; class=&quot;js-chart-container&quot; /&gt;
         &lt;script&gt;
-        var trend = {
-                        "yAxis": [
+            var data = {
+                xaxis: {
+                    max: 1613617600000,
+                    min: 1610755200000,
+                    type: 'datetime'
+                },
+                yaxis: [{
+                    alignTicks: true,
+                    endOnTick: false,
+                    gridLineWidth: 1,
+                    index: 0,
+                    min: 0,
+                    startOnTick: false,
+                    tickAmount: 6,
+                    title: {
+                        rotation: 270,
+                        text: 'kWH / day',
+                        align: 'middle'
+                    }
+                }],
+                seriesDetails: [{
+                    color: '#2ca618',
+                    borderColor: 'GREEN',
+                    fillOpacity: '0.45',
+                    marker: {enabled: true},
+                    showInLegend: false,
+                    type: 'area',
+                    yAxis: 0,
+                    data: [
                         {
-                            "opposite": false,
-                            "plotLines": [
-                                {
-                                    "color": "#e99012",
-                                    "width": 2,
-                                    "value": 1
-                                },
-                                {
-                                    "color": "#0088f2",
-                                    "width": 2,
-                                    "value": 1.8
-                                }
-                            ],
-                            "labels": {
-                                "style": {
-                                    "color": "#7b8387"
-                                }
-                            }
+                            "x": 1611100800000,
+                            "tooltip": "Delivered kWh&lt;div&gt;1.293 kWH / day&lt;/div&gt;&lt;div&gt;01/20/2021 12:00:00.000 AM&lt;/div&gt;",
+                            "y": 1.292699999998149
                         },
                         {
-                            "opposite": true,
-                            "labels": {
-                                "style": {
-                                   "color": "#7b8387"
-                                 }
-                            }
+                            "x": 1611187200000,
+                            "tooltip": "Delivered kWh&lt;div&gt;1.302 kWH / day&lt;/div&gt;&lt;div&gt;01/21/2021 12:00:00.000 AM&lt;/div&gt;",
+                            "y": 1.302400000004127
+                        },
+                        {
+                            "x": 1611273600000,
+                            "tooltip": "Delivered kWh&lt;div&gt;1.313 kWH / day&lt;/div&gt;&lt;div&gt;01/22/2021 12:00:00.000 AM&lt;/div&gt;",
+                            "y": 1.3125999999974738
+                        },
+                        {
+                            "x": 1611331200000,
+                            "tooltip": "Delivered kWh&lt;div&gt;1.751 kWH / day&lt;/div&gt;&lt;div&gt;01/22/2021 04:00:00.000 PM&lt;/div&gt;",
+                            "y": 1.7511000000031345
+                        },
+                        {
+                            "x": 1611532800000,
+                            "tooltip": "Delivered kWh&lt;div&gt;1.215 kWH / day&lt;/div&gt;&lt;div&gt;01/25/2021 12:00:00.000 AM&lt;/div&gt;",
+                            "y": 1.215385714284951
+                        },
+                        {
+                            "x": 1611619200000,
+                            "tooltip": "Delivered kWh&lt;div&gt;1.358 kWH / day&lt;/div&gt;&lt;div&gt;01/26/2021 12:00:00.000 AM&lt;/div&gt;",
+                            "y": 1.357800000001589
                         }
-                     ],
-                     "series": [
-                         {
-                             "yAxis": 1,
-                             "data": [],
-                             "color": "#e99012",
-                             "threshold-value": 1,
-                             "name": "k0 Mark - Axis: Right",
-                             "error": "No Data available."
-                         },
-                         {
-                             "yAxis": 0,
-                             "data": [],
-                             "color": "#0088f2",
-                             "threshold-value": 1.8,
-                             "name": "0o Mark - Axis: Left",
-                             "error": "No Data available."
-                         },
-                         {
-                             "yAxis": 0,
-                             "data": [],
-                             "color": "#b2c98d",
-                             "name": "Blink Count / 101001 Date 07/06/2020 - Axis: Left",
-                             "error": "No Data available."
-                         },
-                         {
-                             "yAxis": 0,
-                             "data": [
-                                 [1612901100000,83.42976251065741], [1613264700000, 99.73843874298709],
-                                 [1613282700000,89.07407972561818], [1613318700000, 41.856915277772806],
-                                 [1613333100000,83.42976251065741], [1613369100000, 89.07407972561818],
-                                 [1613387100000,92.92465186515989], [1613592300000, 83.42976251065741],
-                                 [1613628300000,89.07407972561818], [1614009900000, 41.856915277772806],
-                                 [1614042300000,99.73843874298709], [1614060300000, 89.07407972561818],
-                                 [1614251100000,92.92465186515989], [1614269100000, 41.856915277772806],
-                                 [1614301500000,99.73843874298709], [1614319500000, 89.07407972561818],
-                                 [1614355500000,41.856915277772806], [1614528300000, 41.856915277772806],
-                                 [1614560700000,99.73843874298709], [1614578700000, 89.07407972561818],
-                                 [1614614700000,41.856915277772806], [1614629100000, 83.42976251065741]
-                             ],
-                             "color": "#2ca618",
-                             "name": "Blink Count / 101002 Peak 02/10/2021 - Axis: Left"
-                         }
-                     ],
-                 "name": "101006 2"
-             };
-            var _trendChartContainer = $('.js-trend-chart-summary');
-            var trendChartOptions = {
-                rangeSelector: {
-                    inputEnabled: true,
-                    inputStyle : {
-                        color: yg.colors.BLACK
-                    }
-                },
-                chartWidth : null, //When null the width is calculated from the offset width of the containing element.
-                chartHeight : 675,
-                animateSeriesPloting: true
+                    ],
+                }]
             };
-            var highChartOptions = {};
-            if (_trendChartContainer.exists()) {
-                yukon.trends.buildChart(_trendChartContainer, trend, trendChartOptions, highChartOptions);
-            }
+            
+            yukon.highChart.buildChart($(".js-chart-container"), data, "Previous Month's Midnight Reading Usage Reading", "300", "470");
     
-            &lt;/script&gt;
+        &lt;/script&gt;
         </pre>
         </div>
     </tags:styleguide>
