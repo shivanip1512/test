@@ -4,6 +4,9 @@ public class ZeusErrorResponse {
     private String error;
     private String description;
 
+    public ZeusErrorResponse() {
+    }
+
     public ZeusErrorResponse(String error, String description) {
         this.error = error;
         this.description = description;
