@@ -84,6 +84,7 @@ private:
 
     using Endpoint = std::tuple<std::string, u_short>;
     std::map<Endpoint, std::chrono::high_resolution_clock::time_point> _last_endpoint_send_time;
+    std::set<Endpoint> _active_endpoints;
 
 protected:
 
@@ -95,8 +96,8 @@ protected:
     virtual unsigned getDeviceTimeout( const device_record &dr ) const;
     virtual bool collectInbounds( const Cti::Timing::MillisecondTimer & timer, const unsigned long until);
 
-    Endpoint getDeviceSocketAddress(device_record &dr) const;
-    bool isPostCommWaitComplete(device_record &dr, ULONG postCommWait) const override;
+    Endpoint getDeviceSocketAddress(const device_record& dr) const;
+    bool isPostCommWaitComplete(const device_record& dr, ULONG postCommWait) const override;
 
     virtual void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices);
 
@@ -113,9 +114,9 @@ protected:
 
     virtual std::string describeDeviceAddress( const long device_id ) const;
 
-    void setDeviceActive(device_record *dr) override;
-    bool isDeviceActive(device_record *dr) override;
-    void clearActiveDevice(device_record *dr) override;
+    void setDeviceActive  (const device_record& dr) override;
+    bool isDeviceActive   (const device_record& dr) override;
+    void clearActiveDevice(const device_record& dr) override;
 
 public:
 
