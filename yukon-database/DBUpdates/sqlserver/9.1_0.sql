@@ -54,6 +54,36 @@ INSERT INTO State VALUES(-32, 7, 'Auto Determination', 7, 6, 0);
 INSERT INTO DBUpdates VALUES ('YUK-23951', '9.1.0', GETDATE());
 /* @end YUK-23951 */
 
+/* @start YUK-23903 */
+CREATE TABLE LMGroupZeusMapping (
+   YukonGroupId         NUMERIC              NOT NULL,
+   EcobeeGroupId        VARCHAR(32)          NOT NULL,
+   EcobeeEventId        VARCHAR(50)          NULL,
+   EcobeeGroupName      VARCHAR(255)         NULL,
+   CONSTRAINT PK_LMGROUPZEUSMAPPING PRIMARY KEY (YukonGroupId, EcobeeGroupId)
+);
+GO
+
+CREATE TABLE ZeusGroupInventoryMapping (
+   InventoryID          NUMERIC              NOT NULL,
+   EcobeeGroupId        VARCHAR(32)          NOT NULL,
+   CONSTRAINT PK_ZEUSGROUPINVENTORYMAPPING PRIMARY KEY (InventoryID, EcobeeGroupId)
+);
+GO
+
+ALTER TABLE LMGroupZeusMapping
+   ADD CONSTRAINT FK_LMGroupZeusMapping_LMGroup FOREIGN KEY (YukonGroupId)
+      REFERENCES LMGroup (DeviceID);
+GO
+
+ALTER TABLE ZeusGroupInventoryMapping
+   ADD CONSTRAINT FK_ZeusGroupIM_IBase FOREIGN KEY (InventoryID)
+      REFERENCES InventoryBase (InventoryID);
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-23903', '9.1.0', GETDATE());
+/* @end YUK-23903 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

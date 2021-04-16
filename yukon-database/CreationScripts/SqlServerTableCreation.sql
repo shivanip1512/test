@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/30/2021 1:53:52 PM                         */
+/* Created on:     4/16/2021 12:30:48 AM                        */
 /*==============================================================*/
 
 
@@ -7150,6 +7150,18 @@ create table LMGroupVersacom (
 go
 
 /*==============================================================*/
+/* Table: LMGroupZeusMapping                                    */
+/*==============================================================*/
+create table LMGroupZeusMapping (
+   YukonGroupId         numeric              not null,
+   EcobeeGroupId        varchar(32)          not null,
+   EcobeeEventId        varchar(50)          null,
+   EcobeeGroupName      varchar(255)         null,
+   constraint PK_LMGROUPZEUSMAPPING primary key (YukonGroupId, EcobeeGroupId)
+)
+go
+
+/*==============================================================*/
 /* Table: LMHardwareBase                                        */
 /*==============================================================*/
 create table LMHardwareBase (
@@ -11578,6 +11590,16 @@ create table ZBGatewayToDeviceMapping (
 go
 
 /*==============================================================*/
+/* Table: ZeusGroupInventoryMapping                             */
+/*==============================================================*/
+create table ZeusGroupInventoryMapping (
+   InventoryID          numeric              not null,
+   EcobeeGroupId        varchar(32)          not null,
+   constraint PK_ZEUSGROUPINVENTORYMAPPING primary key (InventoryID, EcobeeGroupId)
+)
+go
+
+/*==============================================================*/
 /* Table: Zone                                                  */
 /*==============================================================*/
 create table Zone (
@@ -14408,6 +14430,11 @@ alter table LMGroupVersacom
       references LMGroup (DeviceID)
 go
 
+alter table LMGroupZeusMapping
+   add constraint FK_LMGroupZeusMapping_LMGroup foreign key (YukonGroupId)
+      references LMGroup (DeviceID)
+go
+
 alter table LMHardwareBase
    add constraint FK_LMHrdB_Rt foreign key (RouteID)
       references Route (RouteID)
@@ -15528,6 +15555,11 @@ alter table ZBGatewayToDeviceMapping
    add constraint FK_ZBGateDeviceMap_ZBGate foreign key (GatewayId)
       references ZBGateway (DeviceId)
          on delete cascade
+go
+
+alter table ZeusGroupInventoryMapping
+   add constraint FK_ZeusGroupIM_IBase foreign key (InventoryID)
+      references InventoryBase (InventoryID)
 go
 
 alter table Zone
