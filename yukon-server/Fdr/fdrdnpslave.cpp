@@ -1463,9 +1463,10 @@ ControlStatus DnpSlave::waitForResponse(const long userMessageId, const bool isP
     return ControlStatus::Undefined;
 }
 
-bool DnpSlave::validRange(unsigned low, unsigned high, unsigned x)
+bool DnpSlave::requireValidRange(unsigned low, unsigned high, unsigned x)
 {
-    return  (low <= x && x <= high);
+    if (x < low)  throw std::invalid_argument(std::to_string(x) + " is lower than " + std::to_string(low));
+    if (x > high) throw std::invalid_argument(std::to_string(x) + " is higher than " + std::to_string(high));
 }
 
 DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
@@ -1500,12 +1501,18 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     
     try
     {
-        dnpId.MasterId = std::stoi(masterId);
-        dnpId.SlaveId = std::stoi(slaveId);
-        dnpId.Offset = std::stoi(dnpOffset);
-        validRange(0, 65519, dnpId.MasterId);
-        validRange(0, 65519, dnpId.SlaveId);
-        validRange(0, 65535, dnpId.Offset);
+        const auto masterid = std::stoi(masterId);
+        const auto slaveid = std::stoi(slaveId);
+        const auto offset = std::stoi(dnpOffset);
+        
+        requireValidRange(0, 65519, masterid);
+        dnpId.MasterId = masterid;
+
+        requireValidRange(0, 65519, slaveid);
+        dnpId.SlaveId = slaveid;
+
+        requireValidRange(0, 65535, offset);
+        dnpId.Offset = offset;
     }
     catch(std::invalid_argument& e)
     {
