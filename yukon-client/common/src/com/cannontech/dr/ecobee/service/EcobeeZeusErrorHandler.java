@@ -1,10 +1,12 @@
 package com.cannontech.dr.ecobee.service;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -22,7 +24,8 @@ public class EcobeeZeusErrorHandler implements ResponseErrorHandler {
             log.error("Error occured while communicating with Ecobee API : Error ",
                     errorResponse.getError() + ", Description: " + errorResponse.getDescription());
         } catch (IOException e) {
-            log.error("Unable to parse error response from Ecobee");
+            String errorResponseBody = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
+            log.error("Unable to parse error response from Ecobee. Response: " + errorResponseBody);
         }
     }
 
