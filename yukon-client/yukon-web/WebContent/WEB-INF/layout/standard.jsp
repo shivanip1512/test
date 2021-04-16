@@ -297,7 +297,7 @@
     
     <!-- Renders React Navigation Menu -->
     <script src="<c:url value="/resources/js/lib/react/react.production.min.js"/>"></script>
-    <script src="<c:url value="/resources/js/common/NavigationContainer.bundle.js"/>"></script>
+    <script src="<c:url value="/resources/js/common/react/yukon.react.navigationContainer.js"/>"></script>
     
 </body>
 
