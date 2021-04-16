@@ -39,6 +39,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.pxmw.model.MWChannel;
+import com.cannontech.dr.pxmw.model.PxMWException;
+import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
@@ -76,7 +78,11 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         }
 
         for (PaoType paoType : paoTypeToPao.keySet()) {
-            receivedPoints.putAll(retrievePointData(paoTypeToPao.get(paoType), getAttributesForPaoType(paoType), queryRange));
+            try {
+                receivedPoints.putAll(retrievePointData(paoTypeToPao.get(paoType), getAttributesForPaoType(paoType), queryRange));
+            } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+                log.error("An error occurred when requesting data for attributes {} on PAOs {}", paoTypeToPao.get(paoType), getAttributesForPaoType(paoType), e);
+            }
         }
 
         if (!receivedPoints.isEmpty()) {
@@ -90,9 +96,14 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
     @Override
     public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Set<BuiltInAttribute> attributes) {
         List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaos(deviceIds);
-
+        Multimap<PaoIdentifier, PointData> receivedPoints = HashMultimap.create();
+        
         log.info("Initiating read for deviceIDs: {} on attributes: {}", deviceIds, attributes);
-        Multimap<PaoIdentifier, PointData> receivedPoints = retrievePointData(paos, attributes, getQueryRange());
+        try {
+            receivedPoints = retrievePointData(paos, attributes, getQueryRange());
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            log.error("An error occurred when requesting data for attributes {} on PAOs {}", deviceIds, attributes, e);
+        }
 
         if (!receivedPoints.isEmpty()) {
             dispatchData.putValues(receivedPoints.values());
