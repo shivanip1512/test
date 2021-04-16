@@ -1847,6 +1847,7 @@
               <page name="datePickers" type="BASIC"/>
               <page name="groupPickers" type="BASIC"/>
               <page name="deviceCollections" type="BASIC"/>
+              <page name="charts" type="BASIC"/>
             </pages>
           </page>
         </pages>

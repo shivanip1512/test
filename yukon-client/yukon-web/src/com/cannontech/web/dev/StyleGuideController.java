@@ -182,6 +182,11 @@ public class StyleGuideController {
         return "styleguide/inputs.jsp";
     }
     
+    @RequestMapping("/styleguide/charts")
+    public String charts(ModelMap model) {
+        return "styleguide/charts.jsp";
+    }
+
     public class NumericInput {
         private float temperature;
 
