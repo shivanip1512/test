@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCredentialsV1;
@@ -26,7 +24,6 @@ import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.service.impl.v1.PxMWCommunicationServiceImplV1;
 import com.cannontech.simulators.message.request.PxMWSimulatorRequest;
 import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
 
 @RestController
@@ -102,18 +99,6 @@ public class PxMWSimulatorApiControllerV1 {
                             new Class[] { PxMWTimeSeriesDataRequestV1.class },
                             new Object[] { pxMWTimeSeriesDataRequestV1 }),
                             PxMWSimulatorResponse.class);
-            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
-        } catch (Exception e) {
-            log.error("Error", e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-    
-    @PutMapping("/deviceAutoCreation")
-    public ResponseEntity<Object> deviceAutoCreation(@ModelAttribute("paoType") PaoType paoType,
-            @ModelAttribute("textInput") String textInput, FlashScope flash) {
-        try {
-            PxMWSimulatorResponse response = new PxMWSimulatorResponse(null, 0);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (Exception e) {
             log.error("Error", e);
