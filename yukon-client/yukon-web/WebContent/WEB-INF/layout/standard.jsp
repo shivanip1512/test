@@ -81,7 +81,8 @@
         <div class="yukon-page">
             
             <!-- Needed to render React Navigation menu -->
-            <div id="navigation" style="position:sticky;top:0;z-index:1200"></div>
+            <c:set var="path" value='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}'/>
+            <div id="navigation" style="position:sticky;top:0;z-index:1200" data-path="${path}"></div>
                                 
             <header class="yukon-header">
 
