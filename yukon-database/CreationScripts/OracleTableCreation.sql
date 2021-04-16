@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/14/2021 11:26:42 PM                        */
+/* Created on:     4/16/2021 12:31:44 AM                        */
 /*==============================================================*/
 
 
@@ -6754,6 +6754,7 @@ create table LMGroupZeusMapping  (
    YukonGroupId         NUMBER                          not null,
    EcobeeGroupId        VARCHAR2(32)                    not null,
    EcobeeEventId        VARCHAR2(50),
+   EcobeeGroupName      VARCHAR2(255),
    constraint PK_LMGROUPZEUSMAPPING primary key (YukonGroupId, EcobeeGroupId)
 );
 

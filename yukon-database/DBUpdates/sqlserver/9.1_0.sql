@@ -59,6 +59,7 @@ CREATE TABLE LMGroupZeusMapping (
    YukonGroupId         NUMERIC              NOT NULL,
    EcobeeGroupId        VARCHAR(32)          NOT NULL,
    EcobeeEventId        VARCHAR(50)          NULL,
+   EcobeeGroupName      VARCHAR(255)         NULL,
    CONSTRAINT PK_LMGROUPZEUSMAPPING PRIMARY KEY (YukonGroupId, EcobeeGroupId)
 );
 GO

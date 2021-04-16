@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/14/2021 11:28:36 PM                        */
+/* Created on:     4/16/2021 12:30:48 AM                        */
 /*==============================================================*/
 
 
@@ -7156,6 +7156,7 @@ create table LMGroupZeusMapping (
    YukonGroupId         numeric              not null,
    EcobeeGroupId        varchar(32)          not null,
    EcobeeEventId        varchar(50)          null,
+   EcobeeGroupName      varchar(255)         null,
    constraint PK_LMGROUPZEUSMAPPING primary key (YukonGroupId, EcobeeGroupId)
 )
 go
