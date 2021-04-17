@@ -130,6 +130,9 @@ yukon.widget.porterQueueCounts = (function () {
                 series: data.series
             },
             series : data.series,
+            time: {
+                timezone: yg.timezone
+            },
             tooltip: {
                 dateTimeLabelFormats: dateTimeLabelFormats,
                 xDateFormat: labelFormat,
