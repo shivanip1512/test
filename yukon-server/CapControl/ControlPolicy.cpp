@@ -102,12 +102,16 @@ Attribute ControlPolicy::getSetPointAttribute()
         {
             return Attribute::ReverseSetPoint;
         }
+        case Bidirectional:
+        case BiasBidirectional:
         case Cogeneration:
+        case ReverseCogeneration:
         {
             if ( inReverseFlow() )
             {
                 return Attribute::ReverseSetPoint;
             }
+            break;
         }
     }
 
@@ -122,18 +126,21 @@ Attribute ControlPolicy::getBandwidthAttribute()
         {
             return Attribute::ReverseBandwidth;
         }
+        case Bidirectional:
+        case BiasBidirectional:
         case Cogeneration:
+        case ReverseCogeneration:
         {
             if ( inReverseFlow() )
             {
                 return Attribute::ReverseBandwidth;
             }
+            break;
         }
     }
 
     return Attribute::ForwardBandwidth;
 }
-
 
 }
 }
