@@ -63,6 +63,8 @@ public class RegulatorMappingServiceImplTest {
                                .put(RegulatorPointMapping.REVERSE_SET_POINT, 114)
                                .put(RegulatorPointMapping.REVERSE_FLOW_INDICATOR, 115)
                                .put(RegulatorPointMapping.CONTROL_MODE, 116)
+                               .put(RegulatorPointMapping.POWER_FLOW_INDETERMINATE, 117)
+                               .put(RegulatorPointMapping.CONTROL_POWER_FLOW_REVERSE, 118)
                                .build())
                 .put(pao2, new ImmutableMap.Builder<RegulatorPointMapping, Integer>()
                                .put(RegulatorPointMapping.AUTO_REMOTE_CONTROL, 201)
@@ -80,6 +82,8 @@ public class RegulatorMappingServiceImplTest {
                                .put(RegulatorPointMapping.REVERSE_SET_POINT, 214)
                                .put(RegulatorPointMapping.REVERSE_FLOW_INDICATOR, 215)
                                .put(RegulatorPointMapping.CONTROL_MODE, 216)
+                               .put(RegulatorPointMapping.POWER_FLOW_INDETERMINATE, 217)
+                               .put(RegulatorPointMapping.CONTROL_POWER_FLOW_REVERSE, 218)
                                .build())
                 .build();
             
@@ -100,6 +104,8 @@ public class RegulatorMappingServiceImplTest {
                                                        .put("GoRegulator-Reverse Set Point", 114)
                                                        .put("GoRegulator-Reverse Flow Indicator", 115)
                                                        .put("GoRegulator-Control Mode", 116)
+                                                       .put("GoRegulator-Power Flow Indeterminate", 117)
+                                                       .put("GoRegulator-Control Power Flow Reverse", 118)
                                                        .put("PoRegulator-Auto Block Enable", 202)
                                                        .put("PoRegulator-Tap Up", 203)
                                                        .put("PoRegulator-Tap Down", 204)
@@ -115,6 +121,8 @@ public class RegulatorMappingServiceImplTest {
                                                        .put("PoRegulator-Reverse Set Point", 214)
                                                        .put("PoRegulator-Reverse Flow Indicator", 215)
                                                        .put("PoRegulator-Control Mode", 216)
+                                                       .put("PoRegulator-Power Flow Indeterminate", 217)
+                                                       .put("PoRegulator-Control Power Flow Reverse", 218)
                                                        .build();
     
     @Test
