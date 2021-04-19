@@ -15,11 +15,14 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -38,6 +41,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.message.request.PxMWSimulatorSettingsUpdateRequest;
+import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.system.GlobalSettingType;
@@ -175,5 +179,17 @@ public class PxMWSimulatorController {
     private String getFormattedJson(Object profile) {
         return new GsonBuilder().setPrettyPrinting().create().toJson(profile);
     } 
+
+    @PostMapping("/deviceAutoCreation")
+    public ResponseEntity<Object> deviceAutoCreation(@ModelAttribute("paoType") PaoType paoType,
+            @ModelAttribute("textInput") String textInput, FlashScope flash) {
+        try {
+            PxMWSimulatorResponse response = new PxMWSimulatorResponse(null, 0);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
+        } catch (Exception e) {
+            log.error("Error", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
 

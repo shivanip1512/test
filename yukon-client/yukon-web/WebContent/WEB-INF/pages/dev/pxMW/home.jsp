@@ -105,6 +105,12 @@
 
     <br/>
 
+    <div class="autoCreationNotes">
+        <br/>This is for describing the functionality of the PxMW Auto Creation feature
+        <br/>Select a device type and a number of devices to create then press submit
+    </div>
+    <br/>
+
     <cti:url var="autoCreationUrl" value="deviceAutoCreation"/>
     <form:form id="autoCreationForm" action="${autoCreationUrl}" method="post">
         <tags:nameValueContainer>
@@ -114,7 +120,7 @@
                         <option value="${type}"><cti:msg2 key="${type.formatKey}"/></option>
                     </c:forEach>
                 </select>
-                <input type="text" name="textInput"/>
+                <input type="text" name="textInput" value="10"/>
                 <cti:button label="Submit" classes="js-auto-creation-submit fn vam"/>
             </tags:nameValue>
         </tags:nameValueContainer>
