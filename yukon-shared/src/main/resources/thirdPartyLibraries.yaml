@@ -5697,15 +5697,15 @@ JavaScript :
     notes : "This library is used to display a grid on the Collection Actions -> Device Report page. Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
 
   - project : jquery
-    version : 3.5.1
+    version : 3.6.0
     project URL : "http://jquery.com/"
     license : MIT
     license URLs : "https://github.com/jquery/jquery/blob/master/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/jquery/v/3.5.1"
-    md5 : 793ca595de394d333280a03210f12d9f
-    sha1 : 9e8e176264ababb6b15b516c7d80c2ae251a7efc
-    jira : YUK-22994
-    updated : 2020-06-10
+    npm URL : "https://www.npmjs.com/package/jquery/v/3.6.0"
+    md5 : 0f4700577b6ad8bf71abec0dd4dedafb
+    sha1 : 29e036f519db0197f9ca7908af30ca4639ed2c39
+    jira : YUK-24193
+    updated : 2020-04-19
     notes : 
 
   - project : jquery-ui
