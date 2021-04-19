@@ -64,15 +64,17 @@ public enum MWChannel {
     private BuiltInAttribute builtInAttribute;
 
     private static Map<Integer, MWChannel> channelLookup = Maps.uniqueIndex(Arrays.asList(values()), MWChannel::getChannelId);
-    private static Map<BuiltInAttribute, MWChannel> attributeChannelLookup = Maps.uniqueIndex(Arrays.asList(values()), MWChannel::getBuiltInAttribute);
+    private static Map<BuiltInAttribute, MWChannel> attributeChannelLookup;
     private static List<BuiltInAttribute> attributeList = Arrays.stream(MWChannel.values())
                                                                   .map(MWChannel::getBuiltInAttribute)
+                                                                  .filter(attribute -> attribute != null)
                                                                   .collect(Collectors.toList());
     private static Set<MWChannel> booleanChannels;
     private static Set<MWChannel> integerChannels;
     private static Set<MWChannel> floatChannels;
 
     static {
+        buildAttributeChannelLookup();
         buildBooleanChannels();
         buildIntegerChannels();
         buildFloatChannels();
@@ -117,6 +119,17 @@ public enum MWChannel {
     private static void buildFloatChannels() {
         floatChannels = ImmutableSet.of(VOLTAGE,
                                         FREQUENCY);
+    }
+
+    private static void buildAttributeChannelLookup() {
+        ImmutableMap.Builder<BuiltInAttribute, MWChannel> builder = ImmutableMap.builder();
+        for (MWChannel channel : values()) {
+            if (channel.getBuiltInAttribute() != null) {
+                builder.put(channel.getBuiltInAttribute(), channel);
+            }
+        }
+        
+        attributeChannelLookup = builder.build();
     }
 
     private MWChannel(Integer channelId, String shortName, BuiltInAttribute builtInAttribute) {

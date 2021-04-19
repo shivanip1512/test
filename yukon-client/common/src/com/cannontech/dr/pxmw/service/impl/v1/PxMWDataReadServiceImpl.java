@@ -158,7 +158,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         PointData pointData = new PointData();
         log.debug("Attempting to parse point data from message: {}", value);
 
-        pointData.setTime(new Date(value.getTimestamp()));
+        pointData.setTimeStamp(new Date(value.getTimestamp()));
         String pxReturnedValue = value.getValue();
         double pointValue;
 
@@ -173,6 +173,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         } else if (MWChannel.getIntegerChannels().contains(channel)) {
             try {
                 pointValue = Integer.parseInt(pxReturnedValue);
+                pointData.setValue(pointValue);
             } catch (NullPointerException | NumberFormatException e) {
                 log.error("Error processing value {} for channel {}", pxReturnedValue, channel, e);
                 pointData = null;
@@ -180,6 +181,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         } else if (MWChannel.getFloatChannels().contains(channel)) {
             try {
                 pointValue = Double.parseDouble(pxReturnedValue);
+                pointData.setValue(pointValue);
             } catch (NullPointerException | NumberFormatException e) {
                 log.error("Error processing value {} for channel {}", pxReturnedValue, channel, e);
                 pointData = null;
