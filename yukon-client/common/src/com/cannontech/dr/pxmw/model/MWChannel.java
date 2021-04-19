@@ -3,11 +3,14 @@ package com.cannontech.dr.pxmw.model;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
 //TODO YUK-23414 Add New/Existing BuiltInAttributes to MWChannel for LCR 6600
@@ -61,9 +64,60 @@ public enum MWChannel {
     private BuiltInAttribute builtInAttribute;
 
     private static Map<Integer, MWChannel> channelLookup = Maps.uniqueIndex(Arrays.asList(values()), MWChannel::getChannelId);
+    private static Map<BuiltInAttribute, MWChannel> attributeChannelLookup = Maps.uniqueIndex(Arrays.asList(values()), MWChannel::getBuiltInAttribute);
     private static List<BuiltInAttribute> attributeList = Arrays.stream(MWChannel.values())
                                                                   .map(MWChannel::getBuiltInAttribute)
                                                                   .collect(Collectors.toList());
+    private static Set<MWChannel> booleanChannels;
+    private static Set<MWChannel> integerChannels;
+    private static Set<MWChannel> floatChannels;
+
+    static {
+        buildBooleanChannels();
+        buildIntegerChannels();
+        buildFloatChannels();
+    }
+
+    private static void buildBooleanChannels() {
+        booleanChannels = ImmutableSet.of(ACTIVATION_STATUS_R1,
+                                          ACTIVATION_STATUS_R2,
+                                          ACTIVATION_STATUS_R3,
+                                          ACTIVATION_STATUS_R4,
+                                          LOAD_STATUS_R1,
+                                          LOAD_STATUS_R2,
+                                          LOAD_STATUS_R3,
+                                          LOAD_STATUS_R4,
+                                          EVENT_STATE_R1,
+                                          EVENT_STATE_R2,
+                                          EVENT_STATE_R3,
+                                          EVENT_STATE_R4);
+    }
+
+    private static void buildIntegerChannels() {
+        integerChannels = ImmutableSet.of(RSSI,
+                                          CLP_TIME_R1,
+                                          CLP_TIME_R2,
+                                          CLP_TIME_R3,
+                                          CLP_TIME_R4,
+                                          POWER_FAIL_COUNT,
+                                          RUNTIME_R1,
+                                          RUNTIME_R2,
+                                          RUNTIME_R3,
+                                          RUNTIME_R4,
+                                          SHEDTIME_R1,
+                                          SHEDTIME_R2,
+                                          SHEDTIME_R3,
+                                          SHEDTIME_R4,
+                                          LUF_COUNT,
+                                          LUV_COUNT,
+                                          FIRMWARE_UPDATE,
+                                          COMMS_LOSS_COUNTER);
+    }
+
+    private static void buildFloatChannels() {
+        floatChannels = ImmutableSet.of(VOLTAGE,
+                                        FREQUENCY);
+    }
 
     private MWChannel(Integer channelId, String shortName, BuiltInAttribute builtInAttribute) {
         this.channelId = channelId;
@@ -79,6 +133,22 @@ public enum MWChannel {
         return attributeList;
     }
 
+    public static Map<BuiltInAttribute, MWChannel> getAttributeChannelLookup() {
+        return attributeChannelLookup;
+    }
+
+    public static Set<MWChannel> getBooleanChannels() {
+        return booleanChannels;
+    }
+
+    public static Set<MWChannel> getIntegerChannels() {
+        return integerChannels;
+    }
+
+    public static Set<MWChannel> getFloatChannels() {
+        return floatChannels;
+    }
+
     public Integer getChannelId() {
         return channelId;
     }
@@ -91,6 +161,10 @@ public enum MWChannel {
         return builtInAttribute;
     }
 
+    public static MWChannel getMWChannel(BuiltInAttribute attribute) {
+        return getAttributeChannelLookup().get(attribute);
+    }
+
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static MWChannel getMWChannelID(String mWChannelJsonString) {
         try {
@@ -99,4 +173,5 @@ public enum MWChannel {
             throw new TypeNotSupportedException(mWChannelJsonString + " mWChannel is not valid.");
         }
     }
+
 }

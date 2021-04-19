@@ -54,6 +54,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
@@ -79,6 +80,12 @@ public final class DeviceDaoImpl implements DeviceDao {
         PaoIdentifier paoIdentifier = rs.getPaoIdentifier("DeviceId", "Type");
         String macAddress = rs.getString("MacAddress");
         return new PaoMacAddress(paoIdentifier, macAddress);
+    };
+    
+    public static final YukonRowMapper<Entry<Integer, String>> DEVICEID_GUID_ROW_MAPPER = (YukonResultSet rs) -> {
+        Integer deviceId = rs.getInt("DeviceId");
+        String guid = rs.getString("Guid");
+        return Maps.immutableEntry(deviceId, guid);
     };
     
     @PostConstruct
@@ -655,6 +662,23 @@ public final class DeviceDaoImpl implements DeviceDao {
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Guid is not found for device id " + deviceId, e);
         }
+    }
+
+    @Override
+    public Map<Integer, String> getGuids(Iterable<Integer> deviceIds) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = (List<Integer> subList) -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT DeviceId, Guid");
+            sql.append("FROM DeviceGuid");
+            sql.append("WHERE DeviceId").in(subList);
+            return sql;
+        };
+
+        return template.mappedQuery(sqlGenerator,
+                                    deviceIds, 
+                                    DEVICEID_GUID_ROW_MAPPER,
+                                    Functions.identity());
     }
 
     @Override
