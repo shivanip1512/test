@@ -1,15 +1,17 @@
 package com.cannontech.dr.ecobee.service.helper;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.HttpHost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,7 +28,6 @@ import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.user.YukonUserContext;
 
 public class EcobeeZeusRequestHelper {
 
@@ -47,9 +48,13 @@ public class EcobeeZeusRequestHelper {
         YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ZEUS_ECOBEE_AUTH_TOKEN);
         zeusEcobeeAuthTokenRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.ZEUS_ECOBEE_AUTH_TOKEN.getName(),
                 configSource, jmsTemplate);
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
-            factory.setProxy(httpProxy.getJavaHttpProxy());
+            HttpHost proxyHost = new HttpHost(httpProxy.getHost(), httpProxy.getPort());
+            HttpClient httpClient = HttpClientBuilder.create()
+                    .setProxy(proxyHost)
+                    .build();
+            factory.setHttpClient(httpClient);
         });
         restTemplate.setRequestFactory(factory);
     }
@@ -103,3 +108,4 @@ public class EcobeeZeusRequestHelper {
     }
 
 }
+
