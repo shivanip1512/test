@@ -11,4 +11,14 @@ public interface EcobeeZeusCommunicationService {
      * Deletes the specified thermostat from a program's root group and deletes from all child groups.
      */
     void deleteDevice(String serialNumber);
+
+    /**
+     * Enroll ecobee devices
+     */
+    void enroll(String lmGroupId, String inventoryId);
+
+    /**
+     * UNEnroll ecobee devices
+     */
+    void unEnroll(String lmGroupId, String inventoryId);
 }

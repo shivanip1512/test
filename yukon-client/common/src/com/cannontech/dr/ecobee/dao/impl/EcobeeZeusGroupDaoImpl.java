@@ -85,4 +85,18 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         sql.append("SELECT EcobeeEventId FROM LMGroupZeusMapping WHERE YukonGroupId = ?");
         return jdbcTemplate.queryForList(sql.getSql(), String.class, yukonGroupId);
     }
+
+    @Override
+    public String getGroupName(String yukonGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EcobeeGroupName FROM LMGroupZeusMapping WHERE YukonGroupId = ?");
+        return jdbcTemplate.queryForString(sql);
+    }
+
+    @Override
+    public int getDeviceCount(String yukonGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM LMGroupZeusMapping WHERE YukonGroupId = ?").eq(yukonGroupId);
+        return jdbcTemplate.queryForInt(sql);
+    }
 }

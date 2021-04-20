@@ -47,4 +47,14 @@ public interface EcobeeZeusGroupDao {
      * Retrieve a list of event IDs for a Yukon group ID.
      */
     List<String> getEventIds(String yukonGroupId);
+
+    /**
+     * Retrieve a Group name for a Yukon group ID.
+     */
+    String getGroupName(String yukonGroupId);
+
+    /**
+     * Retrieve a Device count for a Yukon group ID.
+     */
+    int getDeviceCount(String yukonGroupId);
 }
