@@ -304,22 +304,22 @@ void RfDaPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
 }
 
 
-bool RfDaPortHandler::isPostCommWaitComplete(device_record &dr, ULONG postCommWait) const
+bool RfDaPortHandler::isPostCommWaitComplete(const device_record& dr, ULONG postCommWait) const
 {
     return std::chrono::high_resolution_clock::now() >= ( _last_endpoint_send_time + std::chrono::milliseconds( postCommWait ) );
 }
 
-void RfDaPortHandler::setDeviceActive(device_record *dr)
+void RfDaPortHandler::setDeviceActive(const device_record& dr)
 {
-    _active_endpoint = dr;
+    _active_endpoint = &dr;
 }
 
-bool RfDaPortHandler::isDeviceActive(device_record *dr)
+bool RfDaPortHandler::isDeviceActive(const device_record& dr)
 {
-    return _active_endpoint == dr;
+    return _active_endpoint == &dr;
 }
 
-void RfDaPortHandler::clearActiveDevice(device_record *dr)
+void RfDaPortHandler::clearActiveDevice(const device_record& dr)
 {
     _active_endpoint = nullptr;
 }

@@ -31,19 +31,19 @@ public enum FdrInterfaceOption {
     DNPSLAVE_MASTERID("MasterId", FdrOptionType.TEXT, false, null) {
         @Override
         public boolean validate(String value) {
-            return isIntegerInRange(value, 0, Integer.MAX_VALUE);
+            return isIntegerInRange(value, 0, 65519);
         }
     },
     DNPSLAVE_SLAVEID("SlaveId", FdrOptionType.TEXT, false, null) {
         @Override
         public boolean validate(String value) {
-            return isIntegerInRange(value, 0, Integer.MAX_VALUE);
+            return isIntegerInRange(value, 0, 65519);
         }
     },
     DNPSLAVE_OFFSET("Offset", FdrOptionType.TEXT, false, null) {
         @Override
         public boolean validate(String value) {
-            return isIntegerInRange(value, 0, Integer.MAX_VALUE);
+            return isIntegerInRange(value, 0, 65535);
         }
     },
     DNPSLAVE_DESTINATION_SOURCE("Destination/Source", FdrOptionType.TEXT, true, null),

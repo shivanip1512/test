@@ -69,6 +69,12 @@ public:
         Inclusive
     };
 
+    enum class InstallOrientation
+    {
+        Forward,
+        Reverse
+    };
+
     static const std::string LoadTapChanger;
     static const std::string GangOperatedVoltageRegulator;
     static const std::string PhaseOperatedVoltageRegulator;
@@ -137,6 +143,8 @@ public:
     ControlMode getControlMode() const;
     std::string getHeartbeatMode() const;
 
+    InstallOrientation getInstallOrientation() const;
+
     double getVoltage();
 
     boost::optional<long> getTapPosition();
@@ -156,6 +164,20 @@ public:
 
     double getSetPointValue() const;
     Policy::Action setSetPointValue( const double newSetPoint );
+
+    std::string detailedDescription();
+
+    enum class PowerFlowSituations
+    {
+        OK,
+        IndeterminateFlow,
+        ReverseInstallation,
+        ReverseFlow,
+        ReverseControlPowerFlow,
+        UnsupportedMode
+    };
+
+    PowerFlowSituations determinePowerFlowSituation();
 
 protected:
 
@@ -181,6 +203,8 @@ protected:
     CtiTime     _nextKeepAliveSendTime;
 
     CtiTime         _lastMissingAttributeComplainTime;
+
+    InstallOrientation  _installOrientation;
 
     void notifyControlOperation(const ControlOperation & operation, const CtiTime & timeStamp = CtiTime() );
 

@@ -13,31 +13,40 @@ yukon.support.rfSupportBundle = (function() {
     var _initialized = false,
 
     _checkUpdate = function() {
-        var btn = $('.js-execute-command-rf');
+        var btn = $('.js-execute-command-rf'), classValue;
         $.getJSON(yukon.url("/support/rfBundleInProgress")).done(function(json) {
-            //TODO: Handle timeout and error case after backend changes.
-            if (json.inProgress) {
+            if (!json.isCompleted) {
+                classValue = "success";
                 setTimeout(_checkUpdate, 60000);
             } else {
+                if (json.status == "FAILED" || json.status == "TIMEOUT") {
+                    classValue = "error";
+                } else if (json.status == "COMPLETED") {
+                    classValue = "success";
+                }
                 yukon.ui.unbusy(btn);
             }
+            $('#rf-js-message').addMessage({
+                message : json.message,
+                messageClass : classValue
+            });
         });
     },
-    
+
     mod = {
         init : function() {
             
-            if (_initialized) return;
+            if (_initialized)
+                return;
             
             $(document).on('click', '.js-execute-command-rf', function() {
                 $('#rfSupportBundle-form').ajaxSubmit({
-                    success: function (data, status, xhr, $form) {
-                        $('#rf-support-bundle-section').html(data);
+                    success : function(data, status, xhr, $form) {
                         yukon.ui.initContent('#rf-support-bundle-section');
                         yukon.ui.initDateTimePickers();
                         _checkUpdate();
                     },
-                    error: function (xhr, status, error, $form) {
+                    error : function(xhr, status, error, $form) {
                         $('#rf-support-bundle-section').html(xhr.responseText);
                         yukon.ui.initContent('#rf-support-bundle-section');
                         yukon.ui.initDateTimePickers();
@@ -53,4 +62,6 @@ yukon.support.rfSupportBundle = (function() {
     return mod;
 })();
 
-$(function() { yukon.support.rfSupportBundle.init(); });
+$(function() {
+    yukon.support.rfSupportBundle.init();
+});

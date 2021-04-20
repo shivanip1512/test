@@ -472,7 +472,9 @@ bool UnsolicitedHandler::distributeRequests(const MillisecondTimer &timer, const
 template<class Element>
 bool UnsolicitedHandler::processQueue(std::list<Element> &queue, const char *function, void (UnsolicitedHandler::*processElement)(Element), const Cti::Timing::MillisecondTimer &timer, const unsigned long until)
 {
-    while( ! queue.empty() )
+    const auto max_elements = queue.size();
+
+    for( auto processed = 0; ! queue.empty() && processed < max_elements; ++processed )
     {
         try
         {
@@ -552,7 +554,7 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
 
     dr->outbound.push_back(om);
 
-    if( _active_devices.find(dr) == _active_devices.end() )
+    if( ! _active_devices.count(dr) )
     {
         queueRequestPending(dr);
     }
@@ -651,8 +653,11 @@ bool UnsolicitedHandler::startPendingRequests(const MillisecondTimer &timer, con
 
 void UnsolicitedHandler::startPendingRequest(device_record *dr)
 {
-    if ( getPostCommWait( *dr ) && ! isDeviceActive( dr ) )
+    //  If this device isn't active yet, we cannot start a request - another device_record is using the endpoint
+    if ( getPostCommWait( *dr ) && ! isDeviceActive( *dr ) )
     {
+        queueRequestPending(dr);
+
         return;
     }
 
@@ -772,6 +777,9 @@ void UnsolicitedHandler::trySendOutbounds(device_record *dr)
         // bail out early if we are waiting for the postCommWait to expire
         if ( ! availableToSend( *dr ) )
         {
+            //  requeue onto _waiting_to_send
+            queueWaitingToSend(dr);
+            
             return;
         }
 
@@ -834,7 +842,7 @@ string UnsolicitedHandler::describeDevice( const device_record &dr ) const
 void UnsolicitedHandler::setDeviceInactive(device_record *dr)
 {
     _active_devices.erase( dr );
-    clearActiveDevice( dr );
+    clearActiveDevice( *dr );
 }
 
 
@@ -1016,9 +1024,9 @@ void UnsolicitedHandler::addInboundWork(device_record &dr, packet *p)
             //  we just got work - we're ready to try a decode
             queueToDecode(&dr);
         }
-        else if( _active_devices.find(&dr) == _active_devices.end() )
+        else if( ! _active_devices.count(&dr) )
         {
-            //  it's new work, so get him started next time the pending list is examined
+            //  it's new work, so try to get the device started next time the pending list is examined
             queueRequestPending(&dr);
         }
     }
@@ -1404,7 +1412,7 @@ void UnsolicitedHandler::setDeviceState(device_list &queue, device_record *dr, D
     queue.insert(queue.end(), dr);
     _active_devices[dr] = state;
 
-    setDeviceActive(dr);
+    setDeviceActive(*dr);
 }
 
 void UnsolicitedMessenger::addClient(UnsolicitedHandler *client)

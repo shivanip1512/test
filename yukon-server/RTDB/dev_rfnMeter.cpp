@@ -406,12 +406,27 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg* pReq, CtiComman
         }
 
         bool notCurrent = false;
-        for( const auto& [part, method] : configMethods )
+
+        // first do metlib since other config parts depend on it going out first (maybe)
+        if ( const auto& metlib_lookup = configMethods.find( ConfigPart::metlib ); metlib_lookup != configMethods.end() )
         {
+            const auto& [part, method] = *metlib_lookup;
             if( auto status = executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, part, method );
                 status != ClientErrors::None && status != ClientErrors::ConfigCurrent )
             {
                 notCurrent = true;
+            }
+        }
+
+        for( const auto& [part, method] : configMethods )
+        {
+            if ( part != ConfigPart::metlib )   // skip metlib here since we did it above
+            {
+                if( auto status = executeConfigInstallSingle(pReq, parse, returnMsgs, rfnRequests, part, method);
+                    status != ClientErrors::None && status != ClientErrors::ConfigCurrent )
+                {
+                    notCurrent = true;
+                }
             }
         }
         
