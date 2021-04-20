@@ -49,12 +49,12 @@ public interface EcobeeZeusGroupDao {
     List<String> getEventIds(String yukonGroupId);
 
     /**
-     * Retrieve a Group name for a Yukon group ID.
+     * Get Ecobee Zeus Group name for a Yukon group ID.
      */
-    String getGroupName(String yukonGroupId);
+    String getZeusGroupName(String yukonGroupId);
 
     /**
      * Retrieve a Device count for a Yukon group ID.
      */
-    int getDeviceCount(String yukonGroupId);
+    int getDeviceCount(String zeusGroupId);
 }

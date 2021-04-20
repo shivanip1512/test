@@ -1,11 +1,11 @@
 package com.cannontech.dr.ecobee.message;
 
-public class AddThermostatGroup {
+public class ZeusThermostatRequest {
     String id;
     String state;
     String thermostatId;
 
-    public AddThermostatGroup(String id, String state, String thermostatId) {
+    public ZeusThermostatRequest(String id, String state, String thermostatId) {
         super();
         this.id = id;
         this.state = state;

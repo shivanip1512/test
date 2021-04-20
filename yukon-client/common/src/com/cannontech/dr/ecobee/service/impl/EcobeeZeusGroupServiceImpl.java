@@ -97,7 +97,7 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
 
     @Override
     public String getGroupName(String yukonGroupId) {
-        return ecobeeZeusGroupDao.getGroupName(yukonGroupId);
+        return ecobeeZeusGroupDao.getZeusGroupName(yukonGroupId);
     }
 
     @Override

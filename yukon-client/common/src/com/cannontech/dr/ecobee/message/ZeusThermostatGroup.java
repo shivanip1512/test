@@ -3,6 +3,14 @@ package com.cannontech.dr.ecobee.message;
 public class ZeusThermostatGroup {
     String name;
     String programId;
+    CriteriaSelector criteriaSelector;
+
+    public ZeusThermostatGroup(String name, String programId, CriteriaSelector criteriaSelector) {
+        super();
+        this.name = name;
+        this.programId = programId;
+        this.criteriaSelector = criteriaSelector;
+    }
 
     public String getName() {
         return name;
@@ -27,14 +35,4 @@ public class ZeusThermostatGroup {
     public void setCriteriaSelector(CriteriaSelector criteriaSelector) {
         this.criteriaSelector = criteriaSelector;
     }
-
-    CriteriaSelector criteriaSelector;
-
-    public ZeusThermostatGroup(String name, String programId, CriteriaSelector criteriaSelector) {
-        super();
-        this.name = name;
-        this.programId = programId;
-        this.criteriaSelector = criteriaSelector;
-    }
-
 }

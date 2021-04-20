@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClientException;
 
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
-import com.cannontech.dr.ecobee.message.AddThermostatGroup;
+import com.cannontech.dr.ecobee.message.ZeusThermostatRequest;
 import com.cannontech.dr.ecobee.message.CriteriaSelector;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
@@ -100,7 +100,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             // create amethod in ecobeeZeusGroupService to retrive the no of thermostat avilable in a ecobee group.
             int deviceCount = ecobeeZeusGroupService.getDeviceCount(lmGroupId);
             if (deviceCount < 9900) {
-                ResponseEntity<AddThermostatGroup> responseEntity = addThermostatGroup(zeusGroupId, inventoryId);
+                ResponseEntity<ZeusThermostatRequest> responseEntity = addThermostatToGroup(zeusGroupId, inventoryId);
                 if (responseEntity.getStatusCode() == HttpStatus.OK) {
                     ecobeeZeusGroupService.mapInventoryToZeusGroupId(inventoryId, zeusGroupId);
                 }
@@ -124,6 +124,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         try {
             String createThermostatGroupURL = getUrlBase() + "tstatgroups";
             List<String> list = new ArrayList<String>();
+            //add incrementel old group name ecobeeZeusGroupService.getGroupName(lmGroupId)
             ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(ecobeeZeusGroupService.getGroupName(lmGroupId),
                     programId, new CriteriaSelector("identifier", list));
             return (ResponseEntity<ZeusThermostatGroup>) requestHelper
@@ -135,11 +136,11 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @SuppressWarnings("unchecked")
-    private ResponseEntity<AddThermostatGroup> addThermostatGroup(String zeusGroupId, String inventoryId) {
+    private ResponseEntity<ZeusThermostatRequest> addThermostatToGroup(String zeusGroupId, String inventoryId) {
         String addThermostatURL = getUrlBase() + "tstatgroups/" + inventoryId + "thermostats";
-        AddThermostatGroup addThermostatGroup = new AddThermostatGroup(zeusGroupId, "ENROLLED", inventoryId);
+        ZeusThermostatRequest addThermostatGroup = new ZeusThermostatRequest(zeusGroupId, "ENROLLED", inventoryId);
         try {
-            return (ResponseEntity<AddThermostatGroup>) requestHelper
+            return (ResponseEntity<ZeusThermostatRequest>) requestHelper
                     .callEcobeeAPIForObject(addThermostatURL, HttpMethod.PUT, Object.class, addThermostatGroup);
             // Add thermostat into the required ecobee group by this API
             // https://ecp-api.readme.io/reference#put_tstatgroups-id-thermostats
