@@ -119,9 +119,11 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         BidiMap<Integer, String> deviceIdGuid = new DualHashBidiMap<Integer, String>(deviceDao.getGuids(deviceIdToPao.keySet()));
         List<PxMWTimeSeriesDeviceResultV1> timeSeriesResults = new ArrayList<PxMWTimeSeriesDeviceResultV1>();
 
-        List<String> tags = getTagsForAttributes(attribtues);
-        List<PxMWTimeSeriesDeviceV1> request = buildRequests(deviceIdGuid.values(), tags);
-        timeSeriesResults.addAll(pxMWCommunicationService.getTimeSeriesValues(request, queryRange));
+        Set<String> tags = getTagsForAttributes(attribtues);
+        List<List<PxMWTimeSeriesDeviceV1>> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
+        for (List<PxMWTimeSeriesDeviceV1> request : chunkedRequests) {
+            timeSeriesResults.addAll(pxMWCommunicationService.getTimeSeriesValues(request, queryRange));
+        }
 
         for (PxMWTimeSeriesDeviceResultV1 deviceResult : timeSeriesResults) {
             Integer deviceId = deviceIdGuid.getKey(deviceResult.getDeviceId());
@@ -199,16 +201,19 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
      * Helps optimize the requests that are built by taking a set of GUIDs and a set of 
      * tags that are being requested for those GUIDs and building the minimum number of requests
      */
-    private List<PxMWTimeSeriesDeviceV1> buildRequests(Collection<String> guids, List<String> tags) {
-        List<PxMWTimeSeriesDeviceV1> devices = new ArrayList<PxMWTimeSeriesDeviceV1>();
+    private List<List<PxMWTimeSeriesDeviceV1>> buildRequests(Collection<String> guids, Set<String> tagSet) {
+        List<List<PxMWTimeSeriesDeviceV1>> chunkedRequests = new ArrayList<>();
+        List<String> tags = new ArrayList<>(tagSet);
         List<List<String>> chunkedTags = Lists.partition(tags, 10);
         for (List<String> tagSubset : chunkedTags) {
             String tagCSV = buildTagString(tagSubset);
+            List<PxMWTimeSeriesDeviceV1> workingRequest = new ArrayList<PxMWTimeSeriesDeviceV1>();
             for (String guid : guids) {
-                devices.add(new PxMWTimeSeriesDeviceV1(guid, tagCSV));
+                workingRequest.add(new PxMWTimeSeriesDeviceV1(guid, tagCSV));
             }
+            chunkedRequests.add(workingRequest);
         }
-        return devices;
+        return chunkedRequests;
     }
 
     /**
@@ -244,14 +249,14 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
      * Returns a List of tags for all the BuiltInAttributes. 
      * If a built in attribute has no associated tag it will be ignored
      */
-    private List<String> getTagsForAttributes(Iterable<BuiltInAttribute> attributes) {
+    private Set<String> getTagsForAttributes(Iterable<BuiltInAttribute> attributes) {
         return StreamSupport.stream(attributes.spliterator(), false)
                 .map(attribute -> {
                     MWChannel channel = MWChannel.getMWChannel(attribute);
                     return channel != null ? channel.getChannelId().toString() : null;
                 })
                 .filter(t -> t != null)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private String buildTagString(List<String> tagList) {
