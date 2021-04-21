@@ -8057,15 +8057,6 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPGRDR_YKLST5</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>DRYERTYPEID</i__columnName>
-            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
-            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_APPGRDR_YKLST2</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>BLOWERHORSEPOWERID</i__columnName>
@@ -8075,9 +8066,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPGRDR_YKLST3</i__foreignKeyName>
+            <i__foreignKeyName>FK_APPGRDR_YKLST5</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>BLOWERENERGYSOURCEID</i__columnName>
+            <i__columnName>DRYERTYPEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -8096,6 +8087,15 @@
             <i__foreignKeyName>FK_APPGRDR_YKLST1</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>BINSIZEID</i__columnName>
+            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
+            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_APPGRDR_YKLST3</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>BLOWERENERGYSOURCEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -14269,6 +14269,20 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>PK_LMHARDWAREEVENT</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
+            <string>INDX_LMHARDWAREEVENT_INVENTORYID</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>LMHARDWAREEVENT</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>INVENTORYID</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>INDX_LMHARDWAREEVENT_INVENTORYID</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -22477,6 +22491,26 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>PK_COMMANDREQUESTUNSUPPORTED</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
+            <string>INDX_CREUNS_EXECID_DEVID</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>COMMANDREQUESTUNSUPPORTED</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>COMMANDREQUESTEXECID</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>COMMANDREQUESTUNSUPPORTED</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>DEVICEID</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>INDX_CREUNS_EXECID_DEVID</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
