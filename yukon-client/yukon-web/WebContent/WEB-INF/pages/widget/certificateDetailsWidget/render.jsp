@@ -15,7 +15,7 @@
                 <td class="js-cert-update-file"></td>
                 <td class="js-cert-update-gateways"></td>
                 <td class="js-cert-update-status">
-                    <div class="progress dib vat">
+                    <div class="progress dif vat">
                         <div class="progress-bar progress-bar-success"></div>
                         <div class="progress-bar progress-bar-danger"></div>
                     </div>

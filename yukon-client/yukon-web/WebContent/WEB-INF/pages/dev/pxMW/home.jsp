@@ -126,7 +126,7 @@
         </tags:nameValueContainer>
     </form:form>
 
-    <pre class="js-test-endpoint-results dn"></pre>
+    <pre class="code js-test-endpoint-results dn"></pre>
     
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.pxMWSimulator.js" />
 </cti:standardPage>
