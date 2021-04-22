@@ -6171,8 +6171,8 @@ Css :
     project URL : "https://getbootstrap.com/"
     license : MIT
     license URLs : "https://github.com/twbs/bootstrap/blob/main/LICENSE"
-    md5 : 6d0390c053b857e8d09db0cf724428fb
-    sha1 : 378ada231c632ef54b5590cc14af6cf9b2ff2ea6
+    md5 : dce8c6ac5b7461486c6b56fa7cc3b6e0
+    sha1 : 08b51aa3c79163a8b696f7799abdee5bfc8f146b
     updated : 2021-04-22
     jira : YUK-24198
     notes : This is the css library used for Yukon UI.
