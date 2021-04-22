@@ -13,9 +13,11 @@ import org.springframework.http.HttpStatus;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.PxMWVersion;
 import com.cannontech.simulators.SimulatorType;
+import com.cannontech.simulators.message.request.PxMWSimulatorDeviceCreateRequest;
 import com.cannontech.simulators.message.request.PxMWSimulatorRequest;
 import com.cannontech.simulators.message.request.PxMWSimulatorSettingsUpdateRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
@@ -33,6 +35,7 @@ import com.cannontech.simulators.pxmw.model.PxMWDataV1;
  */
 public class PxMWMessageHandler extends SimulatorMessageHandler {
     @Autowired private DeviceDao deviceDao;
+    @Autowired private NextValueHelper nextValueHelper;
     private static final Logger log = YukonLogManager.getLogger(PxMWMessageHandler.class);
 
     public PxMWMessageHandler() {
@@ -62,6 +65,7 @@ public class PxMWMessageHandler extends SimulatorMessageHandler {
                         int status = statuses.get(request.getUrl());
                         PxMWDataGenerator generator = data.get(request.getUrl().getVersion());
                         generator.setStatus(status);
+                        generator.setNextValueHelper(nextValueHelper);
                         Method method = generator.getClass().getMethod(request.getMethod(), request.getParamClasses());
                         return (PxMWSimulatorResponse) method.invoke(generator, request.getParamValues());
                     } catch (Exception e) {
@@ -72,6 +76,17 @@ public class PxMWMessageHandler extends SimulatorMessageHandler {
             } else if (simulatorRequest instanceof PxMWSimulatorSettingsUpdateRequest) {
                 PxMWSimulatorSettingsUpdateRequest request = (PxMWSimulatorSettingsUpdateRequest) simulatorRequest;
                 statuses = request.getStatuses();
+                return new SimulatorResponseBase(true);
+            } else if (simulatorRequest instanceof PxMWSimulatorDeviceCreateRequest) {
+                PxMWSimulatorDeviceCreateRequest request = (PxMWSimulatorDeviceCreateRequest) simulatorRequest;
+                PxMWDataGenerator generator = data.get(request.getVersion());
+                if (request.isComplete()) {
+                    //auto creation is done
+                    generator.setCreateRequest(null);
+                } else {
+                    generator.setCreateRequest(request);
+                    generator.setNextValueHelper(nextValueHelper);
+                }
                 return new SimulatorResponseBase(true);
             }
 

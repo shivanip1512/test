@@ -177,6 +177,20 @@ public enum MWChannel {
     public static MWChannel getMWChannel(BuiltInAttribute attribute) {
         return getAttributeChannelLookup().get(attribute);
     }
+    
+    /**
+     * Returns a List of tags for all the BuiltInAttributes. 
+     * If a built in attribute has no associated tag it will be ignored
+     */
+    public static Set<String> getTagsForAttributes(Set<BuiltInAttribute> attributes) {
+        return attributes.stream()
+                .map(attribute -> {
+                    MWChannel channel = MWChannel.getMWChannel(attribute);
+                    return channel != null ? channel.getChannelId().toString() : null;
+                })
+                .filter(t -> t != null)
+                .collect(Collectors.toSet());
+    }
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static MWChannel getMWChannelID(String mWChannelJsonString) {
