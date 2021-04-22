@@ -5,7 +5,10 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="modules.support">
-   
+
+    <c:if test="${!empty errorMessage}">
+        <tags:alertBox type="error">${errorMessage}</tags:alertBox>
+    </c:if>
     <div id="rf-js-message"></div>
     <tags:alertBox type="warning" key=".rfSupportBundle.warning"/>
     <tags:sectionContainer2 nameKey="rfSupportBundle">
@@ -17,11 +20,11 @@
                 <form:form id="rfSupportBundle-form" modelAttribute="rfSupportBundle" action="${createRfBundleURL}" method="POST">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".supportBundle.custNameLbl">
-                            <tags:input path="customerName"/>
+                            <tags:input id="rfCustomerName" path="customerName"/> 
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".rfSupportBundle.dateRange">
-                            <dt:date path="date" value="${rfSupportBundle.date}"/>
+                            <dt:date path="date" value="${rfSupportBundle.date}" maxDate="${now}"/>
                             <span class="fr cp"><cti:icon icon="icon-help" data-popup="#date-help"/></span>
                             <cti:msg2 var="helpTitle" key=".rfSupportBundle.dateRange"/>
                             <cti:msg2 var="helpText" key=".rfSupportBundle.dateRange.helpText"/>
