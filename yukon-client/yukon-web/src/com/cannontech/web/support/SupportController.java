@@ -190,8 +190,7 @@ public class SupportController {
             previousBundles.add(f.getName());
         }
         model.addAttribute("supportBundle", bundle);
-        Date date = new Date();
-        model.addAttribute("now", date);
+        model.addAttribute("now", new Date());
         model.addAttribute("rfSupportBundle", new RfSupportBundle());
         model.addAttribute("bundleRangeSelectionOptions", BundleRangeSelection.values());
         model.addAttribute("bundleList", previousBundles);
@@ -275,8 +274,7 @@ public class SupportController {
 
         detailsRfValidator.validate(rfSupportBundle, result);
         model.addAttribute("rfSupportBundle", rfSupportBundle);
-        Date date = new Date();
-        model.addAttribute("now", date);
+        model.addAttribute("now", new Date());
 
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -322,7 +320,7 @@ public class SupportController {
         if (status == null) {
             isCompleted = true;
             message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout");
-        }else {
+        } else {
             switch (status) {
             case STARTED:
             case INPROGRESS:
