@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorV1;
@@ -29,12 +28,9 @@ import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
 
 public class PxMWDataV1 extends PxMWDataGenerator {
     private PxMWFakeTimeseriesDataV1 timeseriesData = new PxMWFakeTimeseriesDataV1();
-    private DeviceDao deviceDao;
-    
-    public PxMWDataV1(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
 
+    Map<String, SimpleDevice> guidsToIds = new HashMap<>();
+ 
     public PxMWSimulatorResponse token() {
         if (status == HttpStatus.BAD_REQUEST.value()) {
             PxMWErrorV1 error = new PxMWErrorV1(List.of("ClientId"), "The field 'ClientId' is not a valid uuid.", "f0d48574-d5f5-47c1-b817-a1042a103b29", status, "2021-02-25T07:07:03.2423402+00:00", null);
@@ -95,16 +91,6 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                     "763a1051-e142-4cdb-893c-46afa4f9af31", status, "2021-02-25T13:45:10.4807211+00:00", null);
             return new PxMWSimulatorResponse(error, status);
         }
-
-        List<String> guids = pxMWTimeSeriesDataRequestV1.getDevices().stream()
-                .map(d -> d.getDeviceGuid())
-                .collect(Collectors.toList());
-        
-        Map<String, SimpleDevice> guidsToIds = new HashMap<>();
-        if(createRequest == null) {
-            //if we are in the process of creating devices this table will be locked.
-            guidsToIds.putAll(deviceDao.getDeviceIds(guids));
-        }
         
         //load bad data to test the parser
         boolean randomBadData = false;
@@ -139,11 +125,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
     }
 
     private PaoType getDeviceType(Map<String, SimpleDevice> guidsToIds, PxMWTimeSeriesDeviceV1 d) {
-        PaoType type = createRequest == null ? PaoType.LCR6200C: createRequest.getPaoType();
-        
-        if(guidsToIds.get(d.getDeviceGuid()) != null) {
-            type = guidsToIds.get(d.getDeviceGuid()).getDeviceType();
-        }
+        PaoType type = createRequest == null ? PaoType.LCR6600C: createRequest.getPaoType();
         return type;
     }
 

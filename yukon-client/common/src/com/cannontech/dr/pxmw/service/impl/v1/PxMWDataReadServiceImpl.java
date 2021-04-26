@@ -101,6 +101,10 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                 try {
                     Integer tag = Integer.parseInt(result.getTag());
                     MWChannel mwChannel = MWChannel.getChannelLookup().get(tag);
+                    if(!attribtues.contains(mwChannel.getBuiltInAttribute())) {
+                        //Received point data we didn't ask for
+                        continue;
+                    }
                     for (PxMWTimeSeriesValueV1 value : result.getValues()) {
                         Double pointValue = parsePointValue(mwChannel, value, device, deviceResult.getDeviceId());
                         if (pointValue != null) {

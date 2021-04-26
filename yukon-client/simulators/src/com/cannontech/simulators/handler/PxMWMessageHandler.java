@@ -34,7 +34,6 @@ import com.cannontech.simulators.pxmw.model.PxMWDataV1;
  * PxMWVersion.V2, new PxMWv2Data() to map the new version to a new object.
  */
 public class PxMWMessageHandler extends SimulatorMessageHandler {
-    @Autowired private DeviceDao deviceDao;
     @Autowired private NextValueHelper nextValueHelper;
     private static final Logger log = YukonLogManager.getLogger(PxMWMessageHandler.class);
 
@@ -47,7 +46,7 @@ public class PxMWMessageHandler extends SimulatorMessageHandler {
     
     @PostConstruct
     void init() {
-        data = Map.of(PxMWVersion.V1, new PxMWDataV1(deviceDao));
+        data = Map.of(PxMWVersion.V1, new PxMWDataV1());
     }
     
     private Map<PxMWRetrievalUrl, Integer> statuses = Arrays.stream(PxMWRetrievalUrl.values())

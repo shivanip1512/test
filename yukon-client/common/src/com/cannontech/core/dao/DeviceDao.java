@@ -237,11 +237,6 @@ public interface DeviceDao {
     Map<Integer, String> getGuids(Iterable<Integer> deviceIds);
     
     /**
-     * Returns map of guid to devices.
-     */
-    Map<String, SimpleDevice> getDeviceIds(List<String> guids);
-
-    /**
      * Returns a list of all the guids in DeviceGuid table as a List<String>
      */
     List<String> getGuids();
