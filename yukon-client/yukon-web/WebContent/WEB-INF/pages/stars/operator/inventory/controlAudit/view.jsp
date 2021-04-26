@@ -35,8 +35,8 @@
             <c:set var="clazz" value="${empty auditId ? 'dn' : ''}"/>
             <div class="buffered progress-lg ${clazz}">
                 <span class="name"><i:inline key="yukon.common.progress"/>:&nbsp;</span>
-                <div class="progress dib vam js-progress">
-                    <div class="progress-bar progress-bar-info progress-bar-striped active"
+                <div class="progress dif vam js-progress">
+                    <div class="progress-bar progress-bar-info progress-bar-striped progress-bar-animated"
                          role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
                 <span class="js-percent-text"></span>

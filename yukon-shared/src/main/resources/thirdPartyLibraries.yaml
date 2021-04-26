@@ -6167,12 +6167,12 @@ Css :
     notes : This library is used in /js-api/home.jsp.
     
   - project : bootstrap
-    version : 2.3.2
+    version : 4.6.0
     project URL : "https://getbootstrap.com/"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0"
-    md5 : 0baee5489e84dc3ff3a1970e47993db2
-    sha1 : 05a8e3b7b48e51a887192e6532103bd544cf5f0c
-    updated : 2015-04-10
-    jira : YUK-14174
+    license : MIT
+    license URLs : "https://github.com/twbs/bootstrap/blob/main/LICENSE"
+    md5 : dce8c6ac5b7461486c6b56fa7cc3b6e0
+    sha1 : 08b51aa3c79163a8b696f7799abdee5bfc8f146b
+    updated : 2021-04-22
+    jira : YUK-24198
     notes : This is the css library used for Yukon UI.
