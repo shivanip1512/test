@@ -30,7 +30,7 @@ public class EcobeeMockServiceTestController {
             "AUTHENTICATION_EXPIRED(14)", "DUPLICATE_DATA_VIOLATION(15)");
 
     private static final List<String> zeusStatus = ImmutableList.of("SUCCESS(0)",
-            "UNAUTHORIZED(1)", "BAD_REQUEST(2)", "NOT_FOUND(3)");
+            "UNAUTHORIZED(1)", "BAD_REQUEST(2)", "NOT_FOUND(3)", "PARTIAL_CONTENT(4)");
 
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
@@ -55,8 +55,8 @@ public class EcobeeMockServiceTestController {
 
     @IgnoreCsrfCheck
     @RequestMapping(value = "zeus/update", method = RequestMethod.POST)
-    public String updateZeus(Integer authenticateOp, Integer createDeviceOp, Integer deleteDeviceOp, Integer enrollDeviceOp, Integer unEnrollDeviceOp, FlashScope flashScope, ModelMap modelMap) throws IOException {
-        zeusEcobeeDataConfiguration.setZeusEcobeeDataConfiguration(authenticateOp, createDeviceOp, deleteDeviceOp, enrollDeviceOp, unEnrollDeviceOp);
+    public String updateZeus(Integer authenticateOp, Integer createDeviceOp, Integer deleteDeviceOp, Integer groupManagementOp, FlashScope flashScope, ModelMap modelMap) throws IOException {
+        zeusEcobeeDataConfiguration.setZeusEcobeeDataConfiguration(authenticateOp, createDeviceOp, deleteDeviceOp, groupManagementOp);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.ecobee.mockTest.saved"));
         return "redirect:viewBase";
     }

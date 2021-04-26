@@ -1,6 +1,7 @@
 package com.cannontech.web.dev;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,6 @@ import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
 import com.cannontech.dr.ecobee.message.ZeusErrorResponse;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
-import com.cannontech.dr.ecobee.message.ZeusAddThermostat;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.partial.Status;
 import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
@@ -213,41 +213,26 @@ public class EcobeeMockApiController {
     }
 
     @IgnoreCsrfCheck
-    @PutMapping("tstatgroups/{id}/thermostats")
-    public ResponseEntity<Object> addThermostatToGroup(@RequestBody ZeusAddThermostat thermostatRequest,
-            @PathVariable String id) {
-        Map<String, Integer> responseMap = new HashMap<String, Integer>();
-        int enrollDevice = zeusEcobeeDataConfiguration.getEnrollDevice();
-        if (enrollDevice == 0) {
-            responseMap.put("added", 1);
-            return new ResponseEntity<>(responseMap, HttpStatus.OK);
-        } else if (enrollDevice == 1) {
-            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
-        } else if (enrollDevice == 3) {
-            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @IgnoreCsrfCheck
     @PutMapping("tstatgroups/{id}")
     public ResponseEntity<Object> updateThermostatGroup(@RequestBody ZeusThermostatGroup thermostatGroup,
             @PathVariable String id) {
-        Map<String, Map<String, Object>> responseMap = new HashMap<String, Map<String, Object>>();
+        Map<String, Object> responseMap = new HashMap<String, Object>();
         Map<String, Object> groupMap = new HashMap<String, Object>();
         groupMap.put("id", id);
         groupMap.put("name", thermostatGroup.getName());
         groupMap.put("utility_id", "utility-123");
         groupMap.put("thermostat_count", thermostatGroup.getCriteriaSelector().getValues().size());
         responseMap.put("group", groupMap);
-        int unEnrollDevice = zeusEcobeeDataConfiguration.getUnEnrollDevice();
-        if (unEnrollDevice == 0) {
+        int groupManagement = zeusEcobeeDataConfiguration.getGroupManagement();
+        if (groupManagement == 0) {
             return new ResponseEntity<>(responseMap, HttpStatus.OK);
-        } else if (unEnrollDevice == 1) {
+        } else if (groupManagement == 1) {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
-        } else if (unEnrollDevice == 3) {
+        } else if (groupManagement == 3) {
             return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else if (groupManagement == 4) {
+            responseMap.put("failed_thermostat_ids", Arrays.asList("12345678"));
+            return new ResponseEntity<>(responseMap, HttpStatus.PARTIAL_CONTENT);
         } else {
             return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }
