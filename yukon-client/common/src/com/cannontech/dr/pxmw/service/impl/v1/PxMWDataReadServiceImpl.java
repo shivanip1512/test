@@ -142,11 +142,11 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         return null;
     }
     
-    public PointData generatePointData(LiteYukonPAObject device, BuiltInAttribute attribute, double value, long time, String guid) {
+   private PointData generatePointData(LiteYukonPAObject device, BuiltInAttribute attribute, double value, long time, String guid) {
 
         PointData pointData = new PointData();
         try {
-            pointData.setTime(new Date(time));
+            pointData.setTime(Date.from(java.time.Instant.ofEpochSecond(time)));            
         } catch (Exception e) {
             log.error(
                     "Device Id:{} Name:{} Guid:{} Attribute:{} can't parse timestamp for point data. Discarding received value:{}",
@@ -193,15 +193,6 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         }
         return chunkedRequests;
     }
-
-    /**
-     * Currently just returns a range of the last week
-     */
-    /*private Range<Instant> getQueryRange() {
-        DateTime queryEndTime = new DateTime();
-        DateTime queryStartTime = queryEndTime.minusDays(7);
-        return new Range<Instant>(queryStartTime.toInstant(), false, queryEndTime.toInstant(), true);
-    }*/
 
     private void updateAssetAvailability(Multimap<PaoIdentifier, PointData> pointUpdates) {
         for (PaoIdentifier pao : pointUpdates.keySet()) {

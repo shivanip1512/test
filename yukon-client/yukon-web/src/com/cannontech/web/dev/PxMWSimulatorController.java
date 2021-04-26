@@ -122,11 +122,6 @@ public class PxMWSimulatorController {
     public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint, String params, String jsonParam) {
         Map<String, Object> json = new HashMap<>();
         List<String> paramList = new ArrayList<>();
-
-       /* if (StringUtils.isEmpty(params) && StringUtils.isEmpty(jsonParam)) {
-            json.put("alertError", "Unable to parse parameters, please see parameter help text.");
-            return json;
-        }*/
         try {
             if (!StringUtils.isEmpty(params)) {
                 paramList = Stream.of(params.split(","))

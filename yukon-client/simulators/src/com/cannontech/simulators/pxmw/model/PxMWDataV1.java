@@ -106,17 +106,15 @@ public class PxMWDataV1 extends PxMWDataGenerator {
             guidsToIds.putAll(deviceDao.getDeviceIds(guids));
         }
         
+        //load bad data to test the parser
+        boolean randomBadData = false;
+
         List<PxMWTimeSeriesDeviceResultV1> resultList = pxMWTimeSeriesDataRequestV1.getDevices().stream().map(d -> {
             List<String> tags = Arrays.asList(d.getTagTrait().split(","));
             PaoType type = getDeviceType(guidsToIds, d);
-            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(tags, pxMWTimeSeriesDataRequestV1.getEndTime(), type);
+            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(tags, type, randomBadData);
             return new PxMWTimeSeriesDeviceResultV1(d.getDeviceGuid(), result);
         }).collect(Collectors.toList());
-        
-        //create bad data to test the parser
-        if(pxMWTimeSeriesDataRequestV1.getStartTime() == null) {
-             timeseriesData.messupTheData(resultList);
-        }
 
         return new PxMWSimulatorResponse(resultList.toArray(), status);
     }

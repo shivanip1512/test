@@ -104,17 +104,11 @@
 	</form:form>
 
     <br/>
-
-     <div class="notes">
-        <br/>This is for describing the functionality of the PxMW Auto Creation feature
-        <br/>Select a device type and a number of devices to create then press submit
-    </div>
-    <br/>
-
+    
     <cti:url var="autoCreationUrl" value="deviceAutoCreation"/>
     <form:form id="autoCreationForm" action="${autoCreationUrl}" method="post">
         <tags:nameValueContainer>
-            <tags:nameValue name="PXMW Cellular LCR Auto Creation" nameColumnWidth="250px">
+            <tags:nameValue name="Device Creation" nameColumnWidth="250px">
                 <select name="paoType">
                     <c:forEach var="type" items="${autoCreationTypes}">
                         <option value="${type}"><cti:msg2 key="${type.formatKey}"/></option>
