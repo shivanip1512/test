@@ -27,6 +27,12 @@
              case 'deleteDevice' : {
                  enabledSelectedOption(deleteDevice, deleteDeviceOp);
              } break;
+             case 'enrollDevice' : {
+                 enabledSelectedOption(enrollDevice, enrollDeviceOp);
+             } break;
+             case 'unEnrollDevice' : {
+                 enabledSelectedOption(unEnrollDevice, unEnrollDeviceOp);
+             } break;
          }
          });
      });
@@ -56,6 +62,18 @@
                             <label> 
                                 <input id="deleteDevice" type="checkbox" name="deleteDevice"> 
                                 <i:inline key=".deleteDevice" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="enrollDevice" type="checkbox" name="enrollDevice"> 
+                                <i:inline key=".enrollDevice" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="unEnrollDevice" type="checkbox" name="unEnrollDevice"> 
+                                <i:inline key=".unEnrollDevice" />
                             </label>
                         </li>
                     </ul>
@@ -88,6 +106,22 @@
                                     </c:forEach>
                                 </select>
                                 <input type="hidden" name="deleteDeviceOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="denrollDeviceOp" name="enrollDeviceOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="enrollDeviceOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="unEnrollDeviceOp" name="unEnrollDeviceOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="unEnrollDeviceOp" value="0" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>

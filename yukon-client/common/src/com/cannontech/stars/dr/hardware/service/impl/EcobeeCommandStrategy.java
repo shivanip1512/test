@@ -1,11 +1,14 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
@@ -16,12 +19,14 @@ import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.HardwareStrategyType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandStrategy;
@@ -29,11 +34,14 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
+import com.google.common.collect.Iterables;
 
 public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
     private static final Logger log = YukonLogManager.getLogger(EcobeeCommandStrategy.class);
 
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
+    @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
 
     @Override
@@ -46,6 +54,10 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
         return type.isEcobee();
     }
 
+    private boolean isEcobeeZeusEnabled() {
+        return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED);
+    }
+
     @Override
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
         LiteLmHardwareBase device = command.getDevice();
@@ -55,13 +67,22 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
             int groupId;
             switch(command.getType()) {
             case IN_SERVICE:
+                if(isEcobeeZeusEnabled()) {
+                    groupId = getGroupId(command.getDevice().getInventoryID());
+                    ecobeeZeusCommunicationService.enroll(groupId, serialNumber);
+                }
                 break;
             case OUT_OF_SERVICE:
-                ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
-                // TODO get groupId of group previously enrolled in
-                //  if (!hasActiveEnrollments(groupId)) {
-                //      ecobeeCommunicationService.deleteManagementSet(Integer.toString(groupId), ecId);
-                //  }
+                if (isEcobeeZeusEnabled()) {
+                    Set<Integer> groupIds = (Set<Integer>) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
+                    ecobeeZeusCommunicationService.unEnroll(Iterables.get(groupIds, 0), serialNumber);
+                } else {
+                    ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
+                    // TODO get groupId of group previously enrolled in
+                    // if (!hasActiveEnrollments(groupId)) {
+                    // ecobeeCommunicationService.deleteManagementSet(Integer.toString(groupId), ecId);
+                    // }
+                }
                 break;
             case TEMP_OUT_OF_SERVICE:
                 ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.OPT_OUT_SET);

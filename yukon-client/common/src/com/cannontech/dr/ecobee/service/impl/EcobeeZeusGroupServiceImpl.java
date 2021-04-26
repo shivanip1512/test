@@ -16,25 +16,25 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     @Autowired private EcobeeZeusGroupDao ecobeeZeusGroupDao;
 
     @Override
-    public List<String> getZeusGroupIdsForLmGroup(String yukonGroupId) {
+    public List<String> getZeusGroupIdsForLmGroup(int yukonGroupId) {
         return ecobeeZeusGroupDao.getZeusGroupIdsForLmGroup(yukonGroupId);
     }
 
     @Override
-    public List<String> getZeusGroupIdsForInventoryId(String inventoryId) {
+    public List<String> getZeusGroupIdsForInventoryId(int inventoryId) {
         return ecobeeZeusGroupDao.getZeusGroupIdsForInventoryId(inventoryId);
     }
 
     @Override
-    public String getZeusGroupId(String yukonGroupId, String inventoryId) {
+    public String getZeusGroupId(int yukonGroupId, int inventoryId) {
         return ecobeeZeusGroupDao.getZeusGroupId(yukonGroupId, inventoryId);
     }
 
     @Override
-    public boolean mapGroupIdToZeusGroupId(String yukonGroupId, String zeusGroupId) {
+    public boolean mapGroupIdToZeusGroup(int yukonGroupId, String zeusGroupId, String zeusGroupName) {
         boolean mappingSuccess = false;
         try {
-            ecobeeZeusGroupDao.mapGroupIdToZeusGroupId(yukonGroupId, zeusGroupId);
+            ecobeeZeusGroupDao.mapGroupIdToZeusGroup(yukonGroupId, zeusGroupId, zeusGroupName);
             mappingSuccess = true;
         } catch (DataAccessException e) {
             log.error("Error occurred while Inserting a mapping for Yukon group to Zeus group ID", e);
@@ -43,7 +43,7 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public boolean removeGroupIdForZeusGroupId(String yukonGroupId, String zeusGroupId) {
+    public boolean removeGroupIdForZeusGroupId(int yukonGroupId, String zeusGroupId) {
         boolean deleteSuccess = false;
         try {
             ecobeeZeusGroupDao.removeGroupIdForZeusGroupId(yukonGroupId, zeusGroupId);
@@ -55,7 +55,7 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public boolean mapInventoryToZeusGroupId(String inventoryId, String zeusGroupId) {
+    public boolean mapInventoryToZeusGroupId(int inventoryId, String zeusGroupId) {
         boolean mappingSuccess = false;
         try {
             ecobeeZeusGroupDao.mapInventoryToZeusGroupId(inventoryId, zeusGroupId);
@@ -67,7 +67,7 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public boolean deleteInventoryToZeusGroupId(String inventoryId) {
+    public boolean deleteInventoryToZeusGroupId(int inventoryId) {
         boolean deleteSuccess = false;
         try {
             ecobeeZeusGroupDao.deleteInventoryToZeusGroupId(inventoryId);
@@ -91,17 +91,36 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public List<String> getEventIds(String yukonGroupId) {
+    public List<String> getEventIds(int yukonGroupId) {
         return ecobeeZeusGroupDao.getEventIds(yukonGroupId);
     }
 
     @Override
-    public String getGroupName(String yukonGroupId) {
-        return ecobeeZeusGroupDao.getZeusGroupName(yukonGroupId);
+    public String getNextGroupName(int yukonGroupId) {
+        List<String> existingNames = ecobeeZeusGroupDao.getZeusGroupNames(yukonGroupId);
+        String newGroupName = yukonGroupId + "_";
+        int appender = 1;
+        for (String name : existingNames) {
+            String[] tokens = name.split("_");
+            if (Integer.valueOf(tokens[1]) > appender) {
+                appender = Integer.valueOf(tokens[1]);
+            }
+        }
+        return newGroupName.concat(Integer.toString(appender));
     }
 
     @Override
-    public int getDeviceCount(String yukonGroupId) {
-        return ecobeeZeusGroupDao.getDeviceCount(yukonGroupId);
+    public int getDeviceCount(String zeusGroupId) {
+        return ecobeeZeusGroupDao.getDeviceCount(zeusGroupId);
+    }
+
+    @Override
+    public List<Integer> getInventoryIdsForZeusGrouID(String zeusGroupId) {
+        return ecobeeZeusGroupDao.getInventoryIdsForZeusGrouID(zeusGroupId);
+    }
+
+    @Override
+    public String zeusGroupName(String zeusGroupId) {
+        return ecobeeZeusGroupDao.getZeusGroupName(zeusGroupId);
     }
 }

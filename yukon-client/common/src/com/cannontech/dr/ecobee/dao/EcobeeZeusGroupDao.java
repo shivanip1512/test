@@ -6,37 +6,37 @@ public interface EcobeeZeusGroupDao {
     /**
      * Retrieve list of Zeus group IDs for a given Yukon LM group ID.
      */
-    List<String> getZeusGroupIdsForLmGroup(String yukonGroupId);
+    List<String> getZeusGroupIdsForLmGroup(int yukonGroupId);
 
     /**
      * Retrieve list of Zeus group IDs for a given inventory ID.
      */
-    List<String> getZeusGroupIdsForInventoryId(String inventoryId);
+    List<String> getZeusGroupIdsForInventoryId(int inventoryId);
 
     /**
      * Retrieve a single Zeus group ID for a given Yukon inventory ID and LM group ID.
      */
-    String getZeusGroupId(String yukonGroupId, String inventoryId);
+    String getZeusGroupId(int yukonGroupId, int inventoryId);
 
     /**
-     * Insert a mapping for Yukon group to Zeus group ID.
+     * Insert a mapping for Yukon group to Zeus group details.
      */
-    void mapGroupIdToZeusGroupId(String yukonGroupId, String zeusGroupId);
+    void mapGroupIdToZeusGroup(int yukonGroupId, String zeusGroupId, String zeusGroupName);
 
     /**
      * Remove a mapping for Yukon group to Zeus group ID.
      */
-    void removeGroupIdForZeusGroupId(String yukonGroupId, String zeusGroupId);
+    void removeGroupIdForZeusGroupId(int yukonGroupId, String zeusGroupId);
 
     /**
      * Insert a mapping for inventory ID to Zeus group ID.
      */
-    void mapInventoryToZeusGroupId(String inventoryId, String zeusGroupId);
+    void mapInventoryToZeusGroupId(int inventoryId, String zeusGroupId);
 
     /**
      * Delete a mapping for inventory ID to Zeus group ID.
      */
-    void deleteInventoryToZeusGroupId(String inventoryId);
+    void deleteInventoryToZeusGroupId(int inventoryId);
 
     /**
      * Insert an event ID for a Zeus group ID (overwriting any existing value).
@@ -46,15 +46,22 @@ public interface EcobeeZeusGroupDao {
     /**
      * Retrieve a list of event IDs for a Yukon group ID.
      */
-    List<String> getEventIds(String yukonGroupId);
+    List<String> getEventIds(int yukonGroupId);
 
     /**
      * Get Ecobee Zeus Group name for a Yukon group ID.
      */
-    String getZeusGroupName(String yukonGroupId);
+    List<String> getZeusGroupNames(int yukonGroupId);
 
     /**
-     * Retrieve a Device count for a Yukon group ID.
+     * Retrieve a Device count for a Zeus Group ID.
      */
     int getDeviceCount(String zeusGroupId);
+
+    /**
+     * Retrieve all the thermostats for a Zeus group ID.
+     */
+    List<Integer> getInventoryIdsForZeusGrouID(String zeusGroupId);
+
+    String getZeusGroupName(String zeusGroupId);
 }

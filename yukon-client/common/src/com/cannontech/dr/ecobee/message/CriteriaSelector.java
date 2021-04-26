@@ -7,9 +7,11 @@ public class CriteriaSelector {
     List<String> values;
 
     public CriteriaSelector(String selector, List<String> values) {
-        super();
         this.selector = selector;
         this.values = values;
+    }
+
+    public CriteriaSelector() {
     }
 
     public String getSelector() {

@@ -55,8 +55,8 @@ public class EcobeeMockServiceTestController {
 
     @IgnoreCsrfCheck
     @RequestMapping(value = "zeus/update", method = RequestMethod.POST)
-    public String updateZeus(Integer authenticateOp, Integer createDeviceOp, Integer deleteDeviceOp, FlashScope flashScope, ModelMap modelMap) throws IOException {
-        zeusEcobeeDataConfiguration.setZeusEcobeeDataConfiguration(authenticateOp, createDeviceOp, deleteDeviceOp);
+    public String updateZeus(Integer authenticateOp, Integer createDeviceOp, Integer deleteDeviceOp, Integer enrollDeviceOp, Integer unEnrollDeviceOp, FlashScope flashScope, ModelMap modelMap) throws IOException {
+        zeusEcobeeDataConfiguration.setZeusEcobeeDataConfiguration(authenticateOp, createDeviceOp, deleteDeviceOp, enrollDeviceOp, unEnrollDeviceOp);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.ecobee.mockTest.saved"));
         return "redirect:viewBase";
     }

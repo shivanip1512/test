@@ -13,12 +13,12 @@ public interface EcobeeZeusCommunicationService {
     void deleteDevice(String serialNumber);
 
     /**
-     * Enroll ecobee devices
+     * Enroll the specified device to the specified group.
      */
-    void enroll(String lmGroupId, String inventoryId);
+    void enroll(int lmGroupId, String serialNumber);
 
     /**
-     * UNEnroll ecobee devices
+     * Unenroll the specified device from the specified group.
      */
-    void unEnroll(String lmGroupId, String inventoryId);
+    void unEnroll(int lmGroupId,String serialNumber);
 }
