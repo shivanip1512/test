@@ -205,7 +205,7 @@ public class EcobeeMockApiController {
         Map<String, Map<String, Object>> responseMap = new HashMap<String, Map<String, Object>>();
         Map<String, Object> groupMap = new HashMap<String, Object>();
         groupMap.put("id", StringUtils.replace(UUID.randomUUID().toString(), "-", "").substring(0, 32));
-        groupMap.put("name", thermostatGroup.getName());
+        groupMap.put("name", thermostatGroup.getGroup().getName());
         groupMap.put("utility_id", "utility-123");
         groupMap.put("thermostat_count", 100);
         responseMap.put("group", groupMap);
@@ -219,13 +219,13 @@ public class EcobeeMockApiController {
         Map<String, Object> responseMap = new HashMap<String, Object>();
         Map<String, Object> groupMap = new HashMap<String, Object>();
         groupMap.put("id", id);
-        groupMap.put("name", thermostatGroup.getName());
+        groupMap.put("name", thermostatGroup.getGroup().getName());
         groupMap.put("utility_id", "utility-123");
         groupMap.put("thermostat_count", thermostatGroup.getCriteriaSelector().getValues().size());
         responseMap.put("group", groupMap);
         int enrollment = zeusEcobeeDataConfiguration.getEnrollment();
         if (enrollment == 0) {
-            return new ResponseEntity<>(responseMap, HttpStatus.OK);
+            return new ResponseEntity<>(responseMap, HttpStatus.CREATED);
         } else if (enrollment == 1) {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else if (enrollment == 3) {

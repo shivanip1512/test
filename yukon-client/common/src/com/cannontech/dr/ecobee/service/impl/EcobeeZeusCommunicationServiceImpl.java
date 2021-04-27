@@ -18,6 +18,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.CriteriaSelector;
+import com.cannontech.dr.ecobee.message.Selector;
+import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
@@ -96,8 +98,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @Override
-    public void enroll(int lmGroupId, String serialNumber) {
-        int inventoryId = lmHardwareBaseDao.getBySerialNumber(serialNumber).getInventoryId();
+    public void enroll(int lmGroupId, String serialNumber, int inventoryId) {
         String zeusGroupId = ecobeeZeusGroupService.getZeusGroupIdForLmGroup(lmGroupId);
         // For a new customer, zeusGroupId might be empty. So create a new Ecobee group.
         if (StringUtils.isEmpty(zeusGroupId)) {
@@ -108,10 +109,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             if (deviceCount < thresholdThermostatCount) {
                 addThermostatToGroup(zeusGroupId, serialNumber, inventoryId);
             } else {
-                String groupName = cache.getAllLMGroups()
-                                        .stream()
-                                        .filter(group -> group.getLiteID() == lmGroupId)
-                                        .findFirst().get().getPaoName();
+                String groupName = cache.getAllPaosMap().get(lmGroupId).getPaoName();
                 throw new EnrollmentException("Yukon Ecobee group " + groupName + " can not contain more than "
                         + thresholdThermostatCount
                         + " thermostats. Create new group and attach it to the program before enrolling.");
@@ -128,23 +126,28 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         try {
             String createThermostatGroupURL = getUrlBase() + "tstatgroups";
 
-            CriteriaSelector criteriaSelector = new CriteriaSelector("identifier", Arrays.asList(serialNumber));
-            String groupName = cache.getAllLMGroups()
-                                    .stream()
-                                    .filter(group -> group.getLiteID() == lmGroupId)
-                                    .findFirst().get().getPaoName();
-            ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(groupName, programId, criteriaSelector);
+            CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), Arrays.asList(serialNumber));
+            String groupName = cache.getAllPaosMap().get(lmGroupId).getPaoName();
+            ZeusGroup group = new ZeusGroup(groupName, programId);
+            ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
             ResponseEntity<Map> responseEntity = (ResponseEntity<Map>) requestHelper.callEcobeeAPIForObject(
                     createThermostatGroupURL, HttpMethod.POST, Map.class, zeusThermostatGroup);
 
-            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
                 Map<String, String> responseFields = (Map<String, String>) responseEntity.getBody().get("group");
                 zeusGroupId = responseFields.get("id");
                 groupName = responseFields.get("name");
                 ecobeeZeusGroupService.mapGroupIdToZeusGroup(lmGroupId, zeusGroupId, groupName);
                 log.info("Zeus group with ID: {} and Name: {} created successfully on Ecobee and Mapped to Yukon LM group {}.",
                         zeusGroupId, groupName, groupName);
+            } else if (responseEntity.getStatusCode() == HttpStatus.PARTIAL_CONTENT) {
+                Map<String, Object> response = (Map<String, Object>) responseEntity.getBody();
+                List<String> failedThermostatIds = (List<String>) response.get("failed_thermostat_ids");
+                failedThermostatIds.stream()
+                        .forEach(thermostatId -> log.error("Unable to create the thermostat group with thermostat id {}",
+                                thermostatId));
+                throw new EnrollmentException("Enrolment not completed successfully for all the thermostats.");
             }
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
@@ -161,12 +164,12 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         }
         // Before Update, add the thermostat which we want to enroll.
         thermostatIds.add(serialNumber);
-        ResponseEntity<? extends Object> responseEntiry = updateThermostatGroup(zeusGroupId, thermostatIds);
-        if (responseEntiry.getStatusCode() == HttpStatus.OK) {
+        ResponseEntity<? extends Object> responseEntity = updateThermostatGroup(zeusGroupId, thermostatIds);
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
             log.info("Thermostat serial number {} mapped successfully to the zeus group ID {}", serialNumber, zeusGroupId);
             ecobeeZeusGroupService.mapInventoryToZeusGroupId(inventoryId, zeusGroupId);
-        } else if (responseEntiry.getStatusCode() == HttpStatus.PARTIAL_CONTENT) {
-            Map<String, Object> response = (Map<String, Object>) responseEntiry.getBody();
+        } else if (responseEntity.getStatusCode() == HttpStatus.PARTIAL_CONTENT) {
+            Map<String, Object> response = (Map<String, Object>) responseEntity.getBody();
             List<String> failedThermostatIds = (List<String>) response.get("failed_thermostat_ids");
             failedThermostatIds.stream()
                     .forEach(thermostatId -> log.error("Unable to update the the thermostat: {} to the Zeus group: {}",
@@ -177,9 +180,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
     @SuppressWarnings("unchecked")
     @Override
-    public void unEnroll(int lmGroupId, String serialNumber) {
+    public void unEnroll(int lmGroupId, String serialNumber, int inventoryId) {
         try {
-            Integer inventoryId = lmHardwareBaseDao.getBySerialNumber(serialNumber).getInventoryId();
             String zeusGroupId = ecobeeZeusGroupService.getZeusGroupIdForLmGroup(lmGroupId);
 
             String deleteThermostatsURL = getUrlBase() + "tstatgroups/" + zeusGroupId + "/thermostats?thermostat_ids="
@@ -207,12 +209,13 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         String updateThermostatURL = getUrlBase() + "tstatgroups/" + zeusGroupId;
 
         String groupName = ecobeeZeusGroupService.zeusGroupName(zeusGroupId);
-        CriteriaSelector criteriaSelector = new CriteriaSelector("identifier", thermostatIds);
-        ZeusThermostatGroup zeusThermostatGroupRequest = new ZeusThermostatGroup(groupName, programId, criteriaSelector);
+        CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType() , thermostatIds);
+        ZeusGroup group = new ZeusGroup(groupName, programId);
+        ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
         try {
             return requestHelper.callEcobeeAPIForObject(updateThermostatURL, HttpMethod.PUT, Object.class,
-                    zeusThermostatGroupRequest);
+                    zeusThermostatGroup);
 
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);

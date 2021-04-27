@@ -15,10 +15,10 @@ public interface EcobeeZeusCommunicationService {
     /**
      * Enroll the specified device to the specified group.
      */
-    void enroll(int lmGroupId, String serialNumber);
+    void enroll(int lmGroupId, String serialNumber, int inventoryId);
 
     /**
      * Unenroll the specified device from the specified group.
      */
-    void unEnroll(int lmGroupId,String serialNumber);
+    void unEnroll(int lmGroupId,String serialNumber, int inventoryId);
 }

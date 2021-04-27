@@ -69,13 +69,13 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
             case IN_SERVICE:
                 if(isEcobeeZeusEnabled()) {
                     groupId = getGroupId(command.getDevice().getInventoryID());
-                    ecobeeZeusCommunicationService.enroll(groupId, serialNumber);
+                    ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID());
                 }
                 break;
             case OUT_OF_SERVICE:
                 if (isEcobeeZeusEnabled()) {
                     Set<Integer> groupIds = (Set<Integer>) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
-                    ecobeeZeusCommunicationService.unEnroll(Iterables.get(groupIds, 0), serialNumber);
+                    ecobeeZeusCommunicationService.unEnroll(Iterables.get(groupIds, 0), serialNumber, device.getInventoryID());
                 } else {
                     ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
                     // TODO get groupId of group previously enrolled in
