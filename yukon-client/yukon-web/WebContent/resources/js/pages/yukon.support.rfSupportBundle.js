@@ -24,9 +24,9 @@ yukon.support.rfSupportBundle = (function() {
                 } else if (json.status == "COMPLETED") {
                     classValue = "success";
                 }
+                yukon.ui.unblock($('#rfSupportBundle-form'));
                 yukon.ui.unbusy(btn);
                 $('#rfCustomerName').val("");
-                $("#rfCustomerName").prop("disabled", false);
             }
             $('#rf-js-message').addMessage({
                 message : json.message,
@@ -43,7 +43,7 @@ yukon.support.rfSupportBundle = (function() {
             $.getJSON(yukon.url("/support/rfBundleInProgress")).done(function(json) {
                 if (!json.isCompleted) {
                     yukon.ui.busy($('.js-execute-command-rf'));
-                    $("#rfCustomerName").prop("disabled", true);
+                    yukon.ui.block($('#rfSupportBundle-form'));
                     _checkUpdate();
                 }
             });
@@ -54,7 +54,7 @@ yukon.support.rfSupportBundle = (function() {
                         yukon.ui.initContent('#rf-support-bundle-section');
                         yukon.ui.initDateTimePickers();
                         yukon.ui.busy($('.js-execute-command-rf'));
-                        $("#rfCustomerName").prop("disabled", true);
+                        yukon.ui.block($('#rfSupportBundle-form'));
                         _checkUpdate();
                     },
                     error : function(xhr, status, error, $form) {

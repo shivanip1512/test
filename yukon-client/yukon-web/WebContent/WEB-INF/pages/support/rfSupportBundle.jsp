@@ -17,7 +17,7 @@
             <cti:tab title="${createNewHeading}">
             
                 <cti:url value="/support/createRfBundle" var="createRfBundleURL"/>
-                <form:form id="rfSupportBundle-form" modelAttribute="rfSupportBundle" action="${createRfBundleURL}" method="POST">
+                <form:form id="rfSupportBundle-form" class="js-block-this" modelAttribute="rfSupportBundle" action="${createRfBundleURL}" method="POST">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".supportBundle.custNameLbl">
                             <tags:input id="rfCustomerName" path="customerName"/> 
