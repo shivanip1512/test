@@ -26,7 +26,8 @@ public class PxMWDataReadServiceImplTest {
     
     private static final Logger log = YukonLogManager.getLogger(PxMWDataReadServiceImplTest.class);
 
-    @Test 
+    
+ /*   @Test 
     public void testParseValueDataToPointBoolean() throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Method parseMethod = PxMWDataReadServiceImpl.class.getDeclaredMethod("parseValueDataToPoint", MWChannel.class, PxMWTimeSeriesValueV1.class);
         PxMWDataReadServiceImpl dataReadService = new PxMWDataReadServiceImpl();
@@ -74,7 +75,7 @@ public class PxMWDataReadServiceImplTest {
         pointData = (PointData) parseMethod.invoke(dataReadService, MWChannel.RUNTIME_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "NAN"));
         assertNull(pointData);
     }
-    
+    */
     @SuppressWarnings("unchecked")
     @Test
     public void testBuildRequests() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -118,5 +119,4 @@ public class PxMWDataReadServiceImplTest {
         assertEquals(requestTags, twelveElementTagList);
         assertEquals(requestGuids, guids);
     }
-
 }

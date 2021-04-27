@@ -44,7 +44,6 @@ import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -679,29 +678,6 @@ public final class DeviceDaoImpl implements DeviceDao {
                                     deviceIds, 
                                     DEVICEID_GUID_ROW_MAPPER,
                                     Functions.identity());
-    }
-
-    @Override
-    public Map<String, SimpleDevice> getDeviceIds(List<String> guids) {
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        SqlFragmentGenerator<String> sqlGenerator =  (subList) -> {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT dg.DeviceId, dg.Guid, ypo.Type");
-                sql.append("FROM DeviceGuid dg JOIN YukonPAObject ypo ON dg.DeviceId = ypo.PAObjectID");
-                sql.append("WHERE Guid").in(subList);
-                return sql;
-            };
-      
-
-        Map<String, SimpleDevice> result = new HashMap<>();
-        template.query(sqlGenerator, guids, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                result.put(rs.getString("Guid"),
-                        new SimpleDevice(rs.getInt("DeviceId"), PaoType.getForDbString(rs.getString("Type"))));
-            }
-        });
-        return result;
     }
 
     @Override

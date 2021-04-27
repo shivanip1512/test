@@ -239,11 +239,6 @@ public class MockDeviceDao implements DeviceDao {
     }
 
     @Override
-    public Map<String, SimpleDevice> getDeviceIds(List<String> guids) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
     public List<String> getGuids() {
         throw new MethodNotImplementedException();
     }

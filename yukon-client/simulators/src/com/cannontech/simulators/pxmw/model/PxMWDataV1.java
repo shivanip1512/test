@@ -2,16 +2,18 @@ package com.cannontech.simulators.pxmw.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorV1;
@@ -19,18 +21,16 @@ import com.cannontech.dr.pxmw.model.v1.PxMWSiteDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
 
 public class PxMWDataV1 extends PxMWDataGenerator {
     private PxMWFakeTimeseriesDataV1 timeseriesData = new PxMWFakeTimeseriesDataV1();
-    private DeviceDao deviceDao;
-    
-    public PxMWDataV1(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
 
+    Map<String, SimpleDevice> guidsToIds = new HashMap<>();
+ 
     public PxMWSimulatorResponse token() {
         if (status == HttpStatus.BAD_REQUEST.value()) {
             PxMWErrorV1 error = new PxMWErrorV1(List.of("ClientId"), "The field 'ClientId' is not a valid uuid.", "f0d48574-d5f5-47c1-b817-a1042a103b29", status, "2021-02-25T07:07:03.2423402+00:00", null);
@@ -63,10 +63,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                     status);
         } 
         
-        PxMWSiteDeviceV1 siteDevice = new PxMWSiteDeviceV1("e0824ba4-d832-49d6-ab60-6212a63bcd10",
-                "72358726-1ed0-485b-8beb-6a27a27b58e8", "Test device", "...", "...", "...", "...", "...", "...", "...", "...", "...");
-        List<PxMWSiteDeviceV1> siteDeviceList = new ArrayList<PxMWSiteDeviceV1>();
-        siteDeviceList.add(siteDevice);
+        List<PxMWSiteDeviceV1> siteDeviceList = getSiteDeviceList();
         PxMWSiteV1 site = new PxMWSiteV1(id,
                 "test",
                 "test site 1",
@@ -80,7 +77,8 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                 siteDeviceList);
         return new PxMWSimulatorResponse(site, status);
     }
-  
+
+
     public PxMWSimulatorResponse timeseries(PxMWTimeSeriesDataRequestV1 pxMWTimeSeriesDataRequestV1) {
 
         if (status == HttpStatus.BAD_REQUEST.value()) {
@@ -93,31 +91,42 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                     "763a1051-e142-4cdb-893c-46afa4f9af31", status, "2021-02-25T13:45:10.4807211+00:00", null);
             return new PxMWSimulatorResponse(error, status);
         }
+        
+        //load bad data to test the parser
+        boolean randomBadData = false;
 
-        List<String> guids = pxMWTimeSeriesDataRequestV1.getDevices().stream()
-                .map(d -> d.getDeviceGuid())
-                .collect(Collectors.toList());
-        
-        Map<String, SimpleDevice> guidsToIds = deviceDao.getDeviceIds(guids);
-        
         List<PxMWTimeSeriesDeviceResultV1> resultList = pxMWTimeSeriesDataRequestV1.getDevices().stream().map(d -> {
             List<String> tags = Arrays.asList(d.getTagTrait().split(","));
-            PaoType type = PaoType.LCR6200C;
-            
-            if(guidsToIds.get(d.getDeviceGuid()) != null) {
-                type = guidsToIds.get(d.getDeviceGuid()).getDeviceType();
-            }
-
-            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(tags, pxMWTimeSeriesDataRequestV1.getEndTime(), type);
+            PaoType type = getDeviceType(guidsToIds, d);
+            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(tags, type, randomBadData);
             return new PxMWTimeSeriesDeviceResultV1(d.getDeviceGuid(), result);
         }).collect(Collectors.toList());
-        
-        //create bad data to test the parser
-        if(pxMWTimeSeriesDataRequestV1.getStartTime() == null) {
-             timeseriesData.messupTheData(resultList);
-        }
 
         return new PxMWSimulatorResponse(resultList.toArray(), status);
+    }
+    
+    private List<PxMWSiteDeviceV1> getSiteDeviceList() {
+
+        int devices = createRequest == null ? 0 : createRequest.getDevices();
+
+        List<PxMWSiteDeviceV1> siteDeviceList = new ArrayList<PxMWSiteDeviceV1>();
+
+        IntStream.range(0, devices).forEach(i -> {
+            String guid = UUID.randomUUID().toString();
+            int value = nextValueHelper.getNextValue("PxMWSimulatorNameIncrementor");
+            String name = createRequest.getPaoType() + "_SIM_" + value;
+            PxMWSiteDeviceV1 siteDevice = new PxMWSiteDeviceV1(guid,
+                    "72358726-1ed0-485b-8beb-6a27a27b58e8", name, "...", "...", "...",
+                    paoTypeToHardware.get(createRequest.getPaoType()).toString(), "...", "...", "...", "...",
+                    "...");
+            siteDeviceList.add(siteDevice);
+        });
+        return siteDeviceList;
+    }
+
+    private PaoType getDeviceType(Map<String, SimpleDevice> guidsToIds, PxMWTimeSeriesDeviceV1 d) {
+        PaoType type = createRequest == null ? PaoType.LCR6600C: createRequest.getPaoType();
+        return type;
     }
 
     public PxMWSimulatorResponse sendCommandV1(String id, String command_instance_id, PxMWCommandRequestV1 pxMWCommandRequestV1) {
