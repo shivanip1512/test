@@ -16,18 +16,13 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     @Autowired private EcobeeZeusGroupDao ecobeeZeusGroupDao;
 
     @Override
-    public List<String> getZeusGroupIdsForLmGroup(int yukonGroupId) {
-        return ecobeeZeusGroupDao.getZeusGroupIdsForLmGroup(yukonGroupId);
+    public String getZeusGroupIdForLmGroup(int yukonGroupId) {
+        return ecobeeZeusGroupDao.getZeusGroupIdForLmGroup(yukonGroupId);
     }
 
     @Override
     public List<String> getZeusGroupIdsForInventoryId(int inventoryId) {
         return ecobeeZeusGroupDao.getZeusGroupIdsForInventoryId(inventoryId);
-    }
-
-    @Override
-    public String getZeusGroupId(int yukonGroupId, int inventoryId) {
-        return ecobeeZeusGroupDao.getZeusGroupId(yukonGroupId, inventoryId);
     }
 
     @Override
@@ -43,10 +38,10 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public boolean removeGroupIdForZeusGroupId(int yukonGroupId, String zeusGroupId) {
+    public boolean removeGroupIdForZeusGroupId(String zeusGroupId) {
         boolean deleteSuccess = false;
         try {
-            ecobeeZeusGroupDao.removeGroupIdForZeusGroupId(yukonGroupId, zeusGroupId);
+            ecobeeZeusGroupDao.removeGroupIdForZeusGroupId(zeusGroupId);
             deleteSuccess = true;
         } catch (DataAccessException e) {
             log.error("Error occurred while removing a mapping for Yukon group to Zeus group ID", e);
@@ -67,10 +62,10 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public boolean deleteInventoryToZeusGroupId(int inventoryId) {
+    public boolean deleteZeusGroupMappingForInventoryId(int inventoryId) {
         boolean deleteSuccess = false;
         try {
-            ecobeeZeusGroupDao.deleteInventoryToZeusGroupId(inventoryId);
+            ecobeeZeusGroupDao.deleteZeusGroupMappingForInventoryId(inventoryId);
             deleteSuccess = true;
         } catch (DataAccessException e) {
             log.error("Error occurred while deleting a mapping for inventory ID to Zeus group ID.", e);
@@ -93,20 +88,6 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     @Override
     public List<String> getEventIds(int yukonGroupId) {
         return ecobeeZeusGroupDao.getEventIds(yukonGroupId);
-    }
-
-    @Override
-    public String getNextGroupName(int yukonGroupId) {
-        List<String> existingNames = ecobeeZeusGroupDao.getZeusGroupNames(yukonGroupId);
-        String newGroupName = yukonGroupId + "_";
-        int appender = 1;
-        for (String name : existingNames) {
-            String[] tokens = name.split("_");
-            if (Integer.valueOf(tokens[1]) > appender) {
-                appender = Integer.valueOf(tokens[1]);
-            }
-        }
-        return newGroupName.concat(Integer.toString(appender));
     }
 
     @Override

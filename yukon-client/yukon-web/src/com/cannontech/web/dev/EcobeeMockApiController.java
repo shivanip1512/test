@@ -223,14 +223,14 @@ public class EcobeeMockApiController {
         groupMap.put("utility_id", "utility-123");
         groupMap.put("thermostat_count", thermostatGroup.getCriteriaSelector().getValues().size());
         responseMap.put("group", groupMap);
-        int groupManagement = zeusEcobeeDataConfiguration.getGroupManagement();
-        if (groupManagement == 0) {
+        int enrollment = zeusEcobeeDataConfiguration.getEnrollment();
+        if (enrollment == 0) {
             return new ResponseEntity<>(responseMap, HttpStatus.OK);
-        } else if (groupManagement == 1) {
+        } else if (enrollment == 1) {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
-        } else if (groupManagement == 3) {
+        } else if (enrollment == 3) {
             return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
-        } else if (groupManagement == 4) {
+        } else if (enrollment == 4) {
             responseMap.put("failed_thermostat_ids", Arrays.asList("12345678"));
             return new ResponseEntity<>(responseMap, HttpStatus.PARTIAL_CONTENT);
         } else {

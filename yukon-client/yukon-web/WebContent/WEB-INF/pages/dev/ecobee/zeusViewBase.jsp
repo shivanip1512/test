@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #groupManagement').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -27,8 +27,8 @@
              case 'deleteDevice' : {
                  enabledSelectedOption(deleteDevice, deleteDeviceOp);
              } break;
-             case 'groupManagement' : {
-                 enabledSelectedOption(groupManagement, groupManagementOp);
+             case 'enrollment' : {
+                 enabledSelectedOption(enrollment, enrollmentOp);
              } break;
          }
          });
@@ -63,8 +63,8 @@
                         </li>
                         <li>
                             <label> 
-                                <input id="groupManagement" type="checkbox" name="groupManagement"> 
-                                <i:inline key=".groupManagement" />
+                                <input id="enrollment" type="checkbox" name="enrollment"> 
+                                <i:inline key=".enrollment" />
                             </label>
                         </li>
                     </ul>
@@ -99,12 +99,12 @@
                                 <input type="hidden" name="deleteDeviceOp" value="0" />
                             </li>
                             <li>
-                                <select id="groupManagementOp" name="groupManagementOp" disabled="disabled">
+                                <select id="enrollmentOp" name="enrollmentOp" disabled="disabled">
                                     <c:forEach var="status" items="${status}" varStatus="loopCounter">
                                         <option value="${loopCounter.count-1}">${status}</option>
                                     </c:forEach>
                                 </select>
-                                <input type="hidden" name="groupManagementOp" value="0" />
+                                <input type="hidden" name="enrollmentOp" value="0" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>

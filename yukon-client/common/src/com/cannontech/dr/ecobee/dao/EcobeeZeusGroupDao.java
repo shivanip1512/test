@@ -4,19 +4,14 @@ import java.util.List;
 
 public interface EcobeeZeusGroupDao {
     /**
-     * Retrieve list of Zeus group IDs for a given Yukon LM group ID.
+     * Retrieve Zeus group ID for a given Yukon LM group ID.
      */
-    List<String> getZeusGroupIdsForLmGroup(int yukonGroupId);
+    String getZeusGroupIdForLmGroup(int yukonGroupId);
 
     /**
      * Retrieve list of Zeus group IDs for a given inventory ID.
      */
     List<String> getZeusGroupIdsForInventoryId(int inventoryId);
-
-    /**
-     * Retrieve a single Zeus group ID for a given Yukon inventory ID and LM group ID.
-     */
-    String getZeusGroupId(int yukonGroupId, int inventoryId);
 
     /**
      * Insert a mapping for Yukon group to Zeus group details.
@@ -26,7 +21,7 @@ public interface EcobeeZeusGroupDao {
     /**
      * Remove a mapping for Yukon group to Zeus group ID.
      */
-    void removeGroupIdForZeusGroupId(int yukonGroupId, String zeusGroupId);
+    void removeGroupIdForZeusGroupId(String zeusGroupId);
 
     /**
      * Insert a mapping for inventory ID to Zeus group ID.
@@ -34,9 +29,9 @@ public interface EcobeeZeusGroupDao {
     void mapInventoryToZeusGroupId(int inventoryId, String zeusGroupId);
 
     /**
-     * Delete a mapping for inventory ID to Zeus group ID.
+     * Delete Zeus group mapping for an inventory ID.
      */
-    void deleteInventoryToZeusGroupId(int inventoryId);
+    void deleteZeusGroupMappingForInventoryId(int inventoryId);
 
     /**
      * Insert an event ID for a Zeus group ID (overwriting any existing value).
@@ -49,19 +44,17 @@ public interface EcobeeZeusGroupDao {
     List<String> getEventIds(int yukonGroupId);
 
     /**
-     * Get Ecobee Zeus Group name for a Yukon group ID.
-     */
-    List<String> getZeusGroupNames(int yukonGroupId);
-
-    /**
-     * Retrieve a Device count for a Zeus Group ID.
+     * Returns thermostat count fort the specified Zeus group ID.
      */
     int getDeviceCount(String zeusGroupId);
 
     /**
-     * Retrieve all the thermostats for a Zeus group ID.
+     * Retrieve all the inventory IDs for the specified Zeus group ID
      */
     List<Integer> getInventoryIdsForZeusGrouID(String zeusGroupId);
 
+    /**
+     * Return name of the specified Zeus group ID.
+     */
     String getZeusGroupName(String zeusGroupId);
 }

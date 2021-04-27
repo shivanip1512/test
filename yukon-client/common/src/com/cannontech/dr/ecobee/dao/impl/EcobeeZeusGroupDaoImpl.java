@@ -2,6 +2,7 @@ package com.cannontech.dr.ecobee.dao.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -15,10 +16,14 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
     @Autowired YukonJdbcTemplate jdbcTemplate;
 
     @Override
-    public List<String> getZeusGroupIdsForLmGroup(int yukonGroupId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EcobeeGroupId FROM LMGroupZeusMapping WHERE YukonGroupId = ?");
-        return jdbcTemplate.queryForList(sql.getSql(), String.class, yukonGroupId);
+    public String getZeusGroupIdForLmGroup(int yukonGroupId) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT EcobeeGroupId FROM LMGroupZeusMapping WHERE YukonGroupId").eq(yukonGroupId);
+            return jdbcTemplate.queryForString(sql);
+        } catch (EmptyResultDataAccessException e) {
+            return StringUtils.EMPTY;
+        }
     }
 
     @Override
@@ -26,21 +31,6 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EcobeeGroupId FROM ZeusGroupInventoryMapping WHERE InventoryID = ?");
         return jdbcTemplate.queryForList(sql.getSql(), String.class, inventoryId);
-    }
-
-    @Override
-    public String getZeusGroupId(int yukonGroupId, int inventoryId) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT LGZM.EcobeeGroupId FROM LMGroupZeusMapping LGZM");
-            sql.append("LEFT JOIN ZeusGroupInventoryMapping ZGIM");
-            sql.append("ON LGZM.EcobeeGroupId = ZGIM.EcobeeGroupId");
-            sql.append("WHERE LGZM.YukonGroupId").eq(yukonGroupId);
-            sql.append("AND ZGIM.InventoryID").eq(inventoryId);
-            return jdbcTemplate.queryForString(sql);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
     }
 
     @Override
@@ -54,10 +44,10 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
     }
 
     @Override
-    public void removeGroupIdForZeusGroupId(int yukonGroupId, String zeusGroupId) {
+    public void removeGroupIdForZeusGroupId(String zeusGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM LMGroupZeusMapping WHERE YukonGroupId = ? AND EcobeeGroupId = ?");
-        jdbcTemplate.update(sql.toString(), yukonGroupId, zeusGroupId);
+        sql.append("DELETE FROM LMGroupZeusMapping WHERE EcobeeGroupId = ?");
+        jdbcTemplate.update(sql.toString(), zeusGroupId);
     }
 
     @Override
@@ -70,7 +60,7 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
     }
 
     @Override
-    public void deleteInventoryToZeusGroupId(int inventoryId) {
+    public void deleteZeusGroupMappingForInventoryId(int inventoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ZeusGroupInventoryMapping WHERE InventoryID").eq(inventoryId);
         jdbcTemplate.update(sql);
@@ -89,13 +79,6 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
     public List<String> getEventIds(int yukonGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EcobeeEventId FROM LMGroupZeusMapping WHERE YukonGroupId = ?");
-        return jdbcTemplate.queryForList(sql.getSql(), String.class, yukonGroupId);
-    }
-
-    @Override
-    public List<String> getZeusGroupNames(int yukonGroupId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT EcobeeGroupName FROM LMGroupZeusMapping WHERE YukonGroupId = ?");
         return jdbcTemplate.queryForList(sql.getSql(), String.class, yukonGroupId);
     }
 
