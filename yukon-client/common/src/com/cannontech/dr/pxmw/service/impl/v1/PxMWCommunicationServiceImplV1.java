@@ -149,7 +149,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     public void sendCommand(String deviceGuid, String commandGuid, PxMWCommandRequestV1 request)
             throws PxMWCommunicationExceptionV1, PxMWException {
         URI uri = getUri(Map.of("id", deviceGuid, "command_instance_id", commandGuid), PxMWRetrievalUrl.COMMANDS);
-        log.debug("Sending command to device. Device Guid:{} Command Guid:{} Request:{} URL:{}", deviceGuid, commandGuid,
+        log.info("Sending command to device. Device Guid:{} Command Guid:{} Request:{} URL:{}", deviceGuid, commandGuid,
                 new GsonBuilder().setPrettyPrinting().create().toJson(request),
                 uri);
         try {
@@ -161,7 +161,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
         } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
             throw e;
         } catch (Exception e) {
-            throw new PxMWException("Exception occured while getting channel values", e);
+            throw new PxMWException("Exception occured while sending command", e);
         }
     }
 
