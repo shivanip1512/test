@@ -69,6 +69,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
             receivedPoints.putAll(retrievePointData(paos.get(type), attr, queryRange));
         }
 
+        log.debug("Retrieved point data:{} for devices:{}", receivedPoints.values().size(), receivedPoints.keySet().size());
         if (!receivedPoints.isEmpty()) {
             dispatchData.putValues(receivedPoints.values());
             updateAssetAvailability(receivedPoints);
