@@ -2,17 +2,18 @@ package com.cannontech.simulators.pxmw.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.logging.log4j.core.Logger;
 import org.springframework.http.HttpStatus;
 
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
@@ -21,16 +22,15 @@ import com.cannontech.dr.pxmw.model.v1.PxMWSiteDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
 
 public class PxMWDataV1 extends PxMWDataGenerator {
     private PxMWFakeTimeseriesDataV1 timeseriesData = new PxMWFakeTimeseriesDataV1();
-
-    Map<String, SimpleDevice> guidsToIds = new HashMap<>();
  
+    private static final Logger log = YukonLogManager.getLogger(PxMWDataV1.class);
+
     public PxMWSimulatorResponse token() {
         if (status == HttpStatus.BAD_REQUEST.value()) {
             PxMWErrorV1 error = new PxMWErrorV1(List.of("ClientId"), "The field 'ClientId' is not a valid uuid.", "f0d48574-d5f5-47c1-b817-a1042a103b29", status, "2021-02-25T07:07:03.2423402+00:00", null);
@@ -97,10 +97,21 @@ public class PxMWDataV1 extends PxMWDataGenerator {
 
         List<PxMWTimeSeriesDeviceResultV1> resultList = pxMWTimeSeriesDataRequestV1.getDevices().stream().map(d -> {
             List<String> tags = Arrays.asList(d.getTagTrait().split(","));
-            PaoType type = getDeviceType(guidsToIds, d);
+            PaoType type = createRequest == null ? PaoType.LCR6600C: createRequest.getPaoType();
             List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(tags, type, randomBadData);
             return new PxMWTimeSeriesDeviceResultV1(d.getDeviceGuid(), result);
         }).collect(Collectors.toList());
+
+        AtomicInteger count = new AtomicInteger();
+        Map<String, List<String>> statistics = resultList.stream()
+                .collect(Collectors.toMap(r -> "#"+count.getAndIncrement() + " " + r.getDeviceId(),
+                        r -> r.getResults().stream().map(p -> p.getTag() + " " + p.getTrait() + " " + p.getValues().size())
+                                .collect(Collectors.toList())));
+        AtomicInteger total = new AtomicInteger();
+        resultList.forEach(r -> r.getResults().forEach(a -> total.addAndGet(a.getValues().size())));
+        
+        log.info("timeseries:{} total values:{}", statistics, total);
+        
 
         return new PxMWSimulatorResponse(resultList.toArray(), status);
     }
@@ -123,12 +134,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         });
         return siteDeviceList;
     }
-
-    private PaoType getDeviceType(Map<String, SimpleDevice> guidsToIds, PxMWTimeSeriesDeviceV1 d) {
-        PaoType type = createRequest == null ? PaoType.LCR6600C: createRequest.getPaoType();
-        return type;
-    }
-
+    
     public PxMWSimulatorResponse sendCommandV1(String id, String command_instance_id, PxMWCommandRequestV1 pxMWCommandRequestV1) {
         if (status == HttpStatus.BAD_REQUEST.value()) {
             PxMWErrorV1 error = new PxMWErrorV1(List.of("id"), "Invalid device command payload, id=123.",

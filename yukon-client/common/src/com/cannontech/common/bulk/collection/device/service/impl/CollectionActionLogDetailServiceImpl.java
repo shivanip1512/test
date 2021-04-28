@@ -170,13 +170,14 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                             pointName = pointNames.getIfPresent(pointId);
                             if (pointName == null) {
                                 try {
-                                    pointName = pointDao.getLitePoint(pointId).getPointName();
+                                    LitePoint point = pointDao.getLitePoint(pointId);
+                                    pointName = point.getPointName();
+                                    pointNames.put(point.getLiteID(), pointName);
+                                    log.debug("Unable to find point with id:{} in cache. Attempted the load from DB point name:{}", pointId, pointName);
                                 } catch (NotFoundException e) {
                                     pointName = "";
-                                    log.error(e);
+                                    log.error("Error", e);
                                 }
-                                log.debug("Unable to find point with id=" + pointId
-                                    + "in cache. Attempted the load from DB point name=" + pointName);
                             }
                         }
                         try {

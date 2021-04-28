@@ -7,5 +7,6 @@ public enum StrategyType {
     NM, 
     PORTER, 
     ECOBEE,
-    ITRON
+    ITRON,
+    EATON_CLOUD
 }
