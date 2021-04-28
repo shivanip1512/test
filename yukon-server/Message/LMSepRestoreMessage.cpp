@@ -5,7 +5,7 @@
 
 #include "msg_pcreturn.h"
 
-#include <cms/StreamMessage.h>
+#include "proton_encoder_proxy.h"
 
 namespace Cti {
 namespace Messaging {
@@ -20,7 +20,7 @@ _eventFlags(eventFlags)
 {
 }
 
-void LMSepRestoreMessage::streamInto(cms::StreamMessage &message) const
+void LMSepRestoreMessage::streamInto(Proton::EncoderProxy &message) const
 {
     message.writeInt(_groupId);
     message.writeInt(_utcRestoreTime);

@@ -2,7 +2,7 @@
 
 #include "ControlHistoryAssociationResponse.h"
 
-#include <cms/StreamMessage.h>
+#include "proton_encoder_proxy.h"
 
 namespace Cti {
 namespace Messaging {
@@ -13,7 +13,7 @@ _associationId(associationId)
 {
 }
 
-void ControlHistoryAssociationResponse::streamInto(cms::StreamMessage &message) const
+void ControlHistoryAssociationResponse::streamInto(Proton::EncoderProxy &message) const
 {
     message.writeInt(_historyRowId);
     message.writeInt(_associationId);

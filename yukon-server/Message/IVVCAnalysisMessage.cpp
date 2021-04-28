@@ -2,7 +2,7 @@
 #include "CtiTime.h"
 #include "IVVCAnalysisMessage.h"
 
-#include <cms/StreamMessage.h>
+#include "proton_encoder_proxy.h"
 
 
 namespace Cti           {
@@ -118,7 +118,7 @@ IVVCAnalysisMessage * IVVCAnalysisMessage::createSubbusEnabledMessage( const int
     return message;
 }
 
-void IVVCAnalysisMessage::streamInto( cms::StreamMessage & message ) const
+void IVVCAnalysisMessage::streamInto( Proton::EncoderProxy & message ) const
 {
     message.writeInt( _subbusId );
     message.writeLong( _timestamp );

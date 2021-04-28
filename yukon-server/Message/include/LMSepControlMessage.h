@@ -63,7 +63,7 @@ public:
                                            unsigned int   utcStartTime,
                                            unsigned short controlMinutes );
 
-    void streamInto(cms::StreamMessage &message) const;
+    void streamInto(Proton::EncoderProxy &message) const;
 };
 
 

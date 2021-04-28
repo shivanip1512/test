@@ -41,7 +41,7 @@ extern IM_EX_MSG std::unique_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
 struct test_ActiveMQConnectionManager : Cti::Messaging::ActiveMQConnectionManager
 {
-    void enqueueOutgoingMessage(const std::string &queueName, Cti::Messaging::StreamableMessage::auto_type&& message, ReturnLabel returnLabel) override
+    void enqueueOutgoingMessage(const std::string &queueName, Cti::Messaging::StreamableMessagePtr message, ReturnLabel returnLabel) override
     {
         //  ignore message, do not send
     }

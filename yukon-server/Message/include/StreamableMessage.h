@@ -2,22 +2,20 @@
 
 #include "dlldefs.h"
 
-namespace cms {
-    class StreamMessage;
-}
+namespace Cti::Messaging {
 
-namespace Cti {
-namespace Messaging {
+namespace Proton {
+    class EncoderProxy;
+}
 
 struct IM_EX_MSG StreamableMessage
 {
-    typedef std::unique_ptr<const StreamableMessage> auto_type;
-
     virtual ~StreamableMessage() { };
 
-    virtual void streamInto(cms::StreamMessage &message) const = 0;
+    virtual void streamInto(Proton::EncoderProxy& msg) const = 0;
 };
 
-}
-}
+using StreamableMessagePtr = std::unique_ptr<const StreamableMessage>;
 
+
+}

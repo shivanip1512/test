@@ -22,7 +22,7 @@ public:
                                   long dutyCyclePeriod,
                                   long criticality );
 
-    void streamInto(cms::StreamMessage & message) const;
+    void streamInto(Proton::EncoderProxy & message) const;
 
 private:
 
@@ -44,7 +44,7 @@ public:
     LMItronRestoreMessage( int groupId,
                            long long restoreTime );
 
-    void streamInto(cms::StreamMessage & message) const;
+    void streamInto(Proton::EncoderProxy & message) const;
 
 private:
 

@@ -4,7 +4,7 @@
 
 #include "msg_pcreturn.h"
 
-#include <cms/StreamMessage.h>
+#include "proton_encoder_proxy.h"
 
 #include <ctime>
 #include <atomic>
@@ -26,7 +26,7 @@ messageId(0),
 messagePriority(0)
 {}
 
-void RfnBroadcastMessage::streamInto(cms::StreamMessage &message) const
+void RfnBroadcastMessage::streamInto(Proton::EncoderProxy &message) const
 {
     long long milliseconds = (long long)expirationDuration * 1000;
 

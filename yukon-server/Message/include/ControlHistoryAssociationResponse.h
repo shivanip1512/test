@@ -19,7 +19,7 @@ public:
     ControlHistoryAssociationResponse(int historyRowId,
                                       int associationId);
 
-    void streamInto(cms::StreamMessage &message) const;
+    void streamInto(Proton::EncoderProxy &message) const;
 };
 
 

@@ -4,7 +4,7 @@
 
 #include "msg_pcreturn.h"
 
-#include <cms/StreamMessage.h>
+#include "proton_encoder_proxy.h"
 
 namespace Cti {
 namespace Messaging {
@@ -18,7 +18,7 @@ PorterResponseMessage::PorterResponseMessage(const CtiReturnMsg &msg, const Conn
 {
 }
 
-void PorterResponseMessage::streamInto(cms::StreamMessage &message) const
+void PorterResponseMessage::streamInto(Proton::EncoderProxy &message) const
 {
     message.writeLong(_connectionId);
     message.writeInt(_deviceId);

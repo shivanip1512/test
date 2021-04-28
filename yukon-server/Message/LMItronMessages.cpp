@@ -4,7 +4,7 @@
 #include "LMItronMessages.h"
 #include "msg_pcreturn.h"
 
-#include <cms/StreamMessage.h>
+#include "proton_encoder_proxy.h"
 
 
 namespace Cti::Messaging::LoadManagement {
@@ -31,7 +31,7 @@ LMItronCyclingControlMessage::LMItronCyclingControlMessage( int groupId,
     // empty
 }
 
-void LMItronCyclingControlMessage::streamInto(cms::StreamMessage & message) const
+void LMItronCyclingControlMessage::streamInto(Proton::EncoderProxy & message) const
 {
     message.writeInt( _groupId );
     message.writeLong( _startTime );
@@ -52,7 +52,7 @@ LMItronRestoreMessage::LMItronRestoreMessage( int groupId,
     // empty
 }
 
-void LMItronRestoreMessage::streamInto(cms::StreamMessage & message) const
+void LMItronRestoreMessage::streamInto(Proton::EncoderProxy & message) const
 {
     message.writeInt( _groupId );
     message.writeLong( _restoreTime );

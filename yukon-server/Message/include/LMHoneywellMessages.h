@@ -19,7 +19,7 @@ public:
                                       const bool mandatory,
                                       const bool rampInOut );
 
-    void streamInto(cms::StreamMessage & message) const;
+    void streamInto(Proton::EncoderProxy & message) const;
 
 private:
 
@@ -44,7 +44,7 @@ public:
                                        const long long startTime,
                                        const int  controlDuration );
 
-    void streamInto(cms::StreamMessage & message) const;
+    void streamInto(Proton::EncoderProxy & message) const;
 
 private:
 
@@ -64,7 +64,7 @@ public:
     LMHoneywellRestoreMessage( const int groupId,
                                const int restoreTime );
 
-    void streamInto(cms::StreamMessage & message) const;
+    void streamInto(Proton::EncoderProxy & message) const;
 
 private:
 

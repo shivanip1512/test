@@ -7,9 +7,7 @@
 
 class CtiTime;
 
-namespace Cti           {
-namespace Messaging     {
-namespace CapControl    {
+namespace Cti::Messaging::CapControl {
 
 class IM_EX_MSG CapControlOperationMessage : public StreamableMessage
 {
@@ -43,7 +41,7 @@ public:
     static CapControlOperationMessage * createRefreshSystemMessage( const int       deviceId,
                                                                     const CtiTime & timestamp);
 
-    virtual void streamInto( cms::StreamMessage & message ) const;
+    virtual void streamInto( Proton::EncoderProxy& message ) const;
 
 protected:
 
@@ -55,4 +53,5 @@ protected:
                                 const int       opearationId,
                                 const CtiTime & timestamp );
 };
-}}}
+
+}

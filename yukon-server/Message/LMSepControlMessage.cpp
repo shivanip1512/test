@@ -5,7 +5,7 @@
 
 #include "msg_pcreturn.h"
 
-#include <cms/StreamMessage.h>
+#include "proton_encoder_proxy.h"
 
 namespace Cti {
 namespace Messaging {
@@ -109,7 +109,7 @@ auto LMSepControlMessage::createCycleMessage(int            groupId,
     return retVal;
 }
 
-void LMSepControlMessage::streamInto(cms::StreamMessage &message) const
+void LMSepControlMessage::streamInto(Proton::EncoderProxy &message) const
 {
     // To make the java conversion work properly, we are sending all unsigned fields using
     // a larger element. Bytes are sent as shorts, shorts as ints, etc.

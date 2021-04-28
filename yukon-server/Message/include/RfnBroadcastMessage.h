@@ -30,7 +30,7 @@ public:
                           unsigned int expirationDuration,
                           const std::vector<unsigned char> &payload);
 
-    void streamInto(cms::StreamMessage &message) const;
+    void streamInto(Proton::EncoderProxy &message) const;
 
     struct IM_EX_MSG RfnMessageClass
     {

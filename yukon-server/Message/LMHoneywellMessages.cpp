@@ -2,7 +2,7 @@
 
 #include "LMHoneywellMessages.h"
 
-#include <cms/StreamMessage.h>
+#include "proton_encoder_proxy.h"
 
 
 namespace Cti::Messaging::LoadManagement
@@ -26,7 +26,7 @@ LMHoneywellCyclingControlMessage::LMHoneywellCyclingControlMessage( const int  p
     // empty
 }
 
-void LMHoneywellCyclingControlMessage::streamInto(cms::StreamMessage & message) const
+void LMHoneywellCyclingControlMessage::streamInto(Proton::EncoderProxy & message) const
 {
     message.writeInt( _programId );
     message.writeInt(_groupId);
@@ -55,7 +55,7 @@ LMHoneywellSetpointControlMessage::LMHoneywellSetpointControlMessage( const int 
     // empty
 }
 
-void LMHoneywellSetpointControlMessage::streamInto(cms::StreamMessage & message) const
+void LMHoneywellSetpointControlMessage::streamInto(Proton::EncoderProxy & message) const
 {
     message.writeInt( _programId );
     message.writeInt( _groupId );
@@ -74,7 +74,7 @@ LMHoneywellRestoreMessage::LMHoneywellRestoreMessage( const int groupId,
     // empty
 }
 
-void LMHoneywellRestoreMessage::streamInto(cms::StreamMessage & message) const
+void LMHoneywellRestoreMessage::streamInto(Proton::EncoderProxy & message) const
 {
     message.writeInt(_groupId);
     message.writeInt(_restoreTime);

@@ -18,7 +18,7 @@ public:
 
     LMSepRestoreMessage(int groupId, unsigned int restoreTime, unsigned char eventFlags);
 
-    void streamInto(cms::StreamMessage &message) const;
+    void streamInto(Proton::EncoderProxy &message) const;
 };
 
 

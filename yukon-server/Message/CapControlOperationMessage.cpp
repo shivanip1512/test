@@ -2,7 +2,7 @@
 #include "CtiTime.h"
 #include "CapControlOperationMessage.h"
 
-#include <cms/StreamMessage.h>
+#include "proton_encoder_proxy.h"
 
 
 namespace Cti           {
@@ -69,7 +69,7 @@ CapControlOperationMessage * CapControlOperationMessage::createRefreshSystemMess
     return message;
 }
 
-void CapControlOperationMessage::streamInto( cms::StreamMessage & message ) const
+void CapControlOperationMessage::streamInto( Proton::EncoderProxy& message ) const
 {
     message.writeInt( _deviceId );
     message.writeInt( _operationId );
