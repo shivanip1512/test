@@ -149,14 +149,14 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     public void sendCommand(String deviceGuid, String commandGuid, PxMWCommandRequestV1 request)
             throws PxMWCommunicationExceptionV1, PxMWException {
         URI uri = getUri(Map.of("id", deviceGuid, "command_instance_id", commandGuid), PxMWRetrievalUrl.COMMANDS);
-        log.info("Sending command to device. Device Guid:{} Command Guid:{} Request:{} URL:{}", deviceGuid, commandGuid,
+        log.debug("Sending command to device. Device Guid:{} Command Guid:{} Request:{} URL:{}", deviceGuid, commandGuid,
                 new GsonBuilder().setPrettyPrinting().create().toJson(request),
                 uri);
         try {
             HttpEntity<PxMWCommandRequestV1> requestEntity = getRequestWithAuthHeaders(request);
             ResponseEntity<PxMWCommandResponseV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
                     PxMWCommandResponseV1.class);
-            log.info("Sent command to device. Device Guid:{} Command Guid:{} Response:{}", deviceGuid, commandGuid,
+            log.debug("Sent command to device. Device Guid:{} Command Guid:{} Response:{}", deviceGuid, commandGuid,
                     new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
         } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
             throw e;
