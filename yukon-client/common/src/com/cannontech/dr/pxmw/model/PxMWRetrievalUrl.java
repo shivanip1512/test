@@ -15,7 +15,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 
 //Data retrieval URLs
 public enum PxMWRetrievalUrl {
-    SECURITY_TOKEN(PxMWVersion.V1, "/api/security/token",
+    SECURITY_TOKEN(PxMWVersion.V1, "/api/security/serviceaccount/token",
             "https://eas-all-apim-eus-dev.azure-api.net/api/security/serviceAccount/token",
             // 200,401
             List.of(HttpStatus.OK, HttpStatus.UNAUTHORIZED),

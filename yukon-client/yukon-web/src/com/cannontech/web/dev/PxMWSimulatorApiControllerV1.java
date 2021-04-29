@@ -62,7 +62,7 @@ public class PxMWSimulatorApiControllerV1 {
         }
     }
     
-    @PostMapping("/security/token")
+    @PostMapping("/security/serviceaccount/token")
     public ResponseEntity<Object> token(@RequestBody PxMWCredentialsV1  pxMWCredentialsV1) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
