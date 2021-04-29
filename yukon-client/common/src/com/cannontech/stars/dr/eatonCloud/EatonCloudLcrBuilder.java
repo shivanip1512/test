@@ -50,8 +50,13 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
     public void createDevice(Hardware hardware) {
         try {
             if (deviceDao.isGuidExists(hardware.getGuid())) {
-                throw new PxMWException("Guid:" + hardware.getGuid() + " already exits for " + hardware.getDeviceId());
+                throw new PxMWException("Guid:" + hardware.getGuid() + " already exists.");
             }     
+            
+            if (!pxMWCommunicationServiceV1.isCreatableDevice(hardware.getGuid())) {
+                throw new PxMWException("GUID " + hardware.getGuid() + " does not exist in this site");
+            }
+            
             SimpleDevice pao = creationService.createDeviceByDeviceType(
                 hardwareTypeToPaoType.get(hardware.getHardwareType()), hardware.getSerialNumber());
             inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), pao.getDeviceId());

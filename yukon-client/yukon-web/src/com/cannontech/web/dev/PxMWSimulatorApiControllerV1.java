@@ -27,7 +27,7 @@ import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
 import com.cannontech.web.security.annotation.CheckCparm;
 
 @RestController
-@RequestMapping("/pxMiddleware/api/v1")
+@RequestMapping("/pxMiddleware/api")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 /**
  * This controller is used to simulate API responses. The message is sent to Simulator service which will generate a fake data,
@@ -52,7 +52,7 @@ public class PxMWSimulatorApiControllerV1 {
             @RequestParam(required=false) Boolean includeDetail) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
-                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICES_BY_SITE_V1, "devicesV1",
+                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICES_BY_SITE, "devicesV1",
                             new Class[] { String.class, Boolean.class, Boolean.class },
                             new Object[] { id, recursive, includeDetail }), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
@@ -92,15 +92,29 @@ public class PxMWSimulatorApiControllerV1 {
     }
 
     @PutMapping("/devices/timeseries/")
-    public ResponseEntity<Object> timeseries(@RequestBody PxMWTimeSeriesDataRequestV1 pxMWTimeSeriesDataRequestV1) {
+    public ResponseEntity<Object> timeseriesV1(@RequestBody PxMWTimeSeriesDataRequestV1 pxMWTimeSeriesDataRequestV1) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
-                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.TREND_DATA_RETRIEVAL, "timeseries",
+                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.TREND_DATA_RETRIEVAL, "timeseriesV1",
                             new Class[] { PxMWTimeSeriesDataRequestV1.class },
                             new Object[] { pxMWTimeSeriesDataRequestV1 }),
                             PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (Exception e) {
+            log.error("Error", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @GetMapping("/devices/{deviceId}/details")
+    public ResponseEntity<Object> detailsV1(@PathVariable String deviceId, @RequestParam(required=false) Boolean recursive) {
+        try {
+            PxMWSimulatorResponse response = simulatorsCommunicationService
+                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICE_DETAIL, "detailsV1",
+                            new Class[] { String.class, Boolean.class},
+                            new Object[] { deviceId, recursive }), PxMWSimulatorResponse.class);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
+        } catch (ExecutionException e) {
             log.error("Error", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
