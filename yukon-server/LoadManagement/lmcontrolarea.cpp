@@ -2448,10 +2448,29 @@ void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
             }
 
             if( lm_direct->getManualControlReceivedFlag() ||
-                lm_direct->getDirectStopTime() == resultStop )
+                lm_direct->getDirectStopTime() == resultStop )  
             {
+                if( resultStart != lm_direct->getDirectStartTime() && resultStart != beginTime )
+                {
+                    lm_direct->setDirectStartTime(resultStart);
+                    if( lm_direct->isControlling() )
+                    //If we are controlling already, we don't want to send another start message.
+                    //This happens when the control window is moved around.
+                    {
+                        lm_direct->scheduleStopNotificationForTimedControl(resultStop);
+                    }
+                    else
+                    {
+                        lm_direct->scheduleNotificationForTimedControl(resultStart, resultStop);
+                    }
+
+                    setUpdatedFlag(TRUE);
+                }
+
                 continue;
             }
+
+            lm_direct->setDirectStopTime(resultStop);
 
             if( ! lm_direct->getConstraintOverride() )
             {
@@ -2470,21 +2489,6 @@ void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
                     continue;
                 }
             }
-
-            lm_direct->setDirectStartTime(resultStart);
-            lm_direct->setDirectStopTime(resultStop);
-
-            if( lm_direct->isControlling() )
-            {   // If we are controlling already, we dont want to send another start message. This happens
-                // when the control window is moved around.
-                lm_direct->scheduleStopNotificationForTimedControl(resultStop);
-            }
-            else
-            {
-                lm_direct->scheduleNotificationForTimedControl(resultStart, resultStop);
-            }
-
-            setUpdatedFlag(TRUE);
         }
     }
 }
