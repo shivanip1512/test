@@ -34,9 +34,9 @@ public interface EcobeeZeusGroupDao {
     void deleteZeusGroupMappingForInventoryId(int inventoryId);
 
     /**
-     * Insert an event ID for a Zeus group ID (overwriting any existing value).
+     * Insert an event ID for a Yukon group ID (overwriting any existing value).
      */
-    void updateEventId(String eventId, String zeusGroupId);
+    void updateEventId(String eventId, int yukonGroupId);
 
     /**
      * Retrieve a list of event IDs for a Yukon group ID.

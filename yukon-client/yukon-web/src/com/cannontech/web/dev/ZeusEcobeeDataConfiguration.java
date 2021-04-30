@@ -6,12 +6,14 @@ public class ZeusEcobeeDataConfiguration {
     private int createDevice = 0;
     private int deleteDevice = 0;
     private int enrollment = 0;
+    private int issueDemandResponse = 0;
 
-    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment) {
+    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment, int issueDemandResponse) {
         this.authenticate = authenticate;
         this.createDevice = createDevice;
         this.deleteDevice = deleteDevice;
         this.enrollment = enrollment;
+        this.issueDemandResponse = issueDemandResponse;
     }
 
     public int getAuthenticate() {
@@ -30,6 +32,10 @@ public class ZeusEcobeeDataConfiguration {
         return enrollment;
     }
 
+    public int getIssueDemandResponse() {
+        return issueDemandResponse;
+    }
+
     public void setAuthenticate(int authenticate) {
         this.authenticate = authenticate;
     }
@@ -44,6 +50,10 @@ public class ZeusEcobeeDataConfiguration {
 
     public void setEnrollment(int enrollment) {
         this.enrollment = enrollment;
+    }
+
+    public void setIssueDemandResponse(int issueDemandResponse) {
+        this.issueDemandResponse = issueDemandResponse;
     }
 
 }
