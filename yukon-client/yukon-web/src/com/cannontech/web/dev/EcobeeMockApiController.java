@@ -42,6 +42,7 @@ import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
 import com.cannontech.dr.ecobee.message.ZeusErrorResponse;
+import com.cannontech.dr.ecobee.message.ZeusPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.partial.Status;
@@ -57,6 +58,7 @@ public class EcobeeMockApiController {
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
     @Autowired private MockZeusResponseFactory responseFactory;
+    private ZeusPushConfig config;
 
     @IgnoreCsrfCheck
     @RequestMapping(value = "hierarchy/set", method = RequestMethod.POST)
@@ -236,6 +238,18 @@ public class EcobeeMockApiController {
         } else {
             return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("utilities/{utilityId}/pushconfig")
+    public ResponseEntity<Object> showPushApiConfiguration() {
+        return new ResponseEntity<>(config, HttpStatus.OK);
+    }
+
+    @IgnoreCsrfCheck
+    @PostMapping("utilities/{utilityId}/pushconfig")
+    public ResponseEntity<Object> createPushApiConfiguration(@RequestBody ZeusPushConfig zeusPushConfig) {
+        config = new ZeusPushConfig(zeusPushConfig.getReportingUrl(), zeusPushConfig.getPrivateKey());
+        return new ResponseEntity<>(config, HttpStatus.OK);
     }
 
     /**

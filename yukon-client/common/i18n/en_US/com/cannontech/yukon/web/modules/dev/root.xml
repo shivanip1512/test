@@ -415,6 +415,8 @@
     <entry key="yukon.web.modules.dev.ecobee.mockTest.createDevice">Create Device</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.deleteDevice">Delete Device / Unenrollment</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.enrollment">Enrollment</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.createPushConfiguration">Create Push Configuration</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.showPushConfiguration">Show Push Configuration</entry>
     
     <!-- Ecobee PGP Key Pair -->
     <entry key="yukon.web.modules.dev.ecobeePGPKeyPair">Ecobee PGP Key Pair</entry>
