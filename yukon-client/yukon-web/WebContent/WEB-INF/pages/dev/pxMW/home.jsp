@@ -105,6 +105,14 @@
 
     <br/>
     
+    <pre class="code js-test-endpoint-results dn"></pre>
+    
+    
+      <div class="notes">
+        <br/>Creates devices by using auto creating service.
+        <br/>Setup Development Database can be also used to create LCRs and add them to the account if the simulator service is running.
+     </div>
+    <br/>
     <cti:url var="autoCreationUrl" value="deviceAutoCreation"/>
     <form:form id="autoCreationForm" action="${autoCreationUrl}" method="post">
         <tags:nameValueContainer>
@@ -121,8 +129,6 @@
             </tags:nameValue>
         </tags:nameValueContainer>
     </form:form>
-
-    <pre class="code js-test-endpoint-results dn"></pre>
     
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.pxMWSimulator.js" />
 </cti:standardPage>
