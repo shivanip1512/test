@@ -15,26 +15,26 @@ import com.cannontech.system.dao.GlobalSettingDao;
 
 //Data retrieval URLs
 public enum PxMWRetrievalUrl {
-    SECURITY_TOKEN(PxMWVersion.V1, "/api/security/serviceaccount/token",
+    SECURITY_TOKEN(PxMWVersion.V1, "/security/serviceaccount/token",
             "https://eas-all-apim-eus-dev.azure-api.net/api/security/serviceAccount/token",
             // 200,401
             List.of(HttpStatus.OK, HttpStatus.UNAUTHORIZED),
             ImmutableMap.of(),
             false),
-    DEVICES_BY_SITE(PxMWVersion.V1, "/api/sites/{id}/devices",
+    DEVICES_BY_SITE(PxMWVersion.V1, "/sites/{id}/devices",
             "https://eas-all-apim-eus-dev.developer.azure-api.net/api-details#api=devices&operation=get-getsitedevices",
             // 200, 400, 401
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED),
             ImmutableMap.of("Site Guid", "dd5bf079-b8ea-430c-ad94-1cf54124fc02", "Recursive* (true, false)", "false",
                     "Include Detail* (true, false)", "false"),
             false),
-    TREND_DATA_RETRIEVAL(PxMWVersion.V1, "/api/devices/timeseries/",
+    TREND_DATA_RETRIEVAL(PxMWVersion.V1, "/devices/timeseries/",
             "https://eas-all-apim-eus-dev.developer.azure-api.net/api-details#api=devices&operation=post-gettimeseriesdata",
             // 200, 400, 401
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED),
             ImmutableMap.of(),
             true),
-    COMMANDS(PxMWVersion.V1, "/api/devices/{id}/commands/{command_instance_id}",
+    COMMANDS(PxMWVersion.V1, "/devices/{id}/commands/{command_instance_id}",
             "https://adopteriotwebapi.eaton.com/swagger/ui/index#!/Command/Command_GenericDeviceCommand",
             //200, 400, 401, 404
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
@@ -42,7 +42,7 @@ public enum PxMWRetrievalUrl {
                     "Command Guid (Unique command instance id used to differentiate every command issued)",
                     "ba84bae0-2e69-4367-9162-6a14039f9bec"),
             true),
-    DEVICE_DETAIL(PxMWVersion.V1, "/api/devices/{deviceId}/details",
+    DEVICE_DETAIL(PxMWVersion.V1, "/devices/{deviceId}/details",
             "https://eas-all-apim-eus-dev.developer.azure-api.net/api-details#api=devices&operation=get-getsitedevices",
             // 200, 400, 401, 404
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),

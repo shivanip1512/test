@@ -27,7 +27,7 @@ import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
 import com.cannontech.web.security.annotation.CheckCparm;
 
 @RestController
-@RequestMapping("/pxMiddleware/api")
+@RequestMapping("/api")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 /**
  * This controller is used to simulate API responses. The message is sent to Simulator service which will generate a fake data,
