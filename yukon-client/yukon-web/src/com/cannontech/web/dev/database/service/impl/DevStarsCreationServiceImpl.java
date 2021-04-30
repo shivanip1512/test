@@ -349,6 +349,7 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
             hardware.setSerialNumber(name);
             hardware.setGuid(guid);
             hardware.setCreatingNewTwoWayDevice(false);
+            hardware.setDisplayLabel(name);
         }
         if (!canAddStarsHardware(devStars, hardware)) {
             devStars.incrementFailureCount();
