@@ -109,7 +109,7 @@
     
     
       <div class="notes">
-        <br/>Creates devices by using auto creating service.
+        <br/>Creates devices by using auto creation service.
         <br/>Setup Development Database can be also used to create LCRs and add them to the account if the simulator service is running.
      </div>
     <br/>
