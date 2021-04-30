@@ -59,6 +59,8 @@
     <script src="<c:url value="/resources/js/pages/yukon.smart.notifications.js"/>"></script>
 </c:if>
 
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
 </head>
 <body>
     <audio id="alert-audio">
@@ -82,7 +84,8 @@
             
             <!-- Needed to render React Navigation menu -->
             <c:set var="path" value='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}'/>
-            <div id="navigation" style="position:sticky;top:0;z-index:1200" data-path="${path}"></div>
+            <c:set var="reactPath" value='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}'/>
+            <div id="navigation" style="position:sticky;top:0;z-index:1200" data-path="${path}" data-react-path="${reactPath}"></div>
                                 
             <header class="yukon-header">
 
