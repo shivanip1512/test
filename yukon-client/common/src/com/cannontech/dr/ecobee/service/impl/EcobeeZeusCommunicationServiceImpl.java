@@ -20,6 +20,7 @@ import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.CriteriaSelector;
 import com.cannontech.dr.ecobee.message.Selector;
 import com.cannontech.dr.ecobee.message.ZeusGroup;
+import com.cannontech.dr.ecobee.message.ZeusPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
@@ -91,10 +92,6 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         } else {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.");
         }
-    }
-
-    private String getUrlBase() {
-        return settingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
     }
 
     @Override
@@ -220,5 +217,54 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
+    }
+    
+    @Override
+    public void createPushApiConfiguration(String reportingUrl, String privateKey) {
+        try {
+            String utilityId = getUtilityId();
+            String pushConfigURL = getUrlBase() + "utilities/" + utilityId + "/pushconfig";
+            ZeusPushConfig zeusPushConfig = new ZeusPushConfig(reportingUrl, privateKey);
+
+            requestHelper.callEcobeeAPIForObject(pushConfigURL, HttpMethod.POST, Object.class, zeusPushConfig);
+
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+    }
+
+    @Override
+    public ZeusPushConfig showPushApiConfiguration() {
+        try {
+            String utilityId = getUtilityId();
+            String showPushConfigURL = getUrlBase() + "utilities/" + utilityId + "/pushconfig";
+
+            ResponseEntity<?> responseEntity = requestHelper.callEcobeeAPIForObject(showPushConfigURL, HttpMethod.GET,
+                    Object.class);
+            return (ZeusPushConfig) responseEntity.getBody();
+
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private String getUtilityId() throws RestClientException, EcobeeAuthenticationException {
+        String utilityId = StringUtils.EMPTY;
+        String showUsersURL = getUrlBase() + "auth/user";
+        try {
+            ResponseEntity<?> responseEntity = requestHelper.callEcobeeAPIForObject(showUsersURL, HttpMethod.GET, Object.class);
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                Map<String, Object> responseFields = (Map<String, Object>) ((Map<String, Object>) responseEntity.getBody());
+                utilityId = (String) responseFields.get("utility_id");
+            }
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+        return utilityId;
+    }
+
+    private String getUrlBase() {
+        return settingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
     }
 }
