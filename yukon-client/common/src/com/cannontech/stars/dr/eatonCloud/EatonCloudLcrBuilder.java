@@ -54,9 +54,10 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
             }     
             
             if (!pxMWCommunicationServiceV1.isCreatableDevice(hardware.getGuid())) {
-                throw new PxMWException("GUID " + hardware.getGuid() + " does not exist in this site");
+                throw new PxMWException("Unable to find a matching device identifier GUID:" + hardware.getGuid()
+                        + " registered in your Brightlayer site. Device cannot be added to Yukon at this time");
             }
-            
+  
             SimpleDevice pao = creationService.createDeviceByDeviceType(
                 hardwareTypeToPaoType.get(hardware.getHardwareType()), hardware.getSerialNumber());
             inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), pao.getDeviceId());
