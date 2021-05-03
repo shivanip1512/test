@@ -260,14 +260,34 @@ public class EcobeeMockApiController {
 
     @GetMapping("utilities/{utilityId}/pushconfig")
     public ResponseEntity<Object> showPushApiConfiguration() {
-        return new ResponseEntity<>(config, HttpStatus.OK);
+        int getShowPushConfigCode = zeusEcobeeDataConfiguration.getShowPushConfiguration();
+        if (getShowPushConfigCode == 0) {
+            return new ResponseEntity<>(config, HttpStatus.OK);
+        } else if (getShowPushConfigCode == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (getShowPushConfigCode == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @IgnoreCsrfCheck
     @PostMapping("utilities/{utilityId}/pushconfig")
     public ResponseEntity<Object> createPushApiConfiguration(@RequestBody ZeusCreatePushConfig zeusPushConfig) {
-        config = new ZeusCreatePushConfig(zeusPushConfig.getReportingUrl(), zeusPushConfig.getPrivateKey());
-        return new ResponseEntity<>(config, HttpStatus.OK);
+        ZeusCreatePushConfig config = new ZeusCreatePushConfig();
+        zeusPushConfig.setPrivateKey(zeusPushConfig.getPrivateKey());
+        zeusPushConfig.setReportingUrl(zeusPushConfig.getReportingUrl());
+        int getPushConfigCode = zeusEcobeeDataConfiguration.getCreatePushConfiguration();
+        if (getPushConfigCode == 0) {
+            return new ResponseEntity<>(config, HttpStatus.OK);
+        } else if (getPushConfigCode == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (getPushConfigCode == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     /**
