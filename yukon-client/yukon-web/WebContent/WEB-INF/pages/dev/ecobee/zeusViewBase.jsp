@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -38,6 +38,9 @@
              } break;
              case 'showPushConfiguration' : {
                  enabledSelectedOption(showPushConfiguration, showPushConfigurationOp);
+             } break;
+             case 'showUser' : {
+                 enabledSelectedOption(showUser, showUserOp);
              } break;
          }
          });
@@ -92,6 +95,12 @@
                             <label> 
                                 <input id="showPushConfiguration" type="checkbox" name="showPushConfiguration"> 
                                 <i:inline key=".showPushConfiguration" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="showUser" type="checkbox" name="showUser"> 
+                                <i:inline key=".showUser" />
                             </label>
                         </li>
                     </ul>
@@ -156,6 +165,14 @@
                                     </c:forEach>
                                 </select>
                                 <input type="hidden" name="showPushConfigurationOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="showUserOp" name="showUserOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="showUserOp" value="0" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>
