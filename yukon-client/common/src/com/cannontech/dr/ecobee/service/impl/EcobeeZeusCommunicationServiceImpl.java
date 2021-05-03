@@ -242,7 +242,9 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         try {
             String utilityId = getUtilityId();
             String pushConfigURL = getUrlBase() + "utilities/" + utilityId + "/pushconfig";
-            ZeusCreatePushConfig zeusPushConfig = new ZeusCreatePushConfig(reportingUrl, privateKey);
+            ZeusCreatePushConfig zeusPushConfig = new ZeusCreatePushConfig();
+            zeusPushConfig.setPrivateKey(privateKey);
+            zeusPushConfig.setReportingUrl(reportingUrl);
 
             requestHelper.callEcobeeAPIForObject(pushConfigURL, HttpMethod.POST, Object.class, zeusPushConfig);
 
@@ -251,13 +253,12 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         }
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ZeusShowPushConfig showPushApiConfiguration() {
         try {
             String utilityId = getUtilityId();
             String showPushConfigURL = getUrlBase() + "utilities/" + utilityId + "/pushconfig";
-            
+
             ResponseEntity<ZeusShowPushConfig> responseEntity = (ResponseEntity<ZeusShowPushConfig>) requestHelper
                     .callEcobeeAPIForObject(showPushConfigURL, HttpMethod.GET, ZeusShowPushConfig.class);
             return responseEntity.getBody();
