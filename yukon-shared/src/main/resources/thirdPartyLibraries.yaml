@@ -2306,11 +2306,11 @@ Java :
   - filename : protobuf-java-format-1.4.jar
     yukon group : Protobuf
     project : Protobuf
-    version : 3.15.8
+    version : 1.4
     project URL : "https://github.com/protocolbuffers/protobuf/releases"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://repo1.maven.org/maven2/com/googlecode/protobuf-java-format/protobuf-java-format/1.4/"
+    maven URL : "https://mvnrepository.com/artifact/com.googlecode.protobuf-java-format/protobuf-java-format/1.4"
     md5 : 8ed79db49560c6f4f6311e2028968d60
     sha1 : ea0876fccd93c86802af1b07ffc6829525759a10
     updated : 2021-05-03
