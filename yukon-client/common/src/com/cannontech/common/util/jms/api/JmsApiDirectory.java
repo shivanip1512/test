@@ -13,9 +13,11 @@ import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_NETWORK;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.SIMULATOR_MANAGEMENT;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.SIMULATOR;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_FIELD_SIMULATOR;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_LOAD_MANAGEMENT;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_MESSAGE_BROKER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_PORTER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SERVICE_MANAGER;
@@ -23,7 +25,6 @@ import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_S
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WATCHDOG;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_LOAD_MANAGEMENT;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_MULTI_RESPONSE;
@@ -109,7 +110,6 @@ import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
-import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.core.dynamic.RichPointData;
@@ -141,6 +141,7 @@ import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
+import com.cannontech.simulators.message.request.PxMWDeviceAutoCreationSimulatonRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.FieldSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.ModifyFieldSimulatorResponse;
@@ -1293,21 +1294,23 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
 
-    public static final JmsApi<RfnSupportBundleRequest,?,RfnSupportBundleResponse> RF_SUPPORT_BUNDLE =
-            JmsApi.builder(RfnSupportBundleRequest.class, RfnSupportBundleResponse.class)
-                  .name("RF Support Bundle")
-                  .description("Sends a support bundle request from Yukon to Network Manager, specifying file "
-                          + "name and parameters. Response is sent by Network Manager when the support bundle "
-                          + "is generated, processed on a different queue.")
-                  .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("yukon.qr.obj.support.rfn.RfnSupportBundleRequest"))
-                  .responseQueue(new JmsQueue("yukon.qr.obj.support.rfn.RfnSupportBundleResponse"))
-                  .requestMessage(RfnSupportBundleRequest.class)
-                  .responseMessage(RfnSupportBundleResponse.class)
-                  .sender(YUKON_WEBSERVER)
-                  .receiver(NETWORK_MANAGER)
-                  .logger(YukonLogManager.getRfnLogger())
-                  .build();
+    public static final JmsApi<RfnSupportBundleRequest,RfnSupportBundleResponse ,RfnSupportBundleResponse> RF_SUPPORT_BUNDLE =
+            JmsApi.builder(RfnSupportBundleRequest.class, RfnSupportBundleResponse.class, RfnSupportBundleResponse.class)
+            .name("RF Support Bundle")
+            .description("Sends a support bundle request from Yukon to Network Manager, specifying file "
+            + "name and parameters. Response is sent by Network Manager when the support bundle "
+            + "is generated, processed on a different queue.")
+            .communicationPattern(REQUEST_RESPONSE)
+            .queue(new JmsQueue("yukon.qr.obj.support.rfn.RfnSupportBundleRequest"))
+            .responseQueue(JmsQueue.TEMP_QUEUE)
+            .ackQueue(JmsQueue.TEMP_QUEUE)
+            .requestMessage(RfnSupportBundleRequest.class)
+            .ackMessage(RfnSupportBundleResponse.class)
+            .responseMessage(RfnSupportBundleResponse.class)
+            .sender(YUKON_WEBSERVER)
+            .receiver(NETWORK_MANAGER)
+            .logger(YukonLogManager.getRfnLogger())
+            .build();
 
     public static final JmsApi<NetworkManagerHeartbeatRequest,?,NetworkManagerHeartbeatResponse> NM_HEARTBEAT =
             JmsApi.builder(NetworkManagerHeartbeatRequest.class, NetworkManagerHeartbeatResponse.class)
@@ -1322,6 +1325,19 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WATCHDOG)
                   .receiver(NETWORK_MANAGER)
                   .build();
+    
+    
+    public static final JmsApi<PxMWDeviceAutoCreationSimulatonRequest,?,?> PxMW_SIM_DEVICE_AUTO_CREATION_REQUEST = 
+            JmsApi.builder(PxMWDeviceAutoCreationSimulatonRequest.class)
+                  .name("PxMW Device Auto Creation Simulation Request")
+                  .description("WS sends request to SM start auto creation for simulated devices")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.simulator.PxMWDeviceAutoCreationSimulatonRequest"))
+                  .requestMessage(PxMWDeviceAutoCreationSimulatonRequest.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1435,6 +1451,9 @@ public final class JmsApiDirectory {
                          ENROLLMENT_NOTIFICATION, 
                          OPTOUTIN_NOTIFICATION,
                          PROGRAM_STATUS_NOTIFICATION);
+        
+        addApis(jmsApis, SIMULATOR, 
+                PxMW_SIM_DEVICE_AUTO_CREATION_REQUEST);
 
         return jmsApis;
     }

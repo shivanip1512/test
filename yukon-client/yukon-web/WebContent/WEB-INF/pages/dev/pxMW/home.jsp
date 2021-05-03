@@ -23,8 +23,8 @@
         <br/>
         <br/>
         <br/>Configure the PX URL - Admin/Configuration/Demand Response
-        <br/>PX URL:https://eas-all-apim-eus-dev.developer.azure-api.net
-        <br/>Simulator URL: http://localhost:8080/yukon/dev/pxMiddleware
+        <br/>PX URL:https://eas-dev.eastus.cloudapp.azure.com/api
+        <br/>Simulator URL: http://localhost:8080/yukon/dev/api
         <br/>
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
      </div>
@@ -104,7 +104,31 @@
 	</form:form>
 
     <br/>
-    <pre class="js-test-endpoint-results dn"></pre>
+    
+    <pre class="code js-test-endpoint-results dn"></pre>
+    
+    
+      <div class="notes">
+        <br/>Creates devices by using auto creation service.
+        <br/>Setup Development Database can be also used to create LCRs and add them to the account if the simulator service is running.
+     </div>
+    <br/>
+    <cti:url var="autoCreationUrl" value="deviceAutoCreation"/>
+    <form:form id="autoCreationForm" action="${autoCreationUrl}" method="post">
+        <tags:nameValueContainer>
+            <tags:nameValue name="Device Creation" nameColumnWidth="250px">
+                <select name="paoType">
+                    <c:forEach var="type" items="${autoCreationTypes}">
+                        <option value="${type}"><cti:msg2 key="${type.formatKey}"/></option>
+                    </c:forEach>
+                </select>
+                <input type="text" name="textInput" value="10"/>
+                <cti:button label="Submit" type="submit" classes="fn vam"/>
+                <form:form id="autoCreationForm" action="${autoCreationUrl}" method="post"/>
+                <cti:csrfToken/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+    </form:form>
     
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.pxMWSimulator.js" />
 </cti:standardPage>

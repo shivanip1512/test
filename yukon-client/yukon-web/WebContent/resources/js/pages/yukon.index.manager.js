@@ -29,7 +29,8 @@ yukon.support.indexes = (function () {
                 }
                 
                 row.find('.js-build-btn').toggle(!index.building);
-                row.find('.progress').toggle(index.building);
+                row.find('.progress').toggleClass('dn', !index.building);
+                row.find('.progress').toggleClass('df', index.building);
                 if (index.building) {
                     row.find('.progress-bar').css({ width: index.percentDone + '%' });
                 }
@@ -47,7 +48,8 @@ yukon.support.indexes = (function () {
             
             /** Send a build request when a build button in clicked. */
             $(document).on('click', '.js-build-btn', function (ev) {
-                $(this).toggle().prev().toggle();
+                $(this).toggle();
+                $(this).prev().removeClass('dn').addClass('df');
                 var index = $(this).closest('tr').data('index');
                 $.ajax(yukon.url('/index/' + index + '/build'));
             });

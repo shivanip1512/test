@@ -4,7 +4,7 @@
 
 <cti:msgScope paths="yukon.web.modules.operator.mapNetwork">
 
-    <div id="marker-info" class="well dn">
+    <div id="marker-info" class="dn">
         <div id="device-info" class="dn"></div>
         <tags:hideReveal2 styleClass="mw300 dn js-nm-error" titleClass="error" titleKey="yukon.web.modules.tools.map.network.error" showInitially="false">
             <span class="js-nm-error-text"></span>

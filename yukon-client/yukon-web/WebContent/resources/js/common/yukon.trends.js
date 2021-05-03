@@ -81,6 +81,9 @@ yukon.trends = (function () {
                     }
                 },
                 series : trend.series,
+                time: {
+                    timezone: yg.timezone
+                },
                 tooltip: {
                     dateTimeLabelFormats: dateTimeLabelFormats,
                     xDateFormat: labelFormat,

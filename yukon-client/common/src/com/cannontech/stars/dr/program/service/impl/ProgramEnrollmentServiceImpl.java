@@ -222,12 +222,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         command.setDevice(liteHw);
                         command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
                         command.setUser(user);
-                        
-                        if(hardwareType.isItron()) {
+
+                        if (hardwareType.isItron() || hardwareType.isEcobee()) {
                             var groupIds = getAddedEnrollmentGroupIds(originalEnrollments, liteHw.getInventoryID());
                             command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
                         }
-                        
                         lmHardwareCommandService.sendOutOfServiceCommand(command);
                     }
                 }

@@ -49,60 +49,60 @@ Java :
     jira : none
     notes : This JAR version is not stored in Maven
   
-  - filename : activemq-broker-5.15.10.jar
+  - filename : activemq-broker-5.16.1.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.15.10
+    version : 5.16.1
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker/5.15.10"
-    md5 : 22de440ce8590d77c853d8e61b05df2f
-    sha1 : 5700dd48d5e3f5e7ab9d2e44202b865e085009c1
-    updated : 2019-09-25
-    jira : YUK-15354, YUK-20323
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker/5.16.1"
+    md5 : ce155ca5539e1836078f1e3f2efa2c30
+    sha1 : 7b06c5a8cf13845e18f1f0ba7bdbe8a0c60320e5
+    updated : 2021-04-22
+    jira : YUK-24239
     notes : 
   
-  - filename : activemq-client-5.15.10.jar
+  - filename : activemq-client-5.16.1.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.15.10
+    version : 5.16.1
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-client/5.15.10"
-    md5 : 45fd3e720d401d90ddbd1c8807646e22
-    sha1 : 37ca66258ba69a6165e534c45635f4a8b4d8fb96
-    updated : 2019-09-25
-    jira : YUK-15354, YUK-20323
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-client/5.16.1"
+    md5 : 45d1cbf0adc1ee8cbbaef1da9a601ffd
+    sha1 : 0debe850061c0d6966292905d71c768a97ac0034
+    updated : 2021-04-22
+    jira : YUK-24239
     notes : 
   
-  - filename : activemq-kahadb-store-5.15.10.jar
+  - filename : activemq-kahadb-store-5.16.1.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.15.10
+    version : 5.16.1
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-kahadb-store/5.15.10"
-    md5 : e49d9645dfdfe7ad2bc3e2f77973e37c
-    sha1 : 6ef712d9e765eee8842bef3b349ef529fe50e84e
-    updated : 2019-09-25
-    jira : YUK-15354, YUK-20323
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-kahadb-store/5.16.1"
+    md5 : 581755d73ed92cac178f4c09881bd3e1
+    sha1 : 114ea6d9e194cd1c731ffd9346821d700cd8df57
+    updated : 2021-04-22
+    jira : YUK-24239
     notes : 
   
-  - filename : activemq-openwire-legacy-5.15.10.jar
+  - filename : activemq-openwire-legacy-5.16.1.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.15.10
+    version : 5.16.1
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-openwire-legacy/5.15.10"
-    md5 : 6faf7f1a42961eef2397baa70c1995fb
-    sha1 : aa377be3e5610283cf426cf77e484617b5ae721b
-    updated : 2019-09-25
-    jira : YUK-15354, YUK-20323
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-openwire-legacy/5.16.1"
+    md5 : 5b8f58436a1a1c947fe338d37187055c
+    sha1 : 4434ecc0cc041dbe32014aa28f3c6033d87c0800
+    updated : 2021-04-22
+    jira : YUK-24239
     notes : 
   
   - filename : activemq-protobuf-1.1.jar
@@ -5637,15 +5637,15 @@ JavaScript :
     notes : Used for creating Tree Views in our UI
 
   - project : fileupload
-    version : 10.8.0
+    version : 10.31.0
     project URL : "https://github.com/blueimp/jQuery-File-Upload"
     license : MIT
     license URLs : "https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt"
     npm URL : "https://www.npmjs.com/package/blueimp-file-upload"
-    md5 : 5c9fd37430aaf4921c583b36cd25acec
-    sha1 : 725eafdc49086908d9500fc3d59f4fa482b53a00
-    jira : YUK-21524
-    updated : 2020-03-11
+    md5 : 86355d1bfabc77990eef6ae6f57e1460
+    sha1 : fb3d88d28f087c54d960c8fb44ecdaf9b508c388
+    jira : YUK-24190
+    updated : 2021-04-21
     notes : The jquery.iframe-transport.js and jquery.ui.widget.js files comes along with this package. It is used for file Upload widget with multiple file selection and drag&drop support for jQuery in Yukon.
 
   - project : form
@@ -5697,15 +5697,15 @@ JavaScript :
     notes : "This library is used to display a grid on the Collection Actions -> Device Report page. Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
 
   - project : jquery
-    version : 3.5.1
+    version : 3.6.0
     project URL : "http://jquery.com/"
     license : MIT
     license URLs : "https://github.com/jquery/jquery/blob/master/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/jquery/v/3.5.1"
-    md5 : 793ca595de394d333280a03210f12d9f
-    sha1 : 9e8e176264ababb6b15b516c7d80c2ae251a7efc
-    jira : YUK-22994
-    updated : 2020-06-10
+    npm URL : "https://www.npmjs.com/package/jquery/v/3.6.0"
+    md5 : 2c1532fc533453a85a363dc1e642d910
+    sha1 : 9b22a845828bef90c3f3a8a844b0bb0f684b94f8
+    jira : YUK-24193
+    updated : 2021-04-19
     notes : 
 
   - project : jquery-ui
@@ -5794,15 +5794,15 @@ JavaScript :
     notes : Used for rendering the React Navigation menu
 
   - project : scroll.to
-    version : 2.1.2
+    version : 2.1.3
     project URL : "https://github.com/flesler/jquery.scrollTo"
     license : MIT
     license URLs : "https://github.com/flesler/jquery.scrollTo/blob/master/LICENSE"
-    npm URL : "https://www.npmjs.com/package/jquery.scrollto/v/2.1.2"
-    md5 : e15416a593fe4591c76610ffc36fd108
-    sha1 : e589b55b5cc33cd489a7cc138c3bc85705133196
-    jira : YUK-21526
-    updated : 2020-03-11
+    npm URL : "https://www.npmjs.com/package/jquery.scrollto/v/2.1.3"
+    md5 : 64ca8367cddef39b0a7fa6b56b1d555e
+    sha1 : fa91f73a118ad5f8728be6bcc7a40ec3ea23abba
+    jira : YUK-24196
+    updated : 2021-04-23
     notes : This is used for animated scrolling in Yukon.
 
   - project : sortable
@@ -6179,12 +6179,12 @@ Css :
     notes : This library is used in /js-api/home.jsp.
     
   - project : bootstrap
-    version : 2.3.2
+    version : 4.6.0
     project URL : "https://getbootstrap.com/"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0"
-    md5 : 0baee5489e84dc3ff3a1970e47993db2
-    sha1 : 05a8e3b7b48e51a887192e6532103bd544cf5f0c
-    updated : 2015-04-10
-    jira : YUK-14174
+    license : MIT
+    license URLs : "https://github.com/twbs/bootstrap/blob/main/LICENSE"
+    md5 : dce8c6ac5b7461486c6b56fa7cc3b6e0
+    sha1 : 08b51aa3c79163a8b696f7799abdee5bfc8f146b
+    updated : 2021-04-22
+    jira : YUK-24198
     notes : This is the css library used for Yukon UI.

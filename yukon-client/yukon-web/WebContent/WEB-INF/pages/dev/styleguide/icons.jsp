@@ -9,6 +9,7 @@
 
 <style>
 .description { line-height: 22px; }
+.card { margin-bottom: 20px; }
 </style>
 <h2>Adding Icons to Sprite</h2>
 <ul>
@@ -64,8 +65,8 @@
         </c:when>
     </c:choose>
     
-        <div class="column ${classes}">
-            <div class="well">
+        <div class="card bg-light column ${classes}">
+            <div class="card-body">
                 <div class="clearfix" style="text-align:center;">
                     <cti:icon icon="${spriteProperty}" classes="fn"/>
                 </div>
@@ -96,8 +97,8 @@
         </c:when>
     </c:choose>
     
-        <div class="column ${classes}">
-            <div class="well">                
+        <div class="card bg-light column ${classes}">
+            <div class="card-body">                
                 <div class="clearfix" style="text-align:center;">
                     <cti:icon icon="${sprite32Property}" classes="icon-app fn"/>
                 </div>
@@ -128,8 +129,8 @@
         </c:when>
     </c:choose>
     
-        <div class="column ${classes}">
-            <div class="well">                
+        <div class="card bg-light column ${classes}">
+            <div class="card-body">                
                 <div class="clearfix" style="text-align:center;">
                     <cti:icon icon="${sprite32Property}" classes="icon-32 fn"/>
                 </div>

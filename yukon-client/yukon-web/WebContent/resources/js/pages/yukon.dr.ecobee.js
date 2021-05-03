@@ -381,7 +381,7 @@ yukon.dr.ecobee = (function () {
             bar.css({width: status.percentDone});
             if (status.complete) {
                 
-                bar.removeClass('progress-bar-info').parent().removeClass('active progress-striped');
+                bar.removeClass('progress-bar-info').parent().removeClass('progress-bar-animated progress-bar-striped');
                 
                 if (status.successful) {
                     

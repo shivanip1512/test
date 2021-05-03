@@ -128,6 +128,8 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 
         auto waitForResponse(const long userMessageId, const bool isPassthroughControl) -> Protocols::DNP::ControlStatus;
 
+        bool requireValidRange(unsigned low, unsigned high, unsigned x); 
+
         typedef std::map<CtiFDRDestination, DnpId> DnpDestinationMap;
         /** Map of DNP Send and Receive Translations */
         DnpDestinationMap _sendMap, _receiveMap;

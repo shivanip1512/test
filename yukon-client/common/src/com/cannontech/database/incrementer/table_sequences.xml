@@ -451,5 +451,8 @@
       <sequence name="ControlEvent">
         <table name="ControlEvent" identitycolumn="ControlEventId" initsequence="true"/>
       </sequence>
+      <sequence name="PxMWSimulatorNameIncrementor">
+        <table name="PxMWSimulatorNameIncrementor" identitycolumn="requestSeqNumber"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

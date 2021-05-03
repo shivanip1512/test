@@ -218,8 +218,15 @@ bool DnpSlave::readConfig()
         loglist.add(KEY_DB_RELOAD_RATE)     << getReloadRate();
         loglist.add(KEY_LINK_TIMEOUT)       << getLinkTimeout();
 
-        CTILOG_INFO(dout, "FDRDnpSlave Configs"
-                << loglist);
+        loglist.add(KEY_PORTER_PRIORITY_ANALOG_OUTPUT) << _porterPriorities.analogOutput;
+        loglist.add(KEY_PORTER_PRIORITY_DNP_TIMESYNC)  << _porterPriorities.dnpTimesync;
+        loglist.add(KEY_PORTER_PRIORITY_OPERATE)       << _porterPriorities.operate;
+        loglist.add(KEY_PORTER_PRIORITY)               << _porterPriorities.other;
+        loglist.add(KEY_PORTER_PRIORITY_SCAN)          << _porterPriorities.scan;
+
+        CTILOG_INFO(dout, "FDRDnpSlave Configs : "
+            << loglist);
+
     }
 
     return true;
@@ -1463,11 +1470,16 @@ ControlStatus DnpSlave::waitForResponse(const long userMessageId, const bool isP
     return ControlStatus::Undefined;
 }
 
+bool DnpSlave::requireValidRange(unsigned low, unsigned high, unsigned x)
+{
+    if (x < low)  throw std::invalid_argument(std::to_string(x) + " is lower than " + std::to_string(low));
+    if (x > high) throw std::invalid_argument(std::to_string(x) + " is higher than " + std::to_string(high));
+}
 
 DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
 {
     DnpId dnpId;
-
+    
     static const std::string dnpMasterId                     = "MasterId";
     static const std::string dnpSlaveId                      = "SlaveId";
     static const std::string dnpPointType                    = "POINTTYPE";
@@ -1493,9 +1505,28 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
         dnpId.valid = false;
         return dnpId;
     }
+    
+    try
+    {
+        const auto masterid = std::stoi(masterId);
+        const auto slaveid = std::stoi(slaveId);
+        const auto offset = std::stoi(dnpOffset);
+        
+        requireValidRange(0, 65519, masterid);
+        dnpId.MasterId = masterid;
 
-    dnpId.MasterId  = std::stoi(masterId);
-    dnpId.SlaveId   = std::stoi(slaveId);
+        requireValidRange(0, 65519, slaveid);
+        dnpId.SlaveId = slaveid;
+
+        requireValidRange(0, 65535, offset);
+        dnpId.Offset = offset;
+    }
+    catch(std::invalid_argument& e)
+    {
+        CTILOG_ERROR(dout, "Error: " << e.what() << " occured on the point with id: " << pointDestination.getParentPointId() << " and translation: " << pointDestination.getTranslation());
+        dnpId.valid = false;
+        return dnpId;
+    }
 
     using boost::algorithm::to_lower_copy;
 
@@ -1509,8 +1540,6 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     };
 
     dnpId.PointType = mapFindOrDefault(PointTypeNames, to_lower_copy(pointType), InvalidPointType);
-
-    dnpId.Offset = std::stoi(dnpOffset);
     dnpId.MasterServerName = pointDestination.getDestination();
 
     if (dnpMultiplier.empty())
@@ -1519,7 +1548,17 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     }
     else
     {
-        dnpId.Multiplier = std::stod(dnpMultiplier);
+        try
+        {
+            dnpId.Multiplier = std::stod(dnpMultiplier);
+        }
+        catch(std::invalid_argument& e)
+        {
+            CTILOG_ERROR(dout, "Error: " << e.what() << " occured on the point with id: " << pointDestination.getParentPointId() << " and translation: " << pointDestination.getTranslation());
+            dnpId.valid = false;
+            return dnpId;
+        }
+        
     }
     dnpId.valid = true;
 

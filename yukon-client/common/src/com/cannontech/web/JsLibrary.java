@@ -10,8 +10,8 @@ public enum JsLibrary {
     
     DEBUGGER("/resources/js/lib/debugger.js"), // http://benalman.com/projects/javascript-debug-console-log/
     
-    JQUERY("/resources/js/lib/jquery/jquery-3.5.1.min.js",
-           "/resources/js/lib/jquery/jquery-3.5.1.js"), // http://www.jquery.com
+    JQUERY("/resources/js/lib/jquery/jquery-3.6.0.min.js",
+           "/resources/js/lib/jquery/jquery-3.6.0.js"), // http://www.jquery.com
     
     JQUERY_CHECK_ALL("/resources/js/lib/checkall/jquery.checkall.js"), // https://github.com/mjball/jQuery-CheckAll
     JQUERY_COOKIE("/resources/js/lib/cookie/jquery.cookie.js"), // https://github.com/carhartl/jquery-cookie
@@ -27,7 +27,7 @@ public enum JsLibrary {
                       "/resources/js/lib/mousewheel/jquery.mousewheel.js"), // https://github.com/brandonaaron/jquery-mousewheel
     JQUERY_PLACEHOLDER("/resources/js/lib/placeholder/jquery.placeholder.js"), // https://github.com/mathiasbynens/jquery-placeholder
     JQUERY_SCROLLTO("/resources/js/lib/scroll.to/jquery.scrollTo.min.js",
-                    "/resources/js/lib/scroll.to/jquery.scrollTo.src.js"), // https://github.com/flesler/jquery.scrollTo/releases
+                    "/resources/js/lib/scroll.to/jquery.scrollTo.js"), // https://github.com/flesler/jquery.scrollTo/releases
     JQUERY_SPECTRUM("/resources/js/lib/spectrum/spectrum.js"), // http://bgrins.github.io/spectrum/
     JQUERY_TREE("/resources/js/lib/dynatree/jquery.dynatree.min.js",
                 "/resources/js/lib/dynatree/jquery.dynatree.js"), // http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
