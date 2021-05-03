@@ -37,6 +37,7 @@ import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.PxMWVersion;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
@@ -128,7 +129,7 @@ public class PxMWSimulatorController {
                         .map(String::trim)
                         .collect(Collectors.toList());
             }
-            if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
+            if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE) {
                 PxMWSiteV1 site = pxMWCommunicationServiceV1.getSiteDevices(paramList.get(0), parseBoolean(paramList, 1),
                         parseBoolean(paramList, 2));
                 processSuccess(params, json, getFormattedJson(site));
@@ -150,6 +151,9 @@ public class PxMWSimulatorController {
                 List<PxMWTimeSeriesDeviceResultV1> response = pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(),
                         timeRange);
                 processSuccess(params, json, getFormattedJson(response));
+            } else if (endpoint == PxMWRetrievalUrl.DEVICE_DETAIL) {
+                PxMWDeviceDetail detail = pxMWCommunicationServiceV1.getDeviceDetails(paramList.get(0), parseBoolean(paramList, 1));
+                processSuccess(params, json, getFormattedJson(detail));
             }
         } catch (PxMWCommunicationExceptionV1 e) {
             processError(json, e);
