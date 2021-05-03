@@ -24,11 +24,11 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
-public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrategy{
+public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrategy {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudHardwareReadNowStrategy.class);
-    
+
     @Autowired private PxMWDataReadService readService;
-    @Autowired private IDatabaseCache cache;   
+    @Autowired private IDatabaseCache cache;
 
     @Override
     public Map<String, Object> readNow(int deviceId, YukonUserContext userContext) {
@@ -37,8 +37,8 @@ public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrateg
         try {
             DateTime start = new DateTime();
             DateTime end = start.minusDays(7);
-            Range<Instant> range =  new Range<Instant>(end.toInstant(), false, start.toInstant(), true);
-        
+            Range<Instant> range = new Range<Instant>(end.toInstant(), false, start.toInstant(), true);
+
             Set<Integer> deviceIds = new HashSet<>();
             deviceIds.add(deviceId);
             // Read Device.
@@ -51,8 +51,6 @@ public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrateg
             json.put("message", e.getMessage());
         }
 
-        
-        
         return json;
     }
 
@@ -60,7 +58,7 @@ public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrateg
     public HardwareStrategyType getType() {
         return HardwareStrategyType.EATON_CLOUD;
     }
-    
+
     @Override
     public boolean canHandle(HardwareType type) {
         return type.isEatonCloud();
