@@ -39,12 +39,15 @@ LONG DnpDevice::getAddress() const
     return _dnp_address.getSlaveAddress();
 }
 
-
 LONG DnpDevice::getMasterAddress() const
 {
     return _dnp_address.getMasterAddress();
 }
 
+int DnpDevice::getPostDelay() const
+{
+    return _dnp_address.getPostDelay();
+}
 
 void DnpDevice::resetDNPScansPending( void )
 {

@@ -85,6 +85,20 @@ std::unique_ptr<ScanPolicy> resolveScanPolicy( const std::string & paoType )
     return std::make_unique<LoadOnlyScanPolicy>();
 }
 
+std::string resolveInstallOrientation( const VoltageRegulator::InstallOrientation & orientation )
+{
+    return orientation == VoltageRegulator::InstallOrientation::Forward
+            ? "Forward"
+            : "Reverse";
+}
+
+std::string resolveVoltageControlMode( const VoltageRegulator::ControlMode & orientation )
+{
+    return orientation == VoltageRegulator::ControlMode::SetPoint
+            ? "SetPoint"
+            : "ManualTap";
+}
+
 }
 
 // If these strings change, remember to update them in resolveCapControlType()
@@ -107,6 +121,7 @@ VoltageRegulator::VoltageRegulator()
     _recentTapOperation(false),
     _keepAlivePeriod( 0 ),
     _keepAliveValue( 0 ),
+    _installOrientation( InstallOrientation::Forward ),
     _controlPolicy( std::make_unique<StandardControlPolicy>() ),
     _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
     _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
@@ -127,6 +142,7 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     _recentTapOperation(false),
     _keepAlivePeriod( 0 ),
     _keepAliveValue( 0 ),
+    _installOrientation( InstallOrientation::Forward ),
     _controlPolicy( std::make_unique<StandardControlPolicy>() ),
     _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
     _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
@@ -146,7 +162,9 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     _lastCommandedOperatingMode(toCopy._lastCommandedOperatingMode),
     _recentTapOperation(toCopy._recentTapOperation),
     _keepAlivePeriod( toCopy._keepAlivePeriod ),
-    _keepAliveValue( toCopy._keepAliveValue )
+    _keepAliveValue( toCopy._keepAliveValue ),
+    _installOrientation( toCopy._installOrientation )
+
 {
     // empty...
 }
@@ -250,6 +268,8 @@ void VoltageRegulator::loadAttributes( AttributeService * service )
 
     _keepAlivePeriod = getKeepAliveTimer();
     _keepAliveValue  = getKeepAliveConfig();
+
+    _installOrientation = getInstallOrientation();
 
     _keepAlivePolicy = resolveKeepAlivePolicy( getHeartbeatMode(), getControlMode() );
     _scanPolicy = resolveScanPolicy( getPaoType() );
@@ -459,6 +479,26 @@ std::string VoltageRegulator::getHeartbeatMode() const
     }
 
     return "NONE";
+}
+
+
+VoltageRegulator::InstallOrientation VoltageRegulator::getInstallOrientation() const
+{
+    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
+
+    if ( deviceConfig )
+    {
+        if ( boost::optional<std::string>   orientation =
+             deviceConfig->findValue<std::string>( Config::RegulatorStrings::installOrientation ) )
+        {
+            if ( *orientation == "REVERSE" )
+            {
+                return InstallOrientation::Reverse;
+            }
+        }
+    }
+
+    return InstallOrientation::Forward;
 }
 
 
@@ -1007,6 +1047,241 @@ double VoltageRegulator::getSetPointValue() const
 Policy::Action VoltageRegulator::setSetPointValue( const double newSetPoint )
 {
     return _controlPolicy->setSetPointValue( newSetPoint );
+}
+
+
+std::string VoltageRegulator::detailedDescription()
+{
+    return
+        resolveVoltageControlMode( getControlMode() )
+        + " Regulator: "
+        + getPaoName()
+        + " in "
+        + resolveControlMode( getConfigurationMode() )
+        + " mode";
+}
+
+VoltageRegulator::PowerFlowSituations VoltageRegulator::determinePowerFlowSituation()
+{
+    struct
+    {
+        PowerFlowSituations code;
+        std::string         reason;
+    }
+    status { PowerFlowSituations::OK, "OK" };
+
+    const ControlPolicy::ControlModes configMode = getConfigurationMode();
+    const InstallOrientation orientation = getInstallOrientation();
+
+    const bool  inReverseFlow = isReverseFlowDetected();
+    const bool  controlPowerFlowReverse = _controlPolicy->isControlPowerFlowReverse();
+
+    // check for reverse installation first and unsupported modes
+
+    switch ( configMode )
+    {
+        case ControlPolicy::LockedForward:
+        case ControlPolicy::ReverseIdle:
+        case ControlPolicy::NeutralIdle:
+        case ControlPolicy::Cogeneration:
+        case ControlPolicy::BiasCogeneration:
+        {
+            if ( orientation == InstallOrientation::Reverse )
+            {
+                status = { PowerFlowSituations::ReverseInstallation, " is installed in reverse orientation." };
+            }
+            break;
+        }
+        case ControlPolicy::LockedReverse:
+        case ControlPolicy::ReverseCogeneration:
+        {
+            if ( orientation == InstallOrientation::Forward )
+            {
+                status = { PowerFlowSituations::ReverseInstallation, " is installed in forward orientation." };
+            }
+            break;
+        }
+        case ControlPolicy::Bidirectional:
+        case ControlPolicy::BiasBidirectional:
+        {
+            // all good...
+            break;
+        }
+        default:
+        {
+            status = { PowerFlowSituations::UnsupportedMode, ", is unsupported." };
+            break;
+        }
+    }
+
+    if ( status.code == PowerFlowSituations::OK )
+    {
+        if (_controlPolicy->isPowerFlowIndeterminate())
+        {
+            status = { PowerFlowSituations::IndeterminateFlow, " has indeterminate power flow." };
+        }
+        else if ( getControlMode() == VoltageRegulator::ManualTap )
+        {
+            switch ( configMode )
+            {
+                case ControlPolicy::LockedForward:
+                {
+                    if ( inReverseFlow )
+                    {
+                        status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
+                    }
+                    else if ( controlPowerFlowReverse )
+                    {
+                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting reverse control power flow." };
+                    }
+                    break;
+                }
+                case ControlPolicy::ReverseIdle:
+                case ControlPolicy::NeutralIdle:
+                {
+                    if ( inReverseFlow )
+                    {
+                        status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
+                    }
+                    else if ( ! controlPowerFlowReverse )
+                    {
+                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting forward control power flow." };
+                    }
+                    break;
+                }
+                case ControlPolicy::Bidirectional:
+                {
+                    if ( orientation == InstallOrientation::Reverse )
+                    {
+                        status = { PowerFlowSituations::ReverseInstallation, " is installed in reverse orientation." };
+                    }
+                    else if ( inReverseFlow )
+                    {
+                        status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
+                    }
+                    else if ( controlPowerFlowReverse )
+                    {
+                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting reverse control power flow." };
+                    }
+                    break;
+                }
+                default:
+                {
+                    status = { PowerFlowSituations::UnsupportedMode, ", is unsupported." };
+                    break;
+                }
+            }
+        }
+        else    // we are configured as SetPoint
+        {
+            switch ( configMode )
+            {
+                case ControlPolicy::LockedForward:
+                {
+                    if ( inReverseFlow )
+                    {
+                        status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
+                    }
+                    else if ( controlPowerFlowReverse )
+                    {
+                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting reverse control power flow." };
+                    }
+                    break;
+                }
+                case ControlPolicy::LockedReverse:
+                {
+                    if ( ! inReverseFlow )
+                    {
+                        status = { PowerFlowSituations::ReverseFlow, " is detecting forward power flow." };
+                    }
+                    else if ( ! controlPowerFlowReverse )
+                    {
+                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting forward control power flow." };
+                    }
+                    break;
+                }
+                case ControlPolicy::ReverseIdle:
+                case ControlPolicy::NeutralIdle:
+                {
+                    if ( inReverseFlow )
+                    {
+                        status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
+                    }
+                    else if ( ! controlPowerFlowReverse )
+                    {
+                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting forward control power flow." };
+                    }
+                    break;
+                }
+                case ControlPolicy::Bidirectional:
+                case ControlPolicy::BiasBidirectional:
+                {
+                    if ( orientation == InstallOrientation::Forward )
+                    {
+                        if ( inReverseFlow )
+                        {
+                            status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
+                        }
+                        else if ( controlPowerFlowReverse )
+                        {
+                            status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting reverse control power flow." };
+                        }
+                    }
+                    else
+                    {
+                        if ( ! inReverseFlow )
+                        {
+                            status = { PowerFlowSituations::ReverseFlow, " is detecting forward power flow." };
+                        }
+                        else if ( ! controlPowerFlowReverse )
+                        {
+                            status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting forward control power flow." };
+                        }
+                    }
+                    break;
+                }
+                case ControlPolicy::Cogeneration:
+                case ControlPolicy::BiasCogeneration:
+                {
+                    if ( controlPowerFlowReverse )
+                    {
+                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting reverse control power flow." };
+                    }
+                    break;
+                }
+                case ControlPolicy::ReverseCogeneration:
+                {
+                    if ( inReverseFlow )
+                    {
+                        if ( ! controlPowerFlowReverse )
+                        {
+                            status = { PowerFlowSituations::ReverseControlPowerFlow, " has reverse flow, but is detecting forward control power flow." };
+                        }
+                    }
+                    else
+                    {
+                        if ( controlPowerFlowReverse )
+                        {
+                            status = { PowerFlowSituations::ReverseControlPowerFlow, " has forward flow, but is detecting reverse control power flow." };
+                        }
+                    }
+                    break;
+                }
+                default:
+                {
+                    status = { PowerFlowSituations::UnsupportedMode, ", is unsupported." };
+                    break;
+                }
+            }
+        }
+    }
+
+    if ( status.code != PowerFlowSituations::OK )
+    {
+        CTILOG_INFO( dout, detailedDescription() << status.reason );
+    }
+
+    return status.code;
 }
 
 

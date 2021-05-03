@@ -921,7 +921,7 @@ void UdpPortHandler::loadEncodingFilter()
 }
 
 
-UdpPortHandler::Endpoint UdpPortHandler::getDeviceSocketAddress(device_record &dr) const
+UdpPortHandler::Endpoint UdpPortHandler::getDeviceSocketAddress(const device_record &dr) const
 {
     string  device_ip   = getDeviceIp  ( dr.device->getID() );
     u_short device_port = getDevicePort( dr.device->getID() );
@@ -930,7 +930,7 @@ UdpPortHandler::Endpoint UdpPortHandler::getDeviceSocketAddress(device_record &d
 }
 
 
-bool UdpPortHandler::isPostCommWaitComplete(device_record &dr, ULONG postCommWait) const
+bool UdpPortHandler::isPostCommWaitComplete(const device_record& dr, ULONG postCommWait) const
 {
     if ( auto tp = mapFind( _last_endpoint_send_time, getDeviceSocketAddress( dr ) ) )
     {
@@ -942,19 +942,19 @@ bool UdpPortHandler::isPostCommWaitComplete(device_record &dr, ULONG postCommWai
     return true;
 }
 
-void UdpPortHandler::setDeviceActive(device_record *dr)
+void UdpPortHandler::setDeviceActive(const device_record& dr)
 {
-    _last_endpoint_send_time[ getDeviceSocketAddress( *dr ) ] = std::chrono::high_resolution_clock::now();
+    _active_endpoints.insert( getDeviceSocketAddress( dr ) );
 }
 
-bool UdpPortHandler::isDeviceActive(device_record *dr)
+bool UdpPortHandler::isDeviceActive(const device_record& dr)
 {
-    return _last_endpoint_send_time.count( getDeviceSocketAddress( *dr ) );
+    return _active_endpoints.count( getDeviceSocketAddress( dr ) );
 }
 
-void UdpPortHandler::clearActiveDevice(device_record *dr)
+void UdpPortHandler::clearActiveDevice(const device_record& dr)
 {
-    _last_endpoint_send_time.erase( getDeviceSocketAddress( *dr ) );
+    _active_endpoints.erase( getDeviceSocketAddress( dr ) );
 }
 
 }

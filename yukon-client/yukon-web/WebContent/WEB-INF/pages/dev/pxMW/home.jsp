@@ -104,7 +104,25 @@
 	</form:form>
 
     <br/>
-    <pre class="js-test-endpoint-results dn"></pre>
+    
+    <cti:url var="autoCreationUrl" value="deviceAutoCreation"/>
+    <form:form id="autoCreationForm" action="${autoCreationUrl}" method="post">
+        <tags:nameValueContainer>
+            <tags:nameValue name="Device Creation" nameColumnWidth="250px">
+                <select name="paoType">
+                    <c:forEach var="type" items="${autoCreationTypes}">
+                        <option value="${type}"><cti:msg2 key="${type.formatKey}"/></option>
+                    </c:forEach>
+                </select>
+                <input type="text" name="textInput" value="10"/>
+                <cti:button label="Submit" type="submit" classes="fn vam"/>
+                <form:form id="autoCreationForm" action="${autoCreationUrl}" method="post"/>
+                <cti:csrfToken/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+    </form:form>
+
+    <pre class="code js-test-endpoint-results dn"></pre>
     
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.pxMWSimulator.js" />
 </cti:standardPage>

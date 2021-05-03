@@ -218,8 +218,15 @@ bool DnpSlave::readConfig()
         loglist.add(KEY_DB_RELOAD_RATE)     << getReloadRate();
         loglist.add(KEY_LINK_TIMEOUT)       << getLinkTimeout();
 
-        CTILOG_INFO(dout, "FDRDnpSlave Configs"
-                << loglist);
+        loglist.add(KEY_PORTER_PRIORITY_ANALOG_OUTPUT) << _porterPriorities.analogOutput;
+        loglist.add(KEY_PORTER_PRIORITY_DNP_TIMESYNC)  << _porterPriorities.dnpTimesync;
+        loglist.add(KEY_PORTER_PRIORITY_OPERATE)       << _porterPriorities.operate;
+        loglist.add(KEY_PORTER_PRIORITY)               << _porterPriorities.other;
+        loglist.add(KEY_PORTER_PRIORITY_SCAN)          << _porterPriorities.scan;
+
+        CTILOG_INFO(dout, "FDRDnpSlave Configs : "
+            << loglist);
+
     }
 
     return true;

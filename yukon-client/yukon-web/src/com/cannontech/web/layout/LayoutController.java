@@ -134,7 +134,7 @@ public class LayoutController {
         /** CSS ORDER MATTERS! **/
         b = ImmutableList.builder();
         b.add(CssLibrary.NORMALIZE.getPath());
-        b.add(CssLibrary.BOOTSTRAP.getPath());
+        b.add(dev ? CssLibrary.BOOTSTRAP.getPath() : CssLibrary.BOOTSTRAP_MIN.getPath());
         b.add(CssLibrary.ANIMATE.getPath());
         b.add(CssLibrary.LAYOUT.getPath());
         b.add(CssLibrary.YUKON.getPath());

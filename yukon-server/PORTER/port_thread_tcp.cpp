@@ -513,7 +513,7 @@ bool TcpPortHandler::isDeviceDisconnected( const long device_id ) const
 }
 
 
-bool TcpPortHandler::isPostCommWaitComplete(device_record &dr, ULONG postCommWait) const
+bool TcpPortHandler::isPostCommWaitComplete(const device_record& dr, ULONG postCommWait) const
 {
     if ( const auto optAddr = getDeviceSocketAddress( dr.device->getID() ) )
     {
@@ -526,29 +526,29 @@ bool TcpPortHandler::isPostCommWaitComplete(device_record &dr, ULONG postCommWai
     return true;
 }
 
-void TcpPortHandler::setDeviceActive(device_record *dr)
+void TcpPortHandler::setDeviceActive(const device_record& dr)
 {
-    if ( const auto optAddr = getDeviceSocketAddress( dr->device->getID() ) )
+    if ( const auto optAddr = getDeviceSocketAddress( dr.device->getID() ) )
     {
-        _last_endpoint_send_time[ *optAddr ] = std::chrono::high_resolution_clock::now();
+        _active_endpoints.insert( *optAddr );
     }
 }
 
-bool TcpPortHandler::isDeviceActive(device_record *dr)
+bool TcpPortHandler::isDeviceActive(const device_record& dr)
 {
-    if ( const auto optAddr = getDeviceSocketAddress( dr->device->getID() ) )
+    if ( const auto optAddr = getDeviceSocketAddress( dr.device->getID() ) )
     {
-        return _last_endpoint_send_time.find( *optAddr ) != _last_endpoint_send_time.end();
+        return _active_endpoints.count( *optAddr );
     }
 
     return false;
 }
 
-void TcpPortHandler::clearActiveDevice(device_record *dr)
+void TcpPortHandler::clearActiveDevice(const device_record& dr)
 {
-    if ( const auto optAddr = getDeviceSocketAddress( dr->device->getID() ) )
+    if( const auto optAddr = getDeviceSocketAddress(dr.device->getID()) )
     {
-        _last_endpoint_send_time.erase( *optAddr );
+        _active_endpoints.erase( *optAddr );
     }
 }
 

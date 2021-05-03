@@ -34,7 +34,7 @@
                             <td class="js-gw-sq-end">${block.end}</td>
                             <c:if test="${status.first}">
                                 <td class="js-gw-sq-completeness">
-                                    <div class="progress dib vat">
+                                    <div class="progress dif vat">
                                         <c:set var="clazz" value="progress-bar-success"/>
                                         <c:if test="${sequence.completionPercentage < 90 and sequence.completionPercentage >= 75}">
                                             <c:set var="clazz" value="progress-bar-warning"/>

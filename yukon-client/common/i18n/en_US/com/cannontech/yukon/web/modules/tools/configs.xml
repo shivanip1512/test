@@ -109,6 +109,9 @@
     <entry key="yukon.web.modules.tools.configs.enum.regulatorHeartbeatMode.INCREMENT">Increment</entry>
     <entry key="yukon.web.modules.tools.configs.enum.regulatorHeartbeatMode.COUNTDOWN">Countdown</entry>
     
+    <entry key="yukon.web.modules.tools.configs.enum.regulatorInstallOrientation.FORWARD">Forward</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.regulatorInstallOrientation.REVERSE">Reverse</entry>
+
     <entry key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.DISABLED">Disabled</entry>
     <entry key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.ANALOG">Analog</entry>
     <entry key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.PULSED">Pulsed</entry>
@@ -568,7 +571,8 @@
     <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.definition">Regulator Control Method</entry>
     <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.voltageChangePerTap">Volt Change Per Tap</entry>
     <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.voltageControlMode">Control Mode</entry>
-
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.installOrientation">Install Orientation</entry>
+    
     <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.title">Regulator Heartbeat</entry>
     <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.definition">Heartbeat control parameters for Regulators</entry>
     <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.regulatorHeartbeatMode">Heartbeat Mode</entry>

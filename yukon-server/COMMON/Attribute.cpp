@@ -756,6 +756,8 @@ INIT_ATTRIBUTE( PortQueueCount,                                     "PORT_QUEUE_
 INIT_ATTRIBUTE( ReverseBandwidth,                                   "REVERSE_BANDWIDTH" );
 INIT_ATTRIBUTE( ReverseSetPoint,                                    "REVERSE_SET_POINT" );
 INIT_ATTRIBUTE( ReverseFlowIndicator,                               "REVERSE_FLOW_INDICATOR" );
+INIT_ATTRIBUTE( PowerFlowIndeterminate,                             "POWER_FLOW_INDETERMINATE" );  
+INIT_ATTRIBUTE( ControlPowerFlowReverse,                            "CONTROL_POWER_FLOW_REVERSE" );
 
 INIT_ATTRIBUTE( ConfigurationUpdatedHash,                           "CONFIGURATION_UPDATED_HASH" );
 INIT_ATTRIBUTE( EventCancelled,                                     "EVENT_CANCELLED" );

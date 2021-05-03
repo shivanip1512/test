@@ -85,7 +85,7 @@
                                 <i:inline key=".lastCommStatus.${gateway.data.lastCommStatus}"/>
                             </td>
                             <td class="js-gw-data-collection">
-                                <div class="dib vat progress">
+                                <div class="dif vat progress">
                                     <c:set var="clazz" value="progress-bar-success"/>
                                     <c:if test="${gateway.totalCompletionLevelWarning}">
                                         <c:set var="clazz" value="progress-bar-warning"/>

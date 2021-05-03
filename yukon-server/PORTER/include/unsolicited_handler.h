@@ -222,12 +222,12 @@ protected:
 
     ULONG getPostCommWait(device_record &dr) const;
     bool availableToSend(device_record &dr) const;
-    virtual bool isPostCommWaitComplete(device_record &dr, ULONG postCommWait) const = 0;
+    virtual bool isPostCommWaitComplete(const device_record& dr, ULONG postCommWait) const = 0;
 
-    virtual void setDeviceActive(device_record *dr) = 0;
-    virtual bool isDeviceActive(device_record *dr) = 0;
+    virtual void setDeviceActive  (const device_record& dr) = 0;
+    virtual bool isDeviceActive   (const device_record& dr) = 0;
     void setDeviceInactive(device_record *dr);
-    virtual void clearActiveDevice(device_record *dr) = 0;
+    virtual void clearActiveDevice(const device_record& dr) = 0;
 
 public:
 

@@ -14,9 +14,13 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
+import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
 
@@ -28,7 +32,10 @@ public class EcobeeMessageListener {
     private static final Logger log = YukonLogManager.getLogger(EcobeeMessageListener.class);
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
+    @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
+    @Autowired private EcobeeZeusGroupService ecobeeZeusGroupService;
     @Autowired private ControlHistoryService controlHistoryService;
+    @Autowired private ConfigurationSource configurationSource;
 
     private static final Map<Integer, String> groupToDrIdentifierMap = new HashMap<>();
 
@@ -46,13 +53,16 @@ public class EcobeeMessageListener {
                 log.error("Exception parsing StreamMessage for duty cycle DR event.", e);
                 return;
             }
-            
-            //Send DR message to ecobee server
-            String drIdentifier = ecobeeCommunicationService.sendDutyCycleDR(parameters);
-            
-            //Store the most recent dr handle for each group, so we can cancel
-            groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
-            
+            if (isEcobeeZeusEnabled()) {
+                String eventId = ecobeeZeusCommunicationService.sendDutyCycleDR(parameters);
+                ecobeeZeusGroupService.updateEventId(eventId, parameters.getGroupId());
+            } else {
+                // Send DR message to ecobee server
+                String drIdentifier = ecobeeCommunicationService.sendDutyCycleDR(parameters);
+
+                // Store the most recent dr handle for each group, so we can cancel
+                groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
+            }
             //Send control history message to dispatch
             Duration controlDuration = new Duration(parameters.getStartTime(), parameters.getEndTime());
             int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
@@ -194,5 +204,9 @@ public class EcobeeMessageListener {
                 groupId, startTime, utcStartTimeSeconds, endTime, utcEndTimeSeconds, optional, mandatoryByte, tempOptionHeat, tempOptionByte, tempOffset);
         
         return new EcobeeSetpointDrParameters(groupId, tempOptionHeat, optional, tempOffset, startTime, endTime);
+    }
+    
+    private boolean isEcobeeZeusEnabled() {
+        return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED);
     }
 }
