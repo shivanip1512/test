@@ -37,7 +37,7 @@
                                 <span class="success"><i:inline key="yukon.common.complete"/></span>
                             </c:when>
                             <c:otherwise>
-                                <div class="progress dib vat">
+                                <div class="progress dif vat">
                                     <div class="progress-bar progress-bar-success" style="width: ${update.successPercent};"></div>
                                     <div class="progress-bar progress-bar-danger" style="width: ${update.failedPercent};"></div>
                                 </div>

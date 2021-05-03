@@ -113,35 +113,35 @@
 
 <p class="description">
     Stripe bars with <span class="label label-attr">.progress-bar-striped</span> and animate them with 
-    <span class="label label-attr">.active</span>.  As a bonus there are being updated with super sexy javascript.
+    <span class="label label-attr">.progress-bar-animated</span>.  As a bonus there are being updated with super sexy javascript.
 </p>
 <div class="column-4-20 clearfix style-guide-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
         <p>
             <div class="progress js-updating-bar" data-progress="40">
-                <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                <div class="progress-bar progress-bar-success progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
                     <span class="sr-only">40% Complete (success)</span>
                 </div>
             </div>
         </p>
         <p>
             <div class="progress js-updating-bar" data-progress="20">
-                <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                <div class="progress-bar progress-bar-info progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
                     <span class="sr-only">20% Complete</span>
                 </div>
             </div>
         </p>
         <p>
             <div class="progress js-updating-bar" data-progress="60">
-                <div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                <div class="progress-bar progress-bar-warning progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
                     <span class="sr-only">60% Complete (warning)</span>
                 </div>
             </div>
         </p>
         <p>
             <div class="progress js-updating-bar" data-progress="1">
-                <div class="progress-bar progress-bar-danger progress-bar-low progress-bar-striped active" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 1%">
+                <div class="progress-bar progress-bar-danger progress-bar-low progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 1%">
                     <span>1%</span>
                 </div>
             </div>
@@ -167,28 +167,28 @@
 <pre class="code prettyprint">
 &lt;p&gt;
     &lt;div class=&quot;progress&quot;&gt;
-        &lt;div class=&quot;progress-bar progress-bar-success progress-bar-striped active&quot; role=&quot;progressbar&quot; aria-valuenow=&quot;40&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; style=&quot;width: 40%&quot;&gt;
+        &lt;div class=&quot;progress-bar progress-bar-success progress-bar-striped progress-bar-animated&quot; role=&quot;progressbar&quot; aria-valuenow=&quot;40&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; style=&quot;width: 40%&quot;&gt;
             &lt;span class=&quot;sr-only&quot;&gt;40% Complete (success)&lt;/span&gt;
         &lt;/div&gt;
     &lt;/div&gt;
 &lt;/p&gt;
 &lt;p&gt;
     &lt;div class=&quot;progress&quot;&gt;
-        &lt;div class=&quot;progress-bar progress-bar-info progress-bar-striped active&quot; role=&quot;progressbar&quot; aria-valuenow=&quot;20&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; style=&quot;width: 20%&quot;&gt;
+        &lt;div class=&quot;progress-bar progress-bar-info progress-bar-striped progress-bar-animated&quot; role=&quot;progressbar&quot; aria-valuenow=&quot;20&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; style=&quot;width: 20%&quot;&gt;
             &lt;span class=&quot;sr-only&quot;&gt;20% Complete&lt;/span&gt;
         &lt;/div&gt;
     &lt;/div&gt;
 &lt;/p&gt;
 &lt;p&gt;
     &lt;div class=&quot;progress&quot;&gt;
-        &lt;div class=&quot;progress-bar progress-bar-warning progress-bar-striped active&quot; role=&quot;progressbar&quot; aria-valuenow=&quot;60&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; style=&quot;width: 60%&quot;&gt;
+        &lt;div class=&quot;progress-bar progress-bar-warning progress-bar-striped progress-bar-animated&quot; role=&quot;progressbar&quot; aria-valuenow=&quot;60&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; style=&quot;width: 60%&quot;&gt;
             &lt;span class=&quot;sr-only&quot;&gt;60% Complete (warning)&lt;/span&gt;
         &lt;/div&gt;
     &lt;/div&gt;
 &lt;/p&gt;
 &lt;p&gt;
     &lt;div class=&quot;progress js-updating-bar&quot;&gt;
-        &lt;div class=&quot;progress-bar progress-bar-danger progress-bar-low progress-bar-striped active&quot; role=&quot;progressbar&quot; aria-valuenow=&quot;1&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; style=&quot;width: 1%&quot;&gt;
+        &lt;div class=&quot;progress-bar progress-bar-danger progress-bar-low progress-bar-striped progress-bar-animated&quot; role=&quot;progressbar&quot; aria-valuenow=&quot;1&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; style=&quot;width: 1%&quot;&gt;
             &lt;span&gt;1%&lt;/span&gt;
         &lt;/div&gt;
     &lt;/div&gt;

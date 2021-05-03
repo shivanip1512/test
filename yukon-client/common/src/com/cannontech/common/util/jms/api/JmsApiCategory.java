@@ -18,6 +18,7 @@ public enum JmsApiCategory {
     SIMULATOR_MANAGEMENT("Simulator Management"),
     SMART_NOTIFICATION("Smart Notification"),
     WIDGET_REFRESH("Widget Refresh"),
+    SIMULATOR("Simulator"),
     ;
     
     private final String niceString;

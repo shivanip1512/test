@@ -62,10 +62,10 @@ public class EcobeeZeusRequestHelper {
     /**
      * Returns the ResponseEntity object after making appropriated call using the provided URL, HTTP method & Response type.
      */
-    public ResponseEntity<? extends Object> callEcobeeAPIForObject(String url, HttpMethod method,
-            Class<? extends Object> responseType, Object... requestObject) throws RestClientException, EcobeeAuthenticationException {
+    public <T> ResponseEntity<T> callEcobeeAPIForObject(String url, HttpMethod method, Class<T> responseType,
+            Object... requestObject) throws RestClientException, EcobeeAuthenticationException {
         HttpEntity<Object> requestEntity = getRequestEntity(requestObject);
-        ResponseEntity<? extends Object> response = restTemplate.exchange(url, method, requestEntity, responseType);
+        ResponseEntity<T> response = restTemplate.exchange(url, method, requestEntity, responseType);
         return response;
     }
 

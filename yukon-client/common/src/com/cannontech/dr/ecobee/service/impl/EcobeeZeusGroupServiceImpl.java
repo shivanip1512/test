@@ -74,10 +74,10 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public boolean updateEventId(String eventId, String zeusGroupId) {
+    public boolean updateEventId(String eventId, int yukonGroupId) {
         boolean updateSuccess = false;
         try {
-            ecobeeZeusGroupDao.updateEventId(eventId, zeusGroupId);
+            ecobeeZeusGroupDao.updateEventId(eventId, yukonGroupId);
             updateSuccess = true;
         } catch (Exception e) {
             log.error("Error occurred while Inserting an event ID for a Zeus group ID (overwriting any existing value).", e);

@@ -67,11 +67,11 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
     }
 
     @Override
-    public void updateEventId(String eventId, String zeusGroupId) {
+    public void updateEventId(String eventId, int yukonGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE LMGroupZeusMapping");
         sql.append("SET EcobeeEventId").eq(eventId);
-        sql.append("WHERE EcobeeGroupId").eq(zeusGroupId);
+        sql.append("WHERE YukonGroupId").eq(yukonGroupId);
         jdbcTemplate.update(sql);
     }
 

@@ -156,12 +156,12 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
             HttpEntity<PxMWCommandRequestV1> requestEntity = getRequestWithAuthHeaders(request);
             ResponseEntity<PxMWCommandResponseV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
                     PxMWCommandResponseV1.class);
-            log.info("Sent command to device. Device Guid:{} Command Guid:{} Response:{}", deviceGuid, commandGuid,
+            log.debug("Sent command to device. Device Guid:{} Command Guid:{} Response:{}", deviceGuid, commandGuid,
                     new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
         } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
             throw e;
         } catch (Exception e) {
-            throw new PxMWException("Exception occured while getting channel values", e);
+            throw new PxMWException("Exception occured while sending command", e);
         }
     }
 

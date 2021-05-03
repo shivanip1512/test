@@ -27,7 +27,7 @@ public enum JsLibrary {
                       "/resources/js/lib/mousewheel/jquery.mousewheel.js"), // https://github.com/brandonaaron/jquery-mousewheel
     JQUERY_PLACEHOLDER("/resources/js/lib/placeholder/jquery.placeholder.js"), // https://github.com/mathiasbynens/jquery-placeholder
     JQUERY_SCROLLTO("/resources/js/lib/scroll.to/jquery.scrollTo.min.js",
-                    "/resources/js/lib/scroll.to/jquery.scrollTo.src.js"), // https://github.com/flesler/jquery.scrollTo/releases
+                    "/resources/js/lib/scroll.to/jquery.scrollTo.js"), // https://github.com/flesler/jquery.scrollTo/releases
     JQUERY_SPECTRUM("/resources/js/lib/spectrum/spectrum.js"), // http://bgrins.github.io/spectrum/
     JQUERY_TREE("/resources/js/lib/dynatree/jquery.dynatree.min.js",
                 "/resources/js/lib/dynatree/jquery.dynatree.js"), // http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
