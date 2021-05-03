@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesValueV1;
@@ -25,57 +26,59 @@ import com.cannontech.message.dispatch.message.PointData;
 public class PxMWDataReadServiceImplTest {
     
     private static final Logger log = YukonLogManager.getLogger(PxMWDataReadServiceImplTest.class);
-
+    private static final String testGuid = "415c885c-e5fc-4bc4-b7e1-f39356eb813a";
     
- /*   @Test 
+    @Test
     public void testParseValueDataToPointBoolean() throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Method parseMethod = PxMWDataReadServiceImpl.class.getDeclaredMethod("parseValueDataToPoint", MWChannel.class, PxMWTimeSeriesValueV1.class);
+        Method parseMethod = PxMWDataReadServiceImpl.class.getDeclaredMethod("parsePointValue", MWChannel.class, PxMWTimeSeriesValueV1.class, LiteYukonPAObject.class, String.class);
         PxMWDataReadServiceImpl dataReadService = new PxMWDataReadServiceImpl();
         parseMethod.setAccessible(true);
         Date timestampDate = new Date(1618854415l * 1000);
+        LiteYukonPAObject pao = new LiteYukonPAObject(123456789);
+        pao.setPaoName("PAO NAME");
         
-        PointData pointData = (PointData) parseMethod.invoke(dataReadService, MWChannel.ACTIVATION_STATUS_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "True"));
-        assertTrue(pointData.getValue() == 1.0);
-        assertTrue(pointData.getTimeStamp().equals(timestampDate));
+        Double pointValue = (Double) parseMethod.invoke(dataReadService, MWChannel.ACTIVATION_STATUS_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "True"), pao, testGuid);
+        assertTrue(pointValue.equals(1.0));
         
-        pointData = (PointData) parseMethod.invoke(dataReadService, MWChannel.ACTIVATION_STATUS_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "False"));
-        assertTrue(pointData.getValue() == 0.0);
-        assertTrue(pointData.getTimeStamp().equals(timestampDate));
+        pointValue = (Double) parseMethod.invoke(dataReadService, MWChannel.ACTIVATION_STATUS_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "False"), pao, testGuid);
+        assertTrue(pointValue.equals(0.0));
         
-        pointData = (PointData) parseMethod.invoke(dataReadService, MWChannel.ACTIVATION_STATUS_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "ERROR INVALID"));
-        assertNull(pointData);
+        pointValue = (Double) parseMethod.invoke(dataReadService, MWChannel.ACTIVATION_STATUS_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "ERROR INVALID"), pao, testGuid);
+        assertNull(pointValue);
     }
     
     @Test
     public void testParseValueDataToPointInteger() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Method parseMethod = PxMWDataReadServiceImpl.class.getDeclaredMethod("parseValueDataToPoint", MWChannel.class, PxMWTimeSeriesValueV1.class);
+        Method parseMethod = PxMWDataReadServiceImpl.class.getDeclaredMethod("parsePointValue", MWChannel.class, PxMWTimeSeriesValueV1.class, LiteYukonPAObject.class, String.class);
         PxMWDataReadServiceImpl dataReadService = new PxMWDataReadServiceImpl();
         parseMethod.setAccessible(true);
         Date timestampDate = new Date(1618854415l * 1000);
+        LiteYukonPAObject pao = new LiteYukonPAObject(123456789);
+        pao.setPaoName("PAO NAME");
         
-        PointData pointData = (PointData) parseMethod.invoke(dataReadService, MWChannel.RUNTIME_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "1617814415"));
-        assertTrue(pointData.getValue() == 1617814415);
-        assertTrue(pointData.getTimeStamp().equals(timestampDate));
+        Double pointData = (Double) parseMethod.invoke(dataReadService, MWChannel.RUNTIME_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "1617814415"), pao, testGuid);
+        assertTrue(pointData.equals(1617814415.0));
         
-        pointData = (PointData) parseMethod.invoke(dataReadService, MWChannel.RUNTIME_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "NAN"));
+        pointData = (Double) parseMethod.invoke(dataReadService, MWChannel.RUNTIME_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "NAN"), pao, testGuid);
         assertNull(pointData);
     }
     
     @Test
     public void testParseValueDataToPointDouble() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Method parseMethod = PxMWDataReadServiceImpl.class.getDeclaredMethod("parseValueDataToPoint", MWChannel.class, PxMWTimeSeriesValueV1.class);
+        Method parseMethod = PxMWDataReadServiceImpl.class.getDeclaredMethod("parsePointValue", MWChannel.class, PxMWTimeSeriesValueV1.class, LiteYukonPAObject.class, String.class);
         PxMWDataReadServiceImpl dataReadService = new PxMWDataReadServiceImpl();
         parseMethod.setAccessible(true);
         Date timestampDate = new Date(1618854415l * 1000);
+        LiteYukonPAObject pao = new LiteYukonPAObject(123456789);
+        pao.setPaoName("PAO NAME");
         
-        PointData pointData = (PointData) parseMethod.invoke(dataReadService, MWChannel.VOLTAGE, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "119.1123"));
-        assertTrue(pointData.getValue() == 119.1123);
-        assertTrue(pointData.getTimeStamp().equals(timestampDate));
+        Double pointData = (Double) parseMethod.invoke(dataReadService, MWChannel.VOLTAGE, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "119.1123"), pao, testGuid);
+        assertTrue(pointData.equals(119.1123));
         
-        pointData = (PointData) parseMethod.invoke(dataReadService, MWChannel.RUNTIME_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "NAN"));
+        pointData = (Double) parseMethod.invoke(dataReadService, MWChannel.RUNTIME_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "NAN"), pao, testGuid);
         assertNull(pointData);
     }
-    */
+    
     @SuppressWarnings("unchecked")
     @Test
     public void testBuildRequests() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
