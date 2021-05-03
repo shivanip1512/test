@@ -58,7 +58,6 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     private static final int thresholdThermostatCount = 9900;
     private static final String YUKON_CYCLE_EVENT_NAME = "yukonCycle";
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean isDeviceRegistered(String serialNumber) {
         try {
@@ -237,13 +236,36 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters) {
-        DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
         String eventId = StringUtils.EMPTY;
 
         String issueDemandResponseUrl = getUrlBase() + "events/dr";
+        ZeusDutyCycleDrRequest dutyCycleDr = new ZeusDutyCycleDrRequest(buildZeusEvent(parameters));
+        if (log.isDebugEnabled()) {
+            try {
+                log.debug("Sending ecobee duty cycle DR with body: {}", JsonUtils.toJson(dutyCycleDr));
+            } catch (JsonProcessingException e) {
+                log.warn("Error parsing json in debug.", e);
+            }
+        }
+        try {
+            ResponseEntity<ZeusDutyCycleDrRequest> zeusDrResponseEntity = requestHelper
+                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDutyCycleDrRequest.class, dutyCycleDr);
+            if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
+                eventId = zeusDrResponseEntity.getBody().getEvent().getId();
+            }
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+        return eventId;
+    }
+
+    /**
+     * Method to build Zeus event.
+     */
+    private ZeusDutyCycleEvent buildZeusEvent(EcobeeDutyCycleDrParameters parameters) {
+        DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         String eventDisplayMessage = messageSourceAccessor.getMessage("yukon.web.modules.dr.ecobee.eventDisplayMessage");
         String zeusGroupId = ecobeeZeusGroupService.getZeusGroupIdForLmGroup(parameters.getGroupId());
@@ -266,24 +288,6 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         event.setState(DrEventState.SUBMITTED_DIRECTLY);
         event.setShowThermostat(true);
         event.setShowWeb(true);
-
-        ZeusDutyCycleDrRequest dutyCycleDr = new ZeusDutyCycleDrRequest(event);
-        if (log.isDebugEnabled()) {
-            try {
-                log.debug("Sending ecobee duty cycle DR with body: {}", JsonUtils.toJson(dutyCycleDr));
-            } catch (JsonProcessingException e) {
-                log.warn("Error parsing json in debug.", e);
-            }
-        }
-        try {
-            ResponseEntity<ZeusDutyCycleDrRequest> zeusDrResponseEntity = (ResponseEntity<ZeusDutyCycleDrRequest>) requestHelper
-                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDutyCycleDrRequest.class, dutyCycleDr);
-            if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
-                eventId = zeusDrResponseEntity.getBody().getEvent().getId();
-            }
-        } catch (RestClientException | EcobeeAuthenticationException e) {
-            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
-        }
-        return eventId;
+        return event;
     }
 }
