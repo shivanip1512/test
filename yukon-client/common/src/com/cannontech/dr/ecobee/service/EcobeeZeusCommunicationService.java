@@ -1,6 +1,6 @@
 package com.cannontech.dr.ecobee.service;
 
-import com.cannontech.dr.ecobee.message.ZeusPushConfig;
+import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 
 public interface EcobeeZeusCommunicationService {
 
@@ -32,5 +32,5 @@ public interface EcobeeZeusCommunicationService {
     /**
      * Show push API configuration.
      */
-    ZeusPushConfig showPushApiConfiguration();
+    ZeusShowPushConfig showPushApiConfiguration();
 }

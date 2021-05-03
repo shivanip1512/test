@@ -19,8 +19,9 @@ import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.CriteriaSelector;
 import com.cannontech.dr.ecobee.message.Selector;
+import com.cannontech.dr.ecobee.message.ZeusCreatePushConfig;
 import com.cannontech.dr.ecobee.message.ZeusGroup;
-import com.cannontech.dr.ecobee.message.ZeusPushConfig;
+import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
@@ -224,7 +225,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         try {
             String utilityId = getUtilityId();
             String pushConfigURL = getUrlBase() + "utilities/" + utilityId + "/pushconfig";
-            ZeusPushConfig zeusPushConfig = new ZeusPushConfig(reportingUrl, privateKey);
+            ZeusCreatePushConfig zeusPushConfig = new ZeusCreatePushConfig(reportingUrl, privateKey);
 
             requestHelper.callEcobeeAPIForObject(pushConfigURL, HttpMethod.POST, Object.class, zeusPushConfig);
 
@@ -232,16 +233,17 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
     }
-
+    
+    @SuppressWarnings("unchecked")
     @Override
-    public ZeusPushConfig showPushApiConfiguration() {
+    public ZeusShowPushConfig showPushApiConfiguration() {
         try {
             String utilityId = getUtilityId();
             String showPushConfigURL = getUrlBase() + "utilities/" + utilityId + "/pushconfig";
-
-            ResponseEntity<?> responseEntity = requestHelper.callEcobeeAPIForObject(showPushConfigURL, HttpMethod.GET,
-                    Object.class);
-            return (ZeusPushConfig) responseEntity.getBody();
+            
+            ResponseEntity<ZeusShowPushConfig> responseEntity = (ResponseEntity<ZeusShowPushConfig>) requestHelper
+                    .callEcobeeAPIForObject(showPushConfigURL, HttpMethod.GET, ZeusShowPushConfig.class);
+            return responseEntity.getBody();
 
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
