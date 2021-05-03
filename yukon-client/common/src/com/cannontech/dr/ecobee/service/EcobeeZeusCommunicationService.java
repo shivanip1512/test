@@ -1,5 +1,7 @@
 package com.cannontech.dr.ecobee.service;
 
+import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+
 public interface EcobeeZeusCommunicationService {
 
     /**
@@ -21,4 +23,9 @@ public interface EcobeeZeusCommunicationService {
      * Unenroll the specified device from the specified group.
      */
     void unEnroll(int lmGroupId,String serialNumber, int inventoryId);
+
+    /**
+     * Initiates a duty cycle demand response event in Ecobee and return the created DR event ID.
+     */
+    String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters);
 }

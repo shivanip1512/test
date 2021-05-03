@@ -41,6 +41,7 @@ import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusResponse;
 import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
+import com.cannontech.dr.ecobee.message.ZeusDutyCycleDrRequest;
 import com.cannontech.dr.ecobee.message.ZeusErrorResponse;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
@@ -233,6 +234,23 @@ public class EcobeeMockApiController {
         } else if (enrollment == 4) {
             responseMap.put("failed_thermostat_ids", Arrays.asList("12345678"));
             return new ResponseEntity<>(responseMap, HttpStatus.PARTIAL_CONTENT);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @IgnoreCsrfCheck
+    @PostMapping("events/dr")
+    public ResponseEntity<Object> issueDemandResponse(@RequestBody ZeusDutyCycleDrRequest zeusDutyCycleDrRequest) {
+        String eventId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+        zeusDutyCycleDrRequest.getEvent().setId(eventId);
+        int issueDemandResponse = zeusEcobeeDataConfiguration.getIssueDemandResponse();
+        if (issueDemandResponse == 0) {
+            return new ResponseEntity<>(zeusDutyCycleDrRequest, HttpStatus.CREATED);
+        } else if (issueDemandResponse == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (issueDemandResponse == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }
