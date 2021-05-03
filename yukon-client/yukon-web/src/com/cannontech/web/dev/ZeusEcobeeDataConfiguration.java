@@ -5,11 +5,13 @@ public class ZeusEcobeeDataConfiguration {
     private int authenticate = 0;
     private int createDevice = 0;
     private int deleteDevice = 0;
+    private String serialNumber;
 
-    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice) {
+    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, String serialNumber) {
         this.authenticate = authenticate;
         this.createDevice = createDevice;
         this.deleteDevice = deleteDevice;
+        this.serialNumber = serialNumber;
     }
 
     public int getDeleteDevice() {
@@ -34,6 +36,14 @@ public class ZeusEcobeeDataConfiguration {
 
     public void setDeleteDevice(int deleteDevice) {
         this.deleteDevice = deleteDevice;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
 }
