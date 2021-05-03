@@ -23,8 +23,8 @@
         <br/>
         <br/>
         <br/>Configure the PX URL - Admin/Configuration/Demand Response
-        <br/>PX URL:https://eas-all-apim-eus-dev.developer.azure-api.net
-        <br/>Simulator URL: http://localhost:8080/yukon/dev/pxMiddleware
+        <br/>PX URL:https://eas-dev.eastus.cloudapp.azure.com/api
+        <br/>Simulator URL: http://localhost:8080/yukon/dev/api
         <br/>
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
      </div>
@@ -105,6 +105,14 @@
 
     <br/>
     
+    <pre class="code js-test-endpoint-results dn"></pre>
+    
+    
+      <div class="notes">
+        <br/>Creates devices by using auto creation service.
+        <br/>Setup Development Database can be also used to create LCRs and add them to the account if the simulator service is running.
+     </div>
+    <br/>
     <cti:url var="autoCreationUrl" value="deviceAutoCreation"/>
     <form:form id="autoCreationForm" action="${autoCreationUrl}" method="post">
         <tags:nameValueContainer>
@@ -121,8 +129,6 @@
             </tags:nameValue>
         </tags:nameValueContainer>
     </form:form>
-
-    <pre class="code js-test-endpoint-results dn"></pre>
     
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.pxMWSimulator.js" />
 </cti:standardPage>
