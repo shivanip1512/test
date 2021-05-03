@@ -10,12 +10,15 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.dr.itron.service.ItronCommunicationException;
+import com.cannontech.dr.pxmw.model.PxMWException;
+import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareReadNowStrategy;
@@ -26,13 +29,16 @@ import com.google.common.collect.Multimap;
 
 public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrategy {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudHardwareReadNowStrategy.class);
+    private static final String keyBase = "yukon.web.modules.operator.hardware.";
 
     @Autowired private PxMWDataReadService readService;
     @Autowired private IDatabaseCache cache;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
     public Map<String, Object> readNow(int deviceId, YukonUserContext userContext) {
         LiteYukonPAObject device = cache.getAllPaosMap().get(deviceId);
+        final MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = Maps.newHashMapWithExpectedSize(2);
         try {
             DateTime start = new DateTime();
@@ -42,13 +48,13 @@ public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrateg
             Set<Integer> deviceIds = new HashSet<>();
             deviceIds.add(deviceId);
             // Read Device.
-            Multimap<PaoIdentifier, PointData> devicesToPointValues = readService.collectDataForRead(deviceIds, range);
+            readService.collectDataForRead(deviceIds, range);
             json.put("success", true);
-            json.put("message", devicesToPointValues);
-        } catch (ItronCommunicationException e) {
+            json.put("message", accessor.getMessage(keyBase + "readNowSuccess"));
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
             log.debug("Read now failed for " + device);
             json.put("success", false);
-            json.put("message", e.getMessage());
+            json.put("message", accessor.getMessage(keyBase + "error.readNowFailed", e.getMessage()));
         }
 
         return json;
