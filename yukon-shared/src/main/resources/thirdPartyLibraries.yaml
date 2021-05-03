@@ -2289,6 +2289,48 @@ Java :
     jira : none
     notes : 
   
+  - filename : protobuf-java-3.15.8.jar
+    yukon group : Protobuf
+    project : Protobuf
+    version : 3.15.8
+    project URL : "https://github.com/protocolbuffers/protobuf/releases"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java/3.15.8"
+    md5 : 446b54fdecf8cdaa18805fe6c141575e
+    sha1 : ae78c5552b1ed6549fc5b51f9739e8dbd921ffc3
+    updated : 2021-05-03
+    jira : YUK-24160
+    notes :
+    
+  - filename : protobuf-java-format-1.4.jar
+    yukon group : Protobuf
+    project : Protobuf
+    version : 3.15.8
+    project URL : "https://github.com/protocolbuffers/protobuf/releases"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://repo1.maven.org/maven2/com/googlecode/protobuf-java-format/protobuf-java-format/1.4/"
+    md5 : 8ed79db49560c6f4f6311e2028968d60
+    sha1 : ea0876fccd93c86802af1b07ffc6829525759a10
+    updated : 2021-05-03
+    jira : YUK-24160
+    notes :
+    
+  - filename : protobuf-java-util-3.15.8.jar
+    yukon group : Protobuf
+    project : Protobuf
+    version : 3.15.8
+    project URL : "https://github.com/protocolbuffers/protobuf/releases"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java-util/3.15.8"
+    md5 : c1780d6aaaf8072267f5cc24f0c52470
+    sha1 : b2cd54f068be1538eeb58e42945fc30ee6c07021
+    updated : 2021-05-03
+    jira : YUK-24160
+    notes :
+    
   - filename : proton-j-0.33.4.jar
     yukon group : Azure
     project : Microsoft Azure SDK
