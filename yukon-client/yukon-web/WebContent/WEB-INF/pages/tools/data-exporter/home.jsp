@@ -124,7 +124,7 @@
 
         <c:if test="${not empty allFormats}">
             <h3><i:inline key=".preview.title"/></h3>
-            <pre><div><i:inline key=".preview.rulerNumbers"/></div><div><i:inline key=".preview.rulerMarks"/></div><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
+            <pre class="code"><div><i:inline key=".preview.rulerNumbers"/></div><div><i:inline key=".preview.rulerMarks"/></div><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
         </c:if>
 
         <%@ include file="scheduledJobsTable.jsp" %>

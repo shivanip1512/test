@@ -1,11 +1,5 @@
 package com.cannontech.dr.pxmw.service.impl.v1;
 
-import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
-import com.cannontech.message.dispatch.message.PointData;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -19,7 +13,6 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.buf.StringUtils;
-import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,13 +32,16 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.pxmw.model.MWChannel;
-import com.cannontech.dr.pxmw.model.PxMWException;
-import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesValueV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
+import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
+import com.cannontech.message.dispatch.message.PointData;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 public class PxMWDataReadServiceImpl implements PxMWDataReadService {
 
@@ -58,142 +54,130 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
     @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
-
+ 
     @Override
-    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds) {
-        Multimap<PaoType, LiteYukonPAObject> paoTypeToPao = HashMultimap.create();
+    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> queryRange) {
+
+        Map<PaoType, Set<LiteYukonPAObject>> paos = paoDao.getLiteYukonPaos(deviceIds).stream()
+                .filter(pao -> pao.getPaoType().isCloudLcr())
+                .collect(Collectors.groupingBy(pao -> pao.getPaoType(), Collectors.toSet()));
+          
         Multimap<PaoIdentifier, PointData> receivedPoints = HashMultimap.create();
-        List<LiteYukonPAObject> paos = new ArrayList<>();
-        Range<Instant> queryRange = getQueryRange();
-        
-        log.info("Initiating read for all attributes on device IDs: {}", deviceIds);
-
-        for (LiteYukonPAObject pao : paoDao.getLiteYukonPaos(deviceIds)) {
-            if (pao.getPaoType().isCloudLcr()) {
-                paoTypeToPao.put(pao.getPaoType(), pao);
-                paos.add(pao);
-            } else {
-                log.info("Non-RF-LCR device ID passed: {}. Will be skipped", pao);
-            }
+        for (PaoType type : paos.keySet()) {
+            Set<BuiltInAttribute> attr = getAttributesForPaoType(type);
+            log.info("Initiating read for type:{} devices: {} on attributes:{}", type, paos.get(type).size(), attr.size());
+            receivedPoints.putAll(retrievePointData(paos.get(type), attr, queryRange));
         }
 
-        for (PaoType paoType : paoTypeToPao.keySet()) {
-            try {
-                receivedPoints.putAll(retrievePointData(paoTypeToPao.get(paoType), getAttributesForPaoType(paoType), queryRange));
-            } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
-                log.error("An error occurred when requesting data for attributes {} on PAOs {}", paoTypeToPao.get(paoType), getAttributesForPaoType(paoType), e);
-            }
-        }
-
+        log.debug("Retrieved point data:{} for devices:{}", receivedPoints.values().size(), receivedPoints.keySet().size());
         if (!receivedPoints.isEmpty()) {
             dispatchData.putValues(receivedPoints.values());
             updateAssetAvailability(receivedPoints);
         }
-
-        return receivedPoints;
-    }
-    
-    @Override
-    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Set<BuiltInAttribute> attributes) {
-        List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaos(deviceIds);
-        Multimap<PaoIdentifier, PointData> receivedPoints = HashMultimap.create();
-        
-        log.info("Initiating read for deviceIDs: {} on attributes: {}", deviceIds, attributes);
-        try {
-            receivedPoints = retrievePointData(paos, attributes, getQueryRange());
-        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
-            log.error("An error occurred when requesting data for attributes {} on PAOs {}", deviceIds, attributes, e);
-        }
-
-        if (!receivedPoints.isEmpty()) {
-            dispatchData.putValues(receivedPoints.values());
-            updateAssetAvailability(receivedPoints);
-        }
-
         return receivedPoints;
     }
 
-    private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<LiteYukonPAObject> paos, Iterable<BuiltInAttribute> attribtues, Range<Instant> queryRange) {
-        Multimap<PaoIdentifier, PointData> newPaoPointMap = HashMultimap.create();
-        Map<Integer, LiteYukonPAObject> deviceIdToPao = StreamSupport.stream(paos.spliterator(), false).collect(Collectors.toMap(LiteYukonPAObject::getYukonID, liteYukonPao -> liteYukonPao));
+    private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<LiteYukonPAObject> paos,
+            Set<BuiltInAttribute> attribtues, Range<Instant> queryRange) {
+        Map<Integer, LiteYukonPAObject> deviceIdToPao = StreamSupport.stream(paos.spliterator(), false)
+                .collect(Collectors.toMap(LiteYukonPAObject::getYukonID, liteYukonPao -> liteYukonPao));
         BidiMap<Integer, String> deviceIdGuid = new DualHashBidiMap<Integer, String>(deviceDao.getGuids(deviceIdToPao.keySet()));
-        List<PxMWTimeSeriesDeviceResultV1> timeSeriesResults = new ArrayList<PxMWTimeSeriesDeviceResultV1>();
 
-        Set<String> tags = getTagsForAttributes(attribtues);
+        Multimap<PaoIdentifier, PointData> newPaoPointMap = HashMultimap.create();
+        List<PxMWTimeSeriesDeviceResultV1> timeSeriesResults = new ArrayList<PxMWTimeSeriesDeviceResultV1>();
+        Set<String> tags = MWChannel.getTagsForAttributes(attribtues);
         List<List<PxMWTimeSeriesDeviceV1>> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
         for (List<PxMWTimeSeriesDeviceV1> request : chunkedRequests) {
-            timeSeriesResults.addAll(pxMWCommunicationService.getTimeSeriesValues(request, queryRange));
+            List<PxMWTimeSeriesDeviceResultV1> result = pxMWCommunicationService.getTimeSeriesValues(request, queryRange);
+            timeSeriesResults.addAll(result);
         }
 
         for (PxMWTimeSeriesDeviceResultV1 deviceResult : timeSeriesResults) {
             Integer deviceId = deviceIdGuid.getKey(deviceResult.getDeviceId());
+            if (deviceId == null) {
+                continue;
+            }
+            LiteYukonPAObject device = deviceIdToPao.get(deviceId);
             for (PxMWTimeSeriesResultV1 result : deviceResult.getResults()) {
-                Integer tag = null;
                 try {
-                    tag = Integer.parseInt(result.getTag());
-                } catch (NullPointerException | NumberFormatException e) {
-                    log.error("Error parsing tag {} from API response", result.getTag(), e);
-                }
-                if (tag != null) {
+                    Integer tag = Integer.parseInt(result.getTag());
                     MWChannel mwChannel = MWChannel.getChannelLookup().get(tag);
-                    LitePoint holder = attributeService.findPointForAttribute(deviceIdToPao.get(deviceId), mwChannel.getBuiltInAttribute()); // This could be optimized
+                    if(!attribtues.contains(mwChannel.getBuiltInAttribute())) {
+                        //Received point data we didn't ask for
+                        continue;
+                    }
                     for (PxMWTimeSeriesValueV1 value : result.getValues()) {
-                        PointData newPoint = parseValueDataToPoint(mwChannel, value);
-                        if (newPoint != null) {
-                            newPoint.setId(holder.getPointID());
-                            newPoint.setPointQuality(PointQuality.Normal);
-                            newPaoPointMap.put(deviceIdToPao.get(deviceId).getPaoIdentifier(), newPoint);
+                        Double pointValue = parsePointValue(mwChannel, value, device, deviceResult.getDeviceId());
+                        if (pointValue != null) {
+                            PointData pointData = generatePointData(device, mwChannel.getBuiltInAttribute(), pointValue,
+                                    value.getTimestamp(), deviceResult.getDeviceId());
+                            if (pointData != null) {
+                                newPaoPointMap.put(device.getPaoIdentifier(), pointData);
+                            }
                         }
                     }
+                } catch (Exception e) {
+                    log.error("Error parsing tag {} from API response", result.getTag(), e);
                 }
             }
         }
-
         return newPaoPointMap;
     }
 
     /**
-     * Parses the channel response into a point, using the channel to determine the correct parse method
-     * Some channels are types that aren't stored in points (strings, specifically). Null is returned for those points
+     * Parses the channel response. Null is returned if unable to parse.
      */
-    private PointData parseValueDataToPoint(MWChannel channel, PxMWTimeSeriesValueV1 value) {
-        PointData pointData = new PointData();
-        log.debug("Attempting to parse point data from message: {}", value);
+    private Double parsePointValue(MWChannel channel, PxMWTimeSeriesValueV1 value, LiteYukonPAObject device, String guid) {
 
-        pointData.setTimeStamp(new Date(value.getTimestamp()));
         String pxReturnedValue = value.getValue();
-        double pointValue;
-
-        if (MWChannel.getBooleanChannels().contains(channel)) {
-            if (!pxReturnedValue.toLowerCase().equals("true") && !pxReturnedValue.toLowerCase().equals("false")) {
-                log.info("Unexpected Value {} for channel {}. Discarding value", pxReturnedValue, channel);
-                pointData = null;
-            } else {
-                pointValue = Boolean.parseBoolean(pxReturnedValue) ? 1 : 0;
-                pointData.setValue(pointValue);
+        try {
+            if (MWChannel.getBooleanChannels().contains(channel)) {
+                if (pxReturnedValue.toLowerCase().equals("true") || pxReturnedValue.toLowerCase().equals("false")) {
+                    return Boolean.parseBoolean(pxReturnedValue) ? Double.valueOf("1") : Double.valueOf("0");
+                }
+            } else if (MWChannel.getIntegerChannels().contains(channel) || MWChannel.getFloatChannels().contains(channel)) {
+                return Double.parseDouble(pxReturnedValue);
             }
-        } else if (MWChannel.getIntegerChannels().contains(channel)) {
-            try {
-                pointValue = Integer.parseInt(pxReturnedValue);
-                pointData.setValue(pointValue);
-            } catch (NullPointerException | NumberFormatException e) {
-                log.error("Error processing value {} for channel {}", pxReturnedValue, channel, e);
-                pointData = null;
-            }
-        } else if (MWChannel.getFloatChannels().contains(channel)) {
-            try {
-                pointValue = Double.parseDouble(pxReturnedValue);
-                pointData.setValue(pointValue);
-            } catch (NullPointerException | NumberFormatException e) {
-                log.error("Error processing value {} for channel {}", pxReturnedValue, channel, e);
-                pointData = null;
-            }
-        } else {
-            log.info("Channel {} is a type that cannot be parsed into point data. Disarding received value: {}", pxReturnedValue);
-            pointData = null;
+        } catch (Exception e) {
+            //can't parse data ignore exception
         }
 
-        log.debug("Parsed point data {} from response {}", pointData, value);
+        log.error("Device Id:{} Name:{} Guid:{} Channel:{} cannot be parsed into point data. Discarding received value: {}",
+                device.getLiteID(), device.getPaoName(), guid, channel, pxReturnedValue);
+        return null;
+    }
+    
+   private PointData generatePointData(LiteYukonPAObject device, BuiltInAttribute attribute, double value, long time, String guid) {
+
+        PointData pointData = new PointData();
+        try {
+            pointData.setTime(Date.from(java.time.Instant.ofEpochSecond(time)));            
+        } catch (Exception e) {
+            log.error(
+                    "Device Id:{} Name:{} Guid:{} Attribute:{} can't parse timestamp for point data. Discarding received value:{}",
+                    device.getLiteID(), device.getPaoName(), guid, attribute, time);
+            return null;
+        }
+        boolean pointCreated = attributeService.createPointForAttribute(device, attribute);
+        LitePoint point = attributeService.getPointForAttribute(device, attribute);
+        if (pointCreated) {
+            log.info(
+                    "Device Id:{} Name:{} Guid:{} Attribute:{} Point Id:{} Point {} created.", device.getLiteID(),
+                    device.getPaoName(), guid, attribute, point.getLiteID(), point.getPointName());
+        }
+
+        pointData.setId(point.getLiteID());
+        pointData.setPointQuality(PointQuality.Normal);
+        pointData.setValue(value);
+        pointData.setType(point.getPointType());
+        pointData.setTagsPointMustArchive(true);
+  
+        log.debug(
+                "Device Id:{} Name:{} Guid:{} Attribute:{} Point Id:{} Point Name:{} point data created with value:{} data:{}.",
+                device.getLiteID(),
+                device.getPaoName(), guid, attribute, point.getLiteID(), point.getPointName(), pointData.getValue(),
+                pointData.getTimeStamp());
+        
         return pointData;
     }
 
@@ -203,8 +187,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
      */
     private List<List<PxMWTimeSeriesDeviceV1>> buildRequests(Collection<String> guids, Set<String> tagSet) {
         List<List<PxMWTimeSeriesDeviceV1>> chunkedRequests = new ArrayList<>();
-        List<String> tags = new ArrayList<>(tagSet);
-        List<List<String>> chunkedTags = Lists.partition(tags, 10);
+        List<List<String>> chunkedTags = Lists.partition(new ArrayList<>(tagSet), 10);
         for (List<String> tagSubset : chunkedTags) {
             String tagCSV = buildTagString(tagSubset);
             List<PxMWTimeSeriesDeviceV1> workingRequest = new ArrayList<PxMWTimeSeriesDeviceV1>();
@@ -214,15 +197,6 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
             chunkedRequests.add(workingRequest);
         }
         return chunkedRequests;
-    }
-
-    /**
-     * Currently just returns a range of the last week
-     */
-    private Range<Instant> getQueryRange() {
-        DateTime queryEndTime = new DateTime();
-        DateTime queryStartTime = queryEndTime.minusDays(7);
-        return new Range<Instant>(queryStartTime.toInstant(), false, queryEndTime.toInstant(), true);
     }
 
     private void updateAssetAvailability(Multimap<PaoIdentifier, PointData> pointUpdates) {
@@ -239,23 +213,9 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
     /**
      * Takes a paoTypes and gets all of the tags that have a builtInAttribute for that paoType
      */
-    private List<BuiltInAttribute> getAttributesForPaoType(PaoType paoType) {
+    private Set<BuiltInAttribute> getAttributesForPaoType(PaoType paoType) {
          return paoDefinitionDao.getDefinedAttributes(paoType).stream()
                 .map(attributeDefinition -> attributeDefinition.getAttribute())
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Returns a List of tags for all the BuiltInAttributes. 
-     * If a built in attribute has no associated tag it will be ignored
-     */
-    private Set<String> getTagsForAttributes(Iterable<BuiltInAttribute> attributes) {
-        return StreamSupport.stream(attributes.spliterator(), false)
-                .map(attribute -> {
-                    MWChannel channel = MWChannel.getMWChannel(attribute);
-                    return channel != null ? channel.getChannelId().toString() : null;
-                })
-                .filter(t -> t != null)
                 .collect(Collectors.toSet());
     }
 

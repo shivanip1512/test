@@ -177,7 +177,7 @@
                 <div class="column one">
                     <tags:nameValueContainer2 tableClass="with-form-controls">
                         <tags:nameValue2 nameKey=".dataCompleteness" valueClass="js-gw-data-completeness">
-                            <div class="progress dib vatb">
+                            <div class="progress dif vatb">
                                 <c:set var="clazz" value="progress-bar-success"/>
                                 <c:if test="${gateway.totalCompletionLevelWarning}">
                                     <c:set var="clazz" value="progress-bar-warning"/>

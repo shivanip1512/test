@@ -34,9 +34,9 @@ public interface EcobeeZeusGroupService {
     boolean deleteZeusGroupMappingForInventoryId(int inventoryId);
 
     /**
-     * Insert an event ID for a Zeus group ID (overwriting any existing value). Return true if update is successful.
+     * Insert an event ID for a Yukon group ID (overwriting any existing value). Return true if update is successful.
      */
-    boolean updateEventId(String eventId, String zeusGroupId);
+    boolean updateEventId(String eventId, int yukonGroupId);
 
     /**
      * Return a list of event IDs for a Yukon group ID.

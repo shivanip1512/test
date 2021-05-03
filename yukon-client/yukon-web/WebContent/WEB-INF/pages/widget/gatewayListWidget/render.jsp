@@ -31,7 +31,7 @@
                 </td>
                 <td class="js-gw-last-comm"></td>
                 <td class="js-gw-data-collection">
-                    <div class="dib vat progress">
+                    <div class="dif vat progress">
                         <div class="progress-bar progress-bar-success"></div>
                     </div>&nbsp;
                     <span class="js-gw-data-collection-percent"></span>

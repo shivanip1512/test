@@ -16,7 +16,7 @@
                 <td class="js-firmware-gateways"></td>
                 <td class="js-firmware-update-servers"></td>
                 <td class="js-firmware-update-status">
-                    <div class="progress dib vat">
+                    <div class="progress dif vat">
                         <div class="progress-bar progress-bar-success"></div>
                         <div class="progress-bar progress-bar-danger"></div>
                     </div>

@@ -8,6 +8,9 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
+import org.joda.time.Duration;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -15,23 +18,36 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.CriteriaSelector;
+import com.cannontech.dr.ecobee.message.DrEventState;
+import com.cannontech.dr.ecobee.message.EcoplusSelector;
 import com.cannontech.dr.ecobee.message.Selector;
+
+import com.cannontech.dr.ecobee.message.ZeusCreatePushConfig;
+import com.cannontech.dr.ecobee.message.ZeusDutyCycleDrRequest;
+import com.cannontech.dr.ecobee.message.ZeusDutyCycleEvent;
+
 import com.cannontech.dr.ecobee.message.ZeusGroup;
-import com.cannontech.dr.ecobee.message.ZeusPushConfig;
+import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
+import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
 import com.cannontech.dr.ecobee.service.helper.EcobeeZeusRequestHelper;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicationService {
     private static Logger log = YukonLogManager.getLogger(EcobeeZeusCommunicationServiceImpl.class);
@@ -40,11 +56,12 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Autowired private EcobeeZeusGroupService ecobeeZeusGroupService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private IDatabaseCache cache;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     // TODO: Remove hard coded String once globalsettings is created for program ID.
     private static String programId = "2df7e7a53193438a8a3aa4c919475ac0";
     private static final int thresholdThermostatCount = 9900;
+    private static final String YUKON_CYCLE_EVENT_NAME = "yukonCycle";
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean isDeviceRegistered(String serialNumber) {
         try {
@@ -218,13 +235,14 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
     }
+
     
     @Override
     public void createPushApiConfiguration(String reportingUrl, String privateKey) {
         try {
             String utilityId = getUtilityId();
             String pushConfigURL = getUrlBase() + "utilities/" + utilityId + "/pushconfig";
-            ZeusPushConfig zeusPushConfig = new ZeusPushConfig(reportingUrl, privateKey);
+            ZeusCreatePushConfig zeusPushConfig = new ZeusCreatePushConfig(reportingUrl, privateKey);
 
             requestHelper.callEcobeeAPIForObject(pushConfigURL, HttpMethod.POST, Object.class, zeusPushConfig);
 
@@ -232,16 +250,17 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
     }
-
+    
+    @SuppressWarnings("unchecked")
     @Override
-    public ZeusPushConfig showPushApiConfiguration() {
+    public ZeusShowPushConfig showPushApiConfiguration() {
         try {
             String utilityId = getUtilityId();
             String showPushConfigURL = getUrlBase() + "utilities/" + utilityId + "/pushconfig";
-
-            ResponseEntity<?> responseEntity = requestHelper.callEcobeeAPIForObject(showPushConfigURL, HttpMethod.GET,
-                    Object.class);
-            return (ZeusPushConfig) responseEntity.getBody();
+            
+            ResponseEntity<ZeusShowPushConfig> responseEntity = (ResponseEntity<ZeusShowPushConfig>) requestHelper
+                    .callEcobeeAPIForObject(showPushConfigURL, HttpMethod.GET, ZeusShowPushConfig.class);
+            return responseEntity.getBody();
 
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
@@ -264,7 +283,64 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         return utilityId;
     }
 
+    @Override
+    public String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters) {
+        String eventId = StringUtils.EMPTY;
+
+        String issueDemandResponseUrl = getUrlBase() + "events/dr";
+        ZeusDutyCycleDrRequest dutyCycleDr = new ZeusDutyCycleDrRequest(buildZeusEvent(parameters));
+        if (log.isDebugEnabled()) {
+            try {
+                log.debug("Sending ecobee duty cycle DR with body: {}", JsonUtils.toJson(dutyCycleDr));
+            } catch (JsonProcessingException e) {
+                log.warn("Error parsing json in debug.", e);
+            }
+        }
+        try {
+            ResponseEntity<ZeusDutyCycleDrRequest> zeusDrResponseEntity = requestHelper
+                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDutyCycleDrRequest.class, dutyCycleDr);
+            if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
+                eventId = zeusDrResponseEntity.getBody().getEvent().getId();
+            }
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+        return eventId;
+    }
+
+    /**
+     * Method to build Zeus event.
+     */
+    private ZeusDutyCycleEvent buildZeusEvent(EcobeeDutyCycleDrParameters parameters) {
+        DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        String eventDisplayMessage = messageSourceAccessor.getMessage("yukon.web.modules.dr.ecobee.eventDisplayMessage");
+        String zeusGroupId = ecobeeZeusGroupService.getZeusGroupIdForLmGroup(parameters.getGroupId());
+
+        ZeusDutyCycleEvent event = new ZeusDutyCycleEvent();
+        event.setName(YUKON_CYCLE_EVENT_NAME);
+        event.setTstatGroupId(zeusGroupId);
+
+        event.setEventStartTime(parameters.getStartTime().toString(dateTimeFormmater));
+        Duration res = new Duration(parameters.getStartTime(), parameters.getEndTime());
+        event.setDurationInMinutes(res.toStandardMinutes().getMinutes());
+
+        event.setMandatory(!parameters.isOptional());
+        event.setDutyCyclePercentage(parameters.getDutyCyclePercent());
+
+        event.setMessage(eventDisplayMessage);
+        event.setSendEmail(settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
+
+        event.setEcoplusSelector(EcoplusSelector.ALL);
+        event.setState(DrEventState.SUBMITTED_DIRECTLY);
+        event.setShowThermostat(true);
+        event.setShowWeb(true);
+        return event;
+    }
+
     private String getUrlBase() {
         return settingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
+
     }
+
 }

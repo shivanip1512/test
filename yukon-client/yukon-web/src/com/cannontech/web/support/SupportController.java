@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -189,6 +190,7 @@ public class SupportController {
             previousBundles.add(f.getName());
         }
         model.addAttribute("supportBundle", bundle);
+        model.addAttribute("now", new Date());
         model.addAttribute("rfSupportBundle", new RfSupportBundle());
         model.addAttribute("bundleRangeSelectionOptions", BundleRangeSelection.values());
         model.addAttribute("bundleList", previousBundles);
@@ -272,6 +274,7 @@ public class SupportController {
 
         detailsRfValidator.validate(rfSupportBundle, result);
         model.addAttribute("rfSupportBundle", rfSupportBundle);
+        model.addAttribute("now", new Date());
 
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -312,28 +315,36 @@ public class SupportController {
         Map<String, Object> json = new HashMap<>();
         RfnSupportBundleResponseType status = rfNetworkSupportBundleService.getStatus();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-
-        switch (status) {
-        case STARTED:
-        case INPROGRESS:
-            json.put("isCompleted", false);
-            json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.started"));
-            break;
-        case COMPLETED:
-            json.put("isCompleted", true);
-            json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success"));
-            break;
-        case FAILED:
-            json.put("isCompleted", true);
-            json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.failed"));
-            break;
-        case TIMEOUT:
-            json.put("isCompleted", true);
-            json.put("message", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout"));
-            break;
-        default:
-            break;
+        boolean isCompleted = false;
+        String message = null;
+        if (status == null) {
+            isCompleted = true;
+            message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout");
+        } else {
+            switch (status) {
+            case STARTED:
+            case INPROGRESS:
+                isCompleted = false;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.started");
+                break;
+            case COMPLETED:
+                isCompleted = true;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success");
+                break;
+            case FAILED:
+                isCompleted = true;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.failed");
+                break;
+            case TIMEOUT:
+                isCompleted = true;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout");
+                break;
+            default:
+                break;
+            }
         }
+        json.put("isCompleted", isCompleted);
+        json.put("message", message);
         json.put("status", status);
         return json;
     }

@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #createPushConfiguration, #showPushConfiguration').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -29,6 +29,9 @@
              } break;
              case 'enrollment' : {
                  enabledSelectedOption(enrollment, enrollmentOp);
+             } break;
+             case 'issueDemandResponse' : {
+                 enabledSelectedOption(issueDemandResponse, issueDemandResponseOp);
              } break;
              case 'createPushConfiguration' : {
                  enabledSelectedOption(createPushConfiguration, createPushConfigurationOp);
@@ -71,6 +74,12 @@
                             <label> 
                                 <input id="enrollment" type="checkbox" name="enrollment"> 
                                 <i:inline key=".enrollment" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="issueDemandResponse" type="checkbox" name="issueDemandResponse"> 
+                                <i:inline key=".issueDemandResponse" />
                             </label>
                         </li>
                         <li>
@@ -123,6 +132,14 @@
                                     </c:forEach>
                                 </select>
                                 <input type="hidden" name="enrollmentOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="issueDemandResponseOp" name="issueDemandResponseOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="issueDemandResponseOp" value="0" />
                             </li>
                             <li>
                                 <select id="createPushConfigurationOp" name="createPushConfigurationOp" disabled="disabled">
