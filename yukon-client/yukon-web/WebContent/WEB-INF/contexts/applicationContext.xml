@@ -1069,6 +1069,7 @@
 
     <bean id="hardwareModelHelper" class="com.cannontech.web.stars.dr.operator.HardwareModelHelper"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareReadServiceImpl"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EatonCloudHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EcobeeHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.PlcHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.RfHardwareReadNowStrategy"/>
