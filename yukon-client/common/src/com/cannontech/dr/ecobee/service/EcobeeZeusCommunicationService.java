@@ -40,4 +40,9 @@ public interface EcobeeZeusCommunicationService {
      */
     String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters);
 
+    /**
+     * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only.
+     */
+    void cancelDemandResponse(int yukonGroupId, String... serialNumbers);
+
 }

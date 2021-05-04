@@ -110,19 +110,21 @@ public class EcobeeMessageListener {
         log.debug("Received message on yukon.notif.stream.dr.EcobeeRestoreMessage queue.");
 
         int groupId;
-        if(message instanceof StreamMessage) {
+        if (message instanceof StreamMessage) {
             try {
                 groupId = getRestoreGroupId((StreamMessage) message);
             } catch (JMSException e) {
                 log.error("Exception parsing StreamMessage for DR restore.", e);
                 return;
             }
-            
-            //Send restore to ecobee server
-            String drIdentifier = groupToDrIdentifierMap.get(groupId);
-            ecobeeCommunicationService.sendRestore(drIdentifier);
-            
-            //Send control history message to dispatch
+            if (isEcobeeZeusEnabled()) {
+                ecobeeZeusCommunicationService.cancelDemandResponse(groupId);
+            } else {
+                // Send restore to ecobee server
+                String drIdentifier = groupToDrIdentifierMap.get(groupId);
+                ecobeeCommunicationService.sendRestore(drIdentifier);
+            }
+            // Send control history message to dispatch
             controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
         }
     }

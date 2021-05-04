@@ -212,7 +212,7 @@ public class EcobeeMockApiController {
         groupMap.put("utility_id", "utility-123");
         groupMap.put("thermostat_count", 100);
         responseMap.put("group", groupMap);
-        return new ResponseEntity<>(responseMap, HttpStatus.OK);
+        return new ResponseEntity<>(responseMap, HttpStatus.CREATED);
     }
 
     @IgnoreCsrfCheck
@@ -228,7 +228,7 @@ public class EcobeeMockApiController {
         responseMap.put("group", groupMap);
         int enrollment = zeusEcobeeDataConfiguration.getEnrollment();
         if (enrollment == 0) {
-            return new ResponseEntity<>(responseMap, HttpStatus.CREATED);
+            return new ResponseEntity<>(responseMap, HttpStatus.OK);
         } else if (enrollment == 1) {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else if (enrollment == 3) {
@@ -311,6 +311,25 @@ public class EcobeeMockApiController {
         }
     }
 
+    @IgnoreCsrfCheck
+    @DeleteMapping("events/dr/{id}")
+    public ResponseEntity<Object> cancelDemandResponse(@PathVariable String id,
+            @RequestParam(name = "thermostat_ids", required = false) String... thermostatIds) {
+        Map<String, Object> responseMap = new HashMap<String, Object>();
+        int cancelDemandResponse = zeusEcobeeDataConfiguration.getCancelDemandResponse();
+        if (cancelDemandResponse == 0) {
+            return new ResponseEntity<>(responseMap, HttpStatus.OK);
+        } else if (cancelDemandResponse == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (cancelDemandResponse == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else if (cancelDemandResponse == 5) {
+            return new ResponseEntity<>(getForbiddenResponse(), HttpStatus.FORBIDDEN);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     /**
      * Response for UNAUTHORIZED status code
      */
@@ -331,4 +350,12 @@ public class EcobeeMockApiController {
     private ZeusErrorResponse getBadRequestResponse() {
         return new ZeusErrorResponse("bad_request", "Supplied request is not well formed.");
     }
+
+    /**
+     * Response for FORBIDDEN status code
+     */
+    private Object getForbiddenResponse() {
+        return new ZeusErrorResponse("Forbidden", "Access with provided parameters is permanently forbidden.");
+    }
+
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Duration;
@@ -337,6 +338,30 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         event.setShowThermostat(true);
         event.setShowWeb(true);
         return event;
+    }
+
+    @Override
+    public void cancelDemandResponse(int yukonGroupId, String... serialNumbers) {
+        boolean isNotEmptyThermostats = ArrayUtils.isNotEmpty(serialNumbers);
+        log.debug("Sending Zeus cancel DR request for Yukon group : {} for {} thermostat(s)", yukonGroupId,
+                isNotEmptyThermostats ? serialNumbers : "all");
+        String zeusEventId = ecobeeZeusGroupService.getEventId(yukonGroupId);
+        String cancelDrUrl = getUrlBase() + "/events/dr/" + zeusEventId;
+        if (isNotEmptyThermostats) {
+            cancelDrUrl = cancelDrUrl.concat("?thermostat_ids=").concat(String.join(",", serialNumbers));
+        }
+        try {
+            ResponseEntity<?> responseEntity = requestHelper.callEcobeeAPIForObject(cancelDrUrl, HttpMethod.DELETE, Map.class);
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                log.debug("Canceled DR request for Yukon group : {} for {} thermostat(s)", yukonGroupId,
+                        isNotEmptyThermostats ? serialNumbers : "all");
+                if (!isNotEmptyThermostats) {
+                    ecobeeZeusGroupService.updateEventId(StringUtils.EMPTY, yukonGroupId);
+                }
+            }
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
     }
 
     private String getUrlBase() {

@@ -30,7 +30,7 @@ public class EcobeeMockServiceTestController {
             "AUTHENTICATION_EXPIRED(14)", "DUPLICATE_DATA_VIOLATION(15)");
 
     private static final List<String> zeusStatus = ImmutableList.of("SUCCESS(0)",
-            "UNAUTHORIZED(1)", "BAD_REQUEST(2)", "NOT_FOUND(3)", "PARTIAL_CONTENT(4)");
+            "UNAUTHORIZED(1)", "BAD_REQUEST(2)", "NOT_FOUND(3)", "PARTIAL_CONTENT(4)", "FORBIDDEN(5)");
 
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
@@ -57,9 +57,9 @@ public class EcobeeMockServiceTestController {
     @RequestMapping(value = "zeus/update", method = RequestMethod.POST)
     public String updateZeus(Integer authenticateOp, Integer createDeviceOp, Integer deleteDeviceOp, Integer enrollmentOp,
             Integer issueDemandResponseOp, Integer showUserOp, Integer createPushConfigurationOp, Integer showPushConfigurationOp,
-            FlashScope flashScope, ModelMap modelMap) throws IOException {
+            Integer cancelDemandResponseOp, FlashScope flashScope, ModelMap modelMap) throws IOException {
         zeusEcobeeDataConfiguration.setZeusEcobeeDataConfiguration(authenticateOp, createDeviceOp, deleteDeviceOp, enrollmentOp,
-                issueDemandResponseOp, showUserOp, createPushConfigurationOp, showPushConfigurationOp);
+                issueDemandResponseOp, showUserOp, createPushConfigurationOp, showPushConfigurationOp, cancelDemandResponseOp);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.ecobee.mockTest.saved"));
         return "redirect:viewBase";
     }
