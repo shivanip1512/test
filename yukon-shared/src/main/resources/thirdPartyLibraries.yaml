@@ -5758,15 +5758,15 @@ JavaScript :
     notes : "This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : open-layers
-    version : 6.4.3
+    version : 6.5.0
     project URL : "https://openlayers.org/"
     license : BSD 2-clause
     license URLs : "https://raw.githubusercontent.com/openlayers/openlayers/master/LICENSE.md"
-    npm URL : "https://www.npmjs.com/package/ol/v/6.4.3"
-    md5 : 5cc60bd85cb1d155b81dc01934e7c149
-    sha1 : 5a0972ba4b9d13f8996188e075bdfa1376a541d0
-    jira : YUK-22996
-    updated : 2020-10-22
+    npm URL : "https://www.npmjs.com/package/ol/v/6.5.0"
+    md5 : e106003252314bfaad7f1c234afd7a74
+    sha1 : 50cea1e30d07c69699b2d6966df792a82c72ebf9
+    jira : YUK-24195
+    updated : 2021-05-03
     notes : Used for mapping
 
   - project : placeholder
