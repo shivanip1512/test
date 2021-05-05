@@ -59,8 +59,8 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.UpdateDeviceEv
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.UpdateDeviceEventLogsResponse;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.AddHANLoadControlProgramEventRequest;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.AddProgramEventResponseType;
-import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelHANLoadControlProgramEventOnDevicesRequest;
-import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelHANLoadControlProgramEventOnDevicesResponse;
+import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelAllHANLoadControlProgramEventOnDevicesRequest;
+import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelAllHANLoadControlProgramEventOnDevicesResponse;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramRequest;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramResponse;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.SetServicePointEnrollmentRequest;
@@ -383,22 +383,19 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      */
     void sendRestore(int yukonGroupId, String macAddress, Long itronGroupId, boolean enableRandomization) {
         LiteYukonPAObject group = getGroup(yukonGroupId);
-
-        long eventId = itronDao.getActiveEvent(yukonGroupId)
-                               .orElseThrow(() -> new ItronEventNotFoundException("Unable to restore, Itron event id doesn't exist."));
         
         String url = ItronEndpointManager.PROGRAM_EVENT.getUrl(settingDao);
         try {
-            CancelHANLoadControlProgramEventOnDevicesRequest request =
-                ProgramEventManagerHelper.buildRestoreRequest(itronGroupId, eventId, macAddress, enableRandomization);
+            CancelAllHANLoadControlProgramEventOnDevicesRequest request =
+                ProgramEventManagerHelper.buildRestoreRequest(itronGroupId, macAddress, enableRandomization);
             log.debug(XmlUtils.getPrettyXml(request));
-            log.debug("ITRON-sendRestore url:{} mac address:{} yukon group:{} itron event id:{}.", url, macAddress,
-                group.getPaoName(), eventId);
-            CancelHANLoadControlProgramEventOnDevicesResponse response =
-                (CancelHANLoadControlProgramEventOnDevicesResponse) ItronEndpointManager.PROGRAM_EVENT.getTemplate(
+            log.debug("ITRON-sendRestore url:{} mac address:{} yukon group:{}.", url, macAddress,
+                    group.getPaoName());
+            CancelAllHANLoadControlProgramEventOnDevicesResponse response =
+                (CancelAllHANLoadControlProgramEventOnDevicesResponse) ItronEndpointManager.PROGRAM_EVENT.getTemplate(
                     settingDao).marshalSendAndReceive(url, request);
-            log.debug("ITRON-sendRestore url:{} mac address:{} yukon group:{} itron event id:{} result:{}.", url,
-                macAddress, group.getPaoName(), eventId, "success");
+            log.debug("ITRON-sendRestore url:{} mac address:{} yukon group:{} result:{}.", url,
+                macAddress, group.getPaoName(), "success");
             log.debug(XmlUtils.getPrettyXml(response));
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.PROGRAM_EVENT);
