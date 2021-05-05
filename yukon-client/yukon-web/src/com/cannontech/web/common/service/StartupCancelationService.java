@@ -26,13 +26,16 @@ public class StartupCancelationService {
         scheduledExecutorService.schedule(() -> {
             try {
                 int total = collectionActionService.terminate();
-                int inProgressCount = deviceConfigurationDao.getInProgressCount();
-                //Change DeviceConfigState status from "In Progress" to "Failure"
-                deviceConfigurationDao.failInProgressDevices();
-
-                log.info("Terminated Collection Actions:{} DeviceConfigState in progress:{}", total, inProgressCount);
+                log.info("Terminated Collection Actions:{}", total);
             } catch (Exception e) {
-                log.error(e);
+                log.error("Error Terminated Collection Actions", e);
+            }
+            try {
+                int inProgressCount = deviceConfigurationDao.getInProgressCount();
+                deviceConfigurationDao.failInProgressDevices();
+                log.info("Changed DeviceConfigState status from 'In Progress' to 'Failure':{}", inProgressCount);
+            } catch (Exception e) {
+                log.error("Error Changed DeviceConfigState status from 'In Progress' to 'Failure'", e);
             }
         }, MIN_TO_WAIT, TimeUnit.MINUTES);
     }
