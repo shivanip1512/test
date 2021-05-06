@@ -32,7 +32,9 @@ import com.cannontech.dr.ecobee.message.ZeusDutyCycleDrRequest;
 import com.cannontech.dr.ecobee.message.ZeusDutyCycleEvent;
 
 import com.cannontech.dr.ecobee.message.ZeusGroup;
+import com.cannontech.dr.ecobee.message.ZeusGroupResponse;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
+import com.cannontech.dr.ecobee.message.ZeusThermostat;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
@@ -339,6 +341,47 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         return event;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ZeusGroup> getAllGroups() {
+        String getAllGroups = getUrlBase() + "tstatgroups";
+
+        try {
+            ResponseEntity<ZeusGroupResponse> responseEntity = (ResponseEntity<ZeusGroupResponse>) requestHelper
+                    .callEcobeeAPIForObject(getAllGroups, HttpMethod.GET, ZeusGroupResponse.class);
+
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                ZeusGroupResponse zeusGroupResponse = responseEntity.getBody();
+                return zeusGroupResponse.getGroups();
+            } else {
+                throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.");
+            }
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ZeusThermostat> getThermostatsInGroup(String thermostatGroupID) {
+        String getThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats";
+        
+        try {
+            ResponseEntity<ZeusThermostatsResponse> responseEntity = (ResponseEntity<ZeusThermostatsResponse>) requestHelper
+                    .callEcobeeAPIForObject(getThermostatsURL, HttpMethod.GET, ZeusThermostatsResponse.class);
+            
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                ZeusThermostatsResponse zeusGroupResponse = responseEntity.getBody();
+                return zeusGroupResponse.getThermostats();
+            } else {
+                throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.");
+            }
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+    }
+    
     private String getUrlBase() {
         return settingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
 

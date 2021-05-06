@@ -10,9 +10,10 @@ public class ZeusEcobeeDataConfiguration {
     private int showUser = 0;
     private int createPushConfiguration = 0;
     private int showPushConfiguration = 0;
+    private int getGroup = 0;
 
     public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment,
-            int issueDemandResponse, int showUser, int createPushConfiguration, int showPushConfiguration) {
+            int issueDemandResponse, int showUser, int createPushConfiguration, int showPushConfiguration, int getGroup) {
 
         this.authenticate = authenticate;
         this.createDevice = createDevice;
@@ -22,6 +23,7 @@ public class ZeusEcobeeDataConfiguration {
         this.showUser = showUser;
         this.createPushConfiguration = createPushConfiguration;
         this.showPushConfiguration = showPushConfiguration;
+        this.getGroup = getGroup;
         
     }
 
@@ -87,5 +89,13 @@ public class ZeusEcobeeDataConfiguration {
 
     public void setShowPushConfiguration(int showPushConfiguration) {
         this.showPushConfiguration = showPushConfiguration;
+    }
+    
+    public int getGetGroup() {
+        return getGroup;
+    }
+
+    public void setGetGroup(int getGroup) {
+        this.getGroup = getGroup;
     }
 }

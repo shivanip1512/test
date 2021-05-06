@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #getGroup').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -41,6 +41,9 @@
              } break;
              case 'showUser' : {
                  enabledSelectedOption(showUser, showUserOp);
+             } break;
+             case 'getGroup' : {
+                 enabledSelectedOption(getGroup, getAllGroupOp);
              } break;
          }
          });
@@ -101,6 +104,12 @@
                             <label> 
                                 <input id="showUser" type="checkbox" name="showUser"> 
                                 <i:inline key=".showUser" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="getGroup" type="checkbox" name="getGroup"> 
+                                <i:inline key=".getGroup" />
                             </label>
                         </li>
                     </ul>

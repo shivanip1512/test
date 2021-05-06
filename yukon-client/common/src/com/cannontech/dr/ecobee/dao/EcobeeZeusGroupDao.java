@@ -57,4 +57,14 @@ public interface EcobeeZeusGroupDao {
      * Return name of the specified Zeus group ID.
      */
     String getZeusGroupName(String zeusGroupId);
+    
+    /*
+     * Get count of zeus group in yukon
+     */
+    int getGroupCount();
+
+    /*
+     * Get count of ecobee thermostats in yukon
+     */
+    int getAllThermostatCount();
 }

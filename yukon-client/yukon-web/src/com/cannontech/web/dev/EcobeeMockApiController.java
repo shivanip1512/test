@@ -169,14 +169,20 @@ public class EcobeeMockApiController {
         return new ResponseEntity<>(responseMap, HttpStatus.OK);
     }
 
+    
+    
     @IgnoreCsrfCheck
     @GetMapping("tstatgroups/{thermostatGroupID}/thermostats")
     public ResponseEntity<Object> retrieveThermostats(@PathVariable String thermostatGroupID,
-            @RequestParam(name = "enrollment_state") ZeusThermostatState state,
-            @RequestParam(name = "thermostat_ids") List<String> thermostatIds) {
+            @RequestParam(name = "enrollment_state", required = false) ZeusThermostatState state,
+            @RequestParam(name = "thermostat_ids", required = false) List<String> thermostatIds) {
         int createDeviceCode = zeusEcobeeDataConfiguration.getCreateDevice();
         if (createDeviceCode == 0) {
-            return new ResponseEntity<>(responseFactory.retrieveThermostats(thermostatIds), HttpStatus.OK);
+            if (thermostatIds == null) {
+                return new ResponseEntity<>(responseFactory.getThermostatsInGroup(thermostatGroupID), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(responseFactory.retrieveThermostats(thermostatIds), HttpStatus.OK);
+            }
         } else if (createDeviceCode == 1) {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else if (createDeviceCode == 3) {
@@ -330,5 +336,20 @@ public class EcobeeMockApiController {
      */
     private ZeusErrorResponse getBadRequestResponse() {
         return new ZeusErrorResponse("bad_request", "Supplied request is not well formed.");
+    }
+    
+    @IgnoreCsrfCheck
+    @GetMapping("tstatgroups")
+    public ResponseEntity<Object> getAllGroups() {
+        int getGroupCode = zeusEcobeeDataConfiguration.getGetGroup();
+        if (getGroupCode == 0) {
+            return new ResponseEntity<>(responseFactory.retrieveGroups(), HttpStatus.OK);
+        } else if (getGroupCode == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (getGroupCode == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
     }
 }

@@ -57,9 +57,10 @@ public class EcobeeMockServiceTestController {
     @RequestMapping(value = "zeus/update", method = RequestMethod.POST)
     public String updateZeus(Integer authenticateOp, Integer createDeviceOp, Integer deleteDeviceOp, Integer enrollmentOp,
             Integer issueDemandResponseOp, Integer showUserOp, Integer createPushConfigurationOp, Integer showPushConfigurationOp,
+            Integer getAllGroupOp,
             FlashScope flashScope, ModelMap modelMap) throws IOException {
         zeusEcobeeDataConfiguration.setZeusEcobeeDataConfiguration(authenticateOp, createDeviceOp, deleteDeviceOp, enrollmentOp,
-                issueDemandResponseOp, showUserOp, createPushConfigurationOp, showPushConfigurationOp);
+                issueDemandResponseOp, showUserOp, createPushConfigurationOp, showPushConfigurationOp, getAllGroupOp);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.ecobee.mockTest.saved"));
         return "redirect:viewBase";
     }

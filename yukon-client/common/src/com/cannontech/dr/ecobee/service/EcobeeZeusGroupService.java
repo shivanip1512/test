@@ -57,4 +57,14 @@ public interface EcobeeZeusGroupService {
      * Return name of the specified Zeus group ID.
      */
     String zeusGroupName(String zeusGroupId);
+    
+    /*
+     * Returns count of zeus group in yukon
+     */
+    int getGroupCount();
+    
+    /*
+     * Returns count of ecobee thermostats in yukon 
+     */
+    int getAllThermostatCount();
 }
