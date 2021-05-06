@@ -74,7 +74,7 @@ public class PxMWDeviceCreationService {
         runFrequencyHours = getDeviceCreationInterval();
         log.info("Auto creation of Eaton cloud LCRs will run every {} hours and begin 5 minutes after startup",
                 runFrequencyHours);
-        executor.scheduleAtFixedRate(autoCreateCloudLCRThread, 5, runFrequencyHours, TimeUnit.HOURS);
+        executor.scheduleAtFixedRate(autoCreateCloudLCRThread, 5/60, runFrequencyHours, TimeUnit.HOURS);
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS);
         
     }
