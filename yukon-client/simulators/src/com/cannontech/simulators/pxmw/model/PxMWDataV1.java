@@ -113,10 +113,6 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         
         log.info("timeseries:{} total values:{}", statistics, total);
         
-
-        resultList.forEach(r -> r.getResults().forEach(t -> t.getValues().forEach(v -> {
-            v.getTimestamp();
-        })));
         return new PxMWSimulatorResponse(resultList.toArray(), status);
     }
     

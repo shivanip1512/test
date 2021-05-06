@@ -152,10 +152,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
 
         PointData pointData = new PointData();
         try {
-            pointData.setTime(Date.from(java.time.Instant.ofEpochSecond(time)));     
-            SimpleDateFormat dfDate = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
-
-            System.out.println(dfDate.format(pointData.getPointDataTimeStamp()));
+            pointData.setTime(Date.from(java.time.Instant.ofEpochSecond(time)));
         } catch (Exception e) {
             log.error(
                     "Device Id:{} Name:{} Guid:{} Attribute:{} can't parse timestamp for point data. Discarding received value:{}",
