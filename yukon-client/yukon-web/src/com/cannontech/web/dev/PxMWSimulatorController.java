@@ -45,7 +45,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.simulators.message.request.PxMWDeviceAutoCreationSimulatonRequest;
+import com.cannontech.simulators.message.request.PxMWDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.PxMWSimulatorDeviceCreateRequest;
 import com.cannontech.simulators.message.request.PxMWSimulatorSettingsUpdateRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
@@ -75,7 +75,7 @@ public class PxMWSimulatorController {
     
     @PostConstruct
     public void init() {
-        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.PxMW_SIM_DEVICE_AUTO_CREATION_REQUEST);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.PxMW_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
     }
     @GetMapping("/home")
     public String home(ModelMap model) {
@@ -213,13 +213,31 @@ public class PxMWSimulatorController {
                         YukonMessageSourceResolvable.createDefaultWithoutCode("See Service Manager logs for results."));
             }
             // Send request to SM to run auto device creation (otherwise it will run once a day)
-            jmsTemplate.convertAndSend(new PxMWDeviceAutoCreationSimulatonRequest());
+            jmsTemplate.convertAndSend(new PxMWDataRetrievalSimulatonRequest(true));
             // SM sends request to simulator
             // Simulator builds responses from cached values
             // Simulator waits for SM to tell it that auto creation is complete
             // Simulator clears its cache
             // When device auto creation runs again, no devices are created
         } catch (ExecutionException e) {
+            log.error("Error", e);
+        }
+       
+        return "redirect:home";
+    }
+    
+    @PostMapping("/deviceAutoRead")
+    public String deviceAutoRead(FlashScope flashScope) {
+        String siteGuid = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
+        
+        if(Strings.isNullOrEmpty(siteGuid)){
+            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("PX System Service Account Id is required, doesn't need to be real."));
+            return "redirect:home";
+        }
+        try {
+            // Send request to SM to run read on all Could LCRs (otherwise it will run once an hour)
+            jmsTemplate.convertAndSend(new PxMWDataRetrievalSimulatonRequest(false));
+        } catch (Exception e) {
             log.error("Error", e);
         }
        

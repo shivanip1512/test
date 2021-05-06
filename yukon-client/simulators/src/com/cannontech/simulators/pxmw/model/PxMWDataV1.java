@@ -113,7 +113,6 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         
         log.info("timeseries:{} total values:{}", statistics, total);
         
-
         return new PxMWSimulatorResponse(resultList.toArray(), status);
     }
     
