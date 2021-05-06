@@ -130,5 +130,21 @@
         </tags:nameValueContainer>
     </form:form>
     
+    
+    <div class="notes">
+        <br/>Reads to all Eaton Cloud LCRs
+     </div>
+    <br/>
+    <cti:url var="autoReadUrl" value="deviceAutoRead"/>
+    <form:form id="autoReadForm" action="${autoReadUrl}" method="post">
+        <tags:nameValueContainer>
+            <tags:nameValue name="Read Lcrs" nameColumnWidth="250px">
+                <cti:button label="Submit" type="submit" classes="fn vam"/>
+                <form:form id="autoReadForm" action="${autoReadUrl}" method="post"/>
+                <cti:csrfToken/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+    </form:form>
+    
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.pxMWSimulator.js" />
 </cti:standardPage>
