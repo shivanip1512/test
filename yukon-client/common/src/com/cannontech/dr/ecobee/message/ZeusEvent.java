@@ -31,11 +31,11 @@ public class ZeusEvent {
     private boolean showThermostat;
     private String message;
     @JsonProperty("is_Temperature_Relative")
-    private boolean isTemperatureRelative;
+    private Boolean isTemperatureRelative = null;
     @JsonProperty("cool_Relative_Temp")
-    int coolRelativeTemp;
+    private Integer coolRelativeTemp = null;
     @JsonProperty("heat_Relative_Temp")
-    int heatRelativeTemp;
+    private Integer heatRelativeTemp = null;
 
     public int getCoolRelativeTemp() {
         return coolRelativeTemp;

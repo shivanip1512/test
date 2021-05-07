@@ -29,11 +29,10 @@ import com.cannontech.dr.ecobee.message.EcoplusSelector;
 import com.cannontech.dr.ecobee.message.Selector;
 
 import com.cannontech.dr.ecobee.message.ZeusCreatePushConfig;
-import com.cannontech.dr.ecobee.message.ZeusDutyCycleDrRequest;
+import com.cannontech.dr.ecobee.message.ZeusDemandResponseRequest;
 import com.cannontech.dr.ecobee.message.ZeusEvent;
 
 import com.cannontech.dr.ecobee.message.ZeusGroup;
-import com.cannontech.dr.ecobee.message.ZeusSetPointDrRequest;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
@@ -292,10 +291,9 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         String eventId = StringUtils.EMPTY;
 
         String issueDemandResponseUrl = getUrlBase() + "events/dr";
-        ZeusEvent event = new ZeusEvent();
-        ZeusSetPointDrRequest dutyCycleDr = new ZeusSetPointDrRequest(buildZeusEvent(event, parameters.getGroupId(),
+        ZeusDemandResponseRequest dutyCycleDr = new ZeusDemandResponseRequest(buildZeusEvent(parameters.getGroupId(),
                 parameters.getStartTime(), parameters.getEndTime(), parameters.isOptional()));
-        event.setDutyCyclePercentage(parameters.getDutyCyclePercent());
+        dutyCycleDr.getEvent().setDutyCyclePercentage(parameters.getDutyCyclePercent());
         if (log.isDebugEnabled()) {
             try {
                 log.debug("Sending ecobee duty cycle DR with body: {}", JsonUtils.toJson(dutyCycleDr));
@@ -304,8 +302,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             }
         }
         try {
-            ResponseEntity<ZeusDutyCycleDrRequest> zeusDrResponseEntity = requestHelper
-                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDutyCycleDrRequest.class, dutyCycleDr);
+            ResponseEntity<ZeusDemandResponseRequest> zeusDrResponseEntity = requestHelper
+                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class, dutyCycleDr);
             if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
                 eventId = zeusDrResponseEntity.getBody().getEvent().getId();
             }
@@ -320,14 +318,13 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         String eventId = StringUtils.EMPTY;
 
         String issueDemandResponseUrl = getUrlBase() + "events/dr";
-        ZeusEvent event = new ZeusEvent();
-        ZeusSetPointDrRequest setpointDr = new ZeusSetPointDrRequest(buildZeusEvent(event, parameters.getGroupId(),
+        ZeusDemandResponseRequest setpointDr = new ZeusDemandResponseRequest(buildZeusEvent(parameters.getGroupId(),
                 parameters.getStartTime(), parameters.getStopTime(), parameters.isOptional()));
-        event.setTemperatureRelative(true);
+        setpointDr.getEvent().setTemperatureRelative(true);
         if (parameters.istempOptionHeat()) {
-            event.setHeatRelativeTemp(parameters.getTempOffset());
+            setpointDr.getEvent().setHeatRelativeTemp(parameters.getTempOffset());
         } else {
-            event.setCoolRelativeTemp(parameters.getTempOffset());
+            setpointDr.getEvent().setCoolRelativeTemp(parameters.getTempOffset());
         }
         if (log.isDebugEnabled()) {
             try {
@@ -337,8 +334,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             }
         }
         try {
-            ResponseEntity<ZeusSetPointDrRequest> zeusDrResponseEntity = requestHelper
-                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusSetPointDrRequest.class, setpointDr);
+            ResponseEntity<ZeusDemandResponseRequest> zeusDrResponseEntity = requestHelper
+                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class, setpointDr);
             if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
                 eventId = zeusDrResponseEntity.getBody().getEvent().getId();
             }
@@ -351,12 +348,13 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     /**
      * Method to build Zeus event.
      */
-    private ZeusEvent buildZeusEvent(ZeusEvent event, int groupId, Instant startTime, Instant stopTime, boolean optional) {
+    private ZeusEvent buildZeusEvent(int groupId, Instant startTime, Instant stopTime, boolean optional) {
         DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         String eventDisplayMessage = messageSourceAccessor.getMessage("yukon.web.modules.dr.ecobee.eventDisplayMessage");
         String zeusGroupId = ecobeeZeusGroupService.getZeusGroupIdForLmGroup(groupId);
 
+        ZeusEvent event = new ZeusEvent();
         event.setName(YUKON_CYCLE_EVENT_NAME);
         event.setTstatGroupId(zeusGroupId);
 
