@@ -1,8 +1,15 @@
 package com.cannontech.simulators.pxmw.model;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +19,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.core.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
@@ -19,6 +28,7 @@ import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesValueV1;
+import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PxMWFakeTimeseriesDataV1 {
@@ -97,8 +107,13 @@ public class PxMWFakeTimeseriesDataV1 {
                                 random.nextBoolean() ? "Test" : t.getValue()))
                         .collect(Collectors.toList());
             } else {
+                Interval interval = new Interval();
                 values = template.getValues().stream()
-                        .map(t -> new PxMWTimeSeriesValueV1(t.getTimestamp(), t.getValue()))
+                        .map(t -> {
+                            PxMWTimeSeriesValueV1 value = new PxMWTimeSeriesValueV1(interval.now.getMillis() / 1000, t.getValue());
+                            interval.now = interval.now.minusMinutes(5);
+                            return value;
+                        })
                         .collect(Collectors.toList());
 
                 result.add(new PxMWTimeSeriesResultV1(template.getTag(), template.getTrait(), values));
@@ -106,4 +121,10 @@ public class PxMWFakeTimeseriesDataV1 {
         }
         return result;
     }
+    
+    private static class Interval {
+        DateTime now = DateTime.now();
+    }
+
+
 }
