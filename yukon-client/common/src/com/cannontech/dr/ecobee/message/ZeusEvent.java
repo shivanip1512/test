@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ZeusDutyCycleEvent {
+public class ZeusEvent {
 
     private String id;
     private String name;
@@ -22,7 +22,7 @@ public class ZeusDutyCycleEvent {
     @JsonProperty("is_mandatory")
     private boolean isMandatory;
     @JsonProperty("duty_cycle")
-    private int dutyCyclePercentage;
+    private Integer dutyCyclePercentage = null;
     @JsonProperty("send_email")
     private boolean sendEmail;
     @JsonProperty("show_web")
@@ -30,8 +30,38 @@ public class ZeusDutyCycleEvent {
     @JsonProperty("show_thermostat")
     private boolean showThermostat;
     private String message;
+    @JsonProperty("is_Temperature_Relative")
+    private boolean isTemperatureRelative;
+    @JsonProperty("cool_Relative_Temp")
+    int coolRelativeTemp;
+    @JsonProperty("heat_Relative_Temp")
+    int heatRelativeTemp;
 
-    public ZeusDutyCycleEvent() {
+    public int getCoolRelativeTemp() {
+        return coolRelativeTemp;
+    }
+
+    public void setCoolRelativeTemp(int coolRelativeTemp) {
+        this.coolRelativeTemp = coolRelativeTemp;
+    }
+
+    public int getHeatRelativeTemp() {
+        return heatRelativeTemp;
+    }
+
+    public void setHeatRelativeTemp(int heatRelativeTemp) {
+        this.heatRelativeTemp = heatRelativeTemp;
+    }
+
+    public boolean isTemperatureRelative() {
+        return isTemperatureRelative;
+    }
+
+    public void setTemperatureRelative(boolean isTemperatureRelative) {
+        this.isTemperatureRelative = isTemperatureRelative;
+    }
+
+    public ZeusEvent() {
     }
 
     public String getId() {

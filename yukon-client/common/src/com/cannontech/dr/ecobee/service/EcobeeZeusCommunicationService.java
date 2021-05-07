@@ -2,6 +2,7 @@ package com.cannontech.dr.ecobee.service;
 
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 
 public interface EcobeeZeusCommunicationService {
 
@@ -40,4 +41,8 @@ public interface EcobeeZeusCommunicationService {
      */
     String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters);
 
+    /**
+     * Initiates a Setpoint demand response event in Ecobee and return the created DR event ID.
+     */
+    String sendSetpointDR(EcobeeSetpointDrParameters parameters);
 }

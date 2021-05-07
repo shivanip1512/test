@@ -3,14 +3,14 @@ package com.cannontech.dr.ecobee.message;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ZeusDutyCycleDrRequest {
+public class ZeusSetPointDrRequest {
     private ZeusEvent event;
 
-    public ZeusDutyCycleDrRequest(ZeusEvent event) {
+    public ZeusSetPointDrRequest(ZeusEvent event) {
         this.event = event;
     }
 
-    public ZeusDutyCycleDrRequest() {
+    public ZeusSetPointDrRequest() {
     }
 
     public ZeusEvent getEvent() {
@@ -20,4 +20,5 @@ public class ZeusDutyCycleDrRequest {
     public void setEvent(ZeusEvent event) {
         this.event = event;
     }
+
 }
