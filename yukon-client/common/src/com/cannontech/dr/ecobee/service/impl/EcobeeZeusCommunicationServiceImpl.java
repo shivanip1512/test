@@ -303,7 +303,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         }
         try {
             ResponseEntity<ZeusDemandResponseRequest> zeusDrResponseEntity = requestHelper
-                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class, dutyCycleDr);
+                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class,
+                            dutyCycleDr);
             if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
                 eventId = zeusDrResponseEntity.getBody().getEvent().getId();
             }
@@ -320,12 +321,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         String issueDemandResponseUrl = getUrlBase() + "events/dr";
         ZeusDemandResponseRequest setpointDr = new ZeusDemandResponseRequest(buildZeusEvent(parameters.getGroupId(),
                 parameters.getStartTime(), parameters.getStopTime(), parameters.isOptional()));
-        setpointDr.getEvent().setTemperatureRelative(true);
-        if (parameters.istempOptionHeat()) {
-            setpointDr.getEvent().setHeatRelativeTemp(parameters.getTempOffset());
-        } else {
-            setpointDr.getEvent().setCoolRelativeTemp(parameters.getTempOffset());
-        }
+        setpointDr.getEvent().setIsHeatingEvent(parameters.istempOptionHeat());
+        setpointDr.getEvent().setRelativeTemp((float) parameters.getTempOffset());
         if (log.isDebugEnabled()) {
             try {
                 log.debug("Sending ecobee set point DR with body: {}", JsonUtils.toJson(setpointDr));

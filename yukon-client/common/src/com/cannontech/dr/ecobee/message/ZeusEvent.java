@@ -30,35 +30,25 @@ public class ZeusEvent {
     @JsonProperty("show_thermostat")
     private boolean showThermostat;
     private String message;
-    @JsonProperty("is_Temperature_Relative")
-    private Boolean isTemperatureRelative = null;
-    @JsonProperty("cool_Relative_Temp")
-    private Integer coolRelativeTemp = null;
-    @JsonProperty("heat_Relative_Temp")
-    private Integer heatRelativeTemp = null;
+    @JsonProperty("is_heating_event")
+    private Boolean isHeatingEvent = null;
+    @JsonProperty("relative_temp")
+    private Float relativeTemp = null;
 
-    public int getCoolRelativeTemp() {
-        return coolRelativeTemp;
+    public Boolean getIsHeatingEvent() {
+        return isHeatingEvent;
     }
 
-    public void setCoolRelativeTemp(int coolRelativeTemp) {
-        this.coolRelativeTemp = coolRelativeTemp;
+    public void setIsHeatingEvent(Boolean isHeatingEvent) {
+        this.isHeatingEvent = isHeatingEvent;
     }
 
-    public int getHeatRelativeTemp() {
-        return heatRelativeTemp;
+    public Float getRelativeTemp() {
+        return relativeTemp;
     }
 
-    public void setHeatRelativeTemp(int heatRelativeTemp) {
-        this.heatRelativeTemp = heatRelativeTemp;
-    }
-
-    public boolean isTemperatureRelative() {
-        return isTemperatureRelative;
-    }
-
-    public void setTemperatureRelative(boolean isTemperatureRelative) {
-        this.isTemperatureRelative = isTemperatureRelative;
+    public void setRelativeTemp(Float relativeTemp) {
+        this.relativeTemp = relativeTemp;
     }
 
     public ZeusEvent() {
