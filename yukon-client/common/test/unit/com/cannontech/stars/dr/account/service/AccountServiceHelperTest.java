@@ -1,8 +1,8 @@
 package com.cannontech.stars.dr.account.service;
 
-import junit.framework.Assert;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
@@ -33,14 +33,12 @@ public class AccountServiceHelperTest {
         
         helper.copyNonNullValues(from, to);
         
-        Assert.assertEquals("First Name was not copied properly.", "Tester", to.getFirstName());
-        Assert.assertEquals("First Name was not copied properly.", "McTesty", to.getLastName());
-        Assert.assertEquals("Street Address: City was not copied properly.", "Slack Jawed Yokel Township", to.getStreetAddress().getCityName());
-        Assert.assertEquals("Street Address: County was not copied properly.", "Cletus County", to.getStreetAddress().getCounty());
-        Assert.assertEquals("SiteInformation: Substation name was not copied properly.", "Flux Capacitor", to.getSiteInfo().getSubstationName());
-        Assert.assertEquals("SiteInformation: Service Voltage was not copied properly.", "1.21 Gigawatts", to.getSiteInfo().getServiceVoltage());
-        
-        
+        assertEquals("Tester", to.getFirstName(), "First Name was not copied properly.");
+        assertEquals("McTesty", to.getLastName(), "First Name was not copied properly.");
+        assertEquals("Slack Jawed Yokel Township", to.getStreetAddress().getCityName(), "Street Address: City was not copied properly.");
+        assertEquals("Cletus County", to.getStreetAddress().getCounty(), "Street Address: County was not copied properly.");
+        assertEquals("Flux Capacitor", to.getSiteInfo().getSubstationName(), "SiteInformation: Substation name was not copied properly.");
+        assertEquals("1.21 Gigawatts", to.getSiteInfo().getServiceVoltage(), "SiteInformation: Service Voltage was not copied properly.");
     }
 
 }

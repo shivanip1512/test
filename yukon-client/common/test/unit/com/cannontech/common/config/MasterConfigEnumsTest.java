@@ -1,12 +1,15 @@
 package com.cannontech.common.config;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -44,9 +47,9 @@ public class MasterConfigEnumsTest {
         Set<String> setA = Sets.newHashSet("hello", "world");
         Set<String> setB = Sets.newHashSet("hello", "mars");
         Set<String> setC = Sets.newHashSet("goodbye", "mars");
-        Assert.assertFalse("setA and setB are not disjoint. test method isDisjoint() is broken", isDisjoint(setA, setB));
-        Assert.assertFalse("setB and setC are not disjoint. test method isDisjoint() is broken", isDisjoint(setB, setC));
-        Assert.assertTrue("setA and setC are disjoint. test method isDisjoint() is broken", isDisjoint(setA, setC));
+        assertFalse(isDisjoint(setA, setB), "setA and setB are not disjoint. test method isDisjoint() is broken");
+        assertFalse(isDisjoint(setB, setC), "setB and setC are not disjoint. test method isDisjoint() is broken");
+        assertTrue(isDisjoint(setA, setC), "setA and setC are disjoint. test method isDisjoint() is broken");
     }
 
     public static void assertDisjoint(Set<String> setA, Set<String> setB) {
@@ -54,7 +57,7 @@ public class MasterConfigEnumsTest {
         if(!isDisjoint) {
             String failMessage = " failed. The following enums are contained in more than one master config enum: ";
             failMessage += StringUtils.join(Sets.intersection(setA, setB), ", ");
-            Assert.fail(failMessage);
+            fail(failMessage);
         }
     }
 

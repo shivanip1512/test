@@ -1,7 +1,9 @@
 package com.cannontech.amr.rfn.service.pointmapping;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -16,8 +18,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cannontech.amr.rfn.service.pointmapping.icd.ManufacturerModel;
@@ -116,7 +117,7 @@ public class RfnPointMappingTest {
                   Function.identity(), 
                   Function.identity(),
                   (l, r) -> {
-                        Assert.fail(String.join("\n", 
+                        fail(String.join("\n", 
                             "PaoType " + l.getKey() + " has conflicting entries:",
                             l.getValue().toString(),
                             r.getValue().toString()));
@@ -154,8 +155,8 @@ public class RfnPointMappingTest {
                     .map(e -> e.getKey() + "/" + e.getValue())
                     .collect(Collectors.joining("\n"));
 
-        assertTrue("Points listed in knownMissingRfnPointMappingPoints but were successfully found:\n" + unexpectedSuccess, unexpectedSuccess.isEmpty());
-        assertTrue("Points not found:\n" + unexpectedFailure, unexpectedFailure.isEmpty());
+        assertTrue(unexpectedSuccess.isEmpty(), "Points listed in knownMissingRfnPointMappingPoints but were successfully found:\n" + unexpectedSuccess);
+        assertTrue(unexpectedFailure.isEmpty(), "Points not found:\n" + unexpectedFailure);
     }
 
     public void confirmDevicePointsHaveMappings() throws JDOMException, IOException {
@@ -171,7 +172,7 @@ public class RfnPointMappingTest {
         Multimap<PaoType, String> unexpectedlyMapped = Multimaps.filterEntries(knownUnmappedPoints,
                 e -> rfnPointMappingNames.containsEntry(e.getKey(), e.getValue()));
 
-        assertTrue("Points declared as \"unmapped\" actually found in rfnPointMapping:" + unexpectedlyMapped, unexpectedlyMapped.isEmpty());
+        assertTrue(unexpectedlyMapped.isEmpty(), "Points declared as \"unmapped\" actually found in rfnPointMapping:" + unexpectedlyMapped);
 
         // These are points created by the system
         Predicate<String> ignoredPointNames = pointName ->
@@ -201,8 +202,8 @@ public class RfnPointMappingTest {
                 paoDefinitionPointNames,
                 e -> !rfnPointMappingNames.containsEntry(e.getKey(), e.getValue()));
 
-        assertTrue("Analog points in PaoDefinition missing mappings in rfnPointMapping.xml:" + unmappedAnalogPoints,
-                unmappedAnalogPoints.isEmpty());
+        assertTrue(unmappedAnalogPoints.isEmpty(),
+                "Analog points in PaoDefinition missing mappings in rfnPointMapping.xml:" + unmappedAnalogPoints);
     }
 
     public void compareToYukonPointMappingIcd() throws IOException, JDOMException {
@@ -249,7 +250,7 @@ public class RfnPointMappingTest {
 
         
         rfnPointMapping.entrySet().stream()
-            .forEach(e -> Assert.fail(e.getKey() + " has " + e.getValue().size() + " unmapped points." 
+            .forEach(e -> fail(e.getKey() + " has " + e.getValue().size() + " unmapped points." 
                                       + "\nFirst entry: " + Iterables.getFirst(e.getValue().entrySet(), null)));
     }
 
@@ -298,7 +299,7 @@ public class RfnPointMappingTest {
             Map<PointMapping, NameScale> icdTypePoints) {
         Map<PointMapping, NameScale> rpmTypePoints = rfnPointMapping.get(type);
         
-        assertNotNull("No points found for type " + type, rpmTypePoints);
+        assertNotNull(rpmTypePoints, "No points found for type " + type);
         
         Map<Boolean,Set<PointMapping>> rpmMapped = rpmTypePoints.keySet().stream().collect(Collectors.partitioningBy(p -> p.isMappedFor(type), Collectors.toSet()));
         Map<Boolean,Set<PointMapping>> icdMapped = icdTypePoints.keySet().stream().collect(Collectors.partitioningBy(p -> p.isMappedFor(type), Collectors.toSet()));
@@ -331,7 +332,7 @@ public class RfnPointMappingTest {
                 .limit(MaxPointCount)
                 .map(cp -> typePoints.get(cp).getName() + "\n        " + cp)
                 .collect(Collectors.joining("\n"));
-            Assert.fail(complaint);
+            fail(complaint);
         }
     }
     

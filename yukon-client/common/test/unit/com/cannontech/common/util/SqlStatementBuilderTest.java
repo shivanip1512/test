@@ -1,10 +1,11 @@
 package com.cannontech.common.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.database.SqlParameterSink;
 import com.google.common.collect.ImmutableList;
@@ -93,11 +94,11 @@ public class SqlStatementBuilderTest {
             "re foo = ? ) m = 'FOO' n = 'BAR' o = 'man' p = " +
             "'woman' q != 'FOO' r != 'BAR' s != 'man' t != " +
             "'woman' u = ? v != ? done ";
-        Assert.assertEquals(expected, sqlAsString);
+        assertEquals(expected, sqlAsString);
         List<Object> argumentList = sql.getArgumentList();
         
         // this must match exactly, always
-        Assert.assertEquals(StringUtils.countMatches(sqlAsString, "?"), argumentList.size());
+        assertEquals(StringUtils.countMatches(sqlAsString, "?"), argumentList.size());
         
         // note that some of the operators change the argument
         Builder<Object> builder = ImmutableList.builder();
@@ -123,7 +124,7 @@ public class SqlStatementBuilderTest {
         builder.add(943);
         builder.add("FOO");
         builder.add("woman");
-        Assert.assertEquals(builder.build(), argumentList);
+        assertEquals(builder.build(), argumentList);
     }
     
     @Test
@@ -136,10 +137,10 @@ public class SqlStatementBuilderTest {
         sql.append("end");
         
         String expectedSql = " start INSERT INTO TABLE1 (a,b) VALUES (?,?) end ";
-        Assert.assertEquals(expectedSql, sql.getSql());
+        assertEquals(expectedSql, sql.getSql());
         
         List<Object> expectedArguments = ImmutableList.<Object>of("a", 2);
-        Assert.assertEquals(expectedArguments, sql.getArgumentList());
+        assertEquals(expectedArguments, sql.getArgumentList());
     }
     
     @Test
@@ -152,9 +153,9 @@ public class SqlStatementBuilderTest {
         sql.append("end");
         
         String expectedSql = " start UPDATE TABLE1 SET a = ? , b = ? end ";
-        Assert.assertEquals(expectedSql, sql.getSql());
+        assertEquals(expectedSql, sql.getSql());
         
         List<Object> expectedArguments = ImmutableList.<Object>of("a", 2);
-        Assert.assertEquals(expectedArguments, sql.getArgumentList());
+        assertEquals(expectedArguments, sql.getArgumentList());
     }
 }

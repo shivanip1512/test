@@ -1,12 +1,17 @@
 package com.cannontech.web.capcontrol;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.joda.time.Instant;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.model.RegulatorPointMappingResult;
@@ -32,10 +37,10 @@ public class RegulatorMappingTaskTest {
         RegulatorMappingTask task = new RegulatorMappingTask(mockRegulators, YukonUserContext.system);
         Instant after = Instant.now();
         
-        Assert.assertNotNull("Start time is null.", task.getStart());
+        assertNotNull(task.getStart(), "Start time is null.");
         
         Range<Instant> range = Range.inclusive(before, after);
-        Assert.assertTrue("Incorrect start time.", range.intersects(task.getStart()));
+        assertTrue(range.intersects(task.getStart()), "Incorrect start time.");
     }
     
     @Test
@@ -47,11 +52,11 @@ public class RegulatorMappingTaskTest {
         task.addResult(successRegulator, RegulatorPointMapping.AUTO_REMOTE_CONTROL, RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE);
         task.deviceComplete(successRegulator);
         
-        Assert.assertEquals("Incorrect success count.", 1, task.getSuccessCount());
-        Assert.assertEquals("Incorrect partial success count.", 0, task.getPartialSuccessCount());
-        Assert.assertEquals("Incorrect fail count.", 0, task.getFailedCount());
-        Assert.assertEquals("Incorrect completion count.", 1, task.getCompleteCount());
-        Assert.assertFalse("Task should not be complete. Only 1 of 3 regulators done.", task.isComplete());
+        assertEquals(1, task.getSuccessCount(), "Incorrect success count.");
+        assertEquals(0, task.getPartialSuccessCount(), "Incorrect partial success count.");
+        assertEquals(0, task.getFailedCount(), "Incorrect fail count.");
+        assertEquals(1, task.getCompleteCount(), "Incorrect completion count.");
+        assertFalse(task.isComplete(), "Task should not be complete. Only 1 of 3 regulators done.");
         
         task.addResult(partSuccessRegulator, RegulatorPointMapping.FORWARD_BANDWIDTH, RegulatorPointMappingResult.SUCCESS);
         task.addResult(partSuccessRegulator, RegulatorPointMapping.FORWARD_SET_POINT, RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE);
@@ -59,29 +64,29 @@ public class RegulatorMappingTaskTest {
         task.addResult(partSuccessRegulator, RegulatorPointMapping.AUTO_BLOCK_ENABLE, RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND);
         task.deviceComplete(partSuccessRegulator);
         
-        Assert.assertEquals("Incorrect success count.", 1, task.getSuccessCount());
-        Assert.assertEquals("Incorrect partial success count.", 1, task.getPartialSuccessCount());
-        Assert.assertEquals("Incorrect fail count.", 0, task.getFailedCount());
-        Assert.assertEquals("Incorrect completion count.", 2, task.getCompleteCount());
-        Assert.assertFalse("Task should not be complete. Only 2 of 3 regulators done.", task.isComplete());
+        assertEquals(1, task.getSuccessCount(), "Incorrect success count.");
+        assertEquals(1, task.getPartialSuccessCount(), "Incorrect partial success count.");
+        assertEquals(0, task.getFailedCount(), "Incorrect fail count.");
+        assertEquals(2, task.getCompleteCount(), "Incorrect completion count.");
+        assertFalse(task.isComplete(), "Task should not be complete. Only 2 of 3 regulators done.");
         
         task.addResult(failRegulator, RegulatorPointMapping.TAP_DOWN, RegulatorPointMappingResult.NO_POINTS_FOUND);
         task.addResult(failRegulator, RegulatorPointMapping.TAP_UP, RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND);
         task.deviceComplete(failRegulator);
         
-        Assert.assertEquals("Incorrect success count.", 1, task.getSuccessCount());
-        Assert.assertEquals("Incorrect partial success count.", 1, task.getPartialSuccessCount());
-        Assert.assertEquals("Incorrect fail count.", 1, task.getFailedCount());
-        Assert.assertEquals("Incorrect completion count.", 3, task.getCompleteCount());
-        Assert.assertTrue("Task should be complete. 3 of 3 regulators done.", task.isComplete());
+        assertEquals(1, task.getSuccessCount(), "Incorrect success count.");
+        assertEquals(1, task.getPartialSuccessCount(), "Incorrect partial success count.");
+        assertEquals(1, task.getFailedCount(), "Incorrect fail count.");
+        assertEquals(3, task.getCompleteCount(), "Incorrect completion count.");
+        assertTrue(task.isComplete(), "Task should be complete. 3 of 3 regulators done.");
         
         Collection<RegulatorMappingResult> results = task.getResults();
         Multimap<RegulatorMappingResultType, RegulatorMappingResult> resultsByType = task.getResultsByType();
         
-        Assert.assertEquals("There should be 3 results.", 3, results.size());
-        Assert.assertEquals("There should be 1 successful result.", 1, resultsByType.get(RegulatorMappingResultType.SUCCESSFUL).size());
-        Assert.assertEquals("There should be 1 partially successful result.", 1, resultsByType.get(RegulatorMappingResultType.PARTIALLY_SUCCESSFUL).size());
-        Assert.assertEquals("There should be 1 failed result.", 1, resultsByType.get(RegulatorMappingResultType.FAILED).size());
+        assertEquals(3, results.size(), "There should be 3 results.");
+        assertEquals(1, resultsByType.get(RegulatorMappingResultType.SUCCESSFUL).size(), "There should be 1 successful result.");
+        assertEquals(1, resultsByType.get(RegulatorMappingResultType.PARTIALLY_SUCCESSFUL).size(), "There should be 1 partially successful result.");
+        assertEquals(1, resultsByType.get(RegulatorMappingResultType.FAILED).size(), "There should be 1 failed result.");
     }
     
     @Test
@@ -93,9 +98,9 @@ public class RegulatorMappingTaskTest {
         task.addResult(successRegulator, RegulatorPointMapping.AUTO_REMOTE_CONTROL, RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE);
         task.deviceComplete(successRegulator);
         
-        Assert.assertFalse("Task was not canceled, but shows canceled.", task.isCanceled());
+        assertFalse( task.isCanceled(), "Task was not canceled, but shows canceled.");
         task.cancel();
-        Assert.assertTrue("Task was canceled, but shows not canceled.", task.isCanceled());
+        assertTrue(task.isCanceled(), "Task was canceled, but shows not canceled.");
     }
     
     @Test
@@ -107,11 +112,11 @@ public class RegulatorMappingTaskTest {
         task.addResult(successRegulator, RegulatorPointMapping.AUTO_REMOTE_CONTROL, RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE);
         task.deviceComplete(successRegulator);
         
-        Assert.assertFalse("Task shows an error when no error occurred.", task.isErrorOccurred());
+        assertFalse(task.isErrorOccurred(), "Task shows an error when no error occurred.");
         Exception e = new Exception("Everything is broken!");
         task.errorOccurred(e);
-        Assert.assertTrue("Task shows no error when an error did occur.", task.isErrorOccurred());
-        Assert.assertSame("Thrown exception does not match exception from task.", e, task.getError());
+        assertTrue(task.isErrorOccurred(), "Task shows no error when an error did occur.");
+        assertSame(e, task.getError(), "Thrown exception does not match exception from task.");
     }
     
     private List<YukonPao> getMockDeviceCollection() {

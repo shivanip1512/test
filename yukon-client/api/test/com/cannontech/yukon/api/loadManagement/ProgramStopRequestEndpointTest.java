@@ -1,12 +1,13 @@
 package com.cannontech.yukon.api.loadManagement;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Date;
 
 import org.jdom2.Element;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -56,7 +57,7 @@ public class ProgramStopRequestEndpointTest {
     private static final int PROG_NOT_FOUND_ID = 6;
     private static final int PROG_NOT_AUTH_ID = 7;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         
         mockService = new MockProgramService();
@@ -150,8 +151,8 @@ public class ProgramStopRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        Assert.assertEquals("Incorrect program.", PROG1_ID, mockService.getProgramId());
-        Assert.assertEquals("Incorrect stopDateTime.", "2008-10-13T21:49:01Z", Iso8601DateUtil.formatIso8601Date(mockService.getStopTime()));
+        assertEquals(PROG1_ID, mockService.getProgramId(), "Incorrect program.");
+        assertEquals("2008-10-13T21:49:01Z", Iso8601DateUtil.formatIso8601Date(mockService.getStopTime()), "Incorrect stopDateTime.");
         
         TestUtils.runSuccessAssertion(outputTemplate, "programStopResponse");
         
@@ -164,8 +165,8 @@ public class ProgramStopRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        Assert.assertEquals("Incorrect program.", PROG2_ID, mockService.getProgramId());
-        Assert.assertEquals("Incorrect stopDateTime - should be null.", CtiUtilities.get1990GregCalendar().getTime(), mockService.getStopTime());
+        assertEquals(PROG2_ID, mockService.getProgramId(), "Incorrect program.");
+        assertEquals(CtiUtilities.get1990GregCalendar().getTime(), mockService.getStopTime(), "Incorrect stopDateTime - should be null.");
         
         TestUtils.runSuccessAssertion(outputTemplate, "programStopResponse");
         

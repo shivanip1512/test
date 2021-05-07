@@ -1,5 +1,7 @@
 package com.cannontech.dr.program.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,10 +15,9 @@ import java.util.TimeZone;
 import javax.annotation.Resource;
 
 import org.joda.time.Duration;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.core.service.DateFormattingService;
@@ -35,7 +36,7 @@ public class ProgramServiceImplTest {
     @Resource(name="drProgramService")
     private ProgramServiceImpl programService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         userContext = new SimpleYukonUserContext();
         userContext.setLocale(Locale.getDefault());
@@ -45,7 +46,7 @@ public class ProgramServiceImplTest {
         ReflectionTestUtils.setField(programService, "dateFormattingService", dateFormattingService, DateFormattingService.class);
     }
 
-    @After
+    @AfterEach
     public void teardown() {
         programService = null;
         userContext = null;
@@ -57,29 +58,29 @@ public class ProgramServiceImplTest {
         Duration offset = new Duration(60 * 1000);
         Date expectedDatePlusOffset = makeDate("2009/11/11 05:08");
         Date datePlusOffset = programService.datePlusOffset(date, offset);
-        Assert.assertEquals(expectedDatePlusOffset, datePlusOffset);
+        assertEquals(expectedDatePlusOffset, datePlusOffset);
 
         offset = new Duration(60 * 60 * 1000);
         expectedDatePlusOffset = makeDate("2009/11/11 06:07");
         datePlusOffset = programService.datePlusOffset(date, offset);
-        Assert.assertEquals(expectedDatePlusOffset, datePlusOffset);
+        assertEquals(expectedDatePlusOffset, datePlusOffset);
 
         date = makeDate("2009/03/08 01:07");
         offset = new Duration(60 * 60 * 1000);
         expectedDatePlusOffset = makeDate("2009/03/08 03:07");
         datePlusOffset = programService.datePlusOffset(date, offset);
-        Assert.assertEquals(expectedDatePlusOffset, datePlusOffset);
+        assertEquals(expectedDatePlusOffset, datePlusOffset);
 
         date = makeDate("2009/11/01 00:07");
         offset = new Duration(60 * 60 * 1000);
         expectedDatePlusOffset = makeDateWithTZ("2009/11/01 01:07-0500");
         datePlusOffset = programService.datePlusOffset(date, offset);
-        Assert.assertEquals(expectedDatePlusOffset, datePlusOffset);
+        assertEquals(expectedDatePlusOffset, datePlusOffset);
 
         offset = new Duration(120 * 60 * 1000);
         expectedDatePlusOffset = makeDateWithTZ("2009/11/01 01:07-0600");
         datePlusOffset = programService.datePlusOffset(date, offset);
-        Assert.assertEquals(expectedDatePlusOffset, datePlusOffset);
+        assertEquals(expectedDatePlusOffset, datePlusOffset);
     }
 
     /**
@@ -96,7 +97,7 @@ public class ProgramServiceImplTest {
         List<GearAdjustment> adjustments =
             programService.getDefaultAdjustments(startDate, stopDate,
                                                  null, userContext);
-        Assert.assertEquals(correctAdjustments, adjustments);
+        assertEquals(correctAdjustments, adjustments);
 
         // some edge cases
         startDate = makeDate("2009/11/11 18:00");
@@ -105,7 +106,7 @@ public class ProgramServiceImplTest {
         adjustments =
             programService.getDefaultAdjustments(startDate, stopDate,
                                                  null, userContext);
-        Assert.assertEquals(correctAdjustments, adjustments);
+        assertEquals(correctAdjustments, adjustments);
 
         startDate = makeDate("2009/11/11 17:59");
         stopDate = makeDate("2009/11/11 19:01");;
@@ -116,7 +117,7 @@ public class ProgramServiceImplTest {
         adjustments =
             programService.getDefaultAdjustments(startDate, stopDate,
                                                  null, userContext);
-        Assert.assertEquals(correctAdjustments, adjustments);
+        assertEquals(correctAdjustments, adjustments);
 
         // cross a date boundary
         startDate = makeDate("2009/11/11 22:12");
@@ -129,7 +130,7 @@ public class ProgramServiceImplTest {
         adjustments =
             programService.getDefaultAdjustments(startDate, stopDate,
                                                  null, userContext);
-        Assert.assertEquals(correctAdjustments, adjustments);
+        assertEquals(correctAdjustments, adjustments);
     }
 
     /**
@@ -171,7 +172,7 @@ public class ProgramServiceImplTest {
             programService.getDefaultAdjustments(startDate, stopDate,
                                                  scenarioPrograms.values(),
                                                  userContext);
-        Assert.assertEquals(correctAdjustments, adjustments);
+        assertEquals(correctAdjustments, adjustments);
 
         // change the adjustments so we have something to check for
         int adjustmentValue = 95;
@@ -203,7 +204,7 @@ public class ProgramServiceImplTest {
                                                                  programStopDate);
             String expectedAdditionalInfo =
                 expectedAdditionalInfoByProgramId.get(programId);
-            Assert.assertEquals(expectedAdditionalInfo, additionalInfo);
+            assertEquals(expectedAdditionalInfo, additionalInfo);
         }
     }
 
@@ -219,7 +220,7 @@ public class ProgramServiceImplTest {
         List<GearAdjustment> adjustments =
             programService.getDefaultAdjustments(startDate, stopDate,
                                                  null, userContext);
-        Assert.assertEquals(correctAdjustments, adjustments);
+        assertEquals(correctAdjustments, adjustments);
     }
 
     @Test
@@ -234,7 +235,7 @@ public class ProgramServiceImplTest {
         List<GearAdjustment> adjustments =
             programService.getDefaultAdjustments(startDate, stopDate,
                                                  null, userContext);
-        Assert.assertEquals(correctAdjustments, adjustments);
+        assertEquals(correctAdjustments, adjustments);
     }
 
     private static Date makeDate(String dateStr) {

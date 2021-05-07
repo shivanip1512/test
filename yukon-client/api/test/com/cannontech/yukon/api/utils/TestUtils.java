@@ -1,5 +1,11 @@
 package com.cannontech.yukon.api.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -10,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.xerces.jaxp.validation.XMLSchemaFactory;
 import org.jdom2.Element;
 import org.jdom2.transform.JDOMSource;
-import org.junit.Assert;
 import org.springframework.core.io.Resource;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -26,7 +31,7 @@ public class TestUtils {
         if (!serviceResponseNameWithNS.startsWith("/y:")) {
             serviceResponseNameWithNS = "/y:" + serviceResponseNameWithNS;
         }        
-        Assert.assertNotNull("Missing success node.", outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/y:success"));
+        assertNotNull(outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/y:success"), "Missing success node.");
     }
     
     public static void runFailureAssertions(SimpleXPathTemplate outputTemplate, String serviceResponseName, String expectedErrorCode) {
@@ -35,9 +40,10 @@ public class TestUtils {
         if (!serviceResponseNameWithNS.startsWith("/y:")) {
             serviceResponseNameWithNS = "/y:" + serviceResponseNameWithNS;
         }
-        Assert.assertNull("Should not have success node.", outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/y:success"));
-        Assert.assertNotNull("No failure node present.", outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/y:failure"));
-        Assert.assertEquals("Incorrect errorCode.", expectedErrorCode, outputTemplate.evaluateAsString(serviceResponseNameWithNS + "/y:failure/y:errorCode"));
+        assertNull(outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/y:success"), "Should not have success node.");
+        assertNotNull(outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/y:failure"), "No failure node present.");
+        assertEquals(expectedErrorCode, outputTemplate.evaluateAsString(serviceResponseNameWithNS + "/y:failure/y:errorCode"),
+                "Incorrect errorCode.");
     }
     
     public static void runVersionAssertion(SimpleXPathTemplate outputTemplate,
@@ -47,11 +53,9 @@ public class TestUtils {
         if (!serviceResponseNameWithNS.startsWith("/y:")) {
             serviceResponseNameWithNS = "/y:" + serviceResponseNameWithNS;
         }
-        Assert.assertNotNull("No version node present",
-                             outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/@version"));
-        Assert.assertEquals("Incorrect Response version",
-                            version,
-                            outputTemplate.evaluateAsString(serviceResponseNameWithNS + "/@version"));
+        assertNotNull(outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/@version"), "No version node present");
+        assertEquals(version, outputTemplate.evaluateAsString(serviceResponseNameWithNS + "/@version"),
+                "Incorrect Response version");
     }
     
     /**
@@ -73,7 +77,7 @@ public class TestUtils {
             // run the element XML thru the validator
             validator.validate(new JDOMSource(element));
 
-            Assert.assertTrue("Element validation failed", !errorHandler.isError());
+            assertTrue(!errorHandler.isError(), "Element validation failed");
             processedOk = true;
 
         } catch (IOException e) {
@@ -85,7 +89,7 @@ public class TestUtils {
                 errorMsgs.addAll(errorHandler.getErrorMsgs());
                 String detailMsg = "Element validation failed: " + StringUtils.join(errorMsgs,
                                                                                     "; ");
-                Assert.fail(detailMsg);
+                fail(detailMsg);
             }
         }
     }

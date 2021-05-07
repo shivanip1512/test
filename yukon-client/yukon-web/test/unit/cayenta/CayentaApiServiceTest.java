@@ -1,8 +1,9 @@
 package unit.cayenta;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.config.MockConfigurationSource;
 import com.cannontech.common.config.UnknownKeyException;
@@ -15,7 +16,7 @@ public class CayentaApiServiceTest {
 	
 	private CayentaApiServiceImpl cayentaApiService;
 	
-	@Before
+	@BeforeEach
     public void setUp() throws Exception {
 		
 		cayentaApiService = new CayentaApiServiceImpl();
@@ -40,18 +41,18 @@ public class CayentaApiServiceTest {
    
 		// SUCCESS TEST
 		CayentaLocationInfo locationInfo = cayentaApiService.getLocationInfoForMeterName("1236");
-		Assert.assertEquals("Wrong City", "Minneapolis", locationInfo.getLocationCity());
-		Assert.assertEquals("Wrong Zip Code", "55199", locationInfo.getLocationZipCode());
-		Assert.assertEquals("Wrong State", "MN", locationInfo.getLocationState());
+		assertEquals("Minneapolis", locationInfo.getLocationCity(), "Wrong City");
+		assertEquals("55199", locationInfo.getLocationZipCode(), "Wrong Zip Code");
+		assertEquals("MN", locationInfo.getLocationState(), "Wrong State");
 		
 		CayentaMeterInfo meterInfo = cayentaApiService.getMeterInfoForMeterName("1236");
-		Assert.assertEquals("Wrong Account Number", "1236", meterInfo.getAccountNumber());
-		Assert.assertEquals("Wrong Name", "John Smith", meterInfo.getName());
-		Assert.assertEquals("Wrong Location Number", "1013", meterInfo.getLocationNumber());
-		Assert.assertEquals("Wrong Serial Number", "1000123", meterInfo.getSerialNumber());
-		Assert.assertEquals("Wrong Address", "123 Main Street", meterInfo.getAddress());
+		assertEquals("1236", meterInfo.getAccountNumber(), "Wrong Account Number");
+		assertEquals("John Smith", meterInfo.getName(), "Wrong Name");
+		assertEquals("1013", meterInfo.getLocationNumber(), "Wrong Location Number");
+		assertEquals("1000123", meterInfo.getSerialNumber(), "Wrong Serial Number");
+		assertEquals("123 Main Street", meterInfo.getAddress(), "Wrong Address");
 		
 		CayentaPhoneInfo phoneInfo = cayentaApiService.getPhoneInfoForAccountNumber("6321");
-		Assert.assertEquals("Wrong Phone Number", "555-867-5309", phoneInfo.getPhoneNumber());
+		assertEquals("555-867-5309", phoneInfo.getPhoneNumber(), "Wrong Phone Number");
     }
 }

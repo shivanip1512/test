@@ -1,5 +1,8 @@
 package com.cannontech.dr.ecobee.message.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +10,7 @@ import java.util.List;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.ecobee.message.AuthenticationRequest;
@@ -38,7 +40,7 @@ public class JsonSerializationTest {
         AuthenticationRequest request = new AuthenticationRequest("abcd", "1234");
         AuthenticationRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request, testRequest);
+        assertEquals(request, testRequest);
     }
     
     @Test
@@ -46,7 +48,7 @@ public class JsonSerializationTest {
         ZeusAuthenticationRequest request = new ZeusAuthenticationRequest("abcd", "1234", "util");
         ZeusAuthenticationRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request, testRequest);
+        assertEquals(request, testRequest);
     }
 
     @Test
@@ -54,7 +56,7 @@ public class JsonSerializationTest {
         Selection request = new Selection(SelectionType.REGISTERED, ImmutableList.of("abcd", "1234", "efgh"));
         Selection testRequest = testSerialization(request);
 
-        Assert.assertEquals(request, testRequest);
+        assertEquals(request, testRequest);
     }
 
     @Test
@@ -62,7 +64,7 @@ public class JsonSerializationTest {
         RegisterDeviceRequest request = new RegisterDeviceRequest("123abc321");
         RegisterDeviceRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request, testRequest);
+        assertEquals(request, testRequest);
     }
 
     @Test
@@ -70,9 +72,9 @@ public class JsonSerializationTest {
         StandardResponse resposne = new StandardResponse(true, new Status(2, "test"));
         StandardResponse testResponse = testSerialization(resposne);
 
-        Assert.assertEquals(resposne.getSuccess(), testResponse.getSuccess());
-        Assert.assertEquals(resposne.getStatus().getMessage(), testResponse.getStatus().getMessage());
-        Assert.assertEquals(resposne.getStatus().getCode(), testResponse.getStatus().getCode());
+        assertEquals(resposne.getSuccess(), testResponse.getSuccess());
+        assertEquals(resposne.getStatus().getMessage(), testResponse.getStatus().getMessage());
+        assertEquals(resposne.getStatus().getCode(), testResponse.getStatus().getCode());
     }
 
     @Test
@@ -80,7 +82,7 @@ public class JsonSerializationTest {
         MoveDeviceRequest request = new MoveDeviceRequest("123abc321", "bogusPath");
         MoveDeviceRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request, testRequest);
+        assertEquals(request, testRequest);
     }
 
     @Test
@@ -88,7 +90,7 @@ public class JsonSerializationTest {
         CreateSetRequest request = new CreateSetRequest("bogusSet");
         CreateSetRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request, testRequest);
+        assertEquals(request, testRequest);
     }
 
     // @Test
@@ -96,7 +98,7 @@ public class JsonSerializationTest {
         DeleteSetRequest request = new DeleteSetRequest("bogusSet");
         DeleteSetRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request, testRequest);
+        assertEquals(request, testRequest);
     }
 
     @Test
@@ -104,7 +106,7 @@ public class JsonSerializationTest {
         MoveSetRequest request = new MoveSetRequest("bogusCurrentPath", "bogusToPath");
         MoveSetRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request, testRequest);
+        assertEquals(request, testRequest);
     }
 
     @Test
@@ -118,7 +120,7 @@ public class JsonSerializationTest {
             new DutyCycleDrRequest("bogusSetName", "bogusDrName", "bogusMessage", 99, startDate, false, endDate, false, false, false);
         DutyCycleDrRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request, testRequest);
+        assertEquals(request, testRequest);
     }
 
     @Test
@@ -126,7 +128,7 @@ public class JsonSerializationTest {
         DrRestoreRequest request = new DrRestoreRequest("demandResponseRef");
         DrRestoreRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request, testRequest);
+        assertEquals(request, testRequest);
     }
 
     @Test
@@ -134,7 +136,7 @@ public class JsonSerializationTest {
         ListHierarchyRequest request = new ListHierarchyRequest();
         ListHierarchyRequest testRequest = testSerialization(request);
 
-        Assert.assertEquals(request, testRequest);
+        assertEquals(request, testRequest);
     }
 
     @Test
@@ -159,13 +161,13 @@ public class JsonSerializationTest {
         HierarchyResponse response = new HierarchyResponse(sets, status);
         HierarchyResponse testResponse = testSerialization(response);
 
-        Assert.assertEquals(response, testResponse);
+        assertEquals(response, testResponse);
     }
     @Test
     public void test_jobStatus() throws IOException {
         EcobeeJobStatus status = EcobeeJobStatus.COMPLETED;
         EcobeeJobStatus teststatus = testSerialization(status);
-        Assert.assertEquals(status, teststatus);
+        assertEquals(status, teststatus);
     }
 
     /**
@@ -177,13 +179,13 @@ public class JsonSerializationTest {
         try {
             json = JsonUtils.toJson(obj);
         } catch (JsonProcessingException e) {
-            Assert.fail("Serialization failed for " + obj.getClass().getSimpleName() + ". " + e.getMessage());
+            fail("Serialization failed for " + obj.getClass().getSimpleName() + ". " + e.getMessage());
             return null;
         }
         try {
             return (T) JsonUtils.fromJson(json, obj.getClass());
         } catch (JsonProcessingException e) {
-            Assert.fail("Deserialization failed for " + obj.getClass().getSimpleName() + ". " + e.getMessage());
+            fail("Deserialization failed for " + obj.getClass().getSimpleName() + ". " + e.getMessage());
             return null;
         }
     }

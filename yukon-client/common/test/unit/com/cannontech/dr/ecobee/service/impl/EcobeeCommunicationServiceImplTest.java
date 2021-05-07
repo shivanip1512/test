@@ -1,5 +1,9 @@
 package com.cannontech.dr.ecobee.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,9 +34,9 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -75,7 +79,7 @@ public class EcobeeCommunicationServiceImplTest {
     private File gzFile;
     private String jobId = "yUo111RE9wtoMmTS1pXXCxhBkOooaf2N";
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         GlobalSettingDao mockGlobalSettingDao = EasyMock.createMock(GlobalSettingDao.class);
         EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL)).andReturn(
@@ -108,9 +112,8 @@ public class EcobeeCommunicationServiceImplTest {
         ReflectionTestUtils.setField(impl, "restTemplate", restTemplateMock);
         RuntimeReportJobResponse res = (RuntimeReportJobResponse) method.invoke(impl, SelectionType.THERMOSTATS,
             testCase.serialNumbers, testCase.getDateRange());
-        Assert.assertEquals("Expected jobID doesn't match returned jobID", jobId, res.getJobId());
-        Assert.assertEquals("Expected job status doesn't match returned job status", EcobeeJobStatus.COMPLETED,
-            res.getJobStatus());
+        assertEquals(jobId, res.getJobId(), "Expected jobID doesn't match returned jobID");
+        assertEquals(EcobeeJobStatus.COMPLETED, res.getJobStatus(), "Expected job status doesn't match returned job status");
     }
 
     @Test
@@ -127,13 +130,13 @@ public class EcobeeCommunicationServiceImplTest {
         EasyMock.replay(restTemplateMock);
         ReflectionTestUtils.setField(impl, "restTemplate", restTemplateMock);
         RuntimeReportJobResponse res = (RuntimeReportJobResponse) method.invoke(impl, SelectionType.THERMOSTATS,
-            testCase.serialNumbers, testCase.getDateRange());
-        Assert.assertEquals("Expected jobID doesn't match returned jobID", jobId, res.getJobId());
-        Assert.assertEquals("Expected EcobeeJobStatus job status doesn't match returned job status",
-            EcobeeJobStatus.ERROR, res.getJobStatus());
-        Assert.assertEquals("Expected status code doesn't match returned status code", 0, res.getStatus().getCode());
-        Assert.assertEquals("Expected status message doesn't match returned status message", StringUtils.EMPTY,
-            res.getStatus().getMessage());
+                testCase.serialNumbers, testCase.getDateRange());
+        assertEquals(jobId, res.getJobId(), "Expected jobID doesn't match returned jobID");
+        assertEquals(EcobeeJobStatus.ERROR, res.getJobStatus(),
+                "Expected EcobeeJobStatus job status doesn't match returned job status");
+        assertEquals(0, res.getStatus().getCode(), "Expected status code doesn't match returned status code");
+        assertEquals(StringUtils.EMPTY, res.getStatus().getMessage(),
+                "Expected status message doesn't match returned status message");
     }
 
     @Test
@@ -213,14 +216,16 @@ public class EcobeeCommunicationServiceImplTest {
         AssertEqual(actualResponse, expectedResponse);
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void test_readDeviceData_withException() throws Exception {
         Class<EcobeeCommunicationServiceImpl> implClass = EcobeeCommunicationServiceImpl.class;
         Method method = implClass.getDeclaredMethod("downloadRuntimeReport", List.class);
         method.setAccessible(true);
         List<String> dataUrls = new ArrayList<>();
         dataUrls.add("test");
-        method.invoke(impl, dataUrls);
+        Assertions.assertThrows(Exception.class, () -> {
+            method.invoke(impl, dataUrls);
+          });
     }
 
     @Test
@@ -468,60 +473,52 @@ public class EcobeeCommunicationServiceImplTest {
 
     private void AssertEqual(List<EcobeeDeviceReadings> allDeviceReadings1,
             List<EcobeeDeviceReadings> allDeviceReadings2) {
-        Assert.assertNotNull(allDeviceReadings1);
-        Assert.assertNotNull(allDeviceReadings2);
+        assertNotNull(allDeviceReadings1);
+        assertNotNull(allDeviceReadings2);
 
-        Assert.assertTrue("Expected number of device readings is different from amount returned",
-            allDeviceReadings1.size() == allDeviceReadings2.size());
+        assertTrue(allDeviceReadings1.size() == allDeviceReadings2.size(), "Expected number of device readings is different from amount returned");
         for (int i = 0; i < allDeviceReadings1.size(); i++) {
             EcobeeDeviceReadings deviceReadings1 = allDeviceReadings1.get(i);
             EcobeeDeviceReadings deviceReadings2 = allDeviceReadings2.get(i);
 
-            Assert.assertEquals("Expected serial number doesn't match returned value",
-                deviceReadings1.getSerialNumber(), deviceReadings2.getSerialNumber());
+            assertEquals(deviceReadings1.getSerialNumber(), deviceReadings2.getSerialNumber(), "Expected serial number doesn't match returned value");
             List<EcobeeDeviceReading> readings1 = deviceReadings1.getReadings();
             List<EcobeeDeviceReading> readings2 = deviceReadings2.getReadings();
-            Assert.assertTrue("Different number of readings returned than was expected",
-                readings1.size() == readings2.size());
+            assertTrue(readings1.size() == readings2.size(), "Different number of readings returned than was expected");
             for (int j = 0; j < readings1.size(); j++) {
                 EcobeeDeviceReading ecobeeDeviceReading1 = readings1.get(j);
                 EcobeeDeviceReading ecobeeDeviceReading2 = readings2.get(j);
-                Assert.assertEquals("Expected date doesn't match returned date", ecobeeDeviceReading1.getDate(),
-                    ecobeeDeviceReading2.getDate());
-                Assert.assertEquals("Expected event activity string doesn't match returned string",
-                    ecobeeDeviceReading1.getEventActivity(), ecobeeDeviceReading2.getEventActivity());
-                Assert.assertEquals("Expected indoor temp doesn't match returned indoor temp",
-                    ecobeeDeviceReading1.getIndoorTempInF(), ecobeeDeviceReading2.getIndoorTempInF());
-                Assert.assertEquals("Expected outdoor temp doesn't match returned outdoor temp",
-                    ecobeeDeviceReading1.getOutdoorTempInF(), ecobeeDeviceReading2.getOutdoorTempInF());
-                Assert.assertEquals("Expected runtime seconds doens't match returned runtime seconds",
-                    ecobeeDeviceReading1.getRuntimeSeconds(), ecobeeDeviceReading2.getRuntimeSeconds());
-                Assert.assertEquals("Expected set cool temp doesn't match returned value",
-                    ecobeeDeviceReading1.getSetCoolTempInF(), ecobeeDeviceReading2.getSetCoolTempInF());
-                Assert.assertEquals("Expected set heat temp doesn't match returned value",
-                    ecobeeDeviceReading1.getSetHeatTempInF(), ecobeeDeviceReading2.getSetHeatTempInF());
+                assertEquals(ecobeeDeviceReading1.getDate(), ecobeeDeviceReading2.getDate(),
+                        "Expected date doesn't match returned date");
+                assertEquals(ecobeeDeviceReading1.getEventActivity(), ecobeeDeviceReading2.getEventActivity(),
+                        "Expected event activity string doesn't match returned string");
+                assertEquals(ecobeeDeviceReading1.getIndoorTempInF(), ecobeeDeviceReading2.getIndoorTempInF(),
+                        "Expected indoor temp doesn't match returned indoor temp");
+                assertEquals(ecobeeDeviceReading1.getOutdoorTempInF(), ecobeeDeviceReading2.getOutdoorTempInF(),
+                        "Expected outdoor temp doesn't match returned outdoor temp");
+                assertEquals(ecobeeDeviceReading1.getRuntimeSeconds(), ecobeeDeviceReading2.getRuntimeSeconds(),
+                        "Expected runtime seconds doens't match returned runtime seconds");
+                assertEquals(ecobeeDeviceReading1.getSetCoolTempInF(), ecobeeDeviceReading2.getSetCoolTempInF(),
+                        "Expected set cool temp doesn't match returned value");
+                assertEquals(ecobeeDeviceReading1.getSetHeatTempInF(), ecobeeDeviceReading2.getSetHeatTempInF(),
+                        "Expected set heat temp doesn't match returned value");
             }
         }
     }
 
     private void assertRuntimeReportJobStatus(RuntimeReportJobStatusResponse expectedResponse,
             RuntimeReportJobStatusResponse actualResponse) {
-        Assert.assertTrue("Expected number of job readings is different from amount returned",
-            expectedResponse.getJobs().size() == actualResponse.getJobs().size());
+        assertTrue(expectedResponse.getJobs().size() == actualResponse.getJobs().size(),
+                "Expected number of job readings is different from amount returned");
         EcobeeReportJob expectedJob = expectedResponse.getJobs().get(0);
         EcobeeReportJob actualJob = actualResponse.getJobs().get(0);
-        Assert.assertEquals("Expected jobID doesn't match returned jobID", expectedJob.getJobId(),
-            actualJob.getJobId());
-        Assert.assertEquals("Expected EcobeeJobStatus job status doesn't match returned job status",
-            expectedJob.getStatus(), actualJob.getStatus());
-        Assert.assertEquals("Expected file size doesn't match returned file size", expectedJob.getFiles().length,
-            actualJob.getFiles().length);
+        assertEquals(expectedJob.getJobId(), actualJob.getJobId(), "Expected jobID doesn't match returned jobID");
+        assertEquals(expectedJob.getStatus(), actualJob.getStatus(), "Expected EcobeeJobStatus job status doesn't match returned job status");
+        assertEquals(expectedJob.getFiles().length, actualJob.getFiles().length, "Expected file size doesn't match returned file size");
         if (EcobeeJobStatus.COMPLETED == actualJob.getStatus()) {
-            Assert.assertEquals("Expected file name doesn't match returned file name", expectedJob.getFiles()[0],
-                actualJob.getFiles()[0]);
+            assertEquals( expectedJob.getFiles()[0], actualJob.getFiles()[0], "Expected file name doesn't match returned file name");
         }
-        Assert.assertEquals("Expected status message doesn't match returned status message", expectedJob.getMessage(),
-            actualJob.getMessage());
+        assertEquals(expectedJob.getMessage(), actualJob.getMessage(), "Expected status message doesn't match returned status message");
     }
 
     private RuntimeReportJobStatusResponse setupMockRuntimeReportJobStatusResponse(EcobeeJobStatus ecobeeJobStatus)

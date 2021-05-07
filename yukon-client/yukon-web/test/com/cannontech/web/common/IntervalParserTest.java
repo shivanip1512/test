@@ -1,5 +1,7 @@
 package com.cannontech.web.common;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,8 +12,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.IntervalParser;
@@ -119,9 +120,9 @@ public class IntervalParserTest {
                 if (range.getMin().isAfter(range.getMax())) {
                     hasValidInterval = false;
                 }
-                Assert.assertTrue("Intervals are incorrect", CollectionUtils.isEqualCollection(intervals, parser.getIntervals()));
-                Assert.assertTrue("Range is incorrect", range.equals(parser.getRange()));
-                Assert.assertTrue("Interval count is invalid", hasValidInterval == parser.hasValidInterval());
+                assertTrue(CollectionUtils.isEqualCollection(intervals, parser.getIntervals()), "Intervals are incorrect");
+                assertTrue(range.equals(parser.getRange()), "Range is incorrect");
+                assertTrue(hasValidInterval == parser.hasValidInterval(), "Interval count is invalid");
             }
         }
     }

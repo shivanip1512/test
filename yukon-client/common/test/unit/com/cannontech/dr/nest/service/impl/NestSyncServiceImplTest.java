@@ -1,8 +1,8 @@
 package com.cannontech.dr.nest.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,9 +13,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.easymock.EasyMock;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.inventory.HardwareType;
@@ -33,7 +32,7 @@ public class NestSyncServiceImplTest {
     
     NestSyncServiceImpl impl;
     
-    @Before
+    @BeforeEach
     public void init() {
         impl = new NestSyncServiceImpl();
     }
@@ -130,11 +129,11 @@ public class NestSyncServiceImplTest {
         
         Optional<NestSyncDetail> programNotFoundActual = impl.buildSyncDetail(1, groupEmpty, mmGtP, mmPtA, bl);
         assertTrue(programNotFoundActual.isPresent());
-        Assert.assertEquals(NestSyncI18nKey.NOT_FOUND_PROGRAM_FOR_NEST_GROUP, programNotFoundActual.get().getReasonKey());
+        assertEquals(NestSyncI18nKey.NOT_FOUND_PROGRAM_FOR_NEST_GROUP, programNotFoundActual.get().getReasonKey());
                 
         Optional<NestSyncDetail> areaNotFound = impl.buildSyncDetail(1, groupProgramNoArea, mmGtP, mmPtA, bl);
         assertTrue(areaNotFound.isPresent());
-        Assert.assertEquals(NestSyncI18nKey.NOT_FOUND_AREA_FOR_NEST_GROUP, areaNotFound.get().getReasonKey());
+        assertEquals(NestSyncI18nKey.NOT_FOUND_AREA_FOR_NEST_GROUP, areaNotFound.get().getReasonKey());
     }
 
     @Test
