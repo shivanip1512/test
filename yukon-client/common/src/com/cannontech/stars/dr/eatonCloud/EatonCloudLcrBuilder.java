@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.creation.DeviceCreationException;
+import com.cannontech.common.device.creation.DeviceCreationException.Type;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.inventory.Hardware;
@@ -50,12 +51,12 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
     public void createDevice(Hardware hardware) {
         try {
             if (deviceDao.isGuidExists(hardware.getGuid())) {
-                throw new PxMWException("Guid:" + hardware.getGuid() + " already exists.");
+                throw new DeviceCreationException("Guid:" + hardware.getGuid() + " already exists.", "invalidDeviceCreation", Type.GUID_ALREADY_EXISTS);
             }     
             
             if (!pxMWCommunicationServiceV1.isCreatableDevice(hardware.getGuid())) {
-                throw new PxMWException("Unable to find a matching device identifier GUID:" + hardware.getGuid()
-                        + " registered in your Brightlayer site. Device cannot be added to Yukon at this time");
+                throw new DeviceCreationException("Unable to find a matching device identifier GUID:" + hardware.getGuid()
+                        + " registered in your Brightlayer site. Device cannot be added to Yukon at this time", "invalidDeviceCreation", Type.GUID_DOES_NOT_EXIST);
             }
   
             SimpleDevice pao = creationService.createDeviceByDeviceType(
