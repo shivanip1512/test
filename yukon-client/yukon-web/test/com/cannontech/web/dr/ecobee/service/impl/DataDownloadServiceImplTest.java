@@ -1,5 +1,8 @@
 package com.cannontech.web.dr.ecobee.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,9 +13,8 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -37,7 +39,7 @@ public class DataDownloadServiceImplTest {
     
     private final DateTimeZone timeZone = DateTimeZone.forID("America/Chicago");
     
-    @Before
+    @BeforeEach
     public void setUp() {
         service = new DataDownloadServiceImpl();
         EcobeeCommunicationService ecobeeCommunicationService = new MockEcobeeCommunicationService(timeZone);
@@ -85,11 +87,11 @@ public class DataDownloadServiceImplTest {
         //call DataDownloadService.runTask(serialNumbers, dateRange, timeZone, file, result)
         ReflectionTestUtils.invokeMethod(service, "runTask", serialNumbers, dateRange, YukonUserContext.system, file, result);
         
-        Assert.assertEquals("Incorrect device total.", serialNumbers.size(), result.getTotal());
-        Assert.assertTrue("Incorrect success value.", result.isSuccessful());
-        Assert.assertEquals("Incorrect number of complete devices.", serialNumbers.size(), result.getCompleted());
-        Assert.assertEquals("Incorrect completion value.", true, result.isComplete());
-        Assert.assertEquals("Incorrect percentage.", "100%", result.getPercentDone());
+        assertEquals(serialNumbers.size(), result.getTotal(), "Incorrect device total.");
+        assertTrue(result.isSuccessful(), "Incorrect success value.");
+        assertEquals(serialNumbers.size(), result.getCompleted(), "Incorrect number of complete devices.");
+        assertEquals(true, result.isComplete(), "Incorrect completion value.");
+        assertEquals("100%", result.getPercentDone(), "Incorrect percentage.");
     }
     
     private List<String> getSerialNumbers(int amount) {
