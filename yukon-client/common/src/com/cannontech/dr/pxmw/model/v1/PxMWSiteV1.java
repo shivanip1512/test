@@ -19,7 +19,6 @@ public class PxMWSiteV1 implements Serializable {
     private String createdByUser;
     private String modifiedTime;
     private String modifiedByUser;
-    private List<PxMWSiteDeviceV1> devices;
 
     @JsonCreator
     public PxMWSiteV1(@JsonProperty("id") String siteGuid,
@@ -31,8 +30,7 @@ public class PxMWSiteV1 implements Serializable {
             @JsonProperty("created") String createdTime, 
             @JsonProperty("created_by") String createdByUser,
             @JsonProperty("modified") String modifiedTime,
-            @JsonProperty("modified_by") String modifiedByUser,
-            @JsonProperty("devices") List<PxMWSiteDeviceV1> devices) {
+            @JsonProperty("modified_by") String modifiedByUser) {
         this.siteGuid = siteGuid;
         this.name = name;
         this.description = description;
@@ -43,7 +41,6 @@ public class PxMWSiteV1 implements Serializable {
         this.createdByUser = createdByUser;
         this.modifiedTime = modifiedTime;
         this.modifiedByUser = modifiedByUser;
-        this.devices = devices;
     }
 
     @JsonProperty("id")
@@ -94,10 +91,5 @@ public class PxMWSiteV1 implements Serializable {
     @JsonProperty("modified_by")
     public String getModifiedByUser() {
         return modifiedByUser;
-    }
-    
-    @JsonProperty("devices")
-    public List<PxMWSiteDeviceV1> getDevices() {
-        return devices;
     }
 }
