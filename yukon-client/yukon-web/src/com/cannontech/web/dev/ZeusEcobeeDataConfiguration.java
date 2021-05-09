@@ -18,12 +18,12 @@ public class ZeusEcobeeDataConfiguration {
         this.authenticate = authenticate;
         this.createDevice = createDevice;
         this.deleteDevice = deleteDevice;
-        this.enableRuntime = enableRuntime;
         this.enrollment = enrollment;
         this.issueDemandResponse = issueDemandResponse;
         this.showUser = showUser;
         this.createPushConfiguration = createPushConfiguration;
         this.showPushConfiguration = showPushConfiguration;
+        this.enableRuntime = enableRuntime;
     }
 
     public int getAuthenticate() {
@@ -58,6 +58,10 @@ public class ZeusEcobeeDataConfiguration {
         return showPushConfiguration;
     }
 
+    public boolean isEnableRuntime() {
+        return enableRuntime;
+    }
+
     public void setAuthenticate(int authenticate) {
         this.authenticate = authenticate;
     }
@@ -68,14 +72,6 @@ public class ZeusEcobeeDataConfiguration {
 
     public void setDeleteDevice(int deleteDevice) {
         this.deleteDevice = deleteDevice;
-    }
-
-    public boolean isEnableRuntime() {
-        return enableRuntime;
-    }
-
-    public void setEnableRuntime(boolean enableRuntime) {
-        this.enableRuntime = enableRuntime;
     }
 
     public void setEnrollment(int enrollment) {
@@ -97,4 +93,9 @@ public class ZeusEcobeeDataConfiguration {
     public void setShowPushConfiguration(int showPushConfiguration) {
         this.showPushConfiguration = showPushConfiguration;
     }
+
+    public void setEnableRuntime(boolean enableRuntime) {
+        this.enableRuntime = enableRuntime;
+    }
+
 }

@@ -116,7 +116,7 @@
                 </tags:sectionContainer>
             </div>
             <div class="column two">
-                <tags:sectionContainer title="Status Code/Enable Runtime">
+                <tags:sectionContainer title="Status Code">
                     <tags:nameValueContainer>
                         <ul class="simple-list">
                             <li>
@@ -185,7 +185,7 @@
                             </li>
                         </ul>
                     </tags:nameValueContainer>
-                </tags:sectionContainer>    
+                </tags:sectionContainer>
             </div>
             <div class="column three nogutter">
                 <div class="action-area">
