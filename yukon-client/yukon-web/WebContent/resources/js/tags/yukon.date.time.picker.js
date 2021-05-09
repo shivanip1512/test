@@ -276,6 +276,26 @@ yukon.ui.dateTimePickers = function () {
                 $('.ui-datepicker-current').addClass('dn');
             });
             
+            /*Overridden method from jquery-ui-timepicker-addon.js to get the Today button to work */
+            $.datepicker._gotoToday = function (id) {
+                var inst = this._getInst($(id)[0]);
+                var tp_inst = this._get(inst, 'timepicker');
+                if (!tp_inst) {
+                    var now = new Date();
+                    this._setDate(inst, now);
+                    this._base_gotoToday(id);
+                    return;
+                }
+
+                var tzoffset = $.timepicker.timezoneOffsetNumber(tp_inst.timezone);
+                var now = new Date();
+                now.setMinutes(now.getMinutes() + now.getTimezoneOffset() + parseInt(tzoffset, 10));
+                this._setTime(inst, now);
+                this._setDate(inst, now);
+                tp_inst._onSelectHandler();
+                this._base_gotoToday(id);
+            };
+            
             $(document).on("change", ".timeOffsetPicker", function(event) {
                 var displayField = $(this),
                     displayValue = displayField.val(),

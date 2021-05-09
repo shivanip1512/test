@@ -54,7 +54,7 @@ $(function() {
         </c:if>
     </c:forEach>
         <c:if test="${hardware.hardwareType.rf or hardware.hardwareType.twoWayPlcLcr 
-                        or hardware.hardwareType.ecobee}">
+                        or hardware.hardwareType.ecobee or hardware.hardwareType.eatonCloud}">
             <div id="commandStatus" class="dn error"></div>
         </c:if>
     <div class="action-area">

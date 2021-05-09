@@ -37,6 +37,7 @@ import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.PxMWVersion;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
@@ -44,7 +45,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.simulators.message.request.PxMWDeviceAutoCreationSimulatonRequest;
+import com.cannontech.simulators.message.request.PxMWDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.PxMWSimulatorDeviceCreateRequest;
 import com.cannontech.simulators.message.request.PxMWSimulatorSettingsUpdateRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
@@ -74,7 +75,7 @@ public class PxMWSimulatorController {
     
     @PostConstruct
     public void init() {
-        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.PxMW_SIM_DEVICE_AUTO_CREATION_REQUEST);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.PxMW_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
     }
     @GetMapping("/home")
     public String home(ModelMap model) {
@@ -128,7 +129,7 @@ public class PxMWSimulatorController {
                         .map(String::trim)
                         .collect(Collectors.toList());
             }
-            if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
+            if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE) {
                 PxMWSiteV1 site = pxMWCommunicationServiceV1.getSiteDevices(paramList.get(0), parseBoolean(paramList, 1),
                         parseBoolean(paramList, 2));
                 processSuccess(params, json, getFormattedJson(site));
@@ -150,6 +151,9 @@ public class PxMWSimulatorController {
                 List<PxMWTimeSeriesDeviceResultV1> response = pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(),
                         timeRange);
                 processSuccess(params, json, getFormattedJson(response));
+            } else if (endpoint == PxMWRetrievalUrl.DEVICE_DETAIL) {
+                PxMWDeviceDetail detail = pxMWCommunicationServiceV1.getDeviceDetails(paramList.get(0), parseBoolean(paramList, 1));
+                processSuccess(params, json, getFormattedJson(detail));
             }
         } catch (PxMWCommunicationExceptionV1 e) {
             processError(json, e);
@@ -209,13 +213,31 @@ public class PxMWSimulatorController {
                         YukonMessageSourceResolvable.createDefaultWithoutCode("See Service Manager logs for results."));
             }
             // Send request to SM to run auto device creation (otherwise it will run once a day)
-            jmsTemplate.convertAndSend(new PxMWDeviceAutoCreationSimulatonRequest());
+            jmsTemplate.convertAndSend(new PxMWDataRetrievalSimulatonRequest(true));
             // SM sends request to simulator
             // Simulator builds responses from cached values
             // Simulator waits for SM to tell it that auto creation is complete
             // Simulator clears its cache
             // When device auto creation runs again, no devices are created
         } catch (ExecutionException e) {
+            log.error("Error", e);
+        }
+       
+        return "redirect:home";
+    }
+    
+    @PostMapping("/deviceAutoRead")
+    public String deviceAutoRead(FlashScope flashScope) {
+        String siteGuid = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
+        
+        if(Strings.isNullOrEmpty(siteGuid)){
+            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("PX System Service Account Id is required, doesn't need to be real."));
+            return "redirect:home";
+        }
+        try {
+            // Send request to SM to run read on all Could LCRs (otherwise it will run once an hour)
+            jmsTemplate.convertAndSend(new PxMWDataRetrievalSimulatonRequest(false));
+        } catch (Exception e) {
             log.error("Error", e);
         }
        
