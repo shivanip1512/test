@@ -14,5 +14,6 @@
         <pointInfo name="Indoor Temperature" init="true" attributes="INDOOR_TEMPERATURE"/>
         <pointInfo name="Outdoor Temperature" init="true" attributes="OUTDOOR_TEMPERATURE"/>
         <pointInfo name="Run Time Data Log" init="true" attributes="RELAY_1_RUN_TIME_DATA_LOG"/>
+        <pointInfo name="Thermostat Relay State" init="true" attributes="THERMOSTAT_RELAY_STATE"/>
     </pointInfos>
 </pao>

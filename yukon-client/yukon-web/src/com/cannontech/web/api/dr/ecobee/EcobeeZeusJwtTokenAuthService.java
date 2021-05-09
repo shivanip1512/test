@@ -17,29 +17,37 @@ import io.jsonwebtoken.Jwts;
 
 public class EcobeeZeusJwtTokenAuthService {
     @Autowired private EcobeeZeusSecurityService ecobeeZeusSecurityService;
+    private PublicKey pubKey;
+    private PrivateKey privKey;
 
     public void validateEcobeeJwtToken(String jwtToken) {
 
         try {
-            Jwts.parser().setSigningKey(getPublicKey())
-                         .parseClaimsJws(jwtToken)
-                         .getBody();
+            pubKey = getPublicKey();
+
+            Jwts.parser()
+                .setSigningKey(pubKey)
+                .parse(jwtToken);
+
         } catch (Exception ex) {
             throw new AuthenticationException("Expired or invalid JWT token");
         }
+
     }
 
     /**
      * Convert String PublicKey to PublicKey.
      */
     private PublicKey getPublicKey() throws Exception {
-        PublicKey pubKey = null;
-        ZeusEncryptionKey encryptionKey = ecobeeZeusSecurityService.getZeusEncryptionKey();
-        if (encryptionKey != null) {
-            byte[] publicBytes = Base64.decodeBase64(encryptionKey.getPublicKey());
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            pubKey = keyFactory.generatePublic(keySpec);
+        
+        if (pubKey == null) {
+            ZeusEncryptionKey encryptionKey = ecobeeZeusSecurityService.getZeusEncryptionKey();
+            if (encryptionKey != null) {
+                byte[] publicBytes = Base64.decodeBase64(encryptionKey.getPublicKey());
+                X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
+                KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                pubKey = keyFactory.generatePublic(keySpec);
+            }
         }
         return pubKey;
     }
@@ -48,14 +56,14 @@ public class EcobeeZeusJwtTokenAuthService {
      * Convert String Private to PrivateKey.
      */
     public PrivateKey getPrivateKey() throws Exception {
-        PrivateKey privKey = null;
-        ZeusEncryptionKey encryptionKey = ecobeeZeusSecurityService.getZeusEncryptionKey();
-        if (encryptionKey != null) {
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.decodeBase64(encryptionKey.getPrivateKey()));
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            privKey = kf.generatePrivate(keySpec);
+        if (privKey == null) {
+            ZeusEncryptionKey encryptionKey = ecobeeZeusSecurityService.getZeusEncryptionKey();
+            if (encryptionKey != null) {
+                PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.decodeBase64(encryptionKey.getPrivateKey()));
+                KeyFactory kf = KeyFactory.getInstance("RSA");
+                privKey = kf.generatePrivate(keySpec);
+            }
         }
-
         return privKey;
     }
 }

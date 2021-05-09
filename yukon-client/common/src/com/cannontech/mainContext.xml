@@ -401,7 +401,6 @@
     <bean id="ecobeeSecurityService" class="com.cannontech.encryption.impl.EcobeeSecurityServiceImpl"/>
     <bean id="itronSecurityService" class="com.cannontech.encryption.impl.ItronSecurityServiceImpl"/>
     <bean id="ecobeeZeusSecurityService" class="com.cannontech.encryption.impl.EcobeeZeusSecurityServiceImpl"/>
-    <bean id="ecobeeZeusJwtTokenAuthService" class="com.cannontech.web.api.dr.ecobee.EcobeeZeusJwtTokenAuthService"/>
 
     <bean id="yukonTextMessageDao" class="com.cannontech.message.activemq.impl.YukonTextMessageDaoImpl"/>
 

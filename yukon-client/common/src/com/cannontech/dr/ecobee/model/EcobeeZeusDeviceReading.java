@@ -2,17 +2,18 @@ package com.cannontech.dr.ecobee.model;
 
 import org.joda.time.Instant;
 
+import com.cannontech.database.db.point.stategroup.TrueFalse;
+
 public final class EcobeeZeusDeviceReading {
     private String serialNumber;
     private Float outdoorTempInF;
     private Float indoorTempInF;
     private Float setCoolTempInF;
     private Float setHeatTempInF;
-    private String drRef;
+    private TrueFalse controlStatus;
     private Instant date;
     private Integer commStatus;
-    private Integer coolStage1;
-    private Integer heatStage1;
+    private Integer stateValue;
 
     public String getSerialNumber() {
         return serialNumber;
@@ -53,15 +54,7 @@ public final class EcobeeZeusDeviceReading {
     public void setSetHeatTempInF(Float setHeatTempInF) {
         this.setHeatTempInF = setHeatTempInF;
     }
-
-    public String getDrRef() {
-        return drRef;
-    }
-
-    public void setDrRef(String drRef) {
-        this.drRef = drRef;
-    }
-
+    
     public Instant getDate() {
         return date;
     }
@@ -78,19 +71,19 @@ public final class EcobeeZeusDeviceReading {
         this.commStatus = commStatus;
     }
 
-    public Integer getCoolStage1() {
-        return coolStage1;
+    public Integer getStateValue() {
+        return stateValue;
     }
 
-    public void setCoolStage1(Integer coolStage1) {
-        this.coolStage1 = coolStage1;
+    public void setStateValue(Integer stateValue) {
+        this.stateValue = stateValue;
     }
 
-    public Integer getHeatStage1() {
-        return heatStage1;
+    public TrueFalse getControlStatus() {
+        return controlStatus;
     }
 
-    public void setHeatStage1(Integer heatStage1) {
-        this.heatStage1 = heatStage1;
+    public void setControlStatus(TrueFalse controlStatus) {
+        this.controlStatus = controlStatus;
     }
 }

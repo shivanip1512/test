@@ -11,15 +11,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.db.point.stategroup.TrueFalse;
 import com.cannontech.dr.ecobee.model.EcobeeZeusDeviceReading;
 import com.cannontech.dr.ecobee.service.EcobeeZeusPointUpdateService;
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_dr_event;
+import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_dr_event.dr_event_state;
+import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_runtime;
+import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_runtime.state_runtime;
+import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_state.ecp_thermostat_connection_state;
 import com.google.protobuf.Timestamp;
 
 @RestController
-@CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
 public class EcobeeZeusApiController {
     private static final Logger log = YukonLogManager.getLogger(EcobeeZeusApiController.class);
     @Autowired private EcobeeZeusPointUpdateService ecobeeZeusPointUpdateService;
@@ -31,6 +34,9 @@ public class EcobeeZeusApiController {
         ecobeeZeusPointUpdateService.updatePointData(deviceReading);
     }
 
+    /**
+     * Build EcobeeZeusDeviceReading from protobuf message.
+     */
     private EcobeeZeusDeviceReading buildEcobeeZeusDeviceReading(EcobeeZeusRuntimeData.ecp_thermostat_message thermostatMessage) {
 
         EcobeeZeusDeviceReading ecobeeZeusDeviceReading = new EcobeeZeusDeviceReading();
@@ -59,17 +65,50 @@ public class EcobeeZeusApiController {
             Float temperatureOutdoorDegF = thermostatMessage.getThermostatState().getTemperatureOutdoorDegF();
             ecobeeZeusDeviceReading.setOutdoorTempInF(temperatureOutdoorDegF);
 
-            Integer commStatus = thermostatMessage.getThermostatState().getConnectionStateValue();
-            ecobeeZeusDeviceReading.setCommStatus(commStatus);
+            ecp_thermostat_connection_state connectionState = thermostatMessage.getThermostatState().getConnectionState();
+            if (connectionState != null) {
+                if (ecp_thermostat_connection_state.connected == connectionState) {
+                    ecobeeZeusDeviceReading.setCommStatus(0); // 0 - connected
+                } else if (ecp_thermostat_connection_state.disconnected == connectionState) {
+                    ecobeeZeusDeviceReading.setCommStatus(1); // 1- disconnected
+                }
+            }
         }
 
         if (thermostatMessage.getThermostatRuntime() != null) {
-            Integer coolStage1 = thermostatMessage.getThermostatRuntime().getCoolStage1OnValue();
-            ecobeeZeusDeviceReading.setCoolStage1(coolStage1);
-            Integer heatStage1 = thermostatMessage.getThermostatRuntime().getHeatStage1OnValue();
-            ecobeeZeusDeviceReading.setHeatStage1(heatStage1);
+            ecp_thermostat_runtime thermostat_runtime = thermostatMessage.getThermostatRuntime();
+            state_runtime coolStage1 = thermostat_runtime.getCoolStage1On();
+            if (coolStage1 != null && coolStage1 != state_runtime.non_applicable) {
+                if (state_runtime.on == coolStage1) {
+                    ecobeeZeusDeviceReading.setStateValue(1); // Cool-On
+                } else {
+                    ecobeeZeusDeviceReading.setStateValue(2); // Off
+                }
+            }
+
+            state_runtime heatStage1 = thermostat_runtime.getHeatStage1On();
+            if (heatStage1 != null && heatStage1 != state_runtime.non_applicable) {
+                if (state_runtime.on == heatStage1) {
+                    ecobeeZeusDeviceReading.setStateValue(0); // Heat-On
+                } else {
+                    ecobeeZeusDeviceReading.setStateValue(2); // Off
+                }
+            }
         }
 
+        if (thermostatMessage.getThermostatProgram() != null) {
+            ecp_thermostat_dr_event drEvent = thermostatMessage.getThermostatProgram().getEventDr();
+            if (drEvent != null) {
+                dr_event_state eventState = drEvent.getEventState();
+                if (eventState != null) {
+                    if (eventState == dr_event_state.dr_setback) {
+                        ecobeeZeusDeviceReading.setControlStatus(TrueFalse.TRUE);
+                    } else {
+                        ecobeeZeusDeviceReading.setControlStatus(TrueFalse.FALSE); // False in case of dr_precool & None
+                    }
+                }
+            }
+        }
         return ecobeeZeusDeviceReading;
 
     }

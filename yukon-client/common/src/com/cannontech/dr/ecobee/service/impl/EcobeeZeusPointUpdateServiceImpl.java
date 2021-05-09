@@ -36,10 +36,10 @@ public class EcobeeZeusPointUpdateServiceImpl implements EcobeeZeusPointUpdateSe
         if (reading.getSetCoolTempInF() != null) {
             inputPointValue(paoIdentifier, BuiltInAttribute.COOL_SET_TEMPERATURE, messageTimestamp, reading.getSetCoolTempInF());
         }
-        if (reading.getDrRef() != null) {
-            TrueFalse controlStatus = checkDREventReferenceId(reading.getDrRef());
-            inputPointValue(paoIdentifier, BuiltInAttribute.CONTROL_STATUS, reading.getDate(), controlStatus.getRawState());
-        }
+        
+        TrueFalse controlStatus = reading.getControlStatus();
+        inputPointValue(paoIdentifier, BuiltInAttribute.CONTROL_STATUS, reading.getDate(), controlStatus.getRawState());
+
         if (reading.getOutdoorTempInF() != null) {
             inputPointValue(paoIdentifier, BuiltInAttribute.OUTDOOR_TEMPERATURE, messageTimestamp, reading.getOutdoorTempInF());
         }
@@ -47,7 +47,9 @@ public class EcobeeZeusPointUpdateServiceImpl implements EcobeeZeusPointUpdateSe
             inputPointValue(paoIdentifier, BuiltInAttribute.INDOOR_TEMPERATURE, messageTimestamp, reading.getIndoorTempInF());
         }
         //TODO Comm Status Point
-        // TODO Discuss Runtime Calculation 
+        if (reading.getStateValue() != null) {
+            inputPointValue(paoIdentifier, BuiltInAttribute.THERMOSTAT_RELAY_STATE, reading.getDate(), reading.getStateValue());
+        }
         updateAssetAvailability(paoIdentifier, messageTimestamp);
 
     }
@@ -70,11 +72,6 @@ public class EcobeeZeusPointUpdateServiceImpl implements EcobeeZeusPointUpdateSe
         pointData.setTagsDataTimestampValid(true);
 
         asyncDynamicDataSource.putValue(pointData);
-    }
-
-    private TrueFalse checkDREventReferenceId(String drRef) {
-        // TODO database call for drRef
-        return TrueFalse.FALSE;
     }
 
 }

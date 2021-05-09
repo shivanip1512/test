@@ -28,7 +28,7 @@
                  enabledSelectedOption(deleteDevice, deleteDeviceOp);
              } break;
              case 'runtimeData' : {
-                 enabledSelectedOption(runtimeData, serialNumber);
+                 enabledSelectedOption(runtimeData, enableRuntime);
              } break;
          }
          });
@@ -63,7 +63,7 @@
                         </li>
                          <li>
                             <label> 
-                                <input id="runtimeData" type="checkbox" name="runtimeData"> 
+                                <input id="runtimeData" type="checkbox" name="enableRuntime"> 
                                 <i:inline key=".runtimeData" />
                             </label>
                         </li>
@@ -71,7 +71,7 @@
                 </tags:sectionContainer>
             </div>
             <div class="column two">
-                <tags:sectionContainer title="Status Code/Serial Number">
+                <tags:sectionContainer title="Status Code/Enable Runtime">
                     <tags:nameValueContainer>
                         <ul class="simple-list">
                             <li>
@@ -97,9 +97,6 @@
                                     </c:forEach>
                                 </select>
                                 <input type="hidden" name="deleteDeviceOp" value="0" />
-                            </li>
-                            <li>
-                                <input name="serialNumber" value="" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>

@@ -118,7 +118,7 @@ public class LmHardwareBaseDaoImpl implements LmHardwareBaseDao {
 
             return yukonJdbcTemplate.queryForObject(sql, TypeRowMapper.PAO_IDENTIFIER);
         } catch (EmptyResultDataAccessException ex) {
-            throw new NotFoundException("The serial number supplied does not exist: " + serialNumber);
+            throw new NotFoundException("No pao is associated with the serial number: " + serialNumber);
         }
     }
 
