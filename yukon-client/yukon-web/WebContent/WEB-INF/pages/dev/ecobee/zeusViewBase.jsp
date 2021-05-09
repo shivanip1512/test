@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #runtimeData').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -26,6 +26,9 @@
              } break;
              case 'deleteDevice' : {
                  enabledSelectedOption(deleteDevice, deleteDeviceOp);
+             } break;
+             case 'runtimeData' : {
+                 enabledSelectedOption(runtimeData, serialNumber);
              } break;
          }
          });
@@ -58,11 +61,17 @@
                                 <i:inline key=".deleteDevice" />
                             </label>
                         </li>
+                         <li>
+                            <label> 
+                                <input id="runtimeData" type="checkbox" name="runtimeData"> 
+                                <i:inline key=".runtimeData" />
+                            </label>
+                        </li>
                     </ul>
                 </tags:sectionContainer>
             </div>
             <div class="column two">
-                <tags:sectionContainer title="Status Code">
+                <tags:sectionContainer title="Status Code/Serial Number">
                     <tags:nameValueContainer>
                         <ul class="simple-list">
                             <li>
@@ -88,6 +97,9 @@
                                     </c:forEach>
                                 </select>
                                 <input type="hidden" name="deleteDeviceOp" value="0" />
+                            </li>
+                            <li>
+                                <input name="serialNumber" value="" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>
