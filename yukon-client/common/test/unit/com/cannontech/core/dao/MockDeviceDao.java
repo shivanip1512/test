@@ -242,4 +242,9 @@ public class MockDeviceDao implements DeviceDao {
     public List<String> getGuids() {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public List<Integer> getDeviceIdsWithGuids() {
+        throw new MethodNotImplementedException();
+    }
 }

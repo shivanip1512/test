@@ -240,4 +240,9 @@ public interface DeviceDao {
      * Returns a list of all the guids in DeviceGuid table as a List<String>
      */
     List<String> getGuids();
+
+    /**
+     * Returns a list of all the devices ids that have guids
+     */
+    List<Integer> getDeviceIdsWithGuids();
 }

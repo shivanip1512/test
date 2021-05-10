@@ -127,6 +127,7 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS, 120);
         globalSettings.put(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS, 2);
         globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL, 24);
+        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES, 1);
         globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID, "fcbd4387-886b-4f89-98d0-7801ff7b75e3");
         command.setValues(globalSettings);
 

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -689,6 +690,18 @@ public final class DeviceDaoImpl implements DeviceDao {
             return jdbcTemplate.query(sql, TypeRowMapper.STRING);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("No Guid's found ", e);
+        }
+    }
+    
+    @Override
+    public List<Integer> getDeviceIdsWithGuids(){
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM DeviceGuid");
+        try {
+            return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No device ids found ", e);
         }
     }
 }

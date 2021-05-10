@@ -41,8 +41,10 @@ import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusResponse;
 import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
+import com.cannontech.dr.ecobee.message.ZeusCreatePushConfig;
 import com.cannontech.dr.ecobee.message.ZeusDutyCycleDrRequest;
 import com.cannontech.dr.ecobee.message.ZeusErrorResponse;
+import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.partial.Status;
@@ -58,7 +60,7 @@ public class EcobeeMockApiController {
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
     @Autowired private MockZeusResponseFactory responseFactory;
-
+    
     @IgnoreCsrfCheck
     @RequestMapping(value = "hierarchy/set", method = RequestMethod.POST)
     public @ResponseBody StandardResponse hierarchy(HttpEntity<SetRequest> requestEntity) {
@@ -251,6 +253,59 @@ public class EcobeeMockApiController {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else if (issueDemandResponse == 3) {
             return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("utilities/{utilityId}/pushconfig")
+    public ResponseEntity<Object> showPushApiConfiguration(@PathVariable String utilityId) {
+        ZeusShowPushConfig config = new ZeusShowPushConfig();
+        config.setPrivateKey("142f8801bc58d69f5100bd2779d75c9e36011244");
+        config.setReportingUrl("http://abcenergy.com/ecobee/runtimedata");
+        int getShowPushConfigCode = zeusEcobeeDataConfiguration.getShowPushConfiguration();
+        if (getShowPushConfigCode == 0) {
+            return new ResponseEntity<>(config, HttpStatus.OK);
+        } else if (getShowPushConfigCode == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (getShowPushConfigCode == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @IgnoreCsrfCheck
+    @PostMapping("utilities/{utilityId}/pushconfig")
+    public ResponseEntity<Object> createPushApiConfiguration(@RequestBody ZeusCreatePushConfig zeusPushConfig,
+            @PathVariable String utilityId) {
+        
+        ZeusCreatePushConfig createConfig = new ZeusCreatePushConfig();
+        createConfig.setPrivateKey(zeusPushConfig.getPrivateKey());
+        createConfig.setReportingUrl(zeusPushConfig.getReportingUrl());
+        int getPushConfigCode = zeusEcobeeDataConfiguration.getCreatePushConfiguration();
+        if (getPushConfigCode == 0) {
+            return new ResponseEntity<>(createConfig, HttpStatus.OK);
+        } else if (getPushConfigCode == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (getPushConfigCode == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @IgnoreCsrfCheck
+    @GetMapping("auth/user")
+    public ResponseEntity<Object> showUser() {
+        Map<String, Object> responseMap = new HashMap<String, Object>();
+        responseMap.put("username", "user123");
+        responseMap.put("utility_id", "utility-123");
+        int showUserCode = zeusEcobeeDataConfiguration.getShowUser();
+        if (showUserCode == 0) {
+            return new ResponseEntity<>(responseMap, HttpStatus.OK);
+        } else if (showUserCode == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else {
             return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }

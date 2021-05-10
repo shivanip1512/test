@@ -4,16 +4,25 @@ public class ZeusEcobeeDataConfiguration {
 
     private int authenticate = 0;
     private int createDevice = 0;
+    private int issueDemandResponse = 0;
     private int deleteDevice = 0;
     private int enrollment = 0;
-    private int issueDemandResponse = 0;
+    private int showUser = 0;
+    private int createPushConfiguration = 0;
+    private int showPushConfiguration = 0;
 
-    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment, int issueDemandResponse) {
+    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment,
+            int issueDemandResponse, int showUser, int createPushConfiguration, int showPushConfiguration) {
+
         this.authenticate = authenticate;
         this.createDevice = createDevice;
         this.deleteDevice = deleteDevice;
         this.enrollment = enrollment;
         this.issueDemandResponse = issueDemandResponse;
+        this.showUser = showUser;
+        this.createPushConfiguration = createPushConfiguration;
+        this.showPushConfiguration = showPushConfiguration;
+        
     }
 
     public int getAuthenticate() {
@@ -36,6 +45,18 @@ public class ZeusEcobeeDataConfiguration {
         return issueDemandResponse;
     }
 
+    public int getShowUser() {
+        return showUser;
+    }
+
+    public int getCreatePushConfiguration() {
+        return createPushConfiguration;
+    }
+
+    public int getShowPushConfiguration() {
+        return showPushConfiguration;
+    }
+
     public void setAuthenticate(int authenticate) {
         this.authenticate = authenticate;
     }
@@ -56,4 +77,15 @@ public class ZeusEcobeeDataConfiguration {
         this.issueDemandResponse = issueDemandResponse;
     }
 
+    public void setShowUser(int showUser) {
+        this.showUser = showUser;
+    }
+    
+    public void setCreatePushConfiguration(int createPushConfiguration) {
+        this.createPushConfiguration = createPushConfiguration;
+    }
+
+    public void setShowPushConfiguration(int showPushConfiguration) {
+        this.showPushConfiguration = showPushConfiguration;
+    }
 }
