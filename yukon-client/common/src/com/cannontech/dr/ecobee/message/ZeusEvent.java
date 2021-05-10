@@ -126,11 +126,11 @@ public class ZeusEvent {
         this.isMandatory = isMandatory;
     }
 
-    public int getDutyCyclePercentage() {
+    public Integer getDutyCyclePercentage() {
         return dutyCyclePercentage;
     }
 
-    public void setDutyCyclePercentage(int dutyCyclePercentage) {
+    public void setDutyCyclePercentage(Integer dutyCyclePercentage) {
         this.dutyCyclePercentage = dutyCyclePercentage;
     }
 
