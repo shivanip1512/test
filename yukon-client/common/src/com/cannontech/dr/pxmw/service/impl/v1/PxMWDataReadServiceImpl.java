@@ -137,10 +137,14 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                     return Boolean.parseBoolean(pxReturnedValue) ? Double.valueOf("1") : Double.valueOf("0");
                 }
             } else if (MWChannel.getIntegerChannels().contains(channel) || MWChannel.getFloatChannels().contains(channel)) {
-                return Double.parseDouble(pxReturnedValue);
+                if (channel.isDefaultPointMultilier()) {
+                    return Double.parseDouble(pxReturnedValue);
+                } else {
+                    return Double.parseDouble(pxReturnedValue) * channel.getPointMultiplier();
+                }
             }
         } catch (Exception e) {
-            //can't parse data ignore exception
+            // can't parse data ignore exception
         }
 
         log.error("Device Id:{} Name:{} Guid:{} Channel:{} cannot be parsed into point data. Discarding received value: {}",
