@@ -6134,14 +6134,14 @@ C++ :
 # -------
 Css :
   - project : animate.css
-    version : 3.7.2
-    project URL : "http://daneden.github.io/animate.css/"
+    version : 4.1.1
+    project URL : "https://animate.style"
     license : MIT
-    license URLs : "https://github.com/daneden/animate.css/blob/3.7.2/LICENSE"
-    md5 : 91cc40989e5e96e8d6bddc0f19598441
-    sha1 : 77b5378a2b4bfc120e52782dd869aeab7efe2fd4
-    jira : YUK-21538
-    updated : 2020-03-19
+    license URLs : "https://github.com/animate-css/animate.css/blob/main/LICENSE"
+    md5 : cf2741a3a7ea8427ade651533a54ef1b
+    sha1 : afcaf144854f4916f4cc4ad17d196bca1aa66bc8
+    jira : YUK-24355
+    updated : 2021-05-06
     notes : This library is used to animate shaking the event alarm alert count.
         
   - project : normalize.css
