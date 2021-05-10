@@ -41,7 +41,7 @@ import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusResponse;
 import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
-import com.cannontech.dr.ecobee.message.ZeusDemandResponseRequest;
+import com.cannontech.dr.ecobee.message.ZeusDutyCycleDrRequest;
 import com.cannontech.dr.ecobee.message.ZeusErrorResponse;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
@@ -241,7 +241,7 @@ public class EcobeeMockApiController {
     
     @IgnoreCsrfCheck
     @PostMapping("events/dr")
-    public ResponseEntity<Object> issueDemandResponse(@RequestBody ZeusDemandResponseRequest zeusDutyCycleDrRequest) {
+    public ResponseEntity<Object> issueDemandResponse(@RequestBody ZeusDutyCycleDrRequest zeusDutyCycleDrRequest) {
         String eventId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
         zeusDutyCycleDrRequest.getEvent().setId(eventId);
         int issueDemandResponse = zeusEcobeeDataConfiguration.getIssueDemandResponse();
