@@ -107,17 +107,17 @@ public class EcobeeMockServiceTestController {
                                                                    showPushConfigurationOp,
                                                                    enableRuntime);
         if (enableRuntime == true) {
-            List<LiteYukonPAObject> ecobeeDevices = new ArrayList<>();
-            PaoType.getEcobeeTypes().forEach(type -> ecobeeDevices.addAll(paoDao.getLiteYukonPAObjectByType(type)));
-            for (LiteYukonPAObject ecobeePao : ecobeeDevices) {
-                PaoIdentifier pao = ecobeePao.getPaoIdentifier();
-                String ecobeeSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(pao.getPaoId());
-                future = scheduledExecutor.scheduleAtFixedRate(() -> {
-                    try {
+            future = scheduledExecutor.scheduleAtFixedRate(() -> {
+                try {
+                    List<LiteYukonPAObject> ecobeeDevices = new ArrayList<>();
+                    PaoType.getEcobeeTypes().forEach(type -> ecobeeDevices.addAll(paoDao.getLiteYukonPAObjectByType(type)));
+                    for (LiteYukonPAObject ecobeePao : ecobeeDevices) {
+                        PaoIdentifier pao = ecobeePao.getPaoIdentifier();
+                        String ecobeeSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(pao.getPaoId());
                         sendHttpProtoMessage(ecobeeSerialNumber);
-                    } catch (Exception e) {}
-                }, 0, 5, TimeUnit.MINUTES);
-            }
+                    }
+                } catch (Exception e) {}
+            }, 0, 5, TimeUnit.MINUTES);
         } else {
             if (future != null) {
                 future.cancel(false);
