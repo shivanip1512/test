@@ -90,7 +90,7 @@ public class EcobeeZeusPointUpdateServiceImpl implements EcobeeZeusPointUpdateSe
             pointData.setTagsDataTimestampValid(true);
 
             pointValues.add(pointData);
-            log.info("Parsed point data for {} - {} ({} {}). Value: {} {}.",
+            log.debug("Parsed point data for {} - {} ({} {}). Value: {} {}.",
                       pao.getPaoName(),
                       litePoint.getPointName(),
                       litePoint.getPointTypeEnum(),
