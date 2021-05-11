@@ -5,20 +5,58 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Optional;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.dr.ecobee.message.ZeusEncryptionKey;
 import com.cannontech.encryption.EcobeeZeusSecurityService;
+import com.cannontech.encryption.EncryptedRouteDao;
+import com.cannontech.encryption.EncryptionKeyType;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.web.api.token.AuthenticationException;
 
 import io.jsonwebtoken.Jwts;
 
 public class EcobeeZeusJwtTokenAuthService {
     @Autowired private EcobeeZeusSecurityService ecobeeZeusSecurityService;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private EncryptedRouteDao encryptedRouteDao;
+    private Logger log = YukonLogManager.getLogger(EcobeeZeusJwtTokenAuthService.class);
     private PublicKey pubKey;
     private PrivateKey privKey;
+
+    @PostConstruct
+    public void init() {
+        createDBChangeListener();
+    }
+
+    private void createDBChangeListener() {
+        asyncDynamicDataSource.addDBChangeListener(dbChange -> {
+            if (dbChange.getDatabase() == DBChangeMsg.CHANGE_ENCRYPTION_KEY_DB) {
+                Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.EcobeeZeus);
+                if (encryptionKey.isPresent()) {
+                    if (encryptionKey.get().getEncryptionKeyId().equals(dbChange.getId())) {
+                        try {
+                            pubKey = null;
+                            privKey = null;
+                            getPublicKey();
+                            getPrivateKey();
+                        } catch (Exception e) {
+                            log.error("Unable to update cache keys ", e);
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     public void validateEcobeeJwtToken(String jwtToken) {
 
