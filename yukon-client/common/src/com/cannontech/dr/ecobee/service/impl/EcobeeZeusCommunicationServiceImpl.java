@@ -345,17 +345,16 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Override
     public List<ZeusGroup> getAllGroups() {
         String getAllGroups = getUrlBase() + "tstatgroups";
-
+        List<ZeusGroup> zeusGroups = new ArrayList<>();
         try {
             ResponseEntity<ZeusGroupResponse> responseEntity = (ResponseEntity<ZeusGroupResponse>) requestHelper
                     .callEcobeeAPIForObject(getAllGroups, HttpMethod.GET, ZeusGroupResponse.class);
 
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
                 ZeusGroupResponse zeusGroupResponse = responseEntity.getBody();
-                return zeusGroupResponse.getGroups();
-            } else {
-                throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.");
-            }
+                zeusGroups = zeusGroupResponse.getGroups();
+            } 
+            return zeusGroups;
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
@@ -366,17 +365,16 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Override
     public List<ZeusThermostat> getThermostatsInGroup(String thermostatGroupID) {
         String getThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats";
-        
+        List<ZeusThermostat> zeusThermostats = new ArrayList<>();
         try {
             ResponseEntity<ZeusThermostatsResponse> responseEntity = (ResponseEntity<ZeusThermostatsResponse>) requestHelper
                     .callEcobeeAPIForObject(getThermostatsURL, HttpMethod.GET, ZeusThermostatsResponse.class);
             
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
                 ZeusThermostatsResponse zeusGroupResponse = responseEntity.getBody();
-                return zeusGroupResponse.getThermostats();
-            } else {
-                throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.");
-            }
+                zeusThermostats = zeusGroupResponse.getThermostats();
+            } 
+            return zeusThermostats;
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
