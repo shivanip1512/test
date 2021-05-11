@@ -20,6 +20,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDeviceV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
@@ -31,6 +32,9 @@ public class PxMWDataV1 extends PxMWDataGenerator {
     private PxMWFakeTimeseriesDataV1 timeseriesData = new PxMWFakeTimeseriesDataV1();
  
     private static final Logger log = YukonLogManager.getLogger(PxMWDataV1.class);
+
+    //Simulator has 2 sites
+    private List<String> sideGuids = List.of("eccdcf03-2ca8-40a9-a5f3-9446a52f515d", "616ff40f-63b2-4d3c-87e2-16b3c40614ed");
 
     public PxMWSimulatorResponse token() {
         if (status == HttpStatus.BAD_REQUEST.value()) {
@@ -63,20 +67,74 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                     new PxMWErrorV1(status,"Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
                     status);
         } 
-        
-        List<PxMWSiteDeviceV1> siteDeviceList = getSiteDeviceList();
-        PxMWSiteV1 site = new PxMWSiteV1(id,
-                "test",
+ 
+        if (id.equals(sideGuids.get(0))) {
+            List<PxMWSiteDeviceV1> siteDeviceList = getSiteDeviceList();
+            //first site returns devices
+            return new PxMWSimulatorResponse(new PxMWSiteDevicesV1(id,
+                    "test 1",
+                    "test site 1",
+                    "abc",
+                    "abc@eaton.com",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    siteDeviceList), status);
+        } else {
+            //second site has no devices
+            return new PxMWSimulatorResponse(new PxMWSiteDevicesV1(id,
+                    "test 2",
+                    "test site 2",
+                    "abc",
+                    "abc@eaton.com",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    new ArrayList<>()), status);
+        }
+    }
+    
+    public PxMWSimulatorResponse sitesV1(String userId) {
+        if (status == HttpStatus.BAD_REQUEST.value()) {
+            PxMWErrorV1 error = new PxMWErrorV1(List.of("Id"), "Invalid UUID-f28b0", "616ff40f-63b2-4d3c-87e2-16b3c40614ed", status, "2021-02-26T10:52:16.0799958+00:00", 10022);
+            return new PxMWSimulatorResponse(error, status);
+
+        }
+        if (status == HttpStatus.UNAUTHORIZED.value()) {
+            return new PxMWSimulatorResponse(
+                    new PxMWErrorV1(status,"Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
+                    status);
+        } 
+        if (status == HttpStatus.NOT_FOUND.value()) {
+            return new PxMWSimulatorResponse(new PxMWErrorV1(status, "Resource not found"), status);
+        } 
+        List<PxMWSiteV1> sites = new ArrayList<>();
+        sites.add(new PxMWSiteV1(sideGuids.get(0),
+                "test 1",
                 "test site 1",
                 "abc",
                 "abc@eaton.com",
-                "7345345737",
-                "2021-02-04T14:54:30Z",
-                "88ea4353-b6ed-41df-a3b9-0a2894e9d0f3",
                 "",
                 "",
-                siteDeviceList);
-        return new PxMWSimulatorResponse(site, status);
+                "",
+                "",
+                ""));
+        sites.add(new PxMWSiteV1(sideGuids.get(1),
+                "test 2",
+                "test site 2",
+                "abc",
+                "abc@eaton.com",
+                "",
+                "",
+                "",
+                "",
+                ""));
+        
+        return new PxMWSimulatorResponse(sites.toArray(), status);
     }
 
 

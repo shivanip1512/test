@@ -1,5 +1,6 @@
 package com.cannontech.services.pxmw.creation.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -28,8 +29,10 @@ import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.PxMWVersion;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDeviceV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
@@ -76,7 +79,7 @@ public class PxMWDataRetrievalService {
         //hours
         int creationInterval = settingDao.getInteger(GlobalSettingType.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL);
         log.info("Auto creation of Eaton cloud LCRs will run every {} hours", creationInterval);
-        executor.scheduleAtFixedRate(autoCreateCloudLCRThread, 5, creationInterval, TimeUnit.HOURS);
+        executor.scheduleAtFixedRate(autoCreateCloudLCRThread, 5 / 60, creationInterval, TimeUnit.HOURS);
 
         //minutes
         int readInterval = settingDao.getInteger(GlobalSettingType.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES);
@@ -132,9 +135,12 @@ public class PxMWDataRetrievalService {
             // get list of Yukon devices (LCR6200C, 6600C) from DeviceGuid
             List<String> yukonGuids = deviceDao.getGuids();
 
-            List<PxMWSiteDeviceV1> devicesToCreate = pxMWCommunicationServiceV1.getSiteDevices(siteGuid, null, true)
-                    .getDevices();
-
+            List<PxMWSiteV1> sites = pxMWCommunicationServiceV1.getSites(siteGuid);
+            
+            List<PxMWSiteDeviceV1> devicesToCreate = new ArrayList<>();
+            sites.forEach(site -> devicesToCreate.addAll(pxMWCommunicationServiceV1.getSiteDevices(site.getSiteGuid(), null, true)
+                    .getDevices()));
+            
             //remove device that exist in yukon
             devicesToCreate.removeIf(device -> yukonGuids.contains(device.getDeviceGuid()));
            
@@ -144,9 +150,8 @@ public class PxMWDataRetrievalService {
                 return;
             }
             
-            
             List<PxMWTimeSeriesDeviceV1> timeSeriesDeviceRequest = devicesToCreate.stream()
-                    .map(device -> new PxMWTimeSeriesDeviceV1(device.getDeviceGuid(), "110741"))
+                    .map(device -> new PxMWTimeSeriesDeviceV1(device.getDeviceGuid(), String.valueOf(MWChannel.FREQUENCY.getChannelId())))
                     .collect(Collectors.toList());
             
             List<String> guidsWithTimeSeriesData = pxMWCommunicationServiceV1
