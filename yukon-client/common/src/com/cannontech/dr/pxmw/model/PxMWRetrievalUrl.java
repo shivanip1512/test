@@ -38,9 +38,7 @@ public enum PxMWRetrievalUrl {
             "https://adopteriotwebapi.eaton.com/swagger/ui/index#!/Command/Command_GenericDeviceCommand",
             //200, 400, 401, 404
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
-            ImmutableMap.of("Device Guid", "821d549c-c1b7-469e-bbf5-9d9d401883b2",
-                    "Command Guid (Unique command instance id used to differentiate every command issued)",
-                    "ba84bae0-2e69-4367-9162-6a14039f9bec"),
+            ImmutableMap.of("Device Guid", "821d549c-c1b7-469e-bbf5-9d9d401883b2"),
             true),
     DEVICE_DETAIL(PxMWVersion.V1, "/devices/{deviceId}/details",
             "https://eas-all-apim-eus-dev.developer.azure-api.net/api-details#api=devices&operation=get-getsitedevices",

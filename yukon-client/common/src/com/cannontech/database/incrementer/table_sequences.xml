@@ -454,5 +454,8 @@
       <sequence name="PxMWSimulatorNameIncrementor">
         <table name="PxMWSimulatorNameIncrementor" identitycolumn="requestSeqNumber"/>
       </sequence>
+      <sequence name="PxMWEventIdIncrementor">
+        <table name="PxMWEventIdIncrementor" identitycolumn="requestSeqNumber"/>
+      </sequence>
   </sequencetable>
 </sequencetables>
