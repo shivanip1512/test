@@ -15,12 +15,12 @@ public class PxMWCredentialsV1 implements Serializable {
     private final String secret;
 
     @JsonCreator
-    public PxMWCredentialsV1(@JsonProperty("serviceAccountId") String serviceAccountId, @JsonProperty("secret") String secret) {
+    public PxMWCredentialsV1(@JsonProperty("service_Account_Id") String serviceAccountId, @JsonProperty("secret") String secret) {
         this.serviceAccountId = serviceAccountId;
         this.secret = secret;
     }
 
-    @JsonProperty("serviceAccountId")
+    @JsonProperty("service_Account_Id")
     public String getServiceAccountId() {
         return serviceAccountId;
     }
