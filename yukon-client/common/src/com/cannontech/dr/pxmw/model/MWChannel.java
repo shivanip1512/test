@@ -192,10 +192,6 @@ public enum MWChannel {
         return getAttributeChannelLookup().get(attribute);
     }
 
-    public boolean isDefaultPointMultilier() {
-        return (pointMultiplier == 1);
-    }
-
     /**
      * Returns a List of tags for all the BuiltInAttributes. 
      * If a built in attribute has no associated tag it will be ignored

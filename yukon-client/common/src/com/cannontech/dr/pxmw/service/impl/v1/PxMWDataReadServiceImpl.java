@@ -134,14 +134,25 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         try {
             if (MWChannel.getBooleanChannels().contains(channel)) {
                 if (pxReturnedValue.toLowerCase().equals("true") || pxReturnedValue.toLowerCase().equals("false")) {
+                    log.debug(
+                            "Successfully parsed Device Id:{} Name:{} Guid:{} Channel:{} PxValue:{}", device.getLiteID(),
+                            device.getPaoName(), guid, channel, pxReturnedValue);
                     return Boolean.parseBoolean(pxReturnedValue) ? Double.valueOf("1") : Double.valueOf("0");
                 }
             } else if (MWChannel.getIntegerChannels().contains(channel) || MWChannel.getFloatChannels().contains(channel)) {
-                if (channel.isDefaultPointMultilier()) {
-                    return Double.parseDouble(pxReturnedValue);
-                } else {
-                    return Double.parseDouble(pxReturnedValue) * channel.getPointMultiplier();
-                }
+                LitePoint point = attributeService.getPointForAttribute(device, channel.getBuiltInAttribute());
+                
+                // Raw point value received from PxMW
+                Double pointValue = Double.parseDouble(pxReturnedValue);
+                // Multiply by channel multiplier to convert to default UOM
+                pointValue = pointValue * channel.getPointMultiplier();
+                // Multiply by point multiplier (usually 1), can by overrode in settings by customer
+                pointValue = pointValue * point.getMultiplier();
+                log.debug(
+                        "Successfully parsed Device Id:{} Name:{} Guid:{} Channel:{} PxValue:{} ChannelMultiplier:{} PointMultiplier:{}",
+                        device.getLiteID(), device.getPaoName(), guid, channel, pxReturnedValue, channel.getPointMultiplier(),
+                        point.getMultiplier());
+                return pointValue;
             }
         } catch (Exception e) {
             // can't parse data ignore exception
