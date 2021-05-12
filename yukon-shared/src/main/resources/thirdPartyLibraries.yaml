@@ -5731,7 +5731,7 @@ JavaScript :
     jira : YUK-24358
     updated : 2021-05-11
     notes : "This library is used to detect if certain features are supported by the browser on which the application is being rendered. 
-                  Generated via https://modernizr.com/download/?-applicationcache-audio-backgroundsize-borderimage-borderradius-boxshadow-canvas-canvastext-cssanimations-csscolumns-cssgradients-cssreflections-csstransforms-csstransforms3d-csstransitions-flexbox-flexboxlegacy-fontface-generatedcontent-geolocation-hashchange-history-hsla-indexeddb-inlinesvg-input-inputtypes-localstorage-multiplebgs-opacity-postmessage-rgba-sessionstorage-smil-svg-svgclippaths-textshadow-touchevents-video-webgl-websockets-websqldatabase-webworkers-domprefixes-hasevent-mq-prefixes-printshiv-setclasses-testallprops-testprop"
+                  Our custom version of modernizr should be built using npm. Follow the instructions in the Confluence page to upgrade: https://confluence-prod.tcc.etn.com/display/EEST/Modernizr"
 
   - project : moment
     version : 2.29.1
