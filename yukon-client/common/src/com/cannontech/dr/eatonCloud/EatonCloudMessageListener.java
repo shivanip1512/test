@@ -152,7 +152,7 @@ public class EatonCloudMessageListener {
             log.info("No devices found for groupId: {}", groupId);
             return;
         }
-        log.info("Sedning LM Eaton Cloud Restore Command - Group Id:{} Devices:{} Restore Time:{}", devices.size(), groupId,
+        log.info("Sedning LM Eaton Cloud Restore Command - Group Id:{} Devices:{} Restore Time:{}", groupId, devices.size(),
                 formatDate(restoreTime));
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         guids.forEach((deviceId, guid) -> {
