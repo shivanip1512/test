@@ -140,18 +140,13 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                     return Boolean.parseBoolean(pxReturnedValue) ? Double.valueOf("1") : Double.valueOf("0");
                 }
             } else if (MWChannel.getIntegerChannels().contains(channel) || MWChannel.getFloatChannels().contains(channel)) {
-                LitePoint point = attributeService.getPointForAttribute(device, channel.getBuiltInAttribute());
-                
                 // Raw point value received from PxMW
                 Double pointValue = Double.parseDouble(pxReturnedValue);
                 // Multiply by channel multiplier to convert to default UOM
                 pointValue = pointValue * channel.getPointMultiplier();
-                // Multiply by point multiplier (usually 1), can by overrode in settings by customer
-                pointValue = pointValue * point.getMultiplier();
                 log.debug(
-                        "Successfully parsed Device Id:{} Name:{} Guid:{} Channel:{} PxValue:{} ChannelMultiplier:{} PointMultiplier:{}",
-                        device.getLiteID(), device.getPaoName(), guid, channel, pxReturnedValue, channel.getPointMultiplier(),
-                        point.getMultiplier());
+                        "Successfully parsed Device Id:{} Name:{} Guid:{} Channel:{} PxValue:{} ChannelMultiplier:{}",
+                        device.getLiteID(), device.getPaoName(), guid, channel, pxReturnedValue, channel.getPointMultiplier());
                 return pointValue;
             }
         } catch (Exception e) {
@@ -181,6 +176,9 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                     "Device Id:{} Name:{} Guid:{} Attribute:{} Point Id:{} Point {} created.", device.getLiteID(),
                     device.getPaoName(), guid, attribute, point.getLiteID(), point.getPointName());
         }
+        // Multiply by point multiplier (usually 1), can by overrode in settings by customer
+        value = value * point.getMultiplier();
+        log.debug("Point multiplier of {} applied to value", point.getMultiplier());
 
         pointData.setId(point.getLiteID());
         pointData.setPointQuality(PointQuality.Normal);
