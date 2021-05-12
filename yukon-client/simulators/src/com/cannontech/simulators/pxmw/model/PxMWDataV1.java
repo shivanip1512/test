@@ -34,7 +34,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
     private static final Logger log = YukonLogManager.getLogger(PxMWDataV1.class);
 
     //Simulator has 2 sites
-    private List<String> sideGuids = List.of("eccdcf03-2ca8-40a9-a5f3-9446a52f515d", "616ff40f-63b2-4d3c-87e2-16b3c40614ed");
+    private List<String> siteGuids = List.of("eccdcf03-2ca8-40a9-a5f3-9446a52f515d", "616ff40f-63b2-4d3c-87e2-16b3c40614ed");
 
     public PxMWSimulatorResponse token() {
         if (status == HttpStatus.BAD_REQUEST.value()) {
@@ -68,7 +68,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                     status);
         } 
  
-        if (id.equals(sideGuids.get(0))) {
+        if (id.equals(siteGuids.get(0))) {
             List<PxMWSiteDeviceV1> siteDeviceList = getSiteDeviceList();
             //first site returns devices
             return new PxMWSimulatorResponse(new PxMWSiteDevicesV1(id,
@@ -113,7 +113,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
             return new PxMWSimulatorResponse(new PxMWErrorV1(status, "Resource not found"), status);
         } 
         List<PxMWSiteV1> sites = new ArrayList<>();
-        sites.add(new PxMWSiteV1(sideGuids.get(0),
+        sites.add(new PxMWSiteV1(siteGuids.get(0),
                 "test 1",
                 "test site 1",
                 "abc",
@@ -123,7 +123,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                 "",
                 "",
                 ""));
-        sites.add(new PxMWSiteV1(sideGuids.get(1),
+        sites.add(new PxMWSiteV1(siteGuids.get(1),
                 "test 2",
                 "test site 2",
                 "abc",

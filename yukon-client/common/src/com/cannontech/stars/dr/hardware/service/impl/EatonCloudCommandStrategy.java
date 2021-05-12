@@ -54,62 +54,82 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
         switch (command.getType()) {
         case SHED:
-        case RESTORE:
-            LiteLmHardwareBase hardware = inventoryBaseDao.getHardwareByDeviceId(command.getDevice().getDeviceID());
-            int accountId = inventoryDao.getAccountIdForInventory(hardware.getInventoryID());
-            if (optOutEventDao.isOptedOut(hardware.getInventoryID(), accountId)) {
-                log.info("Unable to send {} to device:{} user oped out", command.getType(), command.getDevice());
-                throw new CommandCompletionException("User opted out");
-            }
-            String deviceGuid = deviceDao.getGuid(command.getDevice().getDeviceID());
-            try {
-                pxMWCommunicationService.sendCommand(deviceGuid, new PxMWCommandRequestV1("LCR_Control", getParams(command)));
-            } catch (Exception e) {
-                log.error("Error Sending Command : {} ", command, e);
-                throw new CommandCompletionException("Error sending Command to device. See logs for details.", e);
-            }
+            checkOptout(command);
+            sendRequest(command, getShedParams(command));
             break;
+        case RESTORE:
+            checkOptout(command);
+            sendRequest(command, getRestoreParams(command));
+            break;
+        case TEMP_OUT_OF_SERVICE:
+            sendRequest(command, getRestoreParams(command));
+            break;            
         default:
             log.info("Sending {} is not supported for device:{}", command.getType(), command.getDevice());
             break;
         }
     }
 
-    private Map<String, Object> getParams(LmHardwareCommand command) {
+    private void sendRequest(LmHardwareCommand command, Map<String, Object> params) throws CommandCompletionException {
+        String deviceGuid = deviceDao.getGuid(command.getDevice().getDeviceID());
+        try {
+            pxMWCommunicationService.sendCommand(deviceGuid, new PxMWCommandRequestV1("LCR_Control", params));
+        } catch (Exception e) {
+            log.error("Error Sending Command : {} ", command, e);
+            throw new CommandCompletionException("Error sending Command to device. See logs for details.", e);
+        }
+    }
+
+    /**
+     * If user opted out device this method will throw exception
+     * @throws CommandCompletionException
+     */
+    private void checkOptout(LmHardwareCommand command) throws CommandCompletionException {
+        LiteLmHardwareBase hardware = inventoryBaseDao.getHardwareByDeviceId(command.getDevice().getDeviceID());
+        int accountId = inventoryDao.getAccountIdForInventory(hardware.getInventoryID());
+        if (optOutEventDao.isOptedOut(hardware.getInventoryID(), accountId)) {
+            log.info("Unable to send {} to device:{} user oped out", command.getType(), command.getDevice());
+            throw new CommandCompletionException("User opted out");
+        }
+    }
+
+
+    private Map<String, Object> getShedParams(LmHardwareCommand command) {
+        Map<String, Object> params = new LinkedHashMap<>();
+        Integer eventId = nextValueHelper.getNextValue("PxMWEventIdIncrementor");
+        Integer relay = (Integer) command.getParams().get(LmHardwareCommandParam.RELAY);
+        Duration duration = (Duration) command.getParams().get(LmHardwareCommandParam.DURATION);
+        params.put(CommandParam.VRELAY.getParamName(), relay);
+        params.put(CommandParam.CYCLE_PERCENT.getParamName(), 100);
+        params.put(CommandParam.CYCLE_COUNT.getParamName(), 1);
+        params.put(CommandParam.START_TIME.getParamName(), System.currentTimeMillis() / 1000);
+        params.put(CommandParam.STOP_TIME.getParamName(), (System.currentTimeMillis() + duration.getMillis()) / 1000);
+        params.put(CommandParam.CRITICALITY.getParamName(), 255);
+        params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
+        params.put(CommandParam.EVENT_ID.getParamName(), eventId);
+        Pair<Integer, Integer> cacheKey = Pair.of(command.getDevice().getDeviceID(), relay);
+        devicesToEvents.put(cacheKey, eventId);
+        return params;
+    }
+    
+    private Map<String, Object> getRestoreParams(LmHardwareCommand command) {
         Map<String, Object> params = new LinkedHashMap<>();
         Integer relay = (Integer) command.getParams().get(LmHardwareCommandParam.RELAY);
-        params.put(CommandParam.VRELAY.getParamName(), relay);
         Pair<Integer, Integer> cacheKey = Pair.of(command.getDevice().getDeviceID(), relay);
-        switch (command.getType()) {
-        case SHED:
-            Integer eventId = nextValueHelper.getNextValue("PxMWEventIdIncrementor");
-            Duration duration = (Duration) command.getParams().get(LmHardwareCommandParam.DURATION);
-            params.put(CommandParam.CYCLE_PERCENT.getParamName(), 100);
-            params.put(CommandParam.CYCLE_COUNT.getParamName(), 1);
-            params.put(CommandParam.START_TIME.getParamName(), System.currentTimeMillis() / 1000);
-            params.put(CommandParam.STOP_TIME.getParamName(), (System.currentTimeMillis() + duration.getMillis()) / 1000);
-            params.put(CommandParam.CRITICALITY.getParamName(), 255);
-            params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
+        Integer eventId = devicesToEvents.getIfPresent(cacheKey);
+
+        if (eventId != null) {
             params.put(CommandParam.EVENT_ID.getParamName(), eventId);
-            devicesToEvents.put(cacheKey, eventId);
-            break;
-        case RESTORE:
-            params.put(CommandParam.STOP_TIME.getParamName(), 0);
-            params.put(CommandParam.FLAGS.getParamName(), 0);
-            params.put(CommandParam.STOP_FLAGS.getParamName(), 0);
-            eventId = devicesToEvents.getIfPresent(cacheKey);
-            if(eventId != null) {
-                params.put(CommandParam.EVENT_ID.getParamName(), eventId);
-                devicesToEvents.invalidate(cacheKey);
-            } else {
-                throw new BadConfigurationException(
-                        "Event Id is not in cache unable to send " + command.getType() + "  to device:"
-                                + command.getDevice().getManufacturerSerialNumber() + " " + command.getDevice().getDeviceID());
-            }
-            break;
-        default:
-            break;
+            devicesToEvents.invalidate(cacheKey);
+        } else {
+            throw new BadConfigurationException(
+                    "Event Id is not in cache unable to send " + command.getType() + "  to device:"
+                            + command.getDevice().getManufacturerSerialNumber() + " " + command.getDevice().getDeviceID());
         }
+        params.put(CommandParam.VRELAY.getParamName(), relay);
+        params.put(CommandParam.STOP_TIME.getParamName(), 0);
+        params.put(CommandParam.FLAGS.getParamName(), 0);
+        params.put(CommandParam.STOP_FLAGS.getParamName(), 0);
         return params;
     }
 
