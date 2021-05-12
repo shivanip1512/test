@@ -41,6 +41,7 @@ public enum LibraryGroup {
     OPENEXI("OpenEXI"),
     PASSWORDS("Passwords"),
     POWERMOCK("PowerMock"),
+    PROTOBUF("Protobuf"),
     RADIUS("Radius"),
     SCHEDULING("Scheduling"),
     SPRING("Spring"),
