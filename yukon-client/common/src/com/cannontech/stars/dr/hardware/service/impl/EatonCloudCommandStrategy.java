@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.hardware.service.impl;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +34,6 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudCommandStrategy.class);
@@ -46,9 +43,6 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private OptOutEventDao optOutEventDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
-
-    // device id, relay, event id
-    private final Cache<Pair<Integer, Integer>, Integer> devicesToEvents = CacheBuilder.newBuilder().build();
 
     @Override
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
@@ -62,7 +56,7 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
             sendRequest(command, getRestoreParams(command));
             break;
         case TEMP_OUT_OF_SERVICE:
-            sendRequest(command, getRestoreParams(command));
+            sendRequest(command, null);
             break;            
         default:
             log.info("Sending {} is not supported for device:{}", command.getType(), command.getDevice());
@@ -107,25 +101,12 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
         params.put(CommandParam.CRITICALITY.getParamName(), 255);
         params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
-        Pair<Integer, Integer> cacheKey = Pair.of(command.getDevice().getDeviceID(), relay);
-        devicesToEvents.put(cacheKey, eventId);
         return params;
     }
     
     private Map<String, Object> getRestoreParams(LmHardwareCommand command) {
         Map<String, Object> params = new LinkedHashMap<>();
         Integer relay = (Integer) command.getParams().get(LmHardwareCommandParam.RELAY);
-        Pair<Integer, Integer> cacheKey = Pair.of(command.getDevice().getDeviceID(), relay);
-        Integer eventId = devicesToEvents.getIfPresent(cacheKey);
-
-        if (eventId != null) {
-            params.put(CommandParam.EVENT_ID.getParamName(), eventId);
-            devicesToEvents.invalidate(cacheKey);
-        } else {
-            throw new BadConfigurationException(
-                    "Event Id is not in cache unable to send " + command.getType() + "  to device:"
-                            + command.getDevice().getManufacturerSerialNumber() + " " + command.getDevice().getDeviceID());
-        }
         params.put(CommandParam.VRELAY.getParamName(), relay);
         params.put(CommandParam.STOP_TIME.getParamName(), 0);
         params.put(CommandParam.FLAGS.getParamName(), 0);

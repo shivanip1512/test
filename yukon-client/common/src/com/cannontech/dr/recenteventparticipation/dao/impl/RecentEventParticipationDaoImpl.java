@@ -9,9 +9,12 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.logging.log4j.Logger;
+import org.jfree.util.Log;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -34,6 +37,7 @@ import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
+import com.cannontech.stars.dr.hardware.service.impl.EatonCloudCommandStrategy;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
@@ -44,7 +48,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private OptOutEventDao optOutEventDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
-
+    private static final Logger log = YukonLogManager.getLogger(RecentEventParticipationDaoImpl.class);
     /**
      * The DB change Listener updates the OptOutEventId in ControlEventDevice
      */
@@ -97,7 +101,6 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         p.addValue("ProgramId", programId);
         p.addValue("ExternalEventId", externalEventId);
         jdbcTemplate.update(sql);
-
     }
 
     @Override
@@ -371,5 +374,20 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
             sql.append("      AND StartTime").lt(range.getMax());
         }
         return jdbcTemplate.queryForInt(sql);
+    }
+    
+    @Override
+    public Integer getExternalEventId(int groupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ce.ExternalEventID");
+        sql.append("FROM ControlEvent ce");
+        sql.append("WHERE ce.GroupId").eq(groupId);
+        sql.append("AND StartTime = (SELECT max(StartTime) from ControlEvent where GroupId").eq(groupId).append(")");
+        try {
+            return jdbcTemplate.queryForInt(sql);
+        } catch (Exception e) {
+            log.error("ExternalEventID doesn't exist for group id:{}", groupId, e);
+            return null;
+        }
     }
 }
