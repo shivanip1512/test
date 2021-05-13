@@ -43,6 +43,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         public EncryptionKey mapRow(YukonResultSet rs)
                 throws SQLException {
             EncryptionKey encryptionKey = new EncryptionKey();
+            encryptionKey.setEncryptionKeyId(rs.getInt("EncryptionKeyId"));
             encryptionKey.setPrivateKey(rs.getString("PrivateKey"));
             encryptionKey.setPublicKey(rs.getString("PublicKey"));
             encryptionKey.setTimestamp(rs.getInstant("Timestamp"));
@@ -157,6 +158,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         sql.append("(EncryptionKeyId, Name, PrivateKey");
         if (encryptionKeyType == EncryptionKeyType.Honeywell ||
                 encryptionKeyType == EncryptionKeyType.Ecobee ||
+                encryptionKeyType == EncryptionKeyType.EcobeeZeus ||
                 encryptionKeyType == EncryptionKeyType.Itron) {
             sql.append(", PublicKey, EncryptionKeyType, Timestamp)");
             sql.values(encryptionKeyId, name, privateKey, publicKey, encryptionKeyType, timestamp);
@@ -192,7 +194,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         EncryptionKey encryptionKey=null;
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT PrivateKey, PublicKey, Timestamp ");
+            sql.append("SELECT PrivateKey, PublicKey, Timestamp , EncryptionKeyId");
             sql.append("FROM EncryptionKey ");
             sql.append("WHERE EncryptionKeyType =").appendArgument(encryptionKeyType);
             encryptionKey = yukonJdbcTemplate.queryForObject(sql, encryptionKeyRowMapper);

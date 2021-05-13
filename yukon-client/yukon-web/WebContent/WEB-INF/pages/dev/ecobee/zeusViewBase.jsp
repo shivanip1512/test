@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -41,6 +41,9 @@
              } break;
              case 'showUser' : {
                  enabledSelectedOption(showUser, showUserOp);
+             } break;
+             case 'runtimeData' : {
+                 enabledSelectedOption(runtimeData, enableRuntime);
              } break;
          }
          });
@@ -103,6 +106,12 @@
                                 <i:inline key=".showUser" />
                             </label>
                         </li>
+                        <li>
+                            <label> 
+                                <input id="runtimeData" type="checkbox" name="enableRuntime"> 
+                                <i:inline key=".runtimeData" />
+                            </label>
+                        </li>   
                     </ul>
                 </tags:sectionContainer>
             </div>
@@ -176,7 +185,7 @@
                             </li>
                         </ul>
                     </tags:nameValueContainer>
-                </tags:sectionContainer>    
+                </tags:sectionContainer>
             </div>
             <div class="column three nogutter">
                 <div class="action-area">
