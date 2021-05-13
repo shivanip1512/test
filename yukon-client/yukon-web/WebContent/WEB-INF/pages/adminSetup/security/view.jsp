@@ -281,15 +281,15 @@
                     <div class="page-action-area">
                     
                        <cti:msg2 var="generateWarningMessage" key=".confirmGenerateEcobeeZeusKey.warning"/>
-                       <cti:button id="generateEcobeeZeusKey" nameKey="generateEcobeeKey" data-ok-event="yukon:admin:security:generateEcobeeZeusKey"/>
+                       <cti:button id="generateEcobeeZeusKey" nameKey="generateEcobeeKey" data-ok-event="yukon:admin:security:generateEcobeeZeusKey" busy="true"/>
                        <d:confirm on="#generateEcobeeZeusKey" nameKey="confirmGenerateEcobeeZeusKey" userMessage="${generateWarningMessage}" userMessageClass="warning"/>
                      
                        <cti:msg2 var="registerWarningMessage" key=".confirmRegisterConfigurationEcobeeZeusKey.warning"/>
-                       <cti:button id="registerConfigurationEcobeeZeusKey" nameKey="registerConfigurationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:registerEcobeeZeusKey"/>
+                       <cti:button id="registerConfigurationEcobeeZeusKey" nameKey="registerConfigurationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:registerEcobeeZeusKey" busy="true"/>
                        <d:confirm on="#registerConfigurationEcobeeZeusKey" nameKey="confirmRegisterConfigurationEcobeeZeusKey" userMessage="${registerWarningMessage}" userMessageClass="warning"/>
                        
-                       <cti:button id="viewEcobeeZeusKey" nameKey="viewEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-popup="#viewEcobeeZeusKeyDialog"/>
-                       <cti:button id="checkRegistrationEcobeeZeusKey" nameKey="checkRegistrationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:checkRegistrationEcobeeZeusKey"/>
+                       <cti:button id="viewEcobeeZeusKey" nameKey="viewEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-popup="#viewEcobeeZeusKeyDialog" />
+                       <cti:button id="checkRegistrationEcobeeZeusKey" nameKey="checkRegistrationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:checkRegistrationEcobeeZeusKey" busy="true"/>
                     </div>
                 </tags:boxContainer2>
             </cti:checkRolesAndProperties>

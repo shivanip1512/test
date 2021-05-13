@@ -155,6 +155,7 @@ yukon.admin.security = (function () {
                         $('#registerConfigurationEcobeeZeusKey').prop('disabled', false);
                         $('#checkRegistrationEcobeeZeusKey').prop('disabled', false);
                     }
+                    yukon.ui.unbusy($('#generateEcobeeZeusKey'));
                 });
             });
             
@@ -178,6 +179,7 @@ yukon.admin.security = (function () {
                             messageClass : 'error'
                         });
                     }
+                    yukon.ui.unbusy($('#registerConfigurationEcobeeZeusKey'));
                 });
             });
             
@@ -208,6 +210,7 @@ yukon.admin.security = (function () {
                             messageClass : 'error'
                         });
                     }
+                    yukon.ui.unbusy($('#checkRegistrationEcobeeZeusKey'));
                     
                 });
             });
