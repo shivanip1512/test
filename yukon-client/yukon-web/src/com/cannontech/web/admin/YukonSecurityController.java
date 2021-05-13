@@ -41,6 +41,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -220,6 +221,7 @@ public class YukonSecurityController {
 
         model.addAttribute("encryptionKey", encryptionKey);
         List<EncryptionKey> encryptionKeys = encryptedRouteDao.getEncryptionKeys();
+        model.addAttribute("reportingUrl", reportingUrl);
         
         boolean invalidKeyFound = false;
         try {
@@ -693,7 +695,7 @@ public class YukonSecurityController {
         return json;
     }
 
-    @GetMapping(value = "/config/security/registerEcobeeZeusKey")
+    @PostMapping(value = "/config/security/registerEcobeeZeusKey")
     @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
     public @ResponseBody Map<String, Object> registerEcobeeZeusKey(YukonUserContext userContext, FlashScope flashScope)
             throws CryptoException {
@@ -740,14 +742,13 @@ public class YukonSecurityController {
             if (checkUrl && checkPrivateKeySha1) {
                 isSuccess = true;
                 message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusKey.success");
-            } else if (!checkUrl) {
-                message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusURL.error");
+            } else if (!checkUrl && !checkPrivateKeySha1) {
+                message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusURLAndPublicKey.error");
             } else if (!checkPrivateKeySha1) {
                 message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusPublicKey.error");
             } else {
-                message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusURLAndPublicKey.error");
+                message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusURL.error");
             }
-
         } catch (Exception e) {
             log.error("Exception while checking registration with ecobee zeus", e);
             message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusKey.failed");
@@ -763,13 +764,13 @@ public class YukonSecurityController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            String privateKey = ecobeeZeusSecurityService.getZeusEncryptionKey().getPrivateKey();
-            json.put("privateKey", privateKey);
+            String publicKey = ecobeeZeusSecurityService.getZeusEncryptionKey().getPublicKey();
+            json.put("publicKey", publicKey);
             json.put("success", true);
         } catch (Exception e) {
             log.error("Exception getting the ecobee zeus Public Key", e);
             String message = accessor.getMessage(baseKey + ".viewEcobeeZeusKey.failed");
-            json.put("privateKey", message);
+            json.put("publicKey", message);
             json.put("success", false);
         }
         return json;

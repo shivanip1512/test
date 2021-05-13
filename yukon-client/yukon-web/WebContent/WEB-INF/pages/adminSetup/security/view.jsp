@@ -6,6 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
+<cti:msgScope paths="yukon.web.modules.adminSetup.security">
 <cti:standardPage module="adminSetup" page="security">
     <div id="honeywellPublicKeyDownloadStatus" style="display:none"></div>
     <input type="hidden" class="js-show-dialog" value="${showDialog}"/>
@@ -76,7 +77,17 @@
                 readonly="readonly"></textarea>
         </div>
     </div>
-
+    
+    <cti:msg2 key=".confirmViewEcobeeZeusKey.title" var="confirmViewEcobeeZeusKeyDialogTitle"/>
+    <div class="dn" id="viewEcobeeZeusKeyDialog" data-dialog data-title="${confirmViewEcobeeZeusKeyDialogTitle}" data-event="viewEcobeeZeusPublicKey" data-ok-text="<cti:msg2 key=".ecobeeZeusKeyViewBtn.label"/>">
+        <div id="ecobeeZeusErrorMessage"></div>
+        
+        <div id="ecobeeZeuPublicKeyText">
+            <p><i:inline key=".currentPublicKey" /></p>
+            <textarea id="ecobeeZeuPublicKeyArea" rows="17" cols="70" readonly="readonly"></textarea>
+        </div>
+    </div>
+    
     <div class="column-12-12">
         <div class="column one">
             <tags:boxContainer2 nameKey="routesBox" styleClass="largeContainer">
@@ -253,7 +264,36 @@
                         </cti:checkRolesAndProperties>
                     </div>
                 </tags:boxContainer2>
+                
+                <tags:boxContainer2 nameKey="ecobeeZeusKeyBox">
+                    <div id="ecobee-zeus-js-message"></div>
+                    <c:set var="keyGeneratedClass" value="${!empty ecobeeKeyZeusGeneratedDateTime ? '' : 'dn'}"/>
+                    <span class="js-ecobee-zeus-key-generated ${keyGeneratedClass}">
+                        <i:inline key=".ecobeeZeusKeyGenerated"/>&nbsp;<span class="js-ecobee-zeus-key-date-time">${ecobeeKeyZeusGeneratedDateTime}</span>
+                    </span>
+                    <c:set var="keyNotGeneratedClass" value="${!empty ecobeeKeyZeusGeneratedDateTime ? 'dn' : ''}"/>
+                    <span class="js-ecobee-zeus-key-not-generated ${keyNotGeneratedClass}"><i:inline key=".ecobeeZeusNoKeyGenerated"/></span>
+                  
+                    <div id="reportingUrl">
+                        <span class="js-url"><b>URL for incoming ecobee data:</span>
+                        <span class="js-value">${reportingUrl}</span>
+                    </div>
+                    <div class="page-action-area">
+                    
+                       <cti:msg2 var="generateWarningMessage" key=".confirmGenerateEcobeeZeusKey.warning"/>
+                       <cti:button id="generateEcobeeZeusKey" nameKey="generateEcobeeKey" data-ok-event="yukon:admin:security:generateEcobeeZeusKey"/>
+                       <d:confirm on="#generateEcobeeZeusKey" nameKey="confirmGenerateEcobeeZeusKey" userMessage="${generateWarningMessage}" userMessageClass="warning"/>
+                     
+                       <cti:msg2 var="registerWarningMessage" key=".confirmRegisterConfigurationEcobeeZeusKey.warning"/>
+                       <cti:button id="registerConfigurationEcobeeZeusKey" nameKey="registerConfigurationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:registerEcobeeZeusKey"/>
+                       <d:confirm on="#registerConfigurationEcobeeZeusKey" nameKey="confirmRegisterConfigurationEcobeeZeusKey" userMessage="${registerWarningMessage}" userMessageClass="warning"/>
+                       
+                       <cti:button id="viewEcobeeZeusKey" nameKey="viewEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-popup="#viewEcobeeZeusKeyDialog"/>
+                       <cti:button id="checkRegistrationEcobeeZeusKey" nameKey="checkRegistrationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:checkRegistrationEcobeeZeusKey"/>
+                    </div>
+                </tags:boxContainer2>
             </cti:checkRolesAndProperties>
+            
             <tags:boxContainer2 nameKey="itronKeyBox">
                 <c:set var="keyGeneratedClass" value="${!empty itronKeyGeneratedDateTime ? '' : 'dn'}"/>
                 <span class="js-itron-key-generated ${keyGeneratedClass}">
@@ -275,3 +315,4 @@
     <cti:includeScript link="/resources/js/pages/yukon.admin.security.js"/>
 
 </cti:standardPage>
+</cti:msgScope>

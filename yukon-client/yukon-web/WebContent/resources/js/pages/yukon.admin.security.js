@@ -127,9 +127,9 @@ yukon.admin.security = (function () {
             });
             
             $(document).on('yukon:admin:security:generateEcobeeKey', function(event) {
-                $.ajax({ 
-                    url: "generateEcobeeKey", 
-                    type: "GET",
+                $.ajax({
+                    url : "generateEcobeeKey",
+                    type : "GET",
                 }).done(function(data) {
                     $('.js-ecobee-key-generated').hide();
                     $('.js-ecobee-key-not-generated').hide();
@@ -161,11 +161,12 @@ yukon.admin.security = (function () {
             $(document).on('yukon:admin:security:registerEcobeeZeusKey', function(event) {
                 $.ajax({
                     url : "registerEcobeeZeusKey",
-                    type : "GET",
+                    type : "POST",
                     dataType : "json"
                 }).done(function(data) {
                     $('.js-ecobee-zeus-key-not-registered').hide();
                     $('.js-ecobee-zeus-key-registered').hide();
+                    
                     if (data.success) {
                         $('#ecobee-zeus-js-message').addMessage({
                             message : data.ecobeeKeyZeusRegisteredDateTime,
@@ -186,7 +187,7 @@ yukon.admin.security = (function () {
                     type : "GET",
                     dataType : "json"
                 }).done(function(data) {
-                    $('#ecobeeZeuPublicKeyArea').html(data.privateKey);
+                    $('#ecobeeZeuPublicKeyArea').html(data.publicKey);
                     
                 });
             });
