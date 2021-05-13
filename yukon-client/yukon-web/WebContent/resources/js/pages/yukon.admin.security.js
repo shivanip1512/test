@@ -136,10 +136,81 @@ yukon.admin.security = (function () {
                     if (data.ecobeeKeyGeneratedDateTime) {
                         $('.js-ecobee-key-date-time').html(data.ecobeeKeyGeneratedDateTime);
                         $('.js-ecobee-key-generated').show();
+                        
                     }
                 });
             });
             
+            $(document).on('yukon:admin:security:generateEcobeeZeusKey', function(event) {
+                $.ajax({
+                    url : "generateEcobeeZeusKey",
+                    type : "GET",
+                }).done(function(data) {
+                    $('.js-ecobee-zeus-key-generated').hide();
+                    $('.js-ecobee-zeus-key-not-generated').hide();
+                    if (data.ecobeeKeyZeusGeneratedDateTime) {
+                        $('.js-ecobee-zeus-key-date-time').html(data.ecobeeKeyZeusGeneratedDateTime);
+                        $('.js-ecobee-zeus-key-generated').show();
+                        $('#viewEcobeeZeusKey').prop('disabled', false);
+                        $('#registerConfigurationEcobeeZeusKey').prop('disabled', false);
+                        $('#checkRegistrationEcobeeZeusKey').prop('disabled', false);
+                    }
+                });
+            });
+            
+            $(document).on('yukon:admin:security:registerEcobeeZeusKey', function(event) {
+                $.ajax({
+                    url : "registerEcobeeZeusKey",
+                    type : "GET",
+                    dataType : "json"
+                }).done(function(data) {
+                    $('.js-ecobee-zeus-key-not-registered').hide();
+                    $('.js-ecobee-zeus-key-registered').hide();
+                    if (data.success) {
+                        $('#ecobee-zeus-js-message').addMessage({
+                            message : data.ecobeeKeyZeusRegisteredDateTime,
+                            messageClass : 'success'
+                        });
+                    } else {
+                        $('#ecobee-zeus-js-message').addMessage({
+                            message : data.ecobeeKeyZeusRegisteredDateTime,
+                            messageClass : 'error'
+                        });
+                    }
+                });
+            });
+            
+            $(document).on('viewEcobeeZeusPublicKey', function(event) {
+                $.ajax({
+                    url : "viewEcobeeZeusPublicKey",
+                    type : "GET",
+                    dataType : "json"
+                }).done(function(data) {
+                    $('#ecobeeZeuPublicKeyArea').html(data.privateKey);
+                    
+                });
+            });
+            
+            $(document).on('click', '#checkRegistrationEcobeeZeusKey', function() {
+                $.ajax({
+                    url : "checkRegistrationEcobeeZeusKey",
+                    type : "GET",
+                }).done(function(data) {
+                    if (data.success) {
+                        $('#ecobee-zeus-js-message').addMessage({
+                            message : data.checkRegistrationMsg,
+                            messageClass : 'success'
+                        });
+                    } else {
+                        $('#ecobee-zeus-js-message').addMessage({
+                            message : data.checkRegistrationMsg,
+                            messageClass : 'error'
+                        });
+                    }
+                    
+                });
+            });
+          
             $(document).on('yukon:admin:security:generateItronKey', function(otherEvent) {
                 $.ajax({ 
                     url: "generateItronKey", 
