@@ -5763,17 +5763,17 @@ JavaScript :
     notes : "Yukon UI uses effects, widgets (dialog, Accordion..etc) from this library."
 
   - project : modernizr
-    version : 3.6.0 (Custom)
+    version : 3.11.7 (Custom)
     project URL : "https://modernizr.com/"
     license : MIT,BSD
     license URLs : "https://github.com/Modernizr/Modernizr/blob/master/LICENSE"
     npm URL : "https://www.npmjs.com/package/modernizr"
-    md5 : d09c7637c0c62b780b7dc094cf59edfb
-    sha1 : aced2470fbc5e8681e775160ef5d34c2b5a4953d
-    jira : YUK-21537
-    updated : 2020-04-13
+    md5 : 43e70b594425f374c880a8d7b5c5ad6c
+    sha1 : e06b82e46b90cceeb228ac450da15503bc3ca8fc
+    jira : YUK-24358
+    updated : 2021-05-11
     notes : "This library is used to detect if certain features are supported by the browser on which the application is being rendered. 
-                  Generated via http://modernizr.com/download/#-fontface-backgroundsize-borderimage-borderradius-boxshadow-flexbox-flexboxlegacy-hsla-multiplebgs-opacity-rgba-textshadow-cssanimations-csscolumns-generatedcontent-cssgradients-cssreflections-csstransforms-csstransforms3d-csstransitions-applicationcache-canvas-canvastext-draganddrop-hashchange-history-audio-video-indexeddb-input-inputtypes-localstorage-postmessage-sessionstorage-websockets-websqldatabase-webworkers-geolocation-inlinesvg-smil-svg-svgclippaths-touch-webgl-printshiv-mq-cssclasses-teststyles-testprop-testallprops-hasevent-prefixes-domprefixes-load"
+                  Our custom version of modernizr should be built using npm. Follow the instructions in the Confluence page to upgrade: https://confluence-prod.tcc.etn.com/display/EEST/Modernizr"
 
   - project : moment
     version : 2.29.1
