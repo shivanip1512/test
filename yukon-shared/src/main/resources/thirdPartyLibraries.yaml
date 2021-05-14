@@ -6078,16 +6078,16 @@ C++ :
     
   - project : OpenSSL
     path : OPENSSL
-    version : 1.1.1i
+    version : 1.1.1k
     project URL : "https://www.openssl.org/"
     license : Apache 2.0
     license URLs : "https://github.com/openssl/openssl/blob/e216bf9d7ca761718f34e8b3094fcb32c7a143e4/LICENSE"
-    md5 : 1dafcaf590f7e740cb1db61c9bced7ce
-    sha1 : 13e5eb858ad1098dc385f6e6ff609ecdbef5293b
-    fileCount : 117
-    totalSize : 10044012
-    updated : 2021-01-11
-    jira : YUK-23066
+    md5 : 5b7b4dc995b4e17f42e6cc32adc8a12f
+    sha1 : 9125eb51e259fa42b1c07b26620633afc9b3c333
+    fileCount : 121
+    totalSize : 11121055
+    updated : 2021-05-04
+    jira : YUK-24269
     notes : 
     
   - project : Eaton Remote Meter Programming Converter
