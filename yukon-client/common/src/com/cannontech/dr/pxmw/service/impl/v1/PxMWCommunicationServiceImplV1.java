@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
@@ -176,8 +177,9 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
     
     @Override
-    public void sendCommand(String deviceGuid, String commandGuid, PxMWCommandRequestV1 request)
+    public void sendCommand(String deviceGuid, PxMWCommandRequestV1 request)
             throws PxMWCommunicationExceptionV1, PxMWException {
+        String commandGuid = UUID.randomUUID().toString();
         URI uri = getUri(Map.of("id", deviceGuid, "command_instance_id", commandGuid), PxMWRetrievalUrl.COMMANDS);
         log.debug("Sending command to device. Device Guid:{} Command Guid:{} Request:{} URL:{}", deviceGuid, commandGuid,
                 new GsonBuilder().setPrettyPrinting().create().toJson(request),
@@ -193,7 +195,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
         } catch (Exception e) {
             throw new PxMWException("Exception occured while sending command", e);
         }
-        
+
     }
     
     @Override

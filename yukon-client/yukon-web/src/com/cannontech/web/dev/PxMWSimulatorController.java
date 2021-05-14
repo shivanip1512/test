@@ -139,7 +139,7 @@ public class PxMWSimulatorController {
                 processSuccess(params, json, getFormattedJson(token));
             } else if (endpoint == PxMWRetrievalUrl.COMMANDS) {
                 PxMWCommandRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWCommandRequestV1.class);
-                pxMWCommunicationServiceV1.sendCommand(paramList.get(0), paramList.get(1), request);
+                pxMWCommunicationServiceV1.sendCommand(paramList.get(0), request);
             } else if (endpoint == PxMWRetrievalUrl.TREND_DATA_RETRIEVAL) {
                 PxMWTimeSeriesDataRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWTimeSeriesDataRequestV1.class);
                 String startTime = request.getStartTime();

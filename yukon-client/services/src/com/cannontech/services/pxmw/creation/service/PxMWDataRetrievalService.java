@@ -1,6 +1,5 @@
 package com.cannontech.services.pxmw.creation.service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -137,9 +136,12 @@ public class PxMWDataRetrievalService {
 
             List<PxMWSiteV1> sites = pxMWCommunicationServiceV1.getSites(siteGuid);
             
-            List<PxMWSiteDeviceV1> devicesToCreate = new ArrayList<>();
-            sites.forEach(site -> devicesToCreate.addAll(pxMWCommunicationServiceV1.getSiteDevices(site.getSiteGuid(), null, true)
-                    .getDevices()));
+            List<PxMWSiteDeviceV1> devicesToCreate = 
+                    sites.stream()
+                        .map(PxMWSiteV1::getSiteGuid)
+                        .map(guid -> pxMWCommunicationServiceV1.getSiteDevices(guid, null, true))
+                        .flatMap(siteDevices -> siteDevices.getDevices().stream())
+                        .collect(Collectors.toList());
             
             //remove device that exist in yukon
             devicesToCreate.removeIf(device -> yukonGuids.contains(device.getDeviceGuid()));

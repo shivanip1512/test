@@ -76,7 +76,7 @@ public interface PxMWCommunicationServiceV1 {
      * 401 Unauthorized
      * 404 Not Found
      */
-    void sendCommand(String deviceGuid, String commandGuid, PxMWCommandRequestV1 request) throws PxMWCommunicationExceptionV1, PxMWException;
+    void sendCommand(String deviceGuid, PxMWCommandRequestV1 request) throws PxMWCommunicationExceptionV1, PxMWException;
 
     /**
      * Retrieves the device information
