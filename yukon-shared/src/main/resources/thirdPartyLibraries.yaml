@@ -6106,16 +6106,16 @@ C++ :
     
   - project : SQLAPI 
     path : SQLAPI
-    version : 5.0.2
+    version : 5.1.4
     project URL : "http://www.sqlapi.com/"
     license : Eaton-owned
     license URLs : "https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=20161384"
-    md5 : 4706c953ad39db48f7748d70e1bd28d3
-    sha1 : a9906b9871144f9448832e5fe79f4d01e25c4563
-    fileCount : 145
-    totalSize : 20366632
-    updated : 2019-11-20
-    jira : YUK-18843
+    md5 : e0a0ffd24a93a70761f32ce8e1a1e1b6
+    sha1 : b99f33cc54ff5de00cd9318d56deb5de601d4d53
+    fileCount : 158
+    totalSize : 16334404
+    updated : 2021-05-05
+    jira : YUK-24271
     notes : 
     
   - project : TCL 
