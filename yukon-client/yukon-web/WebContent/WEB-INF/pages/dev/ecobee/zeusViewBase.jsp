@@ -15,9 +15,8 @@
         }
     }
 
-
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData', '#getGroup').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData, #cancelDemandResponse, #getGroup').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -45,6 +44,9 @@
              } break;
              case 'runtimeData' : {
                  enabledSelectedOption(runtimeData, enableRuntime);
+             } break;
+             case 'cancelDemandResponse' : {
+                 enabledSelectedOption(cancelDemandResponse, cancelDemandResponseOp);
              } break;
              case 'getGroup' : {
                  enabledSelectedOption(getGroup, getAllGroupOp);
@@ -112,15 +114,22 @@
                         </li>
                         <li>
                             <label> 
+                                <input id="runtimeData" type="checkbox" name="enableRuntime"> 
+                                <i:inline key=".runtimeData" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="cancelDemandResponse" type="checkbox" name="cancelDemandResponse"> 
+                                <i:inline key=".cancelDemandResponse" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
                                 <input id="getGroup" type="checkbox" name="getGroup"> 
                                 <i:inline key=".getGroup" />
                             </label>
                         </li>
-                            <label> 
-                                <input id="runtimeData" type="checkbox" name="enableRuntime"> 
-                                <i:inline key=".runtimeData" />
-                            </label>
-                        </li>   
                     </ul>
                 </tags:sectionContainer>
             </div>
@@ -191,6 +200,22 @@
                                     </c:forEach>
                                 </select>
                                 <input type="hidden" name="showUserOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="cancelDemandResponseOp" name="cancelDemandResponseOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="cancelDemandResponseOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="getAllGroupOp" name="getAllGroupOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="getAllGroupOp" value="0" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>

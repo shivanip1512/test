@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.hardware.service.impl;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,6 +21,7 @@ import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
+import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
@@ -42,6 +44,7 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
+    @Autowired private EcobeeZeusGroupService ecobeeZeusGroupService;
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
 
     @Override
@@ -85,19 +88,38 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                 }
                 break;
             case TEMP_OUT_OF_SERVICE:
-                ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.OPT_OUT_SET);
-                // Send a 5-minute, 0% control to override any currently running control for the device
-                ecobeeCommunicationService.sendOverrideControl(serialNumber);
+                if (isEcobeeZeusEnabled()) {
+                    groupId = getGroupId(command.getDevice().getInventoryID());
+                    // Remove the thermostat from the group
+                    ecobeeZeusCommunicationService.unEnroll(groupId, serialNumber, device.getInventoryID());
+
+                    String eventId = ecobeeZeusGroupService.getEventId(groupId);
+                    // Send opt out request for thermostat if any Demand Response event is running for the group.
+                    if (StringUtils.isNotEmpty(eventId)) {
+                        ecobeeZeusCommunicationService.cancelDemandResponse(groupId, serialNumber);
+                    }
+                } else {
+                    ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.OPT_OUT_SET);
+                    // Send a 5-minute, 0% control to override any currently running control for the device
+                    ecobeeCommunicationService.sendOverrideControl(serialNumber);
+                }
                 break;
             case CANCEL_TEMP_OUT_OF_SERVICE:
-                List<LMHardwareConfiguration> hardwareConfig = lmHardwareConfigDao.getForInventoryId(device.getInventoryID());
-                if (hardwareConfig.size() > 1) {
-                    throw new BadConfigurationException("Ecobee only supports one and only one group per device. "
-                        + hardwareConfig.size() + " groups found.");
-                } else if (hardwareConfig.size() == 1) {
-                    ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(hardwareConfig.get(0).getAddressingGroupId()));
+                if (isEcobeeZeusEnabled()) {
+                    groupId = getGroupId(command.getDevice().getInventoryID());
+                    // Add the thermostat to the group when user cancel the opt out.
+                    ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID());
                 } else {
-                    ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
+                    List<LMHardwareConfiguration> hardwareConfig = lmHardwareConfigDao.getForInventoryId(device.getInventoryID());
+                    if (hardwareConfig.size() > 1) {
+                        throw new BadConfigurationException("Ecobee only supports one and only one group per device. "
+                                + hardwareConfig.size() + " groups found.");
+                    } else if (hardwareConfig.size() == 1) {
+                        ecobeeCommunicationService.moveDeviceToSet(serialNumber,
+                                Integer.toString(hardwareConfig.get(0).getAddressingGroupId()));
+                    } else {
+                        ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
+                    }
                 }
                 break;
             case CONFIG:
