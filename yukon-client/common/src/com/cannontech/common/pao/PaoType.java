@@ -166,7 +166,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     LCR6200C(DeviceTypes.LCR6200C, "LCR-6200C", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
     LCR6600C(DeviceTypes.LCR6600C, "LCR-6600C", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
-    LCR_DISCONNECT_C(DeviceTypes.LCR_DISCONNECT_C, "LCR-DisconnectC", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
     
     RFN_GATEWAY(DeviceTypes.RFN_GATEWAY, "RF Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
     GWY800(DeviceTypes.GWY800, "GWY-800", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -352,6 +351,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> loadGroupSupportedFromWeb;
     private final static ImmutableSet<PaoType> batteryAnalysisTypes;
     private final static ImmutableSet<PaoType> virtualTypes;
+    private final static ImmutableSet<PaoType> cloudLcrTypes;
 
     public final static int INVALID = -1;
     
@@ -720,6 +720,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         tlvReportingTypes = ImmutableSet.of(LCR6700_RFN);
         
+        cloudLcrTypes = ImmutableSet.of(LCR6200C,
+                                           LCR6600C);
+        
         Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
         for (PaoType paoType : PaoType.values()) {
             if (paoType.isCapControl()) {
@@ -1007,6 +1010,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public boolean supportsBatteryAnalysis() {
         return batteryAnalysisTypes.contains(this);
+    }
+    
+    public boolean isCloudLcr() {
+        return cloudLcrTypes.contains(this);
     }
     
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory, PaoClass paoClass) {

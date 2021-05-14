@@ -10,7 +10,7 @@
     <td class="name"><cti:formatDate type="MONTH_DAY_HM" value="${download.startDate}"/>:</td>
     <td class="value full-width">
         <cti:dataUpdaterCallback function="yukon.dr.ecobee.downloadStatus" initialize="true" value="ECOBEE_READ/${key}/STATUS"/>
-        <div class="progress progress-ecobee <c:if test="${not download.complete}">active progress-striped</c:if>">
+        <div class="progress progress-ecobee <c:if test="${not download.complete}">progress-bar-animated progress-bar-striped</c:if>">
             <c:choose>
                 <c:when test="${not download.complete}">
                     <c:set var="classes" value="progress-bar-info"/>

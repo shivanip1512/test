@@ -21,7 +21,7 @@ public class EcobeeZeusErrorHandler implements ResponseErrorHandler {
         try {
             ObjectMapper mapper = new ObjectMapper();
             ZeusErrorResponse errorResponse = mapper.readValue(response.getBody(), ZeusErrorResponse.class);
-            log.error("Error occured while communicating with Ecobee API : Error ",
+            log.error("Error occured while communicating with Ecobee API : Error " +
                     errorResponse.getError() + ", Description: " + errorResponse.getDescription());
         } catch (IOException e) {
             String errorResponseBody = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());

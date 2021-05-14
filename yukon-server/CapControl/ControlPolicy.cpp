@@ -66,17 +66,32 @@ catch ( FailedAttributeLookup & )
         This maintains backwards compatibility with 6.X versions.
 */ 
 bool ControlPolicy::inReverseFlow() const
+{
+    return getStatusPointValue( Attribute::ReverseFlowIndicator, false );
+}
+
+bool ControlPolicy::isPowerFlowIndeterminate() const
+{
+    return getStatusPointValue( Attribute::PowerFlowIndeterminate, false );
+}
+
+bool ControlPolicy::isControlPowerFlowReverse() const
+{
+    return getStatusPointValue( Attribute::ControlPowerFlowReverse, false );
+}
+
+bool ControlPolicy::getStatusPointValue( const Attribute & attribute, const bool defaultValue ) const
 try
 {
-    return getValueByAttribute( Attribute::ReverseFlowIndicator ) > 0.0;
+    return getValueByAttribute( attribute ) > 0.0;
 }
 catch ( UninitializedPointValue & )
 {
-    return false;
+    return defaultValue;
 }
 catch ( FailedAttributeLookup & )
 {
-    return false;
+    return defaultValue;
 }
 
 Attribute ControlPolicy::getSetPointAttribute()
@@ -87,12 +102,16 @@ Attribute ControlPolicy::getSetPointAttribute()
         {
             return Attribute::ReverseSetPoint;
         }
+        case Bidirectional:
+        case BiasBidirectional:
         case Cogeneration:
+        case ReverseCogeneration:
         {
             if ( inReverseFlow() )
             {
                 return Attribute::ReverseSetPoint;
             }
+            break;
         }
     }
 
@@ -107,18 +126,21 @@ Attribute ControlPolicy::getBandwidthAttribute()
         {
             return Attribute::ReverseBandwidth;
         }
+        case Bidirectional:
+        case BiasBidirectional:
         case Cogeneration:
+        case ReverseCogeneration:
         {
             if ( inReverseFlow() )
             {
                 return Attribute::ReverseBandwidth;
             }
+            break;
         }
     }
 
     return Attribute::ForwardBandwidth;
 }
-
 
 }
 }

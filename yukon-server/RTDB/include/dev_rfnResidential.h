@@ -66,6 +66,8 @@ protected:
 
     virtual bool isDemandIntervalConfigSupported() const;
 
+    bool isMetrologyLibraryDisabled( Config::DeviceConfigSPtr deviceConfig );
+
 private:
 
     std::string getDisconnectModeString( Commands::RfnRemoteDisconnectConfigurationCommand::DisconnectMode disconnectMode );

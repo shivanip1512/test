@@ -151,7 +151,7 @@ public class PageDetailProducer {
         String label = getPagePart(CRUMB_TITLE, pageContext, messageSourceAccessor);
 
         String thisCrumb = createLink(request, label, null);
-        String result = previousCrumbs + "<li class=\"active\">" + thisCrumb + "</li>";
+        String result = previousCrumbs + "<li class=\"breadcrumb-item active\">" + thisCrumb + "</li>";
         return result;
     }
 
@@ -173,7 +173,7 @@ public class PageDetailProducer {
         }
 
         String thisCrumb = createLink(request, label, link);
-        String result = previousCrumbs + "<li>" + thisCrumb + "</li>";
+        String result = previousCrumbs + "<li class='breadcrumb-item'>" + thisCrumb + "</li>";
         return result;
     }
     
@@ -205,7 +205,7 @@ public class PageDetailProducer {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
         
-        return "<li>" + createLink(request, message, homeUrl) + "</li>";
+        return "<li class='breadcrumb-item'>" + createLink(request, message, homeUrl) + "</li>";
     }
     
     private String createLink(HttpServletRequest request, String label, String link) {

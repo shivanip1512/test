@@ -5085,7 +5085,16 @@ bool CtiLMProgramDirect::startTimedProgram(CtiTime currentTime, long secondsFrom
     CtiLMProgramConstraintChecker con_checker(*this, currentTime);
 
     CtiLMProgramControlWindow* controlWindow = getControlWindow(secondsFromBeginningOfDay);
-    assert(controlWindow != NULL); //If we are not in a control window then we shouldn't be starting!
+    
+    //If we are not in a control window then we shouldn't be starting!
+    if( controlWindow == NULL )
+    {
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+        {
+            CTILOG_DEBUG(dout, "We are not in a valid control window for the LM Program :  " << getPAOName() << " , with ID: " << getPAOId());
+            return false;
+        }
+    }
 
     CtiTime startTime = currentTime;
     CtiTime endTime = controlWindow->getAvailableStopTime(); // This is likely wrong, not changing during refactor.

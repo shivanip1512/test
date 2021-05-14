@@ -240,14 +240,11 @@ public final class DeviceFactory {
             returnDevice = new Lcr6601S();
             break;
             
-        case LCR6600C:
+        case LCR6200C:
             returnDevice = new Lcr6200C();
             break;
-        case LCR6200C:
+        case LCR6600C:
             returnDevice = new Lcr6600C();
-            break;
-        case LCR_DISCONNECT_C:
-            returnDevice = new LcrDisconnectC();
             break;
         
         //Carrier type devices

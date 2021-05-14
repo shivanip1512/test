@@ -381,7 +381,7 @@ yukon.dr.ecobee = (function () {
             bar.css({width: status.percentDone});
             if (status.complete) {
                 
-                bar.removeClass('progress-bar-info').parent().removeClass('active progress-striped');
+                bar.removeClass('progress-bar-info').parent().removeClass('progress-bar-animated progress-bar-striped');
                 
                 if (status.successful) {
                     
@@ -390,8 +390,8 @@ yukon.dr.ecobee = (function () {
                     btn.enable();
                     
                     if (wasDisabled) {
-                        btn.addClass('animated flash');
-                        setTimeout(function () { btn.removeClass('flash animated'); }, 2000);
+                        btn.addClass('animate__animated animate__flash');
+                        setTimeout(function () { btn.removeClass('animate__flash animate__animated'); }, 2000);
                     }
                 } else {
                     row.find('.js-download-failed').show();

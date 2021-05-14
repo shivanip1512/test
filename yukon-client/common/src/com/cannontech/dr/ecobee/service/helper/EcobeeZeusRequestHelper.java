@@ -62,20 +62,27 @@ public class EcobeeZeusRequestHelper {
     /**
      * Returns the ResponseEntity object after making appropriated call using the provided URL, HTTP method & Response type.
      */
-    public ResponseEntity<? extends Object> callEcobeeAPIForObject(String url, HttpMethod method,
-            Class<? extends Object> responseType) throws RestClientException, EcobeeAuthenticationException {
-        HttpEntity<Object> requestEntity = getRequestEntity();
-        ResponseEntity<? extends Object> response = restTemplate.exchange(url, method, requestEntity, responseType);
+    public <T> ResponseEntity<T> callEcobeeAPIForObject(String url, HttpMethod method, Class<T> responseType,
+            Object... requestObject) throws RestClientException, EcobeeAuthenticationException {
+        HttpEntity<Object> requestEntity = getRequestEntity(requestObject);
+        ResponseEntity<T> response = restTemplate.exchange(url, method, requestEntity, responseType);
         return response;
     }
 
     /**
      * Return HttpEntity after adding Authorization bearer token for Ecobee API communications.
+     * @param requestObject 
      */
-    private HttpEntity<Object> getRequestEntity() throws EcobeeAuthenticationException {
+    private HttpEntity<Object> getRequestEntity(Object[] requestObject) throws EcobeeAuthenticationException {
         HttpHeaders newheaders = new HttpHeaders();
         newheaders.set("Authorization", "Bearer " + getAuthenticationToken());
-        return new HttpEntity<>(newheaders);
+        HttpEntity<Object> requestEntity = null;
+        if (requestObject.length == 1) {
+            requestEntity = new HttpEntity<>(requestObject[0], newheaders);
+        } else {
+            requestEntity = new HttpEntity<>(newheaders);
+        }
+        return requestEntity;
     }
 
     /**
@@ -101,3 +108,4 @@ public class EcobeeZeusRequestHelper {
     }
 
 }
+

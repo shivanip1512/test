@@ -20,6 +20,7 @@ public enum ManagedService {
     SYSTEM_DATA_PUBLISHER("System Data Publisher", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/systemDataPublisher/context/systemDataPublisherContext.xml"),
     PX_MW_AUTH_TOKEN("PX Middleware Auth Token", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/pxmw/authToken/pxmwAuthTokenContext.xml"),
     EATON_CLOUD("Eaton Cloud Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/dr/lmEatonCloudContext.xml"),
+    EATON_CLOUD_DEVICE_AUTO_CREATION("Eaton Cloud Device Auto Creation", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/pxmw/creation/pxmwDeviceCreationContext.xml"),
     ;
     private final String name;
     private final ServiceType type;

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -44,7 +45,6 @@ import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -54,6 +54,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
@@ -79,6 +80,12 @@ public final class DeviceDaoImpl implements DeviceDao {
         PaoIdentifier paoIdentifier = rs.getPaoIdentifier("DeviceId", "Type");
         String macAddress = rs.getString("MacAddress");
         return new PaoMacAddress(paoIdentifier, macAddress);
+    };
+    
+    public static final YukonRowMapper<Entry<Integer, String>> DEVICEID_GUID_ROW_MAPPER = (YukonResultSet rs) -> {
+        Integer deviceId = rs.getInt("DeviceId");
+        String guid = rs.getString("Guid");
+        return Maps.immutableEntry(deviceId, guid);
     };
     
     @PostConstruct
@@ -658,26 +665,20 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
 
     @Override
-    public Map<String, SimpleDevice> getDeviceIds(List<String> guids) {
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        SqlFragmentGenerator<String> sqlGenerator =  (subList) -> {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT dg.DeviceId, dg.Guid, ypo.Type");
-                sql.append("FROM DeviceGuid dg JOIN YukonPAObject ypo ON dg.DeviceId = ypo.PAObjectID");
-                sql.append("WHERE Guid").in(subList);
-                return sql;
-            };
-      
+    public Map<Integer, String> getGuids(Iterable<Integer> deviceIds) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = (List<Integer> subList) -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT DeviceId, Guid");
+            sql.append("FROM DeviceGuid");
+            sql.append("WHERE DeviceId").in(subList);
+            return sql;
+        };
 
-        Map<String, SimpleDevice> result = new HashMap<>();
-        template.query(sqlGenerator, guids, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                result.put(rs.getString("Guid"),
-                        new SimpleDevice(rs.getInt("DeviceId"), PaoType.getForDbString(rs.getString("Type"))));
-            }
-        });
-        return result;
+        return template.mappedQuery(sqlGenerator,
+                                    deviceIds, 
+                                    DEVICEID_GUID_ROW_MAPPER,
+                                    Functions.identity());
     }
 
     @Override
@@ -689,6 +690,18 @@ public final class DeviceDaoImpl implements DeviceDao {
             return jdbcTemplate.query(sql, TypeRowMapper.STRING);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("No Guid's found ", e);
+        }
+    }
+    
+    @Override
+    public List<Integer> getDeviceIdsWithGuids(){
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM DeviceGuid");
+        try {
+            return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No device ids found ", e);
         }
     }
 }

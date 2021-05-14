@@ -49,60 +49,60 @@ Java :
     jira : none
     notes : This JAR version is not stored in Maven
   
-  - filename : activemq-broker-5.15.10.jar
+  - filename : activemq-broker-5.16.1.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.15.10
+    version : 5.16.1
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker/5.15.10"
-    md5 : 22de440ce8590d77c853d8e61b05df2f
-    sha1 : 5700dd48d5e3f5e7ab9d2e44202b865e085009c1
-    updated : 2019-09-25
-    jira : YUK-15354, YUK-20323
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker/5.16.1"
+    md5 : ce155ca5539e1836078f1e3f2efa2c30
+    sha1 : 7b06c5a8cf13845e18f1f0ba7bdbe8a0c60320e5
+    updated : 2021-04-22
+    jira : YUK-24239
     notes : 
   
-  - filename : activemq-client-5.15.10.jar
+  - filename : activemq-client-5.16.1.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.15.10
+    version : 5.16.1
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-client/5.15.10"
-    md5 : 45fd3e720d401d90ddbd1c8807646e22
-    sha1 : 37ca66258ba69a6165e534c45635f4a8b4d8fb96
-    updated : 2019-09-25
-    jira : YUK-15354, YUK-20323
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-client/5.16.1"
+    md5 : 45d1cbf0adc1ee8cbbaef1da9a601ffd
+    sha1 : 0debe850061c0d6966292905d71c768a97ac0034
+    updated : 2021-04-22
+    jira : YUK-24239
     notes : 
   
-  - filename : activemq-kahadb-store-5.15.10.jar
+  - filename : activemq-kahadb-store-5.16.1.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.15.10
+    version : 5.16.1
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-kahadb-store/5.15.10"
-    md5 : e49d9645dfdfe7ad2bc3e2f77973e37c
-    sha1 : 6ef712d9e765eee8842bef3b349ef529fe50e84e
-    updated : 2019-09-25
-    jira : YUK-15354, YUK-20323
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-kahadb-store/5.16.1"
+    md5 : 581755d73ed92cac178f4c09881bd3e1
+    sha1 : 114ea6d9e194cd1c731ffd9346821d700cd8df57
+    updated : 2021-04-22
+    jira : YUK-24239
     notes : 
   
-  - filename : activemq-openwire-legacy-5.15.10.jar
+  - filename : activemq-openwire-legacy-5.16.1.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.15.10
+    version : 5.16.1
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-openwire-legacy/5.15.10"
-    md5 : 6faf7f1a42961eef2397baa70c1995fb
-    sha1 : aa377be3e5610283cf426cf77e484617b5ae721b
-    updated : 2019-09-25
-    jira : YUK-15354, YUK-20323
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-openwire-legacy/5.16.1"
+    md5 : 5b8f58436a1a1c947fe338d37187055c
+    sha1 : 4434ecc0cc041dbe32014aa28f3c6033d87c0800
+    updated : 2021-04-22
+    jira : YUK-24239
     notes : 
   
   - filename : activemq-protobuf-1.1.jar
@@ -1827,46 +1827,46 @@ Java :
     jira : YUK-22559
     notes :       
   
-  - filename : lucene-analyzers-common-8.7.0.jar
+  - filename : lucene-analyzers-common-8.8.2.jar
     yukon group : Lucene
     project : Apache Lucene
-    version : 8.7.0
+    version : 8.8.2
     project URL : "http://lucene.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common/8.7.0"
-    md5 : b76ca76a7e20ad3262dcbce0b9f0bc2d
-    sha1 : fc219a023416a6fe6172f61d0d7bf64ed3645969
-    updated : 2020-01-14
-    jira : YUK-22561
+    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common/8.8.2"
+    md5 : f02f157b3112930f8fc43e55af76f54a
+    sha1 : fa4b3c1d847f4bb91a3afaa990889dd164883d86
+    updated : 2021-05-11
+    jira : YUK-24357
     notes : Apache Lucene Additional Analyzers
   
-  - filename : lucene-core-8.7.0.jar
+  - filename : lucene-core-8.8.2.jar
     yukon group : Lucene
     project : Apache Lucene
-    version : 8.7.0
+    version : 8.8.2
     project URL : "http://lucene.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-core/8.7.0"
-    md5 : 3290130c054f5be59c05609ebe0bd171
-    sha1 : ed64084a1502c2a6a411cbd9826131b81e0bf07f
-    updated : 2020-01-14
-    jira : YUK-22561
+    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-core/8.8.2"
+    md5 : fb1d952de35068d571d263e7cf92bcb3
+    sha1 : e039fa90ee900c475bbc0943989ed5dccc556d3e
+    updated : 2021-05-11
+    jira : YUK-24357
     notes : Apache Lucene Core
   
-  - filename : lucene-queryparser-8.7.0.jar
+  - filename : lucene-queryparser-8.8.2.jar
     yukon group : Lucene
     project : Apache Lucene
-    version : 8.7.0
+    version : 8.8.2
     project URL : "http://lucene.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser/8.7.0"
-    md5 : 63977e7c45166c8816d549686bc07d74
-    sha1 : 66ae10cb549dea23346a4f5230de9f2f4880def4
-    updated : 2020-01-14
-    jira : YUK-22561
+    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser/8.8.2"
+    md5 : 09aef7bc8331680116a42b09a0ca9189
+    sha1 : 67c6580f8a5187fdb7f9eb2404bdecc4635b3328
+    updated : 2021-05-11
+    jira : YUK-24357
     notes : Apache Lucene Query Parser
   
   - filename : mail-1.4.5.jar
@@ -2289,6 +2289,48 @@ Java :
     jira : none
     notes : 
   
+  - filename : protobuf-java-3.15.8.jar
+    yukon group : Protobuf
+    project : Protobuf
+    version : 3.15.8
+    project URL : "https://github.com/protocolbuffers/protobuf/releases"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java/3.15.8"
+    md5 : 1dc82c4de1a9730a03da9d9c5dc89296
+    sha1 : a1d93a50b1630e5826f37332ffa9771775e8f556
+    updated : 2021-05-03
+    jira : YUK-24160
+    notes :
+    
+  - filename : protobuf-java-format-1.4.jar
+    yukon group : Protobuf
+    project : Protobuf
+    version : 1.4
+    project URL : "https://github.com/protocolbuffers/protobuf/releases"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.googlecode.protobuf-java-format/protobuf-java-format/1.4"
+    md5 : 796df9cbf39717c07a684723f6583573
+    sha1 : b8163b6940102c1808814471476f5293dfb419df
+    updated : 2021-05-03
+    jira : YUK-24160
+    notes :
+    
+  - filename : protobuf-java-util-3.15.8.jar
+    yukon group : Protobuf
+    project : Protobuf
+    version : 3.15.8
+    project URL : "https://github.com/protocolbuffers/protobuf/releases"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java-util/3.15.8"
+    md5 : 42ddccd52dc81f44a8d06214d7dd5e42
+    sha1 : dbfce68ceaf0be0bf55eb2422066d3df8d778d3a
+    updated : 2021-05-03
+    jira : YUK-24160
+    notes :
+    
   - filename : proton-j-0.33.4.jar
     yukon group : Azure
     project : Microsoft Azure SDK
@@ -5589,15 +5631,15 @@ JavaScript :
     notes : "This library is used for reading, writing and deleting cookies. No longer maintained, superseded by JS Cookie: https://github.com/js-cookie/js-cookie"
 
   - project : datetimeentry
-    version : 1.1.1
+    version : 2.0.0
     project URL : "http://keith-wood.name/datetimeEntry.html"
     license : MIT
     license URLs : "http://keith-wood.name/licence.html"
     npm URL : "n/a"
-    md5 : d6b587f91184c6b3b8ef915d7ee94d1a
-    sha1 : 6effa521a52977fa70a5bae626ded7a2ff897826
-    jira : YUK-13033
-    updated : 2014-02-17
+    md5 : 7a403c4c30627858bc95cb5fd44ab6a6
+    sha1 : 5618bbb5c934d2e7048cd0c5228ce915f37e39bc
+    jira : YUK-24265
+    updated : 2021-05-04
     notes : "Modernized clone available at https://www.npmjs.com/package/datetime-entry.  This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : debugger.js
@@ -5625,27 +5667,27 @@ JavaScript :
     notes : Used for creating Tree Views in our UI - Being replaced by fancytree
     
   - project : fancytree
-    version : 2.37.0
+    version : 2.38.0
     project URL : "https://github.com/mar10/fancytree"
     license : MIT
     license URLs : "https://github.com/mar10/fancytree/wiki/LicenseInfo"
     npm URL : "https://www.npmjs.com/package/jquery.fancytree"
-    md5 : dfad8e02cf08797247fa32e1928189ec
-    sha1 : ec2f38be5ebd584a8611ba04465b70b7c3b6ba99
-    jira : YUK-22264
-    updated : 2020-10-20
+    md5 : 5872d13c90547bd1ababd9172dc3d91d
+    sha1 : 9d9ff6765d052e56cd6174226cf8fe14627222fe
+    jira : YUK-24189
+    updated : 2021-05-12
     notes : Used for creating Tree Views in our UI
 
   - project : fileupload
-    version : 10.8.0
+    version : 10.31.0
     project URL : "https://github.com/blueimp/jQuery-File-Upload"
     license : MIT
     license URLs : "https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt"
     npm URL : "https://www.npmjs.com/package/blueimp-file-upload"
-    md5 : 5c9fd37430aaf4921c583b36cd25acec
-    sha1 : 725eafdc49086908d9500fc3d59f4fa482b53a00
-    jira : YUK-21524
-    updated : 2020-03-11
+    md5 : 86355d1bfabc77990eef6ae6f57e1460
+    sha1 : fb3d88d28f087c54d960c8fb44ecdaf9b508c388
+    jira : YUK-24190
+    updated : 2021-04-21
     notes : The jquery.iframe-transport.js and jquery.ui.widget.js files comes along with this package. It is used for file Upload widget with multiple file selection and drag&drop support for jQuery in Yukon.
 
   - project : form
@@ -5673,15 +5715,15 @@ JavaScript :
     notes : 
 
   - project : highstock
-    version : 8.2.0
+    version : 9.1.0
     project URL : "https://www.highcharts.com/blog/products/highstock/"
     license : Eaton-owned
     license URLs : n/a
-    npm URL : "https://www.npmjs.com/package/highcharts/v/8.2.0"
-    md5 : 24625afd24ad869519049d609893e4f2
-    sha1 : 2dff361bc7acd9fd12deae604a7eda3442aa8690
-    jira : YUK-22997
-    updated : 2020-10-06
+    npm URL : "https://www.npmjs.com/package/highcharts/v/9.1.0"
+    md5 : 88af53ddb08fe92effebb65b00956ead
+    sha1 : a710e15802f03c4ee56500ea86af1c22113d1a60
+    jira : YUK-24346
+    updated : 2021-05-10
     notes : Used for charting
 
   - project : jqgrid
@@ -5697,15 +5739,15 @@ JavaScript :
     notes : "This library is used to display a grid on the Collection Actions -> Device Report page. Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
 
   - project : jquery
-    version : 3.5.1
+    version : 3.6.0
     project URL : "http://jquery.com/"
     license : MIT
     license URLs : "https://github.com/jquery/jquery/blob/master/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/jquery/v/3.5.1"
-    md5 : 793ca595de394d333280a03210f12d9f
-    sha1 : 9e8e176264ababb6b15b516c7d80c2ae251a7efc
-    jira : YUK-22994
-    updated : 2020-06-10
+    npm URL : "https://www.npmjs.com/package/jquery/v/3.6.0"
+    md5 : 2c1532fc533453a85a363dc1e642d910
+    sha1 : 9b22a845828bef90c3f3a8a844b0bb0f684b94f8
+    jira : YUK-24193
+    updated : 2021-04-19
     notes : 
 
   - project : jquery-ui
@@ -5721,17 +5763,17 @@ JavaScript :
     notes : "Yukon UI uses effects, widgets (dialog, Accordion..etc) from this library."
 
   - project : modernizr
-    version : 3.6.0 (Custom)
+    version : 3.11.7 (Custom)
     project URL : "https://modernizr.com/"
     license : MIT,BSD
     license URLs : "https://github.com/Modernizr/Modernizr/blob/master/LICENSE"
     npm URL : "https://www.npmjs.com/package/modernizr"
-    md5 : d09c7637c0c62b780b7dc094cf59edfb
-    sha1 : aced2470fbc5e8681e775160ef5d34c2b5a4953d
-    jira : YUK-21537
-    updated : 2020-04-13
+    md5 : 43e70b594425f374c880a8d7b5c5ad6c
+    sha1 : e06b82e46b90cceeb228ac450da15503bc3ca8fc
+    jira : YUK-24358
+    updated : 2021-05-11
     notes : "This library is used to detect if certain features are supported by the browser on which the application is being rendered. 
-                  Generated via http://modernizr.com/download/#-fontface-backgroundsize-borderimage-borderradius-boxshadow-flexbox-flexboxlegacy-hsla-multiplebgs-opacity-rgba-textshadow-cssanimations-csscolumns-generatedcontent-cssgradients-cssreflections-csstransforms-csstransforms3d-csstransitions-applicationcache-canvas-canvastext-draganddrop-hashchange-history-audio-video-indexeddb-input-inputtypes-localstorage-postmessage-sessionstorage-websockets-websqldatabase-webworkers-geolocation-inlinesvg-smil-svg-svgclippaths-touch-webgl-printshiv-mq-cssclasses-teststyles-testprop-testallprops-hasevent-prefixes-domprefixes-load"
+                  Our custom version of modernizr should be built using npm. Follow the instructions in the Confluence page to upgrade: https://confluence-prod.tcc.etn.com/display/EEST/Modernizr"
 
   - project : moment
     version : 2.29.1
@@ -5746,27 +5788,27 @@ JavaScript :
     notes : "This library is used to display dates on UI in user's timezone."
 
   - project : mousewheel
-    version : 3.1.9
+    version : 3.1.13
     project URL : "https://github.com/jquery/jquery-mousewheel"
     license : MIT
     license URLs : "https://github.com/jquery/jquery-mousewheel/blob/master/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/jquery-mousewheel/v/3.1.9"
-    md5 : f64a960563507f0f5f874c473f9dcb2a
-    sha1 : 0ceff045b5cb0c4e42e65af30e644dcd6e841ed7
-    jira : YUK-13033
-    updated : 2014-02-17
+    npm URL : "https://www.npmjs.com/package/jquery-mousewheel/v/3.1.13"
+    md5 : 1be67f98747ab44bbce613cd3f899ac4
+    sha1 : 75e901f30fc981f0d9b823f605d829531d91f469
+    jira : YUK-24265
+    updated : 2021-05-04
     notes : "This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : open-layers
-    version : 6.4.3
+    version : 6.5.0
     project URL : "https://openlayers.org/"
     license : BSD 2-clause
     license URLs : "https://raw.githubusercontent.com/openlayers/openlayers/master/LICENSE.md"
-    npm URL : "https://www.npmjs.com/package/ol/v/6.4.3"
-    md5 : 5cc60bd85cb1d155b81dc01934e7c149
-    sha1 : 5a0972ba4b9d13f8996188e075bdfa1376a541d0
-    jira : YUK-22996
-    updated : 2020-10-22
+    npm URL : "https://www.npmjs.com/package/ol/v/6.5.0"
+    md5 : e106003252314bfaad7f1c234afd7a74
+    sha1 : 50cea1e30d07c69699b2d6966df792a82c72ebf9
+    jira : YUK-24195
+    updated : 2021-05-03
     notes : Used for mapping
 
   - project : placeholder
@@ -5782,15 +5824,15 @@ JavaScript :
     notes : This library is used to display the text as a placeholder in input fields for e.g. search text is displayed in global search.
 
   - project : scroll.to
-    version : 2.1.2
+    version : 2.1.3
     project URL : "https://github.com/flesler/jquery.scrollTo"
     license : MIT
     license URLs : "https://github.com/flesler/jquery.scrollTo/blob/master/LICENSE"
-    npm URL : "https://www.npmjs.com/package/jquery.scrollto/v/2.1.2"
-    md5 : e15416a593fe4591c76610ffc36fd108
-    sha1 : e589b55b5cc33cd489a7cc138c3bc85705133196
-    jira : YUK-21526
-    updated : 2020-03-11
+    npm URL : "https://www.npmjs.com/package/jquery.scrollto/v/2.1.3"
+    md5 : 64ca8367cddef39b0a7fa6b56b1d555e
+    sha1 : fa91f73a118ad5f8728be6bcc7a40ec3ea23abba
+    jira : YUK-24196
+    updated : 2021-04-23
     notes : This is used for animated scrolling in Yukon.
 
   - project : sortable
@@ -5830,15 +5872,15 @@ JavaScript :
     notes : This library is used for selecting colors in Themes for Yukon.
 
   - project : time-picker
-    version : 1.5.0
+    version : 1.6.3
     project URL : "https://github.com/trentrichardson/jQuery-Timepicker-Addon"
     license : MIT
     license URLs : "https://github.com/trentrichardson/jQuery-Timepicker-Addon/blob/master/LICENSE-MIT"
-    npm URL : "https://www.npmjs.com/package/spectrum-colorpicker"
-    md5 : b6e477c9f70f52e13a1b800328e04199
-    sha1 : ef21c2ea9e712d05bcf13ec0d4cb5383e9f0f958
-    jira : YUK-10381
-    updated : 2014-11-13
+    npm URL : "https://www.npmjs.com/package/jquery-ui-timepicker-addon"
+    md5 : 689199998a2607268b20f4be82e1a67d
+    sha1 : 619d93b35c0ab3511e43c310b5b2db2cc607d30c
+    jira : YUK-24265
+    updated : 2021-05-04
     notes : "This library is used for the date, time, datetime and offset pickers used on UI."
 
 # -------
@@ -6134,14 +6176,14 @@ C++ :
 # -------
 Css :
   - project : animate.css
-    version : 3.7.2
-    project URL : "http://daneden.github.io/animate.css/"
+    version : 4.1.1
+    project URL : "https://animate.style"
     license : MIT
-    license URLs : "https://github.com/daneden/animate.css/blob/3.7.2/LICENSE"
-    md5 : 91cc40989e5e96e8d6bddc0f19598441
-    sha1 : 77b5378a2b4bfc120e52782dd869aeab7efe2fd4
-    jira : YUK-21538
-    updated : 2020-03-19
+    license URLs : "https://github.com/animate-css/animate.css/blob/main/LICENSE"
+    md5 : cf2741a3a7ea8427ade651533a54ef1b
+    sha1 : afcaf144854f4916f4cc4ad17d196bca1aa66bc8
+    jira : YUK-24355
+    updated : 2021-05-06
     notes : This library is used to animate shaking the event alarm alert count.
         
   - project : normalize.css
@@ -6167,12 +6209,12 @@ Css :
     notes : This library is used in /js-api/home.jsp.
     
   - project : bootstrap
-    version : 2.3.2
+    version : 4.6.0
     project URL : "https://getbootstrap.com/"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0"
-    md5 : 0baee5489e84dc3ff3a1970e47993db2
-    sha1 : 05a8e3b7b48e51a887192e6532103bd544cf5f0c
-    updated : 2015-04-10
-    jira : YUK-14174
+    license : MIT
+    license URLs : "https://github.com/twbs/bootstrap/blob/main/LICENSE"
+    md5 : dce8c6ac5b7461486c6b56fa7cc3b6e0
+    sha1 : 08b51aa3c79163a8b696f7799abdee5bfc8f146b
+    updated : 2021-04-22
+    jira : YUK-24198
     notes : This is the css library used for Yukon UI.

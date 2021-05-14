@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.DateTime;
@@ -25,17 +27,27 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
+import com.cannontech.dr.pxmw.model.PxMWVersion;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
+import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
+import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.simulators.message.request.PxMWDataRetrievalSimulatonRequest;
+import com.cannontech.simulators.message.request.PxMWSimulatorDeviceCreateRequest;
 import com.cannontech.simulators.message.request.PxMWSimulatorSettingsUpdateRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
@@ -45,6 +57,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.gson.GsonBuilder;
 
 @Controller
@@ -54,9 +67,17 @@ public class PxMWSimulatorController {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired PxMWCommunicationServiceV1 pxMWCommunicationServiceV1;
     @Autowired GlobalSettingDao settingDao;
+    @Autowired PxMWDataReadService pxMWDataReadService;
     private static final Logger log = YukonLogManager.getLogger(PxMWSimulatorController.class);
     private SimulatedPxMWSettings settings = new SimulatedPxMWSettings();
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    private YukonJmsTemplate jmsTemplate;
 
+    
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.PxMW_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
+    }
     @GetMapping("/home")
     public String home(ModelMap model) {
         model.addAttribute("endpoints", PxMWRetrievalUrl.values());
@@ -69,6 +90,9 @@ public class PxMWSimulatorController {
         } else {
             model.addAttribute("urlType", "PX White URL");
         }
+
+        model.addAttribute("autoCreationTypes", List.of(PaoType.LCR6200C, PaoType.LCR6600C));
+
         return "pxMW/home.jsp";
     }
 
@@ -83,7 +107,7 @@ public class PxMWSimulatorController {
                 return "redirect:home";
             }
         } catch (ExecutionException e) {
-            log.error(e);
+            log.error("Error", e);
         }
         flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Failed to update simulator settings"));
         return "redirect:home";
@@ -100,19 +124,14 @@ public class PxMWSimulatorController {
     public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint, String params, String jsonParam) {
         Map<String, Object> json = new HashMap<>();
         List<String> paramList = new ArrayList<>();
-
-       /* if (StringUtils.isEmpty(params) && StringUtils.isEmpty(jsonParam)) {
-            json.put("alertError", "Unable to parse parameters, please see parameter help text.");
-            return json;
-        }*/
         try {
             if (!StringUtils.isEmpty(params)) {
                 paramList = Stream.of(params.split(","))
                         .map(String::trim)
                         .collect(Collectors.toList());
             }
-            if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
-                PxMWSiteV1 site = pxMWCommunicationServiceV1.getSiteDevices(paramList.get(0), parseBoolean(paramList, 1),
+            if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE) {
+                PxMWSiteDevicesV1 site = pxMWCommunicationServiceV1.getSiteDevices(paramList.get(0), parseBoolean(paramList, 1),
                         parseBoolean(paramList, 2));
                 processSuccess(params, json, getFormattedJson(site));
             } else if (endpoint == PxMWRetrievalUrl.SECURITY_TOKEN) {
@@ -133,10 +152,18 @@ public class PxMWSimulatorController {
                 List<PxMWTimeSeriesDeviceResultV1> response = pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(),
                         timeRange);
                 processSuccess(params, json, getFormattedJson(response));
+            } else if (endpoint == PxMWRetrievalUrl.DEVICE_DETAIL) {
+                PxMWDeviceDetail detail = pxMWCommunicationServiceV1.getDeviceDetails(paramList.get(0), parseBoolean(paramList, 1));
+                processSuccess(params, json, getFormattedJson(detail));
+            } else if (endpoint == PxMWRetrievalUrl.SITES) {
+                String siteGuid = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
+                List<PxMWSiteV1> detail = pxMWCommunicationServiceV1.getSites(siteGuid);
+                processSuccess(params, json, getFormattedJson(detail));
             }
         } catch (PxMWCommunicationExceptionV1 e) {
             processError(json, e);
         } catch (PxMWException | JsonProcessingException e) {
+            log.error("Error", e);
             json.put("alertError", e.getMessage());
         } 
         return json;
@@ -171,5 +198,55 @@ public class PxMWSimulatorController {
     private String getFormattedJson(Object profile) {
         return new GsonBuilder().setPrettyPrinting().create().toJson(profile);
     } 
-}
 
+    @PostMapping("/deviceAutoCreation")
+    public String deviceAutoCreation(@ModelAttribute("paoType") PaoType paoType,
+            @ModelAttribute("textInput") String total, FlashScope flashScope) {
+        String siteGuid = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
+        
+        if(Strings.isNullOrEmpty(siteGuid)){
+            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("PX System Service Account Id is required, doesn't need to be real."));
+            return "redirect:home";
+        }
+        try {
+            // Send a request to simulator service with pao type and number of devices to create
+            SimulatorResponse response = simulatorsCommunicationService
+                    .sendRequest(new PxMWSimulatorDeviceCreateRequest(PxMWVersion.V1, paoType, Integer.parseInt(total)),
+                            SimulatorResponseBase.class);
+            // Simulator will cache the request and wait
+            if (response.isSuccessful()) {
+                flashScope.setConfirm(
+                        YukonMessageSourceResolvable.createDefaultWithoutCode("See Service Manager logs for results."));
+            }
+            // Send request to SM to run auto device creation (otherwise it will run once a day)
+            jmsTemplate.convertAndSend(new PxMWDataRetrievalSimulatonRequest(true));
+            // SM sends request to simulator
+            // Simulator builds responses from cached values
+            // Simulator waits for SM to tell it that auto creation is complete
+            // Simulator clears its cache
+            // When device auto creation runs again, no devices are created
+        } catch (ExecutionException e) {
+            log.error("Error", e);
+        }
+       
+        return "redirect:home";
+    }
+    
+    @PostMapping("/deviceAutoRead")
+    public String deviceAutoRead(FlashScope flashScope) {
+        String siteGuid = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
+        
+        if(Strings.isNullOrEmpty(siteGuid)){
+            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("PX System Service Account Id is required, doesn't need to be real."));
+            return "redirect:home";
+        }
+        try {
+            // Send request to SM to run read on all Could LCRs (otherwise it will run once an hour)
+            jmsTemplate.convertAndSend(new PxMWDataRetrievalSimulatonRequest(false));
+        } catch (Exception e) {
+            log.error("Error", e);
+        }
+       
+        return "redirect:home";
+    }
+}

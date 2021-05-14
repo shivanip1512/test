@@ -762,6 +762,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     REVERSE_BANDWIDTH("Reverse Bandwidth", AttributeGroup.CAPCONTROL, false),
     REVERSE_SET_POINT("Reverse Set Point", AttributeGroup.CAPCONTROL, false),
     REVERSE_FLOW_INDICATOR("Reverse Flow Indicator", AttributeGroup.CAPCONTROL, false),
+    POWER_FLOW_INDETERMINATE("Power Flow Indeterminate", AttributeGroup.CAPCONTROL, false),
+    CONTROL_POWER_FLOW_REVERSE("Control Power Flow Reverse", AttributeGroup.CAPCONTROL, false),
 
     CONFIGURATION_UPDATED_HASH("Configuration Updated Hash", AttributeGroup.ITRON, false),
     EVENT_CANCELLED("Event Cancelled", AttributeGroup.ITRON, false),

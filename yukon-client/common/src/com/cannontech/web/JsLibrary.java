@@ -10,13 +10,14 @@ public enum JsLibrary {
     
     DEBUGGER("/resources/js/lib/debugger.js"), // http://benalman.com/projects/javascript-debug-console-log/
     
-    JQUERY("/resources/js/lib/jquery/jquery-3.5.1.min.js",
-           "/resources/js/lib/jquery/jquery-3.5.1.js"), // http://www.jquery.com
+    JQUERY("/resources/js/lib/jquery/jquery-3.6.0.min.js",
+           "/resources/js/lib/jquery/jquery-3.6.0.js"), // http://www.jquery.com
     
     JQUERY_CHECK_ALL("/resources/js/lib/checkall/jquery.checkall.js"), // https://github.com/mjball/jQuery-CheckAll
     JQUERY_COOKIE("/resources/js/lib/cookie/jquery.cookie.js"), // https://github.com/carhartl/jquery-cookie
     JQUERY_DATE_TIME_ENTRY("/resources/js/lib/datetimeentry/jquery.datetimeentry.min.js",
                            "/resources/js/lib/datetimeentry/jquery.datetimeentry.js"), // http://keith-wood.name/datetimeEntry.html
+    JQUERY_PLUGIN("/resources/js/lib/datetimeentry/jquery.plugin.min.js", "/resources/js/lib/datetimeentry/jquery.plugin.js"), // http://keith-wood.name/datetimeEntry.html
     JQUERY_FILE_UPLOAD("/resources/js/lib/fileupload/jquery.fileupload.js"), // https://github.com/blueimp/jQuery-File-Upload/tree/master/js
     JQUERY_FORM("/resources/js/lib/form/jquery.form.min.js", "/resources/js/lib/form/jquery.form.js"), // https://github.com/malsup/form/
     JQUERY_GRID("/resources/js/lib/jqgrid/js/jquery.jqGrid.min.js",
@@ -27,7 +28,7 @@ public enum JsLibrary {
                       "/resources/js/lib/mousewheel/jquery.mousewheel.js"), // https://github.com/brandonaaron/jquery-mousewheel
     JQUERY_PLACEHOLDER("/resources/js/lib/placeholder/jquery.placeholder.js"), // https://github.com/mathiasbynens/jquery-placeholder
     JQUERY_SCROLLTO("/resources/js/lib/scroll.to/jquery.scrollTo.min.js",
-                    "/resources/js/lib/scroll.to/jquery.scrollTo.src.js"), // https://github.com/flesler/jquery.scrollTo/releases
+                    "/resources/js/lib/scroll.to/jquery.scrollTo.js"), // https://github.com/flesler/jquery.scrollTo/releases
     JQUERY_SPECTRUM("/resources/js/lib/spectrum/spectrum.js"), // http://bgrins.github.io/spectrum/
     JQUERY_TREE("/resources/js/lib/dynatree/jquery.dynatree.min.js",
                 "/resources/js/lib/dynatree/jquery.dynatree.js"), // http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
@@ -40,7 +41,7 @@ public enum JsLibrary {
     JQUERY_UI("/resources/js/lib/jquery-ui/jquery-ui.min.js",
               "/resources/js/lib/jquery-ui/jquery-ui.js"), // http://www.jqueryui.com
     
-    JQUERY_UI_TIME_PICKER("/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.js"), // https://github.com/trentrichardson/jQuery-Timepicker-Addon
+    JQUERY_UI_TIME_PICKER("/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.js", "/resources/js/lib/time-picker/jquery-ui-timepicker-addon.js"), // https://github.com/trentrichardson/jQuery-Timepicker-Addon
     JQUERY_UI_WIDGET("/resources/js/lib/fileupload/jquery.ui.widget.js"), // https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
 
     YUKON_HIGHCHART("/resources/js/common/yukon.highChart.js"), //in-house

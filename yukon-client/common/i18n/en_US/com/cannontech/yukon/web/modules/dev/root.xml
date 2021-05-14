@@ -411,9 +411,15 @@
     <entry key="yukon.web.modules.dev.ecobee.mockTest.authenticate">Authenticate</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.runtimeReport">Runtime Report</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.assignThermostat">Assign Thermostat</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.runtimeData">Runtime Data</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.saved">Saved Successfully</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.createDevice">Create Device</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.deleteDevice">Delete Device</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.deleteDevice">Delete Device / Unenrollment</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.enrollment">Enrollment</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.issueDemandResponse">Issue Demand Response</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.createPushConfiguration">Create Push Configuration</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.showPushConfiguration">Show Push Configuration</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.showUser">Show User</entry>
     
     <!-- Ecobee PGP Key Pair -->
     <entry key="yukon.web.modules.dev.ecobeePGPKeyPair">Ecobee PGP Key Pair</entry>
@@ -590,6 +596,7 @@
     <entry key="yukon.web.modules.dev.alerts.error">All your base are belong to us.</entry>
     
     <entry key="yukon.web.modules.dev.inputs.pageName">Fun with Inputs</entry>
+    <entry key="yukon.web.modules.dev.charts.pageName">Charts and Graphs</entry>
     <entry key="yukon.web.modules.dev.labels.badges.pageName">Labels And Badges</entry>
     <entry key="yukon.web.modules.dev.progressbars.pageName">Progress Bars</entry>
     <entry key="yukon.web.modules.dev.timelines.pageName">Timelines</entry>

@@ -38,7 +38,9 @@ import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
@@ -99,7 +101,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
  
     @Override
-    public PxMWSiteV1 getSiteDevices(String siteGuid, Boolean recursive, Boolean includeDetail)
+    public PxMWSiteDevicesV1 getSiteDevices(String siteGuid, Boolean recursive, Boolean includeDetail)
             throws PxMWCommunicationExceptionV1, PxMWException {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         if (recursive != null) {
@@ -109,18 +111,46 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
             queryParams.add("includeDetail", includeDetail.toString());
         }
 
-        URI uri = getUri(Map.of("id", siteGuid), PxMWRetrievalUrl.DEVICES_BY_SITE_V1);
+        URI uri = getUri(Map.of("id", siteGuid), PxMWRetrievalUrl.DEVICES_BY_SITE);
         uri = addQueryParams(queryParams, uri);
 
         log.debug("Getting site info. Site Guid: {} URL: {}", siteGuid, uri);
 
-        HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-        ResponseEntity<PxMWSiteV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWSiteV1.class);
-        log.debug("Got site info. Site Guid:{} Result:{}", siteGuid,
-                new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
-        return response.getBody();
+        try {
+            HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+            ResponseEntity<PxMWSiteDevicesV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWSiteDevicesV1.class);
+            log.debug("Got site info. Site Guid:{} Result:{}", siteGuid,
+                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
+            return response.getBody();
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PxMWException("Exception occured while getting site devices", e);
+        }
     }
-   
+    
+    @Override
+    public List<PxMWSiteV1> getSites(String siteGuid) throws PxMWCommunicationExceptionV1, PxMWException {
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("userId", siteGuid);
+        URI uri = getUri(PxMWRetrievalUrl.SITES);
+        uri = addQueryParams(queryParams, uri);
+
+        log.debug("Getting site info. Site Guid: {} URL: {}", siteGuid, uri);
+
+        try {
+            HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+            ResponseEntity<PxMWSiteV1[]> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWSiteV1[].class);
+            log.debug("Got site info. Site Guid:{} Result:{}", siteGuid,
+                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
+            return Arrays.asList(response.getBody());
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PxMWException("Exception occured while getting site devices", e);
+        }
+    }
+
     @Override
     public List<PxMWTimeSeriesDeviceResultV1> getTimeSeriesValues(List<PxMWTimeSeriesDeviceV1> deviceList, Range<Instant> range) {
         URI uri = getUri(PxMWRetrievalUrl.TREND_DATA_RETRIEVAL);
@@ -156,14 +186,54 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
             HttpEntity<PxMWCommandRequestV1> requestEntity = getRequestWithAuthHeaders(request);
             ResponseEntity<PxMWCommandResponseV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
                     PxMWCommandResponseV1.class);
-            log.info("Sent command to device. Device Guid:{} Command Guid:{} Response:{}", deviceGuid, commandGuid,
+            log.debug("Sent command to device. Device Guid:{} Command Guid:{} Response:{}", deviceGuid, commandGuid,
                     new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
         } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
             throw e;
         } catch (Exception e) {
-            throw new PxMWException("Exception occured while getting channel values", e);
+            throw new PxMWException("Exception occured while sending command", e);
+        }
+        
+    }
+    
+    @Override
+    public PxMWDeviceDetail getDeviceDetails(String deviceGuid, Boolean recursive)
+            throws PxMWCommunicationExceptionV1, PxMWException {
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        if (recursive != null) {
+            queryParams.add("recursive", recursive.toString());
+        }
+
+        URI uri = getUri(Map.of("deviceId", deviceGuid), PxMWRetrievalUrl.DEVICE_DETAIL);
+        uri = addQueryParams(queryParams, uri);
+
+        log.debug("Getting device info. Device Guid: {} URL: {}", deviceGuid, uri);
+
+        try {
+            HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+            ResponseEntity<PxMWDeviceDetail> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWDeviceDetail.class);
+            log.debug("Got device info. Device Guid:{} Result:{}", deviceGuid,
+                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
+            return response.getBody();
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PxMWException("Exception occured while getting device detail", e);
         }
     }
+    
+    @Override
+    public boolean isCreatableDevice(String deviceGuid) {
+        try {
+            getDeviceDetails(deviceGuid, null);
+            return true;
+        } catch (Exception e) {
+            //404 Not Found if device doesn't exist
+            log.error("Device:" + deviceGuid + " can't be created", e);
+            return false;
+        }
+    }
+   
 
     /**
      * Creates URI

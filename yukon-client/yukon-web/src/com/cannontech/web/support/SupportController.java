@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,20 +41,22 @@ import com.cannontech.common.userpage.model.SiteMapCategory;
 import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
+import com.cannontech.support.rfn.message.RfnSupportBundleRequest;
+import com.cannontech.support.rfn.message.RfnSupportBundleResponseType;
+import com.cannontech.support.rfn.message.SupportBundleRequestType;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleWriter;
+import com.cannontech.support.service.impl.RFNetworkSupportBundleService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -73,6 +76,7 @@ public class SupportController {
     private final static String baseKey = "yukon.web.modules.support.supportBundle";
     private final static String manualsFolderName = CtiUtilities.getYukonBase() + "/Manuals/";
     private final static Pattern pdfFileName = Pattern.compile("(.*)\\.pdf$");
+    @Autowired private RFNetworkSupportBundleService rfNetworkSupportBundleService;
     @Autowired private SupportBundleService supportBundleService;
     @Autowired private List<SupportBundleWriter> writerList;
     @Autowired private DateFormattingService dateFormattingService;
@@ -81,7 +85,6 @@ public class SupportController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private SiteMapHelper siteMapHelper;
     @Autowired private ObjectFormattingService objectFormattingService;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ServerDatabaseCache serverDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -187,6 +190,7 @@ public class SupportController {
             previousBundles.add(f.getName());
         }
         model.addAttribute("supportBundle", bundle);
+        model.addAttribute("now", new Date());
         model.addAttribute("rfSupportBundle", new RfSupportBundle());
         model.addAttribute("bundleRangeSelectionOptions", BundleRangeSelection.values());
         model.addAttribute("bundleList", previousBundles);
@@ -264,12 +268,13 @@ public class SupportController {
    
     @PostMapping("createRfBundle")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
-    public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle, BindingResult result, ModelMap model,
+    public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle, BindingResult result, ModelMap model, RfnSupportBundleRequest rfRequest,
             YukonUserContext userContext, HttpServletResponse resp) throws Exception {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         detailsRfValidator.validate(rfSupportBundle, result);
         model.addAttribute("rfSupportBundle", rfSupportBundle);
+        model.addAttribute("now", new Date());
 
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -277,8 +282,11 @@ public class SupportController {
             return "rfSupportBundle.jsp";
         }
 
-        // TODO: Invoke Service to start support bundle. bundle.start(rfSupportBundle);
-        model.addAttribute("successMessage", accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success"));
+        rfRequest.setFileName(rfSupportBundle.getCustomerName());
+        rfRequest.setFromTimestamp(rfSupportBundle.getDate().getTime());
+        rfRequest.setType(SupportBundleRequestType.NETWORK_DATA);
+        rfNetworkSupportBundleService.send(rfRequest);
+       
         return "rfSupportBundle.jsp";
     }
 
@@ -292,6 +300,7 @@ public class SupportController {
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
     public @ResponseBody Map<String, Object> bundleInProgress() {
         Map<String, Object> json = new HashMap<>();
+        
         boolean inProgress = supportBundleService.isInProgress();
         json.put("inProgress", inProgress);
         if (!inProgress) {
@@ -299,18 +308,44 @@ public class SupportController {
         }
         return json;
     }
-
+   
     @GetMapping("rfBundleInProgress")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
-    public @ResponseBody Map<String, Object> rfBundleInProgress() {
-       Map<String, Object> json = new HashMap<>();
-
-        // TODO: Invoke Service to check progress of rf support bundle. bundle.inProgress(rfSupportBundle);
-        boolean inProgress = false;
-        json.put("inProgress", inProgress);
-        if (!inProgress) {
-            // TODO: call bundleservice() to download RF Network support bundle
+    public @ResponseBody Map<String, Object> rfBundleInProgress(YukonUserContext userContext) {
+        Map<String, Object> json = new HashMap<>();
+        RfnSupportBundleResponseType status = rfNetworkSupportBundleService.getStatus();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        boolean isCompleted = false;
+        String message = null;
+        if (status == null) {
+            isCompleted = true;
+            message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout");
+        } else {
+            switch (status) {
+            case STARTED:
+            case INPROGRESS:
+                isCompleted = false;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.started");
+                break;
+            case COMPLETED:
+                isCompleted = true;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success");
+                break;
+            case FAILED:
+                isCompleted = true;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.failed");
+                break;
+            case TIMEOUT:
+                isCompleted = true;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout");
+                break;
+            default:
+                break;
+            }
         }
+        json.put("isCompleted", isCompleted);
+        json.put("message", message);
+        json.put("status", status);
         return json;
     }
 

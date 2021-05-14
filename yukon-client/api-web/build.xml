@@ -24,10 +24,10 @@
     
     <fileset dir="${yukon.lib}" id="yukon.lib.files">
         <include name="activation.jar"/>
-        <include name="activemq-broker-5.15.10.jar"/>
-        <include name="activemq-client-5.15.10.jar"/>
-        <include name="activemq-kahadb-store-5.15.10.jar"/>
-        <include name="activemq-openwire-legacy-5.15.10.jar"/>
+        <include name="activemq-broker-5.16.1.jar"/>
+        <include name="activemq-client-5.16.1.jar"/>
+        <include name="activemq-kahadb-store-5.16.1.jar"/>
+        <include name="activemq-openwire-legacy-5.16.1.jar"/>
         <include name="activemq-protobuf-1.1.jar"/>
         <include name="aopalliance-1.0.jar"/>
         <include name="api.jar"/>
@@ -83,9 +83,9 @@
     	<include name="log4j-api-2.14.0.jar"/>
     	<include name="log4j-core-2.14.0.jar"/>
     	<include name="log4j-jcl-2.14.0.jar"/>
-        <include name="lucene-analyzers-common-8.7.0.jar"/>
-        <include name="lucene-core-8.7.0.jar"/>
-        <include name="lucene-queryparser-8.7.0.jar"/>
+        <include name="lucene-analyzers-common-8.8.2.jar"/>
+        <include name="lucene-core-8.8.2.jar"/>
+        <include name="lucene-queryparser-8.8.2.jar"/>
         <include name="mailapi-1.5.1.jar"/>
     	<include name="netty-all-4.1.53.Final.jar"/>
         <include name="smtp-1.5.1.jar"/>

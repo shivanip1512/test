@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.StringRowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -102,7 +104,24 @@ public class LmHardwareBaseDaoImpl implements LmHardwareBaseDao {
         String serialNumber = yukonJdbcTemplate.queryForString(sql);
         return serialNumber;
     }
-    
+
+    @Override
+    public PaoIdentifier getDeviceIdBySerialNumber(String serialNumber) {
+
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT PaObjectId, Type");
+            sql.append("FROM YukonPaObject ypo");
+            sql.append("JOIN InventoryBase ib ON ib.DeviceId = ypo.PaObjectId");
+            sql.append("JOIN LmHardwareBase lmhb ON lmhb.InventoryId = ib.InventoryId");
+            sql.append("WHERE lmhb.ManufacturerSerialNumber").eq(serialNumber);
+
+            return yukonJdbcTemplate.queryForObject(sql, TypeRowMapper.PAO_IDENTIFIER);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new NotFoundException("No pao is associated with the serial number: " + serialNumber);
+        }
+    }
+
     @Override
     public String getSerialNumberForInventoryId(int inventoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

@@ -112,6 +112,32 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(InstallType ins
     return m;
 }
 
+/* 
+    If the device doesn't support metrology, then send the config part.  This preserves existing behavior as much as is possible. 
+    If the device supports metrology, then we only want to send the config part if the metrology library is
+        actually enabled in the config,  If it isn't in the config, then we check the dynamic pao info to see if
+        the device reported in.
+*/
+bool RfnResidentialDevice::isMetrologyLibraryDisabled( Config::DeviceConfigSPtr deviceConfig )
+{
+    if ( hasMetrologyLibrarySupport() )
+    {
+        if ( const auto configMetrologyLibraryEnabled 
+                = deviceConfig->findValue<bool>( Config::RfnStrings::MetrologyLibraryEnabled ) )
+        {
+            return *configMetrologyLibraryEnabled == false;
+        }
+
+        if ( const auto paoinfoMetrologyLibraryEnabled
+                = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled ) )
+        {
+            return *paoinfoMetrologyLibraryEnabled == false;
+        }
+    }
+
+    return false;
+}
+
 YukonError_t RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     rfnRequests.push_back(
@@ -142,6 +168,11 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
         if( ! deviceConfig )
         {
             return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
+        }
+
+        if ( isMetrologyLibraryDisabled( deviceConfig ) )
+        {
+            return ClientErrors::NoMethod;
         }
 
         const unsigned char configFreezeDay               = getConfigData   <unsigned char> ( deviceConfig, Config::RfnStrings::demandFreezeDay );
@@ -456,6 +487,11 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
             return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
+        if ( isMetrologyLibraryDisabled( deviceConfig ) )
+        {
+            return ClientErrors::NoMethod;
+        }
+
         const bool sendForced = parse.isKeyValid("force");
 
         std::map<std::string, std::string> configMap;
@@ -762,6 +798,11 @@ try
     if( ! deviceConfig )
     {
         return reportConfigErrorDetails(ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs);
+    }
+
+    if ( isMetrologyLibraryDisabled( deviceConfig ) )
+    {
+        return ClientErrors::NoMethod;
     }
 
     const bool sendForced = parse.isKeyValid("force");

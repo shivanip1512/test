@@ -963,6 +963,8 @@
     <li>Reverse Set Point - REVERSE_SET_POINT</li>
     <li>Reverse Bandwidth - REVERSE_BANDWIDTH</li>
     <li>Reverse Flow Indicator - REVERSE_FLOW_INDICATOR</li>
+    <li>Power Flow Indeterminate - POWER_FLOW_INDETERMINATE</li>
+    <li>Control Power Flow Reverse - CONTROL_POWER_FLOW_REVERSE</li>
     <li>Control Mode - CONTROL_MODE</li>
     </ul>
     ]]></entry>
@@ -1075,6 +1077,8 @@
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.REVERSE_SET_POINT">Reverse Set Point</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.REVERSE_FLOW_INDICATOR">Reverse Flow Indicator</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.CONTROL_MODE">Control Mode</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.POWER_FLOW_INDETERMINATE">Power Flow Indeterminate</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.CONTROL_POWER_FLOW_REVERSE">Control Power Flow Reverse</entry>
     
     <entry key="yukon.web.modules.capcontrol.targetSetting.UPPER_VOLT_LIMIT">Upper Volt Limit</entry>
     <entry key="yukon.web.modules.capcontrol.targetSetting.LOWER_VOLT_LIMIT">Lower Volt Limit</entry>

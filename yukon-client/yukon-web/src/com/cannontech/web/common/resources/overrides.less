@@ -35,6 +35,7 @@
 .cp { cursor: pointer; }
 .cr { clear: right; }
 .db { display: block; }
+.df { display: flex; }
 .di { display: inline; }
 .dib { display: inline-block; }
 .dif { display: inline-flex; }
@@ -535,35 +536,55 @@ span.fancytree-node {
 
 /** Bootstrap Overrides */
 .progress { 
-    background-color: #e8e8e8;
+    background-color: @gray_light;
     border-radius: 3px;
     height: 18px;
     margin-bottom: 0px;
     min-width: 60px;
 }
-
-.progress-bar-default { background-color: #999999; }
-.progress-bar-info { background-color: #428bca; }
+.progress-bar-success { background-color: @green; }
+.progress-bar-info { background-color: @blue; }
+.progress-bar-warning { background-color: @orange; }
+.progress-bar-danger { background-color: @red; }
 .progress-bar.progress-bar-low { min-width: 2em; }
 
 .breadcrumb {
-    background-color: white;
+    background-color: @white;
     margin: 0;
     padding: 5px 0;
     .active { color: @font-color; }
 }
-.breadcrumb > li + li:before { padding: 0 2px 0 6px; }
-.label-info { background-color: #428bca; }
 
-.badge.badge-error {
-    background-color: @red;
+.label {
+  padding: .2em .6em .3em;
+  font-size: 75%;
+  font-weight: bold;
+  color: @white;
+  border-radius: .25em;
+  line-height: 1;
 }
-.badge.badge-success {
-    background-color: @green;
+.label-default { background-color: @gray; }
+.label-info { background-color: @blue; }
+.label-primary { background-color: @blue; }
+.label-success { background-color: @green; }
+.label-warning { background-color: @orange; }
+.label-danger { background-color: @red; }
+.label-attr { 
+    border: 1px solid @gray_light;
+    background-color: @silver;
+    color: inherit;
+    padding: 2px;
 }
-.badge-warning {
-    background-color: @orange;
+
+.badge {
+  font-size: 12px;
+  border-radius: 10px;
+  background-color: @gray;
+  color: @white;
 }
+.badge-error { background-color: @red; }
+.badge-success { background-color: @green; }
+.badge-warning { background-color: @orange; }
 
 
 /** Chosen Plugin Overrides */
@@ -784,6 +805,10 @@ span.fancytree-node {
     border-bottom: 1px solid #ccc;
 }
 
+.ui-timepicker-div .ui_tpicker_time .ui_tpicker_time_input { 
+    background: none !important;
+    border-bottom: none !important;
+}
 
 
 /** Open Layers Overrides */

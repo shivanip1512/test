@@ -1,10 +1,13 @@
 package com.cannontech.web.dev;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,7 +41,11 @@ import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusResponse;
 import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
+import com.cannontech.dr.ecobee.message.ZeusCreatePushConfig;
+import com.cannontech.dr.ecobee.message.ZeusDemandResponseRequest;
 import com.cannontech.dr.ecobee.message.ZeusErrorResponse;
+import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
+import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.partial.Status;
 import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
@@ -52,7 +60,7 @@ public class EcobeeMockApiController {
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
     @Autowired private MockZeusResponseFactory responseFactory;
-
+    
     @IgnoreCsrfCheck
     @RequestMapping(value = "hierarchy/set", method = RequestMethod.POST)
     public @ResponseBody StandardResponse hierarchy(HttpEntity<SetRequest> requestEntity) {
@@ -189,6 +197,115 @@ public class EcobeeMockApiController {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else if (deleteDeviceCode == 3) {
             return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @IgnoreCsrfCheck
+    @PostMapping("tstatgroups")
+    public ResponseEntity<Object> createThermostatGroup(@RequestBody ZeusThermostatGroup thermostatGroup) {
+        Map<String, Map<String, Object>> responseMap = new HashMap<String, Map<String, Object>>();
+        Map<String, Object> groupMap = new HashMap<String, Object>();
+        groupMap.put("id", StringUtils.replace(UUID.randomUUID().toString(), "-", "").substring(0, 32));
+        groupMap.put("name", thermostatGroup.getGroup().getName());
+        groupMap.put("utility_id", "utility-123");
+        groupMap.put("thermostat_count", 100);
+        responseMap.put("group", groupMap);
+        return new ResponseEntity<>(responseMap, HttpStatus.OK);
+    }
+
+    @IgnoreCsrfCheck
+    @PutMapping("tstatgroups/{id}")
+    public ResponseEntity<Object> updateThermostatGroup(@RequestBody ZeusThermostatGroup thermostatGroup,
+            @PathVariable String id) {
+        Map<String, Object> responseMap = new HashMap<String, Object>();
+        Map<String, Object> groupMap = new HashMap<String, Object>();
+        groupMap.put("id", id);
+        groupMap.put("name", thermostatGroup.getGroup().getName());
+        groupMap.put("utility_id", "utility-123");
+        groupMap.put("thermostat_count", thermostatGroup.getCriteriaSelector().getValues().size());
+        responseMap.put("group", groupMap);
+        int enrollment = zeusEcobeeDataConfiguration.getEnrollment();
+        if (enrollment == 0) {
+            return new ResponseEntity<>(responseMap, HttpStatus.CREATED);
+        } else if (enrollment == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (enrollment == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else if (enrollment == 4) {
+            responseMap.put("failed_thermostat_ids", Arrays.asList("12345678"));
+            return new ResponseEntity<>(responseMap, HttpStatus.PARTIAL_CONTENT);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @IgnoreCsrfCheck
+    @PostMapping("events/dr")
+    public ResponseEntity<Object> issueDemandResponse(@RequestBody ZeusDemandResponseRequest zeusDutyCycleDrRequest) {
+        String eventId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+        zeusDutyCycleDrRequest.getEvent().setId(eventId);
+        int issueDemandResponse = zeusEcobeeDataConfiguration.getIssueDemandResponse();
+        if (issueDemandResponse == 0) {
+            return new ResponseEntity<>(zeusDutyCycleDrRequest, HttpStatus.CREATED);
+        } else if (issueDemandResponse == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (issueDemandResponse == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("utilities/{utilityId}/pushconfig")
+    public ResponseEntity<Object> showPushApiConfiguration(@PathVariable String utilityId) {
+        ZeusShowPushConfig config = new ZeusShowPushConfig();
+        config.setPrivateKey("142f8801bc58d69f5100bd2779d75c9e36011244");
+        config.setReportingUrl("http://abcenergy.com/ecobee/runtimedata");
+        int getShowPushConfigCode = zeusEcobeeDataConfiguration.getShowPushConfiguration();
+        if (getShowPushConfigCode == 0) {
+            return new ResponseEntity<>(config, HttpStatus.OK);
+        } else if (getShowPushConfigCode == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (getShowPushConfigCode == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @IgnoreCsrfCheck
+    @PostMapping("utilities/{utilityId}/pushconfig")
+    public ResponseEntity<Object> createPushApiConfiguration(@RequestBody ZeusCreatePushConfig zeusPushConfig,
+            @PathVariable String utilityId) {
+        
+        ZeusCreatePushConfig createConfig = new ZeusCreatePushConfig();
+        createConfig.setPrivateKey(zeusPushConfig.getPrivateKey());
+        createConfig.setReportingUrl(zeusPushConfig.getReportingUrl());
+        int getPushConfigCode = zeusEcobeeDataConfiguration.getCreatePushConfiguration();
+        if (getPushConfigCode == 0) {
+            return new ResponseEntity<>(createConfig, HttpStatus.OK);
+        } else if (getPushConfigCode == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (getPushConfigCode == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @IgnoreCsrfCheck
+    @GetMapping("auth/user")
+    public ResponseEntity<Object> showUser() {
+        Map<String, Object> responseMap = new HashMap<String, Object>();
+        responseMap.put("username", "user123");
+        responseMap.put("utility_id", "utility-123");
+        int showUserCode = zeusEcobeeDataConfiguration.getShowUser();
+        if (showUserCode == 0) {
+            return new ResponseEntity<>(responseMap, HttpStatus.OK);
+        } else if (showUserCode == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else {
             return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }

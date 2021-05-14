@@ -39,6 +39,8 @@ public class HardwareModelHelper {
     @Autowired private HardwareValidator hardwareValidator;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private CustomerAccountDao customerAccountDao;
+    
+    private final static String deviceCreationErrorKey = "yukon.web.modules.operator.hardware.error.deviceCreationError";
 
     public void creationAttempted(LiteYukonUser user, 
                                   String accountNo, 
@@ -81,8 +83,18 @@ public class HardwareModelHelper {
                 int userId = SessionUtil.getParentLoginUserId(session, user.getUserID());
                 EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_INVENTORY, hardware.getDeviceStatusEntryId(), inventoryId);
             }
-        } catch (DeviceCreationException| IgnoredTemplateException e) {  //includes BadTemplateDeviceCreationException 
-            result.rejectValue( "serialNumber", "yukon.web.modules.operator.hardware.error.deviceCreationError", new Object[]{e.getMessage()}, "");
+        } catch (IgnoredTemplateException e) {  //includes BadTemplateDeviceCreationException 
+            result.rejectValue("serialNumber", deviceCreationErrorKey, new Object[]{e.getMessage()}, "");
+        } catch (DeviceCreationException e) {
+            switch (e.getType()) {
+            case UNKNOWN:
+                result.rejectValue("serialNumber", deviceCreationErrorKey, new Object[]{e.getMessage()}, "");
+                break;
+            case GUID_ALREADY_EXISTS:
+            case GUID_DOES_NOT_EXIST:
+                result.rejectValue("guid", deviceCreationErrorKey, new Object[]{e.getMessage()}, "");
+                break;
+            }
         } catch (StarsDeviceSerialNumberAlreadyExistsException|ObjectInOtherEnergyCompanyException e) {
             result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
         } catch (Lcr3102YukonDeviceCreationException e) {

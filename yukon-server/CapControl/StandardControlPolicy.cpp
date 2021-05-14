@@ -19,7 +19,9 @@ Policy::AttributeList StandardControlPolicy::getSupportedAttributes() const
         Attribute::ForwardBandwidth,
         Attribute::ReverseBandwidth,
         Attribute::ReverseSetPoint,
-        Attribute::ReverseFlowIndicator
+        Attribute::ReverseFlowIndicator,
+        Attribute::PowerFlowIndeterminate,
+        Attribute::ControlPowerFlowReverse
     };
 }
 
