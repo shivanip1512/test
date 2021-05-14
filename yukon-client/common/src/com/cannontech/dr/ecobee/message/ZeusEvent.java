@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ZeusDutyCycleEvent {
+public class ZeusEvent {
 
     private String id;
     private String name;
@@ -22,7 +22,7 @@ public class ZeusDutyCycleEvent {
     @JsonProperty("is_mandatory")
     private boolean isMandatory;
     @JsonProperty("duty_cycle")
-    private int dutyCyclePercentage;
+    private Integer dutyCyclePercentage = null;
     @JsonProperty("send_email")
     private boolean sendEmail;
     @JsonProperty("show_web")
@@ -30,8 +30,28 @@ public class ZeusDutyCycleEvent {
     @JsonProperty("show_thermostat")
     private boolean showThermostat;
     private String message;
+    @JsonProperty("is_heating_event")
+    private Boolean isHeatingEvent = null;
+    @JsonProperty("relative_temp")
+    private Float relativeTemp = null;
 
-    public ZeusDutyCycleEvent() {
+    public Boolean getIsHeatingEvent() {
+        return isHeatingEvent;
+    }
+
+    public void setIsHeatingEvent(Boolean isHeatingEvent) {
+        this.isHeatingEvent = isHeatingEvent;
+    }
+
+    public Float getRelativeTemp() {
+        return relativeTemp;
+    }
+
+    public void setRelativeTemp(Float relativeTemp) {
+        this.relativeTemp = relativeTemp;
+    }
+
+    public ZeusEvent() {
     }
 
     public String getId() {
@@ -106,11 +126,11 @@ public class ZeusDutyCycleEvent {
         this.isMandatory = isMandatory;
     }
 
-    public int getDutyCyclePercentage() {
+    public Integer getDutyCyclePercentage() {
         return dutyCyclePercentage;
     }
 
-    public void setDutyCyclePercentage(int dutyCyclePercentage) {
+    public void setDutyCyclePercentage(Integer dutyCyclePercentage) {
         this.dutyCyclePercentage = dutyCyclePercentage;
     }
 
