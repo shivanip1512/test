@@ -88,12 +88,17 @@ public class EcobeeMessageListener {
             }
             log.debug("Parameters built " + parameters + " Ready to send Ecobee Message");
 
-            //Send DR message to ecobee server
-            String drIdentifier = ecobeeCommunicationService.sendSetpointDR(parameters);
-            
-            //Store the most recent dr handle for each group, so we can cancel
-            groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
-            
+            if (isEcobeeZeusEnabled()) {
+                String eventId = ecobeeZeusCommunicationService.sendSetpointDR(parameters);
+                ecobeeZeusGroupService.updateEventId(eventId, parameters.getGroupId());
+            } else {
+                // Send DR message to ecobee server
+                String drIdentifier = ecobeeCommunicationService.sendSetpointDR(parameters);
+
+                // Store the most recent dr handle for each group, so we can cancel
+                groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
+            }
+
             //Send control history message to dispatch
             Duration controlDuration = new Duration(parameters.getStartTime(), parameters.getStopTime());
             int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
