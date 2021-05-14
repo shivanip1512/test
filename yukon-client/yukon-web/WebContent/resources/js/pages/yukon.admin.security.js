@@ -142,6 +142,7 @@ yukon.admin.security = (function () {
             });
             
             $(document).on('yukon:admin:security:generateEcobeeZeusKey', function(event) {
+                yukon.ui.busy($('#generateEcobeeZeusKey'));
                 $.ajax({
                     url : "generateEcobeeZeusKey",
                     type : "GET",
@@ -160,6 +161,7 @@ yukon.admin.security = (function () {
             });
             
             $(document).on('yukon:admin:security:registerEcobeeZeusKey', function(event) {
+                yukon.ui.busy($('#registerConfigurationEcobeeZeusKey'));
                 $.ajax({
                     url : "registerEcobeeZeusKey",
                     type : "POST",
@@ -183,18 +185,26 @@ yukon.admin.security = (function () {
                 });
             });
             
-            $(document).on('viewEcobeeZeusPublicKey', function(event) {
+            $(document).on('yukon:admin:security:viewEcobeeZeusPublicKey', function(event) {
                 $.ajax({
                     url : "viewEcobeeZeusPublicKey",
                     type : "GET",
                     dataType : "json"
                 }).done(function(data) {
-                    $('#ecobeeZeuPublicKeyArea').html(data.publicKey);
+                    if (data.success) {
+                        $('#ecobeeZeuPublicKeyArea').html(data.publicKey);
+                    } else {
+                        $('#ecobeeZeusErrorMessage').addMessage({
+                            message : data.errorMessage,
+                            messageClass : 'error'
+                        });
+                    }
                     
                 });
             });
             
             $(document).on('click', '#checkRegistrationEcobeeZeusKey', function() {
+                yukon.ui.busy($('#checkRegistrationEcobeeZeusKey'));
                 $.ajax({
                     url : "checkRegistrationEcobeeZeusKey",
                     type : "GET",

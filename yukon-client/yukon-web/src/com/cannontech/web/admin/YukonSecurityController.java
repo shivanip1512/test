@@ -659,7 +659,7 @@ public class YukonSecurityController {
 
     @GetMapping(value = "/config/security/generateEcobeeKey")
     @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
-    public @ResponseBody Map<String, Object> generateEcobeeKey(YukonUserContext userContext, FlashScope flashScope)
+    public @ResponseBody Map<String, Object> generateEcobeeKey(YukonUserContext userContext)
             throws CryptoException {
         Map<String, Object> json = new HashMap<>();
         try {
@@ -678,7 +678,7 @@ public class YukonSecurityController {
 
     @GetMapping(value = "/config/security/generateEcobeeZeusKey")
     @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
-    public @ResponseBody Map<String, Object> generateEcobeeZeusKey(YukonUserContext userContext, FlashScope flashScope)
+    public @ResponseBody Map<String, Object> generateEcobeeZeusKey(YukonUserContext userContext)
             throws CryptoException {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -697,7 +697,7 @@ public class YukonSecurityController {
 
     @PostMapping(value = "/config/security/registerEcobeeZeusKey")
     @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
-    public @ResponseBody Map<String, Object> registerEcobeeZeusKey(YukonUserContext userContext, FlashScope flashScope)
+    public @ResponseBody Map<String, Object> registerEcobeeZeusKey(YukonUserContext userContext)
             throws CryptoException {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -727,7 +727,7 @@ public class YukonSecurityController {
 
     @GetMapping(value = "/config/security/checkRegistrationEcobeeZeusKey")
     @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
-    public @ResponseBody Map<String, Object> checkRegistrationEcobeeZeusKey(YukonUserContext userContext, FlashScope flashScope)
+    public @ResponseBody Map<String, Object> checkRegistrationEcobeeZeusKey(YukonUserContext userContext)
             throws CryptoException {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -759,7 +759,7 @@ public class YukonSecurityController {
     }
 
     @GetMapping(value = "/config/security/viewEcobeeZeusPublicKey")
-    public @ResponseBody Map<String, Object> viewEcobeeZeusPublicKey(YukonUserContext userContext, FlashScope flashScope)
+    public @ResponseBody Map<String, Object> viewEcobeeZeusPublicKey(YukonUserContext userContext)
             throws CryptoException {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -770,7 +770,7 @@ public class YukonSecurityController {
         } catch (Exception e) {
             log.error("Exception getting the ecobee zeus Public Key", e);
             String message = accessor.getMessage(baseKey + ".viewEcobeeZeusKey.failed");
-            json.put("publicKey", message);
+            json.put("errorMessage", message);
             json.put("success", false);
         }
         return json;

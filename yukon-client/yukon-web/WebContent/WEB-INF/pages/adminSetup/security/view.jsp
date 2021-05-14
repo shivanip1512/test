@@ -6,7 +6,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msgScope paths="yukon.web.modules.adminSetup.security">
 <cti:standardPage module="adminSetup" page="security">
     <div id="honeywellPublicKeyDownloadStatus" style="display:none"></div>
     <input type="hidden" class="js-show-dialog" value="${showDialog}"/>
@@ -79,7 +78,7 @@
     </div>
     
     <cti:msg2 key=".confirmViewEcobeeZeusKey.title" var="confirmViewEcobeeZeusKeyDialogTitle"/>
-    <div class="dn" id="viewEcobeeZeusKeyDialog" data-dialog data-title="${confirmViewEcobeeZeusKeyDialogTitle}" data-event="viewEcobeeZeusPublicKey" data-ok-text="<cti:msg2 key=".ecobeeZeusKeyViewBtn.label"/>">
+    <div class="dn" id="viewEcobeeZeusKeyDialog" data-dialog data-title="${confirmViewEcobeeZeusKeyDialogTitle}" data-load-event="yukon:admin:security:viewEcobeeZeusPublicKey">
         <div id="ecobeeZeusErrorMessage"></div>
         
         <div id="ecobeeZeuPublicKeyText">
@@ -275,21 +274,21 @@
                     <span class="js-ecobee-zeus-key-not-generated ${keyNotGeneratedClass}"><i:inline key=".ecobeeZeusNoKeyGenerated"/></span>
                   
                     <div id="reportingUrl">
-                        <span class="js-url"><b>URL for incoming ecobee data:</span>
+                        <span class="js-url"><b> <cti:msg2 key=".ecobeeZeusURL"/></span>
                         <span class="js-value">${reportingUrl}</span>
                     </div>
                     <div class="page-action-area">
                     
                        <cti:msg2 var="generateWarningMessage" key=".confirmGenerateEcobeeZeusKey.warning"/>
-                       <cti:button id="generateEcobeeZeusKey" nameKey="generateEcobeeKey" data-ok-event="yukon:admin:security:generateEcobeeZeusKey" busy="true"/>
+                       <cti:button id="generateEcobeeZeusKey" nameKey="generateEcobeeKey" data-ok-event="yukon:admin:security:generateEcobeeZeusKey"/>
                        <d:confirm on="#generateEcobeeZeusKey" nameKey="confirmGenerateEcobeeZeusKey" userMessage="${generateWarningMessage}" userMessageClass="warning"/>
                      
                        <cti:msg2 var="registerWarningMessage" key=".confirmRegisterConfigurationEcobeeZeusKey.warning"/>
-                       <cti:button id="registerConfigurationEcobeeZeusKey" nameKey="registerConfigurationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:registerEcobeeZeusKey" busy="true"/>
+                       <cti:button id="registerConfigurationEcobeeZeusKey" nameKey="registerConfigurationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:registerEcobeeZeusKey" />
                        <d:confirm on="#registerConfigurationEcobeeZeusKey" nameKey="confirmRegisterConfigurationEcobeeZeusKey" userMessage="${registerWarningMessage}" userMessageClass="warning"/>
                        
                        <cti:button id="viewEcobeeZeusKey" nameKey="viewEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-popup="#viewEcobeeZeusKeyDialog" />
-                       <cti:button id="checkRegistrationEcobeeZeusKey" nameKey="checkRegistrationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:checkRegistrationEcobeeZeusKey" busy="true"/>
+                       <cti:button id="checkRegistrationEcobeeZeusKey" nameKey="checkRegistrationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:checkRegistrationEcobeeZeusKey" />
                     </div>
                 </tags:boxContainer2>
             </cti:checkRolesAndProperties>
@@ -315,4 +314,3 @@
     <cti:includeScript link="/resources/js/pages/yukon.admin.security.js"/>
 
 </cti:standardPage>
-</cti:msgScope>
