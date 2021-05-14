@@ -13,8 +13,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
-//TODO YUK-23414 Add New/Existing BuiltInAttributes to MWChannel for LCR 6600
-
 /**
  * This is the list of enums used to map LCR 6200C and 6600C channels to BuiltInAttributes
  * It was created as part of the PXMW (PXMiddleWare) project for the Eaton Cloud / Cellular LCR

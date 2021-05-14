@@ -78,6 +78,14 @@ ALTER TABLE ZeusGroupInventoryMapping
 INSERT INTO DBUpdates VALUES ('YUK-23903', '9.1.0', SYSDATE);
 /* @end YUK-23903 */
 
+/* @start YUK-24286 */
+INSERT INTO StateGroup VALUES(-33, 'OnOff', 'Status');
+INSERT INTO State VALUES(-33, 0, 'Off', 1, 6, 0);
+INSERT INTO State VALUES(-33, 1, 'On', 0, 6, 0);
+
+INSERT INTO DBUpdates VALUES ('YUK-24286', '9.0.0', SYSDATE);
+/* @end YUK-24286 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
