@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData, #cancelDemandResponse').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData, #cancelDemandResponse, #getGroup').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -47,6 +47,9 @@
              } break;
              case 'cancelDemandResponse' : {
                  enabledSelectedOption(cancelDemandResponse, cancelDemandResponseOp);
+             } break;
+             case 'getGroup' : {
+                 enabledSelectedOption(getGroup, getAllGroupOp);
              } break;
          }
          });
@@ -119,6 +122,12 @@
                             <label> 
                                 <input id="cancelDemandResponse" type="checkbox" name="cancelDemandResponse"> 
                                 <i:inline key=".cancelDemandResponse" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="getGroup" type="checkbox" name="getGroup"> 
+                                <i:inline key=".getGroup" />
                             </label>
                         </li>
                     </ul>
@@ -199,6 +208,14 @@
                                     </c:forEach>
                                 </select>
                                 <input type="hidden" name="cancelDemandResponseOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="getAllGroupOp" name="getAllGroupOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="getAllGroupOp" value="0" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>

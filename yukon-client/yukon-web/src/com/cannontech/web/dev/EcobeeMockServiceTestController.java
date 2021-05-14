@@ -95,8 +95,8 @@ public class EcobeeMockServiceTestController {
     @IgnoreCsrfCheck
     @RequestMapping(value = "zeus/update", method = RequestMethod.POST)
     public String updateZeus(Integer authenticateOp, Integer createDeviceOp, Integer deleteDeviceOp, Integer enrollmentOp, Integer issueDemandResponseOp,
-            Integer showUserOp, Integer createPushConfigurationOp, Integer showPushConfigurationOp, boolean enableRuntime, Integer cancelDemandResponseOp,
-            FlashScope flashScope, ModelMap modelMap) throws Exception {
+            Integer showUserOp, Integer createPushConfigurationOp, Integer showPushConfigurationOp, boolean enableRuntime, Integer getAllGroupOp,
+            Integer cancelDemandResponseOp, FlashScope flashScope, ModelMap modelMap) throws Exception {
         zeusEcobeeDataConfiguration.setZeusEcobeeDataConfiguration(authenticateOp,
                                                                    createDeviceOp,
                                                                    deleteDeviceOp,
@@ -106,7 +106,9 @@ public class EcobeeMockServiceTestController {
                                                                    createPushConfigurationOp,
                                                                    showPushConfigurationOp,
                                                                    enableRuntime,
+                                                                   getAllGroupOp,
                                                                    cancelDemandResponseOp);
+                                                                   
         if (enableRuntime == true) {
             future = scheduledExecutor.scheduleAtFixedRate(() -> {
                 try {

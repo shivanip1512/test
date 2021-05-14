@@ -104,4 +104,14 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     public String zeusGroupName(String zeusGroupId) {
         return ecobeeZeusGroupDao.getZeusGroupName(zeusGroupId);
     }
+    
+    @Override
+    public int getGroupCount() {
+        return ecobeeZeusGroupDao.getGroupCount();
+    }
+    
+    @Override
+    public int getAllThermostatCount() {
+        return ecobeeZeusGroupDao.getAllThermostatCount();
+    }
 }

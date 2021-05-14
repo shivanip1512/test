@@ -34,7 +34,9 @@ import com.cannontech.dr.ecobee.message.ZeusDemandResponseRequest;
 import com.cannontech.dr.ecobee.message.ZeusEvent;
 
 import com.cannontech.dr.ecobee.message.ZeusGroup;
+import com.cannontech.dr.ecobee.message.ZeusGroupResponse;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
+import com.cannontech.dr.ecobee.message.ZeusThermostat;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
@@ -82,14 +84,15 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     /**
-     * Removes the thermostat(s) from the specified thermostat group. When a thermostat is deleted from a group, 
+     * Removes the thermostat(s) from the specified thermostat group. When a thermostat is deleted from a group,
      * it's state changes to "REMOVED".
      */
     @Override
     public void deleteDevice(String serialNumber) {
         try {
             String thermostatGroupID = retrieveThermostatGroupID();
-            String deleteThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats?thermostat_ids=" + serialNumber;
+            String deleteThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats?thermostat_ids="
+                    + serialNumber;
 
             requestHelper.callEcobeeAPIForObject(deleteThermostatsURL, HttpMethod.DELETE, Object.class);
         } catch (RestClientException | EcobeeAuthenticationException e) {
@@ -226,7 +229,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         String updateThermostatURL = getUrlBase() + "tstatgroups/" + zeusGroupId;
 
         String groupName = ecobeeZeusGroupService.zeusGroupName(zeusGroupId);
-        CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType() , thermostatIds);
+        CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), thermostatIds);
         ZeusGroup group = new ZeusGroup(groupName, programId);
         ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
@@ -239,7 +242,6 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         }
     }
 
-    
     @Override
     public void createPushApiConfiguration(String reportingUrl, String privateKey) {
         try {
@@ -255,7 +257,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
     }
-    
+
     @Override
     public ZeusShowPushConfig showPushApiConfiguration() {
         try {
@@ -372,6 +374,45 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         return event;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ZeusGroup> getAllGroups() {
+        String getAllGroups = getUrlBase() + "tstatgroups";
+        List<ZeusGroup> zeusGroups = new ArrayList<>();
+        try {
+            ResponseEntity<ZeusGroupResponse> responseEntity = (ResponseEntity<ZeusGroupResponse>) requestHelper
+                    .callEcobeeAPIForObject(getAllGroups, HttpMethod.GET, ZeusGroupResponse.class);
+
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                ZeusGroupResponse zeusGroupResponse = responseEntity.getBody();
+                zeusGroups = zeusGroupResponse.getGroups();
+            }
+            return zeusGroups;
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ZeusThermostat> getThermostatsInGroup(String thermostatGroupID) {
+        String getThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats";
+        List<ZeusThermostat> zeusThermostats = new ArrayList<>();
+        try {
+            ResponseEntity<ZeusThermostatsResponse> responseEntity = (ResponseEntity<ZeusThermostatsResponse>) requestHelper
+                    .callEcobeeAPIForObject(getThermostatsURL, HttpMethod.GET, ZeusThermostatsResponse.class);
+
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                ZeusThermostatsResponse zeusGroupResponse = responseEntity.getBody();
+                zeusThermostats = zeusGroupResponse.getThermostats();
+            }
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+        return zeusThermostats;
+    }
+
     @Override
     public void cancelDemandResponse(int yukonGroupId, String... serialNumbers) {
         boolean isNotEmptyThermostats = ArrayUtils.isNotEmpty(serialNumbers);
@@ -388,10 +429,10 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                 log.debug("Canceled DR request for Yukon group : {} for {} thermostat(s)", yukonGroupId,
                         isNotEmptyThermostats ? serialNumbers : "all");
                 if (!isNotEmptyThermostats) {
-                    //For DR event cancellation, update the eventId to empty String for the Yukon group.
+                    // For DR event cancellation, update the eventId to empty String for the Yukon group.
                     ecobeeZeusGroupService.updateEventId(StringUtils.EMPTY, yukonGroupId);
                 } else {
-                    //For Opt Out remove the mapping between inventory ID and Zeus group ID.
+                    // For Opt Out remove the mapping between inventory ID and Zeus group ID.
                     int inventoryId = lmHardwareBaseDao.getBySerialNumber(serialNumbers[0]).getInventoryId();
                     ecobeeZeusGroupService.deleteZeusGroupMappingForInventoryId(inventoryId);
                 }
