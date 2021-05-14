@@ -1,5 +1,6 @@
 package com.cannontech.dr.pxmw.service.impl.v1;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -151,7 +152,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
 
         PointData pointData = new PointData();
         try {
-            pointData.setTime(Date.from(java.time.Instant.ofEpochSecond(time)));            
+            pointData.setTime(Date.from(java.time.Instant.ofEpochSecond(time)));
         } catch (Exception e) {
             log.error(
                     "Device Id:{} Name:{} Guid:{} Attribute:{} can't parse timestamp for point data. Discarding received value:{}",

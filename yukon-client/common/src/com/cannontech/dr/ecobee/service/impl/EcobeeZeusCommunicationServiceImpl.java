@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,8 @@ import com.cannontech.dr.ecobee.message.EcoplusSelector;
 import com.cannontech.dr.ecobee.message.Selector;
 
 import com.cannontech.dr.ecobee.message.ZeusCreatePushConfig;
-import com.cannontech.dr.ecobee.message.ZeusDutyCycleDrRequest;
-import com.cannontech.dr.ecobee.message.ZeusDutyCycleEvent;
+import com.cannontech.dr.ecobee.message.ZeusDemandResponseRequest;
+import com.cannontech.dr.ecobee.message.ZeusEvent;
 
 import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusGroupResponse;
@@ -39,6 +40,7 @@ import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
 import com.cannontech.dr.ecobee.service.helper.EcobeeZeusRequestHelper;
@@ -291,7 +293,9 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         String eventId = StringUtils.EMPTY;
 
         String issueDemandResponseUrl = getUrlBase() + "events/dr";
-        ZeusDutyCycleDrRequest dutyCycleDr = new ZeusDutyCycleDrRequest(buildZeusEvent(parameters));
+        ZeusDemandResponseRequest dutyCycleDr = new ZeusDemandResponseRequest(buildZeusEvent(parameters.getGroupId(),
+                parameters.getStartTime(), parameters.getEndTime(), parameters.isOptional()));
+        dutyCycleDr.getEvent().setDutyCyclePercentage(parameters.getDutyCyclePercent());
         if (log.isDebugEnabled()) {
             try {
                 log.debug("Sending ecobee duty cycle DR with body: {}", JsonUtils.toJson(dutyCycleDr));
@@ -300,8 +304,37 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             }
         }
         try {
-            ResponseEntity<ZeusDutyCycleDrRequest> zeusDrResponseEntity = requestHelper
-                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDutyCycleDrRequest.class, dutyCycleDr);
+            ResponseEntity<ZeusDemandResponseRequest> zeusDrResponseEntity = requestHelper
+                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class,
+                            dutyCycleDr);
+            if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
+                eventId = zeusDrResponseEntity.getBody().getEvent().getId();
+            }
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+        return eventId;
+    }
+
+    @Override
+    public String sendSetpointDR(EcobeeSetpointDrParameters parameters) {
+        String eventId = StringUtils.EMPTY;
+
+        String issueDemandResponseUrl = getUrlBase() + "events/dr";
+        ZeusDemandResponseRequest setpointDr = new ZeusDemandResponseRequest(buildZeusEvent(parameters.getGroupId(),
+                parameters.getStartTime(), parameters.getStopTime(), parameters.isOptional()));
+        setpointDr.getEvent().setIsHeatingEvent(parameters.istempOptionHeat());
+        setpointDr.getEvent().setRelativeTemp((float) parameters.getTempOffset());
+        if (log.isDebugEnabled()) {
+            try {
+                log.debug("Sending ecobee set point DR with body: {}", JsonUtils.toJson(setpointDr));
+            } catch (JsonProcessingException e) {
+                log.warn("Error parsing json in debug.", e);
+            }
+        }
+        try {
+            ResponseEntity<ZeusDemandResponseRequest> zeusDrResponseEntity = requestHelper
+                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class, setpointDr);
             if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
                 eventId = zeusDrResponseEntity.getBody().getEvent().getId();
             }
@@ -314,22 +347,21 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     /**
      * Method to build Zeus event.
      */
-    private ZeusDutyCycleEvent buildZeusEvent(EcobeeDutyCycleDrParameters parameters) {
+    private ZeusEvent buildZeusEvent(int groupId, Instant startTime, Instant stopTime, boolean optional) {
         DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         String eventDisplayMessage = messageSourceAccessor.getMessage("yukon.web.modules.dr.ecobee.eventDisplayMessage");
-        String zeusGroupId = ecobeeZeusGroupService.getZeusGroupIdForLmGroup(parameters.getGroupId());
+        String zeusGroupId = ecobeeZeusGroupService.getZeusGroupIdForLmGroup(groupId);
 
-        ZeusDutyCycleEvent event = new ZeusDutyCycleEvent();
+        ZeusEvent event = new ZeusEvent();
         event.setName(YUKON_CYCLE_EVENT_NAME);
         event.setTstatGroupId(zeusGroupId);
 
-        event.setEventStartTime(parameters.getStartTime().toString(dateTimeFormmater));
-        Duration res = new Duration(parameters.getStartTime(), parameters.getEndTime());
+        event.setEventStartTime(startTime.toString(dateTimeFormmater));
+        Duration res = new Duration(startTime, stopTime);
         event.setDurationInMinutes(res.toStandardMinutes().getMinutes());
 
-        event.setMandatory(!parameters.isOptional());
-        event.setDutyCyclePercentage(parameters.getDutyCyclePercent());
+        event.setMandatory(!optional);
 
         event.setMessage(eventDisplayMessage);
         event.setSendEmail(settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));

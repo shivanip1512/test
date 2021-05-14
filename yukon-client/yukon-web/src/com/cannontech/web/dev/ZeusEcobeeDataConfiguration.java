@@ -11,10 +11,10 @@ public class ZeusEcobeeDataConfiguration {
     private int createPushConfiguration = 0;
     private int showPushConfiguration = 0;
     private int getGroup = 0;
+    private boolean enableRuntime = false;
 
-    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment,
-            int issueDemandResponse, int showUser, int createPushConfiguration, int showPushConfiguration, int getGroup) {
-
+    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment, int issueDemandResponse, int showUser,
+            int createPushConfiguration, int showPushConfiguration, boolean enableRuntime, int getGroup) {
         this.authenticate = authenticate;
         this.createDevice = createDevice;
         this.deleteDevice = deleteDevice;
@@ -24,7 +24,7 @@ public class ZeusEcobeeDataConfiguration {
         this.createPushConfiguration = createPushConfiguration;
         this.showPushConfiguration = showPushConfiguration;
         this.getGroup = getGroup;
-        
+        this.enableRuntime = enableRuntime;
     }
 
     public int getAuthenticate() {
@@ -59,6 +59,10 @@ public class ZeusEcobeeDataConfiguration {
         return showPushConfiguration;
     }
 
+    public boolean isEnableRuntime() {
+        return enableRuntime;
+    }
+
     public void setAuthenticate(int authenticate) {
         this.authenticate = authenticate;
     }
@@ -90,7 +94,7 @@ public class ZeusEcobeeDataConfiguration {
     public void setShowPushConfiguration(int showPushConfiguration) {
         this.showPushConfiguration = showPushConfiguration;
     }
-    
+
     public int getGetGroup() {
         return getGroup;
     }
@@ -98,4 +102,9 @@ public class ZeusEcobeeDataConfiguration {
     public void setGetGroup(int getGroup) {
         this.getGroup = getGroup;
     }
+
+    public void setEnableRuntime(boolean enableRuntime) {
+        this.enableRuntime = enableRuntime;
+    }
+
 }

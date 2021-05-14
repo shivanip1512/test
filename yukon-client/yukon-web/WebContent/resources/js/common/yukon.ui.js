@@ -157,8 +157,12 @@ yukon.ui = (function () {
 
         /** Follow clicks on top level nav menus when not using a touch screen. */
         $(document).on('click', '.yukon-header .menu-title', function (ev) {
-            if ($(this).is('[data-url]') && !Modernizr.touch) {
-                window.location.href = $(this).data('url');
+            if ($(this).is('[data-url]')) {
+                //check for touch device
+                var touchDevice = "ontouchstart" in window || navigator.msMaxTouchPoints;
+                if (!touchDevice) {
+                    window.location.href = $(this).data('url');
+                }
             }
         });
 

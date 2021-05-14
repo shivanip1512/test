@@ -1,7 +1,8 @@
 package com.cannontech.services.pxmw.creation.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,11 +29,14 @@ import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.PxMWVersion;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDeviceV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
-import com.cannontech.simulators.message.request.PxMWDeviceAutoCreationSimulatonRequest;
+import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
+import com.cannontech.simulators.message.request.PxMWDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.PxMWSimulatorDeviceCreateRequest;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -43,9 +47,8 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Strings;
 
-public class PxMWDeviceCreationService {
-    private static final Logger log = YukonLogManager.getLogger(PxMWDeviceCreationService.class);
-    private static int runFrequencyHours = 24;
+public class PxMWDataRetrievalService {
+    private static final Logger log = YukonLogManager.getLogger(PxMWDataRetrievalService.class);
 
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired private GlobalSettingDao settingDao;
@@ -56,70 +59,99 @@ public class PxMWDeviceCreationService {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-    private Set<HardwareType> supportedTypes = Set.of(HardwareType.LCR_6200C, HardwareType.LCR_6600C);
+    @Autowired private PxMWDataReadService pxMWDataReadService;
     private YukonJmsTemplate jmsTemplate;
 
-    private static AtomicBoolean isRunning = new AtomicBoolean();
+    private static AtomicBoolean isRunningDeviceCreation = new AtomicBoolean();
+    private static AtomicBoolean isRunningDeviceRead = new AtomicBoolean();
+
+
+    private final Runnable autoCreateCloudLCRThread = this::autoCreateCloudLCRs;
+    private final Runnable readCloudLCRThread = this::readCloudLCRs;
 
     /**
-     * The thread where the calculation is done.
-     */
-    private final Runnable autoCreateCloudLCRThread = this::autoCreateCloudLCR;
-
-    /**
-     * Schedule the calculation thread to run periodically.
+     * Schedule the calculation and data read threads to run periodically.
      */
     @PostConstruct
     public void init() {
-        runFrequencyHours = getDeviceCreationInterval();
-        log.info("Auto creation of Eaton cloud LCRs will run every {} hours and begin 5 minutes after startup",
-                runFrequencyHours);
-        executor.scheduleAtFixedRate(autoCreateCloudLCRThread, 5, runFrequencyHours, TimeUnit.HOURS);
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS);
         
+        //hours
+        int creationInterval = settingDao.getInteger(GlobalSettingType.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL);
+        log.info("Auto creation of Eaton cloud LCRs will run every {} hours", creationInterval);
+        executor.scheduleAtFixedRate(autoCreateCloudLCRThread, 5 / 60, creationInterval, TimeUnit.HOURS);
+
+        //minutes
+        int readInterval = settingDao.getInteger(GlobalSettingType.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES);
+        log.info("Auto read of Eaton cloud LCRs will run every {} minutes",
+                readInterval);
+        executor.scheduleAtFixedRate(readCloudLCRThread, 5, readInterval, TimeUnit.MINUTES);
     }
     
-    public void simulateCreateCloudLCR(PxMWDeviceAutoCreationSimulatonRequest request) {
-        autoCreateCloudLCR();
-        //notify simulator that auto creation is done
-        jmsTemplate.convertAndSend(new PxMWSimulatorDeviceCreateRequest(PxMWVersion.V1, true));
+    public void startSimulation(PxMWDataRetrievalSimulatonRequest request) {
+        if (request.isCreate()) {
+            autoCreateCloudLCRs();
+            // notify simulator that auto creation is done
+            jmsTemplate.convertAndSend(new PxMWSimulatorDeviceCreateRequest(PxMWVersion.V1, true));
+        } else {
+            readCloudLCRs();
+        }
+    }
+
+    private void readCloudLCRs() {
+        if (Strings.isNullOrEmpty(getSiteGuid())) {
+            return;
+        }
+        
+        if (isRunningDeviceRead.get() == true) {
+            log.debug("Eaton Cloud LCR read all task is already running.");
+            return;
+        }
+        isRunningDeviceRead.set(true);
+        log.info("Eaton Cloud read all LCRs task started.");
+        List<Integer> deviceIds = deviceDao.getDeviceIdsWithGuids();
+        pxMWDataReadService.collectDataForRead(new HashSet<>(deviceIds), getRange());
+        isRunningDeviceRead.set(false);
+        log.info("Eaton Cloud read all LCRs task completed - {} devices read", deviceIds.size());
     }
     
     /**
      * Device Auto Creation runs on the interval specified in the settings with a default of 24 hours
      */
-    private void autoCreateCloudLCR() {
+    private void autoCreateCloudLCRs() {
         try {
             String siteGuid = getSiteGuid();
             if (Strings.isNullOrEmpty(siteGuid)) {
                 return;
             }
             // if the auto creation is running, exit, otherwise set isRunning to "true" and continue
-            if (!isRunning.compareAndSet(false, true)) {
+            if (isRunningDeviceCreation.get() == true) {
                 log.debug("Eaton Cloud LCR auto creation task is already running.");
-                isRunning.set(false);
                 return;
             }
+            isRunningDeviceCreation.set(true);
             log.info("Eaton Cloud LCR auto creation started");
 
             // get list of Yukon devices (LCR6200C, 6600C) from DeviceGuid
             List<String> yukonGuids = deviceDao.getGuids();
 
-            List<PxMWSiteDeviceV1> devicesToCreate = pxMWCommunicationServiceV1.getSiteDevices(siteGuid, null, true)
-                    .getDevices();
-
+            List<PxMWSiteV1> sites = pxMWCommunicationServiceV1.getSites(siteGuid);
+            
+            List<PxMWSiteDeviceV1> devicesToCreate = new ArrayList<>();
+            sites.forEach(site -> devicesToCreate.addAll(pxMWCommunicationServiceV1.getSiteDevices(site.getSiteGuid(), null, true)
+                    .getDevices()));
+            
             //remove device that exist in yukon
             devicesToCreate.removeIf(device -> yukonGuids.contains(device.getDeviceGuid()));
            
             if (devicesToCreate.isEmpty()) {
                 log.info("Eaton Cloud LCR auto creation completed - no devices to create");
-                isRunning.set(false);
+                isRunningDeviceCreation.set(false);
                 return;
             }
             
-            
             List<PxMWTimeSeriesDeviceV1> timeSeriesDeviceRequest = devicesToCreate.stream()
-                    .map(device -> new PxMWTimeSeriesDeviceV1(device.getDeviceGuid(), "110741"))
+                    .map(device -> new PxMWTimeSeriesDeviceV1(device.getDeviceGuid(), String.valueOf(MWChannel.FREQUENCY.getChannelId())))
                     .collect(Collectors.toList());
             
             List<String> guidsWithTimeSeriesData = pxMWCommunicationServiceV1
@@ -134,7 +166,7 @@ public class PxMWDeviceCreationService {
     
             if (devicesToCreate.isEmpty()) {
                 log.info("Eaton Cloud LCR auto creation completed - no devices to create");
-                isRunning.set(false);
+                isRunningDeviceCreation.set(false);
                 return;
             }
             
@@ -155,7 +187,7 @@ public class PxMWDeviceCreationService {
                             
                             YukonListEntry typeEntry = typeEntries.get(0);
                             hardware.setHardwareTypeEntryId(typeEntry.getEntryID());
-                            if (supportedTypes.contains(hardware.getHardwareType())) {
+                            if (hardware.getHardwareType().isEatonCloud()) {
                                 hardwareUiService.createHardware(hardware, ec.getUser());
                                 log.info("Created device for guid:{} name:{} type:{}", hardware.getGuid(),
                                         hardware.getDisplayName(),
@@ -172,11 +204,11 @@ public class PxMWDeviceCreationService {
                         }
                     });
 
-            isRunning.set(false);
+            isRunningDeviceCreation.set(false);
             log.info("Eaton Cloud LCR auto creation completed - {} new devices created", createdDevices.get());
         } catch (Exception e) {
             log.error("Unexpected exception: ", e);
-            isRunning.set(false);
+            isRunningDeviceCreation.set(false);
         }
     }
 
@@ -188,14 +220,8 @@ public class PxMWDeviceCreationService {
         return timeRange;
     }
 
-    private int getDeviceCreationInterval() {
-        int deviceCreationInterval = settingDao.getInteger(GlobalSettingType.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL);
-        return deviceCreationInterval;
-    }
-
     private String getSiteGuid() {
-        String siteGuid = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
-        return siteGuid;
+        return settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
     }
 
     private Hardware buildEatonCloudHardware(PxMWSiteDeviceV1 device) {

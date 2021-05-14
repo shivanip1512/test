@@ -56,7 +56,8 @@ public enum MWChannel {
     SHEDTIME_R2(112073, "Shedtime R2", BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG),
     SHEDTIME_R3(112074, "Shedtime R3", BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG),
     SHEDTIME_R4(112075, "Shedtime R4", BuiltInAttribute.RELAY_4_SHED_TIME_DATA_LOG),
-    VERSION(110600, "Version", BuiltInAttribute.FIRMWARE_VERSION),
+    //removed attribute for now to limit log entries
+    VERSION(110600, "Version", null),
     VOLTAGE(110742, "Voltage", BuiltInAttribute.VOLTAGE);
 
     private Integer channelId;

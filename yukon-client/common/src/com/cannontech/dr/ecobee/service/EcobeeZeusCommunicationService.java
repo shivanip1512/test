@@ -6,6 +6,7 @@ import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 
 public interface EcobeeZeusCommunicationService {
 
@@ -54,4 +55,8 @@ public interface EcobeeZeusCommunicationService {
      */
     List<ZeusThermostat> getThermostatsInGroup(String groupId);
 
+    /**
+     * Initiates a Setpoint demand response event in Ecobee and return the created DR event ID.
+     */
+    String sendSetpointDR(EcobeeSetpointDrParameters parameters);
 }
