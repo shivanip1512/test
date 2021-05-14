@@ -4,17 +4,17 @@ public class ZeusEcobeeDataConfiguration {
 
     private int authenticate = 0;
     private int createDevice = 0;
+    private int issueDemandResponse = 0;
     private int deleteDevice = 0;
     private int enrollment = 0;
-    private int issueDemandResponse = 0;
     private int showUser = 0;
     private int createPushConfiguration = 0;
     private int showPushConfiguration = 0;
-    private int cancelDemandResponse = 0;
+    private boolean enableRuntime = false;
 
-    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment,
-            int issueDemandResponse, int showUser, int createPushConfiguration, int showPushConfiguration,
-            int cancelDemandResponse) {
+    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment, int issueDemandResponse, int showUser,
+            int createPushConfiguration, int showPushConfiguration, boolean enableRuntime) {
+
         this.authenticate = authenticate;
         this.createDevice = createDevice;
         this.deleteDevice = deleteDevice;
@@ -23,7 +23,7 @@ public class ZeusEcobeeDataConfiguration {
         this.showUser = showUser;
         this.createPushConfiguration = createPushConfiguration;
         this.showPushConfiguration = showPushConfiguration;
-        this.cancelDemandResponse = cancelDemandResponse;
+        this.enableRuntime = enableRuntime;
     }
 
     public int getAuthenticate() {
@@ -58,8 +58,8 @@ public class ZeusEcobeeDataConfiguration {
         return showPushConfiguration;
     }
 
-    public int getCancelDemandResponse() {
-        return cancelDemandResponse;
+    public boolean isEnableRuntime() {
+        return enableRuntime;
     }
 
     public void setAuthenticate(int authenticate) {
@@ -85,7 +85,7 @@ public class ZeusEcobeeDataConfiguration {
     public void setShowUser(int showUser) {
         this.showUser = showUser;
     }
-
+    
     public void setCreatePushConfiguration(int createPushConfiguration) {
         this.createPushConfiguration = createPushConfiguration;
     }
@@ -94,7 +94,8 @@ public class ZeusEcobeeDataConfiguration {
         this.showPushConfiguration = showPushConfiguration;
     }
 
-    public void setCancelDemandResponse(int cancelDemandResponse) {
-        this.cancelDemandResponse = cancelDemandResponse;
+    public void setEnableRuntime(boolean enableRuntime) {
+        this.enableRuntime = enableRuntime;
     }
+
 }

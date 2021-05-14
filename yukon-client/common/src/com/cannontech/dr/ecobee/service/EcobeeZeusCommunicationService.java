@@ -2,6 +2,7 @@ package com.cannontech.dr.ecobee.service;
 
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 
 public interface EcobeeZeusCommunicationService {
 
@@ -41,8 +42,7 @@ public interface EcobeeZeusCommunicationService {
     String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters);
 
     /**
-     * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only.
+     * Initiates a Setpoint demand response event in Ecobee and return the created DR event ID.
      */
-    void cancelDemandResponse(int yukonGroupId, String... serialNumbers);
-
+    String sendSetpointDR(EcobeeSetpointDrParameters parameters);
 }

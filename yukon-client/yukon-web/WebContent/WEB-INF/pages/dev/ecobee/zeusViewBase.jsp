@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #cancelDemandResponse').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -42,8 +42,8 @@
              case 'showUser' : {
                  enabledSelectedOption(showUser, showUserOp);
              } break;
-             case 'cancelDemandResponse' : {
-                 enabledSelectedOption(cancelDemandResponse, cancelDemandResponseOp);
+             case 'runtimeData' : {
+                 enabledSelectedOption(runtimeData, enableRuntime);
              } break;
          }
          });
@@ -108,10 +108,10 @@
                         </li>
                         <li>
                             <label> 
-                                <input id="cancelDemandResponse" type="checkbox" name="cancelDemandResponse"> 
-                                <i:inline key=".cancelDemandResponse" />
+                                <input id="runtimeData" type="checkbox" name="enableRuntime"> 
+                                <i:inline key=".runtimeData" />
                             </label>
-                        </li>
+                        </li>   
                     </ul>
                 </tags:sectionContainer>
             </div>
@@ -183,17 +183,9 @@
                                 </select>
                                 <input type="hidden" name="showUserOp" value="0" />
                             </li>
-                            <li>
-                                <select id="cancelDemandResponseOp" name="cancelDemandResponseOp" disabled="disabled">
-                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
-                                        <option value="${loopCounter.count-1}">${status}</option>
-                                    </c:forEach>
-                                </select>
-                                <input type="hidden" name="cancelDemandResponseOp" value="0" />
-                            </li>
                         </ul>
                     </tags:nameValueContainer>
-                </tags:sectionContainer>    
+                </tags:sectionContainer>
             </div>
             <div class="column three nogutter">
                 <div class="action-area">
