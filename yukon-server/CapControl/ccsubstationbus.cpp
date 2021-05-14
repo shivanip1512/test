@@ -6371,9 +6371,16 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
     {
         pilMessages.emplace_back( std::move( request ) );
 
-        setOperationSentWaitFlag( true );
+        feeder->setLastCapBankControlledDeviceId( bank->getPaoId() );
+        feeder->setRecentlyControlledFlag( true );
+        feeder->setVarValueBeforeControl( feeder->getCurrentVarLoadPointValue() );
+        feeder->setLastOperationTime( currentDateTime );
+
+        setLastFeederControlled(feeder->getPaoId());
+        setRecentlyControlledFlag( true );
         setVarValueBeforeControl( getCurrentVarLoadPointValue() );
-        setLastFeederControlled( feeder->getPaoId());
+        setLastOperationTime( currentDateTime );
+        setOperationSentWaitFlag( true );
         setCurrentDailyOperationsAndSendMsg( getCurrentDailyOperations() + 1, pointChanges );
 
         figureEstimatedVarLoadPointValue();
@@ -6382,9 +6389,7 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
             pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
         }
 
-        feeder->setLastCapBankControlledDeviceId( bank->getPaoId() );
-        feeder->setRecentlyControlledFlag( true );
-        feeder->setVarValueBeforeControl( feeder->getCurrentVarLoadPointValue() );
+        setBusUpdatedFlag( true );
 
         return true;
     }
