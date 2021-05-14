@@ -64,7 +64,7 @@ public class EcobeeMockServiceTestController {
             "AUTHENTICATION_EXPIRED(14)", "DUPLICATE_DATA_VIOLATION(15)");
 
     private static final List<String> zeusStatus = ImmutableList.of("SUCCESS(0)",
-            "UNAUTHORIZED(1)", "BAD_REQUEST(2)", "NOT_FOUND(3)", "PARTIAL_CONTENT(4)");
+            "UNAUTHORIZED(1)", "BAD_REQUEST(2)", "NOT_FOUND(3)", "PARTIAL_CONTENT(4)", "FORBIDDEN(5)");
 
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
@@ -95,8 +95,8 @@ public class EcobeeMockServiceTestController {
     @IgnoreCsrfCheck
     @RequestMapping(value = "zeus/update", method = RequestMethod.POST)
     public String updateZeus(Integer authenticateOp, Integer createDeviceOp, Integer deleteDeviceOp, Integer enrollmentOp, Integer issueDemandResponseOp,
-            Integer showUserOp, Integer createPushConfigurationOp, Integer showPushConfigurationOp, boolean enableRuntime, FlashScope flashScope,
-            ModelMap modelMap) throws Exception {
+            Integer showUserOp, Integer createPushConfigurationOp, Integer showPushConfigurationOp, boolean enableRuntime, Integer cancelDemandResponseOp,
+            FlashScope flashScope, ModelMap modelMap) throws Exception {
         zeusEcobeeDataConfiguration.setZeusEcobeeDataConfiguration(authenticateOp,
                                                                    createDeviceOp,
                                                                    deleteDeviceOp,
@@ -105,7 +105,8 @@ public class EcobeeMockServiceTestController {
                                                                    showUserOp,
                                                                    createPushConfigurationOp,
                                                                    showPushConfigurationOp,
-                                                                   enableRuntime);
+                                                                   enableRuntime,
+                                                                   cancelDemandResponseOp);
         if (enableRuntime == true) {
             future = scheduledExecutor.scheduleAtFixedRate(() -> {
                 try {

@@ -45,4 +45,9 @@ public interface EcobeeZeusCommunicationService {
      * Initiates a Setpoint demand response event in Ecobee and return the created DR event ID.
      */
     String sendSetpointDR(EcobeeSetpointDrParameters parameters);
+
+    /**
+     * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only.
+     */
+    void cancelDemandResponse(int yukonGroupId, String... serialNumbers);
 }
