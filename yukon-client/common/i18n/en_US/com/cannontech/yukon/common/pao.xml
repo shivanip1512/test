@@ -146,7 +146,6 @@
 
     <entry key="yukon.common.pao.LCR6200C">LCR-6200C</entry>
     <entry key="yukon.common.pao.LCR6600C">LCR-6600C</entry>
-    <entry key="yukon.common.pao.LCR_DISCONNECT_C">LCR-DisconnectC</entry>
     
     <entry key="yukon.common.pao.GWY800">GWY-800</entry>
     <entry key="yukon.common.pao.GWY801">GWY-801</entry>

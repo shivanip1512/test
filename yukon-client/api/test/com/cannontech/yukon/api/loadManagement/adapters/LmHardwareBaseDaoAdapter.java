@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
@@ -38,6 +39,11 @@ public class LmHardwareBaseDaoAdapter implements LmHardwareBaseDao {
 
     @Override
     public List<String> getSerialNumberForInventoryIds(Collection<Integer> inventoryId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public PaoIdentifier getDeviceIdBySerialNumber(String serialNumber) {
         throw new UnsupportedOperationException("not implemented");
     }
     

@@ -40,6 +40,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
@@ -100,7 +101,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
  
     @Override
-    public PxMWSiteV1 getSiteDevices(String siteGuid, Boolean recursive, Boolean includeDetail)
+    public PxMWSiteDevicesV1 getSiteDevices(String siteGuid, Boolean recursive, Boolean includeDetail)
             throws PxMWCommunicationExceptionV1, PxMWException {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         if (recursive != null) {
@@ -117,10 +118,32 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
 
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-            ResponseEntity<PxMWSiteV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWSiteV1.class);
+            ResponseEntity<PxMWSiteDevicesV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWSiteDevicesV1.class);
             log.debug("Got site info. Site Guid:{} Result:{}", siteGuid,
                     new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
             return response.getBody();
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PxMWException("Exception occured while getting site devices", e);
+        }
+    }
+    
+    @Override
+    public List<PxMWSiteV1> getSites(String siteGuid) throws PxMWCommunicationExceptionV1, PxMWException {
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("userId", siteGuid);
+        URI uri = getUri(PxMWRetrievalUrl.SITES);
+        uri = addQueryParams(queryParams, uri);
+
+        log.debug("Getting site info. Site Guid: {} URL: {}", siteGuid, uri);
+
+        try {
+            HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+            ResponseEntity<PxMWSiteV1[]> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWSiteV1[].class);
+            log.debug("Got site info. Site Guid:{} Result:{}", siteGuid,
+                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
+            return Arrays.asList(response.getBody());
         } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
             throw e;
         } catch (Exception e) {

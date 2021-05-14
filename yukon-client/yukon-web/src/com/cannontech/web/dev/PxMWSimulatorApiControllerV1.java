@@ -119,4 +119,18 @@ public class PxMWSimulatorApiControllerV1 {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/accesscontrol/sites")
+    public ResponseEntity<Object> sitesV1(@RequestParam(required = true) String userId) {
+        try {
+            PxMWSimulatorResponse response = simulatorsCommunicationService
+                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.SITES, "sitesV1",
+                            new Class[] { String.class },
+                            new Object[] { userId }), PxMWSimulatorResponse.class);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
+        } catch (ExecutionException e) {
+            log.error("Error", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

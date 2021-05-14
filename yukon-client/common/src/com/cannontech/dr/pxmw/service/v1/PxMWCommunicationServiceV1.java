@@ -9,6 +9,7 @@ import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
+import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
@@ -37,7 +38,7 @@ public interface PxMWCommunicationServiceV1 {
      * 401 Unauthorized
      * 404 Not Found
      */
-    PxMWSiteV1 getSiteDevices(String siteGuid, Boolean recursive, Boolean includeDetail) throws PxMWCommunicationExceptionV1, PxMWException;
+    PxMWSiteDevicesV1 getSiteDevices(String siteGuid, Boolean recursive, Boolean includeDetail) throws PxMWCommunicationExceptionV1, PxMWException;
 
     /**
      * Sends message to SM to get a token, SM will send a message to PX get the token or return a cached token.
@@ -97,4 +98,9 @@ public interface PxMWCommunicationServiceV1 {
      * Returns true if device can be created
      */
     boolean isCreatableDevice(String deviceGuid);
+
+    /**
+     * Retrieves the list of sites
+     */
+    List<PxMWSiteV1> getSites(String siteGuid) throws PxMWCommunicationExceptionV1, PxMWException;
 }

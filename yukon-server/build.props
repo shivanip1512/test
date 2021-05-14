@@ -8,7 +8,7 @@
     <BOOST>$(CPP_LIBRARIES)\boost\1.76.0-vc142-1</BOOST>
     <BOOST_DEBUG Condition="'$(Configuration)'=='Debug'">-gd</BOOST_DEBUG>
     <BOOST_VERSION>vc142-mt$(BOOST_DEBUG)-x32-1_76</BOOST_VERSION>
-    <SQLAPI>$(CPP_LIBRARIES)\sqlapi\5.0.2-vc141-1</SQLAPI>
+    <SQLAPI>$(CPP_LIBRARIES)\sqlapi\5.1.4-vc142-1</SQLAPI>
     <ACTIVEMQ>$(CPP_LIBRARIES)\apache\activemq-cpp\3.9.5-vc142-1</ACTIVEMQ>
     <APR>$(CPP_LIBRARIES)\apache\apr\1.7.0-vc142-1</APR>
     <APR_UTIL>$(CPP_LIBRARIES)\apache\apr-util\1.6.1-vc141</APR_UTIL>

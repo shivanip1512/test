@@ -283,4 +283,4 @@ INSERT INTO DBUpdates VALUES ('YUK-23969', '9.0.0', GETDATE());
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/* INSERT INTO CTIDatabase VALUES ('9.0', '09-SEP-2020', 'Latest Update', 0, GETDATE()); */
+INSERT INTO CTIDatabase VALUES ('9.0', '23-APR-2021', 'Latest Update', 0, GETDATE());
