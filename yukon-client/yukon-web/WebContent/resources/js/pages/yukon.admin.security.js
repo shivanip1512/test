@@ -143,6 +143,7 @@ yukon.admin.security = (function () {
             
             $(document).on('yukon:admin:security:generateEcobeeZeusKey', function(event) {
                 yukon.ui.busy($('#generateEcobeeZeusKey'));
+                $('#generateEcobeeZeusKeyDialog').dialog('close');
                 $.ajax({
                     url : "generateEcobeeZeusKey",
                     type : "GET",
@@ -162,6 +163,7 @@ yukon.admin.security = (function () {
             
             $(document).on('yukon:admin:security:registerEcobeeZeusKey', function(event) {
                 yukon.ui.busy($('#registerConfigurationEcobeeZeusKey'));
+                $('#registerEcobeeZeusDialog').dialog('close');
                 $.ajax({
                     url : "registerEcobeeZeusKey",
                     type : "POST",
