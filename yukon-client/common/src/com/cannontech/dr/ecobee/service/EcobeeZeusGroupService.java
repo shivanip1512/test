@@ -39,9 +39,9 @@ public interface EcobeeZeusGroupService {
     boolean updateEventId(String eventId, int yukonGroupId);
 
     /**
-     * Return a list of event IDs for a Yukon group ID.
+     * Return Demand Response event ID for a Yukon group ID.
      */
-    List<String> getEventIds(int yukonGroupId);
+    String getEventId(int yukonGroupId);
 
     /**
      * Returns thermostat count fort the specified Zeus group ID.
