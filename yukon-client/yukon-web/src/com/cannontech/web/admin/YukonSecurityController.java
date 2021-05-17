@@ -714,7 +714,7 @@ public class YukonSecurityController {
             json.put("ecobeeKeyZeusRegisteredDateTime", successMsg + registeredDateTime);
             json.put("success", true);
         } catch (Exception e) {
-            log.error("Exception while generating ecobee Public and Private Key ", e);
+            log.error("Exception while registering ecobee Zeus", e);
             DateTime todayDate = new DateTime();
             String registeredDateTime = dateFormattingService.format(todayDate,
                     DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
