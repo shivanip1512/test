@@ -185,7 +185,7 @@
 
     <entry key="yukon.web.modules.adminSetup.security.registerConfigurationEcobeeZeusKey.label">Register Configuration</entry>
     <entry key="yukon.web.modules.adminSetup.security.confirmRegisterConfigurationEcobeeZeusKey.title">Confirm Register Configuration</entry>
-    <entry key="yukon.web.modules.adminSetup.security.confirmRegisterConfigurationEcobeeZeusKey.message">Are you sure you want to push registration to zeus?</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmRegisterConfigurationEcobeeZeusKey.message">Are you sure you want to push registration to Zeus?</entry>
     <entry key="yukon.web.modules.adminSetup.security.confirmRegisterConfigurationEcobeeZeusKey.warning">This will overwrite the existing configuration.</entry>
     <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyNotRegistered">Last push data registration failed:</entry>
     <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyRegistered">Last successful push data registration:</entry>
@@ -195,11 +195,11 @@
     <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusPublicKey.error">Private key mismatch with existing configuration.</entry>
     <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusURL.error">URL mismatch with existing configuration.</entry>
     <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusURLAndPublicKey.error">URL and Private key mismatch with existing configuration.</entry>
-    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusKey.failed">Error occurred checking ecobee zeus registration. Check logs for more information.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusKey.failed">Error occurred checking ecobee Zeus registration. Check logs for more information.</entry>
     
-    <entry key="yukon.web.modules.adminSetup.security.viewEcobeeZeusKey.failed">Error occurred retrieving the ecobee zeus Private Key. Check logs for more information.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.viewEcobeeZeusKey.failed">Error occurred retrieving the ecobee Zeus Private Key. Check logs for more information.</entry>
     
-    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyPair.generationFailed">Error occurred generating the ecobee zeus Public and Private Key. Check logs for more information.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyPair.generationFailed">Error occurred generating the ecobee Zeus Public and Private Key. Check logs for more information.</entry>
     <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyRegisterBtn.label">Send</entry>
 
     <entry key="yukon.web.modules.adminSetup.security.routesBox.title">Encrypted Routes</entry>
