@@ -170,6 +170,38 @@
     You will need to provide the new public key to busidev@ecobee.com in order for ecobee to properly encrypt any requested data. 
     Yukon will not be able to unencrypt ecobee data until this process is complete.</entry>
     
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyGenerated">ecobee Zeus Encryption Keys were generated:</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusNoKeyGenerated">No ecobee Zeus Encryption Keys have been generated.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusURL">URL for incoming ecobee data:</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyBox.title">ecobee Zeus Encryption Keys</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeZeusKey.title">Confirm Generate ecobee Zeus Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeZeusKey.message">Are you sure you want to generate new ecobee Zeus encryption keys?</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeZeusKey.warning">This will overwrite the existing Public/Private keys and will prevent Yukon from processing ecobee thermostat data until the new keys are registered with ecobee.</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.viewEcobeeZeusKey.label">View Public Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmViewEcobeeZeusKey.title">View ecobee Zeus Public Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmViewEcobeeZeusKey.message">Current Public Key:</entry>
+
+    <entry key="yukon.web.modules.adminSetup.security.registerConfigurationEcobeeZeusKey.label">Register Configuration</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmRegisterConfigurationEcobeeZeusKey.title">Confirm Register Configuration</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmRegisterConfigurationEcobeeZeusKey.message">Are you sure you want to push registration to Zeus?</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmRegisterConfigurationEcobeeZeusKey.warning">This will overwrite the existing configuration.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyNotRegistered">Last push data registration failed:</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyRegistered">Last successful push data registration:</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusKey.label">Check Registration</entry>
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusKey.success">ecobee Zeus API configuration verified successfully.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusPublicKey.error">Private key mismatch with existing configuration.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusURL.error">URL mismatch with existing configuration.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusURLAndPublicKey.error">URL and Private key mismatch with existing configuration.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusKey.failed">Error occurred checking ecobee Zeus registration. Check logs for more information.</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.viewEcobeeZeusKey.failed">Error occurred retrieving the ecobee Zeus Private Key. Check logs for more information.</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyPair.generationFailed">Error occurred generating the ecobee Zeus Public and Private Key. Check logs for more information.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyRegisterBtn.label">Send</entry>
+
     <entry key="yukon.web.modules.adminSetup.security.routesBox.title">Encrypted Routes</entry>
     
     <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnTitle">Delete Key</entry>

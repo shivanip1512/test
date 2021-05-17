@@ -24,12 +24,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.openssl.PEMWriter;
 import org.jdom2.JDOMException;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +41,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -59,10 +62,14 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.security.EncryptionKey;
+import com.cannontech.dr.ecobee.message.ZeusEncryptionKey;
+import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
+import com.cannontech.dr.ecobee.service.impl.EcobeeZeusCommunicationServiceImpl;
 import com.cannontech.encryption.CertificateGenerationFailedException;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EcobeeSecurityService;
+import com.cannontech.encryption.EcobeeZeusSecurityService;
 import com.cannontech.encryption.EncryptedRouteDao;
 import com.cannontech.encryption.EncryptionKeyType;
 import com.cannontech.encryption.HoneywellSecurityService;
@@ -73,7 +80,6 @@ import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.DREncryption;
-import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.impl.GlobalSettingDaoImpl;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -96,6 +102,10 @@ public class YukonSecurityController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ItronSecurityService itronSecurityService;
     @Autowired private GlobalSettingDaoImpl globalSettingDaoImpl;
+    @Autowired private EcobeeZeusSecurityService ecobeeZeusSecurityService;
+    @Autowired private EcobeeZeusCommunicationServiceImpl ecobeeZeusCommunicationService;
+    // TODO: Remove hard coded String once globalsettings is created for reportingUrl.
+    private String reportingUrl = "http://eaton.com/ecobee/runtimedata";
 
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -106,7 +116,7 @@ public class YukonSecurityController {
     private Logger log = YukonLogManager.getLogger(YukonSecurityController.class);
 
     private final static String baseKey = "yukon.web.modules.adminSetup.security";
-
+   
     private static class FileImportBindingBean {
         private String name = null;
         private MultipartFile file = null;
@@ -211,6 +221,7 @@ public class YukonSecurityController {
 
         model.addAttribute("encryptionKey", encryptionKey);
         List<EncryptionKey> encryptionKeys = encryptedRouteDao.getEncryptionKeys();
+        model.addAttribute("reportingUrl", reportingUrl);
         
         boolean invalidKeyFound = false;
         try {
@@ -266,6 +277,17 @@ public class YukonSecurityController {
             log.debug("Ecobee PGP Key Creation time is not available, may be it is not generated yet.");
         }
         
+        try {
+            ZeusEncryptionKey ecobeeZeusEncryptionKey = ecobeeZeusSecurityService.getZeusEncryptionKey();
+            String ecobeeZeusDateGenerated = dateFormattingService.format(ecobeeZeusEncryptionKey.getTimestamp(),
+                    DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+            model.put("ecobeeKeyZeusGeneratedDateTime", ecobeeZeusDateGenerated);
+        } catch (NoSuchElementException e) {
+            log.debug("Ecobee Zeus Key Creation time is not available, may be it is not generated yet.");
+        } catch (Exception e) {
+            log.error("Error while retrieving Ecobee Zeus encryption keys. ", e);
+        }
+
         try {
             Instant itronKeyCreationTime = itronSecurityService.getItronKeyPairCreationTime();
             String itronDateGenerated = dateFormattingService.format(itronKeyCreationTime,
@@ -637,12 +659,13 @@ public class YukonSecurityController {
 
     @GetMapping(value = "/config/security/generateEcobeeKey")
     @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
-    public @ResponseBody Map<String, Object> generateEcobeeKey(YukonUserContext userContext, FlashScope flashScope) throws CryptoException {
+    public @ResponseBody Map<String, Object> generateEcobeeKey(YukonUserContext userContext)
+            throws CryptoException {
         Map<String, Object> json = new HashMap<>();
         try {
             Instant keyCreationTime = ecobeeSecurityService.generateEcobeePGPKeyPair();
             String dateGenerated = dateFormattingService.format(keyCreationTime,
-                DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+                    DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
             json.put("ecobeeKeyGeneratedDateTime", dateGenerated);
         } catch (EcobeePGPException epe) {
             log.error("Exception while generating the PGP Public and Private Key ", epe);
@@ -652,7 +675,107 @@ public class YukonSecurityController {
         }
         return json;
     }
-    
+
+    @GetMapping(value = "/config/security/generateEcobeeZeusKey")
+    @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
+    public @ResponseBody Map<String, Object> generateEcobeeZeusKey(YukonUserContext userContext)
+            throws CryptoException {
+        Map<String, Object> json = new HashMap<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        try {
+            ZeusEncryptionKey zeusEncryptionKey = ecobeeZeusSecurityService.generateZeusEncryptionKey();
+            String dateGenerated = dateFormattingService.format(zeusEncryptionKey.getTimestamp(),
+                    DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+            json.put("ecobeeKeyZeusGeneratedDateTime", dateGenerated);
+        } catch (RuntimeException e) {
+            log.error("Exception while generating ecobee Public and Private Key ", e);
+            String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyPair.generationFailed");
+            json.put("ecobeeKeyZeusGeneratedDateTime", errMsg);
+        }
+        return json;
+    }
+
+    @PostMapping(value = "/config/security/registerEcobeeZeusKey")
+    @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
+    public @ResponseBody Map<String, Object> registerEcobeeZeusKey(YukonUserContext userContext)
+            throws CryptoException {
+        Map<String, Object> json = new HashMap<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+        try {
+            String privateKey = ecobeeZeusSecurityService.getZeusEncryptionKey().getPrivateKey();
+            ecobeeZeusCommunicationService.createPushApiConfiguration(reportingUrl, privateKey);
+
+            DateTime todayDate = new DateTime();
+            String registeredDateTime = dateFormattingService.format(todayDate,
+                    DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+
+            String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
+            json.put("ecobeeKeyZeusRegisteredDateTime", successMsg + registeredDateTime);
+            json.put("success", true);
+        } catch (Exception e) {
+            log.error("Exception while generating ecobee Public and Private Key ", e);
+            DateTime todayDate = new DateTime();
+            String registeredDateTime = dateFormattingService.format(todayDate,
+                    DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+            String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyNotRegistered");
+            json.put("ecobeeKeyZeusRegisteredDateTime", errMsg + registeredDateTime);
+            json.put("success", false);
+        }
+        return json;
+    }
+
+    @GetMapping(value = "/config/security/checkRegistrationEcobeeZeusKey")
+    @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
+    public @ResponseBody Map<String, Object> checkRegistrationEcobeeZeusKey(YukonUserContext userContext)
+            throws CryptoException {
+        Map<String, Object> json = new HashMap<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        boolean isSuccess = false;
+        String message = null;
+        try {
+            ZeusShowPushConfig showPushConfig = ecobeeZeusCommunicationService.showPushApiConfiguration();
+            String privateKeySha1 = DigestUtils.sha1Hex(ecobeeZeusSecurityService.getZeusEncryptionKey().getPrivateKey());
+            boolean checkUrl = showPushConfig.getReportingUrl().equals(reportingUrl);
+            boolean checkPrivateKeySha1 = showPushConfig.getPrivateKey().equals(privateKeySha1);
+
+            if (checkUrl && checkPrivateKeySha1) {
+                isSuccess = true;
+                message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusKey.success");
+            } else if (!checkUrl && !checkPrivateKeySha1) {
+                message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusURLAndPublicKey.error");
+            } else if (!checkPrivateKeySha1) {
+                message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusPublicKey.error");
+            } else {
+                message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusURL.error");
+            }
+        } catch (Exception e) {
+            log.error("Exception while checking registration with ecobee zeus", e);
+            message = accessor.getMessage(baseKey + ".checkRegistrationEcobeeZeusKey.failed");
+        }
+        json.put("success", isSuccess);
+        json.put("checkRegistrationMsg", message);
+        return json;
+    }
+
+    @GetMapping(value = "/config/security/viewEcobeeZeusPublicKey")
+    public @ResponseBody Map<String, Object> viewEcobeeZeusPublicKey(YukonUserContext userContext)
+            throws CryptoException {
+        Map<String, Object> json = new HashMap<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        try {
+            String publicKey = ecobeeZeusSecurityService.getZeusEncryptionKey().getPublicKey();
+            json.put("publicKey", publicKey);
+            json.put("success", true);
+        } catch (Exception e) {
+            log.error("Exception getting the ecobee zeus Public Key", e);
+            String message = accessor.getMessage(baseKey + ".viewEcobeeZeusKey.failed");
+            json.put("errorMessage", message);
+            json.put("success", false);
+        }
+        return json;
+    }
+
     @GetMapping(value = "/config/security/downloadItronKey")
     public void downloadItronKey(HttpServletResponse response) {
         try (OutputStream stream = response.getOutputStream()) {
@@ -661,7 +784,6 @@ public class YukonSecurityController {
             response.setHeader("Content-Type", "application/force-download");
             String fileName = ServletUtil.makeWindowsSafeFileName("itronPublicKey.txt");
             response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-
             stream.write(publicKey.getBytes());
         } catch (Exception e) {
             log.error("Exception getting the itron Public Key", e);
