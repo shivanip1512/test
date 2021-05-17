@@ -109,7 +109,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                     for (PxMWTimeSeriesValueV1 value : result.getValues()) {
                         Double pointValue = parsePointValue(mwChannel, value, device, deviceResult.getDeviceId());
                         if (pointValue != null) {
-                            PointData pointData = generatePointData(device, mwChannel.getBuiltInAttribute(), pointValue,
+                            PointData pointData = generatePointData(device, mwChannel, pointValue,
                                     value.getTimestamp(), deviceResult.getDeviceId());
                             if (pointData != null) {
                                 newPaoPointMap.put(device.getPaoIdentifier(), pointData);
@@ -136,10 +136,14 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                     return Boolean.parseBoolean(pxReturnedValue) ? Double.valueOf("1") : Double.valueOf("0");
                 }
             } else if (MWChannel.getIntegerChannels().contains(channel) || MWChannel.getFloatChannels().contains(channel)) {
-                return Double.parseDouble(pxReturnedValue);
+                // Raw point value received from PxMW
+                Double pointValue = Double.parseDouble(pxReturnedValue);
+                // Multiply by channel multiplier to convert to default UOM
+                pointValue = pointValue * channel.getPointMultiplier();
+                return pointValue;
             }
         } catch (Exception e) {
-            //can't parse data ignore exception
+            // can't parse data ignore exception
         }
 
         log.error("Device Id:{} Name:{} Guid:{} Channel:{} cannot be parsed into point data. Discarding received value: {}",
@@ -147,9 +151,10 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         return null;
     }
     
-   private PointData generatePointData(LiteYukonPAObject device, BuiltInAttribute attribute, double value, long time, String guid) {
+   private PointData generatePointData(LiteYukonPAObject device, MWChannel channel, double value, long time, String guid) {
 
         PointData pointData = new PointData();
+        BuiltInAttribute attribute = channel.getBuiltInAttribute();
         try {
             pointData.setTime(Date.from(java.time.Instant.ofEpochSecond(time)));
         } catch (Exception e) {
@@ -165,6 +170,8 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                     "Device Id:{} Name:{} Guid:{} Attribute:{} Point Id:{} Point {} created.", device.getLiteID(),
                     device.getPaoName(), guid, attribute, point.getLiteID(), point.getPointName());
         }
+        // Multiply by point multiplier (usually 1), can be overridden in point setup by the user
+        value = value * point.getMultiplier();
 
         pointData.setId(point.getLiteID());
         pointData.setPointQuality(PointQuality.Normal);
@@ -173,9 +180,17 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         pointData.setTagsPointMustArchive(true);
   
         log.debug(
-                "Device Id:{} Name:{} Guid:{} Attribute:{} Point Id:{} Point Name:{} point data created with value:{} data:{}.",
+                "Device Id:{} Name:{} Guid:{} Channel:{} ChannelMultiplier:{} Attribute:{} Point Id:{} Point Name:{} point data created with value:{} using point multiplier:{} data:{}.",
                 device.getLiteID(),
-                device.getPaoName(), guid, attribute, point.getLiteID(), point.getPointName(), pointData.getValue(),
+                device.getPaoName(),
+                guid,
+                channel,
+                channel.getPointMultiplier(),
+                attribute,
+                point.getLiteID(),
+                point.getPointName(),
+                pointData.getValue(),
+                point.getMultiplier(),
                 pointData.getTimeStamp());
         
         return pointData;

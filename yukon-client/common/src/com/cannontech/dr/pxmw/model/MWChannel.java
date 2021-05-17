@@ -38,7 +38,7 @@ public enum MWChannel {
     EVENT_STATE_R3(112065, "Event State R3", BuiltInAttribute.RELAY_3_SHED_STATUS),
     EVENT_STATE_R4(112066, "Event State R4", BuiltInAttribute.RELAY_4_SHED_STATUS),
     FIRMWARE_UPDATE(110751, "Firmware Update", BuiltInAttribute.FIRMWARE_UPDATE_STATUS),
-    FREQUENCY(110741, "Frequency", BuiltInAttribute.FREQUENCY),
+    FREQUENCY(110741, "Frequency", BuiltInAttribute.FREQUENCY, 0.001),
     LOAD_STATUS_R1(110595, "Load Status R1", BuiltInAttribute.RELAY_1_LOAD_STATE),
     LOAD_STATUS_R2(112061, "Load Status R2", BuiltInAttribute.RELAY_2_LOAD_STATE),
     LOAD_STATUS_R3(112062, "Load Status R3", BuiltInAttribute.RELAY_3_LOAD_STATE),
@@ -58,11 +58,12 @@ public enum MWChannel {
     SHEDTIME_R4(112075, "Shedtime R4", BuiltInAttribute.RELAY_4_SHED_TIME_DATA_LOG),
     //removed attribute for now to limit log entries
     VERSION(110600, "Version", null),
-    VOLTAGE(110742, "Voltage", BuiltInAttribute.VOLTAGE);
+    VOLTAGE(110742, "Voltage", BuiltInAttribute.VOLTAGE, 0.001);
 
     private Integer channelId;
     private String shortName;
     private BuiltInAttribute builtInAttribute;
+    private double pointMultiplier;
 
     private static Map<Integer, MWChannel> channelLookup = Maps.uniqueIndex(Arrays.asList(values()), MWChannel::getChannelId);
     private static Map<BuiltInAttribute, MWChannel> attributeChannelLookup;
@@ -137,6 +138,14 @@ public enum MWChannel {
         this.channelId = channelId;
         this.shortName = shortName;
         this.builtInAttribute = builtInAttribute;
+        this.pointMultiplier = 1.0;
+    }
+
+    private MWChannel(Integer channelId, String shortName, BuiltInAttribute builtInAttribute, double pointMultiplier) {
+        this.channelId = channelId;
+        this.shortName = shortName;
+        this.builtInAttribute = builtInAttribute;
+        this.pointMultiplier = pointMultiplier;
     }
 
     public static Map<Integer, MWChannel> getChannelLookup() {
@@ -175,10 +184,14 @@ public enum MWChannel {
         return builtInAttribute;
     }
 
+    public Double getPointMultiplier() {
+        return pointMultiplier;
+    }
+
     public static MWChannel getMWChannel(BuiltInAttribute attribute) {
         return getAttributeChannelLookup().get(attribute);
     }
-    
+
     /**
      * Returns a List of tags for all the BuiltInAttributes. 
      * If a built in attribute has no associated tag it will be ignored
