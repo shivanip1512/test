@@ -5540,7 +5540,7 @@ Network Manager :
     notes : 7zip is bundled in the nmee deploy scripts utilities.
     
   - filename : jjwt-impl-0.10.6.jar
-    yukon group : Token Service
+    yukon group : Support bundle
     project : JSON Web Token
     version : 0.10.6
     project URL : "https://github.com/jwtk/jjwt"
@@ -5554,7 +5554,7 @@ Network Manager :
     notes : Used for token service.
     
   - filename : jjwt-api-0.10.6.jar
-    yukon group : Token Service
+    yukon group : Support bundle
     project : JSON Web Token
     version : 0.10.6
     project URL : "https://github.com/jwtk/jjwt"
@@ -5568,7 +5568,7 @@ Network Manager :
     notes : Used for token service.
     
   - filename : jjwt-jackson-0.10.6.jar
-    yukon group : Token Service
+    yukon group : Support bundle
     project : JSON Web Token
     version : 0.10.6
     project URL : "https://github.com/jwtk/jjwt"
