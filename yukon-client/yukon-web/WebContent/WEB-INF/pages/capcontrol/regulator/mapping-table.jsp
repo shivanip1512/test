@@ -52,16 +52,29 @@
                 
                 <cti:displayForPageEditModes modes="VIEW">
                     <%-- Point Value --%>
-                    <td class="state-indicator">
-                        <cti:pointStatus pointId="${mapping.value}" statusPointOnly="true"/>
-                    </td>
-                    <td>
-                        <c:if test="${not empty mapping.value && mapping.value != 0}">
-                            <cti:pointValue pointId="${mapping.value}" format="VALUE"/>
-                            <cti:pointValue pointId="${mapping.value}" format="UNIT" unavailableValue=""/>
-                            <cti:pointValue pointId="${mapping.value}" format="SHORT_QUALITY" unavailableValue=""/>
-                        </c:if>
-                    </td>
+                    <c:choose>
+                        <c:when test="${mapping.key == regulatorControlModeMapping && mapping.value != null}">
+                            <td class="state-indicator">
+                                <cti:pointStatus pointId="${mapping.value}" format="${regulatorControlModeColorFormat}"/>
+                            </td>
+                            <td>
+                                <cti:pointValue pointId="${mapping.value}" format="${regulatorControlModeFormat}"/>
+                            </td>
+                        </c:when>
+                        <c:otherwise>
+                            <td class="state-indicator">
+                                <cti:pointStatus pointId="${mapping.value}" statusPointOnly="true"/>
+                            </td>
+                            <td>
+                                <c:if test="${not empty mapping.value && mapping.value != 0}">
+                                    <cti:pointValue pointId="${mapping.value}" format="VALUE"/>
+                                    <cti:pointValue pointId="${mapping.value}" format="UNIT" unavailableValue=""/>
+                                    <cti:pointValue pointId="${mapping.value}" format="SHORT_QUALITY" unavailableValue=""/>
+                                </c:if>
+                            </td>
+                        </c:otherwise>
+                    </c:choose>
+
                 </cti:displayForPageEditModes>
             </tr>
         </c:forEach>
