@@ -7,8 +7,8 @@ import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.web.api.route.model.RouteBaseModel;
 
 @SuppressWarnings("rawtypes")
-public class RouteAPICreateValidator extends SimpleValidator<RouteBaseModel> {
-    public RouteAPICreateValidator() {
+public class RouteApiCreateValidator extends SimpleValidator<RouteBaseModel> {
+    public RouteApiCreateValidator() {
         super(RouteBaseModel.class);
     }
 

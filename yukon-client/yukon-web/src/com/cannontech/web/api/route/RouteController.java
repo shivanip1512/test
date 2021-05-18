@@ -25,7 +25,7 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 public class RouteController {
 
     @Autowired private RouteService routeService;
-    @Autowired private RouteAPICreateValidator routeAPICreateValidator;
+    @Autowired private RouteApiCreateValidator routeAPICreateValidator;
     @Autowired private RouteValidator routeValidator;
 
     @PostMapping

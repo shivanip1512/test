@@ -18,15 +18,14 @@ public class RouteValidator extends SimpleValidator<RouteBaseModel> {
     @Override
     protected void doValidation(RouteBaseModel route, Errors errors) {
 
+        String strRouteId = ServletUtils.getPathVariable("id");
+        Integer routeId = strRouteId == null ? null : Integer.valueOf(strRouteId);
+
         if (route.getName() != null) {
-            String strRouteId = ServletUtils.getPathVariable("id");
-            Integer routeId = strRouteId == null ? null : Integer.valueOf(strRouteId);
             routeApiValidatorHelper.validateRouteName(errors, route.getName(), routeId);
         }
 
         if (route.getSignalTransmitterId() != null) {
-            String strRouteId = ServletUtils.getPathVariable("id");
-            Integer routeId = strRouteId == null ? null : Integer.valueOf(strRouteId);
             routeApiValidatorHelper.validateSignalTransmitterId(errors, route.getSignalTransmitterId(), routeId);
         }
     }
