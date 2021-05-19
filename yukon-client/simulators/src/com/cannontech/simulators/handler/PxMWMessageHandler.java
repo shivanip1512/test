@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.PxMWVersion;
@@ -26,6 +25,7 @@ import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.simulators.pxmw.model.PxMWDataGenerator;
 import com.cannontech.simulators.pxmw.model.PxMWDataV1;
+import com.cannontech.simulators.pxmw.model.PxMWFakeTimeseriesDataV1;
 
 /**
  * This class gets a message PxMWSimulatorRequest from WS, which contains a method information to be called using reflection on the data object specified for that version.
@@ -35,6 +35,7 @@ import com.cannontech.simulators.pxmw.model.PxMWDataV1;
  */
 public class PxMWMessageHandler extends SimulatorMessageHandler {
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private PxMWFakeTimeseriesDataV1 pxMWFakeTimeseriesDataV1 ;
     private static final Logger log = YukonLogManager.getLogger(PxMWMessageHandler.class);
 
     public PxMWMessageHandler() {
@@ -46,7 +47,7 @@ public class PxMWMessageHandler extends SimulatorMessageHandler {
     
     @PostConstruct
     void init() {
-        data = Map.of(PxMWVersion.V1, new PxMWDataV1());
+        data = Map.of(PxMWVersion.V1, new PxMWDataV1(pxMWFakeTimeseriesDataV1));
     }
     
     private Map<PxMWRetrievalUrl, Integer> statuses = Arrays.stream(PxMWRetrievalUrl.values())

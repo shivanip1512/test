@@ -29,8 +29,12 @@ import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
 
 public class PxMWDataV1 extends PxMWDataGenerator {
-    private PxMWFakeTimeseriesDataV1 timeseriesData = new PxMWFakeTimeseriesDataV1();
+    private PxMWFakeTimeseriesDataV1 timeseriesData;
  
+    public PxMWDataV1(PxMWFakeTimeseriesDataV1 pxMWTimeSeriesResultV1) {
+        this.timeseriesData = pxMWTimeSeriesResultV1;
+    }
+    
     private static final Logger log = YukonLogManager.getLogger(PxMWDataV1.class);
 
     //Simulator has 2 sites
@@ -157,7 +161,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         List<PxMWTimeSeriesDeviceResultV1> resultList = pxMWTimeSeriesDataRequestV1.getDevices().stream().map(d -> {
             List<String> tags = Arrays.asList(d.getTagTrait().split(","));
             PaoType type = createRequest == null ? PaoType.LCR6600C: createRequest.getPaoType();
-            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(tags, type, randomBadData);
+            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(d.getDeviceGuid(), tags, type, randomBadData);
             return new PxMWTimeSeriesDeviceResultV1(d.getDeviceGuid(), result);
         }).collect(Collectors.toList());
 

@@ -38,7 +38,10 @@ import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesValueV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
+import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
+import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.message.dispatch.message.PointData;
+import com.google.common.base.Splitter;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -54,6 +57,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
     @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
+    @Autowired private RecentEventParticipationDao recentEventParticipationDao;
  
     @Override
     public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> queryRange) {
@@ -102,6 +106,10 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                 try {
                     Integer tag = Integer.parseInt(result.getTag());
                     MWChannel mwChannel = MWChannel.getChannelLookup().get(tag);
+                    if (mwChannel == MWChannel.EVENT_STATE) {
+                        updateEventParticipation(device, result.getValues());
+                        continue;
+                    }
                     if(!attribtues.contains(mwChannel.getBuiltInAttribute())) {
                         //Received point data we didn't ask for
                         continue;
@@ -122,6 +130,54 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
             }
         }
         return newPaoPointMap;
+    }
+
+    private void updateEventParticipation( LiteYukonPAObject device, List<PxMWTimeSeriesValueV1> values) {
+        /*
+         * 123,2 - first event starts
+         * 123,2;124,2 - second event starts
+         * 123,3;124,2 -first event complete
+         * 124,3 - second event complete
+         */
+        values.forEach(value -> {
+            splitString(value.getValue(), ";").forEach(v -> {
+                try {
+                    List<String> resultList = splitString(v, ",");
+                    String externalEventId = resultList.get(0);
+                    ControlEventDeviceStatus status = null;
+                    /* Received: 1, Started: 2 , Complete: 3. Canceled: 4 */
+                    switch (Integer.valueOf(resultList.get(1))) {
+                    case 1:
+                        status = ControlEventDeviceStatus.SUCCESS_RECEIVED;
+                        break;
+                    case 2:
+                        status = ControlEventDeviceStatus.SUCCESS_STARTED;
+                        break;
+                    case 3:
+                    case 4:
+                        status = ControlEventDeviceStatus.SUCCESS_COMPLETED;
+                        break;
+                    default:
+                        log.error("Unable to parse value:{} to update device participation status for device:{}({})", v, device.getPaoName(), device.getLiteID());
+                        break;
+                    }
+                    if (status != null) {
+                        recentEventParticipationDao.updateDeviceControlEvent(externalEventId, device.getLiteID(), status,
+                                new Instant(value.getTimestamp() * 1000));
+                    }
+                } catch (Exception e) {
+                    log.error("Unable to parse value:{} to update device participation status for device:{}({})", v, device.getPaoName(), device.getLiteID());
+                }
+               
+            });       
+        });
+    }
+
+    private List<String> splitString(String value, String on) {
+        return Splitter.on(on)
+                .trimResults()
+                .omitEmptyStrings()
+                .splitToList(value);
     }
 
     /**
