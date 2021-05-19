@@ -86,16 +86,17 @@ public class PxMWFakeTimeseriesDataV1 {
      * Creates result from the template
      * if randomBadData is true creates bad data by randomly substituting date with 123 and value with the word "test"
      * @param deviceGuid 
+     * @param isCreateRequest 
      */
-    public List<PxMWTimeSeriesResultV1> getValues(String deviceGuid, List<String> tags, PaoType type, boolean randomBadData) {
+    public List<PxMWTimeSeriesResultV1> getValues(String deviceGuid, List<String> tags, PaoType type, boolean randomBadData, boolean isCreateRequest) {
         Random random = new Random();
         load();
         
-        
-        List<String> externalEventIds = getExternalEventIds(deviceGuid);
+        //System.out.println(isCreateRequest +"---" + tags);
+        List<String> externalEventIds = getExternalEventIds(deviceGuid, isCreateRequest);
                 
         Map<String, PxMWTimeSeriesResultV1> parsedChannels = channels.get(type);
-        List<PxMWTimeSeriesResultV1> result = new ArrayList<>();
+       List<PxMWTimeSeriesResultV1> result = new ArrayList<>();
         for (String tag : tags) {
             
             boolean isEventState = tag.equals(MWChannel.EVENT_STATE.getChannelId().toString());
@@ -142,7 +143,10 @@ public class PxMWFakeTimeseriesDataV1 {
         return StringUtils.join(externalEventIds.stream().map(id -> id+",1;"+id+",2;"+id+",3;").collect(Collectors.toList()), ";");
     }
 
-    public List<String> getExternalEventIds(String deviceGuid) {
+    public List<String> getExternalEventIds(String deviceGuid, boolean isCreateRequest) {
+        if(isCreateRequest) {
+            return new ArrayList<>();
+        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ExternalEventId");
         sql.append("FROM ControlEventDevice ced");

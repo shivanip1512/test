@@ -3,6 +3,7 @@ package com.cannontech.simulators.handler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -81,8 +82,12 @@ public class PxMWMessageHandler extends SimulatorMessageHandler {
                 PxMWSimulatorDeviceCreateRequest request = (PxMWSimulatorDeviceCreateRequest) simulatorRequest;
                 PxMWDataGenerator generator = data.get(request.getVersion());
                 if (request.isComplete()) {
-                    //auto creation is done
-                    generator.setCreateRequest(null);
+                    try {
+                        // auto creation is done
+                        generator.setCreateRequest(null);
+                    } catch (Exception e) {
+                        log.error("Exception handling request: " + simulatorRequest, e);
+                    }
                 } else {
                     generator.setCreateRequest(request);
                     generator.setNextValueHelper(nextValueHelper);
@@ -94,7 +99,7 @@ public class PxMWMessageHandler extends SimulatorMessageHandler {
                     "Unsupported request type received: " + simulatorRequest.getClass().getCanonicalName());
 
         } catch (Exception e) {
-            log.error("Exception handling request: " + simulatorRequest);
+            log.error("Exception handling request: " + simulatorRequest, e);
             throw e;
         }
     }

@@ -161,7 +161,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         List<PxMWTimeSeriesDeviceResultV1> resultList = pxMWTimeSeriesDataRequestV1.getDevices().stream().map(d -> {
             List<String> tags = Arrays.asList(d.getTagTrait().split(","));
             PaoType type = createRequest == null ? PaoType.LCR6600C: createRequest.getPaoType();
-            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(d.getDeviceGuid(), tags, type, randomBadData);
+            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(d.getDeviceGuid(), tags, type, randomBadData, createRequest != null);
             return new PxMWTimeSeriesDeviceResultV1(d.getDeviceGuid(), result);
         }).collect(Collectors.toList());
 

@@ -90,9 +90,9 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         Multimap<PaoIdentifier, PointData> newPaoPointMap = HashMultimap.create();
         List<PxMWTimeSeriesDeviceResultV1> timeSeriesResults = new ArrayList<PxMWTimeSeriesDeviceResultV1>();
         Set<String> tags = MWChannel.getTagsForAttributes(attribtues);
-        List<List<PxMWTimeSeriesDeviceV1>> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
-        for (List<PxMWTimeSeriesDeviceV1> request : chunkedRequests) {
-            List<PxMWTimeSeriesDeviceResultV1> result = pxMWCommunicationService.getTimeSeriesValues(request, queryRange);
+        List<PxMWTimeSeriesDeviceV1> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
+        for (PxMWTimeSeriesDeviceV1 request : chunkedRequests) {
+            List<PxMWTimeSeriesDeviceResultV1> result = pxMWCommunicationService.getTimeSeriesValues(List.of(request), queryRange);
             timeSeriesResults.addAll(result);
         }
 
@@ -241,16 +241,14 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
      * Helps optimize the requests that are built by taking a set of GUIDs and a set of 
      * tags that are being requested for those GUIDs and building the minimum number of requests
      */
-    private List<List<PxMWTimeSeriesDeviceV1>> buildRequests(Collection<String> guids, Set<String> tagSet) {
-        List<List<PxMWTimeSeriesDeviceV1>> chunkedRequests = new ArrayList<>();
+    private List<PxMWTimeSeriesDeviceV1> buildRequests(Collection<String> guids, Set<String> tagSet) {
+        List<PxMWTimeSeriesDeviceV1> chunkedRequests = new ArrayList<>();
         List<List<String>> chunkedTags = Lists.partition(new ArrayList<>(tagSet), 10);
         for (List<String> tagSubset : chunkedTags) {
             String tagCSV = buildTagString(tagSubset);
-            List<PxMWTimeSeriesDeviceV1> workingRequest = new ArrayList<PxMWTimeSeriesDeviceV1>();
             for (String guid : guids) {
-                workingRequest.add(new PxMWTimeSeriesDeviceV1(guid, tagCSV));
+                chunkedRequests.add(new PxMWTimeSeriesDeviceV1(guid, tagCSV));
             }
-            chunkedRequests.add(workingRequest);
         }
         return chunkedRequests;
     }

@@ -1,5 +1,6 @@
 package com.cannontech.services.pxmw.creation.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -45,6 +46,7 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 public class PxMWDataRetrievalService {
     private static final Logger log = YukonLogManager.getLogger(PxMWDataRetrievalService.class);
@@ -152,16 +154,20 @@ public class PxMWDataRetrievalService {
                 return;
             }
             
-            List<PxMWTimeSeriesDeviceV1> timeSeriesDeviceRequest = devicesToCreate.stream()
+            List<List<PxMWTimeSeriesDeviceV1>> timeSeriesDeviceRequests = Lists.partition(devicesToCreate.stream()
                     .map(device -> new PxMWTimeSeriesDeviceV1(device.getDeviceGuid(), String.valueOf(MWChannel.FREQUENCY.getChannelId())))
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toList()), 10);
             
-            List<String> guidsWithTimeSeriesData = pxMWCommunicationServiceV1
-                    .getTimeSeriesValues(timeSeriesDeviceRequest, getRange())
-                    .stream()
-                    .filter(deviceResult -> !CollectionUtils.isEmpty(deviceResult.getResults()))
-                    .map(deviceID -> deviceID.getDeviceId())
-                    .collect(Collectors.toList());
+            List<String> guidsWithTimeSeriesData = new ArrayList<>();
+            
+            timeSeriesDeviceRequests.forEach(timeSeriesDeviceRequest -> {
+                guidsWithTimeSeriesData.addAll(pxMWCommunicationServiceV1
+                        .getTimeSeriesValues(timeSeriesDeviceRequest, getRange())
+                        .stream()
+                        .filter(deviceResult -> !CollectionUtils.isEmpty(deviceResult.getResults()))
+                        .map(deviceID -> deviceID.getDeviceId())
+                        .collect(Collectors.toList()));
+            });
             
             //remove devices without time series data
             devicesToCreate.removeIf(device -> !guidsWithTimeSeriesData.contains(device.getDeviceGuid()));
