@@ -36,6 +36,10 @@ public final class StateGroupUtils {
     public static final int STATEGROUP_LASTCONTROL_STATE = -17;
 
     public static final int STATEGROUP_IGNORED_CONTROL = -20;
+    
+    public static final int STATEGROUP_BECKWITH_REGULATOR_CONTROL_MODE = -32;
+    
+    public static final int STATEGROUP_EATON_REGULATOR_CONTROL_MODE = -31;
 
 
     //Default State of point
