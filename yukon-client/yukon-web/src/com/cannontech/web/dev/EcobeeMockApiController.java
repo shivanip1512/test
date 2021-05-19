@@ -275,7 +275,7 @@ public class EcobeeMockApiController {
             showconfig.setReportingUrl(createConfig.getReportingUrl());
         } else {
             showconfig.setPrivateKey("e80af43fd2f03da341c70c3f186dd4fe8521c688");
-            showconfig.setReportingUrl("http://localhost/ecobee/runtimeData");
+            showconfig.setReportingUrl("http://127.0.0.1:8080/ecobee/runtimeData");
         }
         int getShowPushConfigCode = zeusEcobeeDataConfiguration.getShowPushConfiguration();
         if (getShowPushConfigCode == 0) {
