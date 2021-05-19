@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -49,6 +50,10 @@ import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.partial.Status;
 import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
+import com.cannontech.encryption.EcobeeSecurityService;
+import com.cannontech.encryption.EcobeeZeusSecurityService;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.impl.GlobalSettingDaoImpl;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 
@@ -60,6 +65,8 @@ public class EcobeeMockApiController {
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
     @Autowired private MockZeusResponseFactory responseFactory;
+    @Autowired private EcobeeZeusSecurityService ecobeeZeusSecurityService;
+    @Autowired private GlobalSettingDaoImpl globalSettingDaoImpl;
     
     @IgnoreCsrfCheck
     @RequestMapping(value = "hierarchy/set", method = RequestMethod.POST)
@@ -263,15 +270,17 @@ public class EcobeeMockApiController {
             return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }
     }
-
+    
     @GetMapping("utilities/{utilityId}/pushconfig")
-    public ResponseEntity<Object> showPushApiConfiguration(@PathVariable String utilityId) {
-        ZeusShowPushConfig config = new ZeusShowPushConfig();
-        config.setPrivateKey("142f8801bc58d69f5100bd2779d75c9e36011244");
-        config.setReportingUrl("http://abcenergy.com/ecobee/runtimedata");
+    public ResponseEntity<Object> showPushApiConfiguration(@PathVariable String utilityId) throws Exception {
+        ZeusShowPushConfig showconfig = new ZeusShowPushConfig();
+        String privateKeySh1 = DigestUtils.sha1Hex(ecobeeZeusSecurityService.getZeusEncryptionKey().getPrivateKey());
+        String reportingURL= globalSettingDaoImpl.getString(GlobalSettingType.ECOBEE_REPORTING_URL);
+        showconfig.setPrivateKey(privateKeySh1);
+        showconfig.setReportingUrl(reportingURL);
         int getShowPushConfigCode = zeusEcobeeDataConfiguration.getShowPushConfiguration();
         if (getShowPushConfigCode == 0) {
-            return new ResponseEntity<>(config, HttpStatus.OK);
+            return new ResponseEntity<>(showconfig, HttpStatus.OK);
         } else if (getShowPushConfigCode == 1) {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else if (getShowPushConfigCode == 3) {

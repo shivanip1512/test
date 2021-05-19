@@ -296,7 +296,7 @@
                     <span class="js-ecobee-zeus-key-not-generated ${keyNotGeneratedClass}"><i:inline key=".ecobeeZeusNoKeyGenerated"/></span>
                   
                     <div id="reportingUrl">
-                        <span class="js-url"><b> <cti:msg2 key=".ecobeeZeusURL"/></span>
+                        <span class="js-url"><b> <cti:msg2 key=".ecobeeZeusURL"/></b></span>
                         <span class="js-value">${reportingUrl}</span>
                     </div>
                     <div class="page-action-area">
