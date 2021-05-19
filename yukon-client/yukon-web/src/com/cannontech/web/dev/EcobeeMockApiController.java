@@ -50,10 +50,6 @@ import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.partial.Status;
 import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
-import com.cannontech.encryption.EcobeeSecurityService;
-import com.cannontech.encryption.EcobeeZeusSecurityService;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.impl.GlobalSettingDaoImpl;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 
@@ -65,8 +61,7 @@ public class EcobeeMockApiController {
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
     @Autowired private MockZeusResponseFactory responseFactory;
-    @Autowired private EcobeeZeusSecurityService ecobeeZeusSecurityService;
-    @Autowired private GlobalSettingDaoImpl globalSettingDaoImpl;
+    private ZeusCreatePushConfig createConfig;
     
     @IgnoreCsrfCheck
     @RequestMapping(value = "hierarchy/set", method = RequestMethod.POST)
@@ -272,12 +267,16 @@ public class EcobeeMockApiController {
     }
     
     @GetMapping("utilities/{utilityId}/pushconfig")
-    public ResponseEntity<Object> showPushApiConfiguration(@PathVariable String utilityId) throws Exception {
+    public ResponseEntity<Object> showPushApiConfiguration(@PathVariable String utilityId) {
         ZeusShowPushConfig showconfig = new ZeusShowPushConfig();
-        String privateKeySh1 = DigestUtils.sha1Hex(ecobeeZeusSecurityService.getZeusEncryptionKey().getPrivateKey());
-        String reportingURL= globalSettingDaoImpl.getString(GlobalSettingType.ECOBEE_REPORTING_URL);
-        showconfig.setPrivateKey(privateKeySh1);
-        showconfig.setReportingUrl(reportingURL);
+        if (createConfig != null) {
+            String privateKeySh1 = DigestUtils.sha1Hex(createConfig.getPrivateKey());
+            showconfig.setPrivateKey(privateKeySh1);
+            showconfig.setReportingUrl(createConfig.getReportingUrl());
+        } else {
+            showconfig.setPrivateKey("e80af43fd2f03da341c70c3f186dd4fe8521c688");
+            showconfig.setReportingUrl("http://localhost/ecobee/runtimeData");
+        }
         int getShowPushConfigCode = zeusEcobeeDataConfiguration.getShowPushConfiguration();
         if (getShowPushConfigCode == 0) {
             return new ResponseEntity<>(showconfig, HttpStatus.OK);
@@ -295,7 +294,7 @@ public class EcobeeMockApiController {
     public ResponseEntity<Object> createPushApiConfiguration(@RequestBody ZeusCreatePushConfig zeusPushConfig,
             @PathVariable String utilityId) {
         
-        ZeusCreatePushConfig createConfig = new ZeusCreatePushConfig();
+        createConfig = new ZeusCreatePushConfig();
         createConfig.setPrivateKey(zeusPushConfig.getPrivateKey());
         createConfig.setReportingUrl(zeusPushConfig.getReportingUrl());
         int getPushConfigCode = zeusEcobeeDataConfiguration.getCreatePushConfiguration();
@@ -314,8 +313,8 @@ public class EcobeeMockApiController {
     @GetMapping("auth/user")
     public ResponseEntity<Object> showUser() {
         Map<String, Object> responseMap = new HashMap<String, Object>();
-        responseMap.put("username", "user123");
-        responseMap.put("utility_id", "utility-123");
+        responseMap.put("username", "yukon@eaton.com");
+        responseMap.put("utility_id", "f9c3631b800027106256");
         int showUserCode = zeusEcobeeDataConfiguration.getShowUser();
         if (showUserCode == 0) {
             return new ResponseEntity<>(responseMap, HttpStatus.OK);
