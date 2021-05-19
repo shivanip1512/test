@@ -82,12 +82,8 @@ public class PxMWMessageHandler extends SimulatorMessageHandler {
                 PxMWSimulatorDeviceCreateRequest request = (PxMWSimulatorDeviceCreateRequest) simulatorRequest;
                 PxMWDataGenerator generator = data.get(request.getVersion());
                 if (request.isComplete()) {
-                    try {
-                        // auto creation is done
-                        generator.setCreateRequest(null);
-                    } catch (Exception e) {
-                        log.error("Exception handling request: " + simulatorRequest, e);
-                    }
+                    // auto creation is done
+                    generator.setCreateRequest(null);
                 } else {
                     generator.setCreateRequest(request);
                     generator.setNextValueHelper(nextValueHelper);
