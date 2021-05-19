@@ -17,7 +17,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
@@ -216,23 +215,5 @@ public class PxMWDataV1 extends PxMWDataGenerator {
                     new PxMWCommandResponseV1(0, "Success sending command for device guid:" + id + " command guid:" + command_instance_id),
                     status);
         
-    }
-    
-    public PxMWSimulatorResponse detailsV1(String deviceId, Boolean recursive) {
-        if (status == HttpStatus.BAD_REQUEST.value()) {
-            PxMWErrorV1 error = new PxMWErrorV1(List.of("Id"), "Invalid UUID-f28b0", "616ff40f-63b2-4d3c-87e2-16b3c40614ed", status, "2021-02-26T10:52:16.0799958+00:00", 10022);
-            return new PxMWSimulatorResponse(error, status);
-
-        }
-        if (status == HttpStatus.UNAUTHORIZED.value()) {
-            return new PxMWSimulatorResponse(
-                    new PxMWErrorV1(status,"Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
-                    status);
-        } 
-        if (status == HttpStatus.NOT_FOUND.value()) {
-            return new PxMWSimulatorResponse(new PxMWErrorV1(status, "Resource not found"), status);
-        }
-        PxMWDeviceDetail detail = new  PxMWDeviceDetail(deviceId, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", true, "");
-        return new PxMWSimulatorResponse(detail, status);
     }
 }

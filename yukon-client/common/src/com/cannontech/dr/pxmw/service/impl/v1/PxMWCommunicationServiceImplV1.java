@@ -9,7 +9,10 @@ import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.logging.log4j.core.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -34,12 +37,12 @@ import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequestV1;
 import com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenResponseV1;
+import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
@@ -167,7 +170,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
                     totalChannels = totalChannels + Arrays.asList(device.getTagTrait().split(",")).size();
                 }
             }
-            log.info("Getting time series data. Request:{} Total Channels:{} Start:{} Stop:{} URL:{}",
+            log.debug("Getting time series data. Request:{} Total Channels:{} Start:{} Stop:{} URL:{}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(request), totalChannels, startTime, stopTime, uri);
             ResponseEntity<PxMWTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
                     PxMWTimeSeriesDeviceResultV1[].class);
@@ -205,44 +208,22 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
     
     @Override
-    public PxMWDeviceDetail getDeviceDetails(String deviceGuid, Boolean recursive)
-            throws PxMWCommunicationExceptionV1, PxMWException {
-        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        if (recursive != null) {
-            queryParams.add("recursive", recursive.toString());
-        }
-
-        URI uri = getUri(Map.of("deviceId", deviceGuid), PxMWRetrievalUrl.DEVICE_DETAIL);
-        uri = addQueryParams(queryParams, uri);
-
-        log.debug("Getting device info. Device Guid: {} URL: {}", deviceGuid, uri);
-
-        try {
-            HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-            ResponseEntity<PxMWDeviceDetail> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWDeviceDetail.class);
-            log.debug("Got device info. Device Guid:{} Result:{}", deviceGuid,
-                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
-            return response.getBody();
-        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new PxMWException("Exception occured while getting device detail", e);
-        }
-    }
-    
-    @Override
     public boolean isCreatableDevice(String deviceGuid) {
         try {
-            getDeviceDetails(deviceGuid, null);
-            return true;
+            DateTime today = new DateTime(Instant.now());
+            DateTime yesterday = today.minusDays(1);
+            Range<Instant> range = new Range<Instant>(yesterday.toInstant(), false, today.toInstant(), false);
+            List<PxMWTimeSeriesDeviceV1> request = List
+                    .of(new PxMWTimeSeriesDeviceV1(deviceGuid, String.valueOf(MWChannel.FREQUENCY.getChannelId())));
+            List<PxMWTimeSeriesDeviceResultV1> response = getTimeSeriesValues(request, range);
+            return CollectionUtils.isNotEmpty(response);
         } catch (Exception e) {
-            //404 Not Found if device doesn't exist
+            // 404 Not Found if device doesn't exist
             log.error("Device:" + deviceGuid + " can't be created", e);
             return false;
         }
     }
    
-
     /**
      * Creates URI
      */

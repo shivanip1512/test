@@ -40,12 +40,6 @@ public enum PxMWRetrievalUrl {
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
             ImmutableMap.of("Device Guid", "821d549c-c1b7-469e-bbf5-9d9d401883b2"),
             true),
-    DEVICE_DETAIL(PxMWVersion.V1, "/devices/{deviceId}/details",
-            "https://eas-all-apim-eus-dev.developer.azure-api.net/api-details#api=devices&operation=get-getsitedevices",
-            // 200, 400, 401, 404
-            List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
-            ImmutableMap.of("Device Guid", "b57f1f16-071f-4813-b63f-1eccf9e70dba", "Recursive* (true, false)", "false"),
-            false),
     SITES(PxMWVersion.V1, "/accesscontrol/sites",
             "https://eas-all-apim-eus-dev.developer.azure-api.net/api-details#api=devices&operation=get-getsites",
             // 200, 400, 401, 404
