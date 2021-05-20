@@ -1,0 +1,25 @@
+post-operation:
+  post:
+    tags:
+     - Route
+    summary: 'Create Route'
+    description: 'API to create Route.'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/routesSchema.yaml#/Route'
+          examples:
+            Route:
+              $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
+      required: true
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/routesSchema.yaml#/Route'
+            examples:
+              Route:
+                $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
