@@ -103,7 +103,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
      */
     @SuppressWarnings("unchecked")
     private String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException {
-        String showProgramURL = getUrlBase() + "programs/" + GlobalSettingType.ECOBEE_ZEUS_PROGRAM_ID;
+        String showProgramURL = getUrlBase() + "programs/" + getZeusProgramId();
 
         ResponseEntity<?> programResponse = requestHelper.callEcobeeAPIForObject(showProgramURL, HttpMethod.GET, Object.class);
         if (programResponse.getStatusCode() == HttpStatus.OK) {
@@ -146,7 +146,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
             CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), Arrays.asList(serialNumber));
             String groupName = cache.getAllPaosMap().get(lmGroupId).getPaoName();
-            ZeusGroup group = new ZeusGroup(groupName, GlobalSettingType.ECOBEE_ZEUS_PROGRAM_ID);
+            ZeusGroup group = new ZeusGroup(groupName, getZeusProgramId());
             ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
             ResponseEntity<Map> responseEntity = (ResponseEntity<Map>) requestHelper.callEcobeeAPIForObject(
@@ -228,7 +228,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
         String groupName = ecobeeZeusGroupService.zeusGroupName(zeusGroupId);
         CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), thermostatIds);
-        ZeusGroup group = new ZeusGroup(groupName, GlobalSettingType.ECOBEE_ZEUS_PROGRAM_ID);
+        ZeusGroup group = new ZeusGroup(groupName, getZeusProgramId());
         ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
         try {
@@ -442,6 +442,10 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
     private String getUrlBase() {
         return settingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
+
+    }
+    private String getZeusProgramId() {
+        return settingDao.getString(GlobalSettingType.ECOBEE_ZEUS_PROGRAM_ID);
 
     }
 
