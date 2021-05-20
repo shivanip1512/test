@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
-        <analog offset="40"/>
+        <analog offset="44"/>
         <status offset="13"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -245,6 +245,30 @@
         <multiplier value="1"/>
         <unitofmeasure value="VOLTS"/>
         <decimalplaces value="3"/>
+    </point>
+    <point offset="41" type="Analog">
+        <name>Relay 1 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="42" type="Analog">
+        <name>Relay 2 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="43" type="Analog">
+        <name>Relay 3 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="44" type="Analog">
+        <name>Relay 4 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
     </point>
 
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

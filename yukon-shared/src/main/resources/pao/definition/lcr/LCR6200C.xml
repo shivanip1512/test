@@ -19,6 +19,7 @@
         <pointInfo name="Total LUV Event Count" attributes="TOTAL_LUV_COUNT"/>
         
         <pointInfo name="Relay 1 Activation Status" attributes="RELAY_1_ACTIVATION_STATUS"/>
+        <pointInfo name="Relay 1 Cold Load Pickup Time" attributes="RELAY_1_COLD_LOAD_PICKUP_TIME"/>
         <pointInfo name="Relay 1 Load State" attributes="RELAY_1_LOAD_STATE"/>
         <pointInfo name="Relay 1 Run Time Data Log" attributes="RELAY_1_RUN_TIME_DATA_LOG"/>
         <pointInfo name="Relay 1 Shed Status" attributes="RELAY_1_SHED_STATUS"/>
