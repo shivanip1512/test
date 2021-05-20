@@ -1,7 +1,7 @@
 package com.cannontech.encryption.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -10,8 +10,9 @@ import java.util.Optional;
 
 import org.easymock.EasyMock;
 import org.joda.time.Instant;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.exception.EcobeePGPException;
@@ -24,7 +25,7 @@ public class EcobeeSecurityServiceImplTest {
     private EcobeeSecurityServiceImpl mockEcobeeSecurityServiceImpl;
     private EncryptedRouteDao mockEncryptedRouteDao;
 
-    @Before
+    @BeforeEach
     public void setup() {
         mockEncryptedRouteDao = EasyMock.createMock(EncryptedRouteDao.class);
         mockEcobeeSecurityServiceImpl = new EcobeeSecurityServiceImpl();
@@ -46,29 +47,35 @@ public class EcobeeSecurityServiceImplTest {
         assertEquals(timestamp, mockEcobeeSecurityServiceImpl.getEcobeeKeyPairCreationTime());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void test_getEcobeeKeyPairCreationTime_NotPresent() {
         EncryptionKey encryptionKey = new EncryptionKey();
         EasyMock.expect(mockEncryptedRouteDao.getEncryptionKey(EncryptionKeyType.Ecobee)).andReturn(Optional.ofNullable(encryptionKey));
         EasyMock.replay(mockEncryptedRouteDao);
-        mockEcobeeSecurityServiceImpl.getEcobeeKeyPairCreationTime();
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            mockEcobeeSecurityServiceImpl.getEcobeeKeyPairCreationTime();
+        });
     }
 
-    @Test(expected = EcobeePGPException.class)
+    @Test
     public void test_decryptEcobeeFile_PrimaryKey_NotPresent() {
         InputStream stubInputStream = new ByteArrayInputStream( "Dummy data".getBytes() );
         EasyMock.expect(mockEncryptedRouteDao.getEncryptionKey(EncryptionKeyType.Ecobee)).andReturn(Optional.empty());
         EasyMock.replay(mockEncryptedRouteDao);
-        mockEcobeeSecurityServiceImpl.decryptEcobeeFile(stubInputStream);
+        Assertions.assertThrows(EcobeePGPException.class, () -> {
+            mockEcobeeSecurityServiceImpl.decryptEcobeeFile(stubInputStream);
+        });
     }
 
-    @Test(expected = EcobeePGPException.class)
+    @Test
     public void test_decryptEcobeeFile_Fail() {
         EncryptionKey encryptionKey = new EncryptionKey();
         encryptionKey.setPrivateKey("de87aaa5e01fd1af0f0dd265a65a65b851510ac3557f44d553727c4d6d257f");
         InputStream stubInputStream = new ByteArrayInputStream( "Dummy data".getBytes() );
         EasyMock.expect(mockEncryptedRouteDao.getEncryptionKey(EncryptionKeyType.Ecobee)).andReturn(Optional.of(encryptionKey));
         EasyMock.replay(mockEncryptedRouteDao);
-        mockEcobeeSecurityServiceImpl.decryptEcobeeFile(stubInputStream);
+        Assertions.assertThrows(EcobeePGPException.class, () -> {
+            mockEcobeeSecurityServiceImpl.decryptEcobeeFile(stubInputStream);
+        });
     }
 }

@@ -1,6 +1,6 @@
 package com.cannontech.core.dao.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -18,7 +18,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 public class RawPointHistoryDaoImplTest {
     RawPointHistoryDao dao;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         System.setProperty("java.locale.providers", "COMPAT,SPI");
         // we need to create a special version that stubs out the actual DB method

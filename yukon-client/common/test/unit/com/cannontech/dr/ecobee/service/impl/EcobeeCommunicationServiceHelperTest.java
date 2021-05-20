@@ -1,6 +1,6 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -8,8 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 
@@ -19,7 +20,7 @@ public class EcobeeCommunicationServiceHelperTest {
     private static final List<String> deviceReadColumns = ImmutableList.of("zoneCalendarEvent", "zoneAveTemp",
         "outdoorTemp", "zoneCoolTemp", "zoneHeatTemp", "compCool1", "compHeat1");
 
-    @Before
+    @BeforeEach
     public void setup() {
         helper = new EcobeeCommunicationServiceHelper();
     }
@@ -31,7 +32,7 @@ public class EcobeeCommunicationServiceHelperTest {
         method.setAccessible(true);
         String text = "123456-" + jobId;
         String thermostatId = (String) method.invoke(helper, text);
-        assertEquals("Expected thermostat number doesn't match returned value", "123456", thermostatId);
+        assertEquals("123456", thermostatId, "Expected thermostat number doesn't match returned value");
     }
 
     @Test
@@ -40,9 +41,9 @@ public class EcobeeCommunicationServiceHelperTest {
         Method method = implClass.getDeclaredMethod("parseIntegerData", String.class);
         method.setAccessible(true);
         Integer nullInteger = (Integer) method.invoke(helper, StringUtils.EMPTY);
-        assertEquals("Expected number doesn't match returned value", null, nullInteger);
+        assertEquals(null, nullInteger, "Expected number doesn't match returned value");
         Integer notNullInteger = (Integer) method.invoke(helper, "10");
-        assertEquals("Expected number doesn't match returned value", Integer.valueOf(10), notNullInteger);
+        assertEquals(Integer.valueOf(10), notNullInteger, "Expected number doesn't match returned value");
     }
 
     @Test
@@ -51,9 +52,9 @@ public class EcobeeCommunicationServiceHelperTest {
         Method method = implClass.getDeclaredMethod("parseFloatData", String.class);
         method.setAccessible(true);
         Float nullFlot = (Float) method.invoke(helper, StringUtils.EMPTY);
-        assertEquals("Expected number doesn't match returned value", null, nullFlot);
+        assertEquals(null, nullFlot, "Expected number doesn't match returned value");
         Float notNullFloat = (Float) method.invoke(helper, "10");
-        assertEquals("Expected number doesn't match returned value", Float.valueOf(10f), notNullFloat);
+        assertEquals(Float.valueOf(10f), notNullFloat, "Expected number doesn't match returned value");
     }
 
     @Test
@@ -64,9 +65,9 @@ public class EcobeeCommunicationServiceHelperTest {
         Integer setCompCool = (Integer) method.invoke(helper, Integer.valueOf(10), null);
         Integer setCompHeat = (Integer) method.invoke(helper, null, Integer.valueOf(20));
         Integer runtime = (Integer) method.invoke(helper, Integer.valueOf(15), Integer.valueOf(15));
-        assertEquals("Expected number runttime doesn't match returned value", Integer.valueOf(10), setCompCool);
-        assertEquals("Expected number runttime doesn't match returned value", Integer.valueOf(20), setCompHeat);
-        assertEquals("Expected number runttime doesn't match returned value", Integer.valueOf(30), runtime);
+        assertEquals(Integer.valueOf(10), setCompCool, "Expected number runttime doesn't match returned value");
+        assertEquals(Integer.valueOf(20), setCompHeat, "Expected number runttime doesn't match returned value");
+        assertEquals(Integer.valueOf(30), runtime, "Expected number runttime doesn't match returned value");
     }
 
     @Test
@@ -80,8 +81,8 @@ public class EcobeeCommunicationServiceHelperTest {
         for (Entry<String, Integer> entry : headerMap.entrySet()) {
             Integer actualHeaderIndex = Integer.valueOf(deviceReadColumns.indexOf(entry.getKey()));
             Integer headerIndex = entry.getValue();
-            assertEquals("Expected header for index " + entry.getKey() + " doesn't match returned value", headerIndex,
-                actualHeaderIndex);
+            assertEquals(headerIndex,
+                    actualHeaderIndex, "Expected header for index " + entry.getKey() + " doesn't match returned value");
         }
     }
 
@@ -98,8 +99,8 @@ public class EcobeeCommunicationServiceHelperTest {
         for (Entry<String, Integer> entry : headerMap.entrySet()) {
             Integer actualHeaderIndex = Integer.valueOf(deviceReadAlphabeticalOrder.indexOf(entry.getKey()));
             Integer headerIndex = entry.getValue();
-            assertEquals("Expected header for index " + entry.getKey() + " doesn't match returned value", headerIndex,
-                actualHeaderIndex);
+            assertEquals(headerIndex,
+                    actualHeaderIndex, "Expected header for index " + entry.getKey() + " doesn't match returned value");
         }
     }
 
@@ -107,7 +108,7 @@ public class EcobeeCommunicationServiceHelperTest {
     public void test_getDecryptedFileName() throws Exception {
         String fileName = "1234-" + jobId + ".tar.gz";
         String url = "https://test.com/" + fileName + ".gpg";
-        assertEquals("Expected file name doesn't match returned value", fileName, helper.getDecryptedFileName(url));
+        assertEquals(fileName, helper.getDecryptedFileName(url), "Expected file name doesn't match returned value");
     }
 
 }

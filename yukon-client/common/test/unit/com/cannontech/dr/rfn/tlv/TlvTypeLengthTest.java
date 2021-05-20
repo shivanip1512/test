@@ -1,7 +1,9 @@
 package com.cannontech.dr.rfn.tlv;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TlvTypeLengthTest {
     
@@ -12,24 +14,32 @@ public class TlvTypeLengthTest {
         }
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void test_length_negative() {
-        testValues(1, -1);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            testValues(1, -1);
+        });
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void test_length_tooLong() {
-        testValues(1, 4096);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            testValues(1, 4096);
+        });
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void test_type_negative() {
-        testValues(-1, 1);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            testValues(-1, 1);
+        });
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void test_type_tooLong() {
-        testValues(4096, 1);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            testValues(4096, 1);
+        });
     }
     
     private void testValues(int type, int length) {
@@ -42,10 +52,10 @@ public class TlvTypeLengthTest {
         
         //Convert back to type and length and compare
         int typeResult = TlvTypeLength.getType(byte1, byte2);
-        Assert.assertEquals("Type mismatch", type, typeResult);
+        assertEquals(type, typeResult, "Type mismatch");
         
         int lengthResult = TlvTypeLength.getLength(byte2, byte3);
-        Assert.assertEquals("Length mismatch", length, lengthResult);
+        assertEquals(length, lengthResult, "Length mismatch");
     }
     
     

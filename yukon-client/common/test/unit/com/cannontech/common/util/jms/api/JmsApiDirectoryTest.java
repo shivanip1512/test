@@ -1,6 +1,7 @@
 package com.cannontech.common.util.jms.api;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class JmsApiDirectoryTest {
     
@@ -35,7 +36,7 @@ public class JmsApiDirectoryTest {
                  try {
                       field.setAccessible(true);
                       JmsApi<?,?,?> api = (JmsApi<?,?,?>) field.get(null);
-                      assertTrue(api + " is not assigned to a category", apis.contains(api));
+                      assertTrue(apis.contains(api), api + " is not assigned to a category");
                  } catch (Exception e) {
                      e.printStackTrace(System.out);
                      fail("Error comparing static fields to Apis assigned to categories.\n" + e.toString());

@@ -1,6 +1,6 @@
 package com.cannontech.eim;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -212,8 +212,8 @@ public class EimJavaLibraryTest {
         Set<String> thirdPartyFilenames = Sets.difference(classpathJars, IgnoredThirdPartyJavaLibraries.getFilenames());
         Set<String> newCommonJars = Sets.difference(thirdPartyFilenames, eimJars);
         Set<String> missingJars = Sets.difference(newCommonJars, excludedJars);
-        assertTrue("Unknown JAR files found. These must be added either in build.xml file of api-web "
-            + "or in excludedJars of this class: " + missingJars, missingJars.isEmpty());
+        assertTrue(missingJars.isEmpty(), "Unknown JAR files found. These must be added either in build.xml file of api-web "
+            + "or in excludedJars of this class: " + missingJars);
     }
 }
 

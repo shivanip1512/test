@@ -1,10 +1,10 @@
 package com.cannontech.stars.dr.controlHistory.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
@@ -13,7 +13,7 @@ import org.joda.time.Minutes;
 import org.joda.time.ReadableDuration;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistoryEvent;
@@ -59,7 +59,7 @@ public class StarsControlHistoryServiceImplTest {
         }
 
         ReadableDuration totalDurationResult = service.calculateTotalDuration(controlHistoryList);
-        Assert.assertEquals("Total Duration was not 15 minutes", totalDurationResult, totalDurationExpected);
+        assertEquals(totalDurationResult, totalDurationExpected, "Total Duration was not 15 minutes");
     }
     
     /**
@@ -103,7 +103,7 @@ public class StarsControlHistoryServiceImplTest {
         
         ReadableDuration totalDurationExpected = new Duration(14400000); // 4 hours
         ReadableDuration totalDurationResult = service.calculateTotalDuration(controlHistoryList);
-        Assert.assertEquals("Total Duration was not 4 hours", totalDurationResult, totalDurationExpected);
+        assertEquals(totalDurationResult, totalDurationExpected, "Total Duration was not 4 hours");
     }
     
     /**
@@ -163,7 +163,7 @@ public class StarsControlHistoryServiceImplTest {
         
         ReadableDuration totalDurationExpected = new Duration(13500000); // 3 hours, 45 minutes
         ReadableDuration totalDurationResult = service.calculateTotalDuration(controlHistoryList);
-        Assert.assertEquals("Total Duration was not 3 hours, 45 minutes", totalDurationResult, totalDurationExpected);
+        assertEquals(totalDurationResult, totalDurationExpected, "Total Duration was not 3 hours, 45 minutes");
     }
     
 }

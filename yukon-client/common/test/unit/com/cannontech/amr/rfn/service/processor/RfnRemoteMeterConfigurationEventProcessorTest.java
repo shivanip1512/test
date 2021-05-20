@@ -1,7 +1,7 @@
 package com.cannontech.amr.rfn.service.processor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -9,8 +9,8 @@ import java.util.Map;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.joda.time.Instant;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.errors.dao.DeviceError;
@@ -43,7 +43,7 @@ public class RfnRemoteMeterConfigurationEventProcessorTest {
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> mockThriftMessenger;
     private Capture<MeterProgramStatusArchiveRequest> requestPayload;
     
-    @Before
+    @BeforeEach
     @SuppressWarnings("unchecked")
     public void init() {
         processor = new RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor();
@@ -79,10 +79,9 @@ public class RfnRemoteMeterConfigurationEventProcessorTest {
         
         processor.process(RFN_DEVICE, e, l, ARBITRARY_TIMESTAMP);
         
-        assertTrue("Captured MeterProgramStatusArchiveRequest", 
-                requestPayload.hasCaptured());
-        assertEquals("MeterProgramStatusArchiveRequest timestamp equals event timestamp",
-                requestPayload.getValue().getTimestamp(), EVENT_TIMESTAMP);
+        assertTrue(requestPayload.hasCaptured(), "Captured MeterProgramStatusArchiveRequest");
+        assertEquals(requestPayload.getValue().getTimestamp(), EVENT_TIMESTAMP,
+                "MeterProgramStatusArchiveRequest timestamp equals event timestamp");
         assertEquals(requestPayload.getValue().getError(), DeviceError.CATASTROPHIC_FAILURE);
     }
     
@@ -101,10 +100,9 @@ public class RfnRemoteMeterConfigurationEventProcessorTest {
         
         processor.process(RFN_DEVICE, e, l, ARBITRARY_TIMESTAMP);
         
-        assertTrue("Captured MeterProgramStatusArchiveRequest", 
-                requestPayload.hasCaptured());
-        assertEquals("MeterProgramStatusArchiveRequest timestamp equals event timestamp",
-                requestPayload.getValue().getTimestamp(), EVENT_TIMESTAMP);
+        assertTrue(requestPayload.hasCaptured(), "Captured MeterProgramStatusArchiveRequest");
+        assertEquals(requestPayload.getValue().getTimestamp(), EVENT_TIMESTAMP,
+                "MeterProgramStatusArchiveRequest timestamp equals event timestamp");
        assertEquals(requestPayload.getValue().getError(), DeviceError.REASON_UNKNOWN);
     }
 }

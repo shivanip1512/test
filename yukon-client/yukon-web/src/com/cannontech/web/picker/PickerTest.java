@@ -1,13 +1,13 @@
 package com.cannontech.web.picker;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AssignableTypeFilter;
@@ -41,7 +41,7 @@ public class PickerTest {
                 classExtendsPicker.add(Class.forName(component.getBeanClassName()));
             } catch (ClassNotFoundException e) {
                 // This test case will break if expected class is not found.
-                assertTrue("Class Not Found ", 1 == 2);
+                assertTrue(1 == 2, "Class Not Found ");
             }
         }
         // These are added as they are abstract class and are not picked by above scanner.
@@ -52,6 +52,6 @@ public class PickerTest {
         classExtendsPicker.add(com.cannontech.web.picker.DatabasePaoPicker.class);
 
         classExtendsPicker.removeAll(classInPicker);
-        assertEquals("Picker not defined as @JsonSubTypes in Picker.class", classExtendsPicker, new ArrayList<Class>());
+        assertEquals(classExtendsPicker, new ArrayList<Class>(), "Picker not defined as @JsonSubTypes in Picker.class");
     }
 }

@@ -1,6 +1,7 @@
 package com.cannontech.common.pao;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
@@ -1930,7 +1931,7 @@ public class PaoTypeTest {
             Arrays.stream(PaoType.values())
                     .map(PaoType::getFormatKey)
                     .forEach(formatKey -> 
-                        assertNotNull("Missing i18n key for " + formatKey, paoNames.get(formatKey)));
+                        assertNotNull(paoNames.get(formatKey), "Missing i18n key for " + formatKey));
 
         } catch (JDOMException | IOException e) {
             fail("Unexpected exception: " + e);

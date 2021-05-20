@@ -1,8 +1,8 @@
 package com.cannontech.encryption.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -16,8 +16,8 @@ import org.apache.commons.codec.binary.Hex;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.joda.time.Instant;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.database.db.security.EncryptionKey;
@@ -31,7 +31,7 @@ public class EcobeeZeusSecurityServiceImplTest {
     private EcobeeZeusSecurityServiceImpl mockEcobeeZeusSecurityServiceImpl;
     private EncryptedRouteDao mockEncryptedRouteDao;
 
-    @Before
+    @BeforeEach
     public void setup() {
         mockEncryptedRouteDao = EasyMock.createMock(EncryptedRouteDao.class);
         mockEcobeeZeusSecurityServiceImpl = new EcobeeZeusSecurityServiceImpl();

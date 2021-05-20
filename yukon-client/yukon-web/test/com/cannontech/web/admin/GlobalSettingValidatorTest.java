@@ -1,13 +1,14 @@
 package com.cannontech.web.admin;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -25,7 +26,7 @@ public class GlobalSettingValidatorTest {
     private GlobalSettingsEditorBean command;
     private Errors errors;
 
-    @Before
+    @BeforeEach
     public void setup() {
         service = new GlobalSettingValidator();
         StaticMessageSource messageSource = new StaticMessageSource();
@@ -98,8 +99,8 @@ public class GlobalSettingValidatorTest {
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.YUKON_SERVICES ,
-            errors.getErrorCount() == 5);
+        assertTrue(errors.getErrorCount() == 5,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.YUKON_SERVICES);
         
         command = new GlobalSettingsEditorBean();
         command.setCategory(GlobalSettingSubCategory.YUKON_SERVICES);
@@ -111,8 +112,8 @@ public class GlobalSettingValidatorTest {
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.YUKON_SERVICES ,
-            errors.getErrorCount() == 4);
+        assertTrue(errors.getErrorCount() == 4,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.YUKON_SERVICES);
 
         // Validation for DR category
         command = new GlobalSettingsEditorBean();
@@ -163,9 +164,8 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
 
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.DR ,
-            errors.getErrorCount() == 4);
-        
+        assertTrue(errors.getErrorCount() == 4,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.DR);
         
         command = new GlobalSettingsEditorBean();
         command.setCategory(GlobalSettingSubCategory.DR);
@@ -178,8 +178,8 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
 
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.DR ,
-            errors.getErrorCount() == 4);
+        assertTrue(errors.getErrorCount() == 4,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.DR);
 
         // InValid Runtime Calculation Value
         command = new GlobalSettingsEditorBean();
@@ -253,8 +253,8 @@ public class GlobalSettingValidatorTest {
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.AUTHENTICATION ,
-            errors.getErrorCount() == 3);
+        assertTrue(errors.getErrorCount() == 3,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.AUTHENTICATION);
 
         command.setCategory(GlobalSettingSubCategory.AUTHENTICATION);
         globalSettings.put(GlobalSettingType.SERVER_ADDRESS, "SERVER?ADDRESS");
@@ -264,8 +264,8 @@ public class GlobalSettingValidatorTest {
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.AUTHENTICATION ,
-            errors.getErrorCount() == 3);
+        assertTrue(errors.getErrorCount() == 3,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.AUTHENTICATION);
 
         
         // Validation for MISC
@@ -290,8 +290,8 @@ public class GlobalSettingValidatorTest {
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.MISC ,
-            errors.getErrorCount() == 3);
+        assertTrue(errors.getErrorCount() == 3,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.MISC);
         
         command = new GlobalSettingsEditorBean();
         command.setCategory(GlobalSettingSubCategory.AMI);
