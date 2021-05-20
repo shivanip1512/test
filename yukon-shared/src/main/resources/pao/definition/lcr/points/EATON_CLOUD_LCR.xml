@@ -17,12 +17,6 @@
         <unitofmeasure value="COUNTS"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="3" type="Analog">
-        <name>Firmware Version</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"/>
-        <decimalplaces value="0"/>        
-    </point>
     <point offset="4" type="Analog">
         <name>Frequency</name>
         <multiplier value="1"/>

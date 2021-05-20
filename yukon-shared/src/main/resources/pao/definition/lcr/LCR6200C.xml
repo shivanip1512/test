@@ -10,7 +10,6 @@
     <pointInfos>
         <pointInfo name="Blink Count" attributes="BLINK_COUNT"/>
         <pointInfo name="Comms Loss Count" attributes="COMMS_LOSS_COUNT"/>
-        <pointInfo name="Firmware Version" attributes="FIRMWARE_VERSION"/>
         <pointInfo name="Firmware Update Status" attributes="FIRMWARE_UPDATE_STATUS"/>
         <pointInfo name="Frequency" attributes="FREQUENCY"/>
         <pointInfo name="Voltage" attributes="VOLTAGE"/>

@@ -26,6 +26,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoDao.InfoKey;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -41,6 +42,7 @@ import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
 import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Splitter;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
@@ -110,6 +112,10 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                         updateEventParticipation(device, result.getValues());
                         continue;
                     }
+                    if (mwChannel == MWChannel.VERSION) {
+                        updateFirmwareVersion(device, result.getValues());
+                        continue;
+                    }
                     if(!attribtues.contains(mwChannel.getBuiltInAttribute())) {
                         //Received point data we didn't ask for
                         continue;
@@ -130,6 +136,14 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
             }
         }
         return newPaoPointMap;
+    }
+
+    private void updateFirmwareVersion(LiteYukonPAObject device, List<PxMWTimeSeriesValueV1> values) {
+        if (!values.isEmpty()) {
+            PxMWTimeSeriesValueV1 value = values.get(0);
+            paoDao.savePaoInfo(device.getLiteID(), InfoKey.FIRMWARE_VERSION, value.getValue(),
+                    new Instant(value.getTimestamp() * 1000), YukonUserContext.system.getYukonUser());
+        }
     }
 
     private void updateEventParticipation( LiteYukonPAObject device, List<PxMWTimeSeriesValueV1> values) {

@@ -117,7 +117,7 @@ $(function() { updateServiceCompanyInfo();});
             <c:if test="${showGuid}">
               <tags:inputNameValue nameKey=".guid" path="guid"/>
             </c:if>
-           
+                 
             <c:if test="${showMacAddress}">
                 <c:choose>
                    <c:when test="${macAddressEditable}">
@@ -158,6 +158,12 @@ $(function() { updateServiceCompanyInfo();});
             
             <c:if test="${showFirmwareVersion}">
                 <tags:inputNameValue nameKey=".firmwareVersion" path="firmwareVersion"></tags:inputNameValue>
+            </c:if>
+            
+            <c:if test="${showEatonCloudFirmwareVersion}">
+                <tags:nameValue2 nameKey=".firmwareVersion">
+                     ${fn:escapeXml(eatonCloudFirmwareVersion)}
+                </tags:nameValue2>
             </c:if>
             
             <tags:inputNameValue nameKey=".label" path="displayLabel"/>

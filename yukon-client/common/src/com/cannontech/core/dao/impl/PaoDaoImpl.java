@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -40,6 +41,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.impl.PaoLoader;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -678,4 +680,38 @@ public final class PaoDaoImpl implements PaoDao {
         return yukonPao;
     }
 
+    @Override
+    public String findPaoInfoValue(int paoId, InfoKey key) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT Value");
+            sql.append("FROM DynamicPAOInfo");
+            sql.append("WHERE PAObjectID").eq(paoId);
+            sql.append("AND InfoKey").eq_k(key);
+            return jdbcTemplate.queryForString(sql);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public void savePaoInfo(int paoId, InfoKey key, String value, Instant time, LiteYukonUser user) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if(findPaoInfoValue(paoId, key) == null) {
+            SqlParameterSink params = sql.insertInto("DynamicPAOInfo");
+            params.addValue("PAObjectID", paoId);
+            params.addValue("Owner", user.getUsername());
+            params.addValue("InfoKey", key);
+            params.addValue("Value", value);
+            params.addValue("UpdateTime", time);
+        } else {
+            SqlParameterSink params = sql.update("DynamicPAOInfo");
+            params.addValue("Owner", user.getUsername());
+            params.addValue("Value", value);
+            params.addValue("UpdateTime", time);
+            sql.append("WHERE PAObjectID").eq(paoId);
+            sql.append("AND InfoKey").eq_k(key);
+        }
+        jdbcTemplate.update(sql);
+    }
 }

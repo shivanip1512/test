@@ -49,6 +49,7 @@ import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoDao.InfoKey;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
@@ -806,6 +807,15 @@ public class OperatorHardwareController {
 
         //  Add Pao Specifics
         Integer deviceId = hardware.getDeviceId();
+        
+        if(type.isEatonCloud()) {
+            String firmwareVersion = paoDao.findPaoInfoValue(deviceId, InfoKey.FIRMWARE_VERSION);
+            if (firmwareVersion != null) {
+                model.addAttribute("showEatonCloudFirmwareVersion", true);
+                model.addAttribute("eatonCloudFirmwareVersion", firmwareVersion);
+            }
+        }
+
         if (deviceId != null && deviceId > 0 && !type.isZigbee()) {  // points for ZigBee device have their own special box
             List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
             if (!points.isEmpty()) {

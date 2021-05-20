@@ -201,8 +201,10 @@ public enum MWChannel {
                 })
                 .filter(t -> t != null)
                 .collect(Collectors.toSet());
-        //required for event Event Participation - always get this value
+        //required for Event Participation - always get this value
         channels.add(EVENT_STATE.channelId.toString());
+        //stored in DynamicPAOInfo
+        channels.add(VERSION.channelId.toString());
         return channels;
     }
 
