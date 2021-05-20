@@ -1,5 +1,6 @@
 package com.cannontech.dr.ecobee.message;
 
+import com.cannontech.system.GlobalSettingType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ZeusGroup {
@@ -7,11 +8,12 @@ public class ZeusGroup {
     @JsonProperty("id")
     private String groupId;
     private String name;
-    @JsonProperty("program_id") private String programId;
+    @JsonProperty("program_id") 
+    private GlobalSettingType programId;
 
-    public ZeusGroup(String name, String programId) {
+    public ZeusGroup(String name, GlobalSettingType ecobeeZeusProgramId) {
         this.name = name;
-        this.programId = programId;
+        this.programId = ecobeeZeusProgramId;
     }
 
     public ZeusGroup() {
@@ -29,7 +31,7 @@ public class ZeusGroup {
         return name;
     }
 
-    public String getProgramId() {
+    public GlobalSettingType getProgramId() {
         return programId;
     }
 
@@ -37,7 +39,7 @@ public class ZeusGroup {
         this.name = name;
     }
 
-    public void setProgramId(String programId) {
+    public void setProgramId(GlobalSettingType programId) {
         this.programId = programId;
     }
 

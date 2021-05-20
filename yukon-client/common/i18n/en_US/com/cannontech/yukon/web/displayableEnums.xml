@@ -461,6 +461,8 @@
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET.description">Secret used to access the PX middleware software</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_URL">PX URL</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_URL.description">URL of the PX middleware software</entry>
+    <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID">Ecobee Zeus Program ID</entry>
+    <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID.description">Ecobee Zeus Program ID required to initiating the Zeus related API communications.</entry>
     
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>

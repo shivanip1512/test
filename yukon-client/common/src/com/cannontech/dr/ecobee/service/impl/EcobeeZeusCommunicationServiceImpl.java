@@ -62,8 +62,6 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    // TODO: Remove hard coded String once globalsettings is created for program ID.
-    private static String programId = "2df7e7a53193438a8a3aa4c919475ac0";
     private static final int thresholdThermostatCount = 9900;
     private static final String YUKON_CYCLE_EVENT_NAME = "yukonCycle";
 
@@ -105,7 +103,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
      */
     @SuppressWarnings("unchecked")
     private String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException {
-        String showProgramURL = getUrlBase() + "programs/" + programId;
+        String showProgramURL = getUrlBase() + "programs/" + GlobalSettingType.ECOBEE_ZEUS_PROGRAM_ID;
 
         ResponseEntity<?> programResponse = requestHelper.callEcobeeAPIForObject(showProgramURL, HttpMethod.GET, Object.class);
         if (programResponse.getStatusCode() == HttpStatus.OK) {
@@ -148,7 +146,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
             CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), Arrays.asList(serialNumber));
             String groupName = cache.getAllPaosMap().get(lmGroupId).getPaoName();
-            ZeusGroup group = new ZeusGroup(groupName, programId);
+            ZeusGroup group = new ZeusGroup(groupName, GlobalSettingType.ECOBEE_ZEUS_PROGRAM_ID);
             ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
             ResponseEntity<Map> responseEntity = (ResponseEntity<Map>) requestHelper.callEcobeeAPIForObject(
@@ -230,7 +228,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
         String groupName = ecobeeZeusGroupService.zeusGroupName(zeusGroupId);
         CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), thermostatIds);
-        ZeusGroup group = new ZeusGroup(groupName, programId);
+        ZeusGroup group = new ZeusGroup(groupName, GlobalSettingType.ECOBEE_ZEUS_PROGRAM_ID);
         ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
         try {
