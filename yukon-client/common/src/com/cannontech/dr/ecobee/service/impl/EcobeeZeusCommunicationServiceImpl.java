@@ -444,9 +444,13 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         return settingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
 
     }
-    private String getZeusProgramId() {
-        return settingDao.getString(GlobalSettingType.ECOBEE_ZEUS_PROGRAM_ID);
 
+    private String getZeusProgramId() {
+        String programId = settingDao.getString(GlobalSettingType.ECOBEE_ZEUS_PROGRAM_ID);
+        if (StringUtils.isEmpty(programId)) {
+            throw new EcobeeCommunicationException("Ecobee Zeus program id is empty.");
+        }
+        return programId;
     }
 
 }
