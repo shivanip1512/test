@@ -172,7 +172,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
             }
             log.debug("Getting time series data. Request:{} Total Channels:{} Start:{} Stop:{} URL:{}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(request), totalChannels, startTime, stopTime, uri);
-            ResponseEntity<PxMWTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
+            ResponseEntity<PxMWTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity,
                     PxMWTimeSeriesDeviceResultV1[].class);
             log.debug("Get time series data. Request:{} Start:{} Stop:{} URL:{} Result:{}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(request), startTime, stopTime, uri,

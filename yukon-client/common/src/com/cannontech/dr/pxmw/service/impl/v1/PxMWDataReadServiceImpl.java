@@ -227,7 +227,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                     device.getPaoName(), guid, attribute, point.getLiteID(), point.getPointName());
         }
         // Multiply by point multiplier (usually 1), can be overridden in point setup by the user
-        value = value * point.getMultiplier();
+        value = point.getMultiplier() == null ? value : value * point.getMultiplier();
 
         pointData.setId(point.getLiteID());
         pointData.setPointQuality(PointQuality.Normal);

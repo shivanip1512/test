@@ -91,7 +91,7 @@ public class PxMWSimulatorApiControllerV1 {
         }
     }
 
-    @PutMapping("/devices/timeseries/")
+    @PostMapping("/devices/timeseries/")
     public ResponseEntity<Object> timeseriesV1(@RequestBody PxMWTimeSeriesDataRequestV1 pxMWTimeSeriesDataRequestV1) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
