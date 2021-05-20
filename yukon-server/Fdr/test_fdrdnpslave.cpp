@@ -3005,7 +3005,11 @@ BOOST_AUTO_TEST_CASE( test_analog_output_receive )
     BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
     BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
 
-    auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+    auto multi = dynamic_cast<const CtiMultiMsg *>(dnpSlave.pointMessages.front().get());
+
+    BOOST_REQUIRE_EQUAL(multi->getCount(), 1);
+
+    auto msg = (*multi)[0];
 
     BOOST_REQUIRE(msg);
 

@@ -1180,113 +1180,132 @@ bool DnpSlave::tryDispatchControl(const Protocols::DnpSlave::control_request &co
 
 int DnpSlave::processAnalogOutputRequest (ConnectionProtocol cp, const ObjectBlock &ob, const Protocols::DnpSlave::ControlAction action)
 {
+    using Protocols::DnpSlave::analog_output_request;
+
+    static const std::map<int, AnalogOutput::Variation> Variation
+    {
+        { AnalogOutput::AO_16Bit,       AnalogOutput::AO_16Bit },
+        { AnalogOutput::AO_32Bit,       AnalogOutput::AO_32Bit },
+        { AnalogOutput::AO_SingleFloat, AnalogOutput::AO_SingleFloat },
+        { AnalogOutput::AO_DoubleFloat, AnalogOutput::AO_DoubleFloat }
+    };
+
     if( ob.getGroup() != AnalogOutput::Group ||
         ob.empty() )
     {
         return -1;
     }
 
-    const auto &objectDescriptor = ob[0];
+    const bool isLongIndexed =
+        ( ob.getIndexLength()    == 2 &&
+          ob.getQuantityLength() == 2 );
 
-    if( ! objectDescriptor.object )
+    std::vector<analog_output_request>  requests;
+    CtiMultiMsg_vec                     pointUpdates;
+
+    for ( std::size_t idx = 0; idx < ob.size(); ++idx )
     {
-        return -1;
-    }
+        const auto & objectDescriptor = ob[ idx ];
 
-    const auto aoc = dynamic_cast<const AnalogOutput *>(objectDescriptor.object);
-
-    if( ! aoc )
-    {
-        return -1;
-    }
-
-    using Protocols::DnpSlave::analog_output_request;
-
-    analog_output_request analog;
-
-    static const std::map<int, AnalogOutput::Variation> Variation {
-        { AnalogOutput::AO_16Bit, AnalogOutput::AO_16Bit },
-        { AnalogOutput::AO_32Bit, AnalogOutput::AO_32Bit },
-        { AnalogOutput::AO_SingleFloat, AnalogOutput::AO_SingleFloat },
-        { AnalogOutput::AO_DoubleFloat, AnalogOutput::AO_DoubleFloat },
-    };
-
-    //  create the point so we can echo it back in the DNP response
-    analog.offset = objectDescriptor.index;
-    analog.value  = aoc->getValue();
-    analog.type   = mapFindOrDefault(Variation, aoc->getVariation(), AnalogOutput::AO_32Bit);
-    analog.action = action;
-    analog.isLongIndexed =
-        (ob.getIndexLength()    == 2 &&
-         ob.getQuantityLength() == 2);
-
-    analog.status = ControlStatus::NotSupported;
-
-    // This guard must happen before the _receiveMux or a deadlock can occur.
-    CTILOCKGUARD( CtiMutex, recvGuard, getReceiveFromList().getMutex() );
-    // Protect _receiveMap while we use it.
-    CTILOCKGUARD( CtiMutex, guard, _receiveMux );
-
-    //  look for the point with the correct control offset
-    for( const auto &kv : _receiveMap )
-    {
-        const DnpId &dnpId = kv.second;
-
-        if( dnpId.SlaveId      == cp.dnpSlave.getSrcAddr()
-            && dnpId.MasterId  == cp.dnpSlave.getDstAddr()
-            && dnpId.PointType == AnalogPointType
-            && dnpId.Offset    == (analog.offset + 1) )
+        if( ! objectDescriptor.object )
         {
-            const CtiFDRDestination &fdrdest = kv.first;
-            long fdrPointId = fdrdest.getParentPointId();
-            CtiFDRPoint fdrPoint;
-            if( !findPointIdInList( fdrPointId, getReceiveFromList(), fdrPoint ) )
-            {
-                continue;
-            }
+            continue;
+        }
 
-            if( fdrPoint.isControllable() )
+        const auto aoc = dynamic_cast<const AnalogOutput *>(objectDescriptor.object);
+
+        if( ! aoc )
+        {
+            continue;
+        }
+
+        analog_output_request analog;
+
+        //  create the point so we can echo it back in the DNP response
+        analog.offset = objectDescriptor.index;
+        analog.value  = aoc->getValue();
+        analog.type   = mapFindOrDefault(Variation, aoc->getVariation(), AnalogOutput::AO_32Bit);
+        analog.action = action;
+        analog.isLongIndexed = isLongIndexed;
+
+        analog.status = ControlStatus::NotSupported;
+
+        // This guard must happen before the _receiveMux or a deadlock can occur.
+        CTILOCKGUARD( CtiMutex, recvGuard, getReceiveFromList().getMutex() );
+        // Protect _receiveMap while we use it.
+        CTILOCKGUARD( CtiMutex, guard, _receiveMux );
+
+        for ( const auto & [ fdrdest, dnpId ] : _receiveMap )
+        {
+            if( dnpId.SlaveId      == cp.dnpSlave.getSrcAddr()
+                && dnpId.MasterId  == cp.dnpSlave.getDstAddr()
+                && dnpId.PointType == AnalogPointType
+                && dnpId.Offset    == (analog.offset + 1) )
             {
-                if( isDnpDirectDeviceId( fdrPoint.getPaoID() ) )
+                long fdrPointId = fdrdest.getParentPointId();
+                CtiFDRPoint fdrPoint;
+                if( !findPointIdInList( fdrPointId, getReceiveFromList(), fdrPoint ) )
                 {
-                    analog.status = tryPorterAnalogOutput(analog, fdrPoint.getPointID(), dnpId.Multiplier);
+                    continue;
                 }
-                else if( tryDispatchAnalogOutput(analog, fdrPoint.getPointID(), dnpId.Multiplier) )
+
+                if( fdrPoint.isControllable() )
                 {
+                    if( isDnpDirectDeviceId( fdrPoint.getPaoID() ) )
+                    {
+                        analog.status = tryPorterAnalogOutput(analog, fdrPoint.getPointID(), dnpId.Multiplier);
+                    }
+                    else if( tryDispatchAnalogOutput(analog, fdrPoint.getPointID(), dnpId.Multiplier) )
+                    {
+                        analog.status = ControlStatus::Success;
+                    }
+                }
+                else
+                {
+                    auto pData = 
+                        std::make_unique<CtiPointDataMsg>(
+                            fdrPoint.getPointID(),
+                            analog.value * dnpId.Multiplier,
+                            NormalQuality,
+                            fdrPoint.getPointType());
+
+                    pointUpdates.push_back( pData.release() );
+
                     analog.status = ControlStatus::Success;
+
+                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                    {
+                        FormattedList l;
+
+                        l.add("Point ID") << fdrPoint.getPointID();
+                        l.add("Pao ID") << fdrPoint.getPaoID();
+                        l.add("Incoming value") << analog.value;
+                        l.add("FDR multiplier") << dnpId.Multiplier;
+                        l.add("Resulting value") << analog.value * dnpId.Multiplier;
+
+                        CTILOG_DEBUG(dout, "Sending analog point update to Dispatch:" << l);
+                    }
                 }
-            }
-            else
-            {
-                auto pData = 
-                    std::make_unique<CtiPointDataMsg>(
-                        fdrPoint.getPointID(),
-                        analog.value * dnpId.Multiplier,
-                        NormalQuality,
-                        fdrPoint.getPointType());
 
-                // consumes a delete memory
-                queueMessageToDispatch(pData.release());
-
-                analog.status = ControlStatus::Success;
-
-                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                {
-                    FormattedList l;
-
-                    l.add("Point ID") << fdrPoint.getPointID();
-                    l.add("Pao ID") << fdrPoint.getPaoID();
-                    l.add("Incoming value") << analog.value;
-                    l.add("FDR multiplier") << dnpId.Multiplier;
-                    l.add("Resulting value") << analog.value * dnpId.Multiplier;
-
-                    CTILOG_DEBUG(dout, "Sending analog point update to Dispatch:" << l);
-                }
+                requests.push_back( analog );
             }
         }
     }
 
-    cp.dnpSlave.setAnalogOutputCommand(analog);
+    if ( requests.empty() )
+    {
+        return -1;
+    }
+
+    if ( ! pointUpdates.empty() )
+    {
+        auto multiMsg = std::make_unique<CtiMultiMsg>( pointUpdates );
+
+        // consumes a delete memory
+        queueMessageToDispatch( multiMsg.release() );
+    }
+
+    cp.dnpSlave.setAnalogOutputCommand( requests );
 
     return doComms(cp, "analog output");
 }
