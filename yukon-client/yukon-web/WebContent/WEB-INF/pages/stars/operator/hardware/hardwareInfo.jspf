@@ -157,13 +157,20 @@ $(function() { updateServiceCompanyInfo();});
             </c:if>
             
             <c:if test="${showFirmwareVersion}">
-                <tags:inputNameValue nameKey=".firmwareVersion" path="firmwareVersion"></tags:inputNameValue>
-            </c:if>
-            
-            <c:if test="${showEatonCloudFirmwareVersion}">
-                <tags:nameValue2 nameKey=".firmwareVersion">
-                     ${fn:escapeXml(eatonCloudFirmwareVersion)}
-                </tags:nameValue2>
+                 <c:choose>
+                   <c:when test="${firmwareVersionEditable}">
+                        <tags:inputNameValue nameKey=".firmwareVersion" path="firmwareVersion"/>
+                   </c:when>
+                   
+                   <c:otherwise>
+                       <tags:nameValue2 nameKey=".firmwareVersion">
+                           <tags:bind path="firmwareVersion">
+                               <form:hidden path="firmwareVersion"/>
+                               ${fn:escapeXml(hardware.firmwareVersion)}
+                           </tags:bind>
+                       </tags:nameValue2>
+                   </c:otherwise>
+                </c:choose>
             </c:if>
             
             <tags:inputNameValue nameKey=".label" path="displayLabel"/>

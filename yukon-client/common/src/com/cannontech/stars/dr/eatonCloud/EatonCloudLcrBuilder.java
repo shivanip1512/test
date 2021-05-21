@@ -22,6 +22,8 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoDao.InfoKey;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
@@ -44,7 +46,8 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private PxMWDataReadService readService;
-    @Autowired PxMWCommunicationServiceV1 pxMWCommunicationServiceV1;
+    @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationServiceV1;
+    @Autowired private PaoDao paoDao;
     
     @Override
     public void createDevice(Hardware hardware) {
@@ -100,6 +103,7 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
     public void retrieveDevice(Hardware hardware) {
         try {
             hardware.setGuid(deviceDao.getGuid(hardware.getDeviceId()));
+            hardware.setFirmwareVersion(paoDao.findPaoInfoValue(hardware.getDeviceId(), InfoKey.FIRMWARE_VERSION));
         } catch (NotFoundException nfe) {
             log.error("GUID is not found device id:" + hardware.getDeviceId(), nfe);
             hardware.setGuid("");

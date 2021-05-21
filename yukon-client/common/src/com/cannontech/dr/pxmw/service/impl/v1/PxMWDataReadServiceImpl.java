@@ -2,6 +2,8 @@ package com.cannontech.dr.pxmw.service.impl.v1;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -85,11 +87,12 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
 
     private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<LiteYukonPAObject> paos,
             Set<BuiltInAttribute> attribtues, Range<Instant> queryRange) {
+
         Map<Integer, LiteYukonPAObject> deviceIdToPao = StreamSupport.stream(paos.spliterator(), false)
                 .collect(Collectors.toMap(LiteYukonPAObject::getYukonID, liteYukonPao -> liteYukonPao));
         BidiMap<Integer, String> deviceIdGuid = new DualHashBidiMap<Integer, String>(deviceDao.getGuids(deviceIdToPao.keySet()));
 
-        Multimap<PaoIdentifier, PointData> newPaoPointMap = HashMultimap.create();
+
         List<PxMWTimeSeriesDeviceResultV1> timeSeriesResults = new ArrayList<PxMWTimeSeriesDeviceResultV1>();
         Set<String> tags = MWChannel.getTagsForAttributes(attribtues);
         List<PxMWTimeSeriesDeviceV1> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
@@ -97,6 +100,8 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
             List<PxMWTimeSeriesDeviceResultV1> result = pxMWCommunicationService.getTimeSeriesValues(List.of(request), queryRange);
             timeSeriesResults.addAll(result);
         }
+        
+        Multimap<PaoIdentifier, PointData> pointMap = HashMultimap.create();
 
         for (PxMWTimeSeriesDeviceResultV1 deviceResult : timeSeriesResults) {
             Integer deviceId = deviceIdGuid.getKey(deviceResult.getDeviceId());
@@ -120,27 +125,33 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                         //Received point data we didn't ask for
                         continue;
                     }
-                    for (PxMWTimeSeriesValueV1 value : result.getValues()) {
-                        Double pointValue = parsePointValue(mwChannel, value, device, deviceResult.getDeviceId());
-                        if (pointValue != null) {
-                            PointData pointData = generatePointData(device, mwChannel, pointValue,
-                                    value.getTimestamp(), deviceResult.getDeviceId());
-                            if (pointData != null) {
-                                newPaoPointMap.put(device.getPaoIdentifier(), pointData);
-                            }
-                        }
-                    }
+                    createPointData(pointMap, deviceResult.getDeviceId(), device, result, mwChannel);
                 } catch (Exception e) {
                     log.error("Error parsing tag {} from API response", result.getTag(), e);
                 }
             }
         }
-        return newPaoPointMap;
+        return pointMap;
+    }
+
+    private void createPointData(Multimap<PaoIdentifier, PointData> pointMap, String guid,
+            LiteYukonPAObject device, PxMWTimeSeriesResultV1 result, MWChannel mwChannel) {
+        for (PxMWTimeSeriesValueV1 value : result.getValues()) {
+            Double pointValue = parsePointValue(mwChannel, value, device, guid);
+            if (pointValue != null) {
+                PointData pointData = generatePointData(device, mwChannel, pointValue,
+                        value.getTimestamp(), guid);
+                if (pointData != null) {
+                    pointMap.put(device.getPaoIdentifier(), pointData);
+                }
+            }
+        }
     }
 
     private void updateFirmwareVersion(LiteYukonPAObject device, List<PxMWTimeSeriesValueV1> values) {
         if (!values.isEmpty()) {
-            PxMWTimeSeriesValueV1 value = values.get(0);
+            PxMWTimeSeriesValueV1 value = Collections.max(values,
+                    Comparator.comparing(v -> new Instant(v.getTimestamp() * 1000)));
             paoDao.savePaoInfo(device.getLiteID(), InfoKey.FIRMWARE_VERSION, value.getValue(),
                     new Instant(value.getTimestamp() * 1000), YukonUserContext.system.getYukonUser());
         }
