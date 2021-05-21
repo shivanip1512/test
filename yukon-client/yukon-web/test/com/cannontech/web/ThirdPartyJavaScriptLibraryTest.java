@@ -1,12 +1,11 @@
 package com.cannontech.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +21,7 @@ import java.util.stream.Stream;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cannontech.common.stream.StreamUtils;
@@ -58,24 +57,24 @@ public class ThirdPartyJavaScriptLibraryTest {
                 .collect(StreamUtils.mapToSelf(File::getName));
         
         Set<String> unknownFiles = Sets.difference(thirdPartyProjects.keySet(), documentedLibrariesByProject.keySet());
-        assertTrue("Unknown JavaScript projects found: " + unknownFiles, unknownFiles.isEmpty());
+        assertTrue(unknownFiles.isEmpty(), "Unknown JavaScript projects found: " + unknownFiles);
 
         Set<String> missingFiles = Sets.difference(documentedLibrariesByProject.keySet(), thirdPartyProjects.keySet());
-        assertTrue("JavaScript projects listed in thirdPartyLibraries.yaml, but missing from WebContent/resources/js/lib: " + missingFiles, missingFiles.isEmpty());
+        assertTrue(missingFiles.isEmpty(), "JavaScript projects listed in thirdPartyLibraries.yaml, but missing from WebContent/resources/js/lib: " + missingFiles);
         
         MessageDigest md_md5 = MessageDigest.getInstance("MD5");
         MessageDigest md_sha1 = MessageDigest.getInstance("SHA1");
 
         documentedLibrariesByProject.entrySet().stream().forEach(e -> {
-            assertFalse(e.getKey() + " must have a project name", StringUtils.isEmpty(e.getValue().project));
-            assertFalse(e.getKey() + " must have a project version", StringUtils.isEmpty(e.getValue().version));
-            assertFalse(e.getKey() + " must have a project URL", StringUtils.isEmpty(e.getValue().projectUrl));
-            assertFalse(e.getKey() + " must have an NPM URL", StringUtils.isEmpty(e.getValue().npmUrl));
-            assertThat(e.getKey() + " must have a valid NPM URL", e.getValue().npmUrl, anyOf(startsWith("https://www.npmjs.com/package/"), equalTo("n/a")));
-            assertFalse(e.getKey() + " must have a license type", CollectionUtils.isEmpty(e.getValue().licenses));
-            assertFalse(e.getKey() + " must have a license URL", CollectionUtils.isEmpty(e.getValue().licenseUrls));
-            assertFalse(e.getKey() + " must have a JIRA entry", StringUtils.isEmpty(e.getValue().jira));
-            assertNotNull(e.getKey() + " must have an updated date", e.getValue().updated);
+            assertFalse(StringUtils.isEmpty(e.getValue().project), e.getKey() + " must have a project name");
+            assertFalse(StringUtils.isEmpty(e.getValue().version), e.getKey() + " must have a project version");
+            assertFalse(StringUtils.isEmpty(e.getValue().projectUrl), e.getKey() + " must have a project URL");
+            assertFalse(StringUtils.isEmpty(e.getValue().npmUrl), e.getKey() + " must have an NPM URL");
+            assertEquals(e.getValue().npmUrl, anyOf(startsWith("https://www.npmjs.com/package/"), equalTo("n/a")), e.getKey() + " must have a valid NPM URL");
+            assertFalse(CollectionUtils.isEmpty(e.getValue().licenses), e.getKey() + " must have a license type");
+            assertFalse(CollectionUtils.isEmpty(e.getValue().licenseUrls), e.getKey() + " must have a license URL");
+            assertFalse(StringUtils.isEmpty(e.getValue().jira), e.getKey() + " must have a JIRA entry");
+            assertNotNull(e.getValue().updated, e.getKey() + " must have an updated date");
             
             File baseFile = thirdPartyProjects.get(e.getKey());
             Stream<File> files = baseFile.isFile()

@@ -1,8 +1,8 @@
 package com.cannontech.common;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -30,7 +30,7 @@ public class YukonColorPaletteTest {
     private static Set<String> yukonColorPaletteEnumValues;
     private static Set<String> colorsDefinedInFile = new HashSet<>();
     
-    @BeforeClass
+    @BeforeAll
     public static void init() throws IOException {
         yukonColorPaletteEnumValues = Stream.of(YukonColorPalette.values()).map(YukonColorPalette::name).collect(Collectors.toSet());
         
@@ -47,13 +47,13 @@ public class YukonColorPaletteTest {
     @Test
     public void testYukonColorPaletteColors() {
         Set<String> colorsDifference = Sets.difference(yukonColorPaletteEnumValues, colorsDefinedInFile);
-        assertTrue("Found colors in YukonColorPalette.java that are not defined in colors.less file. These colors and their values must be defined in colors.less file.: " + colorsDifference, colorsDifference.isEmpty());
+        assertTrue(colorsDifference.isEmpty(), "Found colors in YukonColorPalette.java that are not defined in colors.less file. These colors and their values must be defined in colors.less file.: " + colorsDifference);
     }
     
     @Test
     public void testColorsFromFile() {
         Set<String> colorsDifference = Sets.difference(colorsDefinedInFile, yukonColorPaletteEnumValues);
-        assertTrue("Found colors in colors.less file that are not defined in YukonColorPalette. Define an enum value in YukonColorPalette for these colors.: " + colorsDifference, colorsDifference.isEmpty());
+        assertTrue(colorsDifference.isEmpty(), "Found colors in colors.less file that are not defined in YukonColorPalette. Define an enum value in YukonColorPalette for these colors.: " + colorsDifference);
     }
  
     @Test
@@ -70,7 +70,7 @@ public class YukonColorPaletteTest {
             generalProperties.loadFromXML(inputStream);
             for (YukonColorPalette  attr : YukonColorPalette.values()) {
                 var colorEntry = generalProperties.get(attr.getFormatKey());
-                assertNotNull("No key for " + attr + " in general.xml file", colorEntry);
+                assertNotNull(colorEntry, "No key for " + attr + " in general.xml file");
             }
         } catch (FileNotFoundException e) {
             fail("Caught exception in testMissingColor: " + e.getMessage());

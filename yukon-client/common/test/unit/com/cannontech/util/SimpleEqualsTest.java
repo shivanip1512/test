@@ -1,6 +1,7 @@
 package com.cannontech.util;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -16,10 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.joda.time.LocalDate;
 import org.joda.time.Instant;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.joda.time.LocalDate;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -206,7 +207,7 @@ public class SimpleEqualsTest {
     }
 
     @Test
-    @Ignore("test causes NPE because of the way CompleteTwoWayCbc is setup")
+    @Disabled("test causes NPE because of the way CompleteTwoWayCbc is setup")
     public void test_CompleteTwoWayCbc() {
         testEqualsAndHashCode(CompleteTwoWayCbc.class, false);
     }
@@ -318,9 +319,9 @@ public class SimpleEqualsTest {
     private void testEqualsAndHashCode(Class<?> aClass, boolean immutable) {
         try {
             ObjectPermutations objs = getPopulatedObjects(aClass, immutable);
-            assertEquals(aClass.getSimpleName() + ".equals() failed test. ", objs.getObjectA(), objs.getObjectB());
-            assertEquals(aClass.getSimpleName() + ".hashCode() failed test. ", 
-                objs.getObjectA().hashCode(), objs.getObjectB().hashCode());
+            assertEquals(objs.getObjectA(), objs.getObjectB(), aClass.getSimpleName() + ".equals() failed test. ");
+            assertEquals(objs.getObjectA().hashCode(), objs.getObjectB().hashCode(),
+                    aClass.getSimpleName() + ".hashCode() failed test. ");
 
             for (ModifiedObject obj : objs.getInequalPermuations()) {
                 String propertyDesc = obj.getPropertyType().getSimpleName() + " " + obj.getPropertyName();

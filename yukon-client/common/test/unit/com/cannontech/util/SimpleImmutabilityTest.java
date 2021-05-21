@@ -1,6 +1,6 @@
 package com.cannontech.util;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -11,7 +11,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;

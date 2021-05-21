@@ -1,12 +1,12 @@
 package com.cannontech.encryption;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
 import org.apache.commons.codec.DecoderException;
 import org.jdom2.JDOMException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.system.GlobalSettingCryptoUtils;
 
@@ -20,13 +20,16 @@ public class ConfigCryptoUtilsTest {
         String strWithNoSpaces = "TestStringNoSpaces!@#$%^++=";
         
         String encryptedStrWithPaddingSpaces = GlobalSettingCryptoUtils.encryptValue(strWithPaddingSpaces);
-        assertTrue("Encrypted string was changed unexpectedly during encryption/decryption", GlobalSettingCryptoUtils.decryptValue(encryptedStrWithPaddingSpaces).equals(strWithoutPaddingSpaces));
+        assertTrue(GlobalSettingCryptoUtils.decryptValue(encryptedStrWithPaddingSpaces).equals(strWithoutPaddingSpaces),
+                "Encrypted string was changed unexpectedly during encryption/decryption");
         
         String encryptedStrWithInternalSpaces = GlobalSettingCryptoUtils.encryptValue(strWithInternalSpaces);
-        assertTrue("Encrypted string was changed unexpectedly during encryption/decryption", GlobalSettingCryptoUtils.decryptValue(encryptedStrWithInternalSpaces).equals(strWithInternalSpaces));
+        assertTrue(GlobalSettingCryptoUtils.decryptValue(encryptedStrWithInternalSpaces).equals(strWithInternalSpaces),
+                "Encrypted string was changed unexpectedly during encryption/decryption");
         
         String encryptedStrWithNoSpaces = GlobalSettingCryptoUtils.encryptValue(strWithNoSpaces);
-        assertTrue("Encrypted string was changed unexpectedly during encryption/decryption", GlobalSettingCryptoUtils.decryptValue(encryptedStrWithNoSpaces).equals(strWithNoSpaces));
+        assertTrue(GlobalSettingCryptoUtils.decryptValue(encryptedStrWithNoSpaces).equals(strWithNoSpaces),
+                "Encrypted string was changed unexpectedly during encryption/decryption");
     }
     
     @Test
@@ -35,7 +38,8 @@ public class ConfigCryptoUtilsTest {
         String trimmedString = "Test String With\tTabs";
         
         String encryptedString = GlobalSettingCryptoUtils.encryptValue(strWithTabsAndNewlines);
-        assertTrue("Encrypted string was changed unexpectedly during encryption/decryption", GlobalSettingCryptoUtils.decryptValue(encryptedString).equals(trimmedString));
+        assertTrue(GlobalSettingCryptoUtils.decryptValue(encryptedString).equals(trimmedString),
+                "Encrypted string was changed unexpectedly during encryption/decryption");
     }
     
     @Test public void test_encrypt_decrypt_string_with_newline() throws CryptoException, IOException, JDOMException, DecoderException {
@@ -43,7 +47,8 @@ public class ConfigCryptoUtilsTest {
         String strWithNewLinesTrimmed = "Test\nString";
         
         String encryptedString = GlobalSettingCryptoUtils.encryptValue(strWithNewlines);
-        assertTrue("Encrypted string was changed unexpectedly during encryption/decryption", GlobalSettingCryptoUtils.decryptValue(encryptedString).equals(strWithNewLinesTrimmed));
+        assertTrue(GlobalSettingCryptoUtils.decryptValue(encryptedString).equals(strWithNewLinesTrimmed),
+                "Encrypted string was changed unexpectedly during encryption/decryption");
     }
 
 }
