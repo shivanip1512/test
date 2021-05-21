@@ -19,12 +19,12 @@ public enum ThemePropertyType implements DisplayableEnum {
     PRIMARY_COLOR("primary-color", "#06C", new ColorType()),
     VISITED_COLOR("visited-color", "#1c49a6", new ColorType()),
     
-    LOGIN_BACKGROUND("login-background-url", "2", new ImageType("backgrounds")),
+    LOGIN_BACKGROUND("login-background-url", "-2", new ImageType("backgrounds")),
     LOGIN_FONT_COLOR("login-font-color", "#fff", new ColorType()),
     LOGIN_FONT_SHADOW("login-font-shadow", "rgba(0,0,0,0.5)", new ColorType()),
     LOGIN_TAGLINE_MARGIN("tagline-margin", "35", new PixelType()),
     
-    LOGO("logo-url", "1", new ImageType("logos")),
+    LOGO("logo-url", "-1", new ImageType("logos")),
     LOGO_LEFT("logo-left", "0", new PixelType()),
     LOGO_TOP("logo-top", "17", new PixelType()),
     LOGO_WIDTH("logo-width", "163", new PixelType());
