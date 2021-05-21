@@ -1,0 +1,81 @@
+syntax = "proto3";
+package com.cannontech.web.api.dr.ecobee.message;
+option java_outer_classname = "EcobeeZeusRuntimeData";
+import "google/protobuf/timestamp.proto";
+
+message ecp_thermostat_message { 
+  google.protobuf.Timestamp message_time_utc = 1;
+  int64 message_sequence_number_annual = 2;
+  ecp_thermostat_info thermostat_info = 3; 
+  ecp_thermostat_settings thermostat_settings = 4; 
+  ecp_thermostat_state thermostat_state = 5; 
+  ecp_thermostat_program thermostat_program = 6; 
+  ecp_thermostat_runtime thermostat_runtime = 7;
+}
+
+message ecp_thermostat_info {
+  string thermostat_id = 1;
+}
+
+message ecp_thermostat_settings {
+  enum ecp_thermostat_hvac_mode {
+     off = 0;
+     auto = 1;
+     cool = 2;
+     heat = 3; 
+  }
+  ecp_thermostat_hvac_mode hvac_mode = 1;
+  int32 comfort_preference = 2; // a value of zero indicates a non-eco+ device
+}
+
+message ecp_thermostat_state {
+  enum ecp_thermostat_connection_state {
+     disconnected = 0;
+     connected = 1;
+  }
+  ecp_thermostat_connection_state connection_state = 1;
+  float temperature_heat_setpoint_deg_f = 2;
+  float temperature_cool_setpoint_deg_f = 3;
+  float temperature_indoor_deg_f = 4;
+  float temperature_outdoor_deg_f = 5;
+}
+
+message ecp_thermostat_dr_event {
+  enum dr_event_state {
+    none = 0;
+    dr_precool = 1;
+    dr_setback = 2;
+  }
+  string dr_ref = 1;
+  dr_event_state event_state = 2;
+}
+
+message ecp_thermostat_tou_event {
+  enum tou_event_state {
+    none = 0;
+    tou_precool = 1;
+    tou_setback = 2;
+  }
+  tou_event_state event_state = 1;
+}
+
+message ecp_thermostat_program {
+  ecp_thermostat_dr_event event_dr = 1;
+  ecp_thermostat_tou_event event_tou = 2;
+}
+
+message ecp_thermostat_runtime {
+  enum state_runtime {
+    non_applicable = 0;
+    on = 1;
+    off = 2;
+  }
+  state_runtime cool_stage1_on = 1;
+  state_runtime cool_stage2_on = 2;
+  state_runtime heat_stage1_on = 3;
+  state_runtime heat_stage2_on = 4;
+  state_runtime heat_stage3_on = 5;
+  state_runtime aux_heat_stage1 = 6;
+  state_runtime aux_heat_stage2 = 7;
+  state_runtime aux_heat_stage3 = 8;
+}

@@ -88,12 +88,17 @@ public class EcobeeMessageListener {
             }
             log.debug("Parameters built " + parameters + " Ready to send Ecobee Message");
 
-            //Send DR message to ecobee server
-            String drIdentifier = ecobeeCommunicationService.sendSetpointDR(parameters);
-            
-            //Store the most recent dr handle for each group, so we can cancel
-            groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
-            
+            if (isEcobeeZeusEnabled()) {
+                String eventId = ecobeeZeusCommunicationService.sendSetpointDR(parameters);
+                ecobeeZeusGroupService.updateEventId(eventId, parameters.getGroupId());
+            } else {
+                // Send DR message to ecobee server
+                String drIdentifier = ecobeeCommunicationService.sendSetpointDR(parameters);
+
+                // Store the most recent dr handle for each group, so we can cancel
+                groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
+            }
+
             //Send control history message to dispatch
             Duration controlDuration = new Duration(parameters.getStartTime(), parameters.getStopTime());
             int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
@@ -110,19 +115,21 @@ public class EcobeeMessageListener {
         log.debug("Received message on yukon.notif.stream.dr.EcobeeRestoreMessage queue.");
 
         int groupId;
-        if(message instanceof StreamMessage) {
+        if (message instanceof StreamMessage) {
             try {
                 groupId = getRestoreGroupId((StreamMessage) message);
             } catch (JMSException e) {
                 log.error("Exception parsing StreamMessage for DR restore.", e);
                 return;
             }
-            
-            //Send restore to ecobee server
-            String drIdentifier = groupToDrIdentifierMap.get(groupId);
-            ecobeeCommunicationService.sendRestore(drIdentifier);
-            
-            //Send control history message to dispatch
+            if (isEcobeeZeusEnabled()) {
+                ecobeeZeusCommunicationService.cancelDemandResponse(groupId);
+            } else {
+                // Send restore to ecobee server
+                String drIdentifier = groupToDrIdentifierMap.get(groupId);
+                ecobeeCommunicationService.sendRestore(drIdentifier);
+            }
+            // Send control history message to dispatch
             controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
         }
     }

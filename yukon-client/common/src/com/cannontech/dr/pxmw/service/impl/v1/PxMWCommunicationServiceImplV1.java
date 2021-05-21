@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
@@ -40,6 +41,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
@@ -100,7 +102,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
  
     @Override
-    public PxMWSiteV1 getSiteDevices(String siteGuid, Boolean recursive, Boolean includeDetail)
+    public PxMWSiteDevicesV1 getSiteDevices(String siteGuid, Boolean recursive, Boolean includeDetail)
             throws PxMWCommunicationExceptionV1, PxMWException {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         if (recursive != null) {
@@ -117,10 +119,32 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
 
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-            ResponseEntity<PxMWSiteV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWSiteV1.class);
+            ResponseEntity<PxMWSiteDevicesV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWSiteDevicesV1.class);
             log.debug("Got site info. Site Guid:{} Result:{}", siteGuid,
                     new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
             return response.getBody();
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PxMWException("Exception occured while getting site devices", e);
+        }
+    }
+    
+    @Override
+    public List<PxMWSiteV1> getSites(String siteGuid) throws PxMWCommunicationExceptionV1, PxMWException {
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("userId", siteGuid);
+        URI uri = getUri(PxMWRetrievalUrl.SITES);
+        uri = addQueryParams(queryParams, uri);
+
+        log.debug("Getting site info. Site Guid: {} URL: {}", siteGuid, uri);
+
+        try {
+            HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+            ResponseEntity<PxMWSiteV1[]> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWSiteV1[].class);
+            log.debug("Got site info. Site Guid:{} Result:{}", siteGuid,
+                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
+            return Arrays.asList(response.getBody());
         } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
             throw e;
         } catch (Exception e) {
@@ -153,8 +177,9 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
     
     @Override
-    public void sendCommand(String deviceGuid, String commandGuid, PxMWCommandRequestV1 request)
+    public void sendCommand(String deviceGuid, PxMWCommandRequestV1 request)
             throws PxMWCommunicationExceptionV1, PxMWException {
+        String commandGuid = UUID.randomUUID().toString();
         URI uri = getUri(Map.of("id", deviceGuid, "command_instance_id", commandGuid), PxMWRetrievalUrl.COMMANDS);
         log.debug("Sending command to device. Device Guid:{} Command Guid:{} Request:{} URL:{}", deviceGuid, commandGuid,
                 new GsonBuilder().setPrettyPrinting().create().toJson(request),
@@ -170,7 +195,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
         } catch (Exception e) {
             throw new PxMWException("Exception occured while sending command", e);
         }
-        
+
     }
     
     @Override

@@ -71,4 +71,9 @@ public interface RecentEventParticipationDao {
      * Gets count of ControlEvents for specified date range
      */
     int getNumberOfEvents(Range<Instant> range);
+
+    /**
+     * Returns event id for group id. Row with the most recent start time is used to find the event id;
+     */
+    Integer getExternalEventId(int groupId);
 }

@@ -86,8 +86,8 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public List<String> getEventIds(int yukonGroupId) {
-        return ecobeeZeusGroupDao.getEventIds(yukonGroupId);
+    public String getEventId(int yukonGroupId) {
+        return ecobeeZeusGroupDao.getEventId(yukonGroupId);
     }
 
     @Override
@@ -103,5 +103,15 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     @Override
     public String zeusGroupName(String zeusGroupId) {
         return ecobeeZeusGroupDao.getZeusGroupName(zeusGroupId);
+    }
+    
+    @Override
+    public int getGroupCount() {
+        return ecobeeZeusGroupDao.getGroupCount();
+    }
+    
+    @Override
+    public int getAllThermostatCount() {
+        return ecobeeZeusGroupDao.getAllThermostatCount();
     }
 }

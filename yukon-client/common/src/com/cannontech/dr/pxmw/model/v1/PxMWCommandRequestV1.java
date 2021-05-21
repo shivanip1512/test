@@ -8,10 +8,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PxMWCommandRequestV1 implements Serializable {
     private final String method;
-    private final Map<String, String> params;
+    private final Map<String, Object> params;
 
     @JsonCreator
-    public PxMWCommandRequestV1(@JsonProperty("method") String method, @JsonProperty("params") Map<String, String> params) {
+    public PxMWCommandRequestV1(@JsonProperty("method") String method, @JsonProperty("params") Map<String, Object> params) {
         this.method = method;
         this.params = params;
     }
@@ -22,7 +22,7 @@ public class PxMWCommandRequestV1 implements Serializable {
     }
 
     @JsonProperty("params")
-    public Map<String, String> getParams() {
+    public Map<String, Object> getParams() {
         return params;
     }
 }

@@ -76,7 +76,39 @@
                 readonly="readonly"></textarea>
         </div>
     </div>
-
+    
+    <cti:msg2 key=".confirmGenerateEcobeeZeusKey.title" var="confirmGenerateEcobeeZeusKeyDialogTitle"/>
+    <div class="dn" id="generateEcobeeZeusKeyDialog" data-dialog data-title="${confirmGenerateEcobeeZeusKeyDialogTitle}"  data-event="yukon:admin:security:generateEcobeeZeusKey" data-width="500" data-height="auto" >
+        <div id="generateEcobeeZeusKeyWarning">
+            <tags:alertBox type="warning" key=".confirmGenerateEcobeeZeusKey.warning"/>
+        </div>
+        
+        <div id="generateEcobeeZeusKeyMessage">
+            <p><i:inline key=".confirmGenerateEcobeeZeusKey.message" /></p>
+        </div>
+    </div>
+    
+    <cti:msg2 key=".confirmRegisterConfigurationEcobeeZeusKey.title" var="confirmRegisterConfigurationEcobeeZeusKeyDialogTitle"/>
+    <div class="dn" id="registerEcobeeZeusDialog" data-dialog data-title="${confirmRegisterConfigurationEcobeeZeusKeyDialogTitle}"  data-event="yukon:admin:security:registerEcobeeZeusKey" data-dialog data-ok-text="<cti:msg2 key=".ecobeeZeusKeyRegisterBtn.label"/>" data-width="500" data-height="auto">
+        <div id="registerEcobeeZeusWarning">
+            <tags:alertBox type="warning" key=".confirmRegisterConfigurationEcobeeZeusKey.warning"/>  
+        </div>
+        
+        <div id="registerEcobeeZeusMessage">
+            <p><i:inline key=".confirmRegisterConfigurationEcobeeZeusKey.message" /></p>
+        </div>
+    </div>
+    
+    <cti:msg2 key=".confirmViewEcobeeZeusKey.title" var="confirmViewEcobeeZeusKeyDialogTitle"/>
+    <div class="dn" id="viewEcobeeZeusKeyDialog" data-dialog data-title="${confirmViewEcobeeZeusKeyDialogTitle}" data-load-event="yukon:admin:security:viewEcobeeZeusPublicKey">
+        <div id="ecobeeZeusErrorMessage"></div>
+        
+        <div id="ecobeeZeuPublicKeyText">
+            <p><i:inline key=".currentPublicKey" /></p>
+            <textarea id="ecobeeZeuPublicKeyArea" rows="17" cols="70" readonly="readonly"></textarea>
+        </div>
+    </div>
+    
     <div class="column-12-12">
         <div class="column one">
             <tags:boxContainer2 nameKey="routesBox" styleClass="largeContainer">
@@ -253,7 +285,36 @@
                         </cti:checkRolesAndProperties>
                     </div>
                 </tags:boxContainer2>
+                
+                <tags:boxContainer2 nameKey="ecobeeZeusKeyBox">
+                    <div id="ecobee-zeus-js-message"></div>
+                    <c:set var="keyGeneratedClass" value="${!empty ecobeeKeyZeusGeneratedDateTime ? '' : 'dn'}"/>
+                    <span class="js-ecobee-zeus-key-generated ${keyGeneratedClass}">
+                        <i:inline key=".ecobeeZeusKeyGenerated"/>&nbsp;<span class="js-ecobee-zeus-key-date-time">${ecobeeKeyZeusGeneratedDateTime}</span>
+                    </span>
+                    <c:set var="keyNotGeneratedClass" value="${!empty ecobeeKeyZeusGeneratedDateTime ? 'dn' : ''}"/>
+                    <span class="js-ecobee-zeus-key-not-generated ${keyNotGeneratedClass}"><i:inline key=".ecobeeZeusNoKeyGenerated"/></span>
+                  
+                    <div id="reportingUrl">
+                        <span class="js-url"><b> <cti:msg2 key=".ecobeeZeusURL"/></span>
+                        <span class="js-value">${reportingUrl}</span>
+                    </div>
+                    <div class="page-action-area">
+	                    <div class="column-12-12 clearfix">
+	                        <div class="column one">
+	                            <cti:button id="generateEcobeeZeusKey" nameKey="generateEcobeeKey" data-popup="#generateEcobeeZeusKeyDialog" /><br/><br/>
+	                            <cti:button id="registerConfigurationEcobeeZeusKey" nameKey="registerConfigurationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-popup="#registerEcobeeZeusDialog" />
+	                        </div>
+	                      
+	                        <div class="column two nogutter">
+	                            <cti:button id="viewEcobeeZeusKey" nameKey="viewEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-popup="#viewEcobeeZeusKeyDialog" /><br/><br/>
+		                        <cti:button id="checkRegistrationEcobeeZeusKey" nameKey="checkRegistrationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:checkRegistrationEcobeeZeusKey" />
+	                        </div>
+	                    </div>
+                    </div>
+                </tags:boxContainer2>
             </cti:checkRolesAndProperties>
+            
             <tags:boxContainer2 nameKey="itronKeyBox">
                 <c:set var="keyGeneratedClass" value="${!empty itronKeyGeneratedDateTime ? '' : 'dn'}"/>
                 <span class="js-itron-key-generated ${keyGeneratedClass}">

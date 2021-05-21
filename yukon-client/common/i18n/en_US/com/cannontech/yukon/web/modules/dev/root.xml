@@ -411,6 +411,7 @@
     <entry key="yukon.web.modules.dev.ecobee.mockTest.authenticate">Authenticate</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.runtimeReport">Runtime Report</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.assignThermostat">Assign Thermostat</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.runtimeData">Runtime Data</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.saved">Saved Successfully</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.createDevice">Create Device</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.deleteDevice">Delete Device / Unenrollment</entry>
@@ -419,6 +420,8 @@
     <entry key="yukon.web.modules.dev.ecobee.mockTest.createPushConfiguration">Create Push Configuration</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.showPushConfiguration">Show Push Configuration</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.showUser">Show User</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.getGroup">Get Group</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.cancelDemandResponse">Cancel Demand Response / Opt Out</entry>
     
     <!-- Ecobee PGP Key Pair -->
     <entry key="yukon.web.modules.dev.ecobeePGPKeyPair">Ecobee PGP Key Pair</entry>

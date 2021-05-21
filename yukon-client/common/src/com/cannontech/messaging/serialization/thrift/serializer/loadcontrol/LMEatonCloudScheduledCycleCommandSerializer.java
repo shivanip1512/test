@@ -17,8 +17,8 @@ public class LMEatonCloudScheduledCycleCommandSerializer extends SimpleThriftSer
 
         var eatonCloudScheduledCycleCommand = new LMEatonCloudScheduledCycleCommand();
         eatonCloudScheduledCycleCommand.setGroupId(entity.get_groupId());
-        eatonCloudScheduledCycleCommand.setControlStartDateTime(new Instant(entity.get_controlStartDateTime()));
-        eatonCloudScheduledCycleCommand.setControlEndDateTime(new Instant(entity.get_controlEndDateTime()));
+        eatonCloudScheduledCycleCommand.setControlStartDateTime(new Instant(entity.get_controlStartDateTime() * 1000));
+        eatonCloudScheduledCycleCommand.setControlEndDateTime(new Instant(entity.get_controlEndDateTime() * 1000));
         eatonCloudScheduledCycleCommand.setIsRampIn(entity.is_isRampIn());
         eatonCloudScheduledCycleCommand.setIsRampOut(entity.is_isRampOut());
         eatonCloudScheduledCycleCommand.setCyclingOption(EatonCloudCycleType.of(entity.get_cyclingOption().getValue()));

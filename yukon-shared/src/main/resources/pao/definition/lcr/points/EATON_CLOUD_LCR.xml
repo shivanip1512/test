@@ -261,7 +261,7 @@
     <point offset="3" type="Status">
         <name>Relay 1 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="RelayState"/>
+        <stategroup value="OnOff"/>
     </point>
     <point offset="4" type="Status">
         <name>Relay 1 Shed Status</name>
@@ -276,7 +276,7 @@
     <point offset="6" type="Status">
         <name>Relay 2 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="RelayState"/>
+        <stategroup value="OnOff"/>
     </point>
     <point offset="7" type="Status">
         <name>Relay 2 Shed Status</name>
@@ -291,7 +291,7 @@
     <point offset="9" type="Status">
         <name>Relay 3 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="RelayState"/>
+        <stategroup value="OnOff"/>
     </point>
     <point offset="10" type="Status">
         <name>Relay 3 Shed Status</name>
@@ -306,7 +306,7 @@
     <point offset="12" type="Status">
         <name>Relay 4 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="RelayState"/>
+        <stategroup value="OnOff"/>
     </point>
     <point offset="13" type="Status">
         <name>Relay 4 Shed Status</name>

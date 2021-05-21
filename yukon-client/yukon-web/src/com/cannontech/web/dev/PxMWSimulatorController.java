@@ -38,6 +38,7 @@ import com.cannontech.dr.pxmw.model.PxMWVersion;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
+import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
@@ -130,7 +131,7 @@ public class PxMWSimulatorController {
                         .collect(Collectors.toList());
             }
             if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE) {
-                PxMWSiteV1 site = pxMWCommunicationServiceV1.getSiteDevices(paramList.get(0), parseBoolean(paramList, 1),
+                PxMWSiteDevicesV1 site = pxMWCommunicationServiceV1.getSiteDevices(paramList.get(0), parseBoolean(paramList, 1),
                         parseBoolean(paramList, 2));
                 processSuccess(params, json, getFormattedJson(site));
             } else if (endpoint == PxMWRetrievalUrl.SECURITY_TOKEN) {
@@ -138,7 +139,7 @@ public class PxMWSimulatorController {
                 processSuccess(params, json, getFormattedJson(token));
             } else if (endpoint == PxMWRetrievalUrl.COMMANDS) {
                 PxMWCommandRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWCommandRequestV1.class);
-                pxMWCommunicationServiceV1.sendCommand(paramList.get(0), paramList.get(1), request);
+                pxMWCommunicationServiceV1.sendCommand(paramList.get(0), request);
             } else if (endpoint == PxMWRetrievalUrl.TREND_DATA_RETRIEVAL) {
                 PxMWTimeSeriesDataRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWTimeSeriesDataRequestV1.class);
                 String startTime = request.getStartTime();
@@ -154,10 +155,15 @@ public class PxMWSimulatorController {
             } else if (endpoint == PxMWRetrievalUrl.DEVICE_DETAIL) {
                 PxMWDeviceDetail detail = pxMWCommunicationServiceV1.getDeviceDetails(paramList.get(0), parseBoolean(paramList, 1));
                 processSuccess(params, json, getFormattedJson(detail));
+            } else if (endpoint == PxMWRetrievalUrl.SITES) {
+                String siteGuid = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
+                List<PxMWSiteV1> detail = pxMWCommunicationServiceV1.getSites(siteGuid);
+                processSuccess(params, json, getFormattedJson(detail));
             }
         } catch (PxMWCommunicationExceptionV1 e) {
             processError(json, e);
         } catch (PxMWException | JsonProcessingException e) {
+            log.error("Error", e);
             json.put("alertError", e.getMessage());
         } 
         return json;
@@ -244,4 +250,3 @@ public class PxMWSimulatorController {
         return "redirect:home";
     }
 }
-

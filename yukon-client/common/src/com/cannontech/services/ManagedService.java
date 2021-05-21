@@ -10,7 +10,7 @@ public enum ManagedService {
     SMART_NOTIFICATION("Smart Notification", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/smartNotification/smartNotificationContext.xml"),
     MAINTENANCE("System Maintenance", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/maintenance/service/maintenanceContext.xml"),
     SERVER_DEVICE_CREATION("Server Device Creation", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/serverDeviceCreation/serverDeviceCreationContext.xml"),
-    ECOBEE_AUTH_TOKEN("Ecobee Auth Token", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/ecobee/authToken/ecobeeAuthTokenContext.xml"),
+    ECOBEE("Ecobee", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/ecobee/ecobeeContext.xml"),
     NEST_MESSAGE_LISTENER("Nest Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/nestMessageListener/nestMessageListenerContext.xml"),
     NM_ALARM_MESSAGE_LISTENER("NM Alarm Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/rf/alarms/nmAlarmContext.xml"),
     ITRON_SERVICES("Itron Services", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/itronServices/itronServicesContext.xml"),

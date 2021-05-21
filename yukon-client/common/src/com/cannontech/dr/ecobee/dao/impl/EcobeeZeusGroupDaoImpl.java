@@ -76,10 +76,10 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
     }
 
     @Override
-    public List<String> getEventIds(int yukonGroupId) {
+    public String getEventId(int yukonGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EcobeeEventId FROM LMGroupZeusMapping WHERE YukonGroupId = ?");
-        return jdbcTemplate.queryForList(sql.getSql(), String.class, yukonGroupId);
+        sql.append("SELECT EcobeeEventId FROM LMGroupZeusMapping WHERE YukonGroupId").eq(yukonGroupId);
+        return jdbcTemplate.queryForString(sql);
     }
 
     @Override
@@ -101,5 +101,19 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT EcobeeGroupName FROM LMGroupZeusMapping WHERE EcobeeGroupId").eq(zeusGroupId);
         return jdbcTemplate.queryForString(sql);
+    }
+    
+    @Override
+    public int getGroupCount() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM LMGroupZeusMapping");
+        return jdbcTemplate.queryForInt(sql);
+    }
+    
+    @Override
+    public int getAllThermostatCount() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM ZeusGroupInventoryMapping");
+        return jdbcTemplate.queryForInt(sql);
     }
 }

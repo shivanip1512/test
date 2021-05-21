@@ -72,9 +72,9 @@
     	<include name="log4j-api-2.14.0.jar"/>
     	<include name="log4j-core-2.14.0.jar"/>
     	<include name="log4j-jcl-2.14.0.jar"/>
-        <include name="lucene-analyzers-common-8.7.0.jar"/>
-        <include name="lucene-core-8.7.0.jar"/>
-        <include name="lucene-queryparser-8.7.0.jar"/>
+        <include name="lucene-analyzers-common-8.8.2.jar"/>
+        <include name="lucene-core-8.8.2.jar"/>
+        <include name="lucene-queryparser-8.8.2.jar"/>
         <include name="mailapi-1.5.1.jar"/>
         <include name="smtp-1.5.1.jar"/>
         <include name="notification.jar"/>

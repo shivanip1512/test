@@ -20,15 +20,15 @@ public class EatonCloudCommandListener {
         var command = eatonCloudStopCommandSerializer.fromBytes(message);
         log.debug("LMEatonCloudStopCommand message recieved: {}", command);
 
-        eatonCloudMessageListener.handleRestoreMessage(command.getGroupId(), command.getRestoreTime());
+        eatonCloudMessageListener.handleRestoreMessage(command);
     }
 
     public void handleEatonCloudCycleScheduledCommand(byte[] message) {
         var command = eatonCloudCycleScheduledCommandSerializer.fromBytes(message);
         log.debug("LMEatonCloudSchdeuledCycleCommand message recieved: {}", command);
-
-        eatonCloudMessageListener.handleCyclingControlMessage(command.getGroupId(), command.getControlStartDateTime(),
-                command.getControlEndDateTime(), command.getDutyCyclePercentage());
+        
+     
+        eatonCloudMessageListener.handleCyclingControlMessage(command);
     }
 
 }

@@ -4,16 +4,18 @@ public class ZeusEcobeeDataConfiguration {
 
     private int authenticate = 0;
     private int createDevice = 0;
-    private int issueDemandResponse = 0;
     private int deleteDevice = 0;
     private int enrollment = 0;
+    private int issueDemandResponse = 0;
     private int showUser = 0;
     private int createPushConfiguration = 0;
     private int showPushConfiguration = 0;
+    private int getGroup = 0;
+    private boolean enableRuntime = false;
+    private int cancelDemandResponse = 0;
 
-    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment,
-            int issueDemandResponse, int showUser, int createPushConfiguration, int showPushConfiguration) {
-
+    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment, int issueDemandResponse, int showUser,
+            int createPushConfiguration, int showPushConfiguration, boolean enableRuntime,int getGroup, int cancelDemandResponse) {
         this.authenticate = authenticate;
         this.createDevice = createDevice;
         this.deleteDevice = deleteDevice;
@@ -22,7 +24,9 @@ public class ZeusEcobeeDataConfiguration {
         this.showUser = showUser;
         this.createPushConfiguration = createPushConfiguration;
         this.showPushConfiguration = showPushConfiguration;
-        
+        this.getGroup = getGroup;
+        this.enableRuntime = enableRuntime;
+        this.cancelDemandResponse = cancelDemandResponse;
     }
 
     public int getAuthenticate() {
@@ -57,6 +61,14 @@ public class ZeusEcobeeDataConfiguration {
         return showPushConfiguration;
     }
 
+    public boolean isEnableRuntime() {
+        return enableRuntime;
+    }
+
+    public int getCancelDemandResponse() {
+        return cancelDemandResponse;
+    }
+
     public void setAuthenticate(int authenticate) {
         this.authenticate = authenticate;
     }
@@ -87,5 +99,21 @@ public class ZeusEcobeeDataConfiguration {
 
     public void setShowPushConfiguration(int showPushConfiguration) {
         this.showPushConfiguration = showPushConfiguration;
+    }
+
+    public int getGetGroup() {
+        return getGroup;
+    }
+
+    public void setGetGroup(int getGroup) {
+        this.getGroup = getGroup;
+    }
+
+    public void setEnableRuntime(boolean enableRuntime) {
+        this.enableRuntime = enableRuntime;
+    }
+
+    public void setCancelDemandResponse(int cancelDemandResponse) {
+        this.cancelDemandResponse = cancelDemandResponse;
     }
 }
