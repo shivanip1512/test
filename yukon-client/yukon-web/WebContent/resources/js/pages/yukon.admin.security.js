@@ -205,6 +205,17 @@ yukon.admin.security = (function () {
                 });
             });
             
+            $(document).on('click', '#registerEcobeeZeusKey', function() {
+                yukon.ui.busy($('#registerEcobeeZeusKey'));
+                $('#js-url-message').hide();
+                $('#ecobee-zeus-js-message').addMessage({
+                    message : $('.js-ecobee-url').val(),
+                    messageClass : 'error'
+                });
+                
+                yukon.ui.unbusy($('#registerEcobeeZeusKey'));
+            });
+            
             $(document).on('click', '#checkRegistrationEcobeeZeusKey', function() {
                 yukon.ui.busy($('#checkRegistrationEcobeeZeusKey'));
                 $.ajax({

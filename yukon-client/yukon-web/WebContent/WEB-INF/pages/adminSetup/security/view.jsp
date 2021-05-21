@@ -287,25 +287,38 @@
                 </tags:boxContainer2>
                 
                 <tags:boxContainer2 nameKey="ecobeeZeusKeyBox">
+                    <cti:msg2 key=".ecobeeZeusURL.blank" var="ecobeeZeusUrlBlank"/>
+                    <input type="hidden" class="js-ecobee-url" value="${ecobeeZeusUrlBlank}"/>
                     <div id="ecobee-zeus-js-message"></div>
+                    <c:if test="${empty reportingUrl}">
+                       <div id="js-url-message">
+                        <tags:alertBox type="warning">${ecobeeZeusUrlBlank}</tags:alertBox> 
+                       </div>
+                    </c:if>
                     <c:set var="keyGeneratedClass" value="${!empty ecobeeKeyZeusGeneratedDateTime ? '' : 'dn'}"/>
                     <span class="js-ecobee-zeus-key-generated ${keyGeneratedClass}">
                         <i:inline key=".ecobeeZeusKeyGenerated"/>&nbsp;<span class="js-ecobee-zeus-key-date-time">${ecobeeKeyZeusGeneratedDateTime}</span>
                     </span>
                     <c:set var="keyNotGeneratedClass" value="${!empty ecobeeKeyZeusGeneratedDateTime ? 'dn' : ''}"/>
                     <span class="js-ecobee-zeus-key-not-generated ${keyNotGeneratedClass}"><i:inline key=".ecobeeZeusNoKeyGenerated"/></span>
-                  
+                    
                     <div id="reportingUrl">
                         <span class="js-url"><b> <cti:msg2 key=".ecobeeZeusURL"/></b></span>
                         <span class="js-value">${reportingUrl}</span>
                     </div>
                     <div class="page-action-area">
 	                    <div class="column-12-12 clearfix">
-	                        <div class="column one">
-	                            <cti:button id="generateEcobeeZeusKey" nameKey="generateEcobeeKey" data-popup="#generateEcobeeZeusKeyDialog" /><br/><br/>
-	                            <cti:button id="registerConfigurationEcobeeZeusKey" nameKey="registerConfigurationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-popup="#registerEcobeeZeusDialog" />
+	                       <div class="column one">
+	                           <cti:button id="generateEcobeeZeusKey" nameKey="generateEcobeeKey" data-popup="#generateEcobeeZeusKeyDialog" /><br/><br/>
+	                           <c:choose>
+	                               <c:when test="${empty reportingUrl}">
+                                       <cti:button id="registerEcobeeZeusKey" nameKey="registerConfigurationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:registerEcobeeZeusKey"/>
+                                    </c:when>
+                                    <c:otherwise>
+	                                    <cti:button id="registerConfigurationEcobeeZeusKey" nameKey="registerConfigurationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-popup="#registerEcobeeZeusDialog" />
+                                    </c:otherwise>
+	                           </c:choose>
 	                        </div>
-	                      
 	                        <div class="column two nogutter">
 	                            <cti:button id="viewEcobeeZeusKey" nameKey="viewEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-popup="#viewEcobeeZeusKeyDialog" /><br/><br/>
 		                        <cti:button id="checkRegistrationEcobeeZeusKey" nameKey="checkRegistrationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:checkRegistrationEcobeeZeusKey" />
