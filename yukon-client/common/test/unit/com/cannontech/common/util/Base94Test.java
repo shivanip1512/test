@@ -1,5 +1,7 @@
 package com.cannontech.common.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,19 +9,15 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.core.io.ClassPathResource;
 
-@RunWith(Parameterized.class)
 public class Base94Test {
 
     private static ClassPathResource testCases = new ClassPathResource("testCases/base94.txt");
     
-    @Parameters
     public static Collection<Object[]> data() throws IOException {
         
         var lineReader = new BufferedReader(new InputStreamReader(testCases.getInputStream()));
@@ -35,13 +33,11 @@ public class Base94Test {
     private long input;
     private String expected;
     
-    public Base94Test(long input, String expected) {
-        this.input = input;
-        this.expected = expected;
+    @ParameterizedTest
+    @MethodSource("data")
+    public void test(ArgumentsAccessor argumentsAccessor) {
+        input = argumentsAccessor.getLong(0);
+        expected = argumentsAccessor.getString(1);
+        assertEquals(Base94.of(input), expected, "base94 of " + input);
     }
-    
-    @Test
-    public void test() {
-        Assert.assertEquals("base94 of " + input, Base94.of(input), expected);
-    }        
 }

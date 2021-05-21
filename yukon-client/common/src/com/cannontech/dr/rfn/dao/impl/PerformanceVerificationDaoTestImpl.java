@@ -3,7 +3,7 @@ package com.cannontech.dr.rfn.dao.impl;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,13 +12,13 @@ import java.util.Map;
 import org.easymock.EasyMock;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.database.YukonJdbcTemplate;
@@ -26,13 +26,13 @@ import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.model.DeviceStatus;
 import com.cannontech.system.dao.GlobalSettingDao;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration({"/com/cannontech/common/daoTestContext.xml"})
 public class PerformanceVerificationDaoTestImpl {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     private PerformanceVerificationDao performanceVerificationDao;
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         performanceVerificationDao = new PerformanceVerificationDaoImpl();
         ReflectionTestUtils.setField(performanceVerificationDao, "jdbcTemplate", jdbcTemplate);
@@ -40,7 +40,7 @@ public class PerformanceVerificationDaoTestImpl {
         prepareBaseData();
     }
     
-    @After
+    @AfterEach
     public void cleanUp() throws Exception {
         cleanBaseData();
     }
