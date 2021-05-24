@@ -84,6 +84,9 @@
                 <c:if test="${selectedGearType == 'EcobeeSetpoint' }">
                     <%@ include file="ecobeeSetpoint.jsp" %>
                 </c:if>
+                <c:if test="${selectedGearType == 'EcobeePlus' }">
+                    <%@ include file="ecobeePlus.jsp" %>
+                </c:if>
                 <c:if test="${selectedGearType == 'HoneywellCycle'}">
                     <%@ include file="honeywellCycle.jsp" %>
                 </c:if>
