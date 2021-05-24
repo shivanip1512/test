@@ -127,6 +127,8 @@ public:
 
     static ObjectBlockPtr makeQuantityBlock   (ObjectPtr obj);
 
+    static ObjectBlockPtr makeLongIndexedBlockForObjects( std::vector<std::pair<unsigned, ObjectPtr>> objs );
+
     enum
     {
         ObjectBlockMinSize = 3
