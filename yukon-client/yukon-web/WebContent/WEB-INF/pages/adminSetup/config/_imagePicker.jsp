@@ -11,7 +11,7 @@
 </style>
 
 <cti:msgScope paths="yukon.common.imagePicker">
-<span id="image-upload-error" class="user-message error dn"/>
+<span id="image-upload-error" class="user-message error dn"></span>
 <div class="separated-sections image-picker" data-category="${category}" data-original-image-id="${selected}">
     <div class="section clearfix">
         <cti:url var="imagesUrl" value="/common/images"/>
