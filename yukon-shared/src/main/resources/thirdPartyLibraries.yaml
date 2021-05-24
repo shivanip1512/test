@@ -217,6 +217,20 @@ Java :
     jira : YUK-15125
     notes : Can probably be removed now that we're on log4j2
   
+  - filename : apiguardian-api-1.1.0.jar
+    yukon group : Unit Tests
+    project : Junit
+    version : 1.1.0
+    project URL : "https://github.com/apiguardian-team/apiguardian"
+    license : Apache 2.0
+    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apiguardian/apiguardian-api/1.1.0"
+    md5 : 944805817b648e558ed6be6fc7f054f3
+    sha1 : fc9dff4bb36d627bdc553de77e1f17efd790876c
+    updated : 2021-05-24
+    jira : YUK-24356
+    notes : 
+    
   - filename : applicationinsights-core-1.0.2.jar
     yukon group : Azure
     project : Azure Monitor - Application Insights SDK
@@ -1015,20 +1029,48 @@ Java :
     jira : YUK-13351
     notes : 
   
-  - filename : hamcrest-core-1.3.jar
+  - filename : hamcrest-2.2.jar
     yukon group : Unit Tests
     project : Hamcrest
-    version : 1.3
+    version : 2.2
     project URL : "http://hamcrest.org/JavaHamcrest/"
-    license : BSD 2-clause
-    license URLs : "https://opensource.org/licenses/bsd-license.php"
-    maven URL : "https://mvnrepository.com/artifact/org.hamcrest/hamcrest-core/1.3"
-    md5 : 6393363b47ddcbba82321110c3e07519
-    sha1 : 42a25dc3219429f0e5d060061f71acb49bf010a0
-    updated : 2014-04-03
-    jira : YUK-12614
-    notes : "Deprecated, migrate to https://mvnrepository.com/artifact/org.hamcrest/hamcrest/"
+    license : BSD 3-clause
+    license URLs : "http://opensource.org/licenses/BSD-3-Clause"
+    maven URL : "https://mvnrepository.com/artifact/org.hamcrest/hamcrest/2.2"
+    md5 : 10b47e837f271d0662f28780e60388e8
+    sha1 : 1820c0968dba3a11a1b30669bb1f01978a91dedc
+    updated : 2021-05-24
+    jira : YUK-24356
+    notes : 
+    
+  - filename : hamcrest-core-2.2.jar
+    yukon group : Unit Tests
+    project : Hamcrest
+    version : 2.2
+    project URL : "http://hamcrest.org/JavaHamcrest/"
+    license : BSD 3-clause
+    license URLs : "http://opensource.org/licenses/BSD-3-Clause"
+    maven URL : "https://mvnrepository.com/artifact/org.hamcrest/hamcrest-core/2.2"
+    md5 : be43e37f4c7b4f6fadba382933006b15
+    sha1 : 3f2bd07716a31c395e2837254f37f21f0f0ab24b
+    updated : 2021-05-24
+    jira : YUK-24356
+    notes : 
   
+  - filename : hamcrest-library-2.2.jar
+    yukon group : Unit Tests
+    project : Hamcrest
+    version : 2.2
+    project URL : "http://hamcrest.org/JavaHamcrest/"
+    license : BSD 3-clause
+    license URLs : "http://opensource.org/licenses/BSD-3-Clause"
+    maven URL : "https://mvnrepository.com/artifact/org.hamcrest/hamcrest-core/1.3"
+    md5 : e55927fb7e4a3c7a4ecd325677ea8cb3
+    sha1 : cf530c8a0bc993487c64e940ae639bb4a6104dc6
+    updated : 2021-05-24
+    jira : YUK-24356
+    notes : 
+    
   - filename : hawtbuf-1.11.jar
     yukon group : ActiveMQ
     project : HawtBuf
@@ -1687,20 +1729,76 @@ Java :
     jira : YUK-17953
     notes : MD5 does not match Maven
   
-  - filename : junit-4.12.jar
+  - filename : junit-jupiter-api-5.7.1.jar
     yukon group : Unit Tests
     project : Junit
-    version : 4.12
-    project URL : "http://junit.org/"
-    license : EPL 1.0
-    license URLs : "https://www.eclipse.org/legal/epl-v10.html"
-    maven URL : "https://mvnrepository.com/artifact/junit/junit/4.12"
-    md5 : 5b38c40c97fbd0adee29f91e60405584
-    sha1 : 2973d150c0dc1fefe998f834810d68f278ea58ec
-    updated : 2018-06-22
-    jira : YUK-18346
+    version : 5.7.1
+    project URL : "https://junit.org/junit5/"
+    license : Eclipse Public License v2.0
+    license URLs : "https://www.eclipse.org/legal/epl-v20.html"
+    maven URL : "https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api/5.7.1"
+    md5 : 69395a5e457e37765d4fbbbb5f2d5a18
+    sha1 : a7261dff44e64aea7f621842eac5977fd6d2412d
+    updated : 2021-05-24
+    jira : YUK-24356
     notes : 
   
+  - filename : junit-jupiter-engine-5.7.1.jar
+    yukon group : Unit Tests
+    project : Junit
+    version : 5.7.1
+    project URL : "https://junit.org/junit5/"
+    license : Eclipse Public License v2.0
+    license URLs : "https://www.eclipse.org/legal/epl-v20.html"
+    maven URL : "https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine/5.7.1"
+    md5 : 5889138d49d65cd1be3a228b73abc485
+    sha1 : 7fcfa59c5533abb41f86b1408960737eeaf1f49f
+    updated : 2021-05-24
+    jira : YUK-24356
+    notes : 
+    
+  - filename : junit-jupiter-params-5.7.1.jar
+    yukon group : Unit Tests
+    project : Junit
+    version : 5.7.1
+    project URL : "https://junit.org/junit5/"
+    license : Eclipse Public License v2.0
+    license URLs : "https://www.eclipse.org/legal/epl-v20.html"
+    maven URL : "https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params/5.7.1"
+    md5 : 99c60487a3d01dda353e34894f6b0720
+    sha1 : 6f81b3c053433a8a40a378d2b4f056c5c31e50ff
+    updated : 2021-05-24
+    jira : YUK-24356
+    notes : 
+    
+  - filename : junit-platform-commons-1.7.1.jar
+    yukon group : Unit Tests
+    project : Junit
+    version : 1.7.1
+    project URL : "https://junit.org/junit5/"
+    license : Eclipse Public License v2.0
+    license URLs : "https://www.eclipse.org/legal/epl-v20.html"
+    maven URL : "https://repo1.maven.org/maven2/org/junit/platform/junit-platform-commons/1.7.1"
+    md5 : d6d74d7c8854ecd573bdc8cde68b80f1
+    sha1 : 7c49f0074842d07f4335de2389d624a7437d1407
+    updated : 2021-05-24
+    jira : YUK-24356
+    notes : 
+    
+  - filename : junit-platform-engine-1.7.1.jar
+    yukon group : Unit Tests
+    project : Junit
+    version : 1.7.1
+    project URL : "https://junit.org/junit5/"
+    license : Eclipse Public License v2.0
+    license URLs : "https://www.eclipse.org/legal/epl-v20.html"
+    maven URL : "https://mvnrepository.com/artifact/org.junit.platform/junit-platform-engine/1.7.1"
+    md5 : c039039577212197d235e0d30d991c31
+    sha1 : d276a968c57f5d60a421dedd1f8b6ca2fae09e86
+    updated : 2021-05-24
+    jira : YUK-24356
+    notes : 
+    
   - filename : lang-tag-1.5.jar
     yukon group : Azure
     project : Microsoft Azure SDK
@@ -2259,6 +2357,20 @@ Java :
     sha1 : 8789d5e9078ffa0027098535e52344685f34096c
     updated : 2019-02-25
     jira : YUK-19494
+    notes : 
+    
+  - filename : opentest4j-1.2.0.jar
+    yukon group : Unit Tests
+    project : Junit
+    version : 1.2.0
+    project URL : "https://github.com/ota4j-team/opentest4j"
+    license : Apache 2.0
+    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.opentest4j/opentest4j/1.2.0"
+    md5 : 45c9a837c21f68e8c93e85b121e2fb90
+    sha1 : 28c11eb91f9b6d8e200631d46e20a7f407f2a046
+    updated : 2021-05-24
+    jira : YUK-24356
     notes : 
   
   - filename : org.osgi.core-4.1.0.jar
