@@ -34,6 +34,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
+import com.cannontech.dr.pxmw.model.EatonCloudEventStatus;
 import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
@@ -169,32 +170,20 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                 try {
                     List<String> resultList = splitString(v, ",");
                     String externalEventId = resultList.get(0);
-                    ControlEventDeviceStatus status = null;
-                    /* Received: 1, Started: 2 , Complete: 3. Canceled: 4 */
-                    switch (Integer.valueOf(resultList.get(1))) {
-                    case 1:
-                        status = ControlEventDeviceStatus.SUCCESS_RECEIVED;
-                        break;
-                    case 2:
-                        status = ControlEventDeviceStatus.SUCCESS_STARTED;
-                        break;
-                    case 3:
-                    case 4:
-                        status = ControlEventDeviceStatus.SUCCESS_COMPLETED;
-                        break;
-                    default:
-                        log.error("Unable to parse value:{} to update device participation status for device:{}({})", v, device.getPaoName(), device.getLiteID());
-                        break;
-                    }
-                    if (status != null) {
-                        recentEventParticipationDao.updateDeviceControlEvent(externalEventId, device.getLiteID(), status,
+                    int statusId = Integer.valueOf(resultList.get(1));
+                    EatonCloudEventStatus cloudStatus = EatonCloudEventStatus.getById(statusId);
+                    ControlEventDeviceStatus controlEventStatus = ControlEventDeviceStatus.getDeviceStatus(cloudStatus);
+                    if (controlEventStatus != null) {
+                        recentEventParticipationDao.updateDeviceControlEvent(externalEventId, device.getLiteID(),
+                                controlEventStatus,
                                 new Instant(value.getTimestamp() * 1000));
                     }
                 } catch (Exception e) {
-                    log.error("Unable to parse value:{} to update device participation status for device:{}({})", v, device.getPaoName(), device.getLiteID());
+                    log.error("Unable to parse value:{} to update device participation status for device:{}({})", v,
+                            device.getPaoName(), device.getLiteID());
                 }
-               
-            });       
+
+            });
         });
     }
 
