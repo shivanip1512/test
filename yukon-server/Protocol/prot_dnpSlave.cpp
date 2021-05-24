@@ -408,12 +408,12 @@ void DnpSlaveProtocol::setAnalogOutputCommand( const std::vector<DnpSlave::analo
         aoc->setControl( analog.value );
         aoc->setStatus( analog.status );
 
-        objs.push_back( std::make_pair( analog.offset, std::move(aoc) ) );
+        objs.emplace_back( analog.offset, std::move(aoc) );
     }
 
     _application.setCommand(
             ApplicationLayer::ResponseResponse,
-            ObjectBlock::makeLongIndexedBlocks( std::move(objs) ) );
+            ObjectBlock::makeLongIndexedBlockForObjects( std::move(objs) ) );
 
     //  finalize the request
     _application.initForSlaveOutput();

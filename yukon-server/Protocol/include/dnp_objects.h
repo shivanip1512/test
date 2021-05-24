@@ -127,7 +127,7 @@ public:
 
     static ObjectBlockPtr makeQuantityBlock   (ObjectPtr obj);
 
-    static ObjectBlockPtr makeLongIndexedBlocks( std::vector<std::pair<unsigned, ObjectPtr>> objs );
+    static ObjectBlockPtr makeLongIndexedBlockForObjects( std::vector<std::pair<unsigned, ObjectPtr>> objs );
 
     enum
     {

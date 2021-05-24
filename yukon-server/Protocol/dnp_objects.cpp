@@ -371,7 +371,7 @@ ObjectBlockPtr ObjectBlock::makeQuantityBlock( ObjectPtr object )
 }
 
 
-ObjectBlockPtr ObjectBlock::makeLongIndexedBlocks( std::vector<std::pair<unsigned, ObjectPtr>> objs )
+ObjectBlockPtr ObjectBlock::makeLongIndexedBlockForObjects( std::vector<std::pair<unsigned, ObjectPtr>> objs )
 {
     auto objBlock =
             makeObjectBlock(

@@ -1294,18 +1294,20 @@ int DnpSlave::processAnalogOutputRequest (ConnectionProtocol cp, const ObjectBlo
 
     if ( requests.empty() )
     {
-        return -1;
+        cp.dnpSlave.setUnsupportedCommand();
     }
-
-    if ( ! pointUpdates.empty() )
+    else
     {
-        auto multiMsg = std::make_unique<CtiMultiMsg>( pointUpdates );
+        if ( ! pointUpdates.empty() )
+        {
+            auto multiMsg = std::make_unique<CtiMultiMsg>( pointUpdates );
 
-        // consumes a delete memory
-        queueMessageToDispatch( multiMsg.release() );
+            // consumes a delete memory
+            queueMessageToDispatch( multiMsg.release() );
+        }
+
+        cp.dnpSlave.setAnalogOutputCommand( requests );
     }
-
-    cp.dnpSlave.setAnalogOutputCommand( requests );
 
     return doComms(cp, "analog output");
 }
