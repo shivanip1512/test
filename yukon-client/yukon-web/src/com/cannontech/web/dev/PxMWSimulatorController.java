@@ -37,6 +37,7 @@ import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.PxMWVersion;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDataRequestV1;
@@ -151,7 +152,11 @@ public class PxMWSimulatorController {
                 List<PxMWTimeSeriesDeviceResultV1> response = pxMWCommunicationServiceV1.getTimeSeriesValues(request.getDevices(),
                         timeRange);
                 processSuccess(params, json, getFormattedJson(response));
-            } else if (endpoint == PxMWRetrievalUrl.SITES) {
+            } else if (endpoint == PxMWRetrievalUrl.DEVICE_DETAIL) {
+                PxMWDeviceDetail detail = pxMWCommunicationServiceV1.getDeviceDetails(paramList.get(0), parseBoolean(paramList, 1));
+                processSuccess(params, json, getFormattedJson(detail));
+            } 
+            else if (endpoint == PxMWRetrievalUrl.SITES) {
                 String siteGuid = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
                 List<PxMWSiteV1> detail = pxMWCommunicationServiceV1.getSites(siteGuid);
                 processSuccess(params, json, getFormattedJson(detail));

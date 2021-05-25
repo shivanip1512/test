@@ -182,7 +182,6 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                     log.error("Unable to parse value:{} to update device participation status for device:{}({})", v,
                             device.getPaoName(), device.getLiteID());
                 }
-
             });
         });
     }

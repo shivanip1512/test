@@ -8,6 +8,7 @@ import com.cannontech.common.util.Range;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
@@ -77,10 +78,22 @@ public interface PxMWCommunicationServiceV1 {
      */
     void sendCommand(String deviceGuid, PxMWCommandRequestV1 request) throws PxMWCommunicationExceptionV1, PxMWException;
 
+    
     /**
-     * Returns true if device can be created
+     * Retrieves the device information
+     * 
+     * @param deviceGuid - Device id in the form of uuid
+     * @param recursive
+     * @return device details
+     * @throws PxMWCommunicationExceptionV1
+     * @throws PxMWException
+     * 
+     * 200 OK
+     * 400 Bad Request
+     * 401 Unauthorized
+     * 404 Not Found
      */
-    boolean isCreatableDevice(String deviceGuid);
+    PxMWDeviceDetail getDeviceDetails(String deviceGuid, Boolean recursive) throws PxMWCommunicationExceptionV1, PxMWException;
 
     /**
      * Retrieves the list of sites

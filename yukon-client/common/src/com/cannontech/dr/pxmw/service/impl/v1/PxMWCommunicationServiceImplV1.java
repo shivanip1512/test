@@ -43,6 +43,7 @@ import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDevicesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
@@ -186,6 +187,32 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
     
     @Override
+    public PxMWDeviceDetail getDeviceDetails(String deviceGuid, Boolean recursive)
+            throws PxMWCommunicationExceptionV1, PxMWException {
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        if (recursive != null) {
+            queryParams.add("recursive", recursive.toString());
+        }
+
+        URI uri = getUri(Map.of("deviceId", deviceGuid), PxMWRetrievalUrl.DEVICE_DETAIL);
+        uri = addQueryParams(queryParams, uri);
+
+        log.debug("Getting device info. Device Guid: {} URL: {}", deviceGuid, uri);
+
+        try {
+            HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+            ResponseEntity<PxMWDeviceDetail> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, PxMWDeviceDetail.class);
+            log.debug("Got device info. Device Guid:{} Result:{}", deviceGuid,
+                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
+            return response.getBody();
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PxMWException("Exception occured while getting device detail", e);
+        }
+    }
+    
+    @Override
     public void sendCommand(String deviceGuid, PxMWCommandRequestV1 request)
             throws PxMWCommunicationExceptionV1, PxMWException {
         String commandGuid = UUID.randomUUID().toString();
@@ -204,26 +231,8 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
         } catch (Exception e) {
             throw new PxMWException("Exception occured while sending command", e);
         }
-
     }
-    
-    @Override
-    public boolean isCreatableDevice(String deviceGuid) {
-        try {
-            DateTime today = new DateTime(Instant.now());
-            DateTime yesterday = today.minusDays(1);
-            Range<Instant> range = new Range<Instant>(yesterday.toInstant(), false, today.toInstant(), false);
-            List<PxMWTimeSeriesDeviceV1> request = List
-                    .of(new PxMWTimeSeriesDeviceV1(deviceGuid, String.valueOf(MWChannel.FREQUENCY.getChannelId())));
-            List<PxMWTimeSeriesDeviceResultV1> response = getTimeSeriesValues(request, range);
-            return CollectionUtils.isNotEmpty(response);
-        } catch (Exception e) {
-            // 404 Not Found if device doesn't exist
-            log.error("Device:" + deviceGuid + " can't be created", e);
-            return false;
-        }
-    }
-   
+       
     /**
      * Creates URI
      */

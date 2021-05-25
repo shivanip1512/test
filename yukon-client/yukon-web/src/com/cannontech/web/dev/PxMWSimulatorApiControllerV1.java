@@ -119,4 +119,18 @@ public class PxMWSimulatorApiControllerV1 {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+    
+    @GetMapping("/devices/{deviceId}/details")
+    public ResponseEntity<Object> detailsV1(@PathVariable String deviceId, @RequestParam(required=false) Boolean recursive) {
+        try {
+            PxMWSimulatorResponse response = simulatorsCommunicationService
+                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICE_DETAIL, "detailsV1",
+                            new Class[] { String.class, Boolean.class},
+                            new Object[] { deviceId, recursive }), PxMWSimulatorResponse.class);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
+        } catch (ExecutionException e) {
+            log.error("Error", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
