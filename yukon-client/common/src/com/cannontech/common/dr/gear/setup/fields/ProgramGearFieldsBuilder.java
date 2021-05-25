@@ -477,8 +477,6 @@ public class ProgramGearFieldsBuilder {
     private ProgramGearFields getEcobeePlusGearFields(LMProgramDirectGear directGear) {
         EcobeePlusGearFields gearFields = new EcobeePlusGearFields();
 
-        gearFields.setHowToStopControl(HowToStopControl.valueOf(directGear.getMethodStopType()));
-        gearFields.setCapacityReduction(directGear.getPercentReduction());
         HeatCool heatCool = gearDao.getHeatingEvent(directGear.getGearId());
 
         if (directGear.getMethodRate() > 0) {
@@ -491,12 +489,12 @@ public class ProgramGearFieldsBuilder {
         } else {
             gearFields.setHeatingEvent(false);
         }
-
+        gearFields.setHowToStopControl(HowToStopControl.valueOf(directGear.getMethodStopType()));
+        gearFields.setCapacityReduction(directGear.getPercentReduction());
         WhenToChangeFields changeFields = getWhenToChangeFields(directGear);
         gearFields.setWhenToChangeFields(changeFields);
 
         return gearFields;
-
     }
 
 
