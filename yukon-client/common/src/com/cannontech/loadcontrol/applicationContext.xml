@@ -105,6 +105,7 @@
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusCommunicationServiceImpl"/>
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceHelper"/>
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeePointUpdateServiceImpl"/>
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusPointUpdateServiceImpl"/>
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusGroupServiceImpl"/>
     <bean class="com.cannontech.dr.ecobee.service.helper.EcobeeZeusRequestHelper">
             <constructor-arg name="restTemplate">

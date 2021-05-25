@@ -10,10 +10,10 @@ import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_METER;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_GATEWAY;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_MISC;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_NETWORK;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.SIMULATOR;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.SIMULATOR_MANAGEMENT;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.SIMULATOR;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_FIELD_SIMULATOR;
@@ -141,7 +141,7 @@ import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
-import com.cannontech.simulators.message.request.PxMWDeviceAutoCreationSimulatonRequest;
+import com.cannontech.simulators.message.request.PxMWDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.FieldSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.ModifyFieldSimulatorResponse;
@@ -1327,13 +1327,13 @@ public final class JmsApiDirectory {
                   .build();
     
     
-    public static final JmsApi<PxMWDeviceAutoCreationSimulatonRequest,?,?> PxMW_SIM_DEVICE_AUTO_CREATION_REQUEST = 
-            JmsApi.builder(PxMWDeviceAutoCreationSimulatonRequest.class)
+    public static final JmsApi<PxMWDataRetrievalSimulatonRequest,?,?> PxMW_SIM_DEVICE_DATA_RETRIEVAL_REQUEST = 
+            JmsApi.builder(PxMWDataRetrievalSimulatonRequest.class)
                   .name("PxMW Device Auto Creation Simulation Request")
                   .description("WS sends request to SM start auto creation for simulated devices")
                   .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.simulator.PxMWDeviceAutoCreationSimulatonRequest"))
-                  .requestMessage(PxMWDeviceAutoCreationSimulatonRequest.class)
+                  .queue(new JmsQueue("yukon.notif.obj.simulator.PxMWDataRetrievalSimulatonRequest"))
+                  .requestMessage(PxMWDataRetrievalSimulatonRequest.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
@@ -1453,7 +1453,7 @@ public final class JmsApiDirectory {
                          PROGRAM_STATUS_NOTIFICATION);
         
         addApis(jmsApis, SIMULATOR, 
-                PxMW_SIM_DEVICE_AUTO_CREATION_REQUEST);
+                PxMW_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
 
         return jmsApis;
     }

@@ -453,12 +453,16 @@
     <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS.description">The interval, in hours, at which to calculate run time and shed time for devices that do not directly report it.</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL">PX Cellular LCR auto creation interval</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL.description">The interval, in hours of how often Yukon will try to auto create Eaton Cloud Cellular LCRs</entry>
+    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES">PX Cellular LCR auto read interval</entry>
+    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES.description">The interval, in minutes of how often Yukon will try to read Eaton Cloud Cellular LCRs</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID">PX System Service Account Id</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID.description">Service Account Id used to access the PX middleware software</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET">PX System Secret</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET.description">Secret used to access the PX middleware software</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_URL">PX URL</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_URL.description">URL of the PX middleware software</entry>
+    <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID">Ecobee Zeus Program ID</entry>
+    <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID.description">Program ID required for initiating Zeus API communications.</entry>
     
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>

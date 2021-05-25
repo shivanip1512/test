@@ -29,9 +29,9 @@
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
      </div>
      <br/>
-	    
+        
     <cti:url var="updateSettingsUrl" value="updateSettings"/>
-	<form:form id="pxMWForm" action="${updateSettingsUrl}" modelAttribute="settings" method="post">
+    <form:form id="pxMWForm" action="${updateSettingsUrl}" modelAttribute="settings" method="post">
         <cti:csrfToken/>
         <table class="compact-results-table">
             <thead>
@@ -49,10 +49,10 @@
                     <tr>
                         <td style="width:200px" class="wbba"><a href="${endpoint.doc}" target="_blank">${endpoint.suffix}</a></td>
                         <c:if test="${isLocalHost}">
-	                        <td>
-	                            <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}" inputClass="js-selected-status w100"/>
-	                        </td>
-	                    </c:if>
+                            <td>
+                                <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}" inputClass="js-selected-status w100"/>
+                            </td>
+                        </c:if>
                         <td>
                             <c:if test="${not empty endpoint.params}">
                                 <c:set var="params" value=""/>
@@ -101,7 +101,7 @@
                 </c:forEach>
             </tbody>
         </table>
-	</form:form>
+    </form:form>
 
     <br/>
     
@@ -125,6 +125,22 @@
                 <input type="text" name="textInput" value="10"/>
                 <cti:button label="Submit" type="submit" classes="fn vam"/>
                 <form:form id="autoCreationForm" action="${autoCreationUrl}" method="post"/>
+                <cti:csrfToken/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+    </form:form>
+    
+    
+    <div class="notes">
+        <br/>Reads all Eaton Cloud LCRs
+     </div>
+    <br/>
+    <cti:url var="autoReadUrl" value="deviceAutoRead"/>
+    <form:form id="autoReadForm" action="${autoReadUrl}" method="post">
+        <tags:nameValueContainer>
+            <tags:nameValue name="Read LCRs" nameColumnWidth="250px">
+                <cti:button label="Submit" type="submit" classes="fn vam"/>
+                <form:form id="autoReadForm" action="${autoReadUrl}" method="post"/>
                 <cti:csrfToken/>
             </tags:nameValue>
         </tags:nameValueContainer>

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/16/2021 12:31:44 AM                        */
+/* Created on:     5/14/2021 3:17:41 PM                         */
 /*==============================================================*/
 
 
@@ -8730,6 +8730,8 @@ create table State  (
    constraint PK_STATE primary key (StateGroupId, RawState)
 );
 
+INSERT INTO State VALUES(-33, 0, 'Off', 1, 6, 0);
+INSERT INTO State VALUES(-33, 1, 'On', 0, 6, 0);
 INSERT INTO State VALUES(-32, 0, 'Reverse Block', 0, 6, 0);
 INSERT INTO State VALUES(-32, 1, 'Regulate Reverse', 1, 6, 0);
 INSERT INTO State VALUES(-32, 2, 'Regulator Forward', 2, 6, 0);
@@ -8933,6 +8935,7 @@ create table StateGroup  (
    constraint PK_StateGroup primary key (StateGroupId)
 );
 
+INSERT INTO StateGroup VALUES(-33, 'OnOff', 'Status');
 INSERT INTO StateGroup VALUES(-32, 'Beckwith Regulator Control Mode', 'Status');
 INSERT INTO StateGroup VALUES(-31, 'Eaton Regulator Control Mode', 'Status');
 INSERT INTO StateGroup VALUES(-30, 'LCR Firmware Update Status', 'Status');

@@ -24,55 +24,56 @@ import com.cannontech.encryption.EncryptionKeyType;
 
 public class EcobeeZeusSecurityServiceImpl implements EcobeeZeusSecurityService {
 
-	@Autowired private EncryptedRouteDao encryptedRouteDao;
+    @Autowired private EncryptedRouteDao encryptedRouteDao;
 
-	private Logger log = YukonLogManager.getLogger(EcobeeZeusSecurityServiceImpl.class);
+    private Logger log = YukonLogManager.getLogger(EcobeeZeusSecurityServiceImpl.class);
 
-	public ZeusEncryptionKey generateZeusEncryptionKey() throws CryptoException {
+    public ZeusEncryptionKey generateZeusEncryptionKey() throws CryptoException {
 
-		try {
-			char[] password = CryptoUtils.getSharedPasskey();
-			AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
-			// GENERATE THE PUBLIC/PRIVATE RSA KEY PAIR
-			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-			keyPairGenerator.initialize(2048, new SecureRandom());
+        try {
+            char[] password = CryptoUtils.getSharedPasskey();
+            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
+            // GENERATE THE PUBLIC/PRIVATE RSA KEY PAIR
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            keyPairGenerator.initialize(2048, new SecureRandom());
 
-			KeyPair keyPair = keyPairGenerator.generateKeyPair();
-			PublicKey publicKey = keyPair.getPublic();
+            KeyPair keyPair = keyPairGenerator.generateKeyPair();
+            PublicKey publicKey = keyPair.getPublic();
 
-			byte publicKeyEncoded[] = publicKey.getEncoded();
-			byte[] publicKeyEncoded64 = Base64.encodeBase64(publicKeyEncoded);
-			String publicStringKey = new String(publicKeyEncoded64);
+            byte publicKeyEncoded[] = publicKey.getEncoded();
+            byte[] publicKeyEncoded64 = Base64.encodeBase64(publicKeyEncoded);
+            String publicStringKey = new String(publicKeyEncoded64);
 
-			String encryptedpublicKeyValue = new String(Hex.encodeHex(encrypter.encrypt(publicStringKey.getBytes())));
+            String encryptedpublicKeyValue = new String(Hex.encodeHex(encrypter.encrypt(publicStringKey.getBytes())));
 
-			PrivateKey privateKey = keyPair.getPrivate();
+            PrivateKey privateKey = keyPair.getPrivate();
 
-			byte privateKeyEncoded[] = privateKey.getEncoded();
-			byte[] privateKeyEncoded64 = Base64.encodeBase64(privateKeyEncoded);
-			String privateStringKey = new String(privateKeyEncoded64);
+            byte privateKeyEncoded[] = privateKey.getEncoded();
+            byte[] privateKeyEncoded64 = Base64.encodeBase64(privateKeyEncoded);
+            String privateStringKey = new String(privateKeyEncoded64);
 
-			String encryptedPrivateKeyValue = new String(Hex.encodeHex(encrypter.encrypt(privateStringKey.getBytes())));
-			Instant instant = Instant.now();
-			encryptedRouteDao.saveOrUpdateEncryptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue,
-					EncryptionKeyType.EcobeeZeus, instant);
+            String encryptedPrivateKeyValue = new String(Hex.encodeHex(encrypter.encrypt(privateStringKey.getBytes())));
+            Instant instant = Instant.now();
+            encryptedRouteDao.saveOrUpdateEncryptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue, EncryptionKeyType.EcobeeZeus, instant);
 
-			return new ZeusEncryptionKey(privateStringKey, publicStringKey, instant);
+            return new ZeusEncryptionKey(privateStringKey, publicStringKey, instant);
 
-		} catch (Exception ex) {
-			log.error("Error while generating EcobeeZeus encryption keys. ", ex);
-		}
-		return null;
-	}
+        } catch (Exception ex) {
+            log.error("Error while generating EcobeeZeus encryption keys. ", ex);
+        }
+        return null;
+    }
 
-	public ZeusEncryptionKey getZeusEncryptionKey() throws Exception {
-		ZeusEncryptionKey zeusEncryptionKey = null;
-		Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.EcobeeZeus);
-		if (encryptionKey.isPresent()) {
-			char[] sharedPasskey = CryptoUtils.getSharedPasskey();
+    public ZeusEncryptionKey getZeusEncryptionKey() throws Exception {
+        ZeusEncryptionKey zeusEncryptionKey = null;
+        Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.EcobeeZeus);
+        if (encryptionKey.isPresent()) {
+            char[] sharedPasskey = CryptoUtils.getSharedPasskey();
             AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(sharedPasskey);
-			zeusEncryptionKey = new ZeusEncryptionKey(aes.decryptHexStr(encryptionKey.get().getPrivateKey()), aes.decryptHexStr(encryptionKey.get().getPublicKey()), encryptionKey.get().getTimestamp());
-		}
-		return zeusEncryptionKey;
-	}
+            zeusEncryptionKey = new ZeusEncryptionKey(aes.decryptHexStr(encryptionKey.get().getPrivateKey()),
+                                                      aes.decryptHexStr(encryptionKey.get().getPublicKey()),
+                                                      encryptionKey.get().getTimestamp());
+        }
+        return zeusEncryptionKey;
+    }
 }

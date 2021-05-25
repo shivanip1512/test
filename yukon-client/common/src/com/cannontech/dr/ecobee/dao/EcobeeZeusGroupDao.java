@@ -39,9 +39,9 @@ public interface EcobeeZeusGroupDao {
     void updateEventId(String eventId, int yukonGroupId);
 
     /**
-     * Retrieve a list of event IDs for a Yukon group ID.
+     * Retrieve Demand Response event ID for a Yukon group ID.
      */
-    List<String> getEventIds(int yukonGroupId);
+    String getEventId(int yukonGroupId);
 
     /**
      * Returns thermostat count fort the specified Zeus group ID.
@@ -57,4 +57,14 @@ public interface EcobeeZeusGroupDao {
      * Return name of the specified Zeus group ID.
      */
     String getZeusGroupName(String zeusGroupId);
+    
+    /*
+     * Get count of zeus group in yukon
+     */
+    int getGroupCount();
+
+    /*
+     * Get count of ecobee thermostats in yukon
+     */
+    int getAllThermostatCount();
 }

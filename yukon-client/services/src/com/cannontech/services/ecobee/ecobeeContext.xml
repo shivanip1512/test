@@ -45,5 +45,7 @@
         <property name="destinationName" value="yukon.ecobee.auth.token.ZeusEcobeeAuthTokenRequest"/>
         <property name="connectionFactory" ref="connectionFactory"/>
         <property name="messageListener" ref="zeusEcobeeAuthTokenListener"/>
-    </bean> 
+    </bean>
+    
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusSyncService"/> 
 </beans>

@@ -3,6 +3,9 @@ package com.cannontech.dr.ecobee.message;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ZeusGroup {
+    
+    @JsonProperty("id")
+    private String groupId;
     private String name;
     @JsonProperty("program_id") private String programId;
 
@@ -14,6 +17,14 @@ public class ZeusGroup {
     public ZeusGroup() {
     }
 
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+    
     public String getName() {
         return name;
     }

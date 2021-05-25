@@ -71,10 +71,13 @@ public class PxMWDataReadServiceImplTest {
         Date timestampDate = new Date(1618854415l * 1000);
         LiteYukonPAObject pao = new LiteYukonPAObject(123456789);
         pao.setPaoName("PAO NAME");
-        
-        Double pointData = (Double) parseMethod.invoke(dataReadService, MWChannel.VOLTAGE, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "119.1123"), pao, testGuid);
+
+        Double pointData = (Double) parseMethod.invoke(dataReadService, MWChannel.VOLTAGE, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "119112.3"), pao, testGuid);
         assertTrue(pointData.equals(119.1123));
-        
+
+        pointData = (Double) parseMethod.invoke(dataReadService, MWChannel.FREQUENCY, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "60000"), pao, testGuid);
+        assertTrue(pointData.equals(60.0));
+
         pointData = (Double) parseMethod.invoke(dataReadService, MWChannel.RUNTIME_R1, new PxMWTimeSeriesValueV1(timestampDate.getTime(), "NAN"), pao, testGuid);
         assertNull(pointData);
     }

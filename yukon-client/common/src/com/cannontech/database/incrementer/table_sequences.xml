@@ -6,11 +6,11 @@
   <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
       <sequence name="general">
         <table name="ApplianceCategory" identitycolumn="ApplianceCategoryID" initsequence="true"/>
-      	<table name="CapControlComment" identitycolumn="commentid" initsequence="true"/>
+        <table name="CapControlComment" identitycolumn="commentid" initsequence="true"/>
         <table name="LMCustomerEventBase" identitycolumn="EventID" initsequence="true"/>
         <table name="LMConfigurationBase" identitycolumn="ConfigurationID" initsequence="true"/>
         <table name="Warehouse" identitycolumn="WarehouseID"/>
-      	<table name="Substation" identitycolumn="SubstationID" initsequence="true"/>
+        <table name="Substation" identitycolumn="SubstationID" initsequence="true"/>
         <table name="CCurtProgram" identitycolumn="CCurtProgramId"/>
         <table name="CCurtProgramType" identitycolumn="CCurtProgramTypeId"/>
         <table name="CCurtGroup" identitycolumn="CCurtGroupId"/>
@@ -47,7 +47,7 @@
         <!-- Do not add new sequences here.  Add them at the bottom of the file and follow the format used there. -->
       </sequence>
       <sequence name="paobjectid">
-      	<table name="YukonPaObject" identitycolumn="PaObjectId" initsequence="true"/>
+        <table name="YukonPaObject" identitycolumn="PaObjectId" initsequence="true"/>
       </sequence>
       <sequence name="pointid">
         <table name="Point" identitycolumn="POINTID" initsequence="true"/>
@@ -77,14 +77,14 @@
       <sequence name="userpaopermissionid">
         <table name="UserPaoPermission" identitycolumn="userpaopermissionid"/>
       </sequence>
-	  <sequence name="ZoneId">
-      	<table name="Zone" identitycolumn="ZoneId" initsequence="true"/>
+      <sequence name="ZoneId">
+        <table name="Zone" identitycolumn="ZoneId" initsequence="true"/>
       </sequence>
       <sequence name="ZBEventId">
         <table name="ZBControlEvent" identitycolumn="ZBControlEventId" initsequence="true"/>
       </sequence>
       <sequence name="schedAssignemnt">
-      	<table name="PAOScheduleAssignment" identitycolumn="EventID" initsequence="true"/>
+        <table name="PAOScheduleAssignment" identitycolumn="EventID" initsequence="true"/>
       </sequence>
       <sequence name="grouppaopermissionid">
         <table name="GroupPaoPermission" identitycolumn="grouppaopermissionid"/>
@@ -196,7 +196,7 @@
       </sequence>
       <sequence name="StatusPointMonitor">
         <table name="StatusPointMonitor" identitycolumn="StatusPointMonitorId" initsequence="true"/>
-		<table name="StatusPointMonitorProcessor" identitycolumn="StatusPointMonitorProcessorId" initsequence="true"/>
+        <table name="StatusPointMonitorProcessor" identitycolumn="StatusPointMonitorProcessorId" initsequence="true"/>
       </sequence>
       <sequence name="PorterResponseMonitor">
         <table name="PorterResponseMonitor" identitycolumn="MonitorId" initsequence="true"/>
@@ -264,7 +264,7 @@
         <table name="StaticPaoInfo" identitycolumn="StaticPaoInfoId" initsequence="true"/>
       </sequence>
       <sequence name="RoleProperties">
-		<table name="YukonGroup" identitycolumn="GroupId" initsequence="true"/>
+        <table name="YukonGroup" identitycolumn="GroupId" initsequence="true"/>
         <table name="YukonGroupRole" identitycolumn="GroupRoleId" initsequence="true"/>
       </sequence>
       <sequence name="commandSchedule">
@@ -307,10 +307,10 @@
         <table name="GlobalSetting" identitycolumn="GlobalSettingId" initsequence="true" />
       </sequence>
       <sequence name="ProgramToSeasonalProgram">
- 	    <table name="ProgramToSeasonalProgram" identitycolumn="AssignedProgramId" initsequence="true" />
+        <table name="ProgramToSeasonalProgram" identitycolumn="AssignedProgramId" initsequence="true" />
       </sequence>
       <sequence name="FileExportHistory">
-      	<table name="FileExportHistory" identitycolumn="EntryId" initsequence="true" />
+        <table name="FileExportHistory" identitycolumn="EntryId" initsequence="true" />
       </sequence>
       <sequence name="EnergyCompanySetting">
         <table name="EnergyCompanySetting" identitycolumn="EnergyCompanySettingId" initsequence="true" />
@@ -453,6 +453,9 @@
       </sequence>
       <sequence name="PxMWSimulatorNameIncrementor">
         <table name="PxMWSimulatorNameIncrementor" identitycolumn="requestSeqNumber"/>
+      </sequence>
+      <sequence name="PxMWEventIdIncrementor">
+        <table name="PxMWEventIdIncrementor" identitycolumn="requestSeqNumber"/>
       </sequence>
   </sequencetable>
 </sequencetables>

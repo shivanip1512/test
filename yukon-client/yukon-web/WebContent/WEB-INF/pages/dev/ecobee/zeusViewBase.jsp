@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #issueDemandResponse').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData, #cancelDemandResponse, #getGroup').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -32,6 +32,24 @@
              } break;
              case 'issueDemandResponse' : {
                  enabledSelectedOption(issueDemandResponse, issueDemandResponseOp);
+             } break;
+             case 'createPushConfiguration' : {
+                 enabledSelectedOption(createPushConfiguration, createPushConfigurationOp);
+             } break;
+             case 'showPushConfiguration' : {
+                 enabledSelectedOption(showPushConfiguration, showPushConfigurationOp);
+             } break;
+             case 'showUser' : {
+                 enabledSelectedOption(showUser, showUserOp);
+             } break;
+             case 'runtimeData' : {
+                 enabledSelectedOption(runtimeData, enableRuntime);
+             } break;
+             case 'cancelDemandResponse' : {
+                 enabledSelectedOption(cancelDemandResponse, cancelDemandResponseOp);
+             } break;
+             case 'getGroup' : {
+                 enabledSelectedOption(getGroup, getAllGroupOp);
              } break;
          }
          });
@@ -74,6 +92,42 @@
                             <label> 
                                 <input id="issueDemandResponse" type="checkbox" name="issueDemandResponse"> 
                                 <i:inline key=".issueDemandResponse" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="createPushConfiguration" type="checkbox" name="createPushConfiguration"> 
+                                <i:inline key=".createPushConfiguration" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="showPushConfiguration" type="checkbox" name="showPushConfiguration"> 
+                                <i:inline key=".showPushConfiguration" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="showUser" type="checkbox" name="showUser"> 
+                                <i:inline key=".showUser" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="runtimeData" type="checkbox" name="enableRuntime"> 
+                                <i:inline key=".runtimeData" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="cancelDemandResponse" type="checkbox" name="cancelDemandResponse"> 
+                                <i:inline key=".cancelDemandResponse" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="getGroup" type="checkbox" name="getGroup"> 
+                                <i:inline key=".getGroup" />
                             </label>
                         </li>
                     </ul>
@@ -123,9 +177,49 @@
                                 </select>
                                 <input type="hidden" name="issueDemandResponseOp" value="0" />
                             </li>
+                            <li>
+                                <select id="createPushConfigurationOp" name="createPushConfigurationOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="createPushConfigurationOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="showPushConfigurationOp" name="showPushConfigurationOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="showPushConfigurationOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="showUserOp" name="showUserOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="showUserOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="cancelDemandResponseOp" name="cancelDemandResponseOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="cancelDemandResponseOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="getAllGroupOp" name="getAllGroupOp" disabled="disabled">
+                                    <c:forEach var="status" items="${status}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="getAllGroupOp" value="0" />
+                            </li>
                         </ul>
                     </tags:nameValueContainer>
-                </tags:sectionContainer>    
+                </tags:sectionContainer>
             </div>
             <div class="column three nogutter">
                 <div class="action-area">

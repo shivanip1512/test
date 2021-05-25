@@ -229,13 +229,13 @@ yukon.tools.map = (function() {
                 var currentViolations = parseInt(violationsBadge.text(), 10);
                 if (currentViolations !== data.violationDevices.length) {
                     violationsBadge.text(data.violationDevices.length);
-                    violationsBadge.addClass('animated flash');
+                    violationsBadge.addClass('animate__animated animate__flash');
                 }
             }
             else if (diff !== 0) {
                 var count = parseInt($('#device-collection .js-count').text(), 10);
                 $('#device-collection .js-count').text(count + diff);
-                $('#device-collection .js-count').addClass('animated flash');
+                $('#device-collection .js-count').addClass('animate__animated animate__flash');
             }
             
             //update primary routes if changed
@@ -565,7 +565,7 @@ yukon.tools.map = (function() {
                         var currentFiltered = parseInt(filteredBadge.text(), 10);
                         if (currentFiltered !== filteredCount) {
                             filteredBadge.text(filteredCount);
-                            filteredBadge.addClass('animated flash');
+                            filteredBadge.addClass('animate__animated animate__flash');
                         }
                         
                         $('.js-filtered-devices').removeClass('dn');
@@ -629,7 +629,7 @@ yukon.tools.map = (function() {
                 //update filtered count
                 var filteredBadge = $('#filtered-collection .js-filtered');
                 filteredBadge.text(0);
-                filteredBadge.addClass('animated flash');
+                filteredBadge.addClass('animate__animated animate__flash');
                 $('.js-filtered-devices').addClass('dn');
                 $('.js-color-collections').removeClass('dn');
 
@@ -747,11 +747,11 @@ yukon.tools.map = (function() {
             /** Remove animation classes when animation finishes. */
             $('#device-collection .js-count')
                 .on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(ev) {
-                $('#device-collection .js-count').removeClass('animated flash'); 
+                $('#device-collection .js-count').removeClass('animate__animated animate__flash'); 
             });
             $('#violation-collection .js-violations')
                 .on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(ev) {
-                    $('#violation-collection .js-violations').removeClass('animated flash'); 
+                    $('#violation-collection .js-violations').removeClass('animate__animated animate__flash'); 
             });
             
             /** Pause/Resume updating on updater button clicks. */
