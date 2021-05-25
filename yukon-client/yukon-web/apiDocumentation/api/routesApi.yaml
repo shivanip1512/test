@@ -23,3 +23,27 @@ post-operation:
             examples:
               Route:
                 $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
+
+get-update-delete-operation:
+  delete:
+    tags:
+     - Route
+    summary: 'Delete Route'
+    description: 'API to delete Route based on passed id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'Unique identifier for Route.'
+        required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/routesSchema.yaml#/id'
+            examples:
+              RouteId:
+                $ref: '../schemas/routesSchema.yaml#/components/examples/id'
