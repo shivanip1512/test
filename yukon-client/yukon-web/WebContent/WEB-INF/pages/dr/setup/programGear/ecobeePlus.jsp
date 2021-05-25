@@ -14,8 +14,8 @@
                     </tags:nameValue2>
                    
                     <tags:nameValue2 nameKey=".heatingEvent">
-                        <tags:switchButton path="fields.rampInOut" onNameKey=".yes" offNameKey=".no" />
-                    </tags:nameValue2>
+                        <tags:switchButton path="fields.heatingEvent" onNameKey=".yes" offNameKey=".no" />
+                    </tags:nameValue2> 
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="optionalAttributes">

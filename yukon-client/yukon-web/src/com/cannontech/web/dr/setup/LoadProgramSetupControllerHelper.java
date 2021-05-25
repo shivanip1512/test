@@ -28,7 +28,7 @@ import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EatonCloudCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
-import com.cannontech.common.dr.gear.setup.fields.EcobeePlusFields;
+import com.cannontech.common.dr.gear.setup.fields.EcobeePlusGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
@@ -250,8 +250,8 @@ public class LoadProgramSetupControllerHelper {
             setEcobeeSetpointGearFieldsDefaultValues(ecobeeSetpointGearFields);
             break;
         case EcobeePlus:
-            EcobeePlusFields ecobeePlusFields = (EcobeePlusFields) programGear.getFields();
-            setEcobeePlusFieldsDefaultValues(ecobeePlusFields);
+            EcobeePlusGearFields ecobeePlusGearFields = (EcobeePlusGearFields) programGear.getFields();
+            setEcobeePlusFieldsDefaultValues(ecobeePlusGearFields);
             break;
         case HoneywellCycle:
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
@@ -368,10 +368,10 @@ public class LoadProgramSetupControllerHelper {
         ecobeeSetpointGearFields.setCapacityReduction(100);
     }
     
-    private void setEcobeePlusFieldsDefaultValues(EcobeePlusFields ecobeePlusFields) {
-        ecobeePlusFields.setRampInOut(true);
-        ecobeePlusFields.setHeatingEvent(true);
-        ecobeePlusFields.setCapacityReduction(100);
+    private void setEcobeePlusFieldsDefaultValues(EcobeePlusGearFields ecobeePlusGearFields) {
+        ecobeePlusGearFields.setRampInOut(true);
+        ecobeePlusGearFields.setHeatingEvent(true);
+        ecobeePlusGearFields.setCapacityReduction(100);
     }
 
     private void setHoneywellCycleGearFieldsDefaultValues(HoneywellCycleGearFields honeywellCycleGearFields) {
@@ -524,7 +524,7 @@ public class LoadProgramSetupControllerHelper {
             break;
             
         case EcobeePlus:
-            EcobeePlusFields ecobeePlusFields = (EcobeePlusFields) programGear.getFields();
+            EcobeePlusGearFields ecobeePlusFields = (EcobeePlusGearFields) programGear.getFields();
             ecobeePlusFields.setWhenToChangeFields(
                 setWhenToChangeDefaultValues(ecobeePlusFields.getWhenToChangeFields()));
             break;

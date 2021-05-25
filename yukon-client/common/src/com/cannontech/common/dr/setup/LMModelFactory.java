@@ -3,7 +3,7 @@ package com.cannontech.common.dr.setup;
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EatonCloudCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
-import com.cannontech.common.dr.gear.setup.fields.EcobeePlusFields;
+import com.cannontech.common.dr.gear.setup.fields.EcobeePlusGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellSetpointGearFields;
@@ -101,7 +101,7 @@ public class LMModelFactory {
             gearFields = new EcobeeSetpointGearFields();
             break;
         case EcobeePlus:
-            gearFields = new EcobeePlusFields();
+            gearFields = new EcobeePlusGearFields();
             break;
         case HoneywellCycle:
             gearFields = new HoneywellCycleGearFields();
