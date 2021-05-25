@@ -243,7 +243,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
             return new PxMWSimulatorResponse(new PxMWErrorV1(status, "Resource not found"), status);
         }
         creatingGuids.put(deviceId,deviceId);
-        PxMWDeviceDetail detail = new PxMWDeviceDetail(deviceId, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "YUKON_SIMULATOR", true, "");
+        PxMWDeviceDetail detail = new PxMWDeviceDetail(deviceId, "", "", "", "", "2143535", "", "", "", "", "", "", "", "", "", "YUKON_SIMULATOR", true, "");
         return new PxMWSimulatorResponse(detail, status);
     }
 }
