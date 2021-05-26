@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
@@ -26,6 +27,7 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -71,6 +73,9 @@ public class DeviceAttributeReadEcobeeServiceImpl implements DeviceAttributeRead
             if(callback.getResult() != null) {
                 callback.getResult().addCancellationCallback(new CollectionActionCancellationCallback(getStrategy(), callback));
             }
+            Set<Integer> deviceIds = StreamUtils.stream(devices).map(device -> device.getPao().getPaoId()).collect(
+                    Collectors.toSet());
+            commandRequestExecutionResultDao.saveExecutionRequest(execution.getId(), deviceIds);
             // All devices succeeded.
             Multimap<PaoIdentifier, PointValueHolder> devicesToPointValues = initiateRead(devices);
             for (PaoIdentifier pao : devicesToPointValues.keySet()) {

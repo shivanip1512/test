@@ -84,44 +84,44 @@ public class PxMWDataReadServiceImplTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void testBuildRequests() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Method buildRequestsMethod = PxMWDataReadServiceImpl.class.getDeclaredMethod("buildRequests", Collection.class, Set.class);
+    public void testBuildRequests() throws NoSuchMethodException, SecurityException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException {
+        Method buildRequestsMethod = PxMWDataReadServiceImpl.class.getDeclaredMethod("buildRequests", Collection.class,
+                Set.class);
         PxMWDataReadServiceImpl dataReadService = new PxMWDataReadServiceImpl();
         buildRequestsMethod.setAccessible(true);
-        
-        Set<String> guids = new HashSet(Arrays.asList("d87e6130-d2d4-4b28-8fb0-5b774e15e69e",
+
+        Set<String> guids = new HashSet<>(Arrays.asList("d87e6130-d2d4-4b28-8fb0-5b774e15e69e",
                 "b241990b-3766-4ede-bd78-686aa4512a2c",
                 "816c0b6d-f696-4229-a92d-149ba2ab852e",
                 "c619ee6f-b254-4ccb-b5d5-fa60892ce7f6",
                 "53c0c599-ecf3-4462-9472-9bfae2bc25d8"));
-        
+
         Set<String> fiveElementTagList = new HashSet<String>(Arrays.asList("111222", "222333", "333444", "444555", "555666"));
         Set<String> twelveElementTagList = new HashSet<String>(Arrays.asList("111222", "222333", "333444",
-                                                                             "444555", "555666", "666777",
-                                                                             "777888", "888999", "999111",
-                                                                             "101010", "111111", "121212"));
-        
-        List<List<PxMWTimeSeriesDeviceV1>> requests = (List<List<PxMWTimeSeriesDeviceV1>>) buildRequestsMethod.invoke(dataReadService, guids, fiveElementTagList);
-        assertEquals(requests.size(), 1);
+                "444555", "555666", "666777",
+                "777888", "888999", "999111",
+                "101010", "111111", "121212"));
+
+        List<PxMWTimeSeriesDeviceV1> requests = (List<PxMWTimeSeriesDeviceV1>) buildRequestsMethod.invoke(dataReadService, guids,
+                fiveElementTagList);
         Set<String> requestGuids = new HashSet<>();
         Set<String> requestTags = new HashSet<>();
-        for (List<PxMWTimeSeriesDeviceV1> request : requests) {
-            for (PxMWTimeSeriesDeviceV1 device : request) {
-                requestGuids.add(device.getDeviceGuid());
-                requestTags.addAll(new HashSet<String>(Arrays.asList(device.getTagTrait().split(","))));
-            }
+
+        for (PxMWTimeSeriesDeviceV1 device : requests) {
+            requestGuids.add(device.getDeviceGuid());
+            requestTags.addAll(new HashSet<String>(Arrays.asList(device.getTagTrait().split(","))));
         }
+
         assertEquals(requestTags, fiveElementTagList);
         assertEquals(requestGuids, guids);
 
-        requests = (List<List<PxMWTimeSeriesDeviceV1>>) buildRequestsMethod.invoke(dataReadService, guids, twelveElementTagList);
-        assertEquals(requests.size(), 2);
-        for (List<PxMWTimeSeriesDeviceV1> request : requests) {
-            for (PxMWTimeSeriesDeviceV1 device : request) {
-                requestGuids.add(device.getDeviceGuid());
-                requestTags.addAll(Arrays.asList(device.getTagTrait().split(",")));
-            }
+        requests = (List<PxMWTimeSeriesDeviceV1>) buildRequestsMethod.invoke(dataReadService, guids, twelveElementTagList);
+        for (PxMWTimeSeriesDeviceV1 device : requests) {
+            requestGuids.add(device.getDeviceGuid());
+            requestTags.addAll(Arrays.asList(device.getTagTrait().split(",")));
         }
+
         assertEquals(requestTags, twelveElementTagList);
         assertEquals(requestGuids, guids);
     }

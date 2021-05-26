@@ -54,7 +54,6 @@ public enum MWChannel {
     SHEDTIME_R2(112073, "Shedtime R2", BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG),
     SHEDTIME_R3(112074, "Shedtime R3", BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG),
     SHEDTIME_R4(112075, "Shedtime R4", BuiltInAttribute.RELAY_4_SHED_TIME_DATA_LOG),
-    //removed attribute for now to limit log entries
     VERSION(110600, "Version", null),
     VOLTAGE(110742, "Voltage", BuiltInAttribute.VOLTAGE, 0.001);
 
@@ -195,13 +194,18 @@ public enum MWChannel {
      * If a built in attribute has no associated tag it will be ignored
      */
     public static Set<String> getTagsForAttributes(Set<BuiltInAttribute> attributes) {
-        return attributes.stream()
+        Set<String> channels = attributes.stream()
                 .map(attribute -> {
                     MWChannel channel = MWChannel.getMWChannel(attribute);
                     return channel != null ? channel.getChannelId().toString() : null;
                 })
                 .filter(t -> t != null)
                 .collect(Collectors.toSet());
+        //required for Event Participation - always get this value
+        channels.add(EVENT_STATE.channelId.toString());
+        //stored in DynamicPAOInfo
+        channels.add(VERSION.channelId.toString());
+        return channels;
     }
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
