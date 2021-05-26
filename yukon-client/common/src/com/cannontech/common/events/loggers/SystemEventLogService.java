@@ -179,5 +179,9 @@ public interface SystemEventLogService {
     public void attributeAssignmentDeleted(@Arg(ArgEnum.username) LiteYukonUser user,
             @Arg(ArgEnum.attributeName) String attributeName, @Arg(ArgEnum.paoType) PaoType paoType,
             @Arg(ArgEnum.pointType) PointType pointType, @Arg(ArgEnum.pointOffset) Integer PointOffset);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void decryptionFailed(@Arg(ArgEnum.yukonService) String yukonService,
+            @Arg(ArgEnum.serverIdentifier) String serverIdentifier, @Arg(ArgEnum.type) String typeOrValue, @Arg(ArgEnum.timeStamp) Instant timeStamp);
 
 }
