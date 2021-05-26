@@ -39,6 +39,7 @@ import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeePlusDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
@@ -357,6 +358,40 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         }
     }
 
+    @Override
+    public void sendEcoPlusDR(EcobeePlusDrParameters parameters) {
+        String eventId = StringUtils.EMPTY;
+        String issueDemandResponseUrl = getUrlBase() + "events/dr";
+
+        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(parameters.getGroupId());
+        for (String zeusGroupId : zeusGroupIds) {
+            ZeusDemandResponseRequest ecoPluspointDr = new ZeusDemandResponseRequest(buildZeusEcoPlusEvent(zeusGroupId,
+                                                                                                           parameters.getStartTime(),
+                                                                                                           parameters.getEndTime(),
+                                                                                                           parameters.getRandomTimeSeconds(),
+                                                                                                           parameters.isHeatingEvent()));
+
+            if (log.isDebugEnabled()) {
+                try {
+                    log.debug("Sending eco+ point DR with body: {}", JsonUtils.toJson(ecoPluspointDr));
+                } catch (JsonProcessingException e) {
+                    log.warn("Error parsing json in debug.", e);
+                }
+            }
+            try {
+                ResponseEntity<ZeusDemandResponseRequest> zeusDrResponseEntity = requestHelper
+                        .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class,
+                                                ecoPluspointDr);
+                if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
+                    eventId = zeusDrResponseEntity.getBody().getEvent().getId();
+                    ecobeeZeusGroupService.updateEventId(eventId, zeusGroupId);
+                }
+            } catch (RestClientException | EcobeeAuthenticationException e) {
+                throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+            }
+        }
+        
+    }
     /**
      * Method to build Zeus event.
      */
@@ -382,6 +417,28 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         event.setState(DrEventState.SUBMITTED_DIRECTLY);
         event.setShowThermostat(true);
         event.setShowWeb(true);
+        return event;
+    }
+
+    
+    /**
+     * Method to build Zeus eco+ event.
+     */
+    private ZeusEvent buildZeusEcoPlusEvent(String zeusGroupId, Instant startTime, Instant stopTime, Integer randomTimeSeconds, Boolean isHeatingEvent) {
+        DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
+
+        ZeusEvent event = new ZeusEvent();
+        event.setName(YUKON_CYCLE_EVENT_NAME);
+        event.setTstatGroupId(zeusGroupId);
+
+        event.setRandomTimeSeconds(randomTimeSeconds);
+        event.setIsHeatingEvent(isHeatingEvent);
+
+        event.setEventStartTime(startTime.toString(dateTimeFormmater));
+        Duration res = new Duration(startTime, stopTime);
+        event.setDurationInMinutes(res.toStandardMinutes().getMinutes());
+
+        event.setEcoplusSelector(EcoplusSelector.ECOPLUS);
         return event;
     }
 
