@@ -182,6 +182,6 @@ public interface SystemEventLogService {
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
     public void decryptionFailed(@Arg(ArgEnum.yukonService) String yukonService,
-            @Arg(ArgEnum.serverIdentifier) String serverIdentifier, @Arg(ArgEnum.type) String typeOrValue, @Arg(ArgEnum.timeStamp) Instant timeStamp);
+            @Arg(ArgEnum.serverIdentifier) String serverIdentifier, @Arg(ArgEnum.type) String typeOrValue, @Arg(ArgEnum.startTime) Instant timeStamp);
 
 }

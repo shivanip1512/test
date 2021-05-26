@@ -124,7 +124,6 @@ public enum ArgEnum {
     warehouseName,
     widgetType,
     workOrderNumber,
-    timeStamp,
     yukonService,
     serverIdentifier,
     ;
