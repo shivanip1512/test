@@ -58,7 +58,9 @@ public class EcobeeZeusPointUpdateServiceImpl implements EcobeeZeusPointUpdateSe
         if (reading.getIndoorTempInF() != null) {
             inputPointValue(pointValues, pao, BuiltInAttribute.INDOOR_TEMPERATURE, messageTimestamp, reading.getIndoorTempInF());
         }
-        //TODO Comm Status Point
+        if (reading.getCommStatus() != null) {
+            inputPointValue(pointValues, pao, BuiltInAttribute.COMM_STATUS, messageTimestamp, reading.getCommStatus());
+        }
         if (reading.getStateValue() != null) {
             inputPointValue(pointValues, pao, BuiltInAttribute.THERMOSTAT_RELAY_STATE, reading.getDate(), reading.getStateValue());
         }
