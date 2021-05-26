@@ -156,6 +156,7 @@ yukon.admin.security = (function () {
                         $('#viewEcobeeZeusKey').prop('disabled', false);
                         $('#registerConfigurationEcobeeZeusKey').prop('disabled', false);
                         $('#checkRegistrationEcobeeZeusKey').prop('disabled', false);
+                        $('#registerEcobeeZeusKey').prop('disabled', false);
                     }
                     yukon.ui.unbusy($('#generateEcobeeZeusKey'));
                 });
