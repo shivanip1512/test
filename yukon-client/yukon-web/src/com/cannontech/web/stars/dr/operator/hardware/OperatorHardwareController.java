@@ -739,11 +739,16 @@ public class OperatorHardwareController {
         model.addAttribute("showMacAddress", type.isSupportsMacAddress());
         model.addAttribute("showSecondaryMacAddress", type.isItron());
         
+        if (type.isEatonCloud()) {
+            model.addAttribute("showFirmwareVersion", true);
+        }
+        
         if (type.isZigbee()) {
             if (!type.isGateway()) {
                 model.addAttribute("showInstallCode", true);
             } else {
                 model.addAttribute("showFirmwareVersion", true);
+                model.addAttribute("firmwareVersionEditable", true);
             }
         } else if (type.isHoneywell()) {
             model.addAttribute("showDeviceVendorUserId", true);
@@ -806,6 +811,7 @@ public class OperatorHardwareController {
 
         //  Add Pao Specifics
         Integer deviceId = hardware.getDeviceId();
+        
         if (deviceId != null && deviceId > 0 && !type.isZigbee()) {  // points for ZigBee device have their own special box
             List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
             if (!points.isEmpty()) {

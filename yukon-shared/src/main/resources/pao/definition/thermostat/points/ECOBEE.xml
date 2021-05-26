@@ -51,4 +51,9 @@
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Comm Status State"/>
+    </point>
 </points>

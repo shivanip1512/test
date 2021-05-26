@@ -117,7 +117,7 @@ $(function() { updateServiceCompanyInfo();});
             <c:if test="${showGuid}">
               <tags:inputNameValue nameKey=".guid" path="guid"/>
             </c:if>
-           
+                 
             <c:if test="${showMacAddress}">
                 <c:choose>
                    <c:when test="${macAddressEditable}">
@@ -157,7 +157,20 @@ $(function() { updateServiceCompanyInfo();});
             </c:if>
             
             <c:if test="${showFirmwareVersion}">
-                <tags:inputNameValue nameKey=".firmwareVersion" path="firmwareVersion"></tags:inputNameValue>
+                 <c:choose>
+                   <c:when test="${firmwareVersionEditable}">
+                        <tags:inputNameValue nameKey=".firmwareVersion" path="firmwareVersion"/>
+                   </c:when>
+                   
+                   <c:otherwise>
+                       <tags:nameValue2 nameKey=".firmwareVersion">
+                           <tags:bind path="firmwareVersion">
+                               <form:hidden path="firmwareVersion"/>
+                               ${fn:escapeXml(hardware.firmwareVersion)}
+                           </tags:bind>
+                       </tags:nameValue2>
+                   </c:otherwise>
+                </c:choose>
             </c:if>
             
             <tags:inputNameValue nameKey=".label" path="displayLabel"/>

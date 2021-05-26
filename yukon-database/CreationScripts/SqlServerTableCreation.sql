@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/16/2021 12:30:48 AM                        */
+/* Created on:     5/14/2021 3:20:27 PM                         */
 /*==============================================================*/
 
 
@@ -9296,6 +9296,8 @@ create table State (
 )
 go
 
+INSERT INTO State VALUES(-33, 0, 'Off', 1, 6, 0);
+INSERT INTO State VALUES(-33, 1, 'On', 0, 6, 0);
 INSERT INTO State VALUES(-32, 0, 'Reverse Block', 0, 6, 0);
 INSERT INTO State VALUES(-32, 1, 'Regulate Reverse', 1, 6, 0);
 INSERT INTO State VALUES(-32, 2, 'Regulator Forward', 2, 6, 0);
@@ -9501,6 +9503,7 @@ create table StateGroup (
 )
 go
 
+INSERT INTO StateGroup VALUES(-33, 'OnOff', 'Status');
 INSERT INTO StateGroup VALUES(-32, 'Beckwith Regulator Control Mode', 'Status');
 INSERT INTO StateGroup VALUES(-31, 'Eaton Regulator Control Mode', 'Status');
 INSERT INTO StateGroup VALUES(-30, 'LCR Firmware Update Status', 'Status');

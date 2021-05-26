@@ -1,0 +1,22 @@
+Route:
+  title: Route
+  required:
+    - routeName
+    - signalTransmitterId
+
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the route.'
+    signalTransmitterId:
+      type: integer
+      description: 'Id for the signal transmitter.'
+
+components:
+  examples:
+    Route:
+      value:
+        name: Test Route
+        signalTransmitterId: 5

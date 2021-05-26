@@ -156,6 +156,7 @@ yukon.admin.security = (function () {
                         $('#viewEcobeeZeusKey').prop('disabled', false);
                         $('#registerConfigurationEcobeeZeusKey').prop('disabled', false);
                         $('#checkRegistrationEcobeeZeusKey').prop('disabled', false);
+                        $('#registerEcobeeZeusKey').prop('disabled', false);
                     }
                     yukon.ui.unbusy($('#generateEcobeeZeusKey'));
                 });
@@ -203,6 +204,17 @@ yukon.admin.security = (function () {
                     }
                     
                 });
+            });
+            
+            $(document).on('click', '#registerEcobeeZeusKey', function() {
+                yukon.ui.busy($('#registerEcobeeZeusKey'));
+                $('#js-url-message').hide();
+                $('#ecobee-zeus-js-message').addMessage({
+                    message : $('.js-ecobee-url').val(),
+                    messageClass : 'error'
+                });
+                
+                yukon.ui.unbusy($('#registerEcobeeZeusKey'));
             });
             
             $(document).on('click', '#checkRegistrationEcobeeZeusKey', function() {

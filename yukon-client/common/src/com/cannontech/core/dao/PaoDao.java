@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoCategory;
@@ -14,6 +16,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface PaoDao {
 
@@ -198,4 +201,19 @@ public interface PaoDao {
      * This method returns LiteYukonPAObject for the pointId passed as a parameter.
      * */
     LiteYukonPAObject getLiteYukonPaoByPointId(int pointId);
+
+    enum InfoKey {
+        FIRMWARE_VERSION;
+    }
+
+    /**
+     * Returns pao info value for key and device id. Returns null if value doesn't exist.
+     */
+    String findPaoInfoValue(int paoId, InfoKey key);
+    
+
+    /**
+     * If pao info value doesn't exits inserts new entry otherwise updates the table.
+     */
+    void savePaoInfo(int paoId, InfoKey key, String value, Instant time, LiteYukonUser user);
 }

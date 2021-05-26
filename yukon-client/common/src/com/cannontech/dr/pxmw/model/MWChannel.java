@@ -13,8 +13,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
-//TODO YUK-23414 Add New/Existing BuiltInAttributes to MWChannel for LCR 6600
-
 /**
  * This is the list of enums used to map LCR 6200C and 6600C channels to BuiltInAttributes
  * It was created as part of the PXMW (PXMiddleWare) project for the Eaton Cloud / Cellular LCR
@@ -25,10 +23,10 @@ public enum MWChannel {
     ACTIVATION_STATUS_R2(112058, "Activation Status R2", BuiltInAttribute.RELAY_2_ACTIVATION_STATUS),
     ACTIVATION_STATUS_R3(112059, "Activation Status R3", BuiltInAttribute.RELAY_3_ACTIVATION_STATUS),
     ACTIVATION_STATUS_R4(112060, "Activation Status R4", BuiltInAttribute.RELAY_4_ACTIVATION_STATUS),
-    CLP_TIME_R1(110744, "CLP Time R1", null),
-    CLP_TIME_R2(112067, "CLP Time R2", null),
-    CLP_TIME_R3(112068, "CLP Time R3", null),
-    CLP_TIME_R4(112069, "CLP Time R4", null),
+    CLP_TIME_R1(110744, "CLP Time R1", BuiltInAttribute.RELAY_1_COLD_LOAD_PICKUP_TIME),
+    CLP_TIME_R2(112067, "CLP Time R2", BuiltInAttribute.RELAY_2_COLD_LOAD_PICKUP_TIME),
+    CLP_TIME_R3(112068, "CLP Time R3", BuiltInAttribute.RELAY_3_COLD_LOAD_PICKUP_TIME),
+    CLP_TIME_R4(112069, "CLP Time R4", BuiltInAttribute.RELAY_4_COLD_LOAD_PICKUP_TIME),
     COMMS_LOSS_COUNTER(111870, "Comms Loss Counter", BuiltInAttribute.COMMS_LOSS_COUNT),
     DEVICE_TYPE(110745, "Device Type", null),
     DIAGNOSTIC(110752, "Diagnostic", null),
@@ -56,7 +54,6 @@ public enum MWChannel {
     SHEDTIME_R2(112073, "Shedtime R2", BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG),
     SHEDTIME_R3(112074, "Shedtime R3", BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG),
     SHEDTIME_R4(112075, "Shedtime R4", BuiltInAttribute.RELAY_4_SHED_TIME_DATA_LOG),
-    //removed attribute for now to limit log entries
     VERSION(110600, "Version", null),
     VOLTAGE(110742, "Voltage", BuiltInAttribute.VOLTAGE, 0.001);
 
@@ -197,13 +194,18 @@ public enum MWChannel {
      * If a built in attribute has no associated tag it will be ignored
      */
     public static Set<String> getTagsForAttributes(Set<BuiltInAttribute> attributes) {
-        return attributes.stream()
+        Set<String> channels = attributes.stream()
                 .map(attribute -> {
                     MWChannel channel = MWChannel.getMWChannel(attribute);
                     return channel != null ? channel.getChannelId().toString() : null;
                 })
                 .filter(t -> t != null)
                 .collect(Collectors.toSet());
+        //required for Event Participation - always get this value
+        channels.add(EVENT_STATE.channelId.toString());
+        //stored in DynamicPAOInfo
+        channels.add(VERSION.channelId.toString());
+        return channels;
     }
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
