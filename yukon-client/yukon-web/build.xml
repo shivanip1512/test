@@ -199,8 +199,7 @@
         <mkdir dir="${test.results.dir}" />
 
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-    	<jacoco:coverage destfile="${yukon.lib}/coverage/yukon-web-jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant" exclclassloader="sun.reflect.DelegatingClassLoader:javassist.Loader" >
-        <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
+        <junitlauncher printsummary="on" haltonerror="${halt}">
             <classpath id="junit.class.path">
                 <pathelement location="${srcdir}"/>
                 <pathelement location="${destdir}"/>
@@ -209,14 +208,12 @@
                     <exclude name="**/WebContent/**" />
                 </fileset>
             </classpath>
-            <formatter type="xml" />
-            <batchtest todir="${test.results.dir}">
+            <testclasses outputdir="${test.results.dir}">
                 <fileset dir="${destdir}">
                     <include name="**/*Test.class" />
                 </fileset>
-            </batchtest>
-        </junit>
-        </jacoco:coverage>
+            </testclasses>
+        </junitlauncher>
         <!-- Create the html reports for test results -->
         <property name="test.results.dir" value="test/unitTestResults" />
         <junitreport todir="${test.results.dir}">

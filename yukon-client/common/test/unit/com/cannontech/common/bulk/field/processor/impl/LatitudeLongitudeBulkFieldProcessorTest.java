@@ -80,41 +80,79 @@ public class LatitudeLongitudeBulkFieldProcessorTest {
 
     @Test()
     public void testIsRemoveLocation() {
-        assertTrue(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", null, null), "Remove null, null");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(70.00), null), "Remove valid, null");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", null, Double.valueOf(160.00)), "Remove null, valid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(45.00), Double.valueOf(160.00)), "Remove valid, valid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(545.00), Double.valueOf(160.00)), "Remove invalid, valid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(545.00),null), "Remove invalid, null");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(45.00), Double.valueOf(190.00)), "Remove valid, invalid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", null, Double.valueOf(190.00)), "Remove null, invalid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(Double.NaN), Double.valueOf(80.00)), "Remove NaN, valid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(Double.NaN), Double.valueOf(190.00)), "Remove NaN, invalid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(Double.NaN), null), "Remove NaN, null");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(70.00), Double.valueOf(Double.NaN)), "Remove valid, NaN");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(200.00), Double.valueOf(Double.NaN)), "Remove invalid, NaN");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", null , Double.valueOf(Double.NaN)), "Remove null, NaN");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(Double.NaN), Double.valueOf(Double.NaN)), "Remove NaN, NaN");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(545.00), Double.valueOf(190.00)), "Remove invalid, invalid");
+        assertTrue((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", null, null),
+                "Remove null, null");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(70.00), null),
+                "Remove valid, null");
+        assertFalse(
+                (boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", null, Double.valueOf(160.00)),
+                "Remove null, valid");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(45.00),
+                Double.valueOf(160.00)), "Remove valid, valid");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(545.00),
+                Double.valueOf(160.00)), "Remove invalid, valid");
+        assertFalse(
+                (boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(545.00), null),
+                "Remove invalid, null");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(45.00),
+                Double.valueOf(190.00)), "Remove valid, invalid");
+        assertFalse(
+                (boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", null, Double.valueOf(190.00)),
+                "Remove null, invalid");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(Double.NaN),
+                Double.valueOf(80.00)), "Remove NaN, valid");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(Double.NaN),
+                Double.valueOf(190.00)), "Remove NaN, invalid");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(Double.NaN),
+                null), "Remove NaN, null");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(70.00),
+                Double.valueOf(Double.NaN)), "Remove valid, NaN");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(200.00),
+                Double.valueOf(Double.NaN)), "Remove invalid, NaN");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", null,
+                Double.valueOf(Double.NaN)), "Remove null, NaN");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(Double.NaN),
+                Double.valueOf(Double.NaN)), "Remove NaN, NaN");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isRemoveLocationData", Double.valueOf(545.00),
+                Double.valueOf(190.00)), "Remove invalid, invalid");
     }
     
     @Test()
     public void testIsIgnoreLocation() {
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", null, null), "Ignore null, null");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(70.00), null), "Ignore valid, null");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", null, Double.valueOf(160.00)), "Ignore null, valid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(45.00), Double.valueOf(160.00)), "Ignore valid, valid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(545.00), Double.valueOf(160.00)), "Ignore invalid, valid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(545.00),null), "Ignore invalid, null");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(45.00), Double.valueOf(190.00)), "Ignore valid, invalid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", null, Double.valueOf(190.00)), "Ignore null, invalid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(Double.NaN), Double.valueOf(80.00)), "Ignore NaN, valid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(Double.NaN), Double.valueOf(190.00)), "Ignore NaN, invalid");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(Double.NaN), null), "Ignore NaN, null");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(70.00), Double.valueOf(Double.NaN)), "Ignore valid, NaN");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(200.00), Double.valueOf(Double.NaN)), "Ignore invalid, NaN");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", null , Double.valueOf(Double.NaN)), "Ignore null, NaN");
-        assertTrue(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(Double.NaN), Double.valueOf(Double.NaN)), "Ignore NaN, NaN");
-        assertFalse(ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(545.00), Double.valueOf(190.00)), "Ignore invalid, invalid");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", null, null),
+                "Ignore null, null");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(70.00), null),
+                "Ignore valid, null");
+        assertFalse(
+                (boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", null, Double.valueOf(160.00)),
+                "Ignore null, valid");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(45.00),
+                Double.valueOf(160.00)), "Ignore valid, valid");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(545.00),
+                Double.valueOf(160.00)), "Ignore invalid, valid");
+        assertFalse(
+                (boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(545.00), null),
+                "Ignore invalid, null");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(45.00),
+                Double.valueOf(190.00)), "Ignore valid, invalid");
+        assertFalse(
+                (boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", null, Double.valueOf(190.00)),
+                "Ignore null, invalid");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(Double.NaN),
+                Double.valueOf(80.00)), "Ignore NaN, valid");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(Double.NaN),
+                Double.valueOf(190.00)), "Ignore NaN, invalid");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(Double.NaN),
+                null), "Ignore NaN, null");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(70.00),
+                Double.valueOf(Double.NaN)), "Ignore valid, NaN");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(200.00),
+                Double.valueOf(Double.NaN)), "Ignore invalid, NaN");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", null,
+                Double.valueOf(Double.NaN)), "Ignore null, NaN");
+        assertTrue((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(Double.NaN),
+                Double.valueOf(Double.NaN)), "Ignore NaN, NaN");
+        assertFalse((boolean) ReflectionTestUtils.invokeMethod(deviceHelper, "isIgnoreLocationData", Double.valueOf(545.00),
+                Double.valueOf(190.00)), "Ignore invalid, invalid");
     }
 }
