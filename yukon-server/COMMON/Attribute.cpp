@@ -772,9 +772,13 @@ INIT_ATTRIBUTE( CommsLossCount,                                     "COMMS_LOSS_
 INIT_ATTRIBUTE( FirmwareUpdateStatus,                               "FIRMWARE_UPDATE_STATUS" );
 INIT_ATTRIBUTE( Frequency,                                          "FREQUENCY" );
 INIT_ATTRIBUTE( Relay1ActivationStatus,                             "RELAY_1_ACTIVATION_STATUS" );
+INIT_ATTRIBUTE( Relay1ColdLoadPickupTime,                           "RELAY_1_COLD_LOAD_PICKUP_TIME" );
 INIT_ATTRIBUTE( Relay2ActivationStatus,                             "RELAY_2_ACTIVATION_STATUS" );
+INIT_ATTRIBUTE( Relay2ColdLoadPickupTime,                           "RELAY_2_COLD_LOAD_PICKUP_TIME" );
 INIT_ATTRIBUTE( Relay3ActivationStatus,                             "RELAY_3_ACTIVATION_STATUS" );
+INIT_ATTRIBUTE( Relay3ColdLoadPickupTime,                           "RELAY_3_COLD_LOAD_PICKUP_TIME" );
 INIT_ATTRIBUTE( Relay4ActivationStatus,                             "RELAY_4_ACTIVATION_STATUS" );
+INIT_ATTRIBUTE( Relay4ColdLoadPickupTime,                           "RELAY_4_COLD_LOAD_PICKUP_TIME" );
 
 AttributeNotFound::AttributeNotFound(const std::string &name)
 {
