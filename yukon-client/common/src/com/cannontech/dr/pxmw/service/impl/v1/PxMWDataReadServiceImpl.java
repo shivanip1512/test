@@ -116,17 +116,11 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                     MWChannel mwChannel = MWChannel.getChannelLookup().get(tag);
                     if (mwChannel == MWChannel.EVENT_STATE) {
                         updateEventParticipation(device, result.getValues());
-                        continue;
+                    } else if (InfoKey.hasKey(mwChannel)) {
+                        updatePaoInfo(InfoKey.getKey(mwChannel), device, result.getValues());
+                    } else if (attribtues.contains(mwChannel.getBuiltInAttribute())) {
+                        createPointData(pointMap, deviceResult.getDeviceId(), device, result, mwChannel);
                     }
-                    if (mwChannel == MWChannel.VERSION) {
-                        updateFirmwareVersion(device, result.getValues());
-                        continue;
-                    }
-                    if(!attribtues.contains(mwChannel.getBuiltInAttribute())) {
-                        //Received point data we didn't ask for
-                        continue;
-                    }
-                    createPointData(pointMap, deviceResult.getDeviceId(), device, result, mwChannel);
                 } catch (Exception e) {
                     log.error("Error parsing tag {} from API response", result.getTag(), e);
                 }
@@ -149,11 +143,11 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
         }
     }
 
-    private void updateFirmwareVersion(LiteYukonPAObject device, List<PxMWTimeSeriesValueV1> values) {
+    private void updatePaoInfo(InfoKey key, LiteYukonPAObject device, List<PxMWTimeSeriesValueV1> values) {
         if (!values.isEmpty()) {
             PxMWTimeSeriesValueV1 value = Collections.max(values,
                     Comparator.comparing(v -> new Instant(v.getTimestamp() * 1000)));
-            paoDao.savePaoInfo(device.getLiteID(), InfoKey.FIRMWARE_VERSION, value.getValue(),
+            paoDao.savePaoInfo(device.getLiteID(), key, value.getValue(),
                     new Instant(value.getTimestamp() * 1000), YukonUserContext.system.getYukonUser());
         }
     }

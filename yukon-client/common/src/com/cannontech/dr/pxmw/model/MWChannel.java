@@ -55,7 +55,10 @@ public enum MWChannel {
     SHEDTIME_R3(112074, "Shedtime R3", BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG),
     SHEDTIME_R4(112075, "Shedtime R4", BuiltInAttribute.RELAY_4_SHED_TIME_DATA_LOG),
     VERSION(110600, "Version", null),
-    VOLTAGE(110742, "Voltage", BuiltInAttribute.VOLTAGE, 0.001);
+    VOLTAGE(110742, "Voltage", BuiltInAttribute.VOLTAGE, 0.001),
+    IMEI(110598, "IMEI", null),
+    ICCID(112077, "ICCID", null);
+    
 
     private Integer channelId;
     private String shortName;
@@ -205,6 +208,8 @@ public enum MWChannel {
         channels.add(EVENT_STATE.channelId.toString());
         //stored in DynamicPAOInfo
         channels.add(VERSION.channelId.toString());
+        channels.add(IMEI.channelId.toString());
+        channels.add(ICCID.channelId.toString());
         return channels;
     }
 
