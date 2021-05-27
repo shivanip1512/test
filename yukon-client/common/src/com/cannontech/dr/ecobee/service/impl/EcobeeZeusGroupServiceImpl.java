@@ -124,4 +124,19 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     public void removeEventId(String zeusEventId) {
         ecobeeZeusGroupDao.removeEventId(zeusEventId);
     }
+    
+    @Override
+    public String getNextGroupName(int yukonGroupId) {
+        List<String> existingNames = ecobeeZeusGroupDao.getZeusGroupNames(yukonGroupId);
+        String newGroupName = yukonGroupId + "_";
+        int suffix = 0;
+        //Find the max suffix used in the name and increment by 1 before using the suffix in group name.
+        for (String name : existingNames) {
+            String[] tokens = name.split("_");
+            if (Integer.valueOf(tokens[1]) > suffix) {
+                suffix = Integer.valueOf(tokens[1]);
+            }
+        }
+        return newGroupName.concat(Integer.toString(suffix + 1));
+    }
 }

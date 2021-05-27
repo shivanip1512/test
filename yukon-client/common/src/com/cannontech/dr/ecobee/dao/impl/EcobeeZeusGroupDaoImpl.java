@@ -128,4 +128,11 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         sql.append("UPDATE LMGroupZeusMapping SET EcobeeEventId = '' WHERE EcobeeEventId").eq(zeusEventId);
         jdbcTemplate.update(sql);
     }
+
+    @Override
+    public List<String> getZeusGroupNames(int yukonGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT EcobeeGroupName FROM LMGroupZeusMapping WHERE YukonGroupId = ?");
+        return jdbcTemplate.queryForList(sql.getSql(), String.class, yukonGroupId);
+    }
 }

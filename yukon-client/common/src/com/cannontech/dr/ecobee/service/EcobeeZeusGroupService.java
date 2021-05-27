@@ -77,4 +77,9 @@ public interface EcobeeZeusGroupService {
      * Remove the specified the zeusEventId from LMGroupZeusMapping table.
      */
     void removeEventId(String zeusEventId);
+
+    /**
+     * Generate and return next name for Zeus group.
+     */
+    String getNextGroupName(int yukonGroupId);
 }

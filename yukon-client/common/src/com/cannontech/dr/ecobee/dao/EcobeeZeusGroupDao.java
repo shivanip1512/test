@@ -77,4 +77,9 @@ public interface EcobeeZeusGroupDao {
      * Remove the specified the zeusEventId from LMGroupZeusMapping table.
      */
     void removeEventId(String zeusEventId);
+
+    /**
+     * Return the distinct Zeus group names which are mapped to specified Yukon group.
+     */
+    List<String> getZeusGroupNames(int yukonGroupId);
 }
