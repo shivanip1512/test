@@ -11,6 +11,10 @@ import java.net.Socket;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -28,9 +32,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.LocationData;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
+import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
+import com.cannontech.common.util.jms.RequestReplyTemplate;
+import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -45,18 +59,23 @@ public class RFNetworkSupportBundleService {
     private final static Logger log = YukonLogManager.getLogger(RFNetworkSupportBundleService.class);
     private final static String downloadRfSupportBundleURL = "/nmclient/DownloadRfSupportBundleServlet?fileName=";
     private final static String supportBundleDirectory = "/Server/SupportBundles/RfNetworkData/";
-
+    private final static String locationDataDir = supportBundleDirectory + "/locationData";
+    private final static int batchsize = 1000;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired GlobalSettingDao globalSettingDao;
+    @Autowired private PaoLocationDao paoLocationDao;
 
     private RequestReplyReplyTemplate<RfnSupportBundleResponse, RfnSupportBundleResponse> template;
+    private RequestReplyTemplate<RfnMetadataMultiResponse> metaDataMultiRequestTemplate;
     private RfnSupportBundleResponseType responseStatus;
 
     @PostConstruct
     public void initialize() {
         YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_SUPPORT_BUNDLE);
         template = new RequestReplyReplyTemplate<>("RF_SUPPORT_BUNDLE", configurationSource, jmsTemplate);
+        YukonJmsTemplate metadataMultiJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_METADATA_MULTI);
+        metaDataMultiRequestTemplate = new RequestReplyTemplateImpl<>("RF_METADATA_MULTI", configurationSource, metadataMultiJmsTemplate, true);
     }
 
     public void send(RfnSupportBundleRequest request) {
@@ -90,9 +109,10 @@ public class RFNetworkSupportBundleService {
                 if (RfnSupportBundleResponseType.COMPLETED == statusReply.getResponseType()) {
                     // TODO : FileName needs to remove after the code changes for NM side for unique customer name. This
                     // will be collected in the response object.
-                    String suffix = new DateTime(request.getFromTimestamp()).toString(DateTimeFormat.forPattern("yyyyMMddHHmmss"));
-                    String fileName = "historicalData" + "_" + suffix;
+                    // TODO: All the data files (historical,location) needs to be put under customer name file and zipped.
+                    String fileName = "historicalData" + "_" + getFormatedDateStr(request.getFromTimestamp());
                     sendRfSupportBundleDownloadRequest(token, fileName);
+                    sendMeterLocationDataRequest(request);
                 }
                 responseStatus = statusReply.getResponseType();
             }
@@ -250,5 +270,50 @@ public class RFNetworkSupportBundleService {
      */
     private File getRfBundleDir() {
         return new File(CtiUtilities.getYukonBase() + supportBundleDirectory);
+    }
+
+    /**
+     * Return date string in yyyyMMddHHmmss format.
+     */
+    private String getFormatedDateStr(long millis) {
+        return new DateTime(millis).toString(DateTimeFormat.forPattern("yyyyMMddHHmmss"));
+    }
+    /**
+     * Send location data request to NM and write data to the file.
+     */
+    private void sendMeterLocationDataRequest(RfnSupportBundleRequest bundleRequest) {
+        int startIndex = 1;
+        int endIndex = batchsize;
+        List<LocationData> dataList = null;
+        while (dataList == null || dataList.size() >= batchsize) {
+            dataList = paoLocationDao.getLocationDetailForPaoType(PaoType.getRfMeterTypes(), startIndex, endIndex);
+            if (dataList != null && !dataList.isEmpty()) {
+                BlockingJmsReplyHandler<RfnMetadataMultiResponse> replyHandler = new BlockingJmsReplyHandler<>(
+                        RfnMetadataMultiResponse.class);
+                try {
+                    // Build Metadata Request
+                    RfnMetadataMultiRequest request = new RfnMetadataMultiRequest();
+                    request.setRfnMetadatas(RfnMetadataMulti.NODE_DATA);
+                    Set<RfnIdentifier> rfnIdentifiers = new HashSet<RfnIdentifier>();
+                    dataList.stream().forEach(data -> rfnIdentifiers.add(data.getRfnIdentifier()));
+                    request.setRfnIdentifiers(rfnIdentifiers);
+
+                    // Send Request to collect Node data.
+                    metaDataMultiRequestTemplate.send(request, replyHandler);
+                    RfnMetadataMultiResponse response = replyHandler.waitForCompletion();
+                    
+                    // Write data to csv file.
+                    String fileName = "MeterLocationsInYukon";
+                    String dir = locationDataDir + "_" + getFormatedDateStr(bundleRequest.getFromTimestamp());
+                    SupportBundleHelper.buildAndWriteMeterLocDataToDir(response, dataList, dir, fileName);
+                    startIndex = startIndex + batchsize;
+                    endIndex = endIndex + batchsize;
+                } catch (ExecutionException | IOException ex) {
+                    log.error("Error found while sending RfnMetadataMultiRequest for node data.", ex);
+                }
+            } else {
+                log.info("No data found for location.");
+            }
+        }
     }
 }
