@@ -34,7 +34,7 @@
             <tags:sectionContainer2 nameKey="rampInRampOut">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".rampInOut">
-                        <tags:switchButton path="fields.rampInOut"   onNameKey=".yes" offNameKey=".no" />
+                        <tags:switchButton path="fields.rampInOut" onNameKey=".yes" offNameKey=".no" />
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
