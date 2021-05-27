@@ -562,9 +562,7 @@ public class LoadProgramSetupController {
         model.addAttribute("programType", programType);
 
         if (programType == PaoType.LM_ECOBEE_PROGRAM && !isEcobeeLegacyGearEnabled()) {
-            ArrayList<GearControlMethod> gearTypes = new ArrayList<GearControlMethod>();
-            gearTypes.add(GearControlMethod.EcobeePlus);
-            model.addAttribute("gearTypes", gearTypes);
+            model.addAttribute("gearTypes", List.of(GearControlMethod.EcobeePlus));
         } else {
             model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
         }
@@ -592,11 +590,8 @@ public class LoadProgramSetupController {
         }
         model.addAttribute("programGear", programGear);
         model.addAttribute("programType", programType);
-        
         if (programType == PaoType.LM_ECOBEE_PROGRAM && !isEcobeeLegacyGearEnabled()) {
-            ArrayList<GearControlMethod> gearTypes = new ArrayList<GearControlMethod>();
-            gearTypes.add(GearControlMethod.EcobeePlus);
-            model.addAttribute("gearTypes", gearTypes);
+            model.addAttribute("gearTypes", List.of(GearControlMethod.EcobeePlus));
         } else {
             model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
         }
