@@ -250,5 +250,8 @@
     <ClInclude Include="include\honeywellSetPointGear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ecobeePlusGear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

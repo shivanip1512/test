@@ -69,6 +69,32 @@ void LMEcobeeSetpointControlMessage::streamInto( cms::StreamMessage & message ) 
 
 ///
 
+LMEcobeePlusControlMessage::LMEcobeePlusControlMessage( int groupId,
+                                                        long long startTime,
+                                                        int controlDuration,    
+                                                        bool temperatureOption,  
+                                                        int randomTimeSeconds )
+
+    :   _groupId( groupId ),
+        _startTime( startTime ),
+        _stopTime( startTime + controlDuration ),
+        _temperatureOption( temperatureOption ),       
+        _randomTimeSeconds( randomTimeSeconds )      
+{
+    //empty
+}
+
+void LMEcobeePlusControlMessage::streamInto( cms::StreamMessage & message ) const
+{
+    message.writeInt( _groupId );
+    message.writeLong( _startTime );
+    message.writeLong( _stopTime );
+    message.writeByte( _temperatureOption );
+    message.writeInt( _randomTimeSeconds );
+}
+
+/// 
+
 LMEcobeeRestoreMessage::LMEcobeeRestoreMessage( int groupId,
                                                 int restoreTime )
     :   _groupId( groupId ),

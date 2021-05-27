@@ -93,6 +93,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
     static const std::string SEPTempOffsetMethod;
     static const std::string EcobeeCycleMethod;
     static const std::string EcobeeSetpointMethod;
+    static const std::string EcobeePlusMethod;
     static const std::string HoneywellCycleMethod;
     static const std::string HoneywellSetpointMethod;
     static const std::string NestCriticalCycleMethod;

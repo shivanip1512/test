@@ -364,6 +364,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ecobeePlusGear.h" />
     <ClInclude Include="include\BeatThePeakControlInterface.h" />
     <ClInclude Include="include\clistener.h" />
     <ClInclude Include="include\ConstraintViolation.h" />

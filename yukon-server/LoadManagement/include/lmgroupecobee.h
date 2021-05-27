@@ -38,6 +38,11 @@ public:
                               bool mandatory,
                               long temperatureOffset ) override;
 
+    bool sendEcobeePlusControl( long controlDurationSeconds,
+                                bool temperatureOption,
+                                long randomTimeSeconds ) override;                     //bool rampInOutOption
+
+
     std::size_t getFixedSize() const override   { return sizeof( *this ); }
 
     //Unused
