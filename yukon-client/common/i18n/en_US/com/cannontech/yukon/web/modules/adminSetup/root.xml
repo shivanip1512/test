@@ -190,7 +190,7 @@
         The following is a list of the operation that is being performed for Push API configuration.
         <ul>
             <li>
-                <span> <b>Generate New Key - </b></span> Generates a new key pair.
+                <span> <b> Generate New Key - </b> </span> Generates a new key pair.
             </li>
             <li>
                 <span> <b> View PubLic Key - </b> </span> Display Public key.
