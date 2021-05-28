@@ -309,7 +309,7 @@ public class RFNetworkSupportBundleService {
                     
                     // Write data to csv file.
                     String dir = locationDataDir + "_" + getFormatedDateStr(bundleRequest.getFromTimestamp());
-                    SupportBundleHelper.buildAndWriteMeterLocDataToDir(response, dataList, dir, fileName, coloumCount);
+                    SupportBundleHelper.buildAndWriteLocationDataToDir(response, dataList, dir, fileName, coloumCount);
                     startIndex = startIndex + batchsize;
                     endIndex = endIndex + batchsize;
                 } catch (ExecutionException | IOException ex) {

@@ -23,7 +23,7 @@ public class SupportBundleHelper {
 
     private static Logger log = YukonLogManager.getLogger(SupportBundleHelper.class);
 
-    public static void buildAndWriteMeterLocDataToDir(RfnMetadataMultiResponse response, List<LocationData> locationData, String dir, String fileName, int coloumNum) throws IOException {
+    public static void buildAndWriteLocationDataToDir(RfnMetadataMultiResponse response, List<LocationData> locationData, String dir, String fileName, int coloumNum) throws IOException {
         List<String[]> dataRows = Lists.newArrayList();
         for (LocationData loc : locationData) {
             int index = 0;
