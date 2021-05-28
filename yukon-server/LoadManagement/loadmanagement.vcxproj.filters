@@ -272,7 +272,7 @@
     <ClInclude Include="include\SmartGearCyclingOption.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ecobeePlusGear.h">
+    <ClInclude Include="include\ecobeePlusGear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,7 +4,7 @@
 #include "lmprogramthermostatgear.h"
 #include "smartgearbase.h"
 
-class EcobeePlusGear : public SmartGearBase, 
+class EcobeePlusGear : public SmartGearBase,
                        public CtiLMProgramThermostatGear
 {
 public:
@@ -26,5 +26,5 @@ public:
 
     // Custom Gear Settings
 
-    bool isHeatControl() const;    
+    bool isHeatControl() const;
 };
