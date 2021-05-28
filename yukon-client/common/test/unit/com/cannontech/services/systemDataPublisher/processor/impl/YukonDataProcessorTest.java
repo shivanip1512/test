@@ -38,7 +38,7 @@ public class YukonDataProcessorTest {
         cloudDataConfigurationStartUp.setDescription("Gas Meter Count");
         cloudDataConfigurationStartUp.setDetails("Contains the count of gas meter.");
         cloudDataConfigurationStartUp.setSource("SELECT TOP 1 Version FROM CtiDatabase ORDER BY BuildDate DESC");
-        cloudDataConfigurationStartUp.setIotType(IOTDataType.PROPERTY);
+        cloudDataConfigurationStartUp.setIotType(IOTDataType.TELEMETRY);
         cloudDataConfigurationStartUp.setFrequency(SystemDataPublisherFrequency.ON_STARTUP_ONLY);
         
         cloudDataConfigurations.add(cloudDataConfigurationStartUp);
