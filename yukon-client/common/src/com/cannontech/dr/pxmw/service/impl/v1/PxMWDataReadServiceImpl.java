@@ -170,7 +170,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                 try {
                     List<String> resultList = splitString(v, ",");
                     String externalEventId = resultList.get(0);
-                    int statusId = Integer.valueOf(resultList.get(0));
+                    int statusId = Integer.valueOf(resultList.get(1));
                     EatonCloudEventStatus cloudStatus = EatonCloudEventStatus.getById(statusId);
                     ControlEventDeviceStatus controlEventStatus = ControlEventDeviceStatus.getDeviceStatus(cloudStatus);
                     if (controlEventStatus != null) {
