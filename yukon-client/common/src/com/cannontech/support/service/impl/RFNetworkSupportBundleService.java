@@ -60,7 +60,11 @@ public class RFNetworkSupportBundleService {
     private final static String downloadRfSupportBundleURL = "/nmclient/DownloadRfSupportBundleServlet?fileName=";
     private final static String supportBundleDirectory = "/Server/SupportBundles/RfNetworkData/";
     private final static String locationDataDir = supportBundleDirectory + "/locationData";
-    private final static int batchsize = 1000;
+    private final static int batchsize = 10;
+    private final static int meterLocationcolumnCount = 11;
+    private final static int relayLocationcolumnCount = 9;
+    private final static String meterLocationFileName = "MeterLocationsInYukon";
+    private final static String relayLocationFileName = "RelayLocationsInYukon";
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired GlobalSettingDao globalSettingDao;
@@ -112,7 +116,8 @@ public class RFNetworkSupportBundleService {
                     // TODO: All the data files (historical,location) needs to be put under customer name file and zipped.
                     String fileName = "historicalData" + "_" + getFormatedDateStr(request.getFromTimestamp());
                     sendRfSupportBundleDownloadRequest(token, fileName);
-                    sendMeterLocationDataRequest(request);
+                    sendLocationDataRequest(request, PaoType.getRfMeterTypes(), meterLocationFileName, meterLocationcolumnCount);
+                    sendLocationDataRequest(request, PaoType.getRfRelayTypes(), relayLocationFileName, relayLocationcolumnCount);
                 }
                 responseStatus = statusReply.getResponseType();
             }
@@ -281,12 +286,12 @@ public class RFNetworkSupportBundleService {
     /**
      * Send location data request to NM and write data to the file.
      */
-    private void sendMeterLocationDataRequest(RfnSupportBundleRequest bundleRequest) {
+    private void sendLocationDataRequest(RfnSupportBundleRequest bundleRequest, Set<PaoType> paoTypes, String fileName, int coloumCount) {
         int startIndex = 1;
         int endIndex = batchsize;
         List<LocationData> dataList = null;
         while (dataList == null || dataList.size() >= batchsize) {
-            dataList = paoLocationDao.getLocationDetailForPaoType(PaoType.getRfMeterTypes(), startIndex, endIndex);
+            dataList = paoLocationDao.getLocationDetailForPaoType(paoTypes, startIndex, endIndex);
             if (dataList != null && !dataList.isEmpty()) {
                 BlockingJmsReplyHandler<RfnMetadataMultiResponse> replyHandler = new BlockingJmsReplyHandler<>(
                         RfnMetadataMultiResponse.class);
@@ -303,16 +308,15 @@ public class RFNetworkSupportBundleService {
                     RfnMetadataMultiResponse response = replyHandler.waitForCompletion();
                     
                     // Write data to csv file.
-                    String fileName = "MeterLocationsInYukon";
                     String dir = locationDataDir + "_" + getFormatedDateStr(bundleRequest.getFromTimestamp());
-                    SupportBundleHelper.buildAndWriteMeterLocDataToDir(response, dataList, dir, fileName);
+                    SupportBundleHelper.buildAndWriteMeterLocDataToDir(response, dataList, dir, fileName, coloumCount);
                     startIndex = startIndex + batchsize;
                     endIndex = endIndex + batchsize;
                 } catch (ExecutionException | IOException ex) {
-                    log.error("Error found while sending RfnMetadataMultiRequest for node data.", ex);
+                    log.error("Error found while sending RfnMetadataMultiRequest for "+ fileName +" node data.", ex);
                 }
             } else {
-                log.info("No data found for location.");
+                log.info("No data found for " + fileName);
             }
         }
     }
