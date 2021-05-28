@@ -23,6 +23,47 @@ post-operation:
             examples:
               Route:
                 $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
+  get:
+    tags:
+      - Route
+    summary: Retrieve all Routes
+    description: |-
+      API to retrieve all the Routes.
+
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/routesSchema.yaml#/Route'
+            examples:
+              List Routes:
+                $ref: '../schemas/routesSchema.yaml#/components/examples/List Routes'
+
+get-update-delete-operation:
+  get:
+    tags:
+     - Route
+    summary: 'Retrieve Route'
+    description: 'API to retrieve route based on passed id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'Unique identifier for route.'
+        required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/routesSchema.yaml#/Route'
+            examples:
+              Route:
+                $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
 
 get-update-delete-operation:
   delete:
