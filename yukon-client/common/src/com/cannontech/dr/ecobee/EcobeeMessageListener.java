@@ -20,7 +20,6 @@ import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
-import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
 
@@ -33,7 +32,6 @@ public class EcobeeMessageListener {
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
-    @Autowired private EcobeeZeusGroupService ecobeeZeusGroupService;
     @Autowired private ControlHistoryService controlHistoryService;
     @Autowired private ConfigurationSource configurationSource;
 
@@ -54,8 +52,7 @@ public class EcobeeMessageListener {
                 return;
             }
             if (isEcobeeZeusEnabled()) {
-                String eventId = ecobeeZeusCommunicationService.sendDutyCycleDR(parameters);
-                ecobeeZeusGroupService.updateEventId(eventId, parameters.getGroupId());
+                ecobeeZeusCommunicationService.sendDutyCycleDR(parameters);
             } else {
                 // Send DR message to ecobee server
                 String drIdentifier = ecobeeCommunicationService.sendDutyCycleDR(parameters);
@@ -89,8 +86,7 @@ public class EcobeeMessageListener {
             log.debug("Parameters built " + parameters + " Ready to send Ecobee Message");
 
             if (isEcobeeZeusEnabled()) {
-                String eventId = ecobeeZeusCommunicationService.sendSetpointDR(parameters);
-                ecobeeZeusGroupService.updateEventId(eventId, parameters.getGroupId());
+                ecobeeZeusCommunicationService.sendSetpointDR(parameters);
             } else {
                 // Send DR message to ecobee server
                 String drIdentifier = ecobeeCommunicationService.sendSetpointDR(parameters);

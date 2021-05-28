@@ -16,13 +16,18 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     @Autowired private EcobeeZeusGroupDao ecobeeZeusGroupDao;
 
     @Override
-    public String getZeusGroupIdForLmGroup(int yukonGroupId) {
-        return ecobeeZeusGroupDao.getZeusGroupIdForLmGroup(yukonGroupId);
+    public List<String> getZeusGroupIdsForLmGroup(int yukonGroupId) {
+        return ecobeeZeusGroupDao.getZeusGroupIdsForLmGroup(yukonGroupId);
     }
 
     @Override
     public List<String> getZeusGroupIdsForInventoryId(int inventoryId) {
         return ecobeeZeusGroupDao.getZeusGroupIdsForInventoryId(inventoryId);
+    }
+    
+    @Override
+    public String getZeusGroupId(int yukonGroupId, int inventoryId) {
+        return ecobeeZeusGroupDao.getZeusGroupId(yukonGroupId, inventoryId);
     }
 
     @Override
@@ -38,10 +43,10 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public boolean removeGroupIdForZeusGroupId(String zeusGroupId) {
+    public boolean removeGroupIdForZeusGroupId(int yukonGroupId, String zeusGroupId) {
         boolean deleteSuccess = false;
         try {
-            ecobeeZeusGroupDao.removeGroupIdForZeusGroupId(zeusGroupId);
+            ecobeeZeusGroupDao.removeGroupIdForZeusGroupId(yukonGroupId, zeusGroupId);
             deleteSuccess = true;
         } catch (DataAccessException e) {
             log.error("Error occurred while removing a mapping for Yukon group to Zeus group ID", e);
@@ -74,10 +79,10 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public boolean updateEventId(String eventId, int yukonGroupId) {
+    public boolean updateEventId(String eventId, String zeusGroupId) {
         boolean updateSuccess = false;
         try {
-            ecobeeZeusGroupDao.updateEventId(eventId, yukonGroupId);
+            ecobeeZeusGroupDao.updateEventId(eventId, zeusGroupId);
             updateSuccess = true;
         } catch (Exception e) {
             log.error("Error occurred while Inserting an event ID for a Zeus group ID (overwriting any existing value).", e);
@@ -86,8 +91,8 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public String getEventId(int yukonGroupId) {
-        return ecobeeZeusGroupDao.getEventId(yukonGroupId);
+    public List<String> getEventIds(int yukonGroupId) {
+        return ecobeeZeusGroupDao.getEventIds(yukonGroupId);
     }
 
     @Override
@@ -113,5 +118,25 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     @Override
     public int getAllThermostatCount() {
         return ecobeeZeusGroupDao.getAllThermostatCount();
+    }
+
+    @Override
+    public void removeEventId(String zeusEventId) {
+        ecobeeZeusGroupDao.removeEventId(zeusEventId);
+    }
+    
+    @Override
+    public String getNextGroupName(int yukonGroupId) {
+        List<String> existingNames = ecobeeZeusGroupDao.getZeusGroupNames(yukonGroupId);
+        String newGroupName = yukonGroupId + "_";
+        int suffix = 0;
+        //Find the max suffix used in the name and increment by 1 before using the suffix in group name.
+        for (String name : existingNames) {
+            String[] tokens = name.split("_");
+            if (Integer.valueOf(tokens[1]) > suffix) {
+                suffix = Integer.valueOf(tokens[1]);
+            }
+        }
+        return newGroupName.concat(Integer.toString(suffix + 1));
     }
 }
