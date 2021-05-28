@@ -19,6 +19,7 @@
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="yukon.notif.stream.dr.EcobeeCyclingControlMessage" ref="ecobeeMessageListener" method="handleCyclingControlMessage"/>
         <jms:listener destination="yukon.notif.stream.dr.EcobeeSetpointControlMessage" ref="ecobeeMessageListener" method="handleSetpointControlMessage"/>
+        <jms:listener destination="yukon.notif.stream.dr.EcobeePlusControlMessage" ref="ecobeeMessageListener" method="handleEcoPlusControlMessage"/>
         <jms:listener destination="yukon.notif.stream.dr.EcobeeRestoreMessage" ref="ecobeeMessageListener" method="handleRestoreMessage"/>
     </jms:listener-container>
 

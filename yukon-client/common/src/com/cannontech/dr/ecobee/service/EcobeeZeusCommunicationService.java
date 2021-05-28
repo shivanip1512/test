@@ -6,6 +6,7 @@ import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeePlusDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 
 public interface EcobeeZeusCommunicationService {
@@ -64,4 +65,9 @@ public interface EcobeeZeusCommunicationService {
      * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only.
      */
     void cancelDemandResponse(int yukonGroupId, String... serialNumbers);
+
+    /**
+     * Initiates a eco+ demand response event in Ecobee.
+     */
+    void sendEcoPlusDR(EcobeePlusDrParameters parameters);
 }
