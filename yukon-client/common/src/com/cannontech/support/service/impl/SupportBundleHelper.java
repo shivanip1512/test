@@ -23,6 +23,9 @@ public class SupportBundleHelper {
 
     private static Logger log = YukonLogManager.getLogger(SupportBundleHelper.class);
 
+    /**
+     * Write location data to the destination directory in passed fileName.
+     */
     public static void buildAndWriteLocationDataToDir(RfnMetadataMultiResponse response, List<LocationData> locationData, String dir, String fileName, int coloumNum) throws IOException {
         List<String[]> dataRows = Lists.newArrayList();
         for (LocationData loc : locationData) {
