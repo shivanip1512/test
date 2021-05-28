@@ -40,8 +40,7 @@
 						</tags:nameValue2>
 					</tags:nameValueContainer2>
 					<div class="page-action-area">
-						<cti:button nameKey="supportBundle.createBundleBtn"
-							classes="primary action js-execute-command-rf" busy="true"/>
+						<cti:button nameKey="supportBundle.createBundleBtn" classes="primary action js-execute-command-rf" busy="true"/>
 					</div>
 				</form:form>
 			</cti:tab>
