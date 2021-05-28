@@ -2,9 +2,12 @@ package com.cannontech.simulators.pxmw.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -27,14 +30,25 @@ import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class PxMWDataV1 extends PxMWDataGenerator {
-    private PxMWFakeTimeseriesDataV1 timeseriesData = new PxMWFakeTimeseriesDataV1();
+    private PxMWFakeTimeseriesDataV1 timeseriesData;
  
+    public PxMWDataV1(PxMWFakeTimeseriesDataV1 pxMWTimeSeriesResultV1) {
+        this.timeseriesData = pxMWTimeSeriesResultV1;
+    }
+    
     private static final Logger log = YukonLogManager.getLogger(PxMWDataV1.class);
 
     //Simulator has 2 sites
     private List<String> siteGuids = List.of("eccdcf03-2ca8-40a9-a5f3-9446a52f515d", "616ff40f-63b2-4d3c-87e2-16b3c40614ed");
+   
+    //devices in the process of being created
+    //if device was not create in 30 seconds, it will not create at all. If debugging creation code, extend the 30 sec value. 
+    private static Cache<String, String> creatingGuids =
+            CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
 
     public PxMWSimulatorResponse token() {
         if (status == HttpStatus.BAD_REQUEST.value()) {
@@ -157,7 +171,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         List<PxMWTimeSeriesDeviceResultV1> resultList = pxMWTimeSeriesDataRequestV1.getDevices().stream().map(d -> {
             List<String> tags = Arrays.asList(d.getTagTrait().split(","));
             PaoType type = createRequest == null ? PaoType.LCR6600C: createRequest.getPaoType();
-            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(tags, type, randomBadData);
+            List<PxMWTimeSeriesResultV1> result = timeseriesData.getValues(d.getDeviceGuid(), tags, type, randomBadData, creatingGuids.getIfPresent(d.getDeviceGuid()) != null);
             return new PxMWTimeSeriesDeviceResultV1(d.getDeviceGuid(), result);
         }).collect(Collectors.toList());
 
@@ -228,7 +242,8 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         if (status == HttpStatus.NOT_FOUND.value()) {
             return new PxMWSimulatorResponse(new PxMWErrorV1(status, "Resource not found"), status);
         }
-        PxMWDeviceDetail detail = new  PxMWDeviceDetail(deviceId, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", true, "");
+        creatingGuids.put(deviceId,deviceId);
+        PxMWDeviceDetail detail = new PxMWDeviceDetail(deviceId, "", "", "", "", "2143535", "", "", "", "", "", "", "", "", "", "YUKON_SIMULATOR", true, "");
         return new PxMWSimulatorResponse(detail, status);
     }
 }

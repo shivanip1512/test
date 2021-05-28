@@ -37,4 +37,5 @@
     <bean class="com.cannontech.simulators.ivvc.impl.IvvcSimulatorServiceImpl"/>
     <bean class="com.cannontech.simulators.dao.impl.RegulatorEventsSimulatorDaoImpl"/>
     <bean class="com.cannontech.simulators.dao.impl.DeviceConfigurationSimulatorDaoImpl"/>
+    <bean class="com.cannontech.simulators.pxmw.model.PxMWFakeTimeseriesDataV1"/>
 </beans>

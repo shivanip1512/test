@@ -19,7 +19,7 @@ public class EventLogHelper {
 
     public void decryptionFailedEventLog(String yukonService, String type) {
         try {
-            systemEventLogService.decryptionFailed(ApplicationId.SERVICE_MANAGER.getApplicationName(), InetAddress.getLocalHost().getHostName(), type, Instant.now());
+            systemEventLogService.decryptionFailed(yukonService, InetAddress.getLocalHost().getHostName(), type, Instant.now());
         } catch (UnknownHostException ex) {
             log.error("Unknown host exception : \"" + ex.getMessage() + "\".");
         }

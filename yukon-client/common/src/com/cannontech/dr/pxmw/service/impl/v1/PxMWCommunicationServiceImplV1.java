@@ -9,7 +9,10 @@ import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.logging.log4j.core.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -34,6 +37,7 @@ import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequestV1;
 import com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenResponseV1;
+import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
@@ -161,9 +165,15 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
         try {
             PxMWTimeSeriesDataRequestV1 request = new PxMWTimeSeriesDataRequestV1(deviceList, startTime, stopTime);
             HttpEntity<PxMWTimeSeriesDataRequestV1> requestEntity = getRequestWithAuthHeaders(request);
-            log.debug("Getting time series data. Request:{} Start:{} Stop:{} URL:{}",
-                    new GsonBuilder().setPrettyPrinting().create().toJson(request), startTime, stopTime, uri);
-            ResponseEntity<PxMWTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
+            int totalChannels = 0;
+            if(log.isDebugEnabled()) {
+                for(PxMWTimeSeriesDeviceV1 device: deviceList) {
+                    totalChannels = totalChannels + Arrays.asList(device.getTagTrait().split(",")).size();
+                }
+            }
+            log.debug("Getting time series data. Request:{} Total Channels:{} Start:{} Stop:{} URL:{}",
+                    new GsonBuilder().setPrettyPrinting().create().toJson(request), totalChannels, startTime, stopTime, uri);
+            ResponseEntity<PxMWTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity,
                     PxMWTimeSeriesDeviceResultV1[].class);
             log.debug("Get time series data. Request:{} Start:{} Stop:{} URL:{} Result:{}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(request), startTime, stopTime, uri,
@@ -174,28 +184,6 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
         } catch (Exception e) {
             throw new PxMWException("Exception occured while getting time series data", e);
         }
-    }
-    
-    @Override
-    public void sendCommand(String deviceGuid, PxMWCommandRequestV1 request)
-            throws PxMWCommunicationExceptionV1, PxMWException {
-        String commandGuid = UUID.randomUUID().toString();
-        URI uri = getUri(Map.of("id", deviceGuid, "command_instance_id", commandGuid), PxMWRetrievalUrl.COMMANDS);
-        log.debug("Sending command to device. Device Guid:{} Command Guid:{} Request:{} URL:{}", deviceGuid, commandGuid,
-                new GsonBuilder().setPrettyPrinting().create().toJson(request),
-                uri);
-        try {
-            HttpEntity<PxMWCommandRequestV1> requestEntity = getRequestWithAuthHeaders(request);
-            ResponseEntity<PxMWCommandResponseV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
-                    PxMWCommandResponseV1.class);
-            log.debug("Sent command to device. Device Guid:{} Command Guid:{} Response:{}", deviceGuid, commandGuid,
-                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
-        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new PxMWException("Exception occured while sending command", e);
-        }
-
     }
     
     @Override
@@ -225,18 +213,26 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
     
     @Override
-    public boolean isCreatableDevice(String deviceGuid) {
+    public void sendCommand(String deviceGuid, PxMWCommandRequestV1 request)
+            throws PxMWCommunicationExceptionV1, PxMWException {
+        String commandGuid = UUID.randomUUID().toString();
+        URI uri = getUri(Map.of("id", deviceGuid, "command_instance_id", commandGuid), PxMWRetrievalUrl.COMMANDS);
+        log.debug("Sending command to device. Device Guid:{} Command Guid:{} Request:{} URL:{}", deviceGuid, commandGuid,
+                new GsonBuilder().setPrettyPrinting().create().toJson(request),
+                uri);
         try {
-            getDeviceDetails(deviceGuid, null);
-            return true;
+            HttpEntity<PxMWCommandRequestV1> requestEntity = getRequestWithAuthHeaders(request);
+            ResponseEntity<PxMWCommandResponseV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
+                    PxMWCommandResponseV1.class);
+            log.debug("Sent command to device. Device Guid:{} Command Guid:{} Response:{}", deviceGuid, commandGuid,
+                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            throw e;
         } catch (Exception e) {
-            //404 Not Found if device doesn't exist
-            log.error("Device:" + deviceGuid + " can't be created", e);
-            return false;
+            throw new PxMWException("Exception occured while sending command", e);
         }
     }
-   
-
+       
     /**
      * Creates URI
      */

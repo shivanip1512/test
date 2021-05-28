@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.DisplayableDevice;
@@ -28,6 +30,7 @@ import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 import junit.framework.TestCase;
 
@@ -358,6 +361,16 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         @Override
         public LiteYukonPAObject getLiteYukonPaoByPointId(int pointId) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public String findPaoInfoValue(int paoId, InfoKey key) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public void savePaoInfo(int paoId, InfoKey key, String value, Instant time, LiteYukonUser user) {
             throw new UnsupportedOperationException("Method not implemented");
         }
     }

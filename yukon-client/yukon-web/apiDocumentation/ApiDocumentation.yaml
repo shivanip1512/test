@@ -102,6 +102,11 @@ paths:
   /picker/search:
     $ref: 'api/pickerApi.yaml#/search-by-query'
 
+  /routes:
+    $ref: 'api/routesApi.yaml#/post-operation'
+  /routes/{id}:
+    $ref: 'api/routesApi.yaml#/get-update-delete-operation'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -123,3 +128,4 @@ tags:
   - name: Points
   - name: Attributes
   - name: Picker
+  - name: Route

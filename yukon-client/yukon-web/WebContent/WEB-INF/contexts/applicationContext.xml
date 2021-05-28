@@ -1463,6 +1463,7 @@
     <bean id="honeywellSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellSetpointGearFieldsValidator"/>
     <bean id="ecobeeCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeCycleGearFieldsValidator"/>
     <bean id="ecobeeSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeSetpointGearFieldsValidator"/>
+    <bean id="ecobeePlusGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeePlusGearFieldsValidator"/>
     <bean id="smartCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SmartCycleGearFieldsValidator"/>
     <bean id="trueCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.TrueCycleGearFieldsValidator"/>
     <bean id="magnitudeCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MagnitudeCycleGearFieldsValidator"/>
@@ -1538,4 +1539,8 @@
     <bean class="com.cannontech.web.stars.virtualDevice.VirtualDeviceValidator"/>
     <bean class="com.cannontech.web.api.dr.ecobee.EcobeeZeusJwtTokenAuthService"/>
     
+    <bean class="com.cannontech.web.api.route.RouteValidator"/>
+    <bean class="com.cannontech.web.api.route.RouteApiValidatorHelper"/>
+    <bean class="com.cannontech.web.api.route.RouteApiCreateValidator"/>
+    <bean class="com.cannontech.web.api.route.service.impl.RouteServiceImpl"/>
 </beans>

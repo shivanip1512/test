@@ -5,6 +5,7 @@ import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EatonCloudCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EcobeePlusGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
@@ -46,6 +47,7 @@ public class ProgramGear implements DBPersistentConverter<LMProgramDirectGear> {
         @JsonSubTypes.Type(value = BeatThePeakGearFields.class, name = "BeatThePeak"),
         @JsonSubTypes.Type(value = EcobeeCycleGearFields.class, name = "EcobeeCycle"),
         @JsonSubTypes.Type(value = EcobeeSetpointGearFields.class, name = "EcobeeSetpoint"),
+        @JsonSubTypes.Type(value = EcobeePlusGearFields.class, name = "EcobeePlus"),
         @JsonSubTypes.Type(value = HoneywellCycleGearFields.class, name = "HoneywellCycle"),
         @JsonSubTypes.Type(value = HoneywellSetpointGearFields.class, name = "HoneywellSetpoint"),
         @JsonSubTypes.Type(value = ItronCycleGearFields.class, name = "ItronCycle"),

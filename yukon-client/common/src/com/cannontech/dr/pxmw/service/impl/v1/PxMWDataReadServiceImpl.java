@@ -2,6 +2,8 @@ package com.cannontech.dr.pxmw.service.impl.v1;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +28,13 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoDao.InfoKey;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
+import com.cannontech.dr.pxmw.model.EatonCloudEventStatus;
 import com.cannontech.dr.pxmw.model.MWChannel;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesDeviceV1;
@@ -38,7 +42,11 @@ import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesResultV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTimeSeriesValueV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
+import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
+import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.user.YukonUserContext;
+import com.google.common.base.Splitter;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -54,6 +62,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
     @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
+    @Autowired private RecentEventParticipationDao recentEventParticipationDao;
  
     @Override
     public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> queryRange) {
@@ -79,18 +88,21 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
 
     private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<LiteYukonPAObject> paos,
             Set<BuiltInAttribute> attribtues, Range<Instant> queryRange) {
+
         Map<Integer, LiteYukonPAObject> deviceIdToPao = StreamSupport.stream(paos.spliterator(), false)
                 .collect(Collectors.toMap(LiteYukonPAObject::getYukonID, liteYukonPao -> liteYukonPao));
         BidiMap<Integer, String> deviceIdGuid = new DualHashBidiMap<Integer, String>(deviceDao.getGuids(deviceIdToPao.keySet()));
 
-        Multimap<PaoIdentifier, PointData> newPaoPointMap = HashMultimap.create();
+
         List<PxMWTimeSeriesDeviceResultV1> timeSeriesResults = new ArrayList<PxMWTimeSeriesDeviceResultV1>();
         Set<String> tags = MWChannel.getTagsForAttributes(attribtues);
-        List<List<PxMWTimeSeriesDeviceV1>> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
-        for (List<PxMWTimeSeriesDeviceV1> request : chunkedRequests) {
-            List<PxMWTimeSeriesDeviceResultV1> result = pxMWCommunicationService.getTimeSeriesValues(request, queryRange);
+        List<PxMWTimeSeriesDeviceV1> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
+        for (PxMWTimeSeriesDeviceV1 request : chunkedRequests) {
+            List<PxMWTimeSeriesDeviceResultV1> result = pxMWCommunicationService.getTimeSeriesValues(List.of(request), queryRange);
             timeSeriesResults.addAll(result);
         }
+        
+        Multimap<PaoIdentifier, PointData> pointMap = HashMultimap.create();
 
         for (PxMWTimeSeriesDeviceResultV1 deviceResult : timeSeriesResults) {
             Integer deviceId = deviceIdGuid.getKey(deviceResult.getDeviceId());
@@ -102,26 +114,77 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                 try {
                     Integer tag = Integer.parseInt(result.getTag());
                     MWChannel mwChannel = MWChannel.getChannelLookup().get(tag);
-                    if(!attribtues.contains(mwChannel.getBuiltInAttribute())) {
-                        //Received point data we didn't ask for
-                        continue;
-                    }
-                    for (PxMWTimeSeriesValueV1 value : result.getValues()) {
-                        Double pointValue = parsePointValue(mwChannel, value, device, deviceResult.getDeviceId());
-                        if (pointValue != null) {
-                            PointData pointData = generatePointData(device, mwChannel, pointValue,
-                                    value.getTimestamp(), deviceResult.getDeviceId());
-                            if (pointData != null) {
-                                newPaoPointMap.put(device.getPaoIdentifier(), pointData);
-                            }
-                        }
+                    if (mwChannel == MWChannel.EVENT_STATE) {
+                        updateEventParticipation(device, result.getValues());
+                    } else if (InfoKey.hasKey(mwChannel)) {
+                        updatePaoInfo(InfoKey.getKey(mwChannel), device, result.getValues());
+                    } else if (attribtues.contains(mwChannel.getBuiltInAttribute())) {
+                        createPointData(pointMap, deviceResult.getDeviceId(), device, result, mwChannel);
                     }
                 } catch (Exception e) {
                     log.error("Error parsing tag {} from API response", result.getTag(), e);
                 }
             }
         }
-        return newPaoPointMap;
+        return pointMap;
+    }
+
+    private void createPointData(Multimap<PaoIdentifier, PointData> pointMap, String guid,
+            LiteYukonPAObject device, PxMWTimeSeriesResultV1 result, MWChannel mwChannel) {
+        for (PxMWTimeSeriesValueV1 value : result.getValues()) {
+            Double pointValue = parsePointValue(mwChannel, value, device, guid);
+            if (pointValue != null) {
+                PointData pointData = generatePointData(device, mwChannel, pointValue,
+                        value.getTimestamp(), guid);
+                if (pointData != null) {
+                    pointMap.put(device.getPaoIdentifier(), pointData);
+                }
+            }
+        }
+    }
+
+    private void updatePaoInfo(InfoKey key, LiteYukonPAObject device, List<PxMWTimeSeriesValueV1> values) {
+        if (!values.isEmpty()) {
+            PxMWTimeSeriesValueV1 value = Collections.max(values,
+                    Comparator.comparing(v -> new Instant(v.getTimestamp() * 1000)));
+            paoDao.savePaoInfo(device.getLiteID(), key, value.getValue(),
+                    new Instant(value.getTimestamp() * 1000), YukonUserContext.system.getYukonUser());
+        }
+    }
+
+    private void updateEventParticipation( LiteYukonPAObject device, List<PxMWTimeSeriesValueV1> values) {
+        /*
+         * 123,2 - first event starts
+         * 123,2;124,2 - second event starts
+         * 123,3;124,2 -first event complete
+         * 124,3 - second event complete
+         */
+        values.forEach(value -> {
+            splitString(value.getValue(), ";").forEach(v -> {
+                try {
+                    List<String> resultList = splitString(v, ",");
+                    String externalEventId = resultList.get(0);
+                    int statusId = Integer.valueOf(resultList.get(1));
+                    EatonCloudEventStatus cloudStatus = EatonCloudEventStatus.getById(statusId);
+                    ControlEventDeviceStatus controlEventStatus = ControlEventDeviceStatus.getDeviceStatus(cloudStatus);
+                    if (controlEventStatus != null) {
+                        recentEventParticipationDao.updateDeviceControlEvent(externalEventId, device.getLiteID(),
+                                controlEventStatus,
+                                new Instant(value.getTimestamp() * 1000));
+                    }
+                } catch (Exception e) {
+                    log.error("Unable to parse value:{} to update device participation status for device:{}({})", v,
+                            device.getPaoName(), device.getLiteID());
+                }
+            });
+        });
+    }
+
+    private List<String> splitString(String value, String on) {
+        return Splitter.on(on)
+                .trimResults()
+                .omitEmptyStrings()
+                .splitToList(value);
     }
 
     /**
@@ -171,7 +234,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
                     device.getPaoName(), guid, attribute, point.getLiteID(), point.getPointName());
         }
         // Multiply by point multiplier (usually 1), can be overridden in point setup by the user
-        value = value * point.getMultiplier();
+        value = point.getMultiplier() == null ? value : value * point.getMultiplier();
 
         pointData.setId(point.getLiteID());
         pointData.setPointQuality(PointQuality.Normal);
@@ -200,16 +263,14 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
      * Helps optimize the requests that are built by taking a set of GUIDs and a set of 
      * tags that are being requested for those GUIDs and building the minimum number of requests
      */
-    private List<List<PxMWTimeSeriesDeviceV1>> buildRequests(Collection<String> guids, Set<String> tagSet) {
-        List<List<PxMWTimeSeriesDeviceV1>> chunkedRequests = new ArrayList<>();
+    private List<PxMWTimeSeriesDeviceV1> buildRequests(Collection<String> guids, Set<String> tagSet) {
+        List<PxMWTimeSeriesDeviceV1> chunkedRequests = new ArrayList<>();
         List<List<String>> chunkedTags = Lists.partition(new ArrayList<>(tagSet), 10);
         for (List<String> tagSubset : chunkedTags) {
             String tagCSV = buildTagString(tagSubset);
-            List<PxMWTimeSeriesDeviceV1> workingRequest = new ArrayList<PxMWTimeSeriesDeviceV1>();
             for (String guid : guids) {
-                workingRequest.add(new PxMWTimeSeriesDeviceV1(guid, tagCSV));
+                chunkedRequests.add(new PxMWTimeSeriesDeviceV1(guid, tagCSV));
             }
-            chunkedRequests.add(workingRequest);
         }
         return chunkedRequests;
     }

@@ -779,9 +779,13 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     FIRMWARE_UPDATE_STATUS("Firmware Update Status", AttributeGroup.SYSTEM),
     FREQUENCY("Frequency", AttributeGroup.OTHER),
     RELAY_1_ACTIVATION_STATUS("Relay 1 Activation Status", AttributeGroup.RELAY),
+    RELAY_1_COLD_LOAD_PICKUP_TIME("Relay 1 Cold Load Pickup Time", AttributeGroup.RELAY),
     RELAY_2_ACTIVATION_STATUS("Relay 2 Activation Status", AttributeGroup.RELAY),
+    RELAY_2_COLD_LOAD_PICKUP_TIME("Relay 2 Cold Load Pickup Time", AttributeGroup.RELAY),
     RELAY_3_ACTIVATION_STATUS("Relay 3 Activation Status", AttributeGroup.RELAY),
-    RELAY_4_ACTIVATION_STATUS("Relay 4 Activation Status", AttributeGroup.RELAY)
+    RELAY_3_COLD_LOAD_PICKUP_TIME("Relay 3 Cold Load Pickup Time", AttributeGroup.RELAY),
+    RELAY_4_ACTIVATION_STATUS("Relay 4 Activation Status", AttributeGroup.RELAY),
+    RELAY_4_COLD_LOAD_PICKUP_TIME("Relay 4 Cold Load Pickup Time", AttributeGroup.RELAY)
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";

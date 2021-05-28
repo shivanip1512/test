@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
-        <analog offset="40"/>
+        <analog offset="44"/>
         <status offset="13"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -16,12 +16,6 @@
         <multiplier value="1"/>
         <unitofmeasure value="COUNTS"/>
         <decimalplaces value="0"/>
-    </point>
-    <point offset="3" type="Analog">
-        <name>Firmware Version</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"/>
-        <decimalplaces value="0"/>        
     </point>
     <point offset="4" type="Analog">
         <name>Frequency</name>
@@ -246,6 +240,30 @@
         <unitofmeasure value="VOLTS"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="41" type="Analog">
+        <name>Relay 1 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="42" type="Analog">
+        <name>Relay 2 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="43" type="Analog">
+        <name>Relay 3 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="44" type="Analog">
+        <name>Relay 4 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
+    </point>
 
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Status">
@@ -261,7 +279,7 @@
     <point offset="3" type="Status">
         <name>Relay 1 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="RelayState"/>
+        <stategroup value="OnOff"/>
     </point>
     <point offset="4" type="Status">
         <name>Relay 1 Shed Status</name>
@@ -276,7 +294,7 @@
     <point offset="6" type="Status">
         <name>Relay 2 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="RelayState"/>
+        <stategroup value="OnOff"/>
     </point>
     <point offset="7" type="Status">
         <name>Relay 2 Shed Status</name>
@@ -291,7 +309,7 @@
     <point offset="9" type="Status">
         <name>Relay 3 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="RelayState"/>
+        <stategroup value="OnOff"/>
     </point>
     <point offset="10" type="Status">
         <name>Relay 3 Shed Status</name>
@@ -306,7 +324,7 @@
     <point offset="12" type="Status">
         <name>Relay 4 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="RelayState"/>
+        <stategroup value="OnOff"/>
     </point>
     <point offset="13" type="Status">
         <name>Relay 4 Shed Status</name>

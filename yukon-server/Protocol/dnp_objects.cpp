@@ -371,6 +371,24 @@ ObjectBlockPtr ObjectBlock::makeQuantityBlock( ObjectPtr object )
 }
 
 
+ObjectBlockPtr ObjectBlock::makeLongIndexedBlockForObjects( std::vector<std::pair<unsigned, ObjectPtr>> objs )
+{
+    auto objBlock =
+            makeObjectBlock(
+                    ShortIndex_ShortQty,
+                    objs[0].second->getGroup(),
+                    objs[0].second->getVariation());
+
+    for ( auto & [ index, object ] : objs )
+    {
+        objBlock->_objectList.emplace_back(std::move(object));
+        objBlock->_objectIndices.push_back(index);
+    }
+
+    return std::move(objBlock);
+}
+
+
 unsigned ObjectBlock::size( void ) const
 {
     return _objectList.size();

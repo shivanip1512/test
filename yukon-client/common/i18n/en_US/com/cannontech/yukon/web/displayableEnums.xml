@@ -409,6 +409,8 @@
     <entry key="yukon.common.setting.ECOBEE_PASSWORD.description">Password to authenticate with the ecobee service.</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL">ecobee API URL</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service.</entry>
+    <entry key="yukon.common.setting.ECOBEE_REPORTING_URL">ecobee Reporting URL</entry>
+    <entry key="yukon.common.setting.ECOBEE_REPORTING_URL.description">URL for incoming ecobee data.</entry>
     <entry key="yukon.common.setting.ECOBEE_SEND_NOTIFICATIONS">ecobee email notification</entry>
     <entry key="yukon.common.setting.ECOBEE_SEND_NOTIFICATIONS.description">Enables/Disables notifications being sent by ecobee when a DR request is made through Yukon.</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING">Honeywell Wifi Connection</entry>
@@ -461,6 +463,8 @@
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET.description">Secret used to access the PX middleware software</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_URL">PX URL</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_URL.description">URL of the PX middleware software</entry>
+    <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID">Ecobee Zeus Program ID</entry>
+    <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID.description">Program ID required for initiating Zeus API communications.</entry>
     
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>

@@ -138,7 +138,11 @@ a,
 .primary-background .highlight {
     color: @orange;
 }
-.alert { background-color: @pink !important; }
+.alert { 
+    background-color: @pink !important;
+    padding: 0;
+    border-radius: 0;
+}
 .txt-color-white { color: @white; }
 .bg-color-green { background-color: @green; }
 .bg-color-orange { background-color: @orange; }
@@ -647,7 +651,6 @@ table.matrix{
     line-height: @form-control-height;
     border: none;
     width: auto;
-    padding: 0px;
     font-size: inherit;
 }
 .with-form-controls tbody td select,

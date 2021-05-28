@@ -276,6 +276,19 @@ public class LMGearDaoImpl implements LMGearDao {
 
         return EatonCloudCycleType.valueOf(eatonCycle);
     }
+    
+    @Override
+    public HeatCool getHeatingEvent(Integer gearId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Settings");
+        sql.append("FROM LMThermostatGear");
+        sql.append("WHERE GearId").eq(gearId);
+
+        String heatingEvent = jdbcTemplate.queryForString(sql);
+
+        return HeatCool.of(heatingEvent);
+    }
 
     @Override
     public EcobeeSetpointValues getEcobeeSetpointValues(Integer gearId) {
