@@ -15,6 +15,7 @@ import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.LMGearDao;
+import com.cannontech.database.data.device.lm.HeatCool;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.dr.eatonCloud.model.EatonCloudCycleType;
@@ -46,6 +47,9 @@ public class ProgramGearFieldsBuilder {
                 break;
             case EcobeeSetpoint:
                 gearFields = getEcobeeSetpointGearFields(directGear);
+                break;
+            case EcobeePlus:
+                gearFields = getEcobeePlusGearFields(directGear);
                 break;
             case HoneywellCycle:
                 gearFields = getHoneywellCycleGearFields(directGear);
@@ -465,6 +469,34 @@ public class ProgramGearFieldsBuilder {
         return gearFields;
 
     }
+    
+    /**
+     * Build Ecobee Plus Cycle gear fields.
+     */
+
+    private ProgramGearFields getEcobeePlusGearFields(LMProgramDirectGear directGear) {
+        EcobeePlusGearFields gearFields = new EcobeePlusGearFields();
+
+        HeatCool heatCool = gearDao.getHeatingEvent(directGear.getGearId());
+
+        if (directGear.getMethodRate() > 0) {
+            gearFields.setRampInOut(true);
+        } else {
+            gearFields.setRampInOut(false);
+        }
+        if (heatCool == HeatCool.HEAT) {
+            gearFields.setHeatingEvent(true);
+        } else {
+            gearFields.setHeatingEvent(false);
+        }
+        gearFields.setHowToStopControl(HowToStopControl.valueOf(directGear.getMethodStopType()));
+        gearFields.setCapacityReduction(directGear.getPercentReduction());
+        WhenToChangeFields changeFields = getWhenToChangeFields(directGear);
+        gearFields.setWhenToChangeFields(changeFields);
+
+        return gearFields;
+    }
+
 
     /**
      * Build Honeywell Cycle gear fields.

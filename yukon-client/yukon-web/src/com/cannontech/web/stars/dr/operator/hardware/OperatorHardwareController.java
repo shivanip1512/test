@@ -49,6 +49,7 @@ import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoDao.InfoKey;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
@@ -377,7 +378,11 @@ public class OperatorHardwareController {
             int deviceId = inventoryDao.getDeviceId(inventoryId);
             model.addAttribute("deviceId", deviceId);
             model.addAttribute("showMapNetwork", true);
+        } else if (hardware.getHardwareType().isEatonCloud()) {
+            model.addAttribute("IMEI", paoDao.findPaoInfoValue(hardware.getDeviceId(), InfoKey.IMEI));
+            model.addAttribute("ICCID", paoDao.findPaoInfoValue(hardware.getDeviceId(), InfoKey.ICCID));
         }
+
         return "operator/hardware/hardware.jsp";
     }
 

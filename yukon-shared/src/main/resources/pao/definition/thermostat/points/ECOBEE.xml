@@ -3,6 +3,7 @@
     <highestOffsets>
         <analog offset="5"/>
         <status offset="2"/>
+        <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
@@ -50,5 +51,10 @@
         <name>Thermostat Relay State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
+    </point>
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Comm Status State"/>
     </point>
 </points>
