@@ -104,6 +104,8 @@ paths:
 
   /routes:
     $ref: 'api/routesApi.yaml#/post-operation'
+  /routes/{id}:
+    $ref: 'api/routesApi.yaml#/get-update-delete-operation'
 
 components:
   securitySchemes:
