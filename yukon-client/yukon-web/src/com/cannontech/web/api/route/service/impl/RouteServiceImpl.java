@@ -1,5 +1,9 @@
 package com.cannontech.web.api.route.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +18,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.web.api.route.model.RouteBaseModel;
+import com.cannontech.web.api.route.model.RouteModelFactory;
 import com.cannontech.web.api.route.service.RouteService;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -35,6 +40,36 @@ public class RouteServiceImpl implements RouteService {
         paoCreationHelper.addDefaultPointsToPao(device);
         routeBaseModel.buildModel(routeBase);
         return routeBaseModel;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public RouteBaseModel<? extends RouteBase> retrieve(int routeId) {
+        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutesMap().get(routeId);
+        if (pao == null) {
+            throw new NotFoundException("Route Id not found");
+        }
+
+        RouteBase routeBase = (RouteBase) dbPersistentDao.retrieveDBPersistent(pao);
+        RouteBaseModel routeBaseModel = RouteModelFactory.getModel(pao.getPaoType());// new factory
+        routeBaseModel.buildModel(routeBase);
+        return routeBaseModel;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public List<RouteBaseModel> retrieveAllRoutes() {
+        List<LiteYukonPAObject> listOfRoutes = serverDatabaseCache.getAllRoutes();
+        List<RouteBaseModel> routeBaseModelList = new ArrayList();
+        if (!CollectionUtils.isEmpty(listOfRoutes)) {
+            listOfRoutes.forEach(yukonPAObject -> {
+                RouteBase routeBase = (RouteBase) dbPersistentDao.retrieveDBPersistent(yukonPAObject);
+                RouteBaseModel routeBaseModel = RouteModelFactory.getModel(yukonPAObject.getPaoType());
+                routeBaseModel.buildModel(routeBase);
+                routeBaseModelList.add(routeBaseModel);
+            });
+        }
+        return routeBaseModelList;
     }
 
     /**
@@ -81,4 +116,5 @@ public class RouteServiceImpl implements RouteService {
         }
         return pao.getPaoType();
     }
+
 }

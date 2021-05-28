@@ -33,6 +33,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.impl.GlobalSettingDaoImpl;
 import com.cannontech.web.api.dr.ecobee.EcobeeZeusJwtTokenAuthService;
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData;
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_dr_event;
@@ -41,6 +43,7 @@ import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermo
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_program;
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_runtime;
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_state;
+import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_state.ecp_thermostat_connection_state;
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_runtime.state_runtime;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -70,6 +73,7 @@ public class EcobeeMockServiceTestController {
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
     @Autowired private EcobeeZeusJwtTokenAuthService ecobeeZeusJwtTokenAuthService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
+    @Autowired private GlobalSettingDaoImpl globalSettingDaoImpl;
     ScheduledFuture<?> future;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private PaoDao paoDao;
@@ -138,8 +142,7 @@ public class EcobeeMockServiceTestController {
 
     public void sendHttpProtoMessage(String serialNumber) throws Exception {
 
-        //TODO URL Global settings
-        final String url = "http://127.0.0.1:8080/yukon/api/ecobee/runtimeData";
+        final String url =  globalSettingDaoImpl.getString(GlobalSettingType.ECOBEE_REPORTING_URL);
         EcobeeZeusRuntimeData.ecp_thermostat_message message = EcobeeZeusRuntimeData.ecp_thermostat_message.newBuilder()
                                                                                                            .setMessageTimeUtc(Timestamp.newBuilder()
                                                                                                                                        .setSeconds(Instant.now()
@@ -155,7 +158,8 @@ public class EcobeeMockServiceTestController {
                                                                                                                                                    .setTemperatureCoolSetpointDegF(1)
                                                                                                                                                    .setTemperatureHeatSetpointDegF(2)
                                                                                                                                                    .setTemperatureIndoorDegF(5)
-                                                                                                                                                   .setTemperatureOutdoorDegF(6))
+                                                                                                                                                   .setTemperatureOutdoorDegF(6)
+                                                                                                                                                   .setConnectionState(ecp_thermostat_connection_state.connected))
                                                                                                            .build();
         
         RestTemplate restTemplate = getRestTemplate();

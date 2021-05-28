@@ -370,7 +370,7 @@ public class LoadProgramSetupControllerHelper {
     
     private void setEcobeePlusFieldsDefaultValues(EcobeePlusGearFields ecobeePlusGearFields) {
         ecobeePlusGearFields.setRampInOut(true);
-        ecobeePlusGearFields.setHeatingEvent(true);
+        ecobeePlusGearFields.setHeatingEvent(false);
         ecobeePlusGearFields.setCapacityReduction(100);
     }
 

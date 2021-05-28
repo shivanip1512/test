@@ -155,7 +155,8 @@ public class PxMWSimulatorController {
             } else if (endpoint == PxMWRetrievalUrl.DEVICE_DETAIL) {
                 PxMWDeviceDetail detail = pxMWCommunicationServiceV1.getDeviceDetails(paramList.get(0), parseBoolean(paramList, 1));
                 processSuccess(params, json, getFormattedJson(detail));
-            } else if (endpoint == PxMWRetrievalUrl.SITES) {
+            } 
+            else if (endpoint == PxMWRetrievalUrl.SITES) {
                 String siteGuid = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID);
                 List<PxMWSiteV1> detail = pxMWCommunicationServiceV1.getSites(siteGuid);
                 processSuccess(params, json, getFormattedJson(detail));

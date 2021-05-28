@@ -71,6 +71,8 @@ public class DeviceAttributeReadEatonCloudServiceImpl implements DeviceAttribute
             Set<Integer> deviceIds =
                 StreamUtils.stream(devices).map(device -> device.getPao().getPaoId()).collect(
                     Collectors.toSet());
+            
+            commandRequestExecutionResultDao.saveExecutionRequest(execution.getId(), deviceIds);
 
             DateTime start = new DateTime();
             DateTime end = start.minusDays(7);

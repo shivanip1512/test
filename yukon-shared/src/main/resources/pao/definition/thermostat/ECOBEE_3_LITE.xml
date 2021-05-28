@@ -8,6 +8,7 @@
         <tag name="ASSET_DETAIL_DISPLAYABLE"/>
     </tags>
     <pointInfos>
+        <pointInfo name="Comm Status" init="true" attributes="COMM_STATUS"/>
         <pointInfo name="Control Status" init="true" attributes="CONTROL_STATUS"/>
         <pointInfo name="Cool Set Temperature" init="true" attributes="COOL_SET_TEMPERATURE"/>
         <pointInfo name="Heat Set Temperature" init="true" attributes="HEAT_SET_TEMPERATURE"/>
