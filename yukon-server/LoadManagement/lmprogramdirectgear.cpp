@@ -700,32 +700,6 @@ std::size_t CtiLMProgramDirectGear::getVariableSize() const
 
 // Static Members
 
-//Possible control methods
-const string CtiLMProgramDirectGear::TimeRefreshMethod = "TimeRefresh";
-const string CtiLMProgramDirectGear::SmartCycleMethod = "SmartCycle";
-const string CtiLMProgramDirectGear::MasterCycleMethod = "MasterCycle";
-const string CtiLMProgramDirectGear::RotationMethod = "Rotation";
-const string CtiLMProgramDirectGear::LatchingMethod = "Latching";
-const string CtiLMProgramDirectGear::TrueCycleMethod = "TrueCycle";
-const string CtiLMProgramDirectGear::ThermostatRampingMethod = "ThermostatRamping";
-const string CtiLMProgramDirectGear::SimpleThermostatRampingMethod = "SimpleThermostatRamping";
-const string CtiLMProgramDirectGear::TargetCycleMethod = "TargetCycle";
-const string CtiLMProgramDirectGear::MagnitudeCycleMethod = "MagnitudeCycle";
-const string CtiLMProgramDirectGear::SEPCycleMethod = "SEPCycle";
-const string CtiLMProgramDirectGear::SEPTempOffsetMethod = "SEPTemperatureOffset";
-const string CtiLMProgramDirectGear::EcobeeCycleMethod = "EcobeeCycle";
-const string CtiLMProgramDirectGear::EcobeeSetpointMethod = "EcobeeSetpoint";
-const string CtiLMProgramDirectGear::HoneywellCycleMethod = "HoneywellCycle";
-const string CtiLMProgramDirectGear::HoneywellSetpointMethod = "HoneywellSetpoint";
-const string CtiLMProgramDirectGear::NestCriticalCycleMethod = "NestCriticalCycle";
-const string CtiLMProgramDirectGear::NestStandardCycleMethod = "NestStandardCycle";
-const string CtiLMProgramDirectGear::ItronCycleMethod = "ItronCycle";
-const string CtiLMProgramDirectGear::MeterDisconnectMethod = "MeterDisconnect";
-const string CtiLMProgramDirectGear::BeatThePeakMethod = "BeatThePeak";
-const string CtiLMProgramDirectGear::NoControlMethod = "NoControl";
-const string CtiLMProgramDirectGear::EatonCloudCycleMethod = "EatonCloudCycle";
-const string CtiLMProgramDirectGear::EatonCloudNoControlMethod = "EatonCloudNoControl";
-
 //Possible method stop types
 const string CtiLMProgramDirectGear::RestoreStopType = "Restore";
 const string CtiLMProgramDirectGear::TimeInStopType = "TimeIn";

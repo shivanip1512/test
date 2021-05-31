@@ -78,63 +78,66 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
 
     /* Static Members */
 
-    //Possible control methods
-    static const std::string TimeRefreshMethod;
-    static const std::string SmartCycleMethod;
-    static const std::string MasterCycleMethod;
-    static const std::string RotationMethod;
-    static const std::string LatchingMethod;
-    static const std::string TrueCycleMethod;
-    static const std::string MagnitudeCycleMethod;
-    static const std::string ThermostatRampingMethod;
-    static const std::string TargetCycleMethod;
-    static const std::string SimpleThermostatRampingMethod;
-    static const std::string SEPCycleMethod;
-    static const std::string SEPTempOffsetMethod;
-    static const std::string EcobeeCycleMethod;
-    static const std::string EcobeeSetpointMethod;
-    inline static const std::string EcobeePlusMethod = "EcobeePlus";
-    static const std::string HoneywellCycleMethod;
-    static const std::string HoneywellSetpointMethod;
-    static const std::string NestCriticalCycleMethod;
-    static const std::string NestStandardCycleMethod;
-    static const std::string ItronCycleMethod;
-    static const std::string MeterDisconnectMethod;
-    static const std::string BeatThePeakMethod;
-    static const std::string NoControlMethod;
-    static const std::string EatonCloudCycleMethod;
-    static const std::string EatonCloudNoControlMethod;
+   // static constexpr std::string_view someday(?)
+   inline static const std::string
 
-    //Possible method stop types
-    static const std::string RestoreStopType;
-    static const std::string TimeInStopType;
-    static const std::string StopCycleStopType;
-    static const std::string RampOutRandomStopType;
-    static const std::string RampOutFIFOStopType;
-    static const std::string RampOutRandomRestoreStopType;
-    static const std::string RampOutFIFORestoreStopType;
+       //Possible control methods
+       TimeRefreshMethod{ "TimeRefresh" },
+       SmartCycleMethod{ "SmartCycle" },
+       MasterCycleMethod{ "MasterCycle" },
+       RotationMethod{ "Rotation" },
+       LatchingMethod{ "Latching" },
+       TrueCycleMethod{ "TrueCycle" },
+       ThermostatRampingMethod{ "ThermostatRamping" },
+       SimpleThermostatRampingMethod{ "SimpleThermostatRamping" },
+       TargetCycleMethod{ "TargetCycle" },
+       MagnitudeCycleMethod{ "MagnitudeCycle" },
+       SEPCycleMethod{ "SEPCycle" },
+       SEPTempOffsetMethod{ "SEPTemperatureOffset" },
+       EcobeeCycleMethod{ "EcobeeCycle" },
+       EcobeeSetpointMethod{ "EcobeeSetpoint" },
+       EcobeePlusMethod{ "EcobeePlus" },
+       HoneywellCycleMethod{ "HoneywellCycle" },
+       HoneywellSetpointMethod{ "HoneywellSetpoint" },
+       NestCriticalCycleMethod{ "NestCriticalCycle" },
+       NestStandardCycleMethod{ "NestStandardCycle" },
+       ItronCycleMethod{ "ItronCycle" },
+       MeterDisconnectMethod{ "MeterDisconnect" },
+       BeatThePeakMethod{ "BeatThePeak" },
+       NoControlMethod{ "NoControl" },
+       EatonCloudCycleMethod{ "EatonCloudCycle" },
+       EatonCloudNoControlMethod{ "EatonCloudNoControl" };      
 
-    //Possible gear change condition types
-    static const std::string NoneChangeCondition;
-    static const std::string DurationChangeCondition;
-    static const std::string PriorityChangeCondition;
-    static const std::string TriggerOffsetChangeCondition;
+       //Possible method stop types
+       static const std::string RestoreStopType;
+       static const std::string TimeInStopType;
+       static const std::string StopCycleStopType;
+       static const std::string RampOutRandomStopType;
+       static const std::string RampOutFIFOStopType;
+       static const std::string RampOutRandomRestoreStopType;
+       static const std::string RampOutFIFORestoreStopType;
 
-    // Possible group selection methods
-    static const std::string LastControlledSelectionMethod;
-    static const std::string AlwaysFirstGroupSelectionMethod;
-    static const std::string LeastControlTimeSelectionMethod;
+       //Possible gear change condition types
+       static const std::string NoneChangeCondition;
+       static const std::string DurationChangeCondition;
+       static const std::string PriorityChangeCondition;
+       static const std::string TriggerOffsetChangeCondition;
 
-    // Possible method option types
-    static const std::string FixedCountMethodOptionType;
-    static const std::string CountDownMethodOptionType;
-    static const std::string LimitedCountDownMethodOptionType;
-    static const std::string DynamicShedTimeMethodOptionType;
+       // Possible group selection methods
+       static const std::string LastControlledSelectionMethod;
+       static const std::string AlwaysFirstGroupSelectionMethod;
+       static const std::string LeastControlTimeSelectionMethod;
 
-    // Possible randomoption types
-    static const std::string NoneRandomOptionType;
-    static const std::string NoRampRandomOptionType;
-    static const std::string RandomizeRandomOptionType;
+       // Possible method option types
+       static const std::string FixedCountMethodOptionType;
+       static const std::string CountDownMethodOptionType;
+       static const std::string LimitedCountDownMethodOptionType;
+       static const std::string DynamicShedTimeMethodOptionType;
+
+       // Possible randomoption types
+       static const std::string NoneRandomOptionType;
+       static const std::string NoRampRandomOptionType;
+       static const std::string RandomizeRandomOptionType;
 
 protected:
     void restore(Cti::RowReader &rdr);
