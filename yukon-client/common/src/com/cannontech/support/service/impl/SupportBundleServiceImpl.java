@@ -115,9 +115,12 @@ public class SupportBundleServiceImpl implements SupportBundleService {
     public List<File> getRfBundles() {
         return filterFile(getRfBundleDir());
     }
-
-    private List<File> filterFile(File file) {
-        File[] allFiles = file.listFiles(new FilenameFilter() {
+    
+    /**
+     * Filter all the zip files and ordered them based on last modified date i.e latest file first.
+     */
+    private List<File> filterFile(File dir) {
+        File[] allFiles = dir.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String filename) {
                 if (filename.endsWith(".zip")) {
                     return true;
