@@ -57,6 +57,7 @@ import com.cannontech.common.exception.EcobeePGPException;
 import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.ApplicationId;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -597,7 +598,7 @@ public class YukonSecurityController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
         } catch (CryptoException e) {
             log.error("Unable to decrypt file", e);
-            eventLogHelper.decryptionFailedEventLog(ApplicationId.WEBSERVER.getApplicationName(), "Private Key");
+            eventLogHelper.decryptionFailedEventLog( BootstrapUtils.getApplicationName(), "Private Key");
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
         } catch (JDOMException e) {
             log.error("Unable to properly read file", e);

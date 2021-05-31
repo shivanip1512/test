@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.helper.EventLogHelper;
-import com.cannontech.common.util.ApplicationId;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
@@ -118,7 +118,7 @@ public class ItronSecurityServiceImpl implements ItronSecurityService {
             return itronKeyPair;
         } catch (Exception e) {
             log.debug("Exception getting ItronSshRsaKeyPair", e);
-            eventLogHelper.decryptionFailedEventLog(ApplicationId.SERVICE_MANAGER.getApplicationName(), "Itron Private Key Password");
+            eventLogHelper.decryptionFailedEventLog( BootstrapUtils.getApplicationName(), "Itron Private Key Password");
 
             throw new ItronSecurityException("Error retrieving Itron keys.", e);
         }

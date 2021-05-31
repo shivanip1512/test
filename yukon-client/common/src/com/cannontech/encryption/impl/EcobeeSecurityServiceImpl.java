@@ -64,6 +64,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.helper.EventLogHelper;
 import com.cannontech.common.exception.EcobeePGPException;
 import com.cannontech.common.util.ApplicationId;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
@@ -280,7 +281,7 @@ public class EcobeeSecurityServiceImpl implements EcobeeSecurityService {
             return decryptedData;
         } catch (CryptoException | IOException | JDOMException | DecoderException | PGPException e) {
             log.error("Error while decrypting the gpg file" + e);
-            eventLogHelper.decryptionFailedEventLog(ApplicationId.SERVICE_MANAGER.getApplicationName(), "Ecobee Private Key");
+            eventLogHelper.decryptionFailedEventLog( BootstrapUtils.getApplicationName(), "Ecobee Private Key");
 
             throw new EcobeePGPException("Unable to decrypt the gpg file");
         }

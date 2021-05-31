@@ -46,7 +46,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.helper.EventLogHelper;
-import com.cannontech.common.util.ApplicationId;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.dr.honeywell.HoneywellCommunicationException;
@@ -416,7 +416,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         }  catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException
                 | InvalidKeySpecException | CryptoException | IOException | JDOMException | DecoderException e) {
                 log.error("Request signing for Honeywell failed with message: \"" + e.getMessage() + "\".");
-                eventLogHelper.decryptionFailedEventLog(ApplicationId.SERVICE_MANAGER.getApplicationName(), "Honeywell Private Key");
+                eventLogHelper.decryptionFailedEventLog( BootstrapUtils.getApplicationName(), "Honeywell Private Key");
 
                 throw new HoneywellCommunicationException("Unable to communicate with Honeywell API.", e);
             }
