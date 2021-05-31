@@ -108,36 +108,36 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
        EatonCloudCycleMethod{ "EatonCloudCycle" },
        EatonCloudNoControlMethod{ "EatonCloudNoControl" };      
 
-       //Possible method stop types
-       static const std::string RestoreStopType;
-       static const std::string TimeInStopType;
-       static const std::string StopCycleStopType;
-       static const std::string RampOutRandomStopType;
-       static const std::string RampOutFIFOStopType;
-       static const std::string RampOutRandomRestoreStopType;
-       static const std::string RampOutFIFORestoreStopType;
+   //Possible method stop types
+   static const std::string RestoreStopType;
+   static const std::string TimeInStopType;
+   static const std::string StopCycleStopType;
+   static const std::string RampOutRandomStopType;
+   static const std::string RampOutFIFOStopType;
+   static const std::string RampOutRandomRestoreStopType;
+   static const std::string RampOutFIFORestoreStopType;
 
-       //Possible gear change condition types
-       static const std::string NoneChangeCondition;
-       static const std::string DurationChangeCondition;
-       static const std::string PriorityChangeCondition;
-       static const std::string TriggerOffsetChangeCondition;
+   //Possible gear change condition types
+   static const std::string NoneChangeCondition;
+   static const std::string DurationChangeCondition;
+   static const std::string PriorityChangeCondition;
+   static const std::string TriggerOffsetChangeCondition;
 
-       // Possible group selection methods
-       static const std::string LastControlledSelectionMethod;
-       static const std::string AlwaysFirstGroupSelectionMethod;
-       static const std::string LeastControlTimeSelectionMethod;
+   // Possible group selection methods
+   static const std::string LastControlledSelectionMethod;
+   static const std::string AlwaysFirstGroupSelectionMethod;
+   static const std::string LeastControlTimeSelectionMethod;
 
-       // Possible method option types
-       static const std::string FixedCountMethodOptionType;
-       static const std::string CountDownMethodOptionType;
-       static const std::string LimitedCountDownMethodOptionType;
-       static const std::string DynamicShedTimeMethodOptionType;
+   // Possible method option types
+   static const std::string FixedCountMethodOptionType;
+   static const std::string CountDownMethodOptionType;
+   static const std::string LimitedCountDownMethodOptionType;
+   static const std::string DynamicShedTimeMethodOptionType;
 
-       // Possible randomoption types
-       static const std::string NoneRandomOptionType;
-       static const std::string NoRampRandomOptionType;
-       static const std::string RandomizeRandomOptionType;
+   // Possible randomoption types
+   static const std::string NoneRandomOptionType;
+   static const std::string NoRampRandomOptionType;
+   static const std::string RandomizeRandomOptionType;
 
 protected:
     void restore(Cti::RowReader &rdr);
