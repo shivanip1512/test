@@ -176,6 +176,33 @@
     <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusURL.blank">Please configure the ecobee Reporting URL in Configuration settings.</entry>
     
     <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyBox.title">ecobee Zeus Encryption Keys</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyBox.helpText"><![CDATA[<b> ecobee Zeus Push API Configuration - </b>
+        Yukon sends Push API configuration to ecobee Zeus with a publicly accessible HTTPS endpoint and encoded private key.
+        <ul>
+            <li>
+                <span> <b> Reporting URL - </b> </span> User specified URL for incoming ecobee data.<br>
+                This value can be configured by going to the following menu option: (Admin -> Configuration -> Demand Response).
+            </li>
+            <li>
+                <span> <b> Key </b> </span> - Base64 encoded RSA key.
+            </li>
+        </ul>
+        The following options are available:
+        <ul>
+            <li>
+                <span> <b> Generate New Key - </b> </span> Generates a new key pair.
+            </li>
+            <li>
+                <span> <b> View Public Key - </b> </span> Displays the Public key.
+           </li>
+            <li>
+                <span> <b> Register Configuration - </b> </span> Yukon sends Push API configuration to ecobee Zeus.
+            </li>
+            <li>
+                <span> <b> Check Registration - </b> </span> Request Push data configuration from ecobee Zeus and check it against Yukon's stored configuration.
+            </li>
+        </ul>
+    ]]></entry>
     <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeZeusKey.title">Confirm Generate ecobee Zeus Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeZeusKey.message">Are you sure you want to generate new ecobee Zeus encryption keys?</entry>
     <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeZeusKey.warning">This will overwrite the existing Public/Private keys and will prevent Yukon from processing ecobee thermostat data until the new keys are registered with ecobee.</entry>
