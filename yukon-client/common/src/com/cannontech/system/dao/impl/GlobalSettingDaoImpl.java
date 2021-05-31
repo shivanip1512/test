@@ -208,7 +208,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
 
                 } catch (CryptoException | IOException | JDOMException | DecoderException e) {
                     value = type.getDefaultValue();
-                    eventLogHelper.decryptionFailedEventLog( BootstrapUtils.getApplicationName(), type.getDescriptionKey());
+                    eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), type.getDescriptionKey());
                     log.error("Unable to decrypt value for setting " + type + ". Using the default value");
                 }
             }

@@ -281,7 +281,7 @@ public class EcobeeSecurityServiceImpl implements EcobeeSecurityService {
             return decryptedData;
         } catch (CryptoException | IOException | JDOMException | DecoderException | PGPException e) {
             log.error("Error while decrypting the gpg file" + e);
-            eventLogHelper.decryptionFailedEventLog( BootstrapUtils.getApplicationName(), "Ecobee Private Key");
+            eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), "Ecobee Private Key");
 
             throw new EcobeePGPException("Unable to decrypt the gpg file");
         }

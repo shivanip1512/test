@@ -416,7 +416,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         }  catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException
                 | InvalidKeySpecException | CryptoException | IOException | JDOMException | DecoderException e) {
                 log.error("Request signing for Honeywell failed with message: \"" + e.getMessage() + "\".");
-                eventLogHelper.decryptionFailedEventLog( BootstrapUtils.getApplicationName(), "Honeywell Private Key");
+            eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), "Honeywell Private Key");
 
                 throw new HoneywellCommunicationException("Unable to communicate with Honeywell API.", e);
             }

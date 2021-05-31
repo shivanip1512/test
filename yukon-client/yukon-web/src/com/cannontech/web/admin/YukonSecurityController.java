@@ -598,7 +598,7 @@ public class YukonSecurityController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
         } catch (CryptoException e) {
             log.error("Unable to decrypt file", e);
-            eventLogHelper.decryptionFailedEventLog( BootstrapUtils.getApplicationName(), "Private Key");
+            eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), "Private Key");
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
         } catch (JDOMException e) {
             log.error("Unable to properly read file", e);

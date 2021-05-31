@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.SystemEventLogService;
-import com.cannontech.common.util.ApplicationId;
 
 public class EventLogHelper {
 

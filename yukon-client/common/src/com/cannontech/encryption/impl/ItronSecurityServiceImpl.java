@@ -118,7 +118,7 @@ public class ItronSecurityServiceImpl implements ItronSecurityService {
             return itronKeyPair;
         } catch (Exception e) {
             log.debug("Exception getting ItronSshRsaKeyPair", e);
-            eventLogHelper.decryptionFailedEventLog( BootstrapUtils.getApplicationName(), "Itron Private Key Password");
+            eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), "Itron Private Key Password");
 
             throw new ItronSecurityException("Error retrieving Itron keys.", e);
         }
