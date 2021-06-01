@@ -198,8 +198,9 @@ public class PxMWDataV1 extends PxMWDataGenerator {
             String guid = UUID.randomUUID().toString();
             int value = nextValueHelper.getNextValue("PxMWSimulatorNameIncrementor");
             String name = createRequest.getPaoType() + "_SIM_" + value;
+            String serial = createRequest.getPaoType() + "SIM" + value;
             PxMWSiteDeviceV1 siteDevice = new PxMWSiteDeviceV1(guid,
-                    "72358726-1ed0-485b-8beb-6a27a27b58e8", name, "...", "...", "...",
+                    "72358726-1ed0-485b-8beb-6a27a27b58e8", name, serial, "...", "...", "...",
                     paoTypeToHardware.get(createRequest.getPaoType()).toString(), "...", "...", "...", "...",
                     "...");
             siteDeviceList.add(siteDevice);

@@ -237,7 +237,7 @@ public class PxMWDataRetrievalService {
         hardware.setGuid(device.getDeviceGuid());
         hardware.setDisplayName(device.getName());
         hardware.setHardwareType(HardwareType.valueOf(device.getModel()));
-        hardware.setSerialNumber(device.getName());
+        hardware.setSerialNumber(device.getSerial());
         return hardware;
     }
 }

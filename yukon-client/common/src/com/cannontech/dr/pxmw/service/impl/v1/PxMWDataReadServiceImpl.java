@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.buf.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -111,6 +112,9 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
             }
             LiteYukonPAObject device = deviceIdToPao.get(deviceId);
             for (PxMWTimeSeriesResultV1 result : deviceResult.getResults()) {
+                if (CollectionUtils.isEmpty(result.getValues())) {
+                    continue;
+                }
                 try {
                     Integer tag = Integer.parseInt(result.getTag());
                     MWChannel mwChannel = MWChannel.getChannelLookup().get(tag);
