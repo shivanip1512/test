@@ -25,6 +25,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.LocationData;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -1311,6 +1312,11 @@ public class RfnGatewayServiceTest {
 
         @Override
         public List<SimpleDevice> getDevicesWithoutLocationByGateway(List<Integer> gatewayIds) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<LocationData> getLocationDetailForPaoType(Iterable<PaoType> paoTypes, int startIndex, int endIndex) {
             throw new UnsupportedOperationException();
         }
     }
