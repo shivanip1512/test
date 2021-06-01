@@ -207,5 +207,8 @@
     <ClCompile Include="SmartGearCyclingOption.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ecobeePlusGear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

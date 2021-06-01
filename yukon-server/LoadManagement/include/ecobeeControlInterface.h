@@ -18,6 +18,10 @@ struct EcobeeControlInterface
                                       bool temperatureOption,
                                       bool mandatory,
                                       long temperatureOffset ) = 0;
+
+    virtual bool sendEcobeePlusControl( long controlDurationSeconds,
+                                        bool temperatureOption,
+                                        long randomTimeSeconds ) = 0;
 };
 
 typedef boost::shared_ptr<EcobeeControlInterface> EcobeeControlInterfacePtr;
