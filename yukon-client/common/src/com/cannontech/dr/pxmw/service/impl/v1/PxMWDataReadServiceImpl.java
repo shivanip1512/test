@@ -148,7 +148,7 @@ public class PxMWDataReadServiceImpl implements PxMWDataReadService {
     }
 
     private void updatePaoInfo(InfoKey key, LiteYukonPAObject device, List<PxMWTimeSeriesValueV1> values) {
-        if (true) {
+        if (!values.isEmpty()) {
             PxMWTimeSeriesValueV1 value = Collections.max(values,
                     Comparator.comparing(v -> new Instant(v.getTimestamp() * 1000)));
             paoDao.savePaoInfo(device.getLiteID(), key, value.getValue(),
