@@ -51,10 +51,13 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.events.helper.EventLogHelper;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.EcobeePGPException;
 import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.ApplicationId;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -105,6 +108,7 @@ public class YukonSecurityController {
     @Autowired private GlobalSettingDaoImpl globalSettingDaoImpl;
     @Autowired private EcobeeZeusSecurityService ecobeeZeusSecurityService;
     @Autowired private EcobeeZeusCommunicationServiceImpl ecobeeZeusCommunicationService;
+    @Autowired private EventLogHelper eventLogHelper;
     
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -531,7 +535,8 @@ public class YukonSecurityController {
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
             } catch (CryptoException e) {
                 log.error("Unable to decrypt file", e);
-                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
+                eventLogHelper.decryptionFailedEventLog(ApplicationId.WEBSERVER.getApplicationName(), "RSA Public Key");
+               flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
             } catch (JDOMException e) {
                 log.error("Unable to properly read file", e);
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
@@ -593,6 +598,7 @@ public class YukonSecurityController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
         } catch (CryptoException e) {
             log.error("Unable to decrypt file", e);
+            eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), "Private Key");
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
         } catch (JDOMException e) {
             log.error("Unable to properly read file", e);
