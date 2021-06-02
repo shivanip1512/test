@@ -40,7 +40,6 @@ post-operation:
             examples:
               List Routes:
                 $ref: '../schemas/routesSchema.yaml#/components/examples/List Routes'
-
 get-update-delete-operation:
   get:
     tags:
@@ -64,8 +63,6 @@ get-update-delete-operation:
             examples:
               Route:
                 $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
-
-get-update-delete-operation:
   delete:
     tags:
      - Route

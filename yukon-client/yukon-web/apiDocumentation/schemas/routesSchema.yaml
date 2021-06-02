@@ -23,7 +23,6 @@ id:
     id:
       type: integer
       description: 'Unique identifier for Route.'
-
 routeId:
   title: routeId
   required:
@@ -56,6 +55,3 @@ components:
     routeId:
       value:
         routeId: 10
-    id:
-      value:
-        id: 572
