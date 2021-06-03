@@ -1,7 +1,6 @@
 package com.cannontech.dr.itron.service;
 
 import java.util.List;
-
 import java.util.Map;
 
 import org.joda.time.DateTime;
@@ -13,13 +12,12 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.dr.itron.ItronDataEventType;
-import com.cannontech.dr.itron.service.ItronRuntimeCalcService;
+import com.cannontech.dr.itron.model.ItronRelayDataLogs;
 import com.cannontech.dr.service.RuntimeCalcSchedulerService;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.DatedShedtimeStatus;
 import com.cannontech.dr.service.impl.RuntimeStatus;
 import com.cannontech.dr.service.impl.ShedtimeStatus;
-import com.cannontech.dr.itron.service.model.ItronRelayDataLogs;
 
 public class ItronRuntimeCalcService extends RuntimeCalcSchedulerService {
     {

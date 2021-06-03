@@ -1,4 +1,4 @@
-package com.cannontech.dr.itron.service.model;
+package com.cannontech.dr.itron.model;
 
 import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.*;
 
