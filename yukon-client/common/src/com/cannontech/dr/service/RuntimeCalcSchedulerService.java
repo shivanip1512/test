@@ -145,10 +145,7 @@ public abstract class RuntimeCalcSchedulerService {
                 return;
             }
             log.info("{} Calculating runtime/shedtime for {} devices", this.getClass().getSimpleName(), devices.size());
-
-            if(devices.get(0).getPaoIdentifier().getPaoType().isCloudLcr()) {
-                System.out.println();
-            }
+            
             Map<PaoIdentifier, PaoMultiPointIdentifier> deviceDataLogPoints = attributeService
                     .findPaoMultiPointIdentifiersForAttributes(devices, dataLogAttributes).stream()
                     .collect(StreamUtils.mapToSelf(PaoMultiPointIdentifier::getPao));
