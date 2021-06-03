@@ -14,29 +14,26 @@ LMEcobeeCyclingControlMessage::LMEcobeeCyclingControlMessage( int  groupId,
                                                               int  dutyCycle,
                                                               int  startTime,
                                                               int  controlDuration,
-                                                              bool rampIn,
-                                                              bool rampOut,
-                                                              bool mandatory )
+                                                              bool mandatory,
+                                                              bool rampInOut )
     :   _groupId( groupId ),
-        _rampingOption( 0x00 ),
         _dutyCycle( dutyCycle ),
         _startTime( startTime ),
         _stopTime( startTime + controlDuration ),
-        _mandatory( mandatory )
+        _mandatory( mandatory ),
+        _rampingOption( rampInOut )
 {
-    // set specified flags 
-    _rampingOption |= rampIn  ? RampIn  : 0 ;
-    _rampingOption |= rampOut ? RampOut : 0 ;
+    // Empty
 }
 
 void LMEcobeeCyclingControlMessage::streamInto( cms::StreamMessage & message ) const
 {
     message.writeInt ( _groupId );
     message.writeByte( _dutyCycle );
-    message.writeByte( _rampingOption );
     message.writeByte( _mandatory );
     message.writeInt ( _startTime );
     message.writeInt ( _stopTime );
+    message.writeByte( _rampingOption );
 }
 
 ///

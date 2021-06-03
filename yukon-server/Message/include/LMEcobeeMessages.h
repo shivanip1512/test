@@ -16,26 +16,18 @@ public:
                                    int  dutyCycle,
                                    int  startTime,
                                    int  controlDuration,
-                                   bool rampIn,
-                                   bool rampOut,
-                                   bool mandatory );
-
+                                   bool mandatory,
+                                   bool rampInOut);
     void streamInto( cms::StreamMessage & message ) const;
 
 private:
 
-    enum RampOptionFlags
-    {
-        RampOut = ( 1 << 0 ),
-        RampIn  = ( 1 << 1 )
-    };
-
     int  _groupId;
-    char _rampingOption;
     char _dutyCycle;
     int  _startTime;
     int  _stopTime;
     char _mandatory;
+    bool _rampingOption;
 };
 
 ///
