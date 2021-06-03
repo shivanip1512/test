@@ -25,4 +25,6 @@
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
             <jms:listener destination="yukon.notif.stream.dr.EatonCloudStopRequest" ref="eatonCloudCommandListener" method="handleEatonCloudStopCommand"/>
     </jms:listener-container>
+    
+    <bean class="com.cannontech.dr.eatonCloud.service.EatonCloudRuntimeCalcService"/>
 </beans>

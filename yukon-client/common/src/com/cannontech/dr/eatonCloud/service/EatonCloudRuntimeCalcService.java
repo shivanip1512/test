@@ -1,7 +1,6 @@
-package com.cannontech.dr.itron.service;
+package com.cannontech.dr.eatonCloud.service;
 
 import java.util.List;
-
 import java.util.Map;
 
 import org.joda.time.DateTime;
@@ -12,20 +11,25 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.dr.itron.ItronDataEventType;
-import com.cannontech.dr.itron.service.ItronRuntimeCalcService;
+import com.cannontech.database.db.point.stategroup.OnOff;
+import com.cannontech.database.db.point.stategroup.TrueFalse;
+import com.cannontech.dr.eatonCloud.model.EatonCloudRelayDataLogs;
 import com.cannontech.dr.service.RuntimeCalcSchedulerService;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.DatedShedtimeStatus;
 import com.cannontech.dr.service.impl.RuntimeStatus;
 import com.cannontech.dr.service.impl.ShedtimeStatus;
-import com.cannontech.dr.itron.service.model.ItronRelayDataLogs;
 
-public class ItronRuntimeCalcService extends RuntimeCalcSchedulerService {
+public class EatonCloudRuntimeCalcService extends RuntimeCalcSchedulerService {
+
+    /*
+     * Relay X Run Time Data Log X Minutes and Relay X Shed Time Data Log X Minutes are not created automatically, use collection
+     * action to add points
+     */
     {
-        dataLogAttributes = ItronRelayDataLogs.getDataLogAttributes();
-        relayStatusAttributes = ItronRelayDataLogs.getRelayStatusAttributes();
-        types = PaoType.getItronTypes();
+        dataLogAttributes =  EatonCloudRelayDataLogs.getDataLogAttributes();
+        relayStatusAttributes =  EatonCloudRelayDataLogs.getRelayStatusAttributes();
+        types = PaoType.getCloudTypes();
     }
 
     @Override
@@ -33,7 +37,7 @@ public class ItronRuntimeCalcService extends RuntimeCalcSchedulerService {
         DateTime date = new DateTime(pointValue.getPointDataTimeStamp());
         RuntimeStatus status = RuntimeStatus.STOPPED;
 
-        if (pointValue.getValue() == ItronDataEventType.LOAD_ON.getValue()) {
+        if (pointValue.getValue() == OnOff.ON.getRawState()) {
             status = RuntimeStatus.RUNNING;
         }
 
@@ -45,7 +49,7 @@ public class ItronRuntimeCalcService extends RuntimeCalcSchedulerService {
         DateTime date = new DateTime(pointValue.getPointDataTimeStamp());
         ShedtimeStatus status = ShedtimeStatus.RESTORED;
 
-        if (pointValue.getValue() == ItronDataEventType.SHED_START.getValue()) {
+        if (pointValue.getValue() == TrueFalse.TRUE.getRawState()) {
             status = ShedtimeStatus.SHED;
         }
 
@@ -56,7 +60,7 @@ public class ItronRuntimeCalcService extends RuntimeCalcSchedulerService {
     protected void calculateRelayDataLogs(YukonPao device, Map<PaoPointIdentifier, Integer> dataLogIdLookup,
             Map<PaoPointIdentifier, Integer> relayStatusIdLookup, Range<Instant> logRange,
             Map<Integer, List<PointValueHolder>> relayStatusData) {
-        for (var relayInfo : ItronRelayDataLogs.values()) {
+        for (var relayInfo : EatonCloudRelayDataLogs.values()) {
             calculateRelayDataLogs(device, logRange, relayStatusData, relayInfo.getRelayStatusAttribute(), relayInfo.isRuntime(),
                     relayInfo.getRelayNumber(), relayInfo.getDataLogIntervals(), relayStatusIdLookup, dataLogIdLookup);
         }
