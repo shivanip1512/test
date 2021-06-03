@@ -18,24 +18,23 @@ public class PxMWDeviceDetail implements Serializable {
     private String vendor; 
     private String family;
     private String role;
-    private String modelCanonicalName;
-    private String modelLongDisplayName;
-    private String modelShortDisplayName;
+    private String model;
+    private String modelLongName;
+    private String modelShortName;
     private String hardware;
     private String software;
     private boolean cloudEnabled;
     private String devices;
     
-    public PxMWDeviceDetail(@JsonProperty("Id") String id, @JsonProperty("ProfileId") String profileId,
-            @JsonProperty("PublisherId") String publisherId, @JsonProperty("SiteId") String siteId,
-            @JsonProperty("Name") String name, @JsonProperty("Serial") String serial,
-            @JsonProperty("Asset") String asset, @JsonProperty("MacAddress") String macAddress,
-            @JsonProperty("Vendor") String vendor, @JsonProperty("Family") String family, @JsonProperty("Role") String role,
-            @JsonProperty("ModelCanonicalName") String modelCanonicalName,
-            @JsonProperty("ModelLongDisplayName") String modelLongDisplayName,
-            @JsonProperty("ModelShortDisplayName") String modelShortDisplayName, @JsonProperty("Hardware") String hardware,
-            @JsonProperty("Software") String software, @JsonProperty("CloudEnabled") boolean cloudEnabled,
-            @JsonProperty("Devices") String devices) {
+    public PxMWDeviceDetail(@JsonProperty("id") String id, @JsonProperty("profile_id") String profileId,
+            @JsonProperty("publisher_id") String publisherId, @JsonProperty("site_id") String siteId,
+            @JsonProperty("name") String name, @JsonProperty("serial") String serial,
+            @JsonProperty("asset") String asset, @JsonProperty("mac") String macAddress,
+            @JsonProperty("vendor") String vendor, @JsonProperty("family") String family,
+            @JsonProperty("role") String role, @JsonProperty("model") String model,
+            @JsonProperty("model_lname") String modelLongName, @JsonProperty("model_sname") String modelShortName,
+            @JsonProperty("hardware") String hardware, @JsonProperty("software") String software, 
+            @JsonProperty("cloud_enabled") boolean cloudEnabled, @JsonProperty("devices") String devices) {
         this.id = id;
         this.profileId = profileId;
         this.publisherId = publisherId;
@@ -47,101 +46,101 @@ public class PxMWDeviceDetail implements Serializable {
         this.vendor = vendor;
         this.family = family;
         this.role = role;
-        this.modelCanonicalName = modelCanonicalName;
-        this.modelLongDisplayName = modelLongDisplayName;
-        this.modelShortDisplayName = modelShortDisplayName;
+        this.model = model;
+        this.modelLongName = modelLongName;
+        this.modelShortName = modelShortName;
         this.hardware = hardware;
         this.software = software;
         this.cloudEnabled = cloudEnabled;
         this.devices = devices;
     }
 
-    @JsonProperty("Id") 
+    @JsonProperty("id") 
     public String getId() {
         return id;
     }
 
-    @JsonProperty("ProfileId") 
+    @JsonProperty("profile_id") 
     public String getProfileId() {
         return profileId;
     }
 
-    @JsonProperty("PublisherId") 
+    @JsonProperty("publisher_id") 
     public String getPublisherId() {
         return publisherId;
     }
 
-    @JsonProperty("SiteId") 
+    @JsonProperty("site_id") 
     public String getSiteId() {
         return siteId;
     }
 
-    @JsonProperty("Name") 
+    @JsonProperty("name") 
     public String getName() {
         return name;
     }
 
-    @JsonProperty("Serial") 
+    @JsonProperty("serial") 
     public String getSerial() {
         return serial;
     }
 
-    @JsonProperty("Asset") 
+    @JsonProperty("asset") 
     public String getAsset() {
         return asset;
     }
 
-    @JsonProperty("MacAddress") 
+    @JsonProperty("mac") 
     public String getMacAddress() {
         return macAddress;
     }
 
-    @JsonProperty("Vendor") 
+    @JsonProperty("vendor") 
     public String getVendor() {
         return vendor;
     }
 
-    @JsonProperty("Family") 
+    @JsonProperty("family") 
     public String getFamily() {
         return family;
     }
 
-    @JsonProperty("Role") 
+    @JsonProperty("role") 
     public String getRole() {
         return role;
     }
 
-    @JsonProperty("ModelCanonicalName") 
-    public String getModelCanonicalName() {
-        return modelCanonicalName;
+    @JsonProperty("model") 
+    public String getModel() {
+        return model;
     }
 
-    @JsonProperty("ModelLongDisplayName") 
-    public String getModelLongDisplayName() {
-        return modelLongDisplayName;
+    @JsonProperty("model_lname") 
+    public String getModelLongName() {
+        return modelLongName;
     }
 
-    @JsonProperty("ModelShortDisplayName") 
-    public String getModelShortDisplayName() {
-        return modelShortDisplayName;
+    @JsonProperty("model_sname") 
+    public String getModelShortName() {
+        return modelShortName;
     }
 
-    @JsonProperty("Hardware") 
+    @JsonProperty("hardware") 
     public String getHardware() {
         return hardware;
     }
 
-    @JsonProperty("Software") 
+    @JsonProperty("software") 
     public String getSoftware() {
         return software;
     }
 
-    @JsonProperty("CloudEnabled") 
+    @JsonProperty("cloud_enabled") 
     public boolean isCloudEnabled() {
         return cloudEnabled;
     }
 
-    @JsonProperty("Devices") 
+    @JsonProperty("devices") 
     public String getDevices() {
         return devices;
     }
