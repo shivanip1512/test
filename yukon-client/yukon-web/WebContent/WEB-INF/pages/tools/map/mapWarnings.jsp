@@ -12,6 +12,9 @@
         <tags:alertBox classes="dn js-no-descendants-message" type="warning" includeCloseButton="true">
             <i:inline key=".descendants.noDevicesReturned" />
         </tags:alertBox>
+        <tags:alertBox classes="dn js-descendants-missing-locations-message" type="warning" includeCloseButton="true">
+            <i:inline key=".descendants.missingLocations" />
+        </tags:alertBox>
     </div>
 
 </cti:msgScope>
