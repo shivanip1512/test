@@ -138,7 +138,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES(GlobalSettingSubCategory.DR, integerType(), 60),
     PX_MIDDLEWARE_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
     PX_MIDDLEWARE_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
-    PX_MIDDLEWARE_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
+    PX_MIDDLEWARE_URL(GlobalSettingSubCategory.DR, stringType(), "https://brightlayer-ind.eaton.com", GlobalSettingTypeValidators.urlValidator),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
