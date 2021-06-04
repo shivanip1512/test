@@ -258,8 +258,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         
         String groupIdString = Integer.toString(parameters.getGroupId());
         DutyCycleDrRequest request = new DutyCycleDrRequest(groupIdString, YUKON_CYCLE_EVENT_NAME, eventDisplayMessage,
-                    parameters.getDutyCyclePercent(), parameters.getStartTime(), parameters.isRampIn(),
-                    parameters.getEndTime(), parameters.isRampOut(), parameters.isOptional(),
+                    parameters.getDutyCyclePercent(), parameters.getStartTime(), parameters.isRampInOut(),
+                    parameters.getEndTime(), false, parameters.isOptional(),
                     settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
 
         HttpEntity<DutyCycleDrRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());

@@ -199,13 +199,16 @@ public class EcobeeMessageListener {
         int dutyCyclePercent = 100 - controlCyclePercent;
         Instant startTime = new Instant(utcStartTimeSeconds * 1000);
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
-        boolean rampIn = (rampingOptions & 2) == 2;
-        boolean rampOut = (rampingOptions & 1) == 1;
+        //boolean rampIn = (rampingOptions & 2) == 2;
+        //boolean rampOut = (rampingOptions & 1) == 1;
         boolean optional = (mandatoryByte == 0);
+        boolean rampInOut = (rampingOptions & 2) == 2;
+        // If rampInOut is set then randomizationInterval is 1800 else 0
+        int randomizationInterval = (rampInOut ? 1800 : 0);
         log.trace("Parsed duty cycle dr parameters. Start time: {} ({}) End time: {} ({}) Ramp in: {} Ramp out:: {} Optional: {}({})", 
-                startTime, utcStartTimeSeconds, endTime, utcEndTimeSeconds, rampIn, rampOut, optional, mandatoryByte);
+                startTime, utcStartTimeSeconds, endTime, utcEndTimeSeconds, rampInOut, optional, mandatoryByte);
         
-        return new EcobeeDutyCycleDrParameters(startTime, endTime, dutyCyclePercent, rampIn, rampOut, optional, groupId);
+        return new EcobeeDutyCycleDrParameters(startTime, endTime, dutyCyclePercent, rampInOut, optional, groupId);
     }
     
     /**

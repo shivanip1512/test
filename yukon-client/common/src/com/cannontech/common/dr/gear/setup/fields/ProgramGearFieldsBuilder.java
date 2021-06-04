@@ -438,10 +438,11 @@ public class ProgramGearFieldsBuilder {
         gearFields.setHowToStopControl(HowToStopControl.valueOf(directGear.getMethodStopType()));
         gearFields.setCapacityReduction(directGear.getPercentReduction());
         gearFields.setControlPercent(directGear.getMethodRate());
-        gearFields.setRampIn(IlmDefines.RAMP_RANDOM.equals(directGear.getFrontRampOption()));
+        //gearFields.setRampIn(IlmDefines.RAMP_RANDOM.equals(directGear.getFrontRampOption()));
         gearFields.setMandatory(IlmDefines.OPTION_MANDATORY.equalsIgnoreCase(directGear.getMethodOptionType()));
-        gearFields.setRampOut(IlmDefines.RAMP_RANDOM.equals(directGear.getBackRampOption()));
-
+        //gearFields.setRampOut(IlmDefines.RAMP_RANDOM.equals(directGear.getBackRampOption()));
+        gearFields.setRampInOut(IlmDefines.RAMP_RANDOM.equals(directGear.getFrontRampOption()));
+        
         WhenToChangeFields changeFields = getWhenToChangeFields(directGear);
         gearFields.setWhenToChangeFields(changeFields);
         return gearFields;
