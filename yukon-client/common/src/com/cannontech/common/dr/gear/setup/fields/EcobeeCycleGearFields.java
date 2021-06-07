@@ -12,10 +12,6 @@ public class EcobeeCycleGearFields implements ProgramGearFields {
     private Boolean mandatory;
     private Integer controlPercent;
     private HowToStopControl howToStopControl;
-
-    //private Boolean rampIn;
-    //private Boolean rampOut;
-    
     private Boolean rampInOut;
 
     private Integer capacityReduction;
@@ -43,22 +39,7 @@ public class EcobeeCycleGearFields implements ProgramGearFields {
     public void setRampInOut(Boolean rampInOut) {
         this.rampInOut = rampInOut;
     }
-    /*public Boolean getRampIn() {
-        return rampIn;
-    }
-
-    public void setRampIn(Boolean rampIn) {
-        this.rampIn = rampIn;
-    }
-
-    public Boolean getRampOut() {
-        return rampOut;
-    }
-
-    public void setRampOut(Boolean rampOut) {
-        this.rampOut = rampOut;
-    }*/
-
+    
     public Integer getCapacityReduction() {
         return capacityReduction;
     }
@@ -90,9 +71,7 @@ public class EcobeeCycleGearFields implements ProgramGearFields {
         setHowToStopControl(HowToStopControl.valueOf(ecobeeCycleGear.getMethodStopType()));
         setCapacityReduction(ecobeeCycleGear.getPercentReduction());
         setControlPercent(ecobeeCycleGear.getControlCyclePercent());
-        //setRampIn(ecobeeCycleGear.isFrontRampEnabled());
         setMandatory(ecobeeCycleGear.isMandatorySelected(ecobeeCycleGear.getMethodOptionType()));
-        //setRampOut(ecobeeCycleGear.isBackRampEnabled());
         setRampInOut(ecobeeCycleGear.isFrontRampEnabled());
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
@@ -109,11 +88,8 @@ public class EcobeeCycleGearFields implements ProgramGearFields {
         ecobeeCycleGear.setPercentReduction(getCapacityReduction());
         ecobeeCycleGear.setControlCyclePercent(getControlPercent());
         ecobeeCycleGear.setFrontRampEnabled(getRampInOut());
-        //ecobeeCycleGear.setFrontRampEnabled(getRampIn());
         ecobeeCycleGear.setMethodOptionType(getMandatory());
-        //ecobeeCycleGear.setBackRampEnabled(getRampOut());
         
-
         whenToChangeFields.buildDBPersistent(ecobeeCycleGear);
 
     }

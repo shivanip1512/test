@@ -18,14 +18,6 @@ public class EcobeeCycleGear extends com.cannontech.database.db.device.lm.LMProg
         setMethodRate(seconds);
     }
 
-    public int getRandomTimeSeconds() {
-        return getMethodRate();
-    }
-
-    public void setRandomTimeSeconds(int randomTimeSeconds) {
-        setMethodRate(randomTimeSeconds);
-    }
-    
     public boolean isFrontRampEnabled() {
         return RAMP_RANDOM.equals(getFrontRampOption());
     }

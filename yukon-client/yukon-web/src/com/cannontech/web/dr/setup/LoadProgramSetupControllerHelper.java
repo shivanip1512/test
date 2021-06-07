@@ -355,8 +355,6 @@ public class LoadProgramSetupControllerHelper {
 
     private void setEcobeeCycleGearFieldsDefaultValues(EcobeeCycleGearFields ecobeeCycleGearFields) {
         ecobeeCycleGearFields.setMandatory(false);
-        //ecobeeCycleGearFields.setRampIn(true);
-        //ecobeeCycleGearFields.setRampOut(true);
         ecobeeCycleGearFields.setRampInOut(true);
         ecobeeCycleGearFields.setControlPercent(50);
         ecobeeCycleGearFields.setCapacityReduction(100);

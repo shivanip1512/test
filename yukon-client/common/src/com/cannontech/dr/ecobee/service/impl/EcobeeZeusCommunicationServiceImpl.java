@@ -305,6 +305,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             ZeusDemandResponseRequest dutyCycleDr = new ZeusDemandResponseRequest(buildZeusEvent(zeusGroupId,
                     parameters.getStartTime(), parameters.getEndTime(), parameters.isOptional()));
             dutyCycleDr.getEvent().setDutyCyclePercentage(parameters.getDutyCyclePercent());
+            dutyCycleDr.getEvent().setRandomTimeSeconds(parameters.getRandomTimeSeconds());
             if (log.isDebugEnabled()) {
                 try {
                     log.debug("Sending ecobee duty cycle DR with body: {}", JsonUtils.toJson(dutyCycleDr));
