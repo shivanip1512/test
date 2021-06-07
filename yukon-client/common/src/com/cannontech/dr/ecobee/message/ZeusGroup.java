@@ -8,6 +8,17 @@ public class ZeusGroup {
     private String groupId;
     private String name;
     @JsonProperty("program_id") private String programId;
+    
+    @JsonProperty("parent_tstatgroup_id")
+    private String parentGroupId;
+
+    public String getParentGroupId() {
+        return parentGroupId;
+    }
+
+    public void setParentGroupId(String parentGroupId) {
+        this.parentGroupId = parentGroupId;
+    }
 
     public ZeusGroup(String name, String programId) {
         this.name = name;

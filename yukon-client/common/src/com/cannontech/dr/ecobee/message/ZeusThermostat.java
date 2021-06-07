@@ -1,5 +1,7 @@
 package com.cannontech.dr.ecobee.message;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,6 +12,17 @@ public class ZeusThermostat {
     private String serialNumber;
     @JsonProperty("state")
     private ZeusThermostatState state;
+
+    @JsonProperty("tstatgroups")
+    private List<ZeusGroup> zeusGroups;
+    
+    public List<ZeusGroup> getZeusGroups() {
+        return zeusGroups;
+    }
+
+    public void setZeusGroups(List<ZeusGroup> zeusGroups) {
+        this.zeusGroups = zeusGroups;
+    }
 
     public ZeusThermostat() {
     }
