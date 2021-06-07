@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
@@ -41,6 +43,7 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileUtil;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
@@ -58,13 +61,14 @@ public class RFNetworkSupportBundleService {
 
     private final static Logger log = YukonLogManager.getLogger(RFNetworkSupportBundleService.class);
     private final static String downloadRfSupportBundleURL = "/nmclient/DownloadRfSupportBundleServlet?fileName=";
-    private final static String supportBundleDirectory = "/Server/SupportBundles/RfNetworkData/";
-    private final static String locationDataDir = supportBundleDirectory + "/locationData";
+    private final static String supportBundleDirectory = "/Server/SupportBundles/";
+    private final static String locationDataDir = "locationData";
     private final static int batchsize = 10;
     private final static int meterLocationcolumnCount = 11;
     private final static int relayLocationcolumnCount = 9;
     private final static String meterLocationFileName = "MeterLocationsInYukon";
     private final static String relayLocationFileName = "RelayLocationsInYukon";
+    private static final int PAST_RF_BUNDLES_TO_KEEP = 5;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired GlobalSettingDao globalSettingDao;
@@ -111,13 +115,11 @@ public class RFNetworkSupportBundleService {
                 log.info(request + " - received reply2(" + statusReply.getResponseType() + ") from NM ");
                 String token = statusReply.getToken();
                 if (RfnSupportBundleResponseType.COMPLETED == statusReply.getResponseType()) {
-                    // TODO : FileName needs to remove after the code changes for NM side for unique customer name. This
-                    // will be collected in the response object.
-                    // TODO: All the data files (historical,location) needs to be put under customer name file and zipped.
-                    String fileName = "historicalData" + "_" + getFormatedDateStr(request.getFromTimestamp());
-                    sendRfSupportBundleDownloadRequest(token, fileName);
-                    sendLocationDataRequest(request, PaoType.getRfMeterTypes(), meterLocationFileName, meterLocationcolumnCount);
-                    sendLocationDataRequest(request, PaoType.getRfRelayTypes(), relayLocationFileName, relayLocationcolumnCount);
+                    File cutomerDir = createCutomerDirectory(request.getFileName());
+                    sendRfSupportBundleDownloadRequest(token, cutomerDir.getPath(), request.getFileName());
+                    sendLocationDataRequest(request);
+                    zipRfSupportBundle(cutomerDir.getAbsolutePath());
+                    removeOldFiles();
                 }
                 responseStatus = statusReply.getResponseType();
             }
@@ -152,11 +154,34 @@ public class RFNetworkSupportBundleService {
     }
 
     /**
+     * Send data collection request for location data i.e meterLocation, relay location and gatewayLocation.
+     */
+    private void sendLocationDataRequest(RfnSupportBundleRequest request) {
+        sendLocationDataRequest(request, PaoType.getRfMeterTypes(), meterLocationFileName, meterLocationcolumnCount);
+        sendLocationDataRequest(request, PaoType.getRfRelayTypes(), relayLocationFileName, relayLocationcolumnCount);
+        // TODO : Call here for gateway location data.
+    }
+
+    /**
+     * Zip Rf Support Bundle directory and delete the original directory once zipping is done.
+     */
+    private void zipRfSupportBundle(String dirPath) {
+        try {
+            String zippedDirPath = dirPath + ".zip";
+            FileUtil.zipFolder(dirPath, zippedDirPath);
+            FileUtil.deleteAllFilesInDirectory(dirPath);
+            Files.deleteIfExists(Paths.get(dirPath));
+        } catch (IOException ex) {
+            log.error("Error fould while zipping Rfn Support Bundle directory.");
+        }
+    }
+
+    /**
      * Send https request to Network Manager server for downloading RfSupportBundle.
      * @param token : token which is generated at NM server side and shared through RfnSupportBundleResponse.
      * @param fileName : Name of file which needs to be download from NM server.
      */
-    private void sendRfSupportBundleDownloadRequest(String token, String fileName) {
+    private void sendRfSupportBundleDownloadRequest(String token, String destDir, String fileName) {
         initializeHttpsSetting();
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> true);
         HttpURLConnection conn = null;
@@ -172,14 +197,10 @@ public class RFNetworkSupportBundleService {
             conn.connect();
 
             InputStream in = conn.getInputStream();
-            // Check If rf support bundle directory exist. If not, create it.
-            if(!getRfBundleDir().isDirectory()) {
-                getRfBundleDir().mkdir();
-            }
-            String destDir = getRfBundleDir() + File.separator + fileName;
+            // Write support bundle data to the destination directory.
             writeSupportBundleData(in, destDir);
         } catch (FileNotFoundException ex) {
-            log.error("Error while sending DownloadRfSupportBundle request. Check global settings for Network Manager server URL. " + url);
+            log.error("Error while sending DownloadRfSupportBundle request. Check global settings for Network Manager server URL. " + ex);
         } catch (Exception ex) {
             log.error("Error while sending DownloadRfSupportBundle request. " + ex);
         } finally {
@@ -215,6 +236,19 @@ public class RFNetworkSupportBundleService {
             bos.write(bytesIn, 0, read);
         }
         bos.close();
+    }
+
+    /**
+     * Create customer directory inside Rf support bundle directory.
+     */
+    private File createCutomerDirectory(String customerDir) {
+        File file = getRfBundleDir();
+        if(!file.isDirectory()) {
+            file.mkdir();
+        }
+        File customerDataDir = new File (file + File.separator + customerDir);
+        customerDataDir.mkdir();
+        return customerDataDir;
     }
 
     private void initializeHttpsSetting() {
@@ -274,7 +308,25 @@ public class RFNetworkSupportBundleService {
      * Return File for Rf Support bundle directory.
      */
     private File getRfBundleDir() {
-        return new File(CtiUtilities.getYukonBase() + supportBundleDirectory);
+        String supportBundleDir = CtiUtilities.getYukonBase() + supportBundleDirectory;
+        if (!new File(supportBundleDir).exists()) {
+            File file = new File(supportBundleDir);
+            file.mkdir();
+        }
+        return new File(supportBundleDir + "RfNetworkData");
+    }
+
+    /**
+     * Deleted Old RF Support Bundle files from RfNetworkData directory.
+     */
+    private void removeOldFiles() {
+        if (PAST_RF_BUNDLES_TO_KEEP >= 0) {
+            List<File> allFiles = FileUtil.filterAndOrderZipFile(getRfBundleDir());
+            for (int i = PAST_RF_BUNDLES_TO_KEEP; i < allFiles.size(); i++) {
+                log.info("Deleted Old RF Support Bundle: " + allFiles.get(i).getName());
+                allFiles.get(i).delete();
+            }
+        }
     }
 
     /**
@@ -308,8 +360,9 @@ public class RFNetworkSupportBundleService {
                     RfnMetadataMultiResponse response = replyHandler.waitForCompletion();
                     
                     // Write data to csv file.
-                    String dir = locationDataDir + "_" + getFormatedDateStr(bundleRequest.getFromTimestamp());
-                    SupportBundleHelper.buildAndWriteLocationDataToDir(response, dataList, dir, fileName, coloumCount);
+                    String dateTime = getFormatedDateStr(bundleRequest.getFromTimestamp());
+                    String destDir = supportBundleDirectory + bundleRequest.getFileName() + File.separator + locationDataDir + "_" + dateTime;
+                    SupportBundleHelper.buildAndWriteLocationDataToDir(response, dataList, destDir, fileName, coloumCount);
                     startIndex = startIndex + batchsize;
                     endIndex = endIndex + batchsize;
                 } catch (ExecutionException | IOException ex) {
