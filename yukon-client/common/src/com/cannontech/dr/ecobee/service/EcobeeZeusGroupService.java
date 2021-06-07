@@ -82,4 +82,9 @@ public interface EcobeeZeusGroupService {
      * Generate and return next name for Zeus group.
      */
     String getNextGroupName(int yukonGroupId);
+
+    /**
+     * Return the group to which Enrollment will happen
+     */
+    Integer getGroupIdToEnroll(List<Integer> yukonGroupIds, int inventoryId);
 }
