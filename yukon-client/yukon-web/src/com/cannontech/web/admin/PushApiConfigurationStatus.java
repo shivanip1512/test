@@ -1,13 +1,13 @@
 package com.cannontech.web.admin;
 
-public enum PushAPIConfigurationStatus {
+public enum PushApiConfigurationStatus {
 
     SUCCESS("success"),
     FAILED("failed");
 
     private String value;
 
-    PushAPIConfigurationStatus(String value) {
+    PushApiConfigurationStatus(String value) {
         this.value = value;
     }
 
@@ -15,8 +15,8 @@ public enum PushAPIConfigurationStatus {
         return value;
     }
 
-    public static PushAPIConfigurationStatus of(String value) {
-        for (PushAPIConfigurationStatus status : values()) {
+    public static PushApiConfigurationStatus of(String value) {
+        for (PushApiConfigurationStatus status : values()) {
             if (status.getValue().equalsIgnoreCase(value)) {
                 return status;
             }
