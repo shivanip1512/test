@@ -298,10 +298,10 @@ public class YukonSecurityController {
        
         DynamicPaoInfo dynamicPaoInfo = paoDao.getDynamicPaoInfo(InfoKey.ECOBEEZEUS);
         if (dynamicPaoInfo != null) {
-            PushAPIConfigurationStatus status = PushAPIConfigurationStatus.of(dynamicPaoInfo.getValue());
+            PushApiConfigurationStatus status = PushApiConfigurationStatus.of(dynamicPaoInfo.getValue());
             String pushConfigDateTime = dateFormattingService.format(dynamicPaoInfo.getTimestamp(),
                     DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
-            if (status == PushAPIConfigurationStatus.SUCCESS) {
+            if (status == PushApiConfigurationStatus.SUCCESS) {
                 String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
                 model.put("ecobeeZeusRegisteredDateTimeSuccess", successMsg + pushConfigDateTime);
             } else {
@@ -726,7 +726,7 @@ public class YukonSecurityController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-        PushAPIConfigurationStatus status = PushAPIConfigurationStatus.SUCCESS;
+        PushApiConfigurationStatus status = PushApiConfigurationStatus.SUCCESS;
         DateTime todayDate = new DateTime();
         String registeredDateTime = dateFormattingService.format(todayDate,
                 DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
@@ -738,7 +738,7 @@ public class YukonSecurityController {
             json.put("success", true);
         } catch (Exception e) {
             log.error("Exception while registering ecobee Zeus", e);
-            status = PushAPIConfigurationStatus.FAILED;
+            status = PushApiConfigurationStatus.FAILED;
 
             String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyNotRegistered");
             json.put("ecobeeKeyZeusRegisteredDateTime", errMsg + registeredDateTime);
