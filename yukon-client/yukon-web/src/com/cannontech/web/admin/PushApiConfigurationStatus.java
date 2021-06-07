@@ -21,6 +21,6 @@ public enum PushApiConfigurationStatus {
                 return status;
             }
         }
-        throw new IllegalArgumentException("No PushAPIConfigurationStatus for \"" + value + "\"");
+        throw new IllegalArgumentException("No PushApiConfigurationStatus for \"" + value + "\"");
     }
 }
