@@ -79,7 +79,8 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
             double latitude = rs.getDouble("Latitude");
             double longitude = rs.getDouble("Longitude");
             PaoType paoType = rs.getEnum("Type", PaoType.class);
-            return new LocationData(rfnIdentifier, latitude, longitude, paoType);
+            int paoId = rs.getInt("PAObjectID");
+            return new LocationData(rfnIdentifier, latitude, longitude, new PaoIdentifier(paoId, paoType));
         }
     };
 
@@ -282,7 +283,7 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
         sql.append("FROM (");
         sql.append("    SELECT ROW_NUMBER() OVER (");
         sql.append("        ORDER BY cast(rfn.SerialNumber AS BIGINT)");
-        sql.append(")       AS num_row, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model, loc.Latitude, loc.Longitude");
+        sql.append(")       AS num_row, ypo.Type, ypo.PAObjectID, rfn.SerialNumber, rfn.Manufacturer, rfn.Model, loc.Latitude, loc.Longitude");
         sql.append("    FROM YukonPaObject ypo");
         sql.append("    JOIN RfnAddress rfn ON ypo.PAObjectID = rfn.DeviceId");
         sql.append("    LEFT JOIN PaoLocation loc ON loc.PAObjectId = ypo.PAObjectID");
