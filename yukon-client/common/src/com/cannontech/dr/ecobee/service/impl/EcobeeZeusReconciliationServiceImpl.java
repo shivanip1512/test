@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +17,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.dao.EcobeeGroupDeviceMappingDao;
 import com.cannontech.dr.ecobee.dao.EcobeeZeusReconciliationReportDao;
+import com.cannontech.dr.ecobee.message.ZeusGroup;
+import com.cannontech.dr.ecobee.message.ZeusThermostat;
 import com.cannontech.dr.ecobee.model.EcobeeZeusDiscrepancyType;
 import com.cannontech.dr.ecobee.model.EcobeeZeusGroupDeviceMapping;
 import com.cannontech.dr.ecobee.model.EcobeeZeusReconciliationReport;
@@ -51,6 +54,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
         //get structure from ecobee
         List<EcobeeZeusGroupDeviceMapping> groupDeviceMapping = getZeusGroupDeviceMapping();
         
+        /* TODO : updated in YUK-23931
         //get structure from Yukon
         Multimap<Integer, String> groupToDevicesMap = 
                 ecobeeGroupDeviceMappingDao.getSerialNumbersByGroupId();
@@ -61,6 +65,8 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
         
         //save errors to database and return report ID
         return reconciliationReportDao.insertReport(report);
+		        */
+        return 0;
     }
 
     @Override
@@ -175,11 +181,28 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
      // TODO: YUK-23931 - This class might not be required as we do not have complex hierarchy structure.
     }
     
-    // TODO: Add method level comments
+    /**
+     *  Retrieve list of groups and thermostats. 
+     *  Convert it into list of EcobeeZeusGroupDeviceMapping mapping object.
+     */
     private List<EcobeeZeusGroupDeviceMapping> getZeusGroupDeviceMapping() {
-        // TODO: YUK-23930
-        // Call communication service to get group and thermostats.
-        // Convert it into list of EcobeeZeusGroupDeviceMapping mapping object.
-        return new ArrayList<>();
+        log.debug("Retrieving ecobee groups and its corresponding thermostats.");
+
+        List<ZeusGroup> zeusGroups = communicationService.getAllGroups();
+        List<EcobeeZeusGroupDeviceMapping> zeusGroupDeviceMaps = new ArrayList<EcobeeZeusGroupDeviceMapping>();
+
+        zeusGroups.forEach(group -> {
+            List<ZeusThermostat> thermostatsInGroup = communicationService.getThermostatsInGroup(group.getGroupId());
+            List<String> serialNumbers = thermostatsInGroup.stream()
+                    .map(thermostat -> thermostat.getSerialNumber())
+                    .collect(Collectors.toList());
+
+            EcobeeZeusGroupDeviceMapping deviceGroupMap = new EcobeeZeusGroupDeviceMapping(group.getGroupId(), serialNumbers);
+            if (group.getParentGroupId() != null)
+                deviceGroupMap.setParentGroupId(group.getParentGroupId());
+            zeusGroupDeviceMaps.add(deviceGroupMap);
+        });
+
+        return zeusGroupDeviceMaps;
     }
 }
