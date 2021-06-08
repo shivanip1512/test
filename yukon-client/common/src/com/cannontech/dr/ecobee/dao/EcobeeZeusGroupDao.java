@@ -4,14 +4,19 @@ import java.util.List;
 
 public interface EcobeeZeusGroupDao {
     /**
-     * Retrieve Zeus group ID for a given Yukon LM group ID.
+     * Retrieve List of Zeus group ID for a given Yukon LM group ID.
      */
-    String getZeusGroupIdForLmGroup(int yukonGroupId);
+    List<String> getZeusGroupIdsForLmGroup(int yukonGroupId);
 
     /**
      * Retrieve list of Zeus group IDs for a given inventory ID.
      */
     List<String> getZeusGroupIdsForInventoryId(int inventoryId);
+
+    /**
+     * Retrieve Zeus group ID for a given Yukon LM group ID and inventoryId.
+     */
+    String getZeusGroupId(int yukonGroupId, int inventoryId);
 
     /**
      * Insert a mapping for Yukon group to Zeus group details.
@@ -21,7 +26,7 @@ public interface EcobeeZeusGroupDao {
     /**
      * Remove a mapping for Yukon group to Zeus group ID.
      */
-    void removeGroupIdForZeusGroupId(String zeusGroupId);
+    void removeGroupIdForZeusGroupId(int yukonGroupId, String zeusGroupId);
 
     /**
      * Insert a mapping for inventory ID to Zeus group ID.
@@ -34,14 +39,14 @@ public interface EcobeeZeusGroupDao {
     void deleteZeusGroupMappingForInventoryId(int inventoryId);
 
     /**
-     * Insert an event ID for a Yukon group ID (overwriting any existing value).
+     * Insert an event ID for a Zeus group ID (overwriting any existing value).
      */
-    void updateEventId(String eventId, int yukonGroupId);
+    void updateEventId(String eventId, String zeusGroupId);
 
     /**
-     * Retrieve Demand Response event ID for a Yukon group ID.
+     * Retrieve Demand Response event IDs for a Yukon group ID.
      */
-    String getEventId(int yukonGroupId);
+    List<String> getEventIds(int yukonGroupId);
 
     /**
      * Returns thermostat count fort the specified Zeus group ID.
@@ -58,13 +63,23 @@ public interface EcobeeZeusGroupDao {
      */
     String getZeusGroupName(String zeusGroupId);
     
-    /*
+    /**
      * Get count of zeus group in yukon
      */
     int getGroupCount();
 
-    /*
+    /**
      * Get count of ecobee thermostats in yukon
      */
     int getAllThermostatCount();
+
+    /**
+     * Remove the specified the zeusEventId from LMGroupZeusMapping table.
+     */
+    void removeEventId(String zeusEventId);
+
+    /**
+     * Return the distinct Zeus group names which are mapped to specified Yukon group.
+     */
+    List<String> getZeusGroupNames(int yukonGroupId);
 }

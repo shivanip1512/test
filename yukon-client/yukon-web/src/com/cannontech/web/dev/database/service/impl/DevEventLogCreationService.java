@@ -25,6 +25,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.port.BaudRate;
+import com.cannontech.common.events.helper.EventLogHelper;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.CommChannelEventLogService;
 import com.cannontech.common.events.loggers.CommandRequestExecutorEventLogService;
@@ -118,6 +119,7 @@ public class DevEventLogCreationService {
     @Autowired private UsersEventLogService usersEventLogService;
     @Autowired private ValidationEventLogService validationEventLogService;
     @Autowired private ZigbeeEventLogService zigbeeEventLogService;
+    @Autowired private EventLogHelper eventLogHelper;
 
     private Map<LogType, DevEventLogExecutable> eventLogExecutables;
 
@@ -1012,6 +1014,11 @@ public class DevEventLogCreationService {
                 systemEventLogService.attributeDeleted(user, attributeName);
                 systemEventLogService.attributeAssigned(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
                 systemEventLogService.attributeAssignmentDeleted(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
+                
+                String yukonService = "Web Server";
+                String typeOrValue = "Ecobee Private Key";
+                eventLogHelper.decryptionFailedEventLog(yukonService, typeOrValue);
+        
             }
         });
         executables.put(LogType.TOOLS, new DevEventLogExecutable() {
@@ -1330,7 +1337,7 @@ public class DevEventLogCreationService {
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
         RFN_DEVICE(RfnDeviceEventLogService.class, 4),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 40),
+        SYSTEM(SystemEventLogService.class, 41),
         TOOLS(ToolsEventLogService.class, 32),
         USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),

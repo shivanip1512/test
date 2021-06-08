@@ -109,7 +109,18 @@ public class SupportBundleServiceImpl implements SupportBundleService {
 
     @Override
     public List<File> getBundles() {
-        File[] allFiles = getBundleDir().listFiles(new FilenameFilter() {
+        return filterFile(getBundleDir());
+    }
+
+    public List<File> getRfBundles() {
+        return filterFile(getRfBundleDir());
+    }
+    
+    /**
+     * Filter all the zip files and ordered them based on last modified date i.e latest file first.
+     */
+    private List<File> filterFile(File dir) {
+        File[] allFiles = dir.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String filename) {
                 if (filename.endsWith(".zip")) {
                     return true;
@@ -117,7 +128,7 @@ public class SupportBundleServiceImpl implements SupportBundleService {
                 return false;
             }
         });
-
+   
         if (allFiles == null) {
             return Collections.emptyList();
         }
@@ -163,6 +174,10 @@ public class SupportBundleServiceImpl implements SupportBundleService {
 
     private File getBundleDir() {
         return new File(CtiUtilities.getYukonBase() + "/Server/SupportBundles/");
+    }
+
+    private File getRfBundleDir() {
+        return new File(CtiUtilities.getYukonBase() + "/Server/SupportBundles/RfNetworkData/");
     }
 
     private String buildMetaData(ReadableInstant start, ReadableInstant stop, String custName,

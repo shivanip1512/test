@@ -6,11 +6,11 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
-import org.jfree.util.Log;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,10 +37,10 @@ import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.dr.hardware.service.impl.EatonCloudCommandStrategy;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 public class RecentEventParticipationDaoImpl implements RecentEventParticipationDao {
@@ -389,5 +389,30 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
             log.error("ExternalEventID doesn't exist for group id:{}", groupId, e);
             return null;
         }
+    }
+
+    @Override
+    public void updateDeviceControlEvent(String externalEventId, int deviceId, ControlEventDeviceStatus status,
+            Instant deviceReceivedTime) {
+        /*
+         * if the current status is SUCCESS_RECEIVED, and we receive SUCCESS_STARTED, it will update. If we receive them out of
+         * order, it will prevent us from updating the SUCCESS_STARTED status to SUCCESS_RECEIVED
+         */
+        //list of statuses that are "earlier" than the received status
+        List<ControlEventDeviceStatus> statusesToUpdate =
+                ImmutableList.copyOf(ControlEventDeviceStatus.values())
+                             .stream()
+                             .filter(messageStatus -> messageStatus.getMessageOrder() <= status.getMessageOrder())
+                             .collect(Collectors.toList());
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE ControlEventDevice");
+        sql.append("SET Result").eq(status);
+        sql.append(",");
+        sql.append("DeviceReceivedTime").eq(deviceReceivedTime);
+        sql.append("WHERE ControlEventId in (SELECT ControlEventId from ControlEvent WHERE ExternalEventId").eq(externalEventId).append(")");
+        sql.append("AND Result").in(statusesToUpdate);
+        sql.append("AND DeviceId").eq(deviceId);
+        jdbcTemplate.update(sql);
     }
 }

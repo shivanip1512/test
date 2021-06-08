@@ -51,10 +51,13 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.events.helper.EventLogHelper;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.EcobeePGPException;
 import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.ApplicationId;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -80,6 +83,7 @@ import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.DREncryption;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.impl.GlobalSettingDaoImpl;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -104,9 +108,8 @@ public class YukonSecurityController {
     @Autowired private GlobalSettingDaoImpl globalSettingDaoImpl;
     @Autowired private EcobeeZeusSecurityService ecobeeZeusSecurityService;
     @Autowired private EcobeeZeusCommunicationServiceImpl ecobeeZeusCommunicationService;
-    // TODO: Remove hard coded String once globalsettings is created for reportingUrl.
-    private String reportingUrl = "http://eaton.com/ecobee/runtimedata";
-
+    @Autowired private EventLogHelper eventLogHelper;
+    
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
     private static final String HEX_STRING_PATTERN = "^[0-9A-Fa-f]*$";
@@ -221,7 +224,7 @@ public class YukonSecurityController {
 
         model.addAttribute("encryptionKey", encryptionKey);
         List<EncryptionKey> encryptionKeys = encryptedRouteDao.getEncryptionKeys();
-        model.addAttribute("reportingUrl", reportingUrl);
+        model.addAttribute("reportingUrl", getReportingUrl());
         
         boolean invalidKeyFound = false;
         try {
@@ -532,7 +535,8 @@ public class YukonSecurityController {
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
             } catch (CryptoException e) {
                 log.error("Unable to decrypt file", e);
-                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
+                eventLogHelper.decryptionFailedEventLog(ApplicationId.WEBSERVER.getApplicationName(), "RSA Public Key");
+               flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
             } catch (JDOMException e) {
                 log.error("Unable to properly read file", e);
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
@@ -594,6 +598,7 @@ public class YukonSecurityController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
         } catch (CryptoException e) {
             log.error("Unable to decrypt file", e);
+            eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), "Private Key");
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
         } catch (JDOMException e) {
             log.error("Unable to properly read file", e);
@@ -704,7 +709,7 @@ public class YukonSecurityController {
 
         try {
             String privateKey = ecobeeZeusSecurityService.getZeusEncryptionKey().getPrivateKey();
-            ecobeeZeusCommunicationService.createPushApiConfiguration(reportingUrl, privateKey);
+            ecobeeZeusCommunicationService.createPushApiConfiguration(getReportingUrl(), privateKey);
 
             DateTime todayDate = new DateTime();
             String registeredDateTime = dateFormattingService.format(todayDate,
@@ -736,7 +741,7 @@ public class YukonSecurityController {
         try {
             ZeusShowPushConfig showPushConfig = ecobeeZeusCommunicationService.showPushApiConfiguration();
             String privateKeySha1 = DigestUtils.sha1Hex(ecobeeZeusSecurityService.getZeusEncryptionKey().getPrivateKey());
-            boolean checkUrl = showPushConfig.getReportingUrl().equals(reportingUrl);
+            boolean checkUrl = showPushConfig.getReportingUrl().equals(getReportingUrl());
             boolean checkPrivateKeySha1 = showPushConfig.getPrivateKey().equals(privateKeySha1);
 
             if (checkUrl && checkPrivateKeySha1) {
@@ -810,6 +815,10 @@ public class YukonSecurityController {
             log.warn("caught exception in generateItronKey", e);
         }
         return json;
+    }
+    
+    private String getReportingUrl() {
+        return globalSettingDaoImpl.getString(GlobalSettingType.ECOBEE_REPORTING_URL);
     }
 
 }

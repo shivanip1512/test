@@ -14,6 +14,8 @@ public interface SupportBundleService {
 
     public List<File> getBundles();
 
+    public List<File> getRfBundles();
+
     public File getMostRecentBundle();
 
     public boolean isInProgress();

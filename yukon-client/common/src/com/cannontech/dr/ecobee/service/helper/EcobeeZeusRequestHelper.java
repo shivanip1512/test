@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
@@ -28,6 +29,8 @@ import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class EcobeeZeusRequestHelper {
 
@@ -64,9 +67,39 @@ public class EcobeeZeusRequestHelper {
      */
     public <T> ResponseEntity<T> callEcobeeAPIForObject(String url, HttpMethod method, Class<T> responseType,
             Object... requestObject) throws RestClientException, EcobeeAuthenticationException {
+        if (log.isDebugEnabled()) {
+            logRequest(url, method, requestObject);
+        }
         HttpEntity<Object> requestEntity = getRequestEntity(requestObject);
         ResponseEntity<T> response = restTemplate.exchange(url, method, requestEntity, responseType);
+        if (log.isDebugEnabled()) {
+            logResponse(response, url);
+        }
         return response;
+    }
+
+    private void logRequest(String url, HttpMethod method, Object[] requestObject) {
+        log.debug("Request Header : " + method + " : " + url);
+        if (requestObject != null && requestObject.length > 0) {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                log.debug("Request Body: \n" + JsonUtils.beautifyJson(mapper.writeValueAsString(requestObject[0])));
+            } catch (JsonProcessingException e) {
+                log.error("Error while parsing request body : ", e);
+            }
+        }
+    }
+
+    private <T> void logResponse(ResponseEntity<T> response, String url) {
+        log.debug("Response Header : " + url + " : " + response.getStatusCode());
+        if (response.hasBody()) {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                log.debug("Response Body: \n" + JsonUtils.beautifyJson(mapper.writeValueAsString(response.getBody())));
+            } catch (JsonProcessingException e) {
+                log.error("Error while parsing response body : ", e);
+            }
+        }
     }
 
     /**

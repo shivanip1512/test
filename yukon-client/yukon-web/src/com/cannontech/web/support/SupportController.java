@@ -186,14 +186,19 @@ public class SupportController {
         setUpLinks(model, context);
         setUpManuals(model);
         List<String> previousBundles = new ArrayList<>();
+        List<String> previousRfBundles = new ArrayList<>();
         for(File f : bundleService.getBundles()){
             previousBundles.add(f.getName());
+        }
+        for (File f : bundleService.getRfBundles()) {
+            previousRfBundles.add(f.getName());
         }
         model.addAttribute("supportBundle", bundle);
         model.addAttribute("now", new Date());
         model.addAttribute("rfSupportBundle", new RfSupportBundle());
         model.addAttribute("bundleRangeSelectionOptions", BundleRangeSelection.values());
         model.addAttribute("bundleList", previousBundles);
+        model.addAttribute("rfBundleList", previousRfBundles);
         model.addAttribute("writerList", writerList);
         model.addAttribute("inProgress", bundleService.isInProgress());
         return "support.jsp";
@@ -367,7 +372,7 @@ public class SupportController {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         Map<String, String> json = Maps.newHashMapWithExpectedSize(3);
 
-        File bundle = getBundleFileForFileName(fileName);
+        File bundle = getBundleFileForFileName(fileName, false);
         if (bundle == null){
             json.put("fileName", accessor.getMessage(baseKey + ".ftpUpload.failed.NO_FILE", ""));
             json.put("fileSize", "");
@@ -385,13 +390,18 @@ public class SupportController {
 
     @PostMapping("downloadBundle")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
-    public void downloadBundle(HttpServletResponse resp, String fileName) throws IOException {
+    public void downloadBundle(HttpServletResponse resp, String fileName, boolean isRfBundle) throws IOException {
 
-        File bundleToDownload = getBundleFileForFileName(fileName);
+        File bundleToDownload = null;
+        if (isRfBundle) {
+            bundleToDownload = getBundleFileForFileName(fileName, true);
+        } else {
+            bundleToDownload = getBundleFileForFileName(fileName, false);
+        }
         if (bundleToDownload == null) {
             return;
         }
-
+        
         resp.setContentType("application/zip");
 
         // set response header to the filename
@@ -402,9 +412,15 @@ public class SupportController {
         FileCopyUtils.copy(new FileInputStream(bundleToDownload), resp.getOutputStream());
     }
 
-    private File getBundleFileForFileName(String fileName){
-        for(File f : supportBundleService.getBundles()) {
-            if(fileName.equals(f.getName())) {
+    private File getBundleFileForFileName(String fileName, boolean isRfBundle) {
+        List<File> files = null;
+        if (isRfBundle) {
+            files = supportBundleService.getRfBundles();
+        } else {
+            files = supportBundleService.getBundles();
+        }
+        for (File f : files) {
+            if (fileName.equals(f.getName())) {
                 return f;
             }
         }

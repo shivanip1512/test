@@ -6,6 +6,7 @@ import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeePlusDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 
 public interface EcobeeZeusCommunicationService {
@@ -41,9 +42,9 @@ public interface EcobeeZeusCommunicationService {
     ZeusShowPushConfig showPushApiConfiguration();
 
     /**
-     * Initiates a duty cycle demand response event in Ecobee and return the created DR event ID.
+     * Initiates a duty cycle demand response event in Ecobee.
      */
-    String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters);
+    void sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters);
     
     /**
      * Get all groups for a program from ecobee.
@@ -56,12 +57,17 @@ public interface EcobeeZeusCommunicationService {
     List<ZeusThermostat> getThermostatsInGroup(String groupId);
 
     /**
-     * Initiates a Setpoint demand response event in Ecobee and return the created DR event ID.
+     * Initiates a Setpoint demand response event in Ecobee.
      */
-    String sendSetpointDR(EcobeeSetpointDrParameters parameters);
+    void sendSetpointDR(EcobeeSetpointDrParameters parameters);
 
     /**
      * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only.
      */
     void cancelDemandResponse(int yukonGroupId, String... serialNumbers);
+
+    /**
+     * Initiates a eco+ demand response event in Ecobee.
+     */
+    void sendEcoPlusDR(EcobeePlusDrParameters parameters);
 }
