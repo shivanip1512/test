@@ -101,13 +101,23 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
     }
 
     @Override
-    public List<Integer> getInventoryIdsForZeusGrouID(String zeusGroupId) {
+    public List<Integer> getInventoryIdsForZeusGroupID(String zeusGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT InventoryID FROM ZeusGroupInventoryMapping");
         sql.append("WHERE EcobeeGroupId").eq(zeusGroupId);
         return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 
+    @Override
+    public List<Integer> getInventoryIdsForYukonGroupID(String lmGroup) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT InventoryID FROM ZeusGroupInventoryMapping a, LMGroupZeusMapping b");
+        sql.append("WHERE a.EcobeeGroupId = b.EcobeeGroupId");
+        sql.append("AND a.EcobeeGroupId").eq(lmGroup);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+    }
+
+    
     @Override
     public String getZeusGroupName(String zeusGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

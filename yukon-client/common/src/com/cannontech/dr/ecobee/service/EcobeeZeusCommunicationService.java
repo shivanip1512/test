@@ -20,6 +20,11 @@ public interface EcobeeZeusCommunicationService {
      * Deletes the specified thermostat from a program's root group and deletes from all child groups.
      */
     void deleteDevice(String serialNumber);
+    
+    /**
+     * Deletes the specified group
+     */
+    void deleteGroup(String zeusGroupId);
 
     /**
      * Enroll the specified device to the specified group.
@@ -31,6 +36,11 @@ public interface EcobeeZeusCommunicationService {
      */
     void unEnroll(int lmGroupId, String serialNumber, int inventoryId);
 
+    
+    /**
+     * Create thermostat group
+     */
+    void createThermostatGroup(String zeusGroupId, List<String> thermostatIds);
     /**
      * Create push API configuration with a publicly accessible HTTPS endpoint and encoded private key.
      */

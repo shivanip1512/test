@@ -102,7 +102,7 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
 
     @Override
     public List<Integer> getInventoryIdsForZeusGrouID(String zeusGroupId) {
-        return ecobeeZeusGroupDao.getInventoryIdsForZeusGrouID(zeusGroupId);
+        return ecobeeZeusGroupDao.getInventoryIdsForZeusGroupID(zeusGroupId);
     }
 
     @Override

@@ -4,11 +4,8 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum EcobeeZeusDiscrepancyType implements DisplayableEnum {
     MISSING_GROUP(EcobeeZeusDiscrepancyCategory.GROUP, true),
-    // TODO: We should not have a mislocated group as all group have parents as root group and do not have hierarchy
-    MISLOCATED_GROUP(EcobeeZeusDiscrepancyCategory.GROUP, true),
-    
     EXTRANEOUS_GROUP(EcobeeZeusDiscrepancyCategory.GROUP, true),
-    MISSING_DEVICE(EcobeeZeusDiscrepancyCategory.DEVICE, true),
+    MISSING_DEVICE(EcobeeZeusDiscrepancyCategory.DEVICE, false),
     MISLOCATED_DEVICE(EcobeeZeusDiscrepancyCategory.DEVICE, true),
     EXTRANEOUS_DEVICE(EcobeeZeusDiscrepancyCategory.DEVICE, false),
     ;
@@ -31,7 +28,7 @@ public enum EcobeeZeusDiscrepancyType implements DisplayableEnum {
     
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.dr.ecobee.discrepancyType." + name();
+        return "yukon.web.modules.dr.ecobee.zeusDiscrepancyType." + name();
     }
     
     public String getDetailKey() {

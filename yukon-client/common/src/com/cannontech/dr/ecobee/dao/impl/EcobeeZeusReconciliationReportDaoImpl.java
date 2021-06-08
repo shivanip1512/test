@@ -24,7 +24,6 @@ import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusExtraneousDeviceDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusExtraneousGroupDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMislocatedDeviceDiscrepancy;
-import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMislocatedGroupDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMissingDeviceDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMissingGroupDiscrepancy;
 
@@ -49,8 +48,6 @@ public class EcobeeZeusReconciliationReportDaoImpl implements EcobeeZeusReconcil
                     return new EcobeeZeusMissingGroupDiscrepancy(errorId, correctLocation);
                 case EXTRANEOUS_GROUP:
                     return new EcobeeZeusExtraneousGroupDiscrepancy(errorId, currentLocation);
-                case MISLOCATED_GROUP:
-                    return new EcobeeZeusMislocatedGroupDiscrepancy(errorId, currentLocation, correctLocation);
                 case MISSING_DEVICE:
                     return new EcobeeZeusMissingDeviceDiscrepancy(errorId, serialNumber, correctLocation);
                 case EXTRANEOUS_DEVICE:
