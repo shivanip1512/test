@@ -6,16 +6,13 @@ import java.util.List;
  */
 public class EcobeeZeusGroupDeviceMapping {
     private String groupId;
+    private String parentGroupId;
     private List<String> thermostatsSerialNumber;
 
     public EcobeeZeusGroupDeviceMapping(String groupId, List<String> thermostatsSerialNumber) {
         super();
         this.groupId = groupId;
         this.thermostatsSerialNumber = thermostatsSerialNumber;
-    }
-    
-    public EcobeeZeusGroupDeviceMapping() {
-        
     }
 
     public String getGroupId() {
@@ -24,6 +21,14 @@ public class EcobeeZeusGroupDeviceMapping {
 
     public void setGroupId(String groupId) {
         this.groupId = groupId;
+    }
+
+    public String getParentGroupId() {
+        return parentGroupId;
+    }
+
+    public void setParentGroupId(String parentGroupId) {
+        this.parentGroupId = parentGroupId;
     }
 
     public List<String> getThermostatsSerialNumber() {
