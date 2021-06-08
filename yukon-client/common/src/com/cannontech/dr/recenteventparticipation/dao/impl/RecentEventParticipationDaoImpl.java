@@ -122,40 +122,6 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         jdbcTemplate.update(sql);
     }
 
-    @Override
-    public void updateDeviceControlEvent(int eventId, int deviceId, List<ControlEventDeviceStatus> skipUpdateForStatus,
-            ControlEventDeviceStatus receivedDeviceStatus, Instant deviceReceivedTime) {
-        SqlStatementBuilder where = new SqlStatementBuilder();
-        if (receivedDeviceStatus != ControlEventDeviceStatus.SUCCESS_COMPLETED) {
-            where.append("EXISTS");
-            where.append("(SELECT 1 FROM ControlEventDevice");
-            where.append("WHERE");
-            where.append(getWhereClauseFragment(eventId, deviceId));
-            where.append("AND RESULT").in_k(skipUpdateForStatus).append(")");
-            where.append("AND");
-        }
-        where.append(getWhereClauseFragment(eventId, deviceId));
-        updateDeviceControlEvent(eventId, deviceId, receivedDeviceStatus.name(), deviceReceivedTime, where);
-    }
-
-    private SqlFragmentSource getWhereClauseFragment(int eventId, int deviceId) {
-        SqlStatementBuilder whereClause = new SqlStatementBuilder();
-        whereClause.append("ControlEventId").eq(eventId);
-        whereClause.append("  AND DeviceId").eq(deviceId);
-        return whereClause;
-    }
-
-    private void updateDeviceControlEvent(int eventId, int deviceId, String receivedDeviceStatus,
-            Instant deviceReceivedTime, SqlFragmentSource where) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE ControlEventDevice");
-        sql.set("Result", receivedDeviceStatus, "DeviceReceivedTime", deviceReceivedTime);
-        sql.append("WHERE");
-        sql.appendFragment(where);
-        jdbcTemplate.update(sql);
-
-    }
-
     private final static YukonRowMapper<RecentEventParticipationSummary> recentEventParticipationSummaryRowMapper =
         new YukonRowMapper<RecentEventParticipationSummary>() {
             @Override
@@ -211,9 +177,9 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
 
         sql.append("SELECT * FROM (");
         sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY EventId DESC");
-        sql.append("    ) AS RowNumber, EventId, Program, LoadGroup, StartTime, Unknown, Confirmed ");
+        sql.append("    ) AS RowNumber, EventId, Program, LoadGroup, StartTime, Unknown, Confirmed, ExternalEventId");
         sql.append("    FROM (");
-        sql.append("        SELECT ce.ControlEventId AS EventId, pgypo.PAOName AS Program, lgypo.PAOName AS LoadGroup, ce.StartTime AS StartTime, ce.ExternalEventId AS ExternalEventId");
+        sql.append("        SELECT ce.ControlEventId AS EventId, pgypo.PAOName AS Program, lgypo.PAOName AS LoadGroup, ce.StartTime AS StartTime, ExternalEventId, ");
         sql.append("          SUM(CASE WHEN ced.Result").eq_k(UNKNOWN).append("THEN 1 ELSE 0 END) Unknown,");
         sql.append("          SUM(CASE WHEN ced.Result").in_k(ControlEventDeviceStatus.getAllDeviceStatus()).append("THEN 1 ELSE 0 END) Confirmed");
         sql.append("        FROM ControlEvent ce");
@@ -225,7 +191,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
             sql.append("      WHERE StartTime").gt(range.getMin());
             sql.append("      AND StartTime").lt(range.getMax());
         }
-        sql.append("        GROUP BY ce.ControlEventId, ce.StartTime, lgypo.PAOName, pgypo.PAOName) AS innertable");
+        sql.append("        GROUP BY ce.ControlEventId, ce.StartTime, lgypo.PAOName, pgypo.PAOName, ExternalEventId) AS innertable");
         sql.append("    ) outertable ");
         sql.append("WHERE RowNumber BETWEEN").append(pagingParameters.getOneBasedStartIndex());
         sql.append("  AND").append(pagingParameters.getOneBasedEndIndex());

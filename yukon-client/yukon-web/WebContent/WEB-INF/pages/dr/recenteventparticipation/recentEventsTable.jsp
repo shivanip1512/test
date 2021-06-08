@@ -11,7 +11,7 @@
     <table class="compact-results-table has-alerts has-actions row-highlighting">
         <thead>
             <tr>
-                <th nowrap="nowrap"><i:inline key=".eventID" /></th>
+                <th nowrap="nowrap"><i:inline key=".externalEventID" /></th>
                 <th><i:inline key=".program" /></th>
                 <th><i:inline key=".group" /></th>
                 <th><i:inline key=".startTime" /></th>
@@ -24,7 +24,7 @@
                 <c:set var="successWidth" value="${recentEventParticipationStats.eventStats.percentConfirmed * 100}" />
                 <c:set var="failedWidth" value="${recentEventParticipationStats.eventStats.percentUnknown * 100}" />
                 <tr>
-                    <td><span>${recentEventParticipationStats.controlEventId}</span></td>
+                    <td><span>${recentEventParticipationStats.externalEventId}</span></td>
                     <td><span>${recentEventParticipationStats.programName}</span></td>
                     <td><span>${recentEventParticipationStats.groupName}</span></td>
                     <td><cti:formatDate type="FULL" value="${recentEventParticipationStats.startTime}" /></td>
