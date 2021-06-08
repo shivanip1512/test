@@ -33,6 +33,7 @@
 #include "septempoffsetgear.h"
 #include "ecobeeCycleGear.h"
 #include "ecobeeSetpointGear.h"
+#include "ecobeePlusGear.h"
 #include "honeywellCycleGear.h"
 #include "honeywellSetpointGear.h"
 #include "NestCriticalCycleGear.h"
@@ -965,6 +966,17 @@ void CtiLMControlAreaStore::reset()
                         else
                         {
                             CTILOG_ERROR( dout, "ecobee Setpoint Gear missing required temperature settings" );
+                        }
+                    }
+                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::EcobeePlusMethod) )
+                    {
+                        if ( ! rdr["settings"].isNull() )
+                        {
+                            newDirectGear = CTIDBG_new EcobeePlusGear(rdr);
+                        }
+                        else
+                        {
+                            CTILOG_ERROR( dout, "ecobee Plus Gear missing required temperature settings" );
                         }
                     }
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::HoneywellCycleMethod) )

@@ -3,6 +3,7 @@ package com.cannontech.core.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.database.data.device.lm.HeatCool;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.ThermostatRampRateValues;
 import com.cannontech.dr.itron.model.ItronCycleType;
@@ -124,4 +125,9 @@ public interface LMGearDao {
      */
     
     public EatonCloudCycleType getEatonCloudCycleType(Integer gearId);
+    
+    /**
+     * Retrieves Heating Event by GearId
+     */
+    HeatCool getHeatingEvent(Integer gearId);
 }

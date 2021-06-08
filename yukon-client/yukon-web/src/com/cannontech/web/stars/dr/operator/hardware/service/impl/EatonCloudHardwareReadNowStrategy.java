@@ -12,20 +12,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareReadNowStrategy;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareStrategyType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 
 public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrategy {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudHardwareReadNowStrategy.class);

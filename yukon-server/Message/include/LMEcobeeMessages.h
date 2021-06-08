@@ -65,6 +65,29 @@ private:
 
 /// 
 
+class IM_EX_MSG LMEcobeePlusControlMessage : public StreamableMessage
+{
+public:
+
+    LMEcobeePlusControlMessage( int groupId,
+                                long long startTime,
+                                int controlDuration,            
+                                bool temperatureOption,
+                                int randomTimeSeconds );
+
+    void streamInto( cms::StreamMessage & message ) const;
+
+private:
+
+    int _groupId;
+    long long _startTime;
+    long long _stopTime;
+    char _temperatureOption;    
+    int _randomTimeSeconds;
+};
+
+/// 
+
 class IM_EX_MSG LMEcobeeRestoreMessage : public StreamableMessage
 {
 public:

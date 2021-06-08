@@ -61,7 +61,10 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.helper.EventLogHelper;
 import com.cannontech.common.exception.EcobeePGPException;
+import com.cannontech.common.util.ApplicationId;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
@@ -75,6 +78,7 @@ public class EcobeeSecurityServiceImpl implements EcobeeSecurityService {
     private final String IDENTITY= "Identity";
     private Logger log = YukonLogManager.getLogger(EcobeeSecurityServiceImpl.class);
     @Autowired private EncryptedRouteDao encryptedRouteDao;
+    @Autowired private EventLogHelper eventLogHelper;
 
     @Override
     public Instant generateEcobeePGPKeyPair() throws EcobeePGPException {
@@ -277,6 +281,8 @@ public class EcobeeSecurityServiceImpl implements EcobeeSecurityService {
             return decryptedData;
         } catch (CryptoException | IOException | JDOMException | DecoderException | PGPException e) {
             log.error("Error while decrypting the gpg file" + e);
+            eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), "Ecobee Private Key");
+
             throw new EcobeePGPException("Unable to decrypt the gpg file");
         }
     }

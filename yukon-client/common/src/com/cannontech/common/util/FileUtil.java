@@ -9,9 +9,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DateFormat;
@@ -40,6 +42,7 @@ import org.springframework.util.Assert;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.FileCreationException;
+import com.opencsv.CSVWriter;
 
 public final class FileUtil {
     private static Logger log = YukonLogManager.getLogger(FileUtil.class);
@@ -524,6 +527,27 @@ public final class FileUtil {
         } catch (IOException e) {
             log.error("Error while creating tar.gz file.", e);
             throw e;
+        }
+    }
+
+    public static void writeToCSV(String directory, String fileName, List<String[]> dataRows) throws IOException {
+        OutputStream out = null;
+        CSVWriter csvWriter = null;
+        try {
+            out = new FileOutputStream(directory + File.separator + fileName + ".csv", true);
+            Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+            csvWriter = new CSVWriter(writer);
+            if (dataRows != null) {
+                for (String[] line : dataRows) {
+                    csvWriter.writeNext(line);
+                }
+            }
+        } catch (IOException e) {
+            log.error("Unable to perform IO operation. " + e);
+            throw e;
+        } finally {
+            csvWriter.close();
+            out.close();
         }
     }
 }

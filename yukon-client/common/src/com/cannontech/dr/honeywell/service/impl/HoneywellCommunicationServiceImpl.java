@@ -45,6 +45,8 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.helper.EventLogHelper;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.dr.honeywell.HoneywellCommunicationException;
@@ -75,6 +77,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private HoneywellWifiThermostatDao honeywellDao;
     @Autowired private EncryptedRouteDao encryptedRouteDao;
+    @Autowired private EventLogHelper eventLogHelper;
 
     private static final String createDREventGroupUrlPart = "webapi/api/drEventGroups/";
     private static final String getGatewayByMacIdUrlPart = "webapi/api/gateways";
@@ -413,6 +416,8 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         }  catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException
                 | InvalidKeySpecException | CryptoException | IOException | JDOMException | DecoderException e) {
                 log.error("Request signing for Honeywell failed with message: \"" + e.getMessage() + "\".");
+            eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), "Honeywell Private Key");
+
                 throw new HoneywellCommunicationException("Unable to communicate with Honeywell API.", e);
             }
         return signedContent;

@@ -78,6 +78,7 @@ public interface PxMWCommunicationServiceV1 {
      */
     void sendCommand(String deviceGuid, PxMWCommandRequestV1 request) throws PxMWCommunicationExceptionV1, PxMWException;
 
+    
     /**
      * Retrieves the device information
      * 
@@ -93,11 +94,6 @@ public interface PxMWCommunicationServiceV1 {
      * 404 Not Found
      */
     PxMWDeviceDetail getDeviceDetails(String deviceGuid, Boolean recursive) throws PxMWCommunicationExceptionV1, PxMWException;
-
-    /**
-     * Returns true if device can be created
-     */
-    boolean isCreatableDevice(String deviceGuid);
 
     /**
      * Retrieves the list of sites

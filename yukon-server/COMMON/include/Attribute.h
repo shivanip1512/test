@@ -763,9 +763,13 @@ public:
     static const Attribute  FirmwareUpdateStatus;
     static const Attribute  Frequency;
     static const Attribute  Relay1ActivationStatus;
+    static const Attribute  Relay1ColdLoadPickupTime;
     static const Attribute  Relay2ActivationStatus;
+    static const Attribute  Relay2ColdLoadPickupTime;
     static const Attribute  Relay3ActivationStatus;
+    static const Attribute  Relay3ColdLoadPickupTime;
     static const Attribute  Relay4ActivationStatus;
+    static const Attribute  Relay4ColdLoadPickupTime;
 };
 
 

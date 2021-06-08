@@ -57,6 +57,7 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.eatonCloud.EatonCloudLcrBuilder;
 import com.cannontech.stars.dr.ecobee.EcobeeBuilder;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsException;
@@ -86,6 +87,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DeviceCreationService deviceCreationService;
+    @Autowired private EatonCloudLcrBuilder eatonCloudLcrBuilder;
     @Autowired private EcobeeBuilder ecobeeBuilder;
     @Autowired private HoneywellBuilder honeywellBuilder;
     @Autowired private PaoLoadingService paoLoadingService;
@@ -379,6 +381,19 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                     lib.setDeviceID(hardware.getDeviceId());
                 } catch (ItronCommunicationException e) {
                     throw new StarsClientRequestException("There was a communication error trying to connect with Itron.", e);
+                }
+            } else if (ht.isEatonCloud()) {
+                String guid = dto.getGuid();
+                if (StringUtils.isBlank(guid) || !Validator.isValidGuid(guid)) {
+                    throw new StarsInvalidArgumentException("Valid GUID is required");
+                }
+                Hardware hardware = hardwareUiService.getHardware(lib.getInventoryID());
+                hardware.setGuid(guid);
+                try {
+                    eatonCloudLcrBuilder.createDevice(hardware);
+                    lib.setDeviceID(hardware.getDeviceId());
+                } catch (DeviceCreationException e) {
+                    throw new StarsClientRequestException("Failed to create eaton cloud LCR", e);
                 }
             }
         }

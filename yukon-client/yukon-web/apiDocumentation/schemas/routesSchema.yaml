@@ -14,9 +14,44 @@ Route:
       type: integer
       description: 'Id for the signal transmitter.'
 
+id:
+  title: id
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for Route.'
+routeId:
+  title: routeId
+  required:
+    - routeId
+  type: object
+  properties:
+    routeId:
+      type: integer
+      description: 'Unique identifier for Route.'
+
 components:
   examples:
     Route:
       value:
         name: Test Route
         signalTransmitterId: 5
+    List Routes:
+      value:
+        - name: Test Route
+          signalTransmitterId: 5
+          defaultRoute: true
+          routeId : 273
+        - name: Test Route1
+          signalTransmitterId: 5
+          defaultRoute: true
+          routeId : 274
+    id:
+      value:
+        id: 572
+    routeId:
+      value:
+        routeId: 10

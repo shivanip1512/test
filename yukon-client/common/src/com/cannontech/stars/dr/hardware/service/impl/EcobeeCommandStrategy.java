@@ -3,7 +3,7 @@ package com.cannontech.stars.dr.hardware.service.impl;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -93,9 +93,9 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                     // Remove the thermostat from the group
                     ecobeeZeusCommunicationService.unEnroll(groupId, serialNumber, device.getInventoryID());
 
-                    String eventId = ecobeeZeusGroupService.getEventId(groupId);
+                    List<String> eventIds = ecobeeZeusGroupService.getEventIds(groupId);
                     // Send opt out request for thermostat if any Demand Response event is running for the group.
-                    if (StringUtils.isNotEmpty(eventId)) {
+                    if (CollectionUtils.isNotEmpty(eventIds)) {
                         ecobeeZeusCommunicationService.cancelDemandResponse(groupId, serialNumber);
                     }
                 } else {
