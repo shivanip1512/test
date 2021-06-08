@@ -16,14 +16,6 @@ public class ZeusThermostat {
     @JsonProperty("tstatgroups")
     private List<ZeusGroup> zeusGroups;
     
-    public List<ZeusGroup> getZeusGroups() {
-        return zeusGroups;
-    }
-
-    public void setZeusGroups(List<ZeusGroup> zeusGroups) {
-        this.zeusGroups = zeusGroups;
-    }
-
     public ZeusThermostat() {
     }
 
@@ -41,5 +33,13 @@ public class ZeusThermostat {
 
     public void setState(ZeusThermostatState state) {
         this.state = state;
+    }
+
+    public List<ZeusGroup> getZeusGroups() {
+        return zeusGroups;
+    }
+
+    public void setZeusGroups(List<ZeusGroup> zeusGroups) {
+        this.zeusGroups = zeusGroups;
     }
 }
