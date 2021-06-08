@@ -59,6 +59,7 @@ yukon.mapping = (function () {
     _descendantLines = [],
     _descendantLineFeatures = [],
     _descendantDashedLineFeatures = [],
+    _missingDescendants = false,
     
     _setRouteLastUpdatedDateTime = function (dateTimeInstant) {
         if (dateTimeInstant == null) {
@@ -719,6 +720,8 @@ yukon.mapping = (function () {
         
         displayDescendants: function(deviceId, updateZoom) {
             $('.js-no-descendants-message').addClass('dn');
+            $('.js-descendants-missing-locations-message').addClass('dn');
+            _missingDescendants = false;
             var mapContainer = $('#map-container');
             yukon.ui.block(mapContainer);
             $.getJSON(yukon.url('/stars/comprehensiveMap/networkTree') + '?' + $.param({ deviceId: deviceId }))
@@ -787,10 +790,13 @@ yukon.mapping = (function () {
                         });
                         if (dashedLine) {
                             _descendantDashedLineFeatures.push(lineFeature);
+                            _missingDescendants = true;
                         } else {
                             _descendantLineFeatures.push(lineFeature);
                         }
                     }
+                } else {
+                    _missingDescendants = true;
                 }
                 yukon.mapping.findDescendants(childNode, parentId);
             }
@@ -799,6 +805,9 @@ yukon.mapping = (function () {
         showDescendantLines: function() {
             if (_descendantLineFeatures.length == 0 && _descendantDashedLineFeatures.length == 0 ){
                 $('.js-no-descendants-message').removeClass('dn');
+            }
+            if (_missingDescendants) {
+                $('.js-descendants-missing-locations-message').removeClass('dn');
             }
             
             if (_descendantLineFeatures.length > 0) {
@@ -819,8 +828,6 @@ yukon.mapping = (function () {
             }
             
             if (_descendantDashedLineFeatures.length > 0) {
-                
-                $('.js-no-location-message').removeClass('dn');
                 //draw dashed lines
                 var dashedLines = new ol.layer.Vector({
                     source: new ol.source.Vector({
