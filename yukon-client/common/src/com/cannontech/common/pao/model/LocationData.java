@@ -1,6 +1,6 @@
 package com.cannontech.common.pao.model;
 
-import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 public class LocationData {
@@ -8,13 +8,13 @@ public class LocationData {
     private RfnIdentifier rfnIdentifier;
     private double latitude;
     private double longitude;
-    private PaoType paoType;
+    private PaoIdentifier paoIdentifier;
 
-    public LocationData(RfnIdentifier rfnIdentifier, double latitude, double longitude, PaoType paoType) {
+    public LocationData(RfnIdentifier rfnIdentifier, double latitude, double longitude, PaoIdentifier paoIdentifier) {
         this.rfnIdentifier = rfnIdentifier;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.paoType = paoType;
+        this.paoIdentifier = paoIdentifier;
     }
     
     public RfnIdentifier getRfnIdentifier() {
@@ -36,12 +36,12 @@ public class LocationData {
         this.longitude = longitude;
     }
 
-    public PaoType getPaoType() {
-        return paoType;
+    public PaoIdentifier getPaoIdentifier() {
+        return paoIdentifier;
     }
 
-    public void setPaoType(PaoType paoType) {
-        this.paoType = paoType;
+    public void setPaoIdentifier(PaoIdentifier paoIdentifier) {
+        this.paoIdentifier = paoIdentifier;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class LocationData {
         result = prime * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(longitude);
         result = prime * result + (int) (temp ^ (temp >>> 32));
-        result = prime * result + ((paoType == null) ? 0 : paoType.hashCode());
+        result = prime * result + ((paoIdentifier == null) ? 0 : paoIdentifier.hashCode());
         result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
         return result;
     }
@@ -71,7 +71,10 @@ public class LocationData {
             return false;
         if (Double.doubleToLongBits(longitude) != Double.doubleToLongBits(other.longitude))
             return false;
-        if (paoType != other.paoType)
+        if (paoIdentifier == null) {
+            if (other.paoIdentifier != null)
+                return false;
+        } else if (!paoIdentifier.equals(other.paoIdentifier))
             return false;
         if (rfnIdentifier == null) {
             if (other.rfnIdentifier != null)
@@ -84,6 +87,6 @@ public class LocationData {
     @Override
     public String toString() {
         return "LocationData [rfnIdentifier=" + rfnIdentifier + ", latitude=" + latitude + ", longitude=" + longitude
-                + ", paoType=" + paoType + "]";
+                + ", paoIdentifier=" + paoIdentifier + "]";
     }
 }
