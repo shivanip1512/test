@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.helper.EventLogHelper;
-import com.cannontech.common.util.ApplicationId;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -21,11 +21,13 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.encryption.CryptoException;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingCryptoUtils;
 import com.cannontech.system.GlobalSettingSubCategory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingEditorDao;
 import com.cannontech.system.model.GlobalSetting;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -35,6 +37,7 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private EventLogHelper eventLogHelper;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     
     @Override
@@ -66,7 +69,8 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
                         }
                     } catch (CryptoException | IOException | JDOMException | DecoderException e) {
                         value = type.getDefaultValue();
-                        eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), type.getDescriptionKey());
+                        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+                        eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), messageSourceAccessor.getMessage(type.getFormatKey()));
 
                         log.error("Unable to decrypt value for setting " + type + ". Using the default value. ", e);
                     }
