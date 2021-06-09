@@ -1,5 +1,6 @@
 package com.cannontech.web.api.route.service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -14,5 +15,7 @@ public interface RouteService {
     public RouteBaseModel<?> retrieve(int id);
 
     public List<RouteBaseModel> retrieveAllRoutes();
+
+    public int delete(int id, LiteYukonUser yukonUser) throws SQLException;
 
 }

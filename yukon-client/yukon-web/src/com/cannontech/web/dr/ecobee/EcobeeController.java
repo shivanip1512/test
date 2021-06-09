@@ -36,6 +36,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.loggers.EcobeeEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -54,6 +56,7 @@ import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationResult;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeReconciliationService;
+import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -83,12 +86,14 @@ public class EcobeeController {
     private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
     private static final String fixIssueKey = "yukon.web.modules.dr.ecobee.details.issues.";
 
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private DataDownloadService dataDownloadService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
 
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private EcobeeReconciliationService ecobeeReconciliation;
+    @Autowired private EcobeeZeusReconciliationService ecobeeZeusReconciliationService;
     @Autowired private JobManager jobManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
@@ -369,7 +374,11 @@ public class EcobeeController {
     
     @RequestMapping(value="/ecobee/runReport")
     public String runReport() {
-        ecobeeReconciliation.runReconciliationReport();
+        if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
+            ecobeeZeusReconciliationService.runReconciliationReport();
+        } else {
+            ecobeeReconciliation.runReconciliationReport();
+        }
         return "";
     }
 

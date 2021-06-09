@@ -97,6 +97,8 @@
     
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeReconciliationServiceImpl"/>
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeReconciliationReportDaoImpl"/>
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusReconciliationServiceImpl"/>
+    <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeZeusReconciliationReportDaoImpl"/>
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeGroupDeviceMappingDaoImpl"/>
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeQueryCountDaoImpl"/>
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeZeusGroupDaoImpl"/>

@@ -82,5 +82,8 @@
     <ClInclude Include="include\honeywellControlInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ecobeePlusGear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

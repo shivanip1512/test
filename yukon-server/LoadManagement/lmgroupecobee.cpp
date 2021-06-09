@@ -122,6 +122,45 @@ bool LMGroupEcobee::sendSetpointControl( long controlDurationSeconds,
     return true;
 }
 
+bool LMGroupEcobee::sendEcobeePlusControl( long controlDurationSeconds,
+                                           bool temperatureOption,                                               
+                                           long randomTimeSeconds )    
+{
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+
+    CtiTime now;
+    ctitime_t localSeconds = now.getLocalTimeSeconds();
+
+    ActiveMQConnectionManager::enqueueMessage(
+            OutboundQueue::EcobeePlusControl,
+            std::make_unique<LMEcobeePlusControlMessage>(    
+                           getPAOId(),
+                           localSeconds,
+                           controlDurationSeconds,
+                           temperatureOption,
+                           randomTimeSeconds ));                       
+
+    if ( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CTILOG_DEBUG(dout, "Sending ecobee Plus command, LM Group: " << getPAOName() << ", control minutes: "
+            << ( controlDurationSeconds / 60 ) << ", heating event: " << ( temperatureOption ? "HEAT " : "COOL " ) << ", random time: " << randomTimeSeconds );
+    }
+
+    setLastControlSent( now );
+    setLastStopTimeSent( now + controlDurationSeconds );
+
+    if ( getGroupControlState() != CtiLMGroupBase::ActiveState )
+    {
+        setControlStartTime( now );
+        incrementDailyOps();       
+    }
+
+    setGroupControlState( CtiLMGroupBase::ActiveState );
+
+    return true;
+}
 
 bool LMGroupEcobee::sendStopControl( bool stopImmediately /* unused */ )
 {

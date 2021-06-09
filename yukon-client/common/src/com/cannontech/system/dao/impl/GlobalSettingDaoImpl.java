@@ -14,7 +14,11 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.helper.EventLogHelper;
 import com.cannontech.common.exception.NotAuthorizedException;
+<<<<<<< HEAD
 import com.cannontech.common.i18n.MessageSourceAccessor;
+=======
+import com.cannontech.common.util.ApplicationId;
+>>>>>>> branch 'master' of https://bitbucket-prod.tcc.etn.com/scm/easd_sw/yukon.git
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlStatementBuilder;

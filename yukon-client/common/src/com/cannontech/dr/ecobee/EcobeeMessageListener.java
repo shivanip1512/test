@@ -1,6 +1,7 @@
 package com.cannontech.dr.ecobee;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jms.JMSException;
@@ -17,10 +18,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeePlusDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
-import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
 
@@ -33,12 +34,10 @@ public class EcobeeMessageListener {
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
-    @Autowired private EcobeeZeusGroupService ecobeeZeusGroupService;
     @Autowired private ControlHistoryService controlHistoryService;
     @Autowired private ConfigurationSource configurationSource;
 
     private static final Map<Integer, String> groupToDrIdentifierMap = new HashMap<>();
-
     /**
      * Processes ecobee duty cycle DR messages.
      */
@@ -54,8 +53,7 @@ public class EcobeeMessageListener {
                 return;
             }
             if (isEcobeeZeusEnabled()) {
-                String eventId = ecobeeZeusCommunicationService.sendDutyCycleDR(parameters);
-                ecobeeZeusGroupService.updateEventId(eventId, parameters.getGroupId());
+                ecobeeZeusCommunicationService.sendDutyCycleDR(parameters);
             } else {
                 // Send DR message to ecobee server
                 String drIdentifier = ecobeeCommunicationService.sendDutyCycleDR(parameters);
@@ -89,8 +87,7 @@ public class EcobeeMessageListener {
             log.debug("Parameters built " + parameters + " Ready to send Ecobee Message");
 
             if (isEcobeeZeusEnabled()) {
-                String eventId = ecobeeZeusCommunicationService.sendSetpointDR(parameters);
-                ecobeeZeusGroupService.updateEventId(eventId, parameters.getGroupId());
+                ecobeeZeusCommunicationService.sendSetpointDR(parameters);
             } else {
                 // Send DR message to ecobee server
                 String drIdentifier = ecobeeCommunicationService.sendSetpointDR(parameters);
@@ -123,7 +120,7 @@ public class EcobeeMessageListener {
                 return;
             }
             if (isEcobeeZeusEnabled()) {
-                ecobeeZeusCommunicationService.cancelDemandResponse(groupId);
+                ecobeeZeusCommunicationService.cancelDemandResponse(List.of(groupId));
             } else {
                 // Send restore to ecobee server
                 String drIdentifier = groupToDrIdentifierMap.get(groupId);
@@ -133,6 +130,37 @@ public class EcobeeMessageListener {
             controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
         }
     }
+
+    /**
+     * Processes eco+ DR messages.
+     */
+    public void handleEcoPlusControlMessage(Message message) {
+        log.debug("Received message on yukon.notif.stream.dr.EcobeePlusControlMessage queue.");
+
+        EcobeePlusDrParameters parameters;
+        if (message instanceof StreamMessage) {
+            try {
+                parameters = buildEcobeePlusDrParameters((StreamMessage) message);
+            } catch (JMSException e) {
+                log.error("Exception parsing StreamMessage for eco+ DR event.", e);
+                return;
+            }
+            ecobeeZeusCommunicationService.sendEcoPlusDR(parameters);
+            
+            //Send control history message to dispatch
+            Duration controlDuration = new Duration(parameters.getStartTime(), parameters.getEndTime());
+            int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
+            Instant startTime = new Instant(DateTimeZone.getDefault().convertLocalToUTC(parameters.getStartTime().getMillis(), false));
+
+            controlHistoryService.sendControlHistoryShedMessage(parameters.getGroupId(), 
+                                                                startTime, 
+                                                                ControlType.ECOBEE, 
+                                                                null, 
+                                                                controlDurationSeconds, 
+                                                                100);
+        }
+    }
+    
 
     /**
      * Takes the StreamMessage from Load Management and parses out the groupId to restore.
@@ -213,6 +241,42 @@ public class EcobeeMessageListener {
         return new EcobeeSetpointDrParameters(groupId, tempOptionHeat, optional, tempOffset, startTime, endTime);
     }
     
+    /**
+     * Takes the StreamMessage from Load Management and parses out the values into an EcobeePlusParameters object.
+     * Load Management sends
+     * 1. Group ID : signed int (32 bits)
+     * 2. Start time : signed long (64 bits) [seconds from 1970.01.01:UTC]
+     * 3. End time : signed long (64 bits) [seconds from 1970.01.01:UTC]
+     * 4. Temp Option : signed char (8 bits) [0 == cool, 1 == heat]
+     * 5. Random Time Seconds : signed int (32 bits)
+     */
+    private EcobeePlusDrParameters buildEcobeePlusDrParameters(StreamMessage message) throws JMSException {
+        // Get the raw values
+        int groupId = message.readInt();
+        long utcStartTimeSeconds = message.readLong();
+        long utcEndTimeSeconds = message.readLong();
+        byte tempOptionByte = message.readByte();
+        int randomTimeSeconds = message.readInt();
+
+        // Massage the data into the form we want
+
+        Instant startTime = new Instant(utcStartTimeSeconds * 1000);
+        Instant endTime = new Instant(utcEndTimeSeconds * 1000);
+        boolean heatingEvent = (tempOptionByte == 1);
+
+        log.trace("Parsed eco+ dr parameters. GroupId: {} Start time: {} ({}) End time: {} ({}) Heat: {}({}) Random Time Seconds: {}",
+                  groupId,
+                  startTime,
+                  utcStartTimeSeconds,
+                  endTime,
+                  utcEndTimeSeconds,
+                  heatingEvent,
+                  tempOptionByte,
+                  randomTimeSeconds);
+
+        return new EcobeePlusDrParameters(groupId, startTime, endTime, randomTimeSeconds, heatingEvent);
+    }
+
     private boolean isEcobeeZeusEnabled() {
         return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED);
     }

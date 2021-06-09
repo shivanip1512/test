@@ -342,6 +342,7 @@
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ecobeePlusGear.h" />
     <ClInclude Include="include\ecobeeSetpointGear.h" />
     <ClInclude Include="include\honeywellControlInterface.h" />
     <ClInclude Include="include\ItronControlInterface.h" />

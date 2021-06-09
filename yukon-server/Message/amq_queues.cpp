@@ -23,6 +23,9 @@ const IM_EX_MSG OutboundQueue
     OutboundQueue::EcobeeRestore
     {"yukon.notif.stream.dr.EcobeeRestoreMessage"};
 const IM_EX_MSG OutboundQueue
+    OutboundQueue::EcobeePlusControl
+    {"yukon.notif.stream.dr.EcobeePlusControlMessage"};
+const IM_EX_MSG OutboundQueue
     OutboundQueue::HoneywellCyclingControl
     {"yukon.notif.stream.dr.HoneywellCyclingControlMessage"};
 const IM_EX_MSG OutboundQueue

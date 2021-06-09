@@ -38,6 +38,8 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.dr.gear.setup.OperationalState;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
@@ -72,7 +74,8 @@ import com.google.common.collect.Lists;
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/setup/loadProgram")
 public class LoadProgramSetupController {
-
+    
+    @Autowired private ConfigurationSource configurationSource;
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String setupRedirectLink = "/dr/setup/filter?filterByType=" + LmSetupFilterType.LOAD_PROGRAM;
@@ -557,7 +560,12 @@ public class LoadProgramSetupController {
         model.addAttribute("programGear", programGear);
         model.addAttribute("showGearTypeOptions", true);
         model.addAttribute("programType", programType);
-        model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
+
+        if (programType == PaoType.LM_ECOBEE_PROGRAM && !isEcobeeLegacyGearEnabled()) {
+            model.addAttribute("gearTypes", List.of(GearControlMethod.EcobeePlus));
+        } else {
+            model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
+        }
 
         return "dr/setup/programGear/view.jsp";
     }
@@ -582,7 +590,11 @@ public class LoadProgramSetupController {
         }
         model.addAttribute("programGear", programGear);
         model.addAttribute("programType", programType);
-        model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
+        if (programType == PaoType.LM_ECOBEE_PROGRAM && !isEcobeeLegacyGearEnabled()) {
+            model.addAttribute("gearTypes", List.of(GearControlMethod.EcobeePlus));
+        } else {
+            model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
+        }
         model.addAttribute("selectedGearType", programGear.getControlMethod());
         controllerHelper.buildGearModelMap(programGear.getControlMethod(), model, request, userContext);
         return "dr/setup/programGear/view.jsp";
@@ -657,6 +669,10 @@ public class LoadProgramSetupController {
 
         controllerHelper.populateDefaultValuesForDependentFields(programGear);
         return "dr/setup/programGear/view.jsp";
+    }
+    
+    private boolean isEcobeeLegacyGearEnabled() {
+        return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_LEGACY_GEAR);
     }
 
 }
