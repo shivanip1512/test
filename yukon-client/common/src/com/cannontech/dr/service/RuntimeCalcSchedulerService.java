@@ -127,8 +127,12 @@ public abstract class RuntimeCalcSchedulerService {
      */
     private void scheduleCalculateDataLogs() {
         // Schedule calculateDataLogs() every runtimeCalcInterval hours, with the first run 1 minute after the services init.
-        scheduledFuture = scheduledExecutor.scheduleAtFixedRate(this::calculateDataLogs, 1, getRuntimeCalcInterval() * 60,
-                TimeUnit.MINUTES);
+        scheduledFuture = 
+                scheduledExecutor.scheduleAtFixedRate(
+                        this::calculateDataLogs, 
+                        1, 
+                        getRuntimeCalcInterval() * 60,
+                        TimeUnit.MINUTES);
     }
 
     /**
@@ -193,11 +197,11 @@ public abstract class RuntimeCalcSchedulerService {
         Map<PaoPointIdentifier, PointValueQualityHolder> recentData = getRecentData(device);
 
         // Get the most recent timestamp from all initialized point data on the device.
-        Instant endOfRange = getLatestInitializedTimestamp(recentData.values())
-                .map(RelayLogInterval.LOG_60_MINUTE::start) // round down to a 60 minute interval to allow full calculation of all
-                                                            // interval lengths
-                .map(DateTime::toInstant)
-                .orElse(null);
+        Instant endOfRange = 
+                getLatestInitializedTimestamp(recentData.values())
+                    .map(RelayLogInterval.LOG_60_MINUTE::start) // round down to a 60 minute interval to allow full calculation of all interval lengths
+                    .map(DateTime::toInstant)
+                    .orElse(null);
 
         if (endOfRange == null) {
             log.debug("No recent point data found for " + device);
