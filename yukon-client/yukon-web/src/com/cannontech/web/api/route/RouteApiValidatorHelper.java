@@ -32,7 +32,7 @@ public class RouteApiValidatorHelper {
     /**
      * Validate Route name.
      */
-    public void validateRouteName(Errors errors, String routeName, Integer routeId) {
+    public void validateRouteName(Errors errors, String routeName, Integer id) {
 
         String nameI18nText = accessor.getMessage(commonkey + "name");
         YukonApiValidationUtils.checkIsBlank(errors, "name", routeName, nameI18nText, false);
@@ -45,7 +45,7 @@ public class RouteApiValidatorHelper {
                     .filter(liteRoute -> liteRoute.getPaoName().equalsIgnoreCase(routeName.trim()))
                     .findAny()
                     .ifPresent(liteYukonPAObject -> {
-                        if (routeId == null || liteYukonPAObject.getRouteID() != routeId) {
+                        if (id == null || liteYukonPAObject.getRouteID() != id) {
                             errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { routeName },
                                     "");
                         }
@@ -53,14 +53,15 @@ public class RouteApiValidatorHelper {
         }
     }
 
-    public void validateSignalTransmitterId(Errors errors, Integer signalTransmitterId, Integer routeId) {
-        if (dbCache.getAllDevices() != null) {
-            List<LiteYukonPAObject> allDevices = dbCache.getAllDevices().stream()
-                    .filter(device -> device.getYukonID() == signalTransmitterId).collect(Collectors.toList());
-            if (allDevices.isEmpty() || signalTransmitterId == 0) {
-                errors.rejectValue("signalTransmitterId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
-                        new Object[] { signalTransmitterId }, "");
-            }
+    public void validateSignalTransmitterId(Errors errors, Integer signalTransmitterId) {
+        List<LiteYukonPAObject> allTransmiterList = dbCache.getAllDevices().stream()
+                .filter(device -> device.getPaoType().isTransmitter() && !device.getPaoType().isRepeater()
+                                                                      && device.getLiteID() == signalTransmitterId)
+                .collect(Collectors.toList());
+        if (allTransmiterList.isEmpty()) {
+            errors.rejectValue("signalTransmitterId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
+                    new Object[] { signalTransmitterId }, "");
         }
     }
+
 }

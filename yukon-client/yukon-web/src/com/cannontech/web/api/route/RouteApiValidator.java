@@ -8,10 +8,10 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.route.model.RouteBaseModel;
 
 @SuppressWarnings("rawtypes")
-public class RouteValidator extends SimpleValidator<RouteBaseModel> {
+public class RouteApiValidator extends SimpleValidator<RouteBaseModel> {
     @Autowired private RouteApiValidatorHelper routeApiValidatorHelper;
 
-    public RouteValidator() {
+    public RouteApiValidator() {
         super(RouteBaseModel.class);
     }
 
@@ -19,14 +19,14 @@ public class RouteValidator extends SimpleValidator<RouteBaseModel> {
     protected void doValidation(RouteBaseModel route, Errors errors) {
 
         String strRouteId = ServletUtils.getPathVariable("id");
-        Integer routeId = strRouteId == null ? null : Integer.valueOf(strRouteId);
+        Integer id = strRouteId == null ? null : Integer.valueOf(strRouteId);
 
         if (route.getName() != null) {
-            routeApiValidatorHelper.validateRouteName(errors, route.getName(), routeId);
+            routeApiValidatorHelper.validateRouteName(errors, route.getName(), id);
         }
 
         if (route.getSignalTransmitterId() != null) {
-            routeApiValidatorHelper.validateSignalTransmitterId(errors, route.getSignalTransmitterId(), routeId);
+            routeApiValidatorHelper.validateSignalTransmitterId(errors, route.getSignalTransmitterId());
         }
     }
 }
