@@ -1,6 +1,7 @@
 package com.cannontech.dr.ecobee.service;
 
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
@@ -32,9 +33,9 @@ public interface EcobeeZeusCommunicationService {
     void enroll(int lmGroupId, String serialNumber, int inventoryId);
 
     /**
-     * Unenroll the specified device from the specified group.
+     * Unenroll the specified device from the specified groups.
      */
-    void unEnroll(int lmGroupId, String serialNumber, int inventoryId);
+    void unEnroll(Set<Integer> lmGroupIds, String serialNumber, int inventoryId);
 
     
     /**
@@ -74,7 +75,7 @@ public interface EcobeeZeusCommunicationService {
     /**
      * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only.
      */
-    void cancelDemandResponse(int yukonGroupId, String... serialNumbers);
+    void cancelDemandResponse(List<Integer> groupIds, String... serialNumbers);
 
     /**
      * Initiates a eco+ demand response event in Ecobee.

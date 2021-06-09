@@ -89,4 +89,9 @@ public interface EcobeeZeusGroupDao {
      * Return the distinct Zeus group names which are mapped to specified Yukon group.
      */
     List<String> getZeusGroupNames(int yukonGroupId);
+
+    /**
+     * Return the List of Yukon groups associated with the inventory.
+     */
+    List<Integer> getLmGroupsForInventory(int inventoryId);
 }

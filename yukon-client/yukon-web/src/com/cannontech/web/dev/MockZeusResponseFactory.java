@@ -88,10 +88,17 @@ public class MockZeusResponseFactory {
         List<LiteYukonPAObject> paoObjects = serverDatabaseCache.getAllLoadManagement().stream()
                 .filter(pao -> pao.getPaoType() == PaoType.LM_GROUP_ECOBEE)
                 .collect(Collectors.toList());
+
+        // Considering first group as a parent group of other groups.
+        String parentGroupId = String.valueOf(paoObjects.get(0).getLiteID());
         paoObjects.forEach(pao -> {
+
             ZeusGroup group = new ZeusGroup();
             group.setGroupId(String.valueOf(pao.getLiteID()));
             group.setName(String.valueOf(pao.getLiteID()));
+            if (!groups.isEmpty()) {
+                group.setParentGroupId(parentGroupId);
+            }
             groups.add(group);
         });
         ZeusGroupResponse response = new ZeusGroupResponse();

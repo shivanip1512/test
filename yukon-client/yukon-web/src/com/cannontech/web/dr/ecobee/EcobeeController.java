@@ -90,18 +90,19 @@ public class EcobeeController {
     private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
     private static final String fixIssueKey = "yukon.web.modules.dr.ecobee.details.issues.";
 
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private DataDownloadService dataDownloadService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
 
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private EcobeeReconciliationService ecobeeReconciliation;
-    @Autowired private EcobeeZeusReconciliationService ecobeeZeusReconciliation;
+    @Autowired private EcobeeZeusReconciliationService ecobeeZeusReconciliationService;
     @Autowired private JobManager jobManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private ConfigurationSource configurationSource;
+
     
     @Autowired @Qualifier("ecobeeReconciliationReport")
         private YukonJobDefinition<EcobeeReconciliationReportTask> ecobeeReconciliationReportJobDef;
@@ -334,7 +335,7 @@ public class EcobeeController {
         int deviceIssues = 0;
         int groupIssues = 0;
         if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
-            EcobeeZeusReconciliationReport report = ecobeeZeusReconciliation.findReconciliationReport();
+            EcobeeZeusReconciliationReport report = ecobeeZeusReconciliationService.findReconciliationReport();
             if (report != null) {
                 deviceIssues = report.getErrorNumberByCategory(EcobeeZeusDiscrepancyCategory.DEVICE);
                 groupIssues = report.getErrorNumberByCategory(EcobeeZeusDiscrepancyCategory.GROUP);
@@ -380,7 +381,7 @@ public class EcobeeController {
         model.addAttribute("downloads", downloads);
         
         if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
-            EcobeeZeusReconciliationReport report = ecobeeZeusReconciliation.findReconciliationReport();
+            EcobeeZeusReconciliationReport report = ecobeeZeusReconciliationService.findReconciliationReport();
             model.addAttribute("report", report);
         } else {
             EcobeeReconciliationReport report = ecobeeReconciliation.findReconciliationReport();
@@ -393,7 +394,11 @@ public class EcobeeController {
     
     @RequestMapping(value="/ecobee/runReport")
     public String runReport() {
-        ecobeeReconciliation.runReconciliationReport();
+        if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
+            ecobeeZeusReconciliationService.runReconciliationReport();
+        } else {
+            ecobeeReconciliation.runReconciliationReport();
+        }
         return "";
     }
 
@@ -411,7 +416,7 @@ public class EcobeeController {
         if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
             EcobeeZeusReconciliationResult result = null;
             try {
-                result = ecobeeZeusReconciliation.fixDiscrepancy(reportId, errorId, userContext.getYukonUser());
+                result = ecobeeZeusReconciliationService.fixDiscrepancy(reportId, errorId, userContext.getYukonUser());
                 if (result.isSuccess()) {
                     json.put("success", "true");
                 } else {
@@ -459,7 +464,7 @@ public class EcobeeController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
             try {
-                List<EcobeeZeusReconciliationResult> results = ecobeeZeusReconciliation.fixAllDiscrepancies(reportId,
+                List<EcobeeZeusReconciliationResult> results = ecobeeZeusReconciliationService.fixAllDiscrepancies(reportId,
                         userContext.getYukonUser());
                 for (EcobeeZeusReconciliationResult result : results) {
                     EcobeeZeusDiscrepancy originalError = result.getOriginalDiscrepancy();
