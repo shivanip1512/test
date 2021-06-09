@@ -1,6 +1,7 @@
 package com.cannontech.dr.ecobee;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jms.JMSException;
@@ -119,7 +120,7 @@ public class EcobeeMessageListener {
                 return;
             }
             if (isEcobeeZeusEnabled()) {
-                ecobeeZeusCommunicationService.cancelDemandResponse(groupId);
+                ecobeeZeusCommunicationService.cancelDemandResponse(List.of(groupId));
             } else {
                 // Send restore to ecobee server
                 String drIdentifier = groupToDrIdentifierMap.get(groupId);

@@ -143,4 +143,14 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         sql.append("WHERE YukonGroupId").eq(yukonGroupId);
         return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
+
+    @Override
+    public List<Integer> getLmGroupsForInventory(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT LGZM.YukonGroupId FROM LMGroupZeusMapping LGZM");
+        sql.append("JOIN ZeusGroupInventoryMapping ZGIM");
+        sql.append("ON LGZM.EcobeeGroupId = ZGIM.EcobeeGroupId");
+        sql.append("AND ZGIM.InventoryID").eq(inventoryId);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+    }
 }
