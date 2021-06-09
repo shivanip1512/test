@@ -1156,6 +1156,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return itronTypes;
     }
     
+    public static ImmutableSet<PaoType> getCloudTypes() {
+        return cloudLcrTypes;
+    }
+    
     public static ImmutableSet<PaoType> getLongMacSupportedTypes() {
         return itronTypes;
     }

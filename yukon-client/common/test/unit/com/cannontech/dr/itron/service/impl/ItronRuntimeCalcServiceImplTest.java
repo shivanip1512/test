@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -51,6 +52,8 @@ import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.itron.ItronDataEventType;
+import com.cannontech.dr.itron.model.ItronRelayDataLogs;
+import com.cannontech.dr.itron.service.ItronRuntimeCalcService;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.RuntimeCalcServiceImpl;
 import com.cannontech.message.dispatch.message.PointData;
@@ -60,7 +63,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class ItronRuntimeCalcServiceImplTest {
-    private ItronRuntimeCalcServiceImpl itronRuntimeCalcService = new ItronRuntimeCalcServiceImpl();
+    private ItronRuntimeCalcService itronRuntimeCalcService = new ItronRuntimeCalcService();
     
     private static final int lcr6600sId = 17;
     private static final int lcr6601sId = 79;
@@ -155,7 +158,7 @@ public class ItronRuntimeCalcServiceImplTest {
     @Test
     public void test_addBoundaryValues_valuesWithinRange() {
         
-        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+        ItronRuntimeCalcService itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcService.class)
                 .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
                 .createMock();
         
@@ -193,7 +196,7 @@ public class ItronRuntimeCalcServiceImplTest {
     @Test
     public void test_addBoundaryValues_recentValueOutsideRange() {
         
-        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+        ItronRuntimeCalcService itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcService.class)
                 .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
                 .createMock();
         
@@ -223,7 +226,7 @@ public class ItronRuntimeCalcServiceImplTest {
     @Test
     public void test_addBoundaryValues_valueAtRangeEnd() {
         
-        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+        ItronRuntimeCalcService itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcService.class)
                 .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
                 .createMock();
         
@@ -261,7 +264,7 @@ public class ItronRuntimeCalcServiceImplTest {
     @Test
     public void test_addBoundaryValues_valueAtRangeStart() {
         
-        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+        ItronRuntimeCalcService itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcService.class)
                 .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
                 .createMock();
         
@@ -299,7 +302,7 @@ public class ItronRuntimeCalcServiceImplTest {
     @Test
     public void test_addBoundaryValues_noRangeStart() {
         
-        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+        ItronRuntimeCalcService itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcService.class)
                 .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
                 .createMock();
         
@@ -463,7 +466,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         ReflectionTestUtils.setField(itronRuntimeCalcService, "dynamicLcrCommunicationsDao", mockDynamicLcrCommunicationsDao);
         
-        itronRuntimeCalcService.calculateDataLogs();
+        ReflectionTestUtils.invokeMethod(itronRuntimeCalcService, "calculateDataLogs");
     }
     
     @Test
@@ -578,7 +581,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         ReflectionTestUtils.setField(itronRuntimeCalcService, "dynamicLcrCommunicationsDao", mockDynamicLcrCommunicationsDao);
         
-        itronRuntimeCalcService.calculateDataLogs();
+        ReflectionTestUtils.invokeMethod(itronRuntimeCalcService, "calculateDataLogs");
     }
     
     private PointData buildPointData(LitePoint point, DateTime timestamp, Double value) {
