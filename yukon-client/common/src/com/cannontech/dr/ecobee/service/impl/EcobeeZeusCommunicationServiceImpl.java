@@ -97,6 +97,19 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
     }
+    
+    /**
+     * Delete a thermostat group
+     */
+    @Override
+    public void deleteGroup(String zeusGroupId) {
+        try {
+            String deleteGroupURL = getUrlBase() + "tstatgroups/" + zeusGroupId;
+            requestHelper.callEcobeeAPIForObject(deleteGroupURL, HttpMethod.DELETE, Object.class);
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+    }
 
     /**
      * Retrieve root_tstatgroup_id from Ecobee by using programID.
@@ -250,6 +263,26 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
     }
+    
+    @Override
+    public void createThermostatGroup(String zeusGroupId, List<String> thermostatIds) {
+
+        String createThermostatURL = getUrlBase() + "tstatgroups";
+
+        String groupName = ecobeeZeusGroupService.zeusGroupName(zeusGroupId);
+        CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), thermostatIds);
+        ZeusGroup group = new ZeusGroup(groupName, getZeusProgramId());
+        ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
+
+        try {
+            requestHelper.callEcobeeAPIForObject(createThermostatURL, HttpMethod.POST, Object.class,
+                    zeusThermostatGroup);
+
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+    }    
+        
 
     @Override
     public void createPushApiConfiguration(String reportingUrl, String privateKey) {

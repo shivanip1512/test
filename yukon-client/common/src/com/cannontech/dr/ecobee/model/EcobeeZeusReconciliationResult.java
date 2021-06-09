@@ -41,8 +41,6 @@ public class EcobeeZeusReconciliationResult {
     public enum ErrorType implements DisplayableEnum {
         NONE,
         COMMUNICATION,
-        NO_GROUP,
-        NO_DEVICE,
         NOT_FIXABLE,;
 
         @Override

@@ -1,7 +1,11 @@
 package com.cannontech.dr.ecobee.service.impl;
 
+import static com.cannontech.dr.ecobee.model.EcobeeZeusReconciliationResult.ErrorType.COMMUNICATION;
+import static com.cannontech.dr.ecobee.model.EcobeeZeusReconciliationResult.ErrorType.NOT_FIXABLE;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,6 +20,7 @@ import com.cannontech.common.events.loggers.EcobeeEventLogService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.dao.EcobeeGroupDeviceMappingDao;
+import com.cannontech.dr.ecobee.dao.EcobeeZeusGroupDao;
 import com.cannontech.dr.ecobee.dao.EcobeeZeusReconciliationReportDao;
 import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
@@ -26,7 +31,10 @@ import com.cannontech.dr.ecobee.model.EcobeeZeusReconciliationResult;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconciliationService {
@@ -37,12 +45,14 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
     @Autowired private EcobeeZeusCommunicationService communicationService;
     @Autowired private EcobeeGroupDeviceMappingDao ecobeeGroupDeviceMappingDao;
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private EcobeeZeusGroupDao ecobeeZeusGroupDao;
+
     
-  //Fix issues in this order to avoid e.g. deleting an extraneous set containing a mislocated set.
+  //Fix issues in this order to avoid e.g. deleting an extraneous group containing a mislocated group.
     //(This should not be rearranged without some thought)
     private static final ImmutableList<EcobeeZeusDiscrepancyType> errorTypes = ImmutableList.of(
         EcobeeZeusDiscrepancyType.MISSING_GROUP,
-        EcobeeZeusDiscrepancyType.MISLOCATED_GROUP,
         EcobeeZeusDiscrepancyType.EXTRANEOUS_GROUP,
         EcobeeZeusDiscrepancyType.MISSING_DEVICE,
         EcobeeZeusDiscrepancyType.MISLOCATED_DEVICE,
@@ -76,19 +86,45 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
     
     @Override
     public EcobeeZeusReconciliationResult fixDiscrepancy(int reportId, int errorId, LiteYukonUser liteYukonUser) throws IllegalArgumentException {
-        return null;
+        log.debug("Fixing ecobee discrepancy. ReportId: " + reportId + " ErrorId: " + errorId);
+        
+        //get discrepancy
+        EcobeeZeusReconciliationReport report = reconciliationReportDao.findReport();
+        if (report.getReportId() != reportId) {
+            throw new IllegalArgumentException("Report id is outdated.");
+        }
+        
+        EcobeeZeusDiscrepancy error = report.getError(errorId);
+        if(error == null) {
+            throw new IllegalArgumentException("Invalid error id.");
+        }
+        log.debug("Discrepancy type: " + error.getErrorType());
+        ecobeeEventLogService.reconciliationStarted(1, liteYukonUser);
+        
+        //fix discrepancy
+        EcobeeZeusReconciliationResult result = fixDiscrepancy(error);
+        doEventLog(liteYukonUser, error, result);
+        
+        //remove discrepancy from report
+        if (result.isSuccess()) {
+            reconciliationReportDao.removeError(reportId, errorId);
+        }
+        
+        
+        return result;
     }
     
     /**
      * Log events for Ecobee Reconciliation.
      */
     private void doEventLog(LiteYukonUser liteYukonUser, EcobeeZeusDiscrepancy error, EcobeeZeusReconciliationResult result) {
-        String managementSet = getSyncObjectForError(error);
+        String groups = getSyncObjectForError(error);
         int intValue = BooleanUtils.toInteger(result.isSuccess());
-        if (error.getErrorType() == EcobeeZeusDiscrepancyType.EXTRANEOUS_DEVICE) {
+        if (error.getErrorType() == EcobeeZeusDiscrepancyType.EXTRANEOUS_DEVICE
+                || error.getErrorType() == EcobeeZeusDiscrepancyType.MISSING_DEVICE) {
             intValue = 2; // represents unmodified
         }
-        ecobeeEventLogService.reconciliationCompleted(intValue, managementSet,
+        ecobeeEventLogService.reconciliationCompleted(intValue, groups,
                 result.getOriginalDiscrepancy().getErrorType().toString(), liteYukonUser, intValue);
     }
     
@@ -98,7 +134,6 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
     private String getSyncObjectForError(EcobeeZeusDiscrepancy error) {
         switch (error.getErrorType()) {
         case EXTRANEOUS_GROUP:
-        case MISLOCATED_GROUP:
             return error.getCurrentPath();
         case MISSING_GROUP:
             return error.getCorrectPath();
@@ -114,17 +149,86 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
     @Override
     public List<EcobeeZeusReconciliationResult> fixAllDiscrepancies(int reportId, LiteYukonUser liteYukonUser)
             throws IllegalArgumentException {
-        // TODO: YUK-24505
+        int successCount = 0;
+        int unsupportedCount = 0;
+        log.debug("Fixing all ecobee discrepancies. ReportId: " + reportId);
+
         // get discrepancies
         EcobeeZeusReconciliationReport report = reconciliationReportDao.findReport();
         if (report.getReportId() != reportId) {
             throw new IllegalArgumentException("Report id is outdated.");
         }
-        return null;
+        log.debug("Total number of discrepancies: " + report.getErrors().size());
+        ecobeeEventLogService.reconciliationStarted(report.getErrors().size(), liteYukonUser);
+        List<EcobeeZeusReconciliationResult> results = new ArrayList<>();
+
+        for (EcobeeZeusDiscrepancyType errorType : errorTypes) {
+            Collection<EcobeeZeusDiscrepancy> errors = report.getErrors(errorType);
+            for (EcobeeZeusDiscrepancy error : errors) {
+                // Attempt to fix
+                EcobeeZeusReconciliationResult result = fixDiscrepancy(error);
+                // Save the result
+                results.add(result);
+                doEventLog(liteYukonUser, error, result);
+                if (error.getErrorType() == EcobeeZeusDiscrepancyType.EXTRANEOUS_DEVICE || 
+                        error.getErrorType() == EcobeeZeusDiscrepancyType.MISSING_DEVICE) {
+                    unsupportedCount++;
+                }
+                // Remove discrepancy from report
+                if (result.isSuccess()) {
+                    reconciliationReportDao.removeError(reportId, error.getErrorId());
+                    successCount++;
+                }
+            }
+        }
+        ecobeeEventLogService.reconciliationResults(report.getErrors().size(), successCount,
+                report.getErrors().size() - successCount - unsupportedCount, unsupportedCount);
+        return results;
     }
     
     private EcobeeZeusReconciliationResult fixDiscrepancy(EcobeeZeusDiscrepancy error) {
-        return null;
+        try {
+            switch (error.getErrorType()) {
+            // Group in ecobee, doesn't correspond to a Yukon group
+            case EXTRANEOUS_GROUP:
+                // Delete group from ecobee.
+                communicationService.deleteGroup(error.getCurrentPath());
+                return EcobeeZeusReconciliationResult.newSuccess(error);
+
+            // ecobee device corresponds to a Yukon device, but is in the wrong group
+            case MISLOCATED_DEVICE:
+                // Unenroll device from incorrect group and Enroll device in correct group
+                int inventoryId = lmHardwareBaseDao.getBySerialNumber(error.getSerialNumber()).getInventoryId();
+                Set<Integer> groups = new HashSet<>();
+                groups.add(Integer.parseInt(error.getCurrentPath()));
+                communicationService.unEnroll(groups, error.getSerialNumber(), inventoryId);
+                communicationService.enroll(Integer.parseInt(error.getCorrectPath()), error.getSerialNumber(), inventoryId);
+                return EcobeeZeusReconciliationResult.newSuccess(error);
+
+            // Device in Yukon, not in ecobee
+            case MISSING_DEVICE:
+                // Cant fix this at Ecobee Zeus, as this require creation of thermostat at Zeus. Which is not supported
+                return EcobeeZeusReconciliationResult.newFailure(error, NOT_FIXABLE);
+                
+                // Yukon group has no corresponding ecobee group
+            case MISSING_GROUP:
+                // Create thermostat group in ecobee with all its enrollments.
+                List<Integer> ids = ecobeeZeusGroupDao.getInventoryIdsForYukonGroupID(error.getCorrectPath());
+                List<String> inventoryIds = Lists.transform(ids, Functions.toStringFunction());
+                communicationService.createThermostatGroup(error.getCorrectPath(), inventoryIds);
+                return EcobeeZeusReconciliationResult.newSuccess(error);
+
+            // Device in ecobee, not in Yukon
+            case EXTRANEOUS_DEVICE:
+                // Unknown discrepancy type, shouldn't happen
+                return EcobeeZeusReconciliationResult.newFailure(error, NOT_FIXABLE);
+                
+            default:
+                return EcobeeZeusReconciliationResult.newFailure(error, NOT_FIXABLE);
+            }
+        } catch (EcobeeCommunicationException e) {
+            return EcobeeZeusReconciliationResult.newFailure(error, COMMUNICATION);
+        }
     }
     
 
