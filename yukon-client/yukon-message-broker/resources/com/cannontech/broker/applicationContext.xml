@@ -49,22 +49,6 @@
     <bean id="globalSettingDao" class="com.cannontech.system.dao.impl.GlobalSettingDaoImpl"/>
     <bean class="com.cannontech.broker.logging.YukonBrokerLoggingReloader"/>
 
-    <bean id="rootThemeSource" class="com.cannontech.common.i18n.DefaultThemeSource">
-        <property name="messageSource" ref="messageSource"/>
-    </bean>
-    
-    <bean id="mainThemeSource" class="com.cannontech.common.i18n.ReloadableResourceBundleThemeSource">
-        <property name="defaultEncoding" value="UTF-8"/>
-        <property name="fallbackToSystemLocale" value="false"/>
-        <property name="parentThemeSource" ref="rootThemeSource"/>
-        <property name="useCodeAsDefaultMessage" value="false"/>
-        <property name="configurationSource" ref="configurationSource"/>
-    </bean>
-    
-    <bean id="messageSourceResolver" class="com.cannontech.i18n.YukonUserContextMessageSourceResolverImpl">
-        <property name="themeSource" ref="mainThemeSource"/>
-    </bean>
-
     <bean id="connectionFactoryTarget" class="com.cannontech.services.jms.YukonJmsConnectionFactory" lazy-init="true" autowire-candidate="false"/>
         
     <bean id="connectionFactory" class="org.springframework.aop.framework.ProxyFactoryBean">
