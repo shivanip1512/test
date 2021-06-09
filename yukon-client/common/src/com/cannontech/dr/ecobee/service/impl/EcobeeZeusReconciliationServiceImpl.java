@@ -134,6 +134,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
     private String getSyncObjectForError(EcobeeZeusDiscrepancy error) {
         switch (error.getErrorType()) {
         case EXTRANEOUS_GROUP:
+            return error.getCurrentPath();
         case MISSING_GROUP:
             return error.getCorrectPath();
         case MISLOCATED_DEVICE:
@@ -207,7 +208,8 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
             // Device in Yukon, not in ecobee
             case MISSING_DEVICE:
                 // Cant fix this at Ecobee Zeus, as this require creation of thermostat at Zeus. Which is not supported
-
+                return EcobeeZeusReconciliationResult.newFailure(error, NOT_FIXABLE);
+                
                 // Yukon group has no corresponding ecobee group
             case MISSING_GROUP:
                 // Create thermostat group in ecobee with all its enrollments.
@@ -219,6 +221,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
             // Device in ecobee, not in Yukon
             case EXTRANEOUS_DEVICE:
                 // Unknown discrepancy type, shouldn't happen
+                return EcobeeZeusReconciliationResult.newFailure(error, NOT_FIXABLE);
                 
             default:
                 return EcobeeZeusReconciliationResult.newFailure(error, NOT_FIXABLE);

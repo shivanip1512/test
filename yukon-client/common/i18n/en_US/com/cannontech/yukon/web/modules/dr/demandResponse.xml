@@ -534,7 +534,7 @@
             <li>Missing Group: A load management group exists in Yukon that does not have a corresponding group in ecobee.</li>
             <li>Extraneous Group: A group exists in ecobee that does not correspond to any Yukon load management group.</li>
             <li>Missing Device: A device exists in Yukon that has no corresponding device in ecobee.</li>
-            <li>Mislocated Device: The device in ecobee corresponds to a Yukon device, but the device is in an unexpected group in the ecobee.</li>
+            <li>Mislocated Device: The device in ecobee corresponds to a Yukon device, but the device is in an unexpected group in ecobee.</li>
             <li>Extraneous Device: A device exists in ecobee that does not correspond to a device in Yukon.</li>
         </ul>
     ]]>
