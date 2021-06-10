@@ -458,7 +458,7 @@
     <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES">Brightlayer Utilities Suite Demand Response Cellular LCR auto read interval</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES.description">The interval, in minutes of how often Yukon will try to read Eaton Cloud Cellular LCRs</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID">Brightlayer Utilities Suite Demand Response System Service Account Id</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID.description">Service Account Id used to access the Brightlayer Utilities Suite Demand Response software</entry>
+    <entry key="yukon.common.setting.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID.description">Service Account Id used to access Brightlayer Utilities Suite Demand Response functionality</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET">Brightlayer Utilities Suite Demand Response System Secret</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET.description">Secret used to access the Brightlayer Utilities Suite Demand Response software</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_URL">Brightlayer Utilities Suite Demand Response URL</entry>
