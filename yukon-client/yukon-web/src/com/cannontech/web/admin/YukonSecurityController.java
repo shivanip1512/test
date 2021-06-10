@@ -733,14 +733,14 @@ public class YukonSecurityController {
         try {
             String privateKey = ecobeeZeusSecurityService.getZeusEncryptionKey().getPrivateKey();
             ecobeeZeusCommunicationService.createPushApiConfiguration(getReportingUrl(), privateKey);
-            String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
+            String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeySuccessfullyRegistered");
             json.put("ecobeeKeyZeusRegisteredDateTime", successMsg + registeredDateTime);
             json.put("success", true);
         } catch (Exception e) {
             log.error("Exception while registering ecobee Zeus", e);
             status = PushApiConfigurationStatus.FAILED;
 
-            String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyNotRegistered");
+            String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyFailedToRegister");
             json.put("ecobeeKeyZeusRegisteredDateTime", errMsg + registeredDateTime);
             json.put("success", false);
         }
