@@ -221,9 +221,6 @@
                  <fileset dir="${destdir}">
                      <include name="**/*Test.class" />
                  </fileset>
-                 <fork>
-                     <jvmarg value="${jacocoagent}" />
-                 </fork>
              </testclasses>
          </junitlauncher>
         <!-- Create the html reports for test results -->
