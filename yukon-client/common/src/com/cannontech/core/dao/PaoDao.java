@@ -249,7 +249,8 @@ public interface PaoDao {
     void savePaoInfo(int paoId, InfoKey key, String value, Instant time, LiteYukonUser user);
 
     /**
-     * Returns DynamicPaoInfo values based on infoKey.
+     * Returns DynamicPaoInfo values based on infoKey.  
+     * This is used only for values where we expect a single entry.
      */
     DynamicPaoInfo getDynamicPaoInfo(InfoKey key);
     
