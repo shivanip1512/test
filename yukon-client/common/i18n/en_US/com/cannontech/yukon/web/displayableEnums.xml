@@ -462,7 +462,7 @@
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET">Brightlayer Utilities Suite Demand Response System Secret</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET.description">Secret used to access the Brightlayer Utilities Suite Demand Response software</entry>
     <entry key="yukon.common.setting.PX_MIDDLEWARE_URL">Brightlayer Utilities Suite Demand Response URL</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_URL.description">URL of the Brightlayer Utilities Suite Demand Response software</entry>
+    <entry key="yukon.common.setting.PX_MIDDLEWARE_URL.description">API URL for Brightlayer Utilities Suite Demand Response functionality</entry>
     <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID">Ecobee Zeus Program ID</entry>
     <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID.description">Program ID required for initiating Zeus API communications.</entry>
     
