@@ -172,7 +172,10 @@ yukon.admin.security = (function () {
                 }).done(function(data) {
                     $('.js-ecobee-zeus-key-not-registered').hide();
                     $('.js-ecobee-zeus-key-registered').hide();
-                    
+                    if (data.ecobeeKeyZeusRegisteredDateTime) {
+                        $('.js-ecobee-zeus-key-register-date-time').html(data.ecobeeKeyZeusRegisteredDateTime);
+                        $('.js-ecobee-zeus-key-registered').show();
+					}
                     if (data.success) {
                         $('#ecobee-zeus-js-message').addMessage({
                             message : data.ecobeeKeyZeusRegisteredDateTime,

@@ -303,10 +303,10 @@ public class YukonSecurityController {
                     DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
             if (status == PushApiConfigurationStatus.SUCCESS) {
                 String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
-                model.put("ecobeeZeusRegisteredDateTimeSuccess", successMsg + pushConfigDateTime);
+                model.put("ecobeeZeusRegisteredDateTime", successMsg + pushConfigDateTime);
             } else {
                 String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyNotRegistered");
-                model.put("ecobeeZeusRegisteredDateTimeFailure", errMsg + pushConfigDateTime);
+                model.put("ecobeeZeusRegisteredDateTime", errMsg + pushConfigDateTime);
             }
         }
          
