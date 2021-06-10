@@ -1802,6 +1802,55 @@ EcobeeSetpoint:
           $ref: '#capacityReduction'
         whenToChangeFields:
           $ref: '#whenToChangeFields'
+          
+EcobeePlus:
+  title: EcobeePlus
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - EcobeePlus
+      description: 'Type of gear.'
+    fields:
+      required:
+        - rampInOut
+        - heatingEvent
+        - howToStopControl
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        rampInOut:
+          type: boolean
+          default: True
+          description: 'Ramp in a percentage of the load groups over an interval of time.'
+        heatingEvent: 
+          type: booelan
+          default: False
+          description: 'Heating Event. This is controlling parameter.'
+        howToStopControl:
+          type: string
+          enum:
+            - Restore
+          description: |- 
+                        - Restore - A restore command is sent to the device.
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
 
 HoneywellSetpoint:
   title: HoneywellSetpoint
