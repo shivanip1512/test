@@ -32,9 +32,18 @@
   <modelVersion>4.0.0</modelVersion>
   <url>https://ant.apache.org/</url>
   <groupId>org.apache.ant</groupId>
-  <artifactId>ant-launcher</artifactId>
+  <artifactId>ant-imageio</artifactId>
   <version>1.10.10</version>
-  <name>Apache Ant Launcher</name>
+  <name>Apache Ant + ImageIO</name>
+  <description>imageio task and corresponding types.</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.10.10</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
@@ -42,10 +51,11 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <includes>
-            <include>org/apache/tools/ant/launch/*.java</include>
+            <include>org/apache/tools/ant/taskdefs/optional/image/ImageIOTask.java</include>
+            <include>org/apache/tools/ant/types/optional/imageio/*</include>
           </includes>
           <testIncludes>
-            <include>org/apache/tools/ant/launch/*.java</include>
+            <include>org/apache/tools/ant/taskdefs/optional/image/ImageIOTest.java</include>
           </testIncludes>
         </configuration>
       </plugin>
@@ -56,10 +66,26 @@
           <archive>
             <index>true</index>
             <manifest>
-              <mainClass>org.apache.tools.ant.launch.Launcher</mainClass>
+              <addExtensions>true</addExtensions>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
           </archive>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <basedir>../../../..</basedir>
+          <workingDirectory>../../../..</workingDirectory>
+          <systemProperties>
+            <property>
+              <name>ant.test.basedir.ignore</name>
+              <value>true</value>
+            </property>
+          </systemProperties>
+       </configuration>
       </plugin>
     </plugins>
     <resources>
@@ -73,8 +99,7 @@
       </resource>
     </resources>
     <sourceDirectory>../../../../src/main</sourceDirectory>
-    <!-- tests depend on Ant (Os) -->
-    <testSourceDirectory>../../../../src/testcases</testSourceDirectory>
+    <testSourceDirectory>../../../../src/tests/junit</testSourceDirectory>
     <outputDirectory>../../../../target/${project.artifactId}/classes</outputDirectory>
     <testOutputDirectory>../../../../target/${project.artifactId}/testcases</testOutputDirectory>
     <directory>../../../../target/${project.artifactId}</directory>

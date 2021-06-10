@@ -1,119 +1,131 @@
 <?xml version="1.0" ?>
 <project name="services" default="all">
 
-   <property file="../build/build.properties"/>
+	<property file="../build/build.properties"/>
 
-   <target name="all" depends="clean,build">
-    </target>
-   
-   <target name="build">
-       <mkdir dir="build"/>
-       
-       <javac srcdir="src"
+	<target name="all" depends="clean,build">
+	</target>
+
+	<target name="build">
+		<mkdir dir="build"/>
+
+		<javac srcdir="src"
               destdir="build"
               target="${yukon.javac.target}" 
               source="${yukon.javac.source}"
               debug="${yukon.javac.debug}">
-           <compilerarg value="--add-modules"/>
-           <compilerarg value="java.desktop"/>
-           <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
-          <classpath>
-             <fileset dir="${yukon.lib}">
-                <include name="**/*.jar"/>
-             </fileset>
-          </classpath> 
-      </javac>
+			<compilerarg value="--add-modules"/>
+			<compilerarg value="java.desktop"/>
+			<compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
+			<classpath>
+				<fileset dir="${yukon.lib}">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
 
-       <jar jarfile="${yukon.lib}/services.jar"
+		<jar jarfile="${yukon.lib}/services.jar"
             basedir="build/" 
             manifest="resource/manifest.mf">
-            <manifest>
-               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-               <attribute name="Permissions" value="all-permissions"/>
-           </manifest>
-           <fileset dir="src">
-               <exclude name="**/*.java"/>
-           </fileset>
-       </jar>
-   </target>
+			<manifest>
+				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
+				<attribute name="Yukon-Details" value="${yukon.build.details}"/>
+				<attribute name="Permissions" value="all-permissions"/>
+			</manifest>
+			<fileset dir="src">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</jar>
+	</target>
 
-   <target name="clean">
-       <move file="build" tofile="build-delete" failonerror="false"/>
-       <parallel>
-           <daemons>
-               <delete dir="build-delete"/>  
-           </daemons>
-       </parallel>
-   </target>
+	<target name="clean">
+		<move file="build" tofile="build-delete" failonerror="false"/>
+		<parallel>
+			<daemons>
+				<delete dir="build-delete"/>
+			</daemons>
+		</parallel>
+	</target>
 
-   <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
-   <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
-       <antcall target="executeTests">
-           <param name="halt" value="no"/>
-           <param name="srcdir" value="test"/>
-           <param name="destdir" value="test/build/unit"/>
-        </antcall>
-   </target>
-    
-    <!-- Compile unit tests - will compile all unit tests -->
-        <target name="compileUnitTests">
-            <antcall target="compileTests">
-                <param name="srcdir" value="test"/>
-                <param name="destdir" value="test/build/unit" />
-            </antcall>
-        </target>
+	<!-- Run unit tests - will stop running if a failure or error occurs during a test -->
+	<target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
+		<antcall target="executeTests">
+			<param name="halt" value="no"/>
+			<param name="srcdir" value="test"/>
+			<param name="destdir" value="test/build/unit"/>
+		</antcall>
+	</target>
 
-    <!-- Compile the test classes for testing. This target must be supplied a srcdir and a destdir property -->
-        <target name="compileTests">
-            <delete dir="test/build/unit" />
-            <mkdir dir="test/build/unit" />
-            <javac srcdir="test"
+	<!-- Compile unit tests - will compile all unit tests -->
+	<target name="compileUnitTests">
+		<antcall target="compileTests">
+			<param name="srcdir" value="test"/>
+			<param name="destdir" value="test/build/unit" />
+		</antcall>
+	</target>
+
+	<!-- Compile the test classes for testing. This target must be supplied a srcdir and a destdir property -->
+	<target name="compileTests">
+		<delete dir="test/build/unit" />
+		<mkdir dir="test/build/unit" />
+		<javac srcdir="test"
                    destdir="test/build/unit"
                    target="${yukon.javac.target}"
                    source="${yukon.javac.source}"
                    bootclasspath="${yukon.javac.bootclasspath}"
                    debug="${yukon.javac.debug}">
-                <classpath>
-                    <fileset dir="${yukon.lib}">
-                        <include name="**/*.jar" />
-                    </fileset>
-                </classpath>
-            </javac>
-        </target>
+			<classpath>
+				<fileset dir="${yukon.lib}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
 
-    <!-- Run tests. This target must be supplied a halt and destdir property -->
-        <target name="executeTests">
+	<!-- Run tests. This target must be supplied a halt and destdir property -->
+	<target name="executeTests">
 
-            <property name="test.results.dir" value="test/testResults"/>
-            <!-- Clear out any old results -->
-                    <delete dir="${test.results.dir}" />
-                    <mkdir dir="${test.results.dir}" />
+		<property name="test.results.dir" value="test/testResults"/>
+		<!-- Clear out any old results -->
+		<delete dir="${test.results.dir}" />
+		<mkdir dir="${test.results.dir}" />
 
-            <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-            <junitlauncher printsummary="true" haltonerror="${halt}">
-                <classpath id="junit.class.path">
-                    <pathelement location="${srcdir}"/>
-                    <pathelement location="${destdir}"/>
-                    <fileset dir="${yukon.lib}">
-                        <include name="**/*.jar" />
-                        <exclude name="**/WebContent/**" />
-                    </fileset>
-                </classpath>
-                <testclasses outputdir="${test.results.dir}">
-                    <fileset dir="${destdir}">
-                        <include name="**/*Test.class" />
-                    </fileset>
-                </testclasses>
-            </junitlauncher>
-            <!-- Create the html reports for test results -->
-            <property name="test.results.dir" value="test/unitTestResults" />
-            <junitreport todir="${test.results.dir}">
-                <fileset dir="${test.results.dir}">
-                    <include name="TEST-*.xml" />
-                </fileset>
-                <report todir="${test.results.dir}" />
-            </junitreport>
-        </target>
+		<!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
+		<jacoco:agent property="jacocoagent" destfile="${yukon.lib}/coverage/common-jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant" exclclassloader="sun.reflect.DelegatingClassLoader:javassist.Loader" />
+		<junitlauncher haltOnFailure="${halt}" printSummary="true">
+			<classpath id="junit.class.path">
+				<pathelement location="${srcdir}" />
+				<pathelement location="${destdir}" />
+				<fileset dir="${yukon.lib}">
+					<include name="**/*.jar" />
+					<exclude name="**/WebContent/**" />
+				</fileset>
+			</classpath>
+			<testclasses outputdir="${test.results.dir}">
+				<fileset dir="${destdir}">
+					<include name="**/*Test.class" />
+				</fileset>
+				<fork>
+					<jvmarg value="${jacocoagent}" />
+				</fork>
+			</testclasses>
+		</junitlauncher>
+		<!-- Create the html reports for test results -->
+		<property name="test.results.dir" value="test/unitTestResults" />
+		<jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
+			<executiondata>
+				<file file="${yukon.lib}/coverage/common-jacoco.exec" />
+			</executiondata>
+			<structure>
+				<classfiles>
+					<fileset dir="${destdir}" />
+				</classfiles>
+				<sourcefiles encoding="UTF-8">
+					<fileset dir="${test.results.dir}"/>
+				</sourcefiles>
+			</structure>
+			<html destdir="${test.results.dir}" />
+		</jacoco:report>
+	</target>
 
 </project>
