@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData, #cancelDemandResponse, #getGroup').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData, #cancelDemandResponse, #getGroup, #generateDiscrepency').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -50,6 +50,9 @@
              } break;
              case 'getGroup' : {
                  enabledSelectedOption(getGroup, getAllGroupOp);
+             } break;
+             case 'generateDiscrepency' : {
+                 enabledSelectedOption(generateDiscrepency, generateAllDiscrepencyOp);
              } break;
          }
          });
@@ -128,6 +131,12 @@
                             <label> 
                                 <input id="getGroup" type="checkbox" name="getGroup"> 
                                 <i:inline key=".getGroup" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="generateDiscrepency" type="checkbox" name="generateDiscrepency"> 
+                                <i:inline key=".generateDiscrepency" />
                             </label>
                         </li>
                     </ul>
@@ -216,6 +225,14 @@
                                     </c:forEach>
                                 </select>
                                 <input type="hidden" name="getAllGroupOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="generateAllDiscrepencyOp" name="generateAllDiscrepencyOp" disabled="disabled">
+                                    <c:forEach var="decrepencyStatus" items="${decrepencyStatus}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${decrepencyStatus}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="generateAllDiscrepencyOp" value="0" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>

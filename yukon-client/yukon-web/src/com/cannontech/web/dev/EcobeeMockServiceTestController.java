@@ -68,6 +68,8 @@ public class EcobeeMockServiceTestController {
 
     private static final List<String> zeusStatus = ImmutableList.of("SUCCESS(0)",
             "UNAUTHORIZED(1)", "BAD_REQUEST(2)", "NOT_FOUND(3)", "PARTIAL_CONTENT(4)", "FORBIDDEN(5)");
+    
+    private static final List<String> descrepencyStatus = ImmutableList.of("NONE(0)", "ALL(1)");
 
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
@@ -99,7 +101,7 @@ public class EcobeeMockServiceTestController {
     @IgnoreCsrfCheck
     @RequestMapping(value = "zeus/update", method = RequestMethod.POST)
     public String updateZeus(Integer authenticateOp, Integer createDeviceOp, Integer deleteDeviceOp, Integer enrollmentOp, Integer issueDemandResponseOp,
-            Integer showUserOp, Integer createPushConfigurationOp, Integer showPushConfigurationOp, boolean enableRuntime, Integer getAllGroupOp,
+            Integer showUserOp, Integer createPushConfigurationOp, Integer showPushConfigurationOp, boolean enableRuntime, Integer getAllGroupOp, Integer generateAllDiscrepencyOp,
             Integer cancelDemandResponseOp, FlashScope flashScope, ModelMap modelMap) throws Exception {
         zeusEcobeeDataConfiguration.setZeusEcobeeDataConfiguration(authenticateOp,
                                                                    createDeviceOp,
@@ -111,6 +113,7 @@ public class EcobeeMockServiceTestController {
                                                                    showPushConfigurationOp,
                                                                    enableRuntime,
                                                                    getAllGroupOp,
+                                                                   generateAllDiscrepencyOp,
                                                                    cancelDemandResponseOp);
                                                                    
         if (enableRuntime == true) {
@@ -137,6 +140,7 @@ public class EcobeeMockServiceTestController {
     @RequestMapping("zeus/viewBase")
     public String viewZeusBase(ModelMap model) {
         model.addAttribute("status", zeusStatus);
+        model.addAttribute("decrepencyStatus", descrepencyStatus);
         return "ecobee/zeusViewBase.jsp";
     }
 
