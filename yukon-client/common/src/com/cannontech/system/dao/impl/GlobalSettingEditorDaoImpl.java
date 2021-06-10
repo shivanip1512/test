@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.helper.EventLogHelper;
-import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -36,7 +35,6 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private EventLogHelper eventLogHelper;
 
-    
     @Override
     public Map<GlobalSettingType, GlobalSetting> getSettingsForCategory(GlobalSettingSubCategory category) {
         Set<GlobalSettingType> all = GlobalSettingType.getSettingsForCategory(category);
@@ -66,8 +64,7 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
                         }
                     } catch (CryptoException | IOException | JDOMException | DecoderException e) {
                         value = type.getDefaultValue();
-                        eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), type.getDescriptionKey());
-
+                        eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), type.name());
                         log.error("Unable to decrypt value for setting " + type + ". Using the default value. ", e);
                     }
                 }
