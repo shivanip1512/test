@@ -303,10 +303,10 @@ public class YukonSecurityController {
                     DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
             if (status == PushApiConfigurationStatus.SUCCESS) {
                 String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
-                model.put("ecobeeZeusRegisteredDateTime", successMsg + pushConfigDateTime);
+                model.put("ecobeeZeusRegisteredDateTime", pushConfigDateTime);
             } else {
                 String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyNotRegistered");
-                model.put("ecobeeZeusRegisteredDateTime", errMsg + pushConfigDateTime);
+                model.put("ecobeeZeusRegisteredDateTime", pushConfigDateTime);
             }
         }
          
@@ -734,14 +734,16 @@ public class YukonSecurityController {
             String privateKey = ecobeeZeusSecurityService.getZeusEncryptionKey().getPrivateKey();
             ecobeeZeusCommunicationService.createPushApiConfiguration(getReportingUrl(), privateKey);
             String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeySuccessfullyRegistered");
-            json.put("ecobeeKeyZeusRegisteredDateTime", successMsg + registeredDateTime);
+            json.put("ecobeeZeusKeySuccessfullyRegistered", successMsg + registeredDateTime);
+            json.put("ecobeeZeusRegisteredDateTime", registeredDateTime);
             json.put("success", true);
         } catch (Exception e) {
             log.error("Exception while registering ecobee Zeus", e);
             status = PushApiConfigurationStatus.FAILED;
 
             String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyFailedToRegister");
-            json.put("ecobeeKeyZeusRegisteredDateTime", errMsg + registeredDateTime);
+            json.put("ecobeeZeusKeyFailedToRegister", errMsg + registeredDateTime);
+            json.put("ecobeeZeusRegisteredDateTime", registeredDateTime);
             json.put("success", false);
         }
         paoDao.savePaoInfo(0, InfoKey.ECOBEEZEUS, status.getValue(), new Instant(todayDate),

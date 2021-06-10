@@ -297,7 +297,11 @@
                     </c:if>
                     <c:set var="keyRegisteredClass" value="${!empty ecobeeZeusRegisteredDateTime ? '' : 'dn'}"/>
                     <span class="js-ecobee-zeus-key-registered ${keyRegisteredClass}">
-                        <span class="js-ecobee-zeus-key-register-date-time">${ecobeeZeusRegisteredDateTime}</span>
+                        <i:inline key=".ecobeeZeusKeyRegistered"/>&nbsp;<span class="js-ecobee-zeus-key-register-date-time">${ecobeeZeusRegisteredDateTime}</span>
+                    </span>
+                    <c:set var="keyNotRegisteredClass" value="${!empty ecobeeZeusRegisteredDateTime ? 'dn' : ''}"/>
+                    <span class="js-ecobee-zeus-key-not-registered ${keyNotRegisteredClass}">
+                        <i:inline key=".ecobeeZeusKeyNotRegistered"/>&nbsp;<span class="js-ecobee-zeus-key-not-register-date-time">${ecobeeZeusRegisteredDateTime}</span>
                     </span><br>
                     <c:set var="keyGeneratedClass" value="${!empty ecobeeKeyZeusGeneratedDateTime ? '' : 'dn'}"/>
                     <span class="js-ecobee-zeus-key-generated ${keyGeneratedClass}">

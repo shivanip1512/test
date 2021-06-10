@@ -172,18 +172,24 @@ yukon.admin.security = (function () {
                 }).done(function(data) {
                     $('.js-ecobee-zeus-key-not-registered').hide();
                     $('.js-ecobee-zeus-key-registered').hide();
-                    if (data.ecobeeKeyZeusRegisteredDateTime) {
-                        $('.js-ecobee-zeus-key-register-date-time').html(data.ecobeeKeyZeusRegisteredDateTime);
+                    
+                    if (data.ecobeeZeusRegisteredDateTime) {
+                        $('.js-ecobee-zeus-key-register-date-time').html(data.ecobeeZeusRegisteredDateTime);
                         $('.js-ecobee-zeus-key-registered').show();
-					}
+                        }
+                    else{
+                        $('.js-ecobee-zeus-key-register-date-time').html(data.ecobeeZeusRegisteredDateTime);
+                        $('.js-ecobee-zeus-key-registered').show();
+                    }
+                    
                     if (data.success) {
                         $('#ecobee-zeus-js-message').addMessage({
-                            message : data.ecobeeKeyZeusRegisteredDateTime,
+                            message : data.ecobeeZeusKeySuccessfullyRegistered,
                             messageClass : 'success'
                         });
                     } else {
                         $('#ecobee-zeus-js-message').addMessage({
-                            message : data.ecobeeKeyZeusRegisteredDateTime,
+                            message : data.ecobeeZeusKeyFailedToRegister,
                             messageClass : 'error'
                         });
                     }
