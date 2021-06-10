@@ -1007,8 +1007,12 @@
     <entry key="yukon.common.events.dr.nest.responseRetrieveCustomers">{7} customers were found.</entry>
     
     <!-- Eaton Cloud -->
-    <entry key="yukon.common.events.dr.eatoncloud.sendShed">Sending shed command to Eaton Cloud for device: {7}, GUID {1}</entry>
-    <entry key="yukon.common.events.dr.eatoncloud.sendRestore">Sending restore command to Eaton Cloud for device: {7}, GUID {1}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestore">Sending restore command to Eaton Cloud for Device: {1}, GUID: {2}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed">Eaton Cloud shed command was sent with the following settings: Device: {1}, GUID: {2}, Duty Cycle Percent: {7}, Duty Cycle Period: {8}, Criticality: {9}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed.2">GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed.7">Duty Cycle Percent</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed.8">Duty Cycle Period</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed.9">Criticality</entry>
     
     <!-- User, User Group, Role Group, Role Property Changes -->
     <entry key="yukon.common.events.system.usersAndGroups.user.userCreated">User {1} created with user group: {2}, energy company: {3}, status: {4} by {5}.</entry>

@@ -49,17 +49,23 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
     @Override
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
         int deviceId = command.getDevice().getDeviceID();
+        String deviceName = command.getDevice().getDeviceLabel();
         String deviceGuid = deviceDao.getGuid(deviceId);
+        Map<String, Object> shedParams = getShedParams(command);
         switch (command.getType()) {
         case SHED:
             checkOptout(command);
-            sendRequest(command, getShedParams(command));
-            eatonCloudEventLogService.sendShed(deviceId, deviceGuid);
+            sendRequest(command, shedParams);
+            eatonCloudEventLogService.sendShed(deviceName, 
+                                               deviceGuid,
+                                               (Integer) shedParams.get(CommandParam.CYCLE_PERCENT.getParamName()),
+                                               (Integer) shedParams.get(CommandParam.CYCLE_PERIOD.getParamName()),
+                                               (Integer) shedParams.get(CommandParam.CRITICALITY.getParamName()));
             break;
         case RESTORE:
             checkOptout(command);
             sendRequest(command, getRestoreParams(command));
-            eatonCloudEventLogService.sendRestore(deviceId, deviceGuid);
+            eatonCloudEventLogService.sendRestore(deviceName, deviceGuid);
             break;
         case TEMP_OUT_OF_SERVICE:
             sendRequest(command, null);

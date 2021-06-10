@@ -1309,9 +1309,12 @@ public class DevEventLogCreationService {
             @Override
             public void execute(DevEventLog devEventLog) {
                 String guid = "60521f5e-8af1-4a78-abba-abb4f94ed6ba";
-                int deviceId = 91564844;
-                eatonCloudEventLogService.sendShed(deviceId, guid);
-                eatonCloudEventLogService.sendRestore(deviceId, guid);
+                String deviceLabel = "91564844";
+                int dutyCyclePercent = 50;
+                int dutyCyclePeriod = 900;
+                int criticality = 100;
+                eatonCloudEventLogService.sendShed(deviceLabel, guid, dutyCyclePercent, dutyCyclePeriod, criticality);
+                eatonCloudEventLogService.sendRestore(deviceLabel, guid);
             }
         });
         eventLogExecutables = ImmutableMap.copyOf(executables);

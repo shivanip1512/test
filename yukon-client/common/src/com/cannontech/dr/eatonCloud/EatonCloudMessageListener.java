@@ -76,8 +76,6 @@ public class EatonCloudMessageListener {
     public void handleCyclingControlMessage(LMEatonCloudScheduledCycleCommand command) {
         Duration controlDuration = new Duration(command.getControlStartDateTime(), command.getControlEndDateTime());
         int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
-        LiteYukonPAObject group = dbCache.getAllLMGroups().stream()
-                .filter(g -> g.getLiteID() == command.getGroupId()).findAny().orElse(null);
 
         Set<Integer> devices = findInventoryAndRemoveOptOut(command.getGroupId());
         if(devices.isEmpty()) {
@@ -112,8 +110,18 @@ public class EatonCloudMessageListener {
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         guids.forEach((deviceId, guid) -> {
             try {
+                String deviceName = dbCache.getAllDevices().stream()
+                                                           .filter(d -> d.getLiteID() == deviceId)
+                                                           .findAny()
+                                                           .map(d -> d.getPaoName())
+                                                           .orElse(null);
+
                 pxMWCommunicationService.sendCommand(guid, new PxMWCommandRequestV1("LCR_Control", params));
-                eatonCloudEventLogService.sendShed(deviceId, guid);
+                eatonCloudEventLogService.sendShed(deviceName, 
+                                                   guid, 
+                                                   command.getDutyCyclePercentage(),
+                                                   command.getDutyCyclePeriod(),
+                                                   command.getCriticality());
             } catch (Exception e) {
                 log.error("Error sending command device id:{} params:{}", deviceId, params, e);
             }
@@ -125,8 +133,14 @@ public class EatonCloudMessageListener {
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         guids.forEach((deviceId, guid) -> {
             try {
+                String deviceName = dbCache.getAllDevices().stream()
+                        .filter(d -> d.getLiteID() == deviceId)
+                        .findAny()
+                        .map(d -> d.getPaoName())
+                        .orElse(null);
+                
                 pxMWCommunicationService.sendCommand(guid, new PxMWCommandRequestV1("LCR_Control", params));
-                eatonCloudEventLogService.sendRestore(deviceId, guid);
+                eatonCloudEventLogService.sendRestore(deviceName, guid);
             } catch (Exception e) {
                 log.error("Error sending command device id:{} params:{}", deviceId, params, e);
             }
