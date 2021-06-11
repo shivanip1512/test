@@ -138,7 +138,7 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
         for (String name : existingNames) {
             //1st group may not contain _ but 2nd group onwards will have a _.
             if (!StringUtils.contains(name, "_")) {
-                break;
+                continue;
             }
             String[] tokens = name.split("_");
             if (Integer.valueOf(tokens[1]) > suffix) {
