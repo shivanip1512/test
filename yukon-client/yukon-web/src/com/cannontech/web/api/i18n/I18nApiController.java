@@ -30,14 +30,18 @@ public class I18nApiController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @GetMapping("/keys")
-    public ResponseEntity<Object> getKeys(@Valid @RequestBody Map<String, String[]> i18nKeysArgs, YukonUserContext userContext) {
+    public ResponseEntity<Object> getKeys(@RequestBody I18nKeyValue[] i18nKeysArgs, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        Map<String, String> i18nValues = new HashMap<String, String>();
-        for (Map.Entry<String, String[]> i18nKey : i18nKeysArgs.entrySet()) {
-            String i18nValue = accessor.getMessage(i18nKey.getKey(), Arrays.asList(i18nKey.getValue()));
-            i18nValues.put(i18nKey.getKey(), i18nValue);
+        for (I18nKeyValue i18nKeyValue : i18nKeysArgs) {
+            String i18nValue = "";
+            if (i18nKeyValue.getArgs() != null) {
+                i18nValue = accessor.getMessage(i18nKeyValue.getNameKey(), Arrays.asList(i18nKeyValue.getArgs()));
+            } else {
+                i18nValue = accessor.getMessage(i18nKeyValue.getNameKey());
+            }
+            i18nKeyValue.setI18nValue(i18nValue);
         }
-        return new ResponseEntity<>(i18nValues, HttpStatus.OK);
+        return new ResponseEntity<>(i18nKeysArgs, HttpStatus.OK);
     }
     
     @GetMapping("/key")
