@@ -189,6 +189,20 @@ Java :
     jira : YUK-23077
     notes : 
     
+  - filename : ant-junitlauncher.jar
+    yukon group : Ant
+    project : Apache Ant
+    version : 1.10.10
+    project URL : "http://ant.apache.org/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.ant/ant-junitlauncher/1.10.10"
+    md5 : 305959a87366a8246a1292917de390b0
+    sha1 : d36e0be9893285d12787f1bd4819e77782cb2a0d
+    updated : 2021-05-24
+    jira : YUK-24356
+    notes :
+    
   - filename : aopalliance-1.0.jar
     yukon group : Spring
     project : AOP Alliance
@@ -1778,7 +1792,7 @@ Java :
     project URL : "https://junit.org/junit5/"
     license : Eclipse Public License v2.0
     license URLs : "https://www.eclipse.org/legal/epl-v20.html"
-    maven URL : "https://repo1.maven.org/maven2/org/junit/platform/junit-platform-commons/1.7.1"
+    maven URL : "https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons/1.7.1"
     md5 : d6d74d7c8854ecd573bdc8cde68b80f1
     sha1 : 7c49f0074842d07f4335de2389d624a7437d1407
     updated : 2021-05-24
