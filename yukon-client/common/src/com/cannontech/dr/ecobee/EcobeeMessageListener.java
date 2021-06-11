@@ -1,8 +1,6 @@
 package com.cannontech.dr.ecobee;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -15,12 +13,9 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeePlusDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
-import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
@@ -32,12 +27,9 @@ import com.cannontech.dr.service.ControlType;
 public class EcobeeMessageListener {
     private static final Logger log = YukonLogManager.getLogger(EcobeeMessageListener.class);
 
-    @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
     @Autowired private ControlHistoryService controlHistoryService;
-    @Autowired private ConfigurationSource configurationSource;
 
-    private static final Map<Integer, String> groupToDrIdentifierMap = new HashMap<>();
     /**
      * Processes ecobee duty cycle DR messages.
      */
@@ -52,15 +44,9 @@ public class EcobeeMessageListener {
                 log.error("Exception parsing StreamMessage for duty cycle DR event.", e);
                 return;
             }
-            if (isEcobeeZeusEnabled()) {
-                ecobeeZeusCommunicationService.sendDutyCycleDR(parameters);
-            } else {
-                // Send DR message to ecobee server
-                String drIdentifier = ecobeeCommunicationService.sendDutyCycleDR(parameters);
 
-                // Store the most recent dr handle for each group, so we can cancel
-                groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
-            }
+            ecobeeZeusCommunicationService.sendDutyCycleDR(parameters);
+
             //Send control history message to dispatch
             Duration controlDuration = new Duration(parameters.getStartTime(), parameters.getEndTime());
             int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
@@ -86,15 +72,7 @@ public class EcobeeMessageListener {
             }
             log.debug("Parameters built " + parameters + " Ready to send Ecobee Message");
 
-            if (isEcobeeZeusEnabled()) {
-                ecobeeZeusCommunicationService.sendSetpointDR(parameters);
-            } else {
-                // Send DR message to ecobee server
-                String drIdentifier = ecobeeCommunicationService.sendSetpointDR(parameters);
-
-                // Store the most recent dr handle for each group, so we can cancel
-                groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
-            }
+            ecobeeZeusCommunicationService.sendSetpointDR(parameters);
 
             //Send control history message to dispatch
             Duration controlDuration = new Duration(parameters.getStartTime(), parameters.getStopTime());
@@ -119,13 +97,8 @@ public class EcobeeMessageListener {
                 log.error("Exception parsing StreamMessage for DR restore.", e);
                 return;
             }
-            if (isEcobeeZeusEnabled()) {
-                ecobeeZeusCommunicationService.cancelDemandResponse(List.of(groupId));
-            } else {
-                // Send restore to ecobee server
-                String drIdentifier = groupToDrIdentifierMap.get(groupId);
-                ecobeeCommunicationService.sendRestore(drIdentifier);
-            }
+           
+            ecobeeZeusCommunicationService.cancelDemandResponse(List.of(groupId));
             // Send control history message to dispatch
             controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
         }
@@ -278,7 +251,4 @@ public class EcobeeMessageListener {
         return new EcobeePlusDrParameters(groupId, startTime, endTime, randomTimeSeconds, heatingEvent);
     }
 
-    private boolean isEcobeeZeusEnabled() {
-        return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED);
-    }
 }

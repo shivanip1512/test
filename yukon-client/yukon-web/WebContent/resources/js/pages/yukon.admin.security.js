@@ -125,22 +125,6 @@ yukon.admin.security = (function () {
                 var formId = $(event.target).data('form-id');
                 _submitForm(formId);
             });
-            
-            $(document).on('yukon:admin:security:generateEcobeeKey', function(event) {
-                $.ajax({
-                    url : "generateEcobeeKey",
-                    type : "GET",
-                }).done(function(data) {
-                    $('.js-ecobee-key-generated').hide();
-                    $('.js-ecobee-key-not-generated').hide();
-                    if (data.ecobeeKeyGeneratedDateTime) {
-                        $('.js-ecobee-key-date-time').html(data.ecobeeKeyGeneratedDateTime);
-                        $('.js-ecobee-key-generated').show();
-                        
-                    }
-                });
-            });
-            
             $(document).on('yukon:admin:security:generateEcobeeZeusKey', function(event) {
                 yukon.ui.busy($('#generateEcobeeZeusKey'));
                 $('#generateEcobeeZeusKeyDialog').dialog('close');

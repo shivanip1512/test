@@ -191,7 +191,6 @@
         
     <bean id="ecobeeReadBackingService" class="com.cannontech.web.updater.dr.EcobeeReadBackingService"/>
   
-    <bean class="com.cannontech.web.dr.ecobee.service.impl.DataDownloadServiceImpl"/>
     <bean class="com.cannontech.common.util.RecentResultsCache">
         <qualifier value="ecobeeReads"/>
     </bean>
@@ -1070,7 +1069,6 @@
     <bean id="hardwareModelHelper" class="com.cannontech.web.stars.dr.operator.HardwareModelHelper"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareReadServiceImpl"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EatonCloudHardwareReadNowStrategy"/>
-    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EcobeeHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.PlcHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.RfHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ItronHardwareReadNowStrategy"/>

@@ -15,7 +15,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.field.processor.impl.LatitudeLongitudeBulkFieldProcessor;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -349,12 +348,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 lib.setDeviceID(paoIdentifier.getPaoId());
             } else if (ht.isEcobee()) {
                 try {
-                    PaoIdentifier paoIdentifier;
-                    if (isEcobeeZeusEnabled()) {
-                        paoIdentifier = ecobeeBuilder.createZeusDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);
-                    } else {
-                        paoIdentifier = ecobeeBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);
-                    }
+                     PaoIdentifier paoIdentifier = ecobeeBuilder.createZeusDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);
                     lib.setDeviceID(paoIdentifier.getPaoId());
                 } catch (DeviceCreationException e) {
                     throw new StarsClientRequestException("Failed to register ecobee device with ecobee server.", e);
@@ -600,11 +594,5 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         HardwareType ht = HardwareType.valueOf(deviceType.getYukonDefID());
         return ht;
     }
-    
-    /**
-     * Check Zeus is enabled through master config.
-     */
-    private boolean isEcobeeZeusEnabled() {
-        return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED);
-    }
+
 }

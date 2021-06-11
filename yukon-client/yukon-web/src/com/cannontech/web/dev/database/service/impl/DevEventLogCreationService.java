@@ -71,7 +71,7 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
+import com.cannontech.dr.ecobee.model.EcobeeZeusDiscrepancyType;
 import com.cannontech.dr.nest.model.v3.EnrollmentState;
 import com.cannontech.dr.nest.model.v3.RushHourEventType;
 import com.cannontech.dr.nest.model.v3.SchedulabilityError;
@@ -1193,15 +1193,10 @@ public class DevEventLogCreationService {
             @Override
             public void execute(DevEventLog devEventLog) {
                 LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
-                LocalDate endDate = LocalDate.now();
-                LocalDate startDate = LocalDate.now().minusDays(1);
-                String loadGroupIds = devEventLog.getIndicatorString() + "123, 456, 789";
-
-                ecobeeEventLogService.reconciliationCompleted(0, "123453625", EcobeeDiscrepancyType.MISSING_DEVICE.toString(),
+                ecobeeEventLogService.reconciliationCompleted(0, "123453625", EcobeeZeusDiscrepancyType.MISSING_DEVICE.toString(),
                         yukonUser, 1);
                 ecobeeEventLogService.reconciliationStarted(1, yukonUser);
                 ecobeeEventLogService.reconciliationResults(10, 5, 4, 1);
-                ecobeeEventLogService.dataDownloaded(yukonUser, startDate, endDate, loadGroupIds, devEventLog.getEventSource());
             }
         });
         executables.put(LogType.GATEWAY, new DevEventLogExecutable() {

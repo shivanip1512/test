@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
@@ -37,11 +36,11 @@ public class EcobeeZeusSyncService {
     @PostConstruct
     public void init() {
         log.debug("Starting scheduler to populate mapping table for Zeus");
-        if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
-            scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(() -> {
-                syncZeusGroup();
-            }, 1, 1, TimeUnit.MINUTES);
-        }
+
+        scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(() -> {
+            syncZeusGroup();
+        }, 1, 1, TimeUnit.MINUTES);
+
     }
 
     private void syncZeusGroup() {
