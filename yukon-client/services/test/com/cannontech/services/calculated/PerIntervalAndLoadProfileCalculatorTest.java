@@ -101,7 +101,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
                                                      
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        assertEquals(4, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
     
     @Test
@@ -120,7 +120,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
                                                       
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        assertEquals(4, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
     
     @Test
@@ -128,7 +128,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         Instant instant = new Instant(1478415600000l); // Overlap --> true, DST ->false, time -> Sun Nov 06 01:00:00 CST 2016 (CDT to CST)
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        assertEquals(4, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
     
 
@@ -137,7 +137,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         Instant instant = new Instant(1478415662950l); // Overlap --> true, DST -> false, time->Sun Nov 06 01:01:02 CST 2016
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        assertEquals(4, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         Instant instant = new Instant(1478419200000l); // Overlap --> false, DST -> false, time->Sun Nov 06 02:00:00 CST 2016
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        assertEquals(4, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
     
     @Test
