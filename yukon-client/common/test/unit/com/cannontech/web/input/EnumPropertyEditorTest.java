@@ -1,7 +1,6 @@
 package com.cannontech.web.input;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,8 +24,6 @@ public class EnumPropertyEditorTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             editor.setAsText("NOT_A_REAL_ENUM"); // should throw
         });
-
-        fail("NOT_A_REAL_ENUM should have thrown an exception");
     }
 	
 	public enum PlainEnum {ENUM1, ENUM2;}

@@ -1799,6 +1799,20 @@ Java :
     jira : YUK-24356
     notes : 
     
+  - filename : junit-platform-launcher-1.7.1.jar
+    yukon group : Unit Tests
+    project : Junit
+    version : 1.7.1
+    project URL : "https://junit.org/junit5/"
+    license : Eclipse Public License v2.0
+    license URLs : "https://www.eclipse.org/legal/epl-v20.html"
+    maven URL : "https://mvnrepository.com/artifact/org.junit.platform/junit-platform-engine/1.7.1"
+    md5 : d827568eba3417a83249386ed9d8a327
+    sha1 : fba1a549c3b51882a912eb454cad924a573d0df4
+    updated : 2021-05-24
+    jira : YUK-24356
+    notes : 
+    
   - filename : lang-tag-1.5.jar
     yukon group : Azure
     project : Microsoft Azure SDK

@@ -1,12 +1,14 @@
 package com.cannontech.web;
 
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -70,7 +72,7 @@ public class ThirdPartyJavaScriptLibraryTest {
             assertFalse(StringUtils.isEmpty(e.getValue().version), e.getKey() + " must have a project version");
             assertFalse(StringUtils.isEmpty(e.getValue().projectUrl), e.getKey() + " must have a project URL");
             assertFalse(StringUtils.isEmpty(e.getValue().npmUrl), e.getKey() + " must have an NPM URL");
-            assertEquals(e.getValue().npmUrl, anyOf(startsWith("https://www.npmjs.com/package/"), equalTo("n/a")), e.getKey() + " must have a valid NPM URL");
+            assertThat(e.getKey() + " must have a valid NPM URL", e.getValue().npmUrl, anyOf(startsWith("https://www.npmjs.com/package/"), equalTo("n/a")));
             assertFalse(CollectionUtils.isEmpty(e.getValue().licenses), e.getKey() + " must have a license type");
             assertFalse(CollectionUtils.isEmpty(e.getValue().licenseUrls), e.getKey() + " must have a license URL");
             assertFalse(StringUtils.isEmpty(e.getValue().jira), e.getKey() + " must have a JIRA entry");
@@ -99,8 +101,8 @@ public class ThirdPartyJavaScriptLibraryTest {
             String md5 = Hex.encodeHexString(md_md5.digest());
             String sha1 = Hex.encodeHexString(md_sha1.digest());
 
-            assertEquals("MD5 mismatch for " + e.getKey(), e.getValue().md5, md5);
-            assertEquals("SHA1 mismatch for " + e.getKey(), e.getValue().sha1, sha1);
+            assertEquals(e.getValue().md5, md5, "MD5 mismatch for " + e.getKey());
+            assertEquals(e.getValue().sha1, sha1, "SHA1 mismatch for " + e.getKey());
         });
     }
 }
