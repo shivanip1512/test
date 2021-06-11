@@ -304,11 +304,11 @@ public class YukonSecurityController {
             if (status == PushApiConfigurationStatus.SUCCESS) {
 				
 				  String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
-				  model.put("ecobeeZeusRegisteredDateTime", successMsg + pushConfigDateTime);
+				  model.put("ecobeeZeusRegisteredDateTime", successMsg +" "+ pushConfigDateTime);
             } else {
 				
 				  String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyNotRegistered");
-				  model.put("ecobeeZeusRegisteredDateTime", errMsg + pushConfigDateTime);
+				  model.put("ecobeeZeusRegisteredDateTime", errMsg +" "+ pushConfigDateTime);
             }
         }
          
@@ -737,7 +737,7 @@ public class YukonSecurityController {
             ecobeeZeusCommunicationService.createPushApiConfiguration(getReportingUrl(), privateKey);
 			String simpleTextSuccessMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
             String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeySuccessfullyRegistered");
-			json.put("ecobeeZeusRegisteredDateTime", simpleTextSuccessMsg + registeredDateTime);
+			json.put("ecobeeZeusRegisteredDateTime", simpleTextSuccessMsg +" "+ registeredDateTime);
             json.put("ecobeeZeusRegisteredDateTimeMsg", successMsg);
             json.put("success", true);
         } catch (Exception e) {
@@ -745,7 +745,7 @@ public class YukonSecurityController {
             status = PushApiConfigurationStatus.FAILED;
             String simpleTextErrMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyNotRegistered");
             String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyFailedToRegister");
-            json.put("ecobeeZeusRegisteredDateTime",simpleTextErrMsg + registeredDateTime);
+            json.put("ecobeeZeusRegisteredDateTime",simpleTextErrMsg +" "+ registeredDateTime);
             json.put("ecobeeZeusRegisteredDateTimeMsg", errMsg);
             json.put("success", false);
         }

@@ -170,22 +170,15 @@ yukon.admin.security = (function () {
                     type : "POST",
                     dataType : "json"
                 }).done(function(data) {
-                                        
-                    if (data.success) {
-                        $('.js-ecobee-zeus-key-register-date-time').html(data.ecobeeZeusRegisteredDateTime);
-                        $('.js-ecobee-zeus-key-registered').show();
-                        $('#ecobee-zeus-js-message').addMessage({
-                            message : data.ecobeeZeusRegisteredDateTimeMsg,
-                            messageClass : 'success'
-                        });
-                    } else {
+                    
+                    var messageClass = data.success ? 'success' : 'error';
                     $('.js-ecobee-zeus-key-register-date-time').html(data.ecobeeZeusRegisteredDateTime);
-                        $('.js-ecobee-zeus-key-registered').show();
-                        $('#ecobee-zeus-js-message').addMessage({
-                            message : data.ecobeeZeusRegisteredDateTimeMsg,
-                            messageClass : 'error'
-                        });
-                    }
+                    $('.js-ecobee-zeus-key-registered').show();
+                    $('#ecobee-zeus-js-message').addMessage({
+                        message : data.ecobeeZeusRegisteredDateTimeMsg,
+                        messageClass : messageClass
+                    });
+                    
                     yukon.ui.unbusy($('#registerConfigurationEcobeeZeusKey'));
                 });
             });
