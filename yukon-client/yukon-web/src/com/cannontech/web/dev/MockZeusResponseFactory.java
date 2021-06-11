@@ -112,7 +112,7 @@ public class MockZeusResponseFactory {
 
             // EXTRANEOUS_GROUP discrepancy
             ZeusGroup group = new ZeusGroup();
-            group.setGroupId(String.valueOf(StringUtils.replace(UUID.randomUUID().toString(), "-", "").substring(0, 32)));
+            group.setGroupId(String.valueOf("8000"));
             group.setName("EcobeeGroupDecrepency");
             if (!groups.isEmpty()) {
                 group.setParentGroupId(parentGroupId);
@@ -141,7 +141,7 @@ public class MockZeusResponseFactory {
             // MISLOCATED_DEVICE discrepancy
             if (!thermostats.isEmpty() && thermostats.get(0) != null) {
                 ZeusGroup group = new ZeusGroup();
-                group.setGroupId(StringUtils.replace(UUID.randomUUID().toString(), "-", "").substring(0, 32));
+                group.setGroupId("9999");
                 List<ZeusGroup> groups = new ArrayList<ZeusGroup>();
                 groups.add(group);
                 thermostats.get(0).setZeusGroups(groups);
@@ -153,7 +153,7 @@ public class MockZeusResponseFactory {
             }
             // EXTRANEOUS_DEVICE discrepancy
             ZeusThermostat descrepencythermostat = new ZeusThermostat();
-            descrepencythermostat.setSerialNumber(StringUtils.replace(UUID.randomUUID().toString(), "-", "").substring(0, 32));
+            descrepencythermostat.setSerialNumber("9000");
             descrepencythermostat.setState(ZeusThermostatState.ENROLLED);
             thermostats.add(descrepencythermostat);
         }
