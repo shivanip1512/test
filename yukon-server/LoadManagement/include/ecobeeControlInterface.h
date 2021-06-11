@@ -10,9 +10,8 @@ struct EcobeeControlInterface
 {
     virtual bool sendCycleControl( long dutyCycle,
                                    long controlDurationSeconds,
-                                   bool rampInOption,
-                                   bool rampOutOption,
-                                   bool mandatory ) = 0;
+                                   bool mandatory,
+                                   bool rampInOutOption ) = 0;
 
     virtual bool sendSetpointControl( long controlDurationSeconds,
                                       bool temperatureOption,
