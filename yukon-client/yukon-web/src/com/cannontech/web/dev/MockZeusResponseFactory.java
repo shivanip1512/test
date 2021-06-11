@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -111,7 +112,7 @@ public class MockZeusResponseFactory {
 
             // EXTRANEOUS_GROUP discrepancy
             ZeusGroup group = new ZeusGroup();
-            group.setGroupId(String.valueOf("8000"));
+            group.setGroupId(String.valueOf(StringUtils.replace(UUID.randomUUID().toString(), "-", "").substring(0, 32)));
             group.setName("EcobeeGroupDecrepency");
             if (!groups.isEmpty()) {
                 group.setParentGroupId(parentGroupId);
@@ -139,9 +140,8 @@ public class MockZeusResponseFactory {
         if (zeusEcobeeDataConfiguration.getGenerateDiscrepency() == 1) {
             // MISLOCATED_DEVICE discrepancy
             if (!thermostats.isEmpty() && thermostats.get(0) != null) {
-                System.out.println("MISLOCATED_DEVICE discrepancy");
                 ZeusGroup group = new ZeusGroup();
-                group.setGroupId(groupId + "999");
+                group.setGroupId(StringUtils.replace(UUID.randomUUID().toString(), "-", "").substring(0, 32));
                 List<ZeusGroup> groups = new ArrayList<ZeusGroup>();
                 groups.add(group);
                 thermostats.get(0).setZeusGroups(groups);
@@ -153,7 +153,7 @@ public class MockZeusResponseFactory {
             }
             // EXTRANEOUS_DEVICE discrepancy
             ZeusThermostat descrepencythermostat = new ZeusThermostat();
-            descrepencythermostat.setSerialNumber("900");
+            descrepencythermostat.setSerialNumber(StringUtils.replace(UUID.randomUUID().toString(), "-", "").substring(0, 32));
             descrepencythermostat.setState(ZeusThermostatState.ENROLLED);
             thermostats.add(descrepencythermostat);
         }
