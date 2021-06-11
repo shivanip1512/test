@@ -2,13 +2,13 @@ package com.cannontech.common.dr.gear.setup.fields;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.dr.gear.setup.Setpoint;
 import com.cannontech.common.dr.gear.setup.BtpLedIndicator;
 import com.cannontech.common.dr.gear.setup.ControlStartState;
 import com.cannontech.common.dr.gear.setup.CycleCountSendType;
 import com.cannontech.common.dr.gear.setup.GroupSelectionMethod;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.Mode;
+import com.cannontech.common.dr.gear.setup.Setpoint;
 import com.cannontech.common.dr.gear.setup.StopOrder;
 import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
@@ -438,10 +438,9 @@ public class ProgramGearFieldsBuilder {
         gearFields.setHowToStopControl(HowToStopControl.valueOf(directGear.getMethodStopType()));
         gearFields.setCapacityReduction(directGear.getPercentReduction());
         gearFields.setControlPercent(directGear.getMethodRate());
-        gearFields.setRampIn(IlmDefines.RAMP_RANDOM.equals(directGear.getFrontRampOption()));
         gearFields.setMandatory(IlmDefines.OPTION_MANDATORY.equalsIgnoreCase(directGear.getMethodOptionType()));
-        gearFields.setRampOut(IlmDefines.RAMP_RANDOM.equals(directGear.getBackRampOption()));
-
+        gearFields.setRampInOut(IlmDefines.RAMP_RANDOM.equals(directGear.getFrontRampOption()));
+        
         WhenToChangeFields changeFields = getWhenToChangeFields(directGear);
         gearFields.setWhenToChangeFields(changeFields);
         return gearFields;
