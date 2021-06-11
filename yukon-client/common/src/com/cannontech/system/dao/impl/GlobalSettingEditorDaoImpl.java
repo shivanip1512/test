@@ -54,7 +54,7 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-
+                boolean decryptValueFailed = false;
                 GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
                 Object value = InputTypeFactory.convertPropertyValue(type.getType(), rs.getString("Value"));
                 if (value != null && type.isSensitiveInformation()) {
@@ -64,7 +64,8 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
                         }
                     } catch (CryptoException | IOException | JDOMException | DecoderException e) {
                         value = type.getDefaultValue();
-                        eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), type.name());
+                        eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), type.getDescriptionKey());
+                        decryptValueFailed = true;
                         log.error("Unable to decrypt value for setting " + type + ". Using the default value. ", e);
                     }
                 }
@@ -73,7 +74,7 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
                 setting.setId(rs.getInt("GlobalSettingId"));
                 setting.setComments(rs.getString("Comments"));
                 setting.setLastChanged(rs.getInstant("LastChangedDate"));
-                
+                setting.setDecryptValueFailed(decryptValueFailed);
                 settings.put(type, setting);
                 found.add(type);
             }
@@ -82,6 +83,7 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
         Set<GlobalSettingType> missing = Sets.difference(all, found);
         for (GlobalSettingType type : missing) {
             GlobalSetting setting = new GlobalSetting(type, type.getDefaultValue());
+            setting.setDecryptValueFailed(false);
             settings.put(type, setting);
         }
         
