@@ -42,12 +42,14 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
+import com.cannontech.dr.service.impl.RuntimeCalcServiceHelper;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
 public class HoneywellWifiRuntimeCalcServiceTest {
     private static HoneywellWifiRuntimeCalcService honeywellWifiRuntimeCalcService;
+    private static RuntimeCalcServiceHelper runtimeCalcServiceHelper;
     
     private static final int honeywell9000Id = 1;
     private static final int focusProId = 2;
@@ -68,6 +70,7 @@ public class HoneywellWifiRuntimeCalcServiceTest {
     @Before
     public void initEach() {
         honeywellWifiRuntimeCalcService = new HoneywellWifiRuntimeCalcServiceImpl();
+        runtimeCalcServiceHelper = new RuntimeCalcServiceHelper();
         honeywell9000 = new LiteYukonPAObject(honeywell9000Id, "honeywell9000", 
                                               PaoCategory.DEVICE, PaoClass.THERMOSTAT, PaoType.HONEYWELL_9000, 
                                               "description", "F");
@@ -140,10 +143,10 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         replay(mockRphDao);
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "rphDao", mockRphDao);
-        
+        ReflectionTestUtils.setField(runtimeCalcServiceHelper, "rphDao", mockRphDao);
         // Reflectively invoke private method 
         // honeywellWifiRuntimeCalcService.getLastRuntimes(allThermostats);
-        Map<Integer, DateTime> lastRuntimes = ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, 
+        Map<Integer, DateTime> lastRuntimes = ReflectionTestUtils.invokeMethod(runtimeCalcServiceHelper, 
                                                                                "getLastRuntimes", allThermostats);
         
         
@@ -271,7 +274,7 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         
         // Reflectively invoke private method 
         // honeywellWifiRuntimeCalcService.insertRuntimes(honeywell9000, hourlyRuntimeSeconds, null);
-        ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, "insertRuntimes",
+        ReflectionTestUtils.invokeMethod(runtimeCalcServiceHelper, "insertRuntimes",
                                          new Object[] {honeywell9000, hourlyRuntimeSeconds, null});
         //Mock dispatch will throw an exception if any methods are called.
     }
@@ -297,11 +300,12 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         replay(mockPointDao);
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "asyncDynamicDataSource", mockDispatch);
-        ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "pointDao", mockPointDao);
+        ReflectionTestUtils.setField(runtimeCalcServiceHelper, "asyncDynamicDataSource", mockDispatch);
+        ReflectionTestUtils.setField(runtimeCalcServiceHelper, "pointDao", mockPointDao);
         
         // Reflectively invoke private method 
         // honeywellWifiRuntimeCalcService.insertRuntimes(honeywell9000, hourlyRuntimeSeconds, null)
-        ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, "insertRuntimes",
+        ReflectionTestUtils.invokeMethod(runtimeCalcServiceHelper, "insertRuntimes",
                                          new Object[] {honeywell9000, hourlyRuntimeSeconds, null});
         
         PointData pointData1 = buildPointData(1, date4, 10);
@@ -337,13 +341,14 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         replay(mockPointDao);
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "asyncDynamicDataSource", mockDispatch);
-        ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "pointDao", mockPointDao);
+        ReflectionTestUtils.setField(runtimeCalcServiceHelper, "asyncDynamicDataSource", mockDispatch);
+        ReflectionTestUtils.setField(runtimeCalcServiceHelper, "pointDao", mockPointDao);
         
         Predicate<Map.Entry<DateTime, Integer>> filter = entry -> entry.getKey().isAfter(date4);
         
         // Reflectively invoke private method 
         // honeywellWifiRuntimeCalcService.insertRuntimes(honeywell9000, hourlyRuntimeSeconds, filter)
-        ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, "insertRuntimes",
+        ReflectionTestUtils.invokeMethod(runtimeCalcServiceHelper, "insertRuntimes",
                                          new Object[] {honeywell9000, hourlyRuntimeSeconds, filter});
         
         PointData pointData2 = buildPointData(1, date3, 0);

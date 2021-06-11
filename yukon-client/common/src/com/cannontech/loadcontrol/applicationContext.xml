@@ -149,7 +149,7 @@
     </bean>
     
     <bean class="com.cannontech.dr.service.impl.RuntimeCalcServiceImpl" />
-    
+    <bean class="com.cannontech.dr.service.impl.RuntimeCalcServiceHelper" />
     <!-- Honeywell Wifi -->
     <bean class="com.cannontech.dr.honeywell.service.impl.HoneywellCommunicationServiceImpl"/>
 
