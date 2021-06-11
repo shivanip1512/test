@@ -742,7 +742,7 @@ The devices in this category have reported DR message for the event.
 <br>
 The devices in this category have not reported DR message for the event.
 ]]></entry>
-<entry key="yukon.web.modules.dr.recentEventParticipation.details.eventID">Event Id</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.externalEventID">External Event Id</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.program">Program</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.group">Group</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.startTime">Start Time</entry>
