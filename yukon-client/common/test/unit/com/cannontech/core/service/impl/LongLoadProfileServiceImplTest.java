@@ -180,7 +180,7 @@ public class LongLoadProfileServiceImplTest {
         int channel = 4;
         
         //Using this DateFormat so that the date and time are being parsed the way porter would, regardless of locale
-        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm");
         Date start = dateTimeInstance.parse("5/5/05 4:30 pm");
         Date stop = dateTimeInstance.parse("10/9/06 1:50 am");
         service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, YukonUserContext.system);
@@ -190,7 +190,7 @@ public class LongLoadProfileServiceImplTest {
         Request reqMsg = (Request)message; // implicit instanceof check
         
         // check command string
-        String expectedCmd = "getvalue lp channel 4 05/05/2005 16:30 10/09/2006 01:50";
+        String expectedCmd = "getvalue lp channel 4 05/05/2005 04:30 10/09/2006 01:50";
         assertEquals(expectedCmd, reqMsg.getCommandString(), "command is different than expected");
     }
     
@@ -224,7 +224,7 @@ public class LongLoadProfileServiceImplTest {
         int channel = 1;
         
         //Using this DateFormat so that the date and time are being parsed the way porter would, regardless of locale
-        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm");
         Date start = dateTimeInstance.parse("10/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
         service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, YukonUserContext.system);
@@ -240,7 +240,7 @@ public class LongLoadProfileServiceImplTest {
         Request reqMsg = (Request)message; // implicit instanceof check
         
         // check command string
-        String expectedCmd = "getvalue lp channel 1 10/13/2006 13:50 12/13/2006 13:50";
+        String expectedCmd = "getvalue lp channel 1 10/13/2006 01:50 12/13/2006 01:50";
         assertEquals(expectedCmd, reqMsg.getCommandString(), "command is different than expected");
         
         // send expect more response
@@ -298,7 +298,7 @@ public class LongLoadProfileServiceImplTest {
         			"N");	 // eight is arbitrary
 
         int channel = 1;
-        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm");
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
         service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
@@ -369,7 +369,7 @@ public class LongLoadProfileServiceImplTest {
         new LiteYukonPAObject(8, "Test Device Id:8", PaoType.MCT410IL, CtiUtilities.STRING_NONE, "N");
 
         int channel = 1;
-        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm");
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
         
@@ -416,7 +416,7 @@ public class LongLoadProfileServiceImplTest {
         			"N");	 // eight is arbitrary
 
         int channel = 1;
-        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm");
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
 
