@@ -30,11 +30,11 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
 @RequestMapping("/routes")
-public class RouteController {
+public class RouteApiController {
 
     @Autowired private RouteService routeService;
-    @Autowired private RouteApiCreateValidator routeAPICreateValidator;
-    @Autowired private RouteValidator routeValidator;
+    @Autowired private RouteApiCreateValidator routeApiCreateValidator;
+    @Autowired private RouteApiValidator routeApiValidator;
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
@@ -51,8 +51,8 @@ public class RouteController {
 
     @GetMapping("/")
     public ResponseEntity<Object> retrieveAllRoutes() {
-        List<RouteBaseModel> listOfPorts = routeService.retrieveAllRoutes();
-        return new ResponseEntity<>(listOfPorts, HttpStatus.OK);
+        List<RouteBaseModel> listOfRoutes = routeService.retrieveAllRoutes();
+        return new ResponseEntity<>(listOfRoutes, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -66,11 +66,11 @@ public class RouteController {
 
     @InitBinder("routeBaseModel")
     public void setupBinder(WebDataBinder binder) {
-        binder.addValidators(routeValidator);
+        binder.addValidators(routeApiValidator);
 
-        String trendId = ServletUtils.getPathVariable("id");
-        if (trendId == null) {
-            binder.addValidators(routeAPICreateValidator);
+        String routeId = ServletUtils.getPathVariable("id");
+        if (routeId == null) {
+            binder.addValidators(routeApiCreateValidator);
         }
     }
 }

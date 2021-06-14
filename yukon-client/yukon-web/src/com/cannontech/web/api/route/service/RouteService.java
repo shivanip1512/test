@@ -9,13 +9,24 @@ import com.cannontech.web.api.route.model.RouteBaseModel;
 
 public interface RouteService {
 
-    public RouteBaseModel<? extends RouteBase> create(RouteBaseModel<? extends RouteBase> routeBaseModel,
-            LiteYukonUser yukonUser);
+    /**
+     * Create the Route.
+     */
+    RouteBaseModel<? extends RouteBase> create(RouteBaseModel<? extends RouteBase> routeBaseModel, LiteYukonUser yukonUser);
 
-    public RouteBaseModel<?> retrieve(int id);
+    /**
+     * Retrieve Route for passed routeId.
+     */
+    RouteBaseModel<?> retrieve(int id);
 
-    public List<RouteBaseModel> retrieveAllRoutes();
+    /**
+     * Retrieve All the Routes
+     */
+    List<RouteBaseModel> retrieveAllRoutes();
 
-    public int delete(int id, LiteYukonUser yukonUser) throws SQLException;
+    /**
+     * Delete the Route.
+     */
+    int delete(int id, LiteYukonUser yukonUser) throws SQLException;
 
 }
