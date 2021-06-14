@@ -164,7 +164,7 @@ public class RFNetworkSupportBundleService {
      */
     private void sendLocationDataRequest(RfnSupportBundleRequest request) {
         String dateTime = getFormatedDateStr(request.getFromTimestamp());
-        String destDir = supportBundleDirectory + request.getFileName() + File.separator + locationDataDir + "_" + dateTime;
+        String destDir = supportBundleDirectory + "RfNetworkData/" + request.getFileName() + File.separator + locationDataDir + "_" + dateTime;
         sendLocationDataRequest(request, PaoType.getRfMeterTypes(), destDir, meterLocationFileName, meterLocationcolumnCount);
         sendLocationDataRequest(request, PaoType.getRfRelayTypes(), destDir, relayLocationFileName, relayLocationcolumnCount);
         buildAndWriteGatewayLocationData(request, destDir, gatewayLocationFileName);
