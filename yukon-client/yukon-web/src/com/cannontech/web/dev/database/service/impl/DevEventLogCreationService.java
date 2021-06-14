@@ -37,6 +37,7 @@ import com.cannontech.common.events.loggers.DemandResetEventLogService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
+import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.common.events.loggers.EcobeeEventLogService;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
@@ -99,6 +100,7 @@ public class DevEventLogCreationService {
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private DeviceConfigEventLogService deviceConfigEventLogService;
     @Autowired private DisconnectEventLogService disconnectEventLogService;
+    @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
     @Autowired private EndpointEventLogService endPointEventLogService;
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private GatewayEventLogService gatewayEventLogService;
@@ -1303,6 +1305,18 @@ public class DevEventLogCreationService {
                 infrastructureEventLogService.warningCleared(testPaoName, warningType.toString());
             }
         });
+        executables.put(LogType.EATON_CLOUD, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                String guid = "60521f5e-8af1-4a78-abba-abb4f94ed6ba";
+                String deviceLabel = "91564844";
+                int dutyCyclePercent = 50;
+                int dutyCyclePeriod = 900;
+                int criticality = 100;
+                eatonCloudEventLogService.sendShed(deviceLabel, guid, dutyCyclePercent, dutyCyclePeriod, criticality);
+                eatonCloudEventLogService.sendRestore(deviceLabel, guid);
+            }
+        });
         eventLogExecutables = ImmutableMap.copyOf(executables);
     }
 
@@ -1322,6 +1336,7 @@ public class DevEventLogCreationService {
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 54),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
         DISCONNECT(DisconnectEventLogService.class, 10),
+        EATON_CLOUD(EatonCloudEventLogService.class, 2),
         ECOBEE(EcobeeEventLogService.class, 4),
         ENDPOINT(EndpointEventLogService.class, 11),
         GATEWAY(GatewayEventLogService.class, 9),

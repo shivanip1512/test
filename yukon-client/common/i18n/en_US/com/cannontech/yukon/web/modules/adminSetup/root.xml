@@ -217,6 +217,8 @@
     <entry key="yukon.web.modules.adminSetup.security.confirmRegisterConfigurationEcobeeZeusKey.warning">This will overwrite the existing configuration.</entry>
     <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyNotRegistered">Last push data registration failed:</entry>
     <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyRegistered">Last successful push data registration:</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeySuccessfullyRegistered">Successfully registered Push API configuration.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyFailedToRegister">Failed to register Push API configuration.</entry>
     
     <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusKey.label">Check Registration</entry>
     <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusKey.success">ecobee Zeus API configuration verified successfully.</entry>

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
@@ -38,6 +39,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudCommandStrategy.class);
     @Autowired private DeviceDao deviceDao;
+    @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
     @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private InventoryDao inventoryDao;
@@ -46,18 +48,28 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
 
     @Override
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
+        int deviceId = command.getDevice().getDeviceID();
+        String deviceName = command.getDevice().getDeviceLabel();
+        String deviceGuid = deviceDao.getGuid(deviceId);
+        Map<String, Object> shedParams = getShedParams(command);
         switch (command.getType()) {
         case SHED:
             checkOptout(command);
-            sendRequest(command, getShedParams(command));
+            sendRequest(command, shedParams);
+            eatonCloudEventLogService.sendShed(deviceName, 
+                                               deviceGuid,
+                                               (Integer) shedParams.get(CommandParam.CYCLE_PERCENT.getParamName()),
+                                               (Integer) shedParams.get(CommandParam.CYCLE_PERIOD.getParamName()),
+                                               (Integer) shedParams.get(CommandParam.CRITICALITY.getParamName()));
             break;
         case RESTORE:
             checkOptout(command);
             sendRequest(command, getRestoreParams(command));
+            eatonCloudEventLogService.sendRestore(deviceName, deviceGuid);
             break;
         case TEMP_OUT_OF_SERVICE:
             sendRequest(command, null);
-            break;            
+            break;
         default:
             log.info("Sending {} is not supported for device:{}", command.getType(), command.getDevice());
             break;

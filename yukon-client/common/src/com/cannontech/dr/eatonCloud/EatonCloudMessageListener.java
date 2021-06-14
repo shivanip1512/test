@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
@@ -13,6 +14,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -27,6 +29,7 @@ import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -36,7 +39,9 @@ public class EatonCloudMessageListener {
     @Autowired private ControlHistoryService controlHistoryService;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
     @Autowired private EnrollmentDao enrollmentDao;
+    @Autowired private InventoryDao inventoryDao;
     @Autowired private OptOutEventDao optOutEventDao;
     @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
     @Autowired private NextValueHelper nextValueHelper;
@@ -81,7 +86,7 @@ public class EatonCloudMessageListener {
         Integer eventId = nextValueHelper.getNextValue("PxMWEventIdIncrementor");
         log.info("Sending LM Eaton Cloud Shed Command:{} devices:{} event id:{}", command, devices.size(), eventId);
    
-        sendCommands(devices, getShedParams(command, eventId));
+        sendShedCommands(devices, command, eventId);
         
         List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(command.getGroupId());
         int programId = programsByLMGroupId.get(0).getPaobjectId();
@@ -100,14 +105,42 @@ public class EatonCloudMessageListener {
                 command.getDutyCyclePeriod());
     }
 
-    /**
-     * Sends commands to PX
-     */
-    private void sendCommands(Set<Integer> devices, Map<String, Object> params) {
+    private void sendShedCommands(Set<Integer> devices, LMEatonCloudScheduledCycleCommand command, Integer eventId) {
+        Map<String, Object> params = getShedParams(command, eventId);
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         guids.forEach((deviceId, guid) -> {
             try {
+                String deviceName = dbCache.getAllDevices().stream()
+                                                           .filter(d -> d.getLiteID() == deviceId)
+                                                           .findAny()
+                                                           .map(d -> d.getPaoName())
+                                                           .orElse(null);
+
                 pxMWCommunicationService.sendCommand(guid, new PxMWCommandRequestV1("LCR_Control", params));
+                eatonCloudEventLogService.sendShed(deviceName, 
+                                                   guid, 
+                                                   command.getDutyCyclePercentage(),
+                                                   command.getDutyCyclePeriod(),
+                                                   command.getCriticality());
+            } catch (Exception e) {
+                log.error("Error sending command device id:{} params:{}", deviceId, params, e);
+            }
+        });
+    }
+
+    private void sendRestoreCommands(Set<Integer> devices, LMEatonCloudStopCommand command, Integer eventId) {
+        Map<String, Object> params = getRestoreParams(command, eventId);
+        Map<Integer, String> guids = deviceDao.getGuids(devices);
+        guids.forEach((deviceId, guid) -> {
+            try {
+                String deviceName = dbCache.getAllDevices().stream()
+                        .filter(d -> d.getLiteID() == deviceId)
+                        .findAny()
+                        .map(d -> d.getPaoName())
+                        .orElse(null);
+                
+                pxMWCommunicationService.sendCommand(guid, new PxMWCommandRequestV1("LCR_Control", params));
+                eatonCloudEventLogService.sendRestore(deviceName, guid);
             } catch (Exception e) {
                 log.error("Error sending command device id:{} params:{}", deviceId, params, e);
             }
@@ -156,7 +189,7 @@ public class EatonCloudMessageListener {
         Integer eventId = recentEventParticipationDao.getExternalEventId(command.getGroupId());
         if (eventId != null) {
             log.info("Sending LM Eaton Cloud Restore Command:{} devices:{} event id:{}", command, devices.size(), eventId);
-            sendCommands(devices, getRestoreParams(command, eventId));
+            sendRestoreCommands(devices, command, eventId);
         }
         controlHistoryService.sendControlHistoryRestoreMessage(command.getGroupId(), Instant.now());
     }
@@ -178,9 +211,10 @@ public class EatonCloudMessageListener {
      */
     private Set<Integer> findInventoryAndRemoveOptOut(Integer groupId) {
         Set<Integer> optOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(Arrays.asList(groupId));
-        Set<Integer> inventory = enrollmentDao.getActiveEnrolledInventoryIdsForGroupIds(Arrays.asList(groupId));
-        inventory.removeAll(optOutInventory);
-        return inventory;
+        Set<Integer> inventoryIds = enrollmentDao.getActiveEnrolledInventoryIdsForGroupIds(Arrays.asList(groupId));
+        inventoryIds.removeAll(optOutInventory);
+        Set<Integer> deviceIds = inventoryDao.getDeviceIds(inventoryIds).values().stream().collect(Collectors.toSet());
+        return deviceIds;
     }
 
 }

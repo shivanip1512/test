@@ -295,6 +295,10 @@
                         <tags:alertBox type="warning">${ecobeeZeusUrlBlank}</tags:alertBox> 
                        </div>
                     </c:if>
+                    <c:set var="keyRegisteredClass" value="${!empty ecobeeZeusRegisteredDateTime ? '' : 'dn'}"/>
+                    <span class="js-ecobee-zeus-key-registered ${keyRegisteredClass}">
+                        <span class="js-ecobee-zeus-key-register-date-time">${ecobeeZeusRegisteredDateTime}</span>
+                    </span><br>
                     <c:set var="keyGeneratedClass" value="${!empty ecobeeKeyZeusGeneratedDateTime ? '' : 'dn'}"/>
                     <span class="js-ecobee-zeus-key-generated ${keyGeneratedClass}">
                         <i:inline key=".ecobeeZeusKeyGenerated"/>&nbsp;<span class="js-ecobee-zeus-key-date-time">${ecobeeKeyZeusGeneratedDateTime}</span>

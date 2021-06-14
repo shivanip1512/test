@@ -17,7 +17,7 @@ public class RouteApiCreateValidator extends SimpleValidator<RouteBaseModel> {
         // Check if name is NULL
         YukonApiValidationUtils.checkIfFieldRequired("name", errors, route.getName(), "Name");
         // Check if signalTransmitterID is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("signalTransmitterID", errors, route.getSignalTransmitterId(),
-                "SignalTransmitterID");
+        YukonApiValidationUtils.checkIfFieldRequired("signalTransmitterId", errors, route.getSignalTransmitterId(),
+                "SignalTransmitterId");
     }
 }
