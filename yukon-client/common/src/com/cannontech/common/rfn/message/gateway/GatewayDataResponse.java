@@ -63,6 +63,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private int gwTotalNodesWithSN;
     private int gwTotalNodesWithInfo;
     private int gwTotalNodesNoInfo;
+    private float controlRate;
 
 
     @Override
@@ -339,6 +340,14 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         this.ipv6PrefixSuggested = ipv6PrefixSuggested;
     }
 
+    public float getControlRate() {
+        return controlRate;
+    }
+
+    public void setControlRate(float controlRate) {
+        this.controlRate = controlRate;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -348,6 +357,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
         result = prime * result + (int) (connectionStatusTimestamp ^ (connectionStatusTimestamp >>> 32));
         result = prime * result + ((connectionType == null) ? 0 : connectionType.hashCode());
+        result = prime * result + Float.floatToIntBits(controlRate);
         long temp;
         temp = Double.doubleToLongBits(currentDataStreamingLoading);
         result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -416,6 +426,9 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
             return false;
         }
         if (connectionType != other.connectionType) {
+            return false;
+        }
+        if (Float.floatToIntBits(controlRate) != Float.floatToIntBits(other.controlRate)) {
             return false;
         }
         if (Double.doubleToLongBits(currentDataStreamingLoading) != Double.doubleToLongBits(other.currentDataStreamingLoading)) {
@@ -591,7 +604,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
                 + ", currentDataStreamingLoading=" + currentDataStreamingLoading + ", gwTotalNodes=" + gwTotalNodes
                 + ", gwTotalReadyNodes=" + gwTotalReadyNodes + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes
                 + ", gwTotalNodesWithSN=" + gwTotalNodesWithSN + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo
-                + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "]";
+                + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + ", controlRate=" + controlRate + "]";
     }
-
 }
