@@ -53,10 +53,10 @@ public class RouteApiValidatorHelper {
     }
 
     public void validateSignalTransmitterId(Errors errors, Integer signalTransmitterId) {
-        boolean allTransmiterList = dbCache.getAllDevices().stream()
+        boolean transmitterExists = dbCache.getAllDevices().stream()
                 .anyMatch(device -> device.getPaoType().isTransmitter() && !device.getPaoType().isRepeater()
                         && device.getLiteID() == signalTransmitterId);
-        if (allTransmiterList) {
+        if (transmitterExists) {
             errors.rejectValue("signalTransmitterId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
                     new Object[] { signalTransmitterId }, "");
         }
