@@ -91,7 +91,7 @@
 
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
         <jacoco:agent property="jacocoagent" destfile="${yukon.lib}/coverage/services-jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant" exclclassloader="sun.reflect.DelegatingClassLoader:javassist.Loader" />
-        <junitlauncher printSummary="true" haltOnFailure="${halt}">
+        <java classname="org.junit.platform.console.ConsoleLauncher" fork="true" failonerror="${halt}">
             <classpath id="junit.class.path">
                 <pathelement location="${srcdir}" />
                 <pathelement location="${destdir}" />
@@ -100,16 +100,10 @@
                     <exclude name="**/WebContent/**" />
                 </fileset>
             </classpath>
-            <testclasses outputdir="${test.results.dir}">
-                <fileset dir="${destdir}">
-                    <include name="**/*Test.class" />
-                </fileset>
-                <fork>
-                    <jvmarg value="${jacocoagent}" />
-                </fork>
-                <listener type="legacy-xml" sendSysOut="true" sendSysErr="true" outputDir="${basedir}\${test.results.dir}"/>
-            </testclasses>
-        </junitlauncher>
+            <arg value="--scan-classpath"/>
+            <arg line="--reports-dir ${test.results.dir}"/>
+            <jvmarg value="${jacocoagent}"/>
+        </java>
 
         <!-- Create the html reports for test results -->
         <property name="test.results.dir" value="test/unitTestResults" />

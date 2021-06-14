@@ -98,6 +98,7 @@ public class EimJavaLibraryTest {
         "junit-jupiter-engine-5.7.1.jar",
         "junit-jupiter-params-5.7.1.jar",
         "junit-platform-commons-1.7.1.jar",
+        "junit-platform-console-standalone-1.7.1.jar",
         "junit-platform-engine-1.7.1.jar",
         "lang-tag-1.5.jar",
         "logging-interceptor-3.12.2.jar",
