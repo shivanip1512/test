@@ -252,7 +252,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         
         if(log.isDebugEnabled()){
             historicalValues.forEach(value -> {
-                log.debug("{}", pointFormattingService.getValueString(value, Format.SHORT, userContext) + " "
+                log.debug("{}", pointFormattingService.getValueString(value, Format.FULL, userContext) + " "
                         + pointFormattingService.getValueString(value, Format.DATE, userContext));
             });
         }
@@ -374,7 +374,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
                 return "";
             }
             try {
-                return pointFormattingService.getValueString(value, Format.SHORT, userContext) + " "
+                return pointFormattingService.getValueString(value, Format.FULL, userContext) + " "
                         + pointFormattingService.getValueString(value, Format.DATE, userContext);
             } catch (IllegalArgumentException e) {
                 return pointFormattingService.getValueString(value, Format.RAWVALUE, userContext);
