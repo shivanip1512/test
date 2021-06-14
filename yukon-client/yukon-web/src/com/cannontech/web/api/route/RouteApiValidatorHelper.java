@@ -1,7 +1,6 @@
 package com.cannontech.web.api.route;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -54,11 +53,10 @@ public class RouteApiValidatorHelper {
     }
 
     public void validateSignalTransmitterId(Errors errors, Integer signalTransmitterId) {
-        List<LiteYukonPAObject> allTransmiterList = dbCache.getAllDevices().stream()
-                .filter(device -> device.getPaoType().isTransmitter() && !device.getPaoType().isRepeater()
-                                                                      && device.getLiteID() == signalTransmitterId)
-                .collect(Collectors.toList());
-        if (allTransmiterList.isEmpty()) {
+        boolean allTransmiterList = dbCache.getAllDevices().stream()
+                .anyMatch(device -> device.getPaoType().isTransmitter() && !device.getPaoType().isRepeater()
+                        && device.getLiteID() == signalTransmitterId);
+        if (allTransmiterList) {
             errors.rejectValue("signalTransmitterId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
                     new Object[] { signalTransmitterId }, "");
         }
