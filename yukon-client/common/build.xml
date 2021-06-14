@@ -213,7 +213,7 @@
                 <pathelement location="${destdir}" />
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar" />
-                        <exclude name="**/WebContent/**" />
+                    <exclude name="**/WebContent/**" />
                 </fileset>
             </classpath>
             <arg value="--scan-classpath"/>
