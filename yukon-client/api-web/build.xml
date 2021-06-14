@@ -219,7 +219,6 @@
             </classpath>
             <arg value="--scan-classpath"/>
             <arg line="--reports-dir ${test.results.dir}"/>
-            <jvmarg value="${jacocoagent}"/>
         </java>
 
         <!-- Create the html reports for test results -->
