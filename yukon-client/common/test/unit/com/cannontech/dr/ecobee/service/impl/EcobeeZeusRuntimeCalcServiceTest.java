@@ -5,9 +5,9 @@ import static org.easymock.EasyMock.createStrictMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -19,8 +19,8 @@ import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.PaoCategory;
@@ -68,7 +68,7 @@ public class EcobeeZeusRuntimeCalcServiceTest {
     private static final DateTime date3 = date1.minus(Duration.standardDays(2));
     private static final DateTime date4 = date1.minus(Duration.standardDays(3));
     
-    @Before
+    @BeforeEach
     public void initEach() {
         ecobeeZeusRuntimeCalcService = new EcobeeZeusRuntimeCalcServiceImpl();
         runtimeCalcServiceHelper = new RuntimeCalcServiceHelper();
@@ -99,10 +99,10 @@ public class EcobeeZeusRuntimeCalcServiceTest {
         // Reflectively invoke private method
         List<YukonPao> thermostats = ReflectionTestUtils.invokeMethod(ecobeeZeusRuntimeCalcService, "getAllThermostats", new Object[0]);
 
-        assertThat("thermostats list contains ecobeeSmart Si", thermostats, hasItem(ecobeeSmartSi));
-        assertThat("thermostats list contains ecobee3", thermostats, hasItem(ecobee3));
-        assertThat("thermostats list contains ecobee3Lite", thermostats, hasItem(ecobee3Lite));
-        assertThat("thermostats list contains ecobeeSmart", thermostats, hasItem(ecobeeSmart));
+        assertThat("thermostats list contains ecobeeSmart Si", thermostats, hasItems(ecobeeSmartSi));
+        assertThat("thermostats list contains ecobee3", thermostats, hasItems(ecobee3));
+        assertThat("thermostats list contains ecobee3Lite", thermostats, hasItems(ecobee3Lite));
+        assertThat("thermostats list contains ecobeeSmart", thermostats, hasItems(ecobeeSmart));
         assertThat("thermostats list size", thermostats.size(), equalTo(4));
     }
     
@@ -132,10 +132,10 @@ public class EcobeeZeusRuntimeCalcServiceTest {
         Map<Integer, DateTime> lastRuntimes = ReflectionTestUtils.invokeMethod(runtimeCalcServiceHelper, 
                                                                                "getLastRuntimes", allThermostats);
         
-        assertThat("ecobeeSmartSi present in last runtimes", lastRuntimes.keySet(), hasItem(ecobeeSmartSiId));
-        assertThat("ecobee3 present in last runtimes", lastRuntimes.keySet(), hasItem(ecobee3Id));
-        assertThat("ecobee3Lite present in last runtimes", lastRuntimes.keySet(), hasItem(ecobee3LiteId));
-        assertThat("ecobeeSmart present in last runtimes", lastRuntimes.keySet(), hasItem(ecobeeSmartId));
+        assertThat("ecobeeSmartSi present in last runtimes", lastRuntimes.keySet(), hasItems(ecobeeSmartSiId));
+        assertThat("ecobee3 present in last runtimes", lastRuntimes.keySet(), hasItems(ecobee3Id));
+        assertThat("ecobee3Lite present in last runtimes", lastRuntimes.keySet(), hasItems(ecobee3LiteId));
+        assertThat("ecobeeSmart present in last runtimes", lastRuntimes.keySet(), hasItems(ecobeeSmartId));
         
         assertThat("correct last runtime date for ecobeeSmartSi", lastRuntimes.get(ecobeeSmartSiId), equalTo(date1));
         assertThat("correct last runtime date for ecobee3", lastRuntimes.get(ecobee3Id), equalTo(date2));
@@ -195,10 +195,10 @@ public class EcobeeZeusRuntimeCalcServiceTest {
         PointData pointData4 = buildPointData(1, date1, 11);
         
         Iterable<PointData> capturedData = dispatchDataCapture.getValue();
-        assertThat("point data 1 insertion", capturedData, hasItem(pointData1));
-        assertThat("point data 2 insertion", capturedData, hasItem(pointData2));
-        assertThat("point data 3 insertion", capturedData, hasItem(pointData3));
-        assertThat("point data 4 insertion", capturedData, hasItem(pointData4));
+        assertThat("point data 1 insertion", capturedData, hasItems(pointData1));
+        assertThat("point data 2 insertion", capturedData, hasItems(pointData2));
+        assertThat("point data 3 insertion", capturedData, hasItems(pointData3));
+        assertThat("point data 4 insertion", capturedData, hasItems(pointData4));
         assertThat("quantity of point data inserted", Iterators.size(capturedData.iterator()), equalTo(4));
     }
     
@@ -235,9 +235,9 @@ public class EcobeeZeusRuntimeCalcServiceTest {
         PointData pointData4 = buildPointData(1, date1, 11);
         
         Iterable<PointData> capturedData = dispatchDataCapture.getValue();
-        assertThat("point data 2 insertion", capturedData, hasItem(pointData2));
-        assertThat("point data 3 insertion", capturedData, hasItem(pointData3));
-        assertThat("point data 4 insertion", capturedData, hasItem(pointData4));
+        assertThat("point data 2 insertion", capturedData, hasItems(pointData2));
+        assertThat("point data 3 insertion", capturedData, hasItems(pointData3));
+        assertThat("point data 4 insertion", capturedData, hasItems(pointData4));
         assertThat("quantity of point data inserted", Iterators.size(capturedData.iterator()), equalTo(3));
     }
     
