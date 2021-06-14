@@ -3,11 +3,11 @@ package com.cannontech.dr.ecobee.message;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ZeusGroup {
-    
-    @JsonProperty("id")
-    private String groupId;
+
+    @JsonProperty("id") private String groupId;
     private String name;
     @JsonProperty("program_id") private String programId;
+    @JsonProperty("parent_tstatgroup_id") private String parentGroupId;
 
     public ZeusGroup(String name, String programId) {
         this.name = name;
@@ -24,7 +24,7 @@ public class ZeusGroup {
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -39,6 +39,14 @@ public class ZeusGroup {
 
     public void setProgramId(String programId) {
         this.programId = programId;
+    }
+
+    public String getParentGroupId() {
+        return parentGroupId;
+    }
+
+    public void setParentGroupId(String parentGroupId) {
+        this.parentGroupId = parentGroupId;
     }
 
 }

@@ -9,18 +9,16 @@ public final class EcobeeDutyCycleDrParameters {
     private final Instant startTime;
     private final Instant endTime;
     private final int dutyCyclePercent;
-    private final boolean rampIn;
-    private final boolean rampOut;
+    private final int randomTimeSeconds;
     private final boolean isOptional;
     private final int groupId;
     
-    public EcobeeDutyCycleDrParameters(Instant startTime, Instant endTime, int dutyCyclePercent, boolean rampIn, 
-                                       boolean rampOut, boolean isOptional, int groupId) {
+    public EcobeeDutyCycleDrParameters(Instant startTime, Instant endTime, int dutyCyclePercent, int randomTimeSeconds, 
+                                        boolean isOptional, int groupId) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.dutyCyclePercent = dutyCyclePercent;
-        this.rampIn = rampIn;
-        this.rampOut = rampOut;
+        this.randomTimeSeconds = randomTimeSeconds;
         this.groupId = groupId;
         this.isOptional = isOptional;
     }
@@ -37,14 +35,10 @@ public final class EcobeeDutyCycleDrParameters {
         return dutyCyclePercent;
     }
 
-    public boolean isRampIn() {
-        return rampIn;
+    public int getRandomTimeSeconds() {
+        return randomTimeSeconds;
     }
 
-    public boolean isRampOut() {
-        return rampOut;
-    }
-    
     public boolean isOptional() {
         return isOptional;
     }
@@ -52,4 +46,5 @@ public final class EcobeeDutyCycleDrParameters {
     public int getGroupId() {
         return groupId;
     }
+
 }

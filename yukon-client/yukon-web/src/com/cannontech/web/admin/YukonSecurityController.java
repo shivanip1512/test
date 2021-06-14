@@ -61,6 +61,9 @@ import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoDao.InfoKey;
+import com.cannontech.core.dao.impl.DynamicPaoInfo;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.db.pao.EncryptedRoute;
@@ -109,6 +112,8 @@ public class YukonSecurityController {
     @Autowired private EcobeeZeusSecurityService ecobeeZeusSecurityService;
     @Autowired private EcobeeZeusCommunicationServiceImpl ecobeeZeusCommunicationService;
     @Autowired private EventLogHelper eventLogHelper;
+    @Autowired private PaoDao paoDao;
+   
     
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -218,7 +223,7 @@ public class YukonSecurityController {
             EncryptionKey encryptionKey, FileImportBindingBean fileImportBindingBean,
             HoneywellFileImportBindingBean honeywellFileImportBindingBean, FlashScope flashScope,
             YukonUserContext userContext) {
-
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("encryptedRoute", encryptedRoute);
         model.addAttribute("encryptedRoutes", encryptedRouteDao.getAllEncryptedRoutes());
 
@@ -290,7 +295,21 @@ public class YukonSecurityController {
         } catch (Exception e) {
             log.error("Error while retrieving Ecobee Zeus encryption keys. ", e);
         }
-
+       
+        DynamicPaoInfo dynamicPaoInfo = paoDao.getDynamicPaoInfo(InfoKey.ECOBEEZEUS);
+        if (dynamicPaoInfo != null) {
+            PushApiConfigurationStatus status = PushApiConfigurationStatus.of(dynamicPaoInfo.getValue());
+            String pushConfigDateTime = dateFormattingService.format(dynamicPaoInfo.getTimestamp(),
+                    DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+            if (status == PushApiConfigurationStatus.SUCCESS) {
+                String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
+                model.put("ecobeeZeusRegisteredDateTimeSuccess", successMsg + pushConfigDateTime);
+            } else {
+                String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyNotRegistered");
+                model.put("ecobeeZeusRegisteredDateTimeFailure", errMsg + pushConfigDateTime);
+            }
+        }
+         
         try {
             Instant itronKeyCreationTime = itronSecurityService.getItronKeyPairCreationTime();
             String itronDateGenerated = dateFormattingService.format(itronKeyCreationTime,
@@ -707,26 +726,27 @@ public class YukonSecurityController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
+        PushApiConfigurationStatus status = PushApiConfigurationStatus.SUCCESS;
+        DateTime todayDate = new DateTime();
+        String registeredDateTime = dateFormattingService.format(todayDate,
+                DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
         try {
             String privateKey = ecobeeZeusSecurityService.getZeusEncryptionKey().getPrivateKey();
             ecobeeZeusCommunicationService.createPushApiConfiguration(getReportingUrl(), privateKey);
-
-            DateTime todayDate = new DateTime();
-            String registeredDateTime = dateFormattingService.format(todayDate,
-                    DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
-
             String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
             json.put("ecobeeKeyZeusRegisteredDateTime", successMsg + registeredDateTime);
             json.put("success", true);
         } catch (Exception e) {
             log.error("Exception while registering ecobee Zeus", e);
-            DateTime todayDate = new DateTime();
-            String registeredDateTime = dateFormattingService.format(todayDate,
-                    DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+            status = PushApiConfigurationStatus.FAILED;
+
             String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyNotRegistered");
             json.put("ecobeeKeyZeusRegisteredDateTime", errMsg + registeredDateTime);
             json.put("success", false);
         }
+        paoDao.savePaoInfo(0, InfoKey.ECOBEEZEUS, status.getValue(), new Instant(todayDate),
+                userContext.getYukonUser());
+
         return json;
     }
 

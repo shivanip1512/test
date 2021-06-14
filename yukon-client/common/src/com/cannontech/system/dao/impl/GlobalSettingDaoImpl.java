@@ -14,7 +14,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.helper.EventLogHelper;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -208,7 +207,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
 
                 } catch (CryptoException | IOException | JDOMException | DecoderException e) {
                     value = type.getDefaultValue();
-                    eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), type.getDescriptionKey());
+                    eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), type.name());
                     log.error("Unable to decrypt value for setting " + type + ". Using the default value");
                 }
             }

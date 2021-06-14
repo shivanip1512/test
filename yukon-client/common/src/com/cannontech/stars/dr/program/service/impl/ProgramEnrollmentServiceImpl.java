@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
@@ -109,6 +111,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private YukonListDao listDao;
     @Autowired private DrJmsMessagingService drJmsMessagingService;
+    @Autowired private ConfigurationSource configurationSource;
 
     private final Map<Integer, Object> accountIdMutex = Collections.synchronizedMap(new HashMap<Integer, Object>());
     
@@ -197,6 +200,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                     var removedEnrollmentGroupIds = getRemovedEnrollmentGroupIds(originalEnrollments, requests);
                                     var groupIds = CollectionUtils.union(addedEnrollmentGroupIds, removedEnrollmentGroupIds);
                                     command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
+                                }
+                                if (hardwareType.isEcobee() && isEcobeeZeusEnabled()) {
+                                    Set<Integer>  removedEnrollmentGroupIds = getRemovedEnrollmentGroupIds(originalEnrollments, requests);
+                                    command.getParams().put(LmHardwareCommandParam.GROUP_ID, removedEnrollmentGroupIds);
                                 }
                                 
                                 lmHardwareCommandService.sendConfigCommand(command);
@@ -936,5 +943,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         }
 
         return null;
+    }
+    
+    private boolean isEcobeeZeusEnabled() {
+        return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED);
     }
 }

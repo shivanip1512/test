@@ -29,9 +29,8 @@ public:
 
     bool sendCycleControl( long dutyCycle,
                            long controlDurationSeconds,
-                           bool rampInOption,
-                           bool rampOutOption,
-                           bool mandatory ) override;
+                           bool mandatory,
+                           bool rampInOutOption ) override;
 
     bool sendSetpointControl( long controlDurationSeconds,
                               bool temperatureOption,

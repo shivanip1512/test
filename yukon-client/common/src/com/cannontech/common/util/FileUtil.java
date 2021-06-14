@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,18 +16,24 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -549,5 +556,51 @@ public final class FileUtil {
             csvWriter.close();
             out.close();
         }
+    }
+
+    public static void zipFolder(String sourceDirPath, String zipFilePath) throws IOException {
+        Path dstPath = Files.createFile(Paths.get(zipFilePath));
+        try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(dstPath))) {
+            Path srcPath= Paths.get(sourceDirPath);
+            Files.walk(srcPath)
+              .filter(path -> !Files.isDirectory(path))
+              .forEach(path -> {
+                  ZipEntry zipEntry = new ZipEntry(srcPath.relativize(path).toString());
+                  try {
+                      zs.putNextEntry(zipEntry);
+                      Files.copy(path, zs);
+                      zs.closeEntry();
+                } catch (IOException ex) {
+                    log.error("Error found while zipping " + sourceDirPath, ex);
+                }
+              });
+        }
+    }
+    
+    /**
+     * Filter all the zip files and ordered them based on last modified date i.e latest file first.
+     */
+    public static List<File> filterAndOrderZipFile(File dir) {
+        File[] allFiles = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File directory, String filename) {
+                if (filename.endsWith(".zip")) {
+                    return true;
+                }
+                return false;
+            }
+        });
+   
+        if (allFiles == null) {
+            return Collections.emptyList();
+        }
+
+        // sorting by date modified
+        Arrays.sort(allFiles, new Comparator<File>() {
+            public int compare(File f1, File f2) {
+                return new Long(f2.lastModified()).compareTo(f1.lastModified());
+            }
+        });
+
+        return Arrays.asList(allFiles);
     }
 }

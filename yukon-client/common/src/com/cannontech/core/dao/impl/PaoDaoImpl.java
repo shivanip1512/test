@@ -714,4 +714,30 @@ public final class PaoDaoImpl implements PaoDao {
         }
         jdbcTemplate.update(sql);
     }
+    
+    private final YukonRowMapper<DynamicPaoInfo> dynamicPaoInfoRowMapper = rs -> {
+
+        DynamicPaoInfo dynamicPaoInfo = new DynamicPaoInfo();
+        dynamicPaoInfo.setInfoKey(rs.getEnum("InfoKey", InfoKey.class));
+        dynamicPaoInfo.setOwner(rs.getString("Owner"));
+        dynamicPaoInfo.setPaoId(rs.getInt("PAObjectID"));
+        dynamicPaoInfo.setValue(rs.getString("Value"));
+        dynamicPaoInfo.setTimestamp(rs.getInstant("UpdateTime"));
+        return dynamicPaoInfo;
+    };
+
+    @Override
+    public DynamicPaoInfo getDynamicPaoInfo(InfoKey key) {
+        DynamicPaoInfo dynamicPaoInfo = null;
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT PAObjectID, Owner, InfoKey, Value , UpdateTime");
+            sql.append("FROM DynamicPAOInfo ");
+            sql.append("WHERE InfoKey").eq_k(key);
+            dynamicPaoInfo = jdbcTemplate.queryForObject(sql, dynamicPaoInfoRowMapper);
+        } catch (EmptyResultDataAccessException ex) {
+
+        }
+        return dynamicPaoInfo;
+    }
 }

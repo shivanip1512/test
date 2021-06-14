@@ -1242,6 +1242,7 @@ public class NmIntegrationController {
         model.addAttribute("deviceArchiveParameters", new DeviceArchiveRequestParameters());
         model.addAttribute("meterModels", rfnEventTestingService.getGroupedRfnTypes());
         model.addAttribute("rfnLcrModels", RfnManufacturerModel.getRfnLcrModels());
+        model.addAttribute("rfn1200", RfnManufacturerModel.getRfn1200Models());
         model.addAttribute("rfDaModels", List.of("CBC-8000", "RECL-F4D", "VR-CL7"));
         return "rfn/deviceArchive.jsp";
     }

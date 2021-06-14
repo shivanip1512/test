@@ -31,6 +31,7 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.impl.DynamicPaoInfo;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -377,6 +378,13 @@ public class ObjectMapperFactoryImplTest {
         public void savePaoInfo(int paoId, InfoKey key, String value, Instant time, LiteYukonUser user) {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
+        @Override
+        public DynamicPaoInfo getDynamicPaoInfo(InfoKey key) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        
     }
 
     /**

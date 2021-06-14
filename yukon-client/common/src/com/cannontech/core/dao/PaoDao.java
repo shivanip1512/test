@@ -15,6 +15,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.core.dao.impl.DynamicPaoInfo;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -207,13 +208,18 @@ public interface PaoDao {
     enum InfoKey {
         FIRMWARE_VERSION(MWChannel.VERSION),
         IMEI(MWChannel.IMEI),
-        ICCID(MWChannel.ICCID)
+        ICCID(MWChannel.ICCID),
+        ECOBEEZEUS("Push API Configuration")
         ;
         private MWChannel channel;
         InfoKey(MWChannel channel){
             this.channel = channel;
         }
         
+        private String value;
+        InfoKey(String value){
+            this.value = value;
+        }
         public static InfoKey getKey(MWChannel channel) {
             return Arrays.stream(values())
                     .filter(infoKey  -> infoKey.channel == channel)
@@ -225,6 +231,10 @@ public interface PaoDao {
             return getKey(channel) != null; 
         }
         
+        public String getValue() {
+            return value;
+        }
+
     }
 
     /**
@@ -237,4 +247,12 @@ public interface PaoDao {
      * If pao info value doesn't exits inserts new entry otherwise updates the table.
      */
     void savePaoInfo(int paoId, InfoKey key, String value, Instant time, LiteYukonUser user);
+
+    /**
+     * Returns DynamicPaoInfo values based on infoKey.  
+     * This is used only for values where we expect a single entry.
+     */
+    DynamicPaoInfo getDynamicPaoInfo(InfoKey key);
+    
+    
 }

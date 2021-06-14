@@ -33,4 +33,8 @@ public abstract class RecentEventParticipationBase {
         return controlEventId;
     }
 
+    public String getExternalEventId() {
+        return externalEventId;
+    }
+
 }

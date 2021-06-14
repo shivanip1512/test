@@ -15,9 +15,11 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
 import org.jsoup.helper.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -281,13 +283,19 @@ public class SupportController {
         model.addAttribute("rfSupportBundle", rfSupportBundle);
         model.addAttribute("now", new Date());
 
+        List<String> previousRfBundles = new ArrayList<>();
+        for (File f : bundleService.getRfBundles()) {
+            previousRfBundles.add(f.getName());
+        }
+        model.addAttribute("rfBundleList", previousRfBundles);
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("errorMessage", accessor.getMessage("yukon.web.error.fieldErrorsExist"));
             return "rfSupportBundle.jsp";
         }
-
-        rfRequest.setFileName(rfSupportBundle.getCustomerName());
+        String suffix = new DateTime().toString(DateTimeFormat.forPattern("yyyy-MM-dd-HHmmss"));
+        String fileName = rfSupportBundle.getCustomerName() + "-" + suffix;
+        rfRequest.setFileName(fileName);
         rfRequest.setFromTimestamp(rfSupportBundle.getDate().getTime());
         rfRequest.setType(SupportBundleRequestType.NETWORK_DATA);
         rfNetworkSupportBundleService.send(rfRequest);

@@ -101,13 +101,23 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
     }
 
     @Override
-    public List<Integer> getInventoryIdsForZeusGrouID(String zeusGroupId) {
+    public List<Integer> getInventoryIdsForZeusGroupID(String zeusGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT InventoryID FROM ZeusGroupInventoryMapping");
         sql.append("WHERE EcobeeGroupId").eq(zeusGroupId);
         return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 
+    @Override
+    public List<Integer> getInventoryIdsForYukonGroupID(String lmGroup) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT InventoryID FROM ZeusGroupInventoryMapping a, LMGroupZeusMapping b");
+        sql.append("WHERE a.EcobeeGroupId = b.EcobeeGroupId");
+        sql.append("AND a.EcobeeGroupId").eq(lmGroup);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+    }
+
+    
     @Override
     public String getZeusGroupName(String zeusGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -142,5 +152,15 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         sql.append("SELECT DISTINCT EcobeeGroupName FROM LMGroupZeusMapping");
         sql.append("WHERE YukonGroupId").eq(yukonGroupId);
         return jdbcTemplate.query(sql, TypeRowMapper.STRING);
+    }
+
+    @Override
+    public List<Integer> getLmGroupsForInventory(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT LGZM.YukonGroupId FROM LMGroupZeusMapping LGZM");
+        sql.append("JOIN ZeusGroupInventoryMapping ZGIM");
+        sql.append("ON LGZM.EcobeeGroupId = ZGIM.EcobeeGroupId");
+        sql.append("AND ZGIM.InventoryID").eq(inventoryId);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 }

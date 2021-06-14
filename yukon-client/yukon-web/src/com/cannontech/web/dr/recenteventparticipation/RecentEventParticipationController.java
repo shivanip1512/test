@@ -131,7 +131,7 @@ public class RecentEventParticipationController {
     private List<String> getColumnNames(YukonUserContext userContext) {
         List<String> columnNames = Lists.newArrayList();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.eventID"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.externalEventID"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.program"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.group"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.startTime"));
@@ -151,7 +151,7 @@ public class RecentEventParticipationController {
         for (RecentEventParticipationDetail recentEventParticipationDetail : recentEventParticipationDetails) {
             for (ControlDeviceDetail controlDeviceDetail : recentEventParticipationDetail.getDeviceDetails()) {
                 List<String> row = new ArrayList<>();
-                row.add(new Integer(recentEventParticipationDetail.getControlEventId()).toString());
+                row.add(recentEventParticipationDetail.getExternalEventId());
                 row.add(recentEventParticipationDetail.getProgramName());
                 row.add(recentEventParticipationDetail.getGroupName());
                 row.add(recentEventParticipationDetail.getStartTime().toString(formatter));

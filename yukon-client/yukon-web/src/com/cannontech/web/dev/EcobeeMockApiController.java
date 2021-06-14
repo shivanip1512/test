@@ -380,6 +380,23 @@ public class EcobeeMockApiController {
             return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }
     }
+    
+    
+    @IgnoreCsrfCheck
+    @DeleteMapping("tstatgroups/{zeusGroupId}")
+    public ResponseEntity<Object> deleteGroup(@PathVariable String zeusGroupId) {
+        Map<String, Object> responseMap = new HashMap<String, Object>();
+        int getGroupCode = zeusEcobeeDataConfiguration.getGetGroup();
+        if (getGroupCode == 0) {
+            return new ResponseEntity<>(responseMap, HttpStatus.OK);
+        } else if (getGroupCode == 1) {
+            return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
+        } else if (getGroupCode == 3) {
+            return new ResponseEntity<>(getNotFoundResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
     /**
      * Response for FORBIDDEN status code
      */

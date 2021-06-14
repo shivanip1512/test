@@ -26,7 +26,7 @@ public class SupportBundleHelper {
     /**
      * Write location data to the destination directory in passed fileName.
      */
-    public static void buildAndWriteLocationDataToDir(RfnMetadataMultiResponse response, List<LocationData> locationData, String dir, String fileName, int coloumNum) throws IOException {
+    public static void buildAndWriteLocationDataToDir(RfnMetadataMultiResponse response, List<LocationData> locationData, String destDir, String fileName, int coloumNum) throws IOException {
         List<String[]> dataRows = Lists.newArrayList();
         for (LocationData loc : locationData) {
             int index = 0;
@@ -57,7 +57,7 @@ public class SupportBundleHelper {
                 log.warn("Invalid location data entry found.");
             }
         }
-        File temp = new File(CtiUtilities.getYukonBase() + dir);
+        File temp = new File(CtiUtilities.getYukonBase() + destDir);
         if(!temp.exists()) {
             temp.mkdir();
         }

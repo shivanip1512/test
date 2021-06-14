@@ -1,12 +1,16 @@
 package com.cannontech.dr.ecobee.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.dr.ecobee.dao.EcobeeZeusGroupDao;
 import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
 
@@ -102,7 +106,7 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
 
     @Override
     public List<Integer> getInventoryIdsForZeusGrouID(String zeusGroupId) {
-        return ecobeeZeusGroupDao.getInventoryIdsForZeusGrouID(zeusGroupId);
+        return ecobeeZeusGroupDao.getInventoryIdsForZeusGroupID(zeusGroupId);
     }
 
     @Override
@@ -130,13 +134,34 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
         List<String> existingNames = ecobeeZeusGroupDao.getZeusGroupNames(yukonGroupId);
         String newGroupName = yukonGroupId + "_";
         int suffix = 0;
-        //Find the max suffix used in the name and increment by 1 before using the suffix in group name.
+        // Find the max suffix used in the name and increment by 1 before using the suffix in group name.
         for (String name : existingNames) {
+            //1st group may not contain _ but 2nd group onwards will have a _.
+            if (!StringUtils.contains(name, "_")) {
+                continue;
+            }
             String[] tokens = name.split("_");
             if (Integer.valueOf(tokens[1]) > suffix) {
                 suffix = Integer.valueOf(tokens[1]);
             }
         }
         return newGroupName.concat(Integer.toString(suffix + 1));
+    }
+
+    @Override
+    public Integer getGroupIdToEnroll(List<Integer> yukonGroupIds, int inventoryId) {
+        // For only one group, add the device to the same group.
+        if (CollectionUtils.size(yukonGroupIds) == 1) {
+            return yukonGroupIds.get(0);
+        }
+        // If multiple groups, return the group which do not have mapping with the inventory.
+        List<Integer> existingYukonGroupsForInventory = ecobeeZeusGroupDao.getLmGroupsForInventory(inventoryId);
+        List<Integer> toEnollList = yukonGroupIds.stream()
+                                                 .filter(groupId -> !existingYukonGroupsForInventory.contains(groupId))
+                                                 .collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(toEnollList) && toEnollList.size() != 1) {
+            throw new BadConfigurationException("Found multiple groups to which device can be enrolled.");
+        }
+        return toEnollList.get(0);
     }
 }

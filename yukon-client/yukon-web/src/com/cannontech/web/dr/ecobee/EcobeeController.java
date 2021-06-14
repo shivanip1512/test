@@ -36,6 +36,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.loggers.EcobeeEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -52,8 +54,13 @@ import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyCategory;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationResult;
+import com.cannontech.dr.ecobee.model.EcobeeZeusDiscrepancyCategory;
+import com.cannontech.dr.ecobee.model.EcobeeZeusReconciliationReport;
+import com.cannontech.dr.ecobee.model.EcobeeZeusReconciliationResult;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDiscrepancy;
+import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeReconciliationService;
+import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -83,16 +90,19 @@ public class EcobeeController {
     private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
     private static final String fixIssueKey = "yukon.web.modules.dr.ecobee.details.issues.";
 
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private DataDownloadService dataDownloadService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
 
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private EcobeeReconciliationService ecobeeReconciliation;
+    @Autowired private EcobeeZeusReconciliationService ecobeeZeusReconciliationService;
     @Autowired private JobManager jobManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+
     
     @Autowired @Qualifier("ecobeeReconciliationReport")
         private YukonJobDefinition<EcobeeReconciliationReportTask> ecobeeReconciliationReportJobDef;
@@ -324,11 +334,20 @@ public class EcobeeController {
 
         int deviceIssues = 0;
         int groupIssues = 0;
-        EcobeeReconciliationReport report = ecobeeReconciliation.findReconciliationReport();
-        if (report != null) {
-            deviceIssues = report.getErrorNumberByCategory(EcobeeDiscrepancyCategory.DEVICE);
-            groupIssues = report.getErrorNumberByCategory(EcobeeDiscrepancyCategory.GROUP);
+        if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
+            EcobeeZeusReconciliationReport report = ecobeeZeusReconciliationService.findReconciliationReport();
+            if (report != null) {
+                deviceIssues = report.getErrorNumberByCategory(EcobeeZeusDiscrepancyCategory.DEVICE);
+                groupIssues = report.getErrorNumberByCategory(EcobeeZeusDiscrepancyCategory.GROUP);
+            }
+        } else {
+            EcobeeReconciliationReport report = ecobeeReconciliation.findReconciliationReport();
+            if (report != null) {
+                deviceIssues = report.getErrorNumberByCategory(EcobeeDiscrepancyCategory.DEVICE);
+                groupIssues = report.getErrorNumberByCategory(EcobeeDiscrepancyCategory.GROUP);
+            }
         }
+        
         model.addAttribute("deviceIssues", deviceIssues);
         model.addAttribute("groupIssues", groupIssues);
 
@@ -361,15 +380,25 @@ public class EcobeeController {
         model.addAttribute("oneDayAgo", oneDayAgo);
         model.addAttribute("downloads", downloads);
         
-        EcobeeReconciliationReport report = ecobeeReconciliation.findReconciliationReport();
-        model.addAttribute("report", report);
+        if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
+            EcobeeZeusReconciliationReport report = ecobeeZeusReconciliationService.findReconciliationReport();
+            model.addAttribute("report", report);
+        } else {
+            EcobeeReconciliationReport report = ecobeeReconciliation.findReconciliationReport();
+            model.addAttribute("report", report);
+        }
+        
 
         return "dr/ecobee/details.jsp";
     }
     
     @RequestMapping(value="/ecobee/runReport")
     public String runReport() {
-        ecobeeReconciliation.runReconciliationReport();
+        if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
+            ecobeeZeusReconciliationService.runReconciliationReport();
+        } else {
+            ecobeeReconciliation.runReconciliationReport();
+        }
         return "";
     }
 
@@ -381,53 +410,99 @@ public class EcobeeController {
             Integer errorId
             ) throws IllegalArgumentException {
         
-        EcobeeReconciliationResult result = null;
+        
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        try {
-            result = ecobeeReconciliation.fixDiscrepancy(reportId, errorId, userContext.getYukonUser());
-            if (result.isSuccess()) {
-                json.put("success", "true");
-            } else {
+        if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
+            EcobeeZeusReconciliationResult result = null;
+            try {
+                result = ecobeeZeusReconciliationService.fixDiscrepancy(reportId, errorId, userContext.getYukonUser());
+                if (result.isSuccess()) {
+                    json.put("success", "true");
+                } else {
+                    json.put("success", "false");
+                    String message = accessor.getMessage(result.getErrorType());
+                    json.put("message", message);
+                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                }
+            } catch (IllegalArgumentException e) {
                 json.put("success", "false");
                 String message = accessor.getMessage(result.getErrorType());
                 json.put("message", message);
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
-        } catch (IllegalArgumentException e) {
-            json.put("success", "false");
-            String message = accessor.getMessage(result.getErrorType());
-            json.put("message", message);
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        } else {
+            EcobeeReconciliationResult result = null;
+            try {
+                result = ecobeeReconciliation.fixDiscrepancy(reportId, errorId, userContext.getYukonUser());
+                if (result.isSuccess()) {
+                    json.put("success", "true");
+                } else {
+                    json.put("success", "false");
+                    String message = accessor.getMessage(result.getErrorType());
+                    json.put("message", message);
+                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                }
+            } catch (IllegalArgumentException e) {
+                json.put("success", "false");
+                String message = accessor.getMessage(result.getErrorType());
+                json.put("message", message);
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }
         }
+        
         return json;
     }
 
-    @RequestMapping(value="/ecobee/fix-all", method=RequestMethod.GET)
+    @RequestMapping(value = "/ecobee/fix-all", method = RequestMethod.GET)
     public @ResponseBody List<Map<String, Object>> fixAllIssues(
             YukonUserContext userContext,
             Integer reportId,
             FlashScope flash) {
-        
+
         List<Map<String, Object>> fixResponse = new ArrayList<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        try {
-            List<EcobeeReconciliationResult> results = ecobeeReconciliation.fixAllDiscrepancies(reportId, userContext.getYukonUser());
-            for (EcobeeReconciliationResult result: results) {
-                EcobeeDiscrepancy originalError = result.getOriginalDiscrepancy();
-                Integer originalErrorId = originalError.getErrorId();
-                Boolean success = result.isSuccess();
-                Map<String, Object> json = new HashMap<>();
-                json.put("originalErrorId", originalErrorId);
-                json.put("success", success);
-                if (!success) {
-                    String fixErrorString = accessor.getMessage(result.getErrorType());
-                    json.put("fixErrorString", fixErrorString);
+        if (configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED)) {
+            try {
+                List<EcobeeZeusReconciliationResult> results = ecobeeZeusReconciliationService.fixAllDiscrepancies(reportId,
+                        userContext.getYukonUser());
+                for (EcobeeZeusReconciliationResult result : results) {
+                    EcobeeZeusDiscrepancy originalError = result.getOriginalDiscrepancy();
+                    Integer originalErrorId = originalError.getErrorId();
+                    Boolean success = result.isSuccess();
+                    Map<String, Object> json = new HashMap<>();
+                    json.put("originalErrorId", originalErrorId);
+                    json.put("success", success);
+                    if (!success) {
+                        String fixErrorString = accessor.getMessage(result.getErrorType());
+                        json.put("fixErrorString", fixErrorString);
+                    }
+                    fixResponse.add(json);
                 }
-                fixResponse.add(json);
+            } catch (IllegalArgumentException e) {
+                flash.setError(new YukonMessageSourceResolvable(fixIssueKey + "fixFailed"));
             }
-        } catch (IllegalArgumentException e) {
-            flash.setError(new YukonMessageSourceResolvable(fixIssueKey + "fixFailed"));
+        } else {
+            try {
+                List<EcobeeReconciliationResult> results = ecobeeReconciliation.fixAllDiscrepancies(reportId,
+                        userContext.getYukonUser());
+                for (EcobeeReconciliationResult result : results) {
+                    EcobeeDiscrepancy originalError = result.getOriginalDiscrepancy();
+                    Integer originalErrorId = originalError.getErrorId();
+                    Boolean success = result.isSuccess();
+                    Map<String, Object> json = new HashMap<>();
+                    json.put("originalErrorId", originalErrorId);
+                    json.put("success", success);
+                    if (!success) {
+                        String fixErrorString = accessor.getMessage(result.getErrorType());
+                        json.put("fixErrorString", fixErrorString);
+                    }
+                    fixResponse.add(json);
+                }
+            } catch (IllegalArgumentException e) {
+                flash.setError(new YukonMessageSourceResolvable(fixIssueKey + "fixFailed"));
+            }
+
         }
         return fixResponse;
     }
