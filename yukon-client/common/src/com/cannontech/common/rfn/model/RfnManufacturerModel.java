@@ -117,6 +117,7 @@ public enum RfnManufacturerModel {
     RFN_530S4RT(PaoType.RFN530S4ERXR, "LGYR", "S4-RT"),
     RFN_530S4RR(PaoType.RFN530S4ERXR, "LGYR", "S4-RR"),
     RFN_RELAY(PaoType.RFN_RELAY, "EATON", "RFRelay"),
+    CRLY_856(PaoType.CRLY856, "EATON", "CRLY856"),
     
     RFN_1200_CPS_CBC8000(PaoType.RFN_1200, "CPS", "CBC-8000"),
     RFN_1200_CPS_CBCGEN(PaoType.RFN_1200, "CPS", "CBC-GEN"),

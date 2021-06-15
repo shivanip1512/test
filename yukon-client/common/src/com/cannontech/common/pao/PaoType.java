@@ -172,6 +172,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     GWY801(DeviceTypes.GWY801, "GWY-801", PaoCategory.DEVICE, PaoClass.RFMESH),
     VIRTUAL_GATEWAY(DeviceTypes.VIRTUAL_GATEWAY, "Virtual Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
     
+    CRLY856(DeviceTypes.CRLY856, "CLRY-856", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN_RELAY(DeviceTypes.RFN_RELAY, "RFN Relay", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     ION_7700(DeviceTypes.ION_7700, "ION-7700", PaoCategory.DEVICE, PaoClass.RTU),
@@ -714,7 +715,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             VIRTUAL_GATEWAY);
         
         rfRelayTypes = ImmutableSet.of(
-            RFN_RELAY);
+            RFN_RELAY,
+            CRLY856);
         
         rfDaTypes = ImmutableSet.of(RFN_1200);
         
