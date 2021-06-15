@@ -400,17 +400,7 @@
     
     <!-- Ecobee Test -->
     <entry key="yukon.web.modules.dev.ecobee.mockTest.pageName">Ecobee Test</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.registerDevice">Register Device</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.moveDevice">Move Device</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.createSet">Create Management Set</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.moveSet">Move Management Set</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.removeSet">Remove Set</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.sendDR">Send DR</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.sendRestore">Send Restore</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.getHierarchy">Get Hierarchy</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.authenticate">Authenticate</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.runtimeReport">Runtime Report</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.assignThermostat">Assign Thermostat</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.runtimeData">Runtime Data</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.saved">Saved Successfully</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.createDevice">Create Device</entry>
@@ -423,14 +413,6 @@
     <entry key="yukon.web.modules.dev.ecobee.mockTest.getGroup">Get Group</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.generateDiscrepency">Generate Discrepency</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.cancelDemandResponse">Cancel Demand Response / Opt Out</entry>
-    
-    <!-- Ecobee PGP Key Pair -->
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair">Ecobee PGP Key Pair</entry>
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.pgpPublicKey">PGP Public key</entry>
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.pgpPrivateKey">PGP Private Key</entry>
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.save.success">Ecobee key pair saved successfully</entry>
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.save.failed">Provide public and private key</entry>
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.pageName">Save Ecobee PGP Key Pair</entry>
     
     <!-- Itron Key Pair -->
     <entry key="yukon.web.modules.dev.itronKeyPair">Itron Key Pair</entry>

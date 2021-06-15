@@ -133,8 +133,6 @@ import com.cannontech.message.porter.message.DynamicPaoInfoResponse;
 import com.cannontech.message.porter.message.MeterProgramValidationRequest;
 import com.cannontech.message.porter.message.MeterProgramValidationResponse;
 import com.cannontech.services.configurationSettingMessage.model.ConfigurationSettings;
-import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
-import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
@@ -1036,20 +1034,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-    
-    public static final JmsApi<EcobeeAuthTokenRequest,?,EcobeeAuthTokenResponse> ECOBEE_AUTH_TOKEN =
-            JmsApi.builder(EcobeeAuthTokenRequest.class, EcobeeAuthTokenResponse.class)
-            .name("Ecobee Auth Token")
-            .description("Sent from Service Manager and Webserver and received by Service manager to generate Ecobee Auth Token")
-            .communicationPattern(REQUEST_RESPONSE)
-            .queue(new JmsQueue("yukon.ecobee.auth.token.EcobeeAuthTokenRequest"))
-            .responseQueue(JmsQueue.TEMP_QUEUE)
-            .requestMessage(EcobeeAuthTokenRequest.class)
-            .responseMessage(EcobeeAuthTokenResponse.class)
-            .sender(YUKON_WEBSERVER)
-            .sender(YUKON_SERVICE_MANAGER)
-            .receiver(YUKON_SERVICE_MANAGER)
-            .build();
+
     public static final JmsApi<ZeusEcobeeAuthTokenRequest, ?, ZeusEcobeeAuthTokenResponse> ZEUS_ECOBEE_AUTH_TOKEN = 
             JmsApi.builder(ZeusEcobeeAuthTokenRequest.class, ZeusEcobeeAuthTokenResponse.class)
             .name("Zeus Ecobee Auth Token")
@@ -1366,7 +1351,6 @@ public final class JmsApiDirectory {
                 BROKER_SYSTEM_METRICS,
                 CLOUD_CONFIGURATION_SETTINGS,
                 CLOUD_DATA_CONFIGURATIONS,
-                ECOBEE_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LM_EATON_CLOUD_SCHEDULED_CYCLE_COMMAND,
                 LM_EATON_CLOUD_STOP_COMMAND,

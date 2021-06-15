@@ -268,24 +268,6 @@
               </tags:boxContainer2>
            </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="SHOW_ECOBEE">
-                <tags:boxContainer2 nameKey="ecobeeKeyBox">
-                    <c:set var="keyGeneratedClass" value="${!empty ecobeeKeyGeneratedDateTime ? '' : 'dn'}"/>
-                    <span class="js-ecobee-key-generated ${keyGeneratedClass}">
-                        <i:inline key=".ecobeeKeyGenerated"/>&nbsp;<span class="js-ecobee-key-date-time">${ecobeeKeyGeneratedDateTime}</span>
-                    </span>
-                    <c:set var="keyNotGeneratedClass" value="${!empty ecobeeKeyGeneratedDateTime ? 'dn' : ''}"/>
-                    <span class="js-ecobee-key-not-generated ${keyNotGeneratedClass}"><i:inline key=".ecobeeNoKeyGenerated"/></span>
-                    <div class="page-action-area">
-                        <form:form method="GET" action="downloadEcobeeKey">
-                            <cti:button nameKey="downloadEcobeeKey" type="submit" />
-                        </form:form>
-                        <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
-                            <cti:button id="generateEcobeeKey" nameKey="generateEcobeeKey" data-ok-event="yukon:admin:security:generateEcobeeKey"/>
-                            <d:confirm on="#generateEcobeeKey" nameKey="confirmGenerateEcobeeKey" />
-                        </cti:checkRolesAndProperties>
-                    </div>
-                </tags:boxContainer2>
-                
                 <tags:boxContainer2 nameKey="ecobeeZeusKeyBox">
                     <cti:msg2 key=".ecobeeZeusURL.blank" var="ecobeeZeusUrlBlank"/>
                     <input type="hidden" class="js-ecobee-url" value="${ecobeeZeusUrlBlank}"/>
