@@ -9,8 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
@@ -18,9 +16,6 @@ import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
-import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
-import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
-import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
@@ -42,8 +37,6 @@ import com.google.common.collect.Sets;
 public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
     private static final Logger log = YukonLogManager.getLogger(EcobeeCommandStrategy.class);
 
-    @Autowired private ConfigurationSource configurationSource;
-    @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
     @Autowired private EcobeeZeusGroupService ecobeeZeusGroupService;
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
@@ -58,10 +51,6 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
         return type.isEcobee();
     }
 
-    private boolean isEcobeeZeusEnabled() {
-        return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED);
-    }
-
     @Override
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
         LiteLmHardwareBase device = command.getDevice();
@@ -69,80 +58,52 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
 
         try {
             List<Integer> groupIds;
-            switch(command.getType()) {
-            case IN_SERVICE:
-                if (isEcobeeZeusEnabled()) {
-                    int inventoryId = device.getInventoryID();
-                    int groupId = ecobeeZeusGroupService.getGroupIdToEnroll(getGroupId(inventoryId), inventoryId);
+            int inventoryId = device.getInventoryID();
+            int groupId = ecobeeZeusGroupService.getGroupIdToEnroll(getGroupId(inventoryId), inventoryId);
+
+            switch (command.getType()) {
+                case IN_SERVICE:
                     ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID());
-                }
-                break;
-            case OUT_OF_SERVICE:
-                if (isEcobeeZeusEnabled()) {
+                    break;
+                case OUT_OF_SERVICE:
+
                     Set<Integer> groupIdsFromCommandParam = (Set<Integer>) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
                     ecobeeZeusCommunicationService.unEnroll(groupIdsFromCommandParam, serialNumber, device.getInventoryID());
-                } else {
-                    ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
-                    // TODO get groupId of group previously enrolled in
-                    // if (!hasActiveEnrollments(groupId)) {
-                    // ecobeeCommunicationService.deleteManagementSet(Integer.toString(groupId), ecId);
-                    // }
-                }
-                break;
-            case TEMP_OUT_OF_SERVICE:
-                if (isEcobeeZeusEnabled()) {
+
+                    break;
+                case TEMP_OUT_OF_SERVICE:
+
                     groupIds = getGroupId(command.getDevice().getInventoryID());
                     // Remove the thermostat from the groups and then cancel the demand response for the thermostat
                     ecobeeZeusCommunicationService.unEnroll(Sets.newHashSet(groupIds), serialNumber, device.getInventoryID());
                     ecobeeZeusCommunicationService.cancelDemandResponse(groupIds, serialNumber);
-                } else {
-                    ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.OPT_OUT_SET);
-                    // Send a 5-minute, 0% control to override any currently running control for the device
-                    ecobeeCommunicationService.sendOverrideControl(serialNumber);
-                }
-                break;
-            case CANCEL_TEMP_OUT_OF_SERVICE:
-                if (isEcobeeZeusEnabled()) {
-                    int inventoryId = device.getInventoryID();
-                    int groupId = ecobeeZeusGroupService.getGroupIdToEnroll(getGroupId(inventoryId), inventoryId);
+
+                    break;
+                case CANCEL_TEMP_OUT_OF_SERVICE:
+
                     // Add the thermostat to the group when user cancel the opt out.
                     ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID());
-                } else {
-                    List<LMHardwareConfiguration> hardwareConfig = lmHardwareConfigDao.getForInventoryId(device.getInventoryID());
-                    if (hardwareConfig.size() > 1) {
-                        throw new BadConfigurationException("Ecobee only supports one and only one group per device. "
-                                + hardwareConfig.size() + " groups found.");
-                    } else if (hardwareConfig.size() == 1) {
-                        ecobeeCommunicationService.moveDeviceToSet(serialNumber,
-                                Integer.toString(hardwareConfig.get(0).getAddressingGroupId()));
-                    } else {
-                        ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
-                    }
-                }
-                break;
-            case CONFIG:
-                groupIds = getGroupId(device.getInventoryID());
-                if (isEcobeeZeusEnabled()) {
-                    // When user change the Yukon group, 1st unenroll the thermostat then enroll it to the correct group.
-                    Set<Integer> removedEnrollmentGroupIds = (Set<Integer>) command.getParams()
-                            .get(LmHardwareCommandParam.GROUP_ID);
+
+                    break;
+                case CONFIG:
+                    groupIds = getGroupId(device.getInventoryID());
+
+                    // When user change the Yukon group, 1st unenroll the thermostat then enroll it to the correct
+                    // group.
+                    Set<Integer> removedEnrollmentGroupIds = (Set<Integer>) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
                     if (CollectionUtils.isNotEmpty(removedEnrollmentGroupIds)) {
                         ecobeeZeusCommunicationService.unEnroll(removedEnrollmentGroupIds, serialNumber, device.getInventoryID());
                     }
 
-                    int inventoryId = device.getInventoryID();
-                    int groupId = ecobeeZeusGroupService.getGroupIdToEnroll(getGroupId(inventoryId), inventoryId);
                     ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID());
-                } else {
-                    ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(groupIds.get(0)));
-                }
-                break;
-            case PERFORMANCE_VERIFICATION:
-            case READ_NOW:
-            default:
-                break;
+
+                    break;
+                case PERFORMANCE_VERIFICATION:
+                case READ_NOW:
+                default:
+                    break;
             }
-        } catch (EcobeeDeviceDoesNotExistException | EcobeeSetDoesNotExistException | EcobeeCommunicationException e) {
+        } catch ( EcobeeCommunicationException e) {
             log.error("Error sending command to ecobee server.", e);
             throw new CommandCompletionException("Error sending command to ecobee server.", e);
         }

@@ -1782,7 +1782,6 @@
           <page name="setupDatabase" type="BASIC"/>
           <page name="miscellaneousMethod" type="BASIC"/>
           <page name="deviceGroupSimulator" type="BASIC"/>
-          <page name="ecobeePGPKeyPair" type="BASIC"/>
           <page name="itronKeyPair" type="BASIC"/>
           <page name="pxMWToken" type="BASIC"/>
           <page name="systemMetricsSimulator" type="BASIC"/>

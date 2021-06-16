@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
@@ -20,7 +18,6 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteDevice;
 import com.cannontech.common.pao.service.PaoPersistenceService;
-import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -38,40 +35,14 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
             .put(HardwareType.ECOBEE_SMART, PaoType.ECOBEE_SMART)
             .build();
     
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
-    @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
     private final Map<Integer, String> inventoryIdToSerialNumber = new HashMap<>();
     
     @Override
     public void createDevice(Hardware hardware) {
-        if (isEcobeeZeusEnabled()) {
-            createZeusDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
-        } else {
-            createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
-        }
-    }
-    
-    public PaoIdentifier createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
-        try {
-            ecobeeCommunicationService.registerDevice(serialNumber);
-            
-            CompleteDevice ecobeePao = new CompleteDevice();
-            ecobeePao.setPaoName(serialNumber);
-            paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, hardwareTypeToPaoType.get(hardwareType));
-
-            // Update the Stars table with the device id
-            inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, ecobeePao.getPaObjectId());
-            ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
-            return ecobeePao.getPaoIdentifier();
-        } catch (Exception e) {
-            //Catch any exception here - only ecobee exceptions (most often communications) are expected, but we might
-            //also have authentication exceptions (which cannot be explicitly caught here) or something unexpected.
-            log.error("Unable to create device.", e);
-            throw new DeviceCreationException(e.getMessage(), "invalidDeviceCreation", e);
-        }
+        createZeusDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
     }
 
     /**
@@ -112,11 +83,9 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
         }
         // Inventory has been deleted, so get the serial number from the cache and send the ecobee delete request.
         String serialNumber = inventoryIdToSerialNumber.remove(inventoryId.getInventoryId());
-        if (isEcobeeZeusEnabled()) {
-            ecobeeZeusCommunicationService.deleteDevice(serialNumber);
-        } else {
-            ecobeeCommunicationService.deleteDevice(serialNumber);
-        }
+
+        ecobeeZeusCommunicationService.deleteDevice(serialNumber);
+
     }
 
     @Override
@@ -142,11 +111,5 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     @Override
     public void validateDevice(Hardware hardware, Errors errors) {
         // Nothing extra to do
-    }
-    /**
-     * Check Zeus is enabled through master config.
-     */
-    private boolean isEcobeeZeusEnabled() {
-        return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_ZEUS_ENABLED);
     }
 }

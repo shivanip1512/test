@@ -46,16 +46,6 @@
                         <tags:nameValue2 nameKey=".ecobee.configure.dailyErrorCheck" rowId="ecobee-error-check-schedule" valueClass="full-width">
                             <tags:timeSlider startPath="checkErrorsTime" maxValue="1425" displayTimeToLeft="true"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".ecobee.configure.dataCollection" rowId="ecobee-data-collection-toggle" valueClass="full-width">
-                            <tags:hidden path="dataCollection" id="ecobee-data-collection"/>
-                            <div class="button-group button-group-toggle">
-                                <cti:button nameKey="on" classes="on yes M0"/>
-                                <cti:button nameKey="off" classes="no M0"/>
-                            </div>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".ecobee.configure.dailyDataCollection" rowId="ecobee-data-collection-schedule" valueClass="full-width">
-                            <tags:timeSlider startPath="dataCollectionTime" maxValue="1425" displayTimeToLeft="true"/>
-                        </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form:form>
             </div>
