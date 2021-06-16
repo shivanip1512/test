@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableList;
  * This object specifies everything that is needed to assemble a smart notification message.
  */
 public class SmartNotificationMessageParameters implements Serializable {
-    
+
     public enum ProcessingType {
         START_UP,
         DIGEST,
@@ -98,6 +98,7 @@ public class SmartNotificationMessageParameters implements Serializable {
         tsb.append("verbosity", verbosity);
         tsb.append("recipients", recipients);
         tsb.append("events total", events.size());
+        tsb.append("processing type", processingType);
         return tsb;
     }
     
@@ -107,6 +108,7 @@ public class SmartNotificationMessageParameters implements Serializable {
         int result = 1;
         result = prime * result + ((events == null) ? 0 : events.hashCode());
         result = prime * result + ((media == null) ? 0 : media.hashCode());
+        result = prime * result + ((processingType == null) ? 0 : processingType.hashCode());
         result = prime * result + ((recipients == null) ? 0 : recipients.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((verbosity == null) ? 0 : verbosity.hashCode());
@@ -128,6 +130,8 @@ public class SmartNotificationMessageParameters implements Serializable {
         } else if (!events.equals(other.events))
             return false;
         if (media != other.media)
+            return false;
+        if (processingType != other.processingType)
             return false;
         if (recipients == null) {
             if (other.recipients != null)
