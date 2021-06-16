@@ -13,10 +13,23 @@
  * 
 **/
 /*jshint eqeqeq:false */
-/*global jQuery */
+/*global jQuery, define */
 
-(function($) {
-"use strict";	
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+"use strict";
+//module begin
 	$.fmatter = {};
 	//opts can be id:row id for the row, rowdata:the data for the row, colmodel:the column model for this column
 	//example {id:1234,}
@@ -25,7 +38,7 @@
 			return typeof o === 'boolean';
 		},
 		isObject : function(o) {
-			return (o && (typeof o === 'object' || $.isFunction(o))) || false;
+			return (o && (typeof o === 'object' || $.jgrid.isFunction(o))) || false;
 		},
 		isString : function(o) {
 			return typeof o === 'string';
@@ -43,14 +56,14 @@
 			if (!this.isValue(o)){
 				return true;
 			}
-			o = $.trim(o).replace(/\&nbsp\;/ig,'').replace(/\&#160\;/ig,'');
+			o = $.jgrid.trim(o).replace(/\&nbsp\;/ig,'').replace(/\&#160\;/ig,'');
 			return o==="";	
 		}
 	});
 	$.fn.fmatter = function(formatType, cellval, opts, rwd, act) {
 		// build main options before element iteration
 		var v=cellval;
-		opts = $.extend({}, $.jgrid.formatter, opts);
+		opts = $.extend({}, $.jgrid.getRegional(this, 'formatter') , opts);
 
 		try {
 			v = $.fn.fmatter[formatType].call(this, cellval, opts, rwd, act);
@@ -71,8 +84,10 @@
 				if($.fmatter.isNumber(opts.decimalPlaces)) {
 					// Round to the correct decimal place
 					var nDecimalPlaces = opts.decimalPlaces;
-					var nDecimal = Math.pow(10, nDecimalPlaces);
-					sOutput = String(Math.round(nData*nDecimal)/nDecimal);
+					//var nDecimal = Math.pow(10, nDecimalPlaces);
+					//sOutput = String(Math.round(nData*nDecimal)/nDecimal);
+					// see http://www.jacklmoore.com/notes/rounding-in-javascript/
+					sOutput = String(Number(Math.round(nData+'e'+nDecimalPlaces)+'e-'+nDecimalPlaces));
 					nDotIndex = sOutput.lastIndexOf(".");
 					if(nDecimalPlaces > 0) {
 					// Add the decimal separator
@@ -200,7 +215,7 @@
 			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
 		if(!$.fmatter.isEmpty(cellval)) {
-			return $.jgrid.parseDate(op.srcformat,cellval,op.newformat,op);
+			return $.jgrid.parseDate.call(this, op.srcformat,cellval,op.newformat,op);
 		}
 		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
@@ -218,9 +233,9 @@
 			delim = opts.colModel.editoptions.delimiter === undefined ? ";" : opts.colModel.editoptions.delimiter;
 		}
 		if (oSelect) {
-			var	msl =  opts.colModel.editoptions.multiple === true ? true : false,
+			var	msl =  (opts.colModel.editoptions != null && opts.colModel.editoptions.multiple === true) === true ? true : false,
 			scell = [], sv;
-			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
+			if(msl) {scell = cellval.split(",");scell = $.map(scell,function(n){return $.jgrid.trim(n);});}
 			if ($.fmatter.isString(oSelect)) {
 				// mybe here we can use some caching with care ????
 				var so = oSelect.split(delim), j=0, i;
@@ -234,7 +249,7 @@
 							ret[j] = sv[1];
 							j++;
 						}
-					} else if($.trim(sv[0]) === $.trim(cellval)) {
+					} else if($.jgrid.trim(sv[0]) === $.jgrid.trim(cellval)) {
 						ret[0] = sv[1];
 						break;
 					}
@@ -261,34 +276,26 @@
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[$.jgrid.getCellIndex(this)],
-			$actionsDiv = cm.frozen ? $("tr#"+rid+" td:eq("+$.jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
+			$actionsDiv = cm.frozen ? $("tr#"+rid+" td", $grid).eq( $.jgrid.getCellIndex(this) ).find("> div") :$(this).parent(),
 			op = {
-				keys: false,
-				onEdit: null, 
-				onSuccess: null, 
-				afterSave: null,
-				onError: null,
-				afterRestore: null,
-				extraparam: {},
-				url: null,
-				restoreAfterError: true,
-				mtype: "POST",
-				delOptions: {},
-				editOptions: {}
+				extraparam: {}
 			},
 			saverow = function(rowid, res) {
-				if($.isFunction(op.afterSave)) { op.afterSave.call($t, rowid, res); }
+				if($.jgrid.isFunction(op.afterSave)) { op.afterSave.call($t, rowid, res); }
 				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
 				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
 			},
 			restorerow = function(rowid) {
-				if($.isFunction(op.afterRestore)) { op.afterRestore.call($t, rowid); }
+				if($.jgrid.isFunction(op.afterRestore)) { op.afterRestore.call($t, rowid); }
 				$actionsDiv.find("div.ui-inline-edit,div.ui-inline-del").show();
 				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
 			};
 
 		if (cm.formatoptions !== undefined) {
-			op = $.extend(op,cm.formatoptions);
+			// Deep clone before copying over to op, to avoid creating unintentional references.
+			// Otherwise, the assignment of op.extraparam[p.prmNames.oper] below may persist into the colModel config.
+			var formatoptionsClone = $.extend(true, {}, cm.formatoptions);
+			op = $.extend(op, formatoptionsClone);
 		}
 		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
@@ -343,26 +350,30 @@
 	};
 	$.fn.fmatter.actions = function(cellval,opts) {
 		var op={keys:false, editbutton:true, delbutton:true, editformbutton: false},
-			rowid=opts.rowId, str="",ocl;
+			rowid=opts.rowId, str="",ocl,
+			nav = $.jgrid.getRegional(this, 'nav'),
+			classes = $.jgrid.styleUI[(opts.styleUI || 'jQueryUI')].fmatter,
+			common = $.jgrid.styleUI[(opts.styleUI || 'jQueryUI')].common;
 		if(opts.colModel.formatoptions !== undefined) {
 			op = $.extend(op,opts.colModel.formatoptions);
 		}
 		if(rowid === undefined || $.fmatter.isEmpty(rowid)) {return "";}
-		if(op.editformbutton){
-			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
+		var hover = "onmouseover=jQuery(this).addClass('" + common.hover +"'); onmouseout=jQuery(this).removeClass('" + common.hover +"');  ";
+		if(op.editformbutton){ 
+			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); " + hover;
+			str += "<div title='"+nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_edit +"'></span></div>";
 		} else if(op.editbutton){
-			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'edit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
-			str += "<div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
+			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'edit'); " + hover;
+			str += "<div title='"+nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_edit +"'></span></div>";
 		}
 		if(op.delbutton) {
-			ocl = "id='jDeleteButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'del'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-			str += "<div title='"+$.jgrid.nav.deltitle+"' style='float:left;margin-left:5px;' class='ui-pg-div ui-inline-del' "+ocl+"><span class='ui-icon ui-icon-trash'></span></div>";
+			ocl = "id='jDeleteButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'del'); " + hover;
+			str += "<div title='"+nav.deltitle+"' style='float:left;' class='ui-pg-div ui-inline-del' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_del +"'></span></div>";
 		}
-		ocl = "id='jSaveButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'save'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='"+$.jgrid.edit.bSubmit+"' style='float:left;display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='ui-icon ui-icon-disk'></span></div>";
-		ocl = "id='jCancelButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
-		str += "<div title='"+$.jgrid.edit.bCancel+"' style='float:left;display:none;margin-left:5px;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='ui-icon ui-icon-cancel'></span></div>";
+		ocl = "id='jSaveButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'save'); " + hover;
+		str += "<div title='"+nav.savetitle+"' style='float:left;display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_save +"'></span></div>";
+		ocl = "id='jCancelButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); " + hover;
+		str += "<div title='"+nav.canceltitle+"' style='float:left;display:none;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='" + common.icon_base +" "+classes.icon_cancel +"'></span></div>";
 		return "<div style='margin-left:8px;'>" + str + "</div>";
 	};
 	$.unformat = function (cellval,options,pos,cnt) {
@@ -371,10 +382,10 @@
 		op =options.colModel.formatoptions || {}, sep,
 		re = /([\.\*\_\'\(\)\{\}\+\?\\])/g,
 		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
-		if(unformatFunc !== undefined && $.isFunction(unformatFunc) ) {
+		if(unformatFunc !== undefined && $.jgrid.isFunction(unformatFunc) ) {
 			ret = unformatFunc.call(this, $(cellval).text(), options, cellval);
 		} else if(formatType !== undefined && $.fmatter.isString(formatType) ) {
-			var opts = $.jgrid.formatter || {}, stripTag;
+			var opts = $.jgrid.getRegional(this, 'formatter') || {}, stripTag;
 			switch(formatType) {
 				case 'integer' :
 					op = $.extend({},opts.integer,op);
@@ -430,25 +441,28 @@
 			var oSelect = op.value,
 			msl =  op.multiple === true ? true : false,
 			scell = [], sv;
-			if(msl) {scell = cell.split(",");scell = $.map(scell,function(n){return $.trim(n);});}
+			if(msl) {scell = cell.split(",");scell = $.map(scell,function(n){return $.jgrid.trim(n);});}
 			if ($.fmatter.isString(oSelect)) {
 				var so = oSelect.split(delim), j=0, i;
 				for(i=0; i<so.length;i++){
 					sv = so[i].split(sep);
 					if(sv.length > 2 ) {
 						sv[1] = $.map(sv,function(n,i){if(i>0) {return n;}}).join(sep);
-					}					
+					}
+					if(op.decodeValue && op.decodeValue===true) {
+						sv[1] = $.jgrid.htmlDecode(sv[1]);
+					}
 					if(msl) {
-						if($.inArray(sv[1],scell)>-1) {
+						if($.inArray($.jgrid.trim(sv[1]),scell)>-1) {
 							ret[j] = sv[0];
 							j++;
 						}
-					} else if($.trim(sv[1]) === $.trim(cell)) {
+					} else if($.jgrid.trim(sv[1]) === $.jgrid.trim(cell)) {
 						ret[0] = sv[0];
 						break;
 					}
 				}
-			} else if($.fmatter.isObject(oSelect) || $.isArray(oSelect) ){
+			} else if( $.fmatter.isObject(oSelect) || Array.isArray(oSelect) ){
 				if(!msl) {scell[0] =  cell;}
 				ret = $.map(scell, function(n){
 					var rv;
@@ -466,13 +480,14 @@
 		return cell || "";
 	};
 	$.unformat.date = function (cellval, opts) {
-		var op = $.jgrid.formatter.date || {};
+		var op = $.jgrid.getRegional(this, 'formatter.date') || {};
 		if(opts.formatoptions !== undefined) {
 			op = $.extend({},op,opts.formatoptions);
 		}		
 		if(!$.fmatter.isEmpty(cellval)) {
-			return $.jgrid.parseDate(op.newformat,cellval,op.srcformat,op);
+			return $.jgrid.parseDate.call(this, op.newformat,cellval,op.srcformat,op);
 		}
 		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
-})(jQuery);
+//module end
+}));
