@@ -1,4 +1,4 @@
-package com.cannontech.dr.rfn.dao.impl;
+package com.cannontech.dr.rfn.dao.impl.test;
 
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expectLastCall;
@@ -23,12 +23,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
+import com.cannontech.dr.rfn.dao.impl.PerformanceVerificationDaoImpl;
 import com.cannontech.dr.rfn.model.DeviceStatus;
 import com.cannontech.system.dao.GlobalSettingDao;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration({"/com/cannontech/common/daoTestContext.xml"})
-public class PerformanceVerificationDaoTestImpl {
+public class PerformanceVerificationDaoImplTest {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     private PerformanceVerificationDao performanceVerificationDao;
     

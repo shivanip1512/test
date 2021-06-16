@@ -1,7 +1,5 @@
 package com.cannontech.amr.rfn.service.pointmapping.icd;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -33,7 +31,7 @@ public class CoincidentGroupingCollector implements Collector<Named<? extends Po
             } else if (basePoint != null) {
                 map.put(new PointMapping(npd.getValue(), basePoint), new NameScale(npd.getName(), 0));
             } else {
-                fail("Base point is null for " + npd);
+                throw new RuntimeException("Base point is null for " + npd);
             }
         };
     }
