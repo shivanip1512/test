@@ -53,7 +53,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.helper.EventLogHelper;
 import com.cannontech.common.events.loggers.SystemEventLogService;
-import com.cannontech.common.exception.EcobeePGPException;
 import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.ApplicationId;
@@ -74,7 +73,6 @@ import com.cannontech.dr.ecobee.service.impl.EcobeeZeusCommunicationServiceImpl;
 import com.cannontech.encryption.CertificateGenerationFailedException;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
-import com.cannontech.encryption.EcobeeSecurityService;
 import com.cannontech.encryption.EcobeeZeusSecurityService;
 import com.cannontech.encryption.EncryptedRouteDao;
 import com.cannontech.encryption.EncryptionKeyType;
@@ -105,7 +103,6 @@ public class YukonSecurityController {
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private HoneywellSecurityService honeywellSecurityService;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private EcobeeSecurityService ecobeeSecurityService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ItronSecurityService itronSecurityService;
     @Autowired private GlobalSettingDaoImpl globalSettingDaoImpl;
@@ -276,15 +273,6 @@ public class YukonSecurityController {
             model.addAttribute("blockingError", true);
         }
 
-        try {
-            Instant ecobeeKeyCreationTime = ecobeeSecurityService.getEcobeeKeyPairCreationTime();
-            String ecobeeDateGenerated = dateFormattingService.format(ecobeeKeyCreationTime,
-                DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
-            model.put("ecobeeKeyGeneratedDateTime", ecobeeDateGenerated);
-        } catch (NoSuchElementException e) {
-            log.debug("Ecobee PGP Key Creation time is not available, may be it is not generated yet.");
-        }
-        
         try {
             ZeusEncryptionKey ecobeeZeusEncryptionKey = ecobeeZeusSecurityService.getZeusEncryptionKey();
             String ecobeeZeusDateGenerated = dateFormattingService.format(ecobeeZeusEncryptionKey.getTimestamp(),
@@ -666,42 +654,6 @@ public class YukonSecurityController {
         }
     }
     
-    @GetMapping(value = "/config/security/downloadEcobeeKey")
-    @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
-    public void downloadEcobeeKey(HttpServletResponse response) {
-        try (OutputStream stream = response.getOutputStream()) {
-            String publicKey = ecobeeSecurityService.getEcobeePGPPublicKey();
-            response.setContentType("text/plain");
-            response.setHeader("Content-Type", "application/force-download");
-            String fileName = ServletUtil.makeWindowsSafeFileName("ecobeePublicKey.txt");
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-
-            stream.write(publicKey.getBytes());
-        } catch (Exception e) {
-            log.error("Exception getting the ecobee Public Key", e);
-        }
-    }
-    
-
-    @GetMapping(value = "/config/security/generateEcobeeKey")
-    @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
-    public @ResponseBody Map<String, Object> generateEcobeeKey(YukonUserContext userContext)
-            throws CryptoException {
-        Map<String, Object> json = new HashMap<>();
-        try {
-            Instant keyCreationTime = ecobeeSecurityService.generateEcobeePGPKeyPair();
-            String dateGenerated = dateFormattingService.format(keyCreationTime,
-                    DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
-            json.put("ecobeeKeyGeneratedDateTime", dateGenerated);
-        } catch (EcobeePGPException epe) {
-            log.error("Exception while generating the PGP Public and Private Key ", epe);
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String errMsg = accessor.getMessage(baseKey + ".ecobeeKeyPair.generationFailed");
-            json.put("ecobeeKeyGeneratedDateTime", errMsg);
-        }
-        return json;
-    }
-
     @GetMapping(value = "/config/security/generateEcobeeZeusKey")
     @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
     public @ResponseBody Map<String, Object> generateEcobeeZeusKey(YukonUserContext userContext)
