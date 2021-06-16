@@ -21,6 +21,10 @@ import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
@@ -30,8 +34,6 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
@@ -42,6 +44,7 @@ public class Rfn1200Controller {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private ServerDatabaseCache dbCache;
+    @Autowired private DeviceDao deviceDao;
 
     @GetMapping("/{id}")
     public String view(@PathVariable int id, ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
@@ -57,8 +60,27 @@ public class Rfn1200Controller {
     public String delete(@PathVariable int id, FlashScope flash) {
         //TODO: Delete RFN 1200 Device and display success/failure message
         String deviceName = dbCache.getAllPaosMap().get(id).getPaoName();
+        
+        
+        LiteYukonPAObject device = dbCache.getAllPaosMap().get(id);
+       // String meterName = serverDatabaseCache.getAllMeters().get(id).getMeterNumber();
+        try {
+            deviceDao.removeDevice(id);
+            
+            //clean up event log add to RfnDeviceEventLogService example below 
+           // meteringEventLogService.meterDeleted(meter.getPaoName(), meterName, user.getUsername());
+            
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.successful", deviceName));
+           // return "redirect:/meter/start";
+        }
+        catch (Exception e) {
+            //log.error("Unable to delete meter with id " + meter.getPaoName(), e);
+           // flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.failure", meter.getPaoName()));
+           // return "redirect:/meter/home?deviceId="+id;
+        }
+        
         //if success
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", deviceName));
+     //   flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", deviceName));
         //if failure
         //flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", deviceName, e.getMessage()));
         return "redirect:" + "/stars/device/commChannel/list";

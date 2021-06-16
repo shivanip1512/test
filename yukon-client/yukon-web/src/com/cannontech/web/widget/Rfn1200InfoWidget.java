@@ -17,16 +17,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.Rfn1200Detail;
-import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.service.RfDaCreationService;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.YNBoolean;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -42,8 +38,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class Rfn1200InfoWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private Rfn1200Validator rfn1200Validator;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
-    @Autowired private ServerDatabaseCache dbCache;
+    @Autowired private RfDaCreationService rfdaCreationService;
     private static final Logger log = YukonLogManager.getLogger(Rfn1200InfoWidget.class);
 
     @Autowired
@@ -74,16 +69,7 @@ public class Rfn1200InfoWidget extends AdvancedWidgetControllerBase {
     }
 
     private void retrieveRfn1200(YukonUserContext userContext, HttpServletRequest request, int id, ModelMap model) {
-        //TODO: Retrieve RFN 1200
-        RfnDevice device = rfnDeviceDao.getDeviceForId(id);
-        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
-        Rfn1200Detail rfn1200 = new Rfn1200Detail();
-        rfn1200.setId(device.getPaoIdentifier().getPaoId());
-        rfn1200.setName(device.getName());
-        rfn1200.setPaoType(pao.getPaoType());
-        rfn1200.getRfnAddress().setRfnIdentifier(device.getRfnIdentifier());
-        rfn1200.setEnabled(pao.getDisableFlag().equals(YNBoolean.NO.getDatabaseRepresentation()));
-        model.addAttribute("rfn1200", rfn1200);
+        model.addAttribute("rfn1200", rfdaCreationService.retrieve(id));
     }
 
     @PostMapping("/save")
@@ -97,7 +83,8 @@ public class Rfn1200InfoWidget extends AdvancedWidgetControllerBase {
             return "rfn1200InfoWidget/render.jsp";
         }
 
-        //TODO: SAVE
+        
+        rfdaCreationService.update(rfn1200);
         
         //if success
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", rfn1200.getName()));
