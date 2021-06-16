@@ -12,7 +12,6 @@ import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.device.port.LocalSharedPortDetail;
 import com.cannontech.common.device.port.PhysicalPort;
 import com.cannontech.common.device.port.PortBase;
-import com.cannontech.common.device.port.Rfn1200Detail;
 import com.cannontech.common.device.port.SharedPortType;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
@@ -51,9 +50,6 @@ public class CommChannelSetupHelper {
         }
         if (commChannel instanceof TerminalServerPortDetailBase || commChannel instanceof LocalSharedPortDetail) {
             model.addAttribute("sharedPortTypes", Lists.newArrayList(SharedPortType.values()));
-        }
-        if (commChannel instanceof Rfn1200Detail) {
-            model.addAttribute("isRfn1200", true);
         }
     }
 

@@ -1305,6 +1305,10 @@
                         <link>/stars/device/commChannel/${id}</link>
                         <labelArgument>${name}</labelArgument>
                     </page>
+                    <page name="rfn1200Detail" type="DETAIL">
+                        <link>/stars/device/rfn1200/${id}</link>
+                        <labelArgument>${name}</labelArgument>
+                    </page>
                 </pages>
             </page>
             <page name="gateways.list" type="BASIC" hideSearch="true">

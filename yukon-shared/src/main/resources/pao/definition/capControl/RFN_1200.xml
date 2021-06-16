@@ -8,6 +8,7 @@
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="OUTAGE"/>
         <tag name="RFN_EVENTS"/>
+        <tag name="RFN1200_DETAIL_DISPLAYABLE"/>
     </tags>
     <pointInfos>
         <pointInfo name="Bad Upgrade Security Param" init="true"/>
