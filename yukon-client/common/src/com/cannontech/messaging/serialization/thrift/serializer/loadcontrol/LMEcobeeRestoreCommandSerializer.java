@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.loadcontrol.messages.LMEcobeeRestoreCommand;
+import com.cannontech.dr.ecobee.model.LMEcobeeRestoreCommand;
 import com.cannontech.messaging.serialization.thrift.SimpleThriftSerializer;
 import com.cannontech.messaging.serialization.thrift.ThriftByteDeserializer;
 

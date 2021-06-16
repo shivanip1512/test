@@ -1,4 +1,4 @@
-package com.cannontech.loadcontrol.messages;
+package com.cannontech.dr.ecobee.model;
 
 import java.io.Serializable;
 
