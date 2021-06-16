@@ -72,10 +72,8 @@
                                     </p>
                                 </div>
                                 <div>
-                                    <c:if test="${setting.extra.sensitiveInformation}">
-                                        <c:if test="${setting.extra.decryptValueFailed}">
-                                            <span class="error"><i:inline key="yukon.common.setting.decryptValueFailed.description"/></span>
-                                        </c:if>
+                                    <c:if test="${setting.extra.sensitiveInformation && setting.extra.decryptValueFailed}">
+                                        <span class="error"><i:inline key="yukon.common.setting.decryptValueFailed.description"/></span>
                                     </c:if>
                                     <form:hidden path="decryptValueFails[${setting.extra.type}]"/>
                                 </div>
