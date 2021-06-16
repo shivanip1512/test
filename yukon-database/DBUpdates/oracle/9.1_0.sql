@@ -86,6 +86,12 @@ INSERT INTO State VALUES(-33, 1, 'On', 0, 6, 0);
 INSERT INTO DBUpdates VALUES ('YUK-24286', '9.0.0', SYSDATE);
 /* @end YUK-24286 */
 
+/* @start YUK-24557 */
+DELETE FROM Job WHERE BeanName = 'ecobeePointUpdateJobDefinition';
+
+INSERT INTO DBUpdates VALUES ('YUK-24557', '9.1.0', SYSDATE);
+/* @end YUK-24557 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
