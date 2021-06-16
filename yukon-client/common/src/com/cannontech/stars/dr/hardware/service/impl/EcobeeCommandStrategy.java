@@ -25,6 +25,7 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.HardwareStrategyType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandStrategy;
@@ -58,8 +59,13 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
 
         try {
             List<Integer> groupIds;
+            Integer groupId = null ;
             int inventoryId = device.getInventoryID();
-            int groupId = ecobeeZeusGroupService.getGroupIdToEnroll(getGroupId(inventoryId), inventoryId);
+            LmHardwareCommandType type = command.getType();
+
+            if (type == LmHardwareCommandType.IN_SERVICE || type == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE || type == LmHardwareCommandType.CONFIG) {
+                groupId = ecobeeZeusGroupService.getGroupIdToEnroll(getGroupId(inventoryId), inventoryId);
+            }
 
             switch (command.getType()) {
                 case IN_SERVICE:
