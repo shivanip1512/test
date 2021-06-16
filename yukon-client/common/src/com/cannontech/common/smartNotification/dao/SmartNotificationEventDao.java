@@ -120,6 +120,9 @@ public interface SmartNotificationEventDao {
      */
     List<SmartNotificationEvent> getUnprocessedGroupedEvents(SmartNotificationEventType type, String name, String value);
 
+    /**
+     * Creates history to track the number of emails sent
+     */
     void createHistory(SmartNotificationMessageParameters parameters, int intervalMinutes);
 
 
