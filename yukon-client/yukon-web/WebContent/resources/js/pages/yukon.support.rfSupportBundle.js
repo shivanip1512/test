@@ -66,7 +66,7 @@ yukon.support.rfSupportBundle = (function() {
                 });
             });
             
-            $(document).on('click','.js-previous-rf-bundles', function(event) {
+            $('.js-previous-rf-bundles').click (function(event) {
                $.ajax({
                     url : yukon.url("/support/viewRfBundle"),
                     type : "GET"

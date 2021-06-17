@@ -41,7 +41,7 @@
             <cti:msg2 key='.supportBundle.previousHeading' var="previousHeading" />
             <cti:tab title="${previousHeading}" headerClasses="js-previous-rf-bundles">
                 <div id="rf-support-bundle-tab">
-                   <jsp:include page="/WEB-INF/pages/support/supportBundle/rfPreviousBundleTab.jsp"/>
+                   <jsp:include page="rfPreviousBundleTab.jsp"/>
                 </div>
             </cti:tab>
         </cti:tabs>
