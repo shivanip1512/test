@@ -5775,8 +5775,8 @@ JavaScript :
     license : MIT,GPL 2.0
     license URLs : "https://opensource.org/licenses/mit-license.php, http://www.gnu.org/licenses/gpl-2.0.html"
     npm URL : "https://www.npmjs.com/package/jqGrid"
-    md5 : 5157a083b4adf77978624f83846bbe41
-    sha1 : d8181ace878fc0f4c4d5869098d1583bf7fe32cf
+    md5 : 2b424c5bf3ac2f98b899f7dffdeaed9a
+    sha1 : a9349882d50edf6cd0c9f739d3a82de03ce67abb
     jira : YUK-24549
     updated : 2021-06-16
     notes : "This library is used to display a grid on the Collection Actions -> Device Report page. Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
