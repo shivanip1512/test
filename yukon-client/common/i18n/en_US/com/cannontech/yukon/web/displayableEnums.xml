@@ -155,7 +155,7 @@
     <entry key="yukon.common.peakReportPeakType.HOUR.description">Peak Hourly Usage</entry>
     <entry key="yukon.common.peakReportPeakType.INTERVAL">Interval</entry>
     <entry key="yukon.common.peakReportPeakType.INTERVAL.description">Peak Interval</entry>
-    
+    <entry key="yukon.common.setting.decryptValueFailed.description">Unable to decrypt value.</entry>
     <!-- YukonSettingSubCategory -->
     <entry key="yukon.common.setting.subcategory.AUTHENTICATION">Authentication</entry>
     <entry key="yukon.common.setting.subcategory.AUTHENTICATION.description">Authentication, Active Directory, LDAP server settings</entry>
