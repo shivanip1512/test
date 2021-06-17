@@ -6,6 +6,8 @@
 #include "amq_queues.h"
 #include "LMGroupEcobee.h"
 #include "LMEcobeeMessages.h"
+#include "message_factory.h"
+#include "std_helper.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -40,18 +42,31 @@ bool LMGroupEcobee::sendCycleControl( long dutyCycle,
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    ctitime_t localSeconds = now.getLocalTimeSeconds();
+    ctitime_t localSeconds = now.getLocalTimeSeconds();  
 
-    ActiveMQConnectionManager::enqueueMessage( 
-            OutboundQueue::EcobeeCyclingControl, 
-            std::make_unique<LMEcobeeCyclingControlMessage>( 
-                    getPAOId(),
-                    dutyCycle,
-                    static_cast<int>(localSeconds),
-                    controlDurationSeconds,
-                    mandatory,
-                    rampInOutOption ));
-    
+    const auto serializedMessage =
+        Serialization::MessageSerializer<LMEcobeeCyclingControlMessage>::serialize(
+            {
+                getPAOId(),
+                dutyCycle,
+                static_cast<int>(localSeconds),
+                controlDurationSeconds,
+                mandatory,
+                rampInOutOption
+            });
+
+    if (serializedMessage.empty())
+    {
+        CTILOG_ERROR(dout, "Serialization error for ecobee Cycle command, LM Group: " << getPAOName());
+
+        return false;
+    }
+
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::EcobeeCyclingControl,
+        serializedMessage);
+
+
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CTILOG_DEBUG(dout, "Sending ecobee Cycle command, LM Group: " << getPAOName() << ", control minutes: "
@@ -76,9 +91,9 @@ bool LMGroupEcobee::sendCycleControl( long dutyCycle,
 
 
 bool LMGroupEcobee::sendSetpointControl( long controlDurationSeconds,
-                                         bool temperatureOption,
-                                         bool mandatory,
-                                         long temperatureOffset )
+                                        bool temperatureOption,
+                                        bool mandatory,
+                                        long temperatureOffset )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
@@ -87,16 +102,30 @@ bool LMGroupEcobee::sendSetpointControl( long controlDurationSeconds,
     CtiTime now;
     ctitime_t localSeconds = now.getLocalTimeSeconds();
 
-    ActiveMQConnectionManager::enqueueMessage( 
-            OutboundQueue::EcobeeSetpointControl, 
-            std::make_unique<LMEcobeeSetpointControlMessage>( 
-                    getPAOId(),
-                    localSeconds,
-                    controlDurationSeconds,
-                    temperatureOption,
-                    mandatory,
-                    temperatureOffset ));
+    const auto serializedMessage =
+        Serialization::MessageSerializer<LMEcobeeSetpointControlMessage>::serialize(
+            {
+                getPAOId(),
+                localSeconds,
+                controlDurationSeconds,  
+                temperatureOption
+                ?LMEcobeeSetpointControlMessage::TempOptionTypes::Heat
+                :LMEcobeeSetpointControlMessage::TempOptionTypes::Cool,
+                mandatory,
+                temperatureOffset
+            });
 
+    if (serializedMessage.empty())
+    {
+        CTILOG_ERROR(dout, "Serialization error for ecobee Setpoint command, LM Group: " << getPAOName());
+
+        return false;
+    }
+
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::EcobeeSetpointControl,
+        serializedMessage);
+    
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CTILOG_DEBUG(dout, "Sending ecobee Setpoint command, LM Group: " << getPAOName() << ", control minutes: "
@@ -131,15 +160,29 @@ bool LMGroupEcobee::sendEcobeePlusControl( long controlDurationSeconds,
     CtiTime now;
     ctitime_t localSeconds = now.getLocalTimeSeconds();
 
-    ActiveMQConnectionManager::enqueueMessage(
-            OutboundQueue::EcobeePlusControl,
-            std::make_unique<LMEcobeePlusControlMessage>(    
-                           getPAOId(),
-                           localSeconds,
-                           controlDurationSeconds,
-                           temperatureOption,
-                           randomTimeSeconds ));                       
+    const auto serializedMessage =
+        Serialization::MessageSerializer<LMEcobeePlusControlMessage>::serialize(
+            {
+                getPAOId(),
+                localSeconds,
+                controlDurationSeconds,
+                temperatureOption
+                ? LMEcobeePlusControlMessage::TempOptionTypes::Heat
+                : LMEcobeePlusControlMessage::TempOptionTypes::Cool,
+                randomTimeSeconds
+            });
 
+    if (serializedMessage.empty())
+    {
+        CTILOG_ERROR(dout, "Serialization error for ecobee Plus command, LM Group: " << getPAOName());
+
+        return false;
+    }
+
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::EcobeePlusControl,
+        serializedMessage);
+    
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CTILOG_DEBUG(dout, "Sending ecobee Plus command, LM Group: " << getPAOName() << ", control minutes: "
@@ -169,11 +212,23 @@ bool LMGroupEcobee::sendStopControl( bool stopImmediately /* unused */ )
     CtiTime now;
     ctitime_t localSeconds = now.getLocalTimeSeconds();
 
-    ActiveMQConnectionManager::enqueueMessage( 
-            OutboundQueue::EcobeeRestore, 
-            std::make_unique<LMEcobeeRestoreMessage>( 
-                    getPAOId(), 
-                    static_cast<int>(localSeconds) ) );
+    const auto serializedMessage =
+        Serialization::MessageSerializer<LMEcobeeRestoreMessage>::serialize(
+            {
+                getPAOId(),
+                static_cast<int>(localSeconds)
+            });
+
+    if (serializedMessage.empty())
+    {
+        CTILOG_ERROR(dout, "Serialization error for ecobee stop command, LM Group: " << getPAOName());
+
+        return false;
+    }
+
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::EcobeeRestore,
+        serializedMessage);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -198,15 +253,28 @@ bool LMGroupEcobee::sendShedControl( long controlMinutes )
     CtiTime now;
     ctitime_t localSeconds = now.getLocalTimeSeconds();
 
-    ActiveMQConnectionManager::enqueueMessage( 
-            OutboundQueue::EcobeeCyclingControl,
-            std::make_unique<LMEcobeeCyclingControlMessage>( 
-                    getPAOId(),
-                    100,
-                    static_cast<int>(localSeconds),
-                    controlMinutes * 60,
-                    true,
-                    false ));
+    const auto serializedMessage =
+        Serialization::MessageSerializer<LMEcobeeCyclingControlMessage>::serialize(
+            {
+                getPAOId(),
+                100,
+                static_cast<int>(localSeconds),
+                controlMinutes * 60,
+                true,
+                false
+            });
+
+    if (serializedMessage.empty())
+    {
+        CTILOG_ERROR(dout, "Serialization error for ecobee shed command, LM Group: " << getPAOName());
+
+        return false;
+    }
+
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::EcobeeCyclingControl,
+        serializedMessage);
+
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

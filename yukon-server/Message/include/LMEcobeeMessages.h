@@ -1,6 +1,5 @@
 #pragma once
 
-#include <StreamableMessage.h>
 
 #include "dlldefs.h"
 
@@ -8,9 +7,9 @@ namespace Cti            {
 namespace Messaging      {
 namespace LoadManagement {
 
-class IM_EX_MSG LMEcobeeCyclingControlMessage : public StreamableMessage
+
+struct IM_EX_MSG LMEcobeeCyclingControlMessage
 {
-public:
 
     LMEcobeeCyclingControlMessage( int  groupId,
                                    int  dutyCycle,
@@ -18,9 +17,6 @@ public:
                                    int  controlDuration,
                                    bool mandatory,
                                    bool rampInOut);
-    void streamInto( cms::StreamMessage & message ) const;
-
-private:
 
     int  _groupId;
     char _dutyCycle;
@@ -32,23 +28,25 @@ private:
 
 ///
 
-class IM_EX_MSG LMEcobeeSetpointControlMessage : public StreamableMessage
+struct IM_EX_MSG LMEcobeeSetpointControlMessage 
 {
-public:
+
+    enum class TempOptionTypes
+    {
+        Heat,
+        Cool
+    };
 
     LMEcobeeSetpointControlMessage( int  groupId,
                                     long long startTime,
                                     int  controlDuration,
-                                    bool temperatureOption,
+                                    TempOptionTypes temperatureOption,
                                     bool mandatory,
                                     int  temperatureOffset );
 
-    void streamInto( cms::StreamMessage & message ) const;
-
-private:
 
     int  _groupId;
-    char _temperatureOption;
+    TempOptionTypes _temperatureOption;
     char _mandatory;
     int  _temperatureOffset;
     long long _startTime;
@@ -57,39 +55,36 @@ private:
 
 /// 
 
-class IM_EX_MSG LMEcobeePlusControlMessage : public StreamableMessage
+struct IM_EX_MSG LMEcobeePlusControlMessage 
+  
 {
-public:
+    enum class TempOptionTypes
+    {
+        Heat,
+        Cool
+    };
 
     LMEcobeePlusControlMessage( int groupId,
                                 long long startTime,
                                 int controlDuration,            
-                                bool temperatureOption,
+                                TempOptionTypes temperatureOption,
                                 int randomTimeSeconds );
-
-    void streamInto( cms::StreamMessage & message ) const;
-
-private:
 
     int _groupId;
     long long _startTime;
     long long _stopTime;
-    char _temperatureOption;    
+    TempOptionTypes _temperatureOption;    
     int _randomTimeSeconds;
 };
 
 /// 
 
-class IM_EX_MSG LMEcobeeRestoreMessage : public StreamableMessage
+struct IM_EX_MSG LMEcobeeRestoreMessage 
+    
 {
-public:
 
     LMEcobeeRestoreMessage( int groupId,
                             int restoreTime );
-
-    void streamInto( cms::StreamMessage & message ) const;
-
-private:
 
     int _groupId;
     int _restoreTime;
