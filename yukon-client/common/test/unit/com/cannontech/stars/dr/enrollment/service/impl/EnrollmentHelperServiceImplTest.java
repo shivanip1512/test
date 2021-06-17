@@ -1,9 +1,13 @@
 package com.cannontech.stars.dr.enrollment.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
@@ -23,8 +27,8 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, true);
 
-        Assert.assertEquals(5, programEnrollments.size());
-        Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));
+        assertEquals(5, programEnrollments.size());
+        assertTrue(programEnrollments.contains(newProgramEnrollment));
     }
     
     @Test
@@ -39,10 +43,10 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, true);
 
-        Assert.assertEquals(4, programEnrollments.size());
-        Assert.assertTrue(programEnrollments.contains(newProgramEnrollmentTest));
-        Assert.assertEquals(47, programEnrollments.get(1).getLmGroupId());
-        Assert.assertEquals(41, programEnrollments.get(3).getLmGroupId());
+        assertEquals(4, programEnrollments.size());
+        assertTrue(programEnrollments.contains(newProgramEnrollmentTest));
+        assertEquals(47, programEnrollments.get(1).getLmGroupId());
+        assertEquals(41, programEnrollments.get(3).getLmGroupId());
     }
 
     @Test
@@ -57,10 +61,10 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, true);
 
-        Assert.assertEquals(4, programEnrollments.size());
-        Assert.assertTrue(programEnrollments.contains(newProgramEnrollmentTest));
-        Assert.assertEquals(47, programEnrollments.get(1).getLmGroupId());
-        Assert.assertEquals(41, programEnrollments.get(3).getLmGroupId());
+        assertEquals(4, programEnrollments.size());
+        assertTrue(programEnrollments.contains(newProgramEnrollmentTest));
+        assertEquals(47, programEnrollments.get(1).getLmGroupId());
+        assertEquals(41, programEnrollments.get(3).getLmGroupId());
     }
     
     @Test
@@ -75,10 +79,10 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, true);
 
-        Assert.assertEquals(4, programEnrollments.size());
-        Assert.assertTrue(programEnrollments.contains(newProgramEnrollmentTest));
-        Assert.assertEquals(53, programEnrollments.get(1).getAssignedProgramId());
-        Assert.assertEquals(47, programEnrollments.get(1).getLmGroupId());
+        assertEquals(4, programEnrollments.size());
+        assertTrue(programEnrollments.contains(newProgramEnrollmentTest));
+        assertEquals(53, programEnrollments.get(1).getAssignedProgramId());
+        assertEquals(47, programEnrollments.get(1).getLmGroupId());
     }
     
     @Test
@@ -92,9 +96,9 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, true, true);
 
-        Assert.assertEquals(5, programEnrollments.size());
-        Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));
-        Assert.assertTrue(programEnrollments.contains(enrollmentHelperService.getEnrollmentTwo()));
+        assertEquals(5, programEnrollments.size());
+        assertTrue(programEnrollments.contains(newProgramEnrollment));
+        assertTrue(programEnrollments.contains(enrollmentHelperService.getEnrollmentTwo()));
     }
  
     @Test
@@ -108,8 +112,8 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.removeProgramEnrollment(programEnrollments, removedProgramEnrollment);
 
-        Assert.assertEquals(3, programEnrollments.size());
-        Assert.assertFalse(programEnrollments.contains(removedProgramEnrollment));
+        assertEquals(3, programEnrollments.size());
+        assertFalse(programEnrollments.contains(removedProgramEnrollment));
     }
     
     @Test
@@ -126,7 +130,7 @@ public class EnrollmentHelperServiceImplTest {
         } catch (NotFoundException nfe) {
             return;
         }
-        Assert.fail();
+        fail();
     }
 
     /**
@@ -143,8 +147,8 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
 
-        Assert.assertEquals(5, programEnrollments.size());
-        Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));
+        assertEquals(5, programEnrollments.size());
+        assertTrue(programEnrollments.contains(newProgramEnrollment));
     }
 
     /**
@@ -163,8 +167,8 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
 
-        Assert.assertEquals(4, programEnrollments.size());
-        Assert.assertEquals(100, programEnrollments.get(0).getLmGroupId());
+        assertEquals(4, programEnrollments.size());
+        assertEquals(100, programEnrollments.get(0).getLmGroupId());
     }
     
     /**
@@ -183,8 +187,8 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
 
-        Assert.assertEquals(4, programEnrollments.size());
-        Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));
+        assertEquals(4, programEnrollments.size());
+        assertTrue(programEnrollments.contains(newProgramEnrollment));
     }
 
     /**
@@ -203,8 +207,8 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
 
-        Assert.assertEquals(5, programEnrollments.size());
-        Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));
+        assertEquals(5, programEnrollments.size());
+        assertTrue(programEnrollments.contains(newProgramEnrollment));
     }
     
     /**
@@ -223,8 +227,8 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
 
-        Assert.assertEquals(5, programEnrollments.size());
-        Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));
+        assertEquals(5, programEnrollments.size());
+        assertTrue(programEnrollments.contains(newProgramEnrollment));
     }
     
 
@@ -244,9 +248,9 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
 
-        Assert.assertEquals(4, programEnrollments.size());
-        Assert.assertEquals(41, programEnrollments.get(0).getLmGroupId());
-        Assert.assertEquals(3, programEnrollments.get(0).getRelay());
+        assertEquals(4, programEnrollments.size());
+        assertEquals(41, programEnrollments.get(0).getLmGroupId());
+        assertEquals(3, programEnrollments.get(0).getRelay());
     }
 
 }

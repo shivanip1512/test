@@ -1,7 +1,7 @@
 package com.cannontech.services.ecobee.authToken.service.impl;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Method;
 
@@ -11,8 +11,9 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,7 +35,7 @@ public class EcobeeZeusAuthTokenServiceImplTest {
     private HttpHeaders header = new HttpHeaders();
     private ScheduledExecutor scheduledExecutor;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         restTemplateMock = new RestTemplate();
         impl = new EcobeeZeusAuthTokenServiceImpl(restTemplateMock);
@@ -50,11 +51,11 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
         DateTime beforeTime = DateTime.now(DateTimeZone.UTC).minusHours(1);
         DateTime afterTime = DateTime.now(DateTimeZone.UTC).plusHours(1);
-        assertTrue("Must be true", (boolean) method.invoke(impl, formatter.print(beforeTime)));
-        assertFalse("Must be false", (boolean) method.invoke(impl, formatter.print(afterTime)));
+        assertTrue((boolean) method.invoke(impl, formatter.print(beforeTime)), "Must be true");
+        assertFalse((boolean) method.invoke(impl, formatter.print(afterTime)), "Must be false");
     }
 
-    @Test(expected = InvalidCacheLoadException.class)
+    @Test
     public void test_authenticate_emptyConfigurations() throws Exception {
         GlobalSettingDao mockGlobalSettingDao = EasyMock.createMock(GlobalSettingDao.class);
         EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL)).andReturn(StringUtils.EMPTY);
@@ -66,7 +67,9 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         EasyMock.replay(mockGlobalSettingDao);
         ReflectionTestUtils.setField(impl, "globalSettingDao", mockGlobalSettingDao);
 
-        impl.authenticate();
+        Assertions.assertThrows(InvalidCacheLoadException.class, () -> {
+            impl.authenticate();
+        });
     }
 
     @Test
@@ -85,13 +88,13 @@ public class EcobeeZeusAuthTokenServiceImplTest {
 
         ZeusEcobeeAuthTokenResponse response = impl.authenticate();
 
-        assertTrue("Response must not be null: ", response != null);
-        assertTrue("Auth token should match: ", response.getAuthToken().equals("yUo111RE9wtoMmT"));
-        assertTrue("Refresh token should match: ", response.getRefreshToken().equals("JWiuhuihuih372896378"));
-        assertTrue("Expiry timestamp should match: ", response.getExpiryTimestamp().equals("2021-03-12T21:13:44Z"));
+        assertTrue(response != null, "Response must not be null: ");
+        assertTrue(response.getAuthToken().equals("yUo111RE9wtoMmT"), "Auth token should match: ");
+        assertTrue(response.getRefreshToken().equals("JWiuhuihuih372896378"), "Refresh token should match: ");
+        assertTrue(response.getExpiryTimestamp().equals("2021-03-12T21:13:44Z"), "Expiry timestamp should match: ");
     }
 
-    @Test(expected = InvalidCacheLoadException.class)
+    @Test
     public void test_authenticate_unAuthorized() throws Exception {
         setupRequiredFields();
 
@@ -102,10 +105,12 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         EasyMock.replay(restTemplateMock);
         ReflectionTestUtils.setField(impl, "restTemplate", restTemplateMock);
 
-        impl.authenticate();
+        Assertions.assertThrows(InvalidCacheLoadException.class, () -> {
+            impl.authenticate();
+        });
     }
 
-    @Test(expected = UncheckedExecutionException.class)
+    @Test
     public void test_authenticate_badRequest() throws Exception {
         setupRequiredFields();
 
@@ -116,7 +121,9 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         EasyMock.replay(restTemplateMock);
         ReflectionTestUtils.setField(impl, "restTemplate", restTemplateMock);
 
-        impl.authenticate();
+        Assertions.assertThrows(UncheckedExecutionException.class, () -> {
+            impl.authenticate();
+        });
     }
 
     private void setupRequiredFields() {

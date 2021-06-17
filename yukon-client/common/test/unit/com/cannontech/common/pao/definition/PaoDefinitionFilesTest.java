@@ -1,5 +1,8 @@
 package com.cannontech.common.pao.definition;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -23,9 +26,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -45,7 +47,7 @@ public class PaoDefinitionFilesTest {
     private Resource pointsXsd;
     private static final String XML_CLASSPATH = "classpath*:pao/definition/**/*.xml";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         try (var ctx = new ClassPathXmlApplicationContext()) {
             ctx.getResource("classpath:pao/definition/pao.xsd");
@@ -76,7 +78,7 @@ public class PaoDefinitionFilesTest {
                 Points points = (Points) unmarshaller.unmarshal(resource.getInputStream());
 
                 BinaryOperator<Point> failOnDuplicatePointTypeOffset = (x, y) -> { 
-                        Assert.fail(MessageFormat.format("Duplicate point type+offset for {0}, {1} {2}", resource, x.getType(), x.getOffset())); 
+                        fail(MessageFormat.format("Duplicate point type+offset for {0}, {1} {2}", resource, x.getType(), x.getOffset())); 
                         return null; 
                     };
                     
@@ -131,7 +133,7 @@ public class PaoDefinitionFilesTest {
                 
                 var declaredMaxOffsetByType = getDeclaredOffsets(points.getHighestOffsets());
 
-                Assert.assertEquals(resource + "\nhighestOffsets", mapToString(calculatedMaxOffsetByType), mapToString(declaredMaxOffsetByType));
+                assertEquals(mapToString(calculatedMaxOffsetByType), mapToString(declaredMaxOffsetByType), resource + "\nhighestOffsets");
             }
         } catch (IOException | JAXBException | SAXException | ParserConfigurationException e) {
             throw new PaoConfigurationException(

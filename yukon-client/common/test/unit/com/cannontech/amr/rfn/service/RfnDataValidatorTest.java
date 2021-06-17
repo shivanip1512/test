@@ -1,18 +1,18 @@
 package com.cannontech.amr.rfn.service;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RfnDataValidatorTest {
 
@@ -20,7 +20,7 @@ public class RfnDataValidatorTest {
 
     private GlobalSettingDao mockGlobalSettingDao;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         rfnDataValidator = new RfnDataValidatorImpl();
         mockGlobalSettingDao = EasyMock.createNiceMock(GlobalSettingDao.class);

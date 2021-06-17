@@ -161,7 +161,7 @@
 	<!-- Run unit tests - will run all tests even if a failure or error occurs during a test -->
 	<target name="runUnitTestsIgnoreFailures" description="Run all unit tests, do not stop on failure" depends="compileUnitTests">
 		<antcall target="executeTests">
-			<param name="halt" value="no"/>
+			<param name="halt" value="false"/>
 			<param name="srcdir" value="test/unit"/>
 			<param name="destdir" value="test/build/unit" />
 		</antcall>
@@ -199,42 +199,36 @@
 	</target>
 
 	<!-- Run tests. This target must be supplied a halt and destdir property -->
-	<target name="executeTests">
+    <target name="executeTests">
+        <property name="test.results.dir" value="test/testResults"/>
+        <!-- Clear out any old results -->
+        <delete dir="${test.results.dir}" />
+        <mkdir dir="${test.results.dir}" />
 
-		<property name="test.results.dir" value="test/testResults"/>
-		<!-- Clear out any old results -->
-		<delete dir="${test.results.dir}" />
-		<mkdir dir="${test.results.dir}" />
-
-		<!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-		<jacoco:coverage destfile="${yukon.lib}/coverage/common-jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant" exclclassloader="sun.reflect.DelegatingClassLoader:javassist.Loader" >
-		<junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
-			<sysproperty key="java.locale.providers" value="COMPAT,SPI"/>
-			<classpath id="junit.class.path">
-				<pathelement location="${srcdir}"/>
-				<pathelement location="${destdir}"/>
-				<fileset dir="${yukon.lib}">
-					<include name="**/*.jar" />
-					<exclude name="**/WebContent/**" />
-				</fileset>
-			</classpath>
-			<formatter type="xml" />
-			<batchtest todir="${test.results.dir}">
-				<fileset dir="${destdir}">
-					<include name="**/*Test.class" />
-				</fileset>
-			</batchtest>
-		</junit>
-        </jacoco:coverage>
-		<!-- Create the html reports for test results -->
-		<property name="test.results.dir" value="test/unitTestResults" />
-		<junitreport todir="${test.results.dir}">
-			<fileset dir="${test.results.dir}">
-				<include name="TEST-*.xml" />
-			</fileset>
-			<report todir="${test.results.dir}" />
-		</junitreport>
-	</target>
+        <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
+        <jacoco:agent property="jacocoagent" destfile="${yukon.lib}/coverage/common-jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant" exclclassloader="sun.reflect.DelegatingClassLoader:javassist.Loader" />
+        <java classname="org.junit.platform.console.ConsoleLauncher" fork="true" failonerror="${halt}">
+            <classpath id="junit.class.path">
+                <pathelement location="${srcdir}" />
+                <pathelement location="${destdir}" />
+                <fileset dir="${yukon.lib}">
+                    <include name="**/*.jar" />
+                    <exclude name="**/WebContent/**" />
+                </fileset>
+            </classpath>
+            <arg value="--scan-classpath"/>
+            <arg line="--reports-dir ${test.results.dir}"/>
+            <jvmarg value="${jacocoagent}"/>
+        </java>
+        <!-- Create the html reports for test results -->
+        <property name="test.results.dir" value="test/unitTestResults" />
+        <junitreport todir="${test.results.dir}">
+            <fileset dir="${test.results.dir}">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report todir="${test.results.dir}" />
+        </junitreport>
+    </target>
 
 	<!-- Target to generate the jaxb classes for the Itron schema -->
 	<target name="generateItronJaxbClasses">

@@ -1,5 +1,9 @@
 package com.cannontech.services.infrastructure.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Map;
@@ -7,8 +11,7 @@ import java.util.Map;
 import org.easymock.EasyMock;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -76,12 +79,11 @@ public class GatewayConnectionStatusEvaluatorTest {
         
         // Check for correct logic on whether to warn or not, based on point value timestamps
         
-        Assert.assertFalse("ConnectionStatusInfo should not have connected timestamp warnable, "
-                + "with no connected timestamp",
-                connectionStatusInfo.isLastConnectedTimestampWarnable());
-        
-        Assert.assertFalse("ConnectionStatusInfo should not be warnable with no connected timestamp",
-                connectionStatusInfo.isWarnable());
+        assertFalse(connectionStatusInfo.isLastConnectedTimestampWarnable(),
+                "ConnectionStatusInfo should not have connected timestamp warnable, "
+                        + "with no connected timestamp");
+
+        assertFalse(connectionStatusInfo.isWarnable(), "ConnectionStatusInfo should not be warnable with no connected timestamp");
     }
     
     @Test
@@ -114,13 +116,12 @@ public class GatewayConnectionStatusEvaluatorTest {
         
         // Check for correct logic on whether to warn or not, based on point value timestamps
         
-        Assert.assertFalse("ConnectionStatusInfo considers last connected timestamp warnable, "
-                + "but timestamp isn't outside the warnable duration",
-                connectionStatusInfo.isLastConnectedTimestampWarnable());
-        
-        Assert.assertFalse("ConnectionStatusInfo marked as warnable, "
-                + "but there is no DISCONNECTED status",
-                connectionStatusInfo.isWarnable());
+        assertFalse(connectionStatusInfo.isLastConnectedTimestampWarnable(),
+                "ConnectionStatusInfo considers last connected timestamp warnable, "
+                        + "but timestamp isn't outside the warnable duration");
+
+        assertFalse(connectionStatusInfo.isWarnable(), "ConnectionStatusInfo marked as warnable, "
+                + "but there is no DISCONNECTED status");
     }
     
     @Test
@@ -152,13 +153,12 @@ public class GatewayConnectionStatusEvaluatorTest {
         
         // Check for correct logic on whether to warn or not, based on point value timestamps
         
-        Assert.assertFalse("ConnectionStatusInfo considers last connected timestamp warnable, "
-                + "but timestamp isn't outside the warnable duration",
-                connectionStatusInfo.isLastConnectedTimestampWarnable());
-        
-        Assert.assertFalse("ConnectionStatusInfo marked as warnable, "
-                + "but CONNECTED and DISCONNECTED timestamps aren't outside the warnable duration",
-                connectionStatusInfo.isWarnable());
+        assertFalse(connectionStatusInfo.isLastConnectedTimestampWarnable(),
+                "ConnectionStatusInfo considers last connected timestamp warnable, "
+                        + "but timestamp isn't outside the warnable duration");
+
+        assertFalse(connectionStatusInfo.isWarnable(), "ConnectionStatusInfo marked as warnable, "
+                + "but CONNECTED and DISCONNECTED timestamps aren't outside the warnable duration");
     }
     
     @Test
@@ -190,13 +190,12 @@ public class GatewayConnectionStatusEvaluatorTest {
         
         // Check for correct logic on whether to warn or not, based on point value timestamps
         
-        Assert.assertTrue("ConnectionStatusInfo doesn't consider last connected timestamp warnable, "
-                + "but timestamp is beyond the warnable duration",
-                connectionStatusInfo.isLastConnectedTimestampWarnable());
-        
-        Assert.assertFalse("ConnectionStatusInfo marked as warnable, "
-                + "but DISCONNECTED timestamp isn't outside the warnable duration",
-                connectionStatusInfo.isWarnable());
+        assertTrue(connectionStatusInfo.isLastConnectedTimestampWarnable(),
+                "ConnectionStatusInfo doesn't consider last connected timestamp warnable, "
+                        + "but timestamp is beyond the warnable duration");
+
+        assertFalse(connectionStatusInfo.isWarnable(), "ConnectionStatusInfo marked as warnable, "
+                + "but DISCONNECTED timestamp isn't outside the warnable duration");
     }
     
     @Test
@@ -227,18 +226,16 @@ public class GatewayConnectionStatusEvaluatorTest {
                 evaluator.buildConnectionStatusInfo(gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
         
         // Check for correct logic on whether to warn or not, based on point value timestamps
-        
-        Assert.assertTrue("ConnectionStatusInfo doesn't consider last connected timestamp warnable, "
-                + "but timestamp is beyond the warnable duration",
-                connectionStatusInfo.isLastConnectedTimestampWarnable());
-        
-        Assert.assertTrue("ConnectionStatusInfo not marked as warnable, "
-                + "but CONNECTED and DISCONNECTED timestamps are beyond the warnable duration",
-                connectionStatusInfo.isWarnable());
-        
-        Assert.assertEquals("Incorrect DISCONNECTED timestamp", 
-                new Instant(sixtyOneMinutesAgo), 
-                connectionStatusInfo.getNextDisconnectedTimestamp());
+
+        assertTrue(connectionStatusInfo.isLastConnectedTimestampWarnable(),
+                "ConnectionStatusInfo doesn't consider last connected timestamp warnable, "
+                        + "but timestamp is beyond the warnable duration");
+
+        assertTrue(connectionStatusInfo.isWarnable(), "ConnectionStatusInfo not marked as warnable, "
+                + "but CONNECTED and DISCONNECTED timestamps are beyond the warnable duration");
+
+        assertEquals(new Instant(sixtyOneMinutesAgo), connectionStatusInfo.getNextDisconnectedTimestamp(),
+                "Incorrect DISCONNECTED timestamp");
     }
     
     @Test
@@ -270,26 +267,20 @@ public class GatewayConnectionStatusEvaluatorTest {
         
         InfrastructureWarning warning = GatewayConnectionStatusEvaluator.buildWarning(connectionStatusInfo);
         
-        Assert.assertEquals("The infrastructure warning paoId does not match the original gateway ID.", 
-                gatewayPaoId, 
-                warning.getPaoIdentifier());
-        
-        Assert.assertEquals("The infrastructure warning type is incorrect", 
-                InfrastructureWarningType.GATEWAY_CONNECTION_STATUS, 
-                warning.getWarningType());
-        
-        Assert.assertEquals("The infrastructure warning severity is incorrect",
-                InfrastructureWarningSeverity.LOW,
-                warning.getSeverity());
+        assertEquals(gatewayPaoId,
+                warning.getPaoIdentifier(), "The infrastructure warning paoId does not match the original gateway ID.");
+
+        assertEquals(InfrastructureWarningType.GATEWAY_CONNECTION_STATUS, warning.getWarningType(),
+                "The infrastructure warning type is incorrect");
+
+        assertEquals(InfrastructureWarningSeverity.LOW, warning.getSeverity(),
+                "The infrastructure warning severity is incorrect");
         
         Object[] warningArgs = warning.getArguments();
-        Assert.assertEquals("Incorrect number of arguments in infrastructure warning", 
-                1, 
-                warningArgs.length);
+        assertEquals(1,
+                warningArgs.length, "Incorrect number of arguments in infrastructure warning");
         
         String disconnectTimeString = (String) warningArgs[0];
-        Assert.assertEquals("Incorrect formatted disconnect time string.",
-                formattedDisconnectTimeString,
-                disconnectTimeString);
+        assertEquals(formattedDisconnectTimeString, disconnectTimeString, "Incorrect formatted disconnect time string.");
     }
 }

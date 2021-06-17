@@ -1,12 +1,12 @@
 package com.cannontech.web.tools.commander.model;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.message.porter.message.Return;

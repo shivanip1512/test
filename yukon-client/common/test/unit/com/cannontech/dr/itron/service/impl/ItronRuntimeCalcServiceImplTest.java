@@ -6,9 +6,9 @@ import static org.easymock.EasyMock.createStrictMock;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,8 +19,8 @@ import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.PaoCategory;
@@ -84,7 +84,7 @@ public class ItronRuntimeCalcServiceImplTest {
     private static final DateTime date1 = DateTime.parse("2019-03-20T11:13:27");
     private static final DateTime date2 = date1.plus(Duration.standardHours(8));
     
-    @Before
+    @BeforeEach
     public void initEach() {
         lcr6600s = new LiteYukonPAObject(lcr6600sId, "LCR-6600S", PaoCategory.DEVICE, PaoClass.ITRON, PaoType.LCR6600S, "description", "F");
         lcr6601s = new LiteYukonPAObject(lcr6601sId, "LCR-6601S", PaoCategory.DEVICE, PaoClass.ITRON, PaoType.LCR6601S, "description", "F");
@@ -130,8 +130,8 @@ public class ItronRuntimeCalcServiceImplTest {
         
         List<YukonPao> devices = ReflectionTestUtils.invokeMethod(itronRuntimeCalcService, "getAllDevices");
         
-        assertThat("device list contains lcr6600s", devices, hasItem(lcr6600s));
-        assertThat("device list contains lcr6601s", devices, hasItem(lcr6601s));
+        assertThat("device list contains lcr6600s", devices, hasItems(lcr6600s));
+        assertThat("device list contains lcr6601s", devices, hasItems(lcr6601s));
         assertThat("device list size", devices.size(), equalTo(2));
     }
     

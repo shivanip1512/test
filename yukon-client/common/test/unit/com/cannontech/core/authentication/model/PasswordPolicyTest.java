@@ -1,12 +1,15 @@
 package com.cannontech.core.authentication.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.util.UnitTestUtil;
@@ -44,7 +47,7 @@ public class PasswordPolicyTest {
         Pattern uppercasePattern = uppercaseCharacters.getRegexPattern();
         Matcher uppercaseMatcher = uppercasePattern.matcher(PASSWORD_UPPER);
         
-        Assert.assertTrue(uppercaseMatcher.find());
+        assertTrue(uppercaseMatcher.find());
     }
 
     @Test
@@ -54,7 +57,7 @@ public class PasswordPolicyTest {
         Pattern lowercasePattern = lowercaseCharacters.getRegexPattern();
         Matcher lowercaseMatcher = lowercasePattern.matcher(PASSWORD_LOWER);
         
-        Assert.assertTrue(lowercaseMatcher.find());
+        assertTrue(lowercaseMatcher.find());
     }
 
     @Test
@@ -64,7 +67,7 @@ public class PasswordPolicyTest {
         Pattern digitsPattern = digitsCharacters.getRegexPattern();
         Matcher digitsMatcher = digitsPattern.matcher(PASSWORD_DIGITS);
         
-        Assert.assertTrue(digitsMatcher.find());
+        assertTrue(digitsMatcher.find());
     }
 
     @Test
@@ -74,57 +77,57 @@ public class PasswordPolicyTest {
         Pattern nonalphanumericPattern = nonalphanumericCharacters.getRegexPattern();
         Matcher nonalphanumericMatcher = nonalphanumericPattern.matcher(PASSWORD_NONALPHA);
         
-        Assert.assertTrue(nonalphanumericMatcher.find());
+        assertTrue(nonalphanumericMatcher.find());
     }
 
     @Test
     public void testPasswordOne() throws Exception {
         int numberOfRulesMet = passwordPolicyOne.numberOfRulesMet(PASSWORD_ONE);
-        Assert.assertEquals(2, numberOfRulesMet);
+        assertEquals(2, numberOfRulesMet);
         
         boolean isPasswordQualityCheckMet = passwordPolicyOne.isPasswordQualityCheckMet(PASSWORD_ONE);
-        Assert.assertFalse(isPasswordQualityCheckMet);
+        assertFalse(isPasswordQualityCheckMet);
     }
     
     @Test
     public void testPasswordTwo() throws Exception {
         int numberOfRulesMet = passwordPolicyOne.numberOfRulesMet(PASSWORD_TWO);
-        Assert.assertEquals(3, numberOfRulesMet);
+        assertEquals(3, numberOfRulesMet);
         
         boolean isPasswordQualityCheckMet = passwordPolicyOne.isPasswordQualityCheckMet(PASSWORD_TWO);
-        Assert.assertTrue(isPasswordQualityCheckMet);
+        assertTrue(isPasswordQualityCheckMet);
     }
 
     @Test
     public void testPasswordThree() throws Exception {
         int numberOfRulesMet = passwordPolicyOne.numberOfRulesMet(PASSWORD_THREE);
-        Assert.assertEquals(4, numberOfRulesMet);
+        assertEquals(4, numberOfRulesMet);
         
         boolean isPasswordQualityCheckMet = passwordPolicyOne.isPasswordQualityCheckMet(PASSWORD_THREE);
-        Assert.assertTrue(isPasswordQualityCheckMet);
+        assertTrue(isPasswordQualityCheckMet);
     }
 
     @Test
     public void testPasswordAge_JustChanged() {
         Duration passwordAge = passwordPolicyOne.getPasswordAge(USER_JUST_CHANGED);
-        Assert.assertTrue(UnitTestUtil.withinOneMinute(passwordAge, Duration.standardHours(18)));
+        assertTrue(UnitTestUtil.withinOneMinute(passwordAge, Duration.standardHours(18)));
 
-        Assert.assertFalse(passwordPolicyOne.isPasswordAgeRequirementMet(USER_JUST_CHANGED));
+        assertFalse(passwordPolicyOne.isPasswordAgeRequirementMet(USER_JUST_CHANGED));
     }
     
     @Test
     public void testPasswordAge_TwoDaysAgo() {
         Duration passwordAge = passwordPolicyOne.getPasswordAge(USER_CHANGED_TWO_DAYS_AGO);
-        Assert.assertTrue(UnitTestUtil.withinOneMinute(passwordAge, Duration.standardDays(2)));
+        assertTrue(UnitTestUtil.withinOneMinute(passwordAge, Duration.standardDays(2)));
 
-        Assert.assertTrue(passwordPolicyOne.isPasswordAgeRequirementMet(USER_CHANGED_TWO_DAYS_AGO));
+        assertTrue(passwordPolicyOne.isPasswordAgeRequirementMet(USER_CHANGED_TWO_DAYS_AGO));
     }    
 
     @Test
     public void testPasswordAge_ThreeMonthsAgo() {
         Duration passwordAge = passwordPolicyOne.getPasswordAge(USER_CHANGED_THREE_MONTHS_AGO);
-        Assert.assertTrue(UnitTestUtil.withinOneMinute(passwordAge, Duration.standardDays(90)));
+        assertTrue(UnitTestUtil.withinOneMinute(passwordAge, Duration.standardDays(90)));
 
-        Assert.assertTrue(passwordPolicyOne.isPasswordAgeRequirementMet(USER_CHANGED_THREE_MONTHS_AGO));
+        assertTrue(passwordPolicyOne.isPasswordAgeRequirementMet(USER_CHANGED_THREE_MONTHS_AGO));
     }
 }

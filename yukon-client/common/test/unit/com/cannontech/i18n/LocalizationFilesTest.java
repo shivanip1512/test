@@ -1,6 +1,7 @@
 package com.cannontech.i18n;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -11,11 +12,9 @@ import java.util.stream.Collectors;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
@@ -23,23 +22,23 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-@RunWith(Parameterized.class)
 public class LocalizationFilesTest {
 
-    @Parameter(0) public Resource resource;
+    public Resource resource;
 
     private static Map<String, Set<String>> knownIdenticalDuplicatesPerFile = getKnownIdenticalDuplicates();
     private static Map<String, Set<String>> knownDifferingDuplicatesPerFile = getKnownDifferingDuplicates();
     private static String pathPrefix = "com/cannontech/yukon/";
 
-    @Parameters(name = "{0}")
     public static Object[] getResources() throws IOException {
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         return resolver.getResources("classpath*:" + pathPrefix + "**/*.xml");
     }
 
-    @Test
-    public void testDuplicateEntries() throws JDOMException, IOException {
+    @ParameterizedTest
+    @MethodSource("getResources")
+    public void testDuplicateEntries(ArgumentsAccessor argumentsAccessor) throws JDOMException, IOException {
+        resource = (Resource) argumentsAccessor.get(0);
         SAXBuilder builder = new SAXBuilder();
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         var document = builder.build(resource.getInputStream());
@@ -76,8 +75,8 @@ public class LocalizationFilesTest {
             var missingDiffering = Sets.filter(knownDifferingDuplicates,
                     key -> !differingDuplicates.containsKey(key));
             
-            assertTrue("Found duplicates with differing values: " + unexpectedDiffering, unexpectedDiffering.isEmpty());
-            assertTrue("Entries listed as differing duplicates, but not found to be: " + missingDiffering, missingDiffering.isEmpty());
+            assertTrue(unexpectedDiffering.isEmpty(), "Found duplicates with differing values: " + unexpectedDiffering);
+            assertTrue(missingDiffering.isEmpty(), "Entries listed as differing duplicates, but not found to be: " + missingDiffering);
             
             var identicalDuplicates = Maps.filterValues(keyEntries,
                     valueCounts -> valueCounts.values().stream().anyMatch(size -> size > 1));
@@ -88,8 +87,8 @@ public class LocalizationFilesTest {
             var missingIdentical = Sets.filter(knownIdenticalDuplicates,
                     key -> !identicalDuplicates.containsKey(key));
             
-            assertTrue("Found duplicates with identical values:" + unexpectedIdentical.keySet(), unexpectedIdentical.isEmpty());
-            assertTrue("Entries listed as identical duplicates, but not found to be: " + missingIdentical, missingIdentical.isEmpty());
+            assertTrue(unexpectedIdentical.isEmpty(), "Found duplicates with identical values:" + unexpectedIdentical.keySet());
+            assertTrue(missingIdentical.isEmpty(), "Entries listed as identical duplicates, but not found to be: " + missingIdentical);
         }
     }
 

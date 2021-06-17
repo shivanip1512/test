@@ -1,10 +1,11 @@
 package com.cannontech.encryption;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.encryption.impl.RSAKeyfileServiceImpl;
 
@@ -19,10 +20,10 @@ public class RSAPublicKeyfileServiceTest {
             
             service.createFile(file, secret.getBytes(),service.getPublicKey().getEncoded());
             byte[] decBytes = service.decryptAndExtractData(file);
-            Assert.assertEquals(true,secret.equals(new String(decBytes)));
+            assertEquals(true,secret.equals(new String(decBytes)));
             
         } catch (Exception e) {
-            Assert.fail(e.getMessage());
+            fail(e.getMessage());
         }
     }
 }

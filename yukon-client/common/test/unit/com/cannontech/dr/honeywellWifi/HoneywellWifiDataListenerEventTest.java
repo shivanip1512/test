@@ -1,13 +1,15 @@
 package com.cannontech.dr.honeywellWifi;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.temperature.TemperatureUnit;
@@ -32,7 +34,7 @@ import com.microsoft.azure.servicebus.Message;
 public class HoneywellWifiDataListenerEventTest {
     private static HoneywellWifiDataListener honeywellWifiDataListenerEventTest;
     
-    @Before
+    @BeforeEach
     public void init() {
         honeywellWifiDataListenerEventTest = new HoneywellWifiDataListener();   
     }
@@ -76,24 +78,24 @@ public class HoneywellWifiDataListenerEventTest {
                                                               heatUpperSetpointLimit, coolLowerSetpointLimit, coolUpperSetpointLimit, scheduledHeatSetpoint, scheduledCoolSetpoint, 
                                                               switchEmergencyHeatAllowed, systemSwitchPosition, deadband, displayedTempStatus, deviceId, macId);
         
-        Assert.assertEquals("Create Date Mismatch", expectedEvent.getCreatedDate(), actualEvent.getCreatedDate());
-        Assert.assertEquals("Displayed Temperature Mismatch", expectedEvent.getDisplayedTemp(), actualEvent.getDisplayedTemp());
-        Assert.assertEquals("Heat Set Point Mismatch", expectedEvent.getHeatSetpoint(), actualEvent.getHeatSetpoint());
-        Assert.assertEquals("Cool Set Point Mismatch", expectedEvent.getCoolSetpoint(), actualEvent.getCoolSetpoint());
-        Assert.assertEquals("Displayed Units Mismatch", expectedEvent.getDisplayedUnits(), actualEvent.getDisplayedUnits());
-        Assert.assertEquals("Status Heat Mismatch", expectedEvent.getStatusHeat(), actualEvent.getStatusHeat());
-        Assert.assertEquals("Heat Lower Set Point Limit Mismatch", expectedEvent.getHeatLowerSetpointLimit(), actualEvent.getHeatLowerSetpointLimit());
-        Assert.assertEquals("Heat Upper Set Point Limit Mismatch", expectedEvent.getHeatUpperSetpointLimit(), actualEvent.getHeatUpperSetpointLimit());
-        Assert.assertEquals("Cool Lower Set Point Limit Mismatch", expectedEvent.getCoolLowerSetpointLimit(), actualEvent.getCoolLowerSetpointLimit());
-        Assert.assertEquals("Cool Upper Set Point Limit Mismatch", expectedEvent.getCoolUpperSetpointLimit(), actualEvent.getCoolUpperSetpointLimit());
-        Assert.assertEquals("Scheduled Heat Set Point Mismatch", expectedEvent.getScheduledHeatSetpoint(), actualEvent.getScheduledHeatSetpoint());
-        Assert.assertEquals("Scheduled Cool Set Point Mismatch", expectedEvent.getScheduledCoolSetpoint(), actualEvent.getScheduledCoolSetpoint());
-        Assert.assertEquals("Switch Emergency Heat Allowed Mismatch", expectedEvent.getSwitchEmergencyHeatAllowed(), actualEvent.getSwitchEmergencyHeatAllowed());
-        Assert.assertEquals("System Switch Position Mismatch", expectedEvent.getSystemSwitchPosition(), actualEvent.getSystemSwitchPosition());
-        Assert.assertEquals("Deadband Mismatch", expectedEvent.getDeadband(), actualEvent.getDeadband());
-        Assert.assertEquals("Displayed Temp Status Mismatch", expectedEvent.getDisplayedTempStatus(), actualEvent.getDisplayedTempStatus());
-        Assert.assertEquals("Device Id Mismatch", expectedEvent.getDeviceId(), actualEvent.getDeviceId());
-        Assert.assertEquals("Device Mac Id Mismatch", expectedEvent.getMacId(), actualEvent.getMacId());
+        assertEquals(expectedEvent.getCreatedDate(), actualEvent.getCreatedDate(), "Create Date Mismatch");
+        assertEquals(expectedEvent.getDisplayedTemp(), actualEvent.getDisplayedTemp(), "Displayed Temperature Mismatch");
+        assertEquals(expectedEvent.getHeatSetpoint(), actualEvent.getHeatSetpoint(), "Heat Set Point Mismatch");
+        assertEquals(expectedEvent.getCoolSetpoint(), actualEvent.getCoolSetpoint(), "Cool Set Point Mismatch");
+        assertEquals(expectedEvent.getDisplayedUnits(), actualEvent.getDisplayedUnits(), "Displayed Units Mismatch");
+        assertEquals(expectedEvent.getStatusHeat(), actualEvent.getStatusHeat(), "Status Heat Mismatch");
+        assertEquals(expectedEvent.getHeatLowerSetpointLimit(), actualEvent.getHeatLowerSetpointLimit(), "Heat Lower Set Point Limit Mismatch");
+        assertEquals(expectedEvent.getHeatUpperSetpointLimit(), actualEvent.getHeatUpperSetpointLimit(), "Heat Upper Set Point Limit Mismatch");
+        assertEquals(expectedEvent.getCoolLowerSetpointLimit(), actualEvent.getCoolLowerSetpointLimit(), "Cool Lower Set Point Limit Mismatch");
+        assertEquals(expectedEvent.getCoolUpperSetpointLimit(), actualEvent.getCoolUpperSetpointLimit(), "Cool Upper Set Point Limit Mismatch");
+        assertEquals(expectedEvent.getScheduledHeatSetpoint(), actualEvent.getScheduledHeatSetpoint(), "Scheduled Heat Set Point Mismatch");
+        assertEquals(expectedEvent.getScheduledCoolSetpoint(), actualEvent.getScheduledCoolSetpoint(), "Scheduled Cool Set Point Mismatch");
+        assertEquals(expectedEvent.getSwitchEmergencyHeatAllowed(), actualEvent.getSwitchEmergencyHeatAllowed(), "Switch Emergency Heat Allowed Mismatch");
+        assertEquals(expectedEvent.getSystemSwitchPosition(), actualEvent.getSystemSwitchPosition(), "System Switch Position Mismatch");
+        assertEquals(expectedEvent.getDeadband(), actualEvent.getDeadband(), "Deadband Mismatch");
+        assertEquals(expectedEvent.getDisplayedTempStatus(), actualEvent.getDisplayedTempStatus(), "Displayed Temp Status Mismatch");
+        assertEquals(expectedEvent.getDeviceId(), actualEvent.getDeviceId(), "Device Id Mismatch");
+        assertEquals(expectedEvent.getMacId(), actualEvent.getMacId(), "Device Mac Id Mismatch");
     }
     
     @Test
@@ -124,15 +126,15 @@ public class HoneywellWifiDataListenerEventTest {
         DemandResponseEvent actualEvent = (DemandResponseEvent) ReflectionTestUtils.invokeMethod(honeywellWifiDataListenerEventTest, "getData", json, message);
         DemandResponseEvent expectedEvent = new DemandResponseEvent(demandResponseId, phase, optedOut, heatSetpointLimit, coolSetpointLimit, intervals, startTime, deviceId, macId);
         
-        Assert.assertEquals("Demand Response Id Mismatch", expectedEvent.getDemandResponseId(), actualEvent.getDemandResponseId());
-        Assert.assertEquals("Phase Mismatch", expectedEvent.getPhase(), actualEvent.getPhase());
-        Assert.assertEquals("Opted Out Mismatch", expectedEvent.getOptedOut(), actualEvent.getOptedOut());
-        Assert.assertEquals("Heat Set Point Limit Mismatch", expectedEvent.getHeatSetpointLimit(), actualEvent.getHeatSetpointLimit());
-        Assert.assertEquals("Cool Set Point Limit Mismatch", expectedEvent.getCoolSetpointLimit(), actualEvent.getCoolSetpointLimit());
-        Assert.assertEquals("Intervals Mismatch", expectedEvent.getIntervals(), actualEvent.getIntervals());
-        Assert.assertEquals("Start Time Mismatch", expectedEvent.getStartTime(), actualEvent.getStartTime());
-        Assert.assertEquals("Device Id Mismatch", expectedEvent.getDeviceId(), actualEvent.getDeviceId());
-        Assert.assertEquals("Device Mac Id Mismatch", expectedEvent.getMacId(), actualEvent.getMacId());
+        assertEquals(expectedEvent.getDemandResponseId(), actualEvent.getDemandResponseId(), "Demand Response Id Mismatch");
+        assertEquals(expectedEvent.getPhase(), actualEvent.getPhase(), "Phase Mismatch");
+        assertEquals( expectedEvent.getOptedOut(), actualEvent.getOptedOut(), "Opted Out Mismatch");
+        assertEquals(expectedEvent.getHeatSetpointLimit(), actualEvent.getHeatSetpointLimit(), "Heat Set Point Limit Mismatch");
+        assertEquals(expectedEvent.getCoolSetpointLimit(), actualEvent.getCoolSetpointLimit(), "Cool Set Point Limit Mismatch");
+        assertEquals(expectedEvent.getIntervals(), actualEvent.getIntervals(), "Intervals Mismatch");
+        assertEquals(expectedEvent.getStartTime(), actualEvent.getStartTime(), "Start Time Mismatch");
+        assertEquals(expectedEvent.getDeviceId(), actualEvent.getDeviceId(), "Device Id Mismatch");
+        assertEquals(expectedEvent.getMacId(), actualEvent.getMacId(), "Device Mac Id Mismatch");
     }
     
     @Test
@@ -156,11 +158,11 @@ public class HoneywellWifiDataListenerEventTest {
         EquipmentStatusEvent actualEvent = (EquipmentStatusEvent) ReflectionTestUtils.invokeMethod(honeywellWifiDataListenerEventTest, "getData", json, message);
         EquipmentStatusEvent expectedEvent = new EquipmentStatusEvent(equipmentStatus, previouseEquipmentStatus, fanStatus, previousFanStatus, deviceId, macId);
         
-        Assert.assertEquals("Equipment Status Mismatch", expectedEvent.getEquipmentStatus(), actualEvent.getEquipmentStatus());
-        Assert.assertEquals("Previous Equipment Status Mismatch", expectedEvent.getPreviousEquipmentStatus(), actualEvent.getPreviousEquipmentStatus());
-        Assert.assertEquals("Fan Status Mismatch", expectedEvent.getFanStatus(), actualEvent.getFanStatus());
-        Assert.assertEquals("Previous Fan Status Mismatch", expectedEvent.getPreviousFanStatus(), actualEvent.getPreviousFanStatus());
-        Assert.assertEquals("Device Id Mismatch", expectedEvent.getDeviceId(), actualEvent.getDeviceId());
+        assertEquals(expectedEvent.getEquipmentStatus(), actualEvent.getEquipmentStatus(), "Equipment Status Mismatch");
+        assertEquals(expectedEvent.getPreviousEquipmentStatus(), actualEvent.getPreviousEquipmentStatus(), "Previous Equipment Status Mismatch");
+        assertEquals(expectedEvent.getFanStatus(), actualEvent.getFanStatus(), "Fan Status Mismatch");
+        assertEquals(expectedEvent.getPreviousFanStatus(), actualEvent.getPreviousFanStatus(), "Previous Fan Status Mismatch");
+        assertEquals(expectedEvent.getDeviceId(), actualEvent.getDeviceId(), "Device Id Mismatch");
     }
     
     @Test
@@ -180,9 +182,9 @@ public class HoneywellWifiDataListenerEventTest {
         ConnectionStatusEvent actualEvent = (ConnectionStatusEvent) ReflectionTestUtils.invokeMethod(honeywellWifiDataListenerEventTest, "getData", json, message);
         ConnectionStatusEvent expectedEvent = new ConnectionStatusEvent(connectionStatus,deviceId, macId);
         
-        Assert.assertEquals("Connection Status Mismatch", expectedEvent.getConnectionStatus(), actualEvent.getConnectionStatus());
-        Assert.assertEquals("Device Id Mismatch", expectedEvent.getDeviceId(), actualEvent.getDeviceId());
-        Assert.assertEquals("Device Mac Id Mismatch", expectedEvent.getMacId(), actualEvent.getMacId());
+        assertEquals(expectedEvent.getConnectionStatus(), actualEvent.getConnectionStatus(), "Connection Status Mismatch");
+        assertEquals(expectedEvent.getDeviceId(), actualEvent.getDeviceId(), "Device Id Mismatch");
+        assertEquals(expectedEvent.getMacId(), actualEvent.getMacId(), "Device Mac Id Mismatch");
     }
     
     @Test
@@ -206,12 +208,12 @@ public class HoneywellWifiDataListenerEventTest {
         ApplicationAccessAddedEvent actualEvent = (ApplicationAccessAddedEvent) ReflectionTestUtils.invokeMethod(honeywellWifiDataListenerEventTest, "getData", json, message);
         ApplicationAccessAddedEvent expectedEvent = new ApplicationAccessAddedEvent(userId, locationId, macId, appId, applicationName, isConfirmed);
         
-        Assert.assertEquals("User Id Mismatch", expectedEvent.getUserId(), actualEvent.getUserId());
-        Assert.assertEquals("Location Id Mismatch", expectedEvent.getLocationId(), actualEvent.getLocationId());
-        Assert.assertEquals("Device Mac Id Mismatch", expectedEvent.getMacId(), actualEvent.getMacId());
-        Assert.assertEquals("App Id Mismatch", expectedEvent.getAppId(), actualEvent.getAppId());
-        Assert.assertEquals("Application Name Mismatch", expectedEvent.getApplicationName(), actualEvent.getApplicationName());
-        Assert.assertEquals("Confirmation Mismatch", expectedEvent.getIsConfirmed(), actualEvent.getIsConfirmed());
+        assertEquals(expectedEvent.getUserId(), actualEvent.getUserId(), "User Id Mismatch");
+        assertEquals(expectedEvent.getLocationId(), actualEvent.getLocationId(), "Location Id Mismatch");
+        assertEquals(expectedEvent.getMacId(), actualEvent.getMacId(), "Device Mac Id Mismatch");
+        assertEquals(expectedEvent.getAppId(), actualEvent.getAppId(), "App Id Mismatch");
+        assertEquals(expectedEvent.getApplicationName(), actualEvent.getApplicationName(), "Application Name Mismatch");
+        assertEquals(expectedEvent.getIsConfirmed(), actualEvent.getIsConfirmed(), "Confirmation Mismatch");
     }
     
     @Test
@@ -234,11 +236,11 @@ public class HoneywellWifiDataListenerEventTest {
       ApplicationAccessRemovedEvent actualEvent = (ApplicationAccessRemovedEvent) ReflectionTestUtils.invokeMethod(honeywellWifiDataListenerEventTest, "getData", json, message);
       ApplicationAccessRemovedEvent expectedEvent = new ApplicationAccessRemovedEvent(userId, locationId, macId, appId, applicationName);
 
-      Assert.assertEquals("User Id Mismatch", expectedEvent.getUserId(), actualEvent.getUserId());
-      Assert.assertEquals("Location Id Mismatch", expectedEvent.getLocationId(), actualEvent.getLocationId());
-      Assert.assertEquals("Device Mac Id Mismatch", expectedEvent.getMacId(), actualEvent.getMacId());
-      Assert.assertEquals("App Id Mismatch", expectedEvent.getAppId(), actualEvent.getAppId());
-      Assert.assertEquals("Application Name Mismatch", expectedEvent.getApplicationName(), actualEvent.getApplicationName());
+      assertEquals(expectedEvent.getUserId(), actualEvent.getUserId(), "User Id Mismatch");
+      assertEquals(expectedEvent.getLocationId(), actualEvent.getLocationId(), "Location Id Mismatch");
+      assertEquals(expectedEvent.getMacId(), actualEvent.getMacId(), "Device Mac Id Mismatch");
+      assertEquals(expectedEvent.getAppId(), actualEvent.getAppId(), "App Id Mismatch");
+      assertEquals(expectedEvent.getApplicationName(), actualEvent.getApplicationName(), "Application Name Mismatch");
     }
      
     @Test
@@ -254,6 +256,6 @@ public class HoneywellWifiDataListenerEventTest {
 
         HoneywellWifiData actualEvent = ReflectionTestUtils.invokeMethod(honeywellWifiDataListenerEventTest, "getData", json, message);
 
-        Assert.assertTrue("Event Not Instance of UnknownEvent", actualEvent instanceof UnknownEvent);
+        assertTrue(actualEvent instanceof UnknownEvent, "Event Not Instance of UnknownEvent");
     }
 }

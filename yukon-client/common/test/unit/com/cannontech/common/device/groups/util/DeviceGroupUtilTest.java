@@ -1,9 +1,10 @@
 package com.cannontech.common.device.groups.util;
 
 import static com.cannontech.common.device.groups.util.DeviceGroupUtil.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.device.groups.IllegalGroupNameException;
 
@@ -13,27 +14,27 @@ import com.cannontech.common.device.groups.IllegalGroupNameException;
 public class DeviceGroupUtilTest {
     @Test
     public void testIsValidName() {
-        assertTrue("isValidName(My Device Group)", isValidName("My Device Group"));
-        assertFalse("isValidName(My Device Group)", isValidName("/group"));
-        assertFalse("isValidName(My Device Group)", isValidName("group/other"));
-        assertFalse("isValidName(My Device Group)", isValidName("group/"));
-        assertFalse("isValidName(My Device Group)", isValidName("\\group"));
-        assertFalse("isValidName(My Device Group)", isValidName("group\\other"));
-        assertFalse("isValidName(My Device Group)", isValidName("group\\"));
+        assertTrue(isValidName("My Device Group"), "isValidName(My Device Group)");
+        assertFalse(isValidName("/group"), "isValidName(My Device Group)");
+        assertFalse(isValidName("group/other"), "isValidName(My Device Group)");
+        assertFalse(isValidName("group/"), "isValidName(My Device Group)");
+        assertFalse(isValidName("\\group"), "isValidName(My Device Group)");
+        assertFalse(isValidName("group\\other"), "isValidName(My Device Group)");
+        assertFalse(isValidName("group\\"), "isValidName(My Device Group)");
     }
 
     private void testValidateNameSuccess(String name) {
         try {
             validateName(name);
         } catch (IllegalGroupNameException igne) {
-            assertFalse("name " + name + " failed but should not have", true);
+            assertFalse(true, "name " + name + " failed but should not have");
         }
     }
 
     private void testValidateNameError(String name) {
         try {
             validateName(name);
-            assertFalse("name " + name + " did not fail but should have", true);
+            assertFalse(true, "name " + name + " did not fail but should have");
         } catch (IllegalGroupNameException igne) {
         }
     }
@@ -50,7 +51,7 @@ public class DeviceGroupUtilTest {
     }
 
     private void testRemoval(String input, String expectedValue) {
-        assertTrue("", expectedValue.equals(removeInvalidDeviceGroupNameCharacters(input)));
+        assertTrue(expectedValue.equals(removeInvalidDeviceGroupNameCharacters(input)));
     }
 
     @Test

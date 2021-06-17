@@ -1,8 +1,8 @@
 package com.cannontech.common.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,15 +18,15 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.util.FileCopyUtils;
 
 public class FileUtilTest {
 
     private File file;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         InputStream resourceAsStream = this.getClass().getResourceAsStream("testLogForFileUtil.log");
         file = File.createTempFile("fileUtilTest", ".tmp");

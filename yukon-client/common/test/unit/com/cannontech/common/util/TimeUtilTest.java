@@ -1,15 +1,16 @@
 package com.cannontech.common.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.joda.time.DateTime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class TimeUtilTest {
@@ -21,7 +22,7 @@ public class TimeUtilTest {
 
     @Autowired TimeUtil timeUtil;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         baseTime = Calendar.getInstance();
         baseTime.set(2007, 8, 27, 10, 0, 0);
@@ -39,7 +40,7 @@ public class TimeUtilTest {
         twoDaysAgo.set(2007, 8, 25, 10, 0, 0);
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
         baseTime = null;
         oneDayAgo = null;
@@ -50,28 +51,28 @@ public class TimeUtilTest {
     public void test_differenceInDays_sameDay() {
         int expectedResult = 0;
         int days = TimeUtil.differenceInDays(baseTime, sameDay);
-        assertEquals("difference in days should have been " + expectedResult, expectedResult, days);
+        assertEquals(expectedResult, days, "difference in days should have been " + expectedResult);
     }
 
     @Test
     public void test_differenceInDays_halfDayAgo() {
         int days = TimeUtil.differenceInDays(halfDayAgo, baseTime);
         int expectedResult = 1;
-        assertEquals("difference in days should have been " + expectedResult, expectedResult, days);
+        assertEquals(expectedResult, days, "difference in days should have been " + expectedResult);
     }
     
     @Test
     public void test_differenceInDays_oneDayAgo() {
         int days = TimeUtil.differenceInDays(oneDayAgo, baseTime);
         int expectedResult = 1;
-        assertEquals("difference in days should have been " + expectedResult, expectedResult, days);
+        assertEquals(expectedResult, days, "difference in days should have been " + expectedResult);
     }
     
     @Test
     public void test_differenceInDays_twoDaysAgo() {
         int days = TimeUtil.differenceInDays(twoDaysAgo, baseTime);
         int expectedResult = 2;
-        assertEquals("difference in days should have been " + expectedResult, expectedResult, days);
+        assertEquals(expectedResult, days, "difference in days should have been " + expectedResult);
     }
     
     @Test
@@ -83,7 +84,7 @@ public class TimeUtilTest {
         int yearDayCount = (leapYear) ? 366 : 365;
         
         int days = TimeUtil.differenceInDays(oneYearAgo, baseTime);
-        assertEquals("difference in days should have been " + yearDayCount, yearDayCount, days);
+        assertEquals(yearDayCount, days, "difference in days should have been " + yearDayCount);
     }
     
     @Test
@@ -93,7 +94,7 @@ public class TimeUtilTest {
         
         int expectedResult = 1;
         int days = TimeUtil.differenceInDays(oneDayAgo, baseTime);
-        assertEquals("difference in days should have been " + expectedResult, expectedResult, days);
+        assertEquals(expectedResult, days, "difference in days should have been " + expectedResult);
     }
     
     @Test
@@ -143,12 +144,14 @@ public class TimeUtilTest {
         assertEquals("0 0 7 ? * 3,4,5,7,1", TimeUtil.buildCronExpression(cronOption, time, days, 'Y'));
     }
     
-    @Test(expected = ParseException.class)
+    @Test
     public void test_buildCronExpression_with48Hours_selectedDays_invalidTime() throws ParseException {
         CronExprOption cronOption = CronExprOption.WEEKDAYS;
         int time = 5660; // Invalid time value
         String days = "NYYYNYY";
-        TimeUtil.buildCronExpression(cronOption, time, days, 'Y');
+        Assertions.assertThrows(ParseException.class, () -> {
+            TimeUtil.buildCronExpression(cronOption, time, days, 'Y');
+          });
     }
 
     private boolean isLeapYear(final Calendar cal) {
@@ -163,48 +166,48 @@ public class TimeUtilTest {
     public void test_hoursRemainingAfterConveritngToDays_validHours_withExtraHours() {
         long totalHours = 25;
         long expectedResult = 1;
-        assertEquals("Remaining hours should have been " + expectedResult, expectedResult,
-            TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
+        assertEquals(expectedResult, TimeUtil.hoursRemainingAfterConveritngToDays(totalHours),
+                "Remaining hours should have been " + expectedResult);
     }
 
     @Test
     public void test_hoursRemainingAfterConveritngToDays_validHours_withoutExtraHours() {
         long totalHours = 48;
         long expectedResult = 0;
-        assertEquals("Remaining hours should have been " + expectedResult, expectedResult,
-            TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
+        assertEquals(expectedResult, TimeUtil.hoursRemainingAfterConveritngToDays(totalHours),
+                "Remaining hours should have been " + expectedResult);
     }
 
     @Test
     public void test_hoursRemainingAfterConveritngToDays_inValidHours() {
         long totalHours = -25;
         long expectedResult = 0;
-        assertEquals("Remaining hours should have been " + expectedResult, expectedResult,
-            TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
+        assertEquals(expectedResult, TimeUtil.hoursRemainingAfterConveritngToDays(totalHours),
+                "Remaining hours should have been " + expectedResult);
     }
     
     @Test
     public void test_isFutureDate_futureDate() {
         DateTime futureDate = new DateTime().plusHours(24).withTimeAtStartOfDay();
-        assertEquals(futureDate + " is future date." , true , TimeUtil.isFutureDate(futureDate));
+        assertEquals(true , TimeUtil.isFutureDate(futureDate), futureDate + " is future date." );
     }
     
     @Test
     public void test_isFutureDate_currentDate() {
         DateTime currentDate = new DateTime();
-        assertEquals(currentDate + " is not future date." , false , TimeUtil.isFutureDate(currentDate));
+        assertEquals(false , TimeUtil.isFutureDate(currentDate), currentDate + " is not future date.");
     }
     
     @Test
     public void test_isFutureDate_pastDate() {
         DateTime currentDate = new DateTime().plusHours(-25);
-        assertEquals(currentDate + " is not future date." , false , TimeUtil.isFutureDate(currentDate));
+        assertEquals(false , TimeUtil.isFutureDate(currentDate), currentDate + " is not future date.");
     }
 
     @Test
     public void test_isFutureDate_null() {
         DateTime nullDate = null;
-        assertEquals(nullDate + " is not future date." , false , TimeUtil.isFutureDate(nullDate));
+        assertEquals(false , TimeUtil.isFutureDate(nullDate), nullDate + " is not future date.");
     }
     @Test
     public void test_fromMinutesToHHmm_nonZeroMaximum() {
@@ -224,13 +227,19 @@ public class TimeUtilTest {
         assertEquals("00:00", TimeUtil.fromMinutesToHHmm(minutes));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void test_fromMinutesToHHmm_invalidNegative() {
-        TimeUtil.fromMinutesToHHmm(-1);
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            TimeUtil.fromMinutesToHHmm(-1);
+          });
+        
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void test_fromMinutesToHHmm_invalidPositive() {
-        TimeUtil.fromMinutesToHHmm(1441);
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            TimeUtil.fromMinutesToHHmm(1441);
+          });
+        
     }
 }

@@ -1,9 +1,10 @@
 package com.cannontech.common.util;
 
 import static com.cannontech.common.util.BinaryPrefix.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSourceResolvable;
 
 public class BinaryPrefixTest {

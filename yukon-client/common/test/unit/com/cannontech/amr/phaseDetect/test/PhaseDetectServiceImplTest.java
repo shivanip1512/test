@@ -1,10 +1,12 @@
 package com.cannontech.amr.phaseDetect.test;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
-
 import com.cannontech.common.model.Phase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
+
 import com.cannontech.amr.phaseDetect.data.PhaseDetectVoltageReading;
 import com.cannontech.amr.phaseDetect.data.UndefinedPhaseException;
 import com.cannontech.amr.phaseDetect.service.impl.PhaseDetectServiceImpl;
@@ -16,37 +18,37 @@ public class PhaseDetectServiceImplTest {
         String porterMsg = "";
         try{
             PhaseDetectServiceImpl.parsePhase(porterMsg);
-            Assert.fail("parsePhase should throw UndefinedPhaseException.");
+            fail("parsePhase should throw UndefinedPhaseException.");
         } catch (UndefinedPhaseException e){}
         
         porterMsg = "Phase = \nA";
         try{
             PhaseDetectServiceImpl.parsePhase(porterMsg);
-            Assert.fail("parsePhase should throw UndefinedPhaseException for 'Phase = \nA'.");
+            fail("parsePhase should throw UndefinedPhaseException for 'Phase = \nA'.");
         } catch (UndefinedPhaseException e){}
         
         porterMsg = "Phase = A";
         try{
             Phase phase = PhaseDetectServiceImpl.parsePhase(porterMsg);
-            Assert.assertEquals("Phase should be A.", "A", phase.name());
+            assertEquals("A", phase.name(), "Phase should be A.");
         } catch (UndefinedPhaseException e){
-            Assert.fail("parsePhase should not throw UndefinedPhaseException for 'Phase = A'.");
+            fail("parsePhase should not throw UndefinedPhaseException for 'Phase = A'.");
         }
         
         porterMsg = "Phase = B";
         try{
             Phase phase = PhaseDetectServiceImpl.parsePhase(porterMsg);
-            Assert.assertEquals("Phase should be B.", "B", phase.name());
+            assertEquals("B", phase.name(), "Phase should be B.");
         } catch (UndefinedPhaseException e){
-            Assert.fail("parsePhase should not throw UndefinedPhaseException for 'Phase = B'.");
+            fail("parsePhase should not throw UndefinedPhaseException for 'Phase = B'.");
         }
         
         porterMsg = "Phase = C";
         try{
             Phase phase = PhaseDetectServiceImpl.parsePhase(porterMsg);
-            Assert.assertEquals("Phase should be C.", "C", phase.name());
+            assertEquals("C", phase.name(), "Phase should be C.");
         } catch (UndefinedPhaseException e){
-            Assert.fail("parsePhase should not throw UndefinedPhaseException for 'Phase = C'.");
+            fail("parsePhase should not throw UndefinedPhaseException for 'Phase = C'.");
         }
     }
     
@@ -57,9 +59,9 @@ public class PhaseDetectServiceImplTest {
         double delta = 1.2;
         double initial = 256.4;
         double last = 257.6;
-        Assert.assertEquals("Delta should be 1.2.", delta, reading.getDelta());
-        Assert.assertEquals("Initial should be 256.4.", initial, reading.getInitial());
-        Assert.assertEquals("Last should be 257.6.", last, reading.getLast());
+        assertEquals(delta, reading.getDelta(), "Delta should be 1.2.");
+        assertEquals(initial, reading.getInitial(), "Initial should be 256.4.");
+        assertEquals(last, reading.getLast(), "Last should be 257.6.");
         
     }
 }

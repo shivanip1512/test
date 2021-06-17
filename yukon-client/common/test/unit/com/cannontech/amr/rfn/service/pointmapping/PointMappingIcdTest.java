@@ -1,11 +1,12 @@
 package com.cannontech.amr.rfn.service.pointmapping;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cannontech.common.util.YamlParserUtils;
@@ -13,7 +14,7 @@ import com.cannontech.common.util.YamlParserUtils;
 public class PointMappingIcdTest {
 
     @Test
-    @Ignore
+    @Disabled
     public void asJson() throws IOException {
 
         ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");

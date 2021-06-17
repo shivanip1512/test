@@ -1,5 +1,9 @@
 package com.cannontech.amr.rfn.dao.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -7,9 +11,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 
@@ -26,7 +29,7 @@ public class RfnDeviceAttributeDaoImplTest {
     private static final String EMPTY = "";
     private static final int TOU_OFFSET = 1000;
     
-    @Before
+    @BeforeEach
     public void initialize() throws IOException {
         InputStream mapping = this.getClass().getClassLoader().getResourceAsStream("metricIdToAttributeMapping.json");
         
@@ -50,16 +53,14 @@ public class RfnDeviceAttributeDaoImplTest {
         Set<Integer> unmappedMetricIds = Sets.difference(icdMetricIds, baseMetricIds);
         Set<Integer> unexpectedUnmappedMetricIds = Sets.difference(unmappedMetricIds, getKnownUnmappedMetricIds());
 
-        Assert.assertTrue(
-                "Found metric IDs not mapped in metricIdToAttributeMapping.json: " + unexpectedUnmappedMetricIds,
-                unexpectedUnmappedMetricIds.isEmpty());
+        assertTrue(unexpectedUnmappedMetricIds.isEmpty(),
+                "Found metric IDs not mapped in metricIdToAttributeMapping.json: " + unexpectedUnmappedMetricIds);
 
         Set<Integer> missingMetricIds = Sets.difference(baseMetricIds, icdMetricIds);
         Set<Integer> unexpectedMissingMetricIds = Sets.difference(missingMetricIds, getKnownMissingMetricIds());
 
-        Assert.assertTrue(
-                "Found metric IDs in metricIdToAttributeMapping.json not in yukonPointMappingIcd.yaml: " + unexpectedMissingMetricIds,
-                unexpectedMissingMetricIds.isEmpty());
+        assertTrue(unexpectedMissingMetricIds.isEmpty(),
+                "Found metric IDs in metricIdToAttributeMapping.json not in yukonPointMappingIcd.yaml: " + unexpectedMissingMetricIds);
     }
     
     @Test
@@ -72,7 +73,7 @@ public class RfnDeviceAttributeDaoImplTest {
                 Collectors.groupingBy(e -> e.getValue().getUnit(),
                 Collectors.groupingBy(e -> Set.copyOf(e.getValue().getModifiers()),
                 Collectors.reducing((t1, t2) -> { 
-                    Assert.fail("Multiple metric IDs for identical UOM/modifiers:"
+                    fail("Multiple metric IDs for identical UOM/modifiers:"
                             + "\n" + t1 
                             + "\n" + t2);
                     return t1;
@@ -82,9 +83,9 @@ public class RfnDeviceAttributeDaoImplTest {
     @Test
     public void test_getMetricIdForAttribute() {
 
-        Assert.assertEquals((Integer)  5, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.DELIVERED_DEMAND, PaoType.RFN420CL));
+        assertEquals((Integer)  5, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.DELIVERED_DEMAND, PaoType.RFN420CL));
         
-        Assert.assertEquals((Integer)200, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.INSTANTANEOUS_KW, PaoType.RFN430SL1));
+        assertEquals((Integer)200, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.INSTANTANEOUS_KW, PaoType.RFN430SL1));
     }
     
     @Test
@@ -96,12 +97,12 @@ public class RfnDeviceAttributeDaoImplTest {
                     .collect(Collectors.groupingBy(e -> e.getKey() / TOU_OFFSET, 
                              Collectors.toMap(Entry::getKey, Entry::getValue)));
 
-        Assert.assertEquals("No mismatched TOU rate A attributes", EMPTY, findTouMismatches(touGroupings.remove(1), "_RATE_A"));
-        Assert.assertEquals("No mismatched TOU rate B attributes", EMPTY, findTouMismatches(touGroupings.remove(2), "_RATE_B"));
-        Assert.assertEquals("No mismatched TOU rate C attributes", EMPTY, findTouMismatches(touGroupings.remove(3), "_RATE_C"));
-        Assert.assertEquals("No mismatched TOU rate D attributes", EMPTY, findTouMismatches(touGroupings.remove(4), "_RATE_D"));
+        assertEquals(EMPTY, findTouMismatches(touGroupings.remove(1), "_RATE_A"), "No mismatched TOU rate A attributes");
+        assertEquals(EMPTY, findTouMismatches(touGroupings.remove(2), "_RATE_B"), "No mismatched TOU rate B attributes");
+        assertEquals(EMPTY, findTouMismatches(touGroupings.remove(3), "_RATE_C"), "No mismatched TOU rate C attributes");
+        assertEquals(EMPTY, findTouMismatches(touGroupings.remove(4), "_RATE_D"), "No mismatched TOU rate D attributes");
         
-        Assert.assertEquals("No additional TOU rate attributes", "{}", touGroupings.toString());
+        assertEquals("{}", touGroupings.toString(), "No additional TOU rate attributes");
     }
 
     private String findTouMismatches(Map<Integer, BuiltInAttribute> attributes, String rateSuffix) {

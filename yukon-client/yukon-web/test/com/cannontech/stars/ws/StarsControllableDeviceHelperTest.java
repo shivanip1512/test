@@ -1,9 +1,9 @@
 package com.cannontech.stars.ws;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.bulk.processor.ProcessingException;
@@ -21,14 +21,14 @@ public class StarsControllableDeviceHelperTest {
     public void testIsOperationAllowedForDeviceNest() {
         boolean isOperationAllowed =
             ReflectionTestUtils.invokeMethod(deviceHelper, "isOperationAllowedForHardware", HardwareType.NEST_THERMOSTAT);
-        assertFalse("Is operation allowed", isOperationAllowed);
+        assertFalse(isOperationAllowed, "Is operation allowed");
     }
 
     @Test
     public void testIsOperationAllowedForDeviceNonNest() {
         boolean isOperationAllowed =
             ReflectionTestUtils.invokeMethod(deviceHelper, "isOperationAllowedForHardware", HardwareType.HONEYWELL_9000);
-        assertTrue("Is operation allowed", isOperationAllowed);
+        assertTrue(isOperationAllowed, "Is operation allowed");
     }
 
 }

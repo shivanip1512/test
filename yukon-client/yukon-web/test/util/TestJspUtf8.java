@@ -1,6 +1,6 @@
 package util;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -16,8 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class TestJspUtf8 {
     /**
@@ -26,7 +26,7 @@ public class TestJspUtf8 {
     private final String yukonWebDirectory = "C:/Dev/Workspace/trunk/yukon-web";
 
     @Test
-    @Ignore("Cannot be run on build machine.")
+    @Disabled("Cannot be run on build machine.")
     public void test() throws IOException {
         Files.walkFileTree(Paths.get(yukonWebDirectory), new FileVisitor<Path>() {
             CharsetDecoder utf8Decoder = Charset.forName("UTF-8").newDecoder();

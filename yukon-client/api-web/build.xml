@@ -168,7 +168,7 @@
     <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
     <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">
-            <param name="halt" value="yes"/>
+            <param name="halt" value="true"/>
             <param name="srcdir" value="test"/>
             <param name="destdir" value="test/build/unit"/>
         </antcall>
@@ -208,24 +208,21 @@
         <mkdir dir="${test.results.dir}" />
 
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-        <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
+        <java classname="org.junit.platform.console.ConsoleLauncher" fork="true" failonerror="${halt}">
             <classpath id="junit.class.path">
-                <pathelement location="${srcdir}"/>
-                <pathelement location="${destdir}"/>
+                <pathelement location="${srcdir}" />
+                <pathelement location="${destdir}" />
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar" />
                     <exclude name="**/WebContent/**" />
                 </fileset>
             </classpath>
-            <formatter type="xml" />
-            <batchtest todir="${test.results.dir}">
-                <fileset dir="${destdir}">
-                    <include name="**/*Test.class" />
-                </fileset>
-            </batchtest>
-        </junit>
+            <arg value="--scan-classpath"/>
+            <arg line="--reports-dir ${test.results.dir}"/>
+        </java>
+
         <!-- Create the html reports for test results -->
-        <property name="test.results.dir" value="test/unitTestResults" />
+        <property name="test.results.dir" value="test/unitTestResults"/>
         <junitreport todir="${test.results.dir}">
             <fileset dir="${test.results.dir}">
                 <include name="TEST-*.xml" />

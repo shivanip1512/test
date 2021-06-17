@@ -1,6 +1,6 @@
 package com.cannontech.common.device.groups.editor.dao.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -33,7 +33,7 @@ public class PartialGroupResolverTest {
     private StoredDeviceGroup c5 = createDeviceGroup(nextId++, c1, "C5");  // -- /c1/c5
     private StoredDeviceGroup c6 = createDeviceGroup(nextId++, c1, "C6");  // -- /c1/c6
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         partialGroupList = new ArrayList<PartialDeviceGroup>();
         storedGroupList = new ArrayList<StoredDeviceGroup>();

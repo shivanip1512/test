@@ -1,9 +1,9 @@
 package com.cannontech.common.pao.attribute.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,8 +13,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.device.model.SimpleDevice;
@@ -35,7 +36,7 @@ public class AttributeServiceImplTest {
     private MockPointDao pointDao;
     private SimpleDevice device;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         service = new AttributeServiceImpl();
         paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
@@ -82,7 +83,7 @@ public class AttributeServiceImplTest {
         // Test for existing device / attribute
         LitePoint expectedPoint = pointDao.getLitePoint(1);
         LitePoint actualPoint = service.getPointForAttribute(device, BuiltInAttribute.USAGE);
-        assertEquals("Attribute point isn't as expected", expectedPoint, actualPoint);
+        assertEquals(expectedPoint, actualPoint, "Attribute point isn't as expected");
     }
 
     @Test
@@ -93,7 +94,7 @@ public class AttributeServiceImplTest {
         expectedAttributes.add(BuiltInAttribute.USAGE);
         expectedAttributes.add(BuiltInAttribute.COMM_STATUS);
         Set<Attribute> actualAttributes = service.getExistingAttributes(device, expectedAttributes);
-        assertEquals("Existing attributes aren't as expected", expectedAttributes, actualAttributes);
+        assertEquals(expectedAttributes, actualAttributes, "Existing attributes aren't as expected");
     }
 
     @Test
@@ -101,12 +102,14 @@ public class AttributeServiceImplTest {
         Set<Attribute> expectedAttributes = new HashSet<>();
         device = new SimpleDevice(1, PaoType.MCT318L.getDeviceTypeId());
         Set<Attribute> actualAttributes = service.getExistingAttributes(device, expectedAttributes);
-        assertEquals("There shouldn't be any attributes", expectedAttributes, actualAttributes);
+        assertEquals(expectedAttributes, actualAttributes, "There shouldn't be any attributes");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test_getAllExistingAttributes_withInvalidDevice() {
-        SimpleDevice invalidDevice = new SimpleDevice(1, 99);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            new SimpleDevice(1, 99);
+        });
     }
 
     /**
@@ -137,7 +140,7 @@ public class AttributeServiceImplTest {
         } catch (Exception e) {
             fail("caught exception in testValidateAllPointMessages" + e.getMessage());
         }
-        assertFalse(" Message missing for keys -" + missingKeyList, missingKeyList.size() > 0);
+        assertFalse(missingKeyList.size() > 0, " Message missing for keys -" + missingKeyList);
     }
 
 }

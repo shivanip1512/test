@@ -1,6 +1,7 @@
 package com.cannontech.dr.itron.service;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -10,9 +11,8 @@ import java.util.stream.Collectors;
 
 import org.easymock.EasyMock;
 import org.joda.time.Instant;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.PaoCategory;
@@ -38,7 +38,7 @@ public class ItronDeviceDataParserTest {
     
     ItronDeviceDataParser parser;
     
-    @Before
+    @BeforeEach
     public void init() {
         parser = new ItronDeviceDataParser();
     }
@@ -77,40 +77,40 @@ public class ItronDeviceDataParserTest {
     public void validateRowParsingForPayloadValuedEventWithMultiplier() {
         String[] rowData = rowData("type: 0, log event ID: 32925 (0x809D) - Vendor-specific or Unknown, payload:  data(0960000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.AVERAGE_VOLTAGE, rowData);
-        Assert.assertEquals(1, data.size());
+        assertEquals(1, data.size());
         PointData pointData = (PointData) data.toArray()[0];
         double value = pointData.getValue();
-        Assert.assertEquals(240.0, value, .1);
+        assertEquals(240.0, value, .1);
     }
 
     @Test
     public void validateRowParsingForEventStarted() {
         String[] rowData = rowData("type: 0, log event ID: 14 (0x0e) - Event Started, payload: Event ID (130093) data(0001FC2D00)");
         Collection<PointData> data = parseRow(BuiltInAttribute.EVENT_STARTED, rowData);
-        Assert.assertEquals(1, data.size());
+        assertEquals(1, data.size());
         PointData pointData = (PointData) data.toArray()[0];
         double value = pointData.getValue();
-        Assert.assertEquals(130093, value, .1);
+        assertEquals(130093, value, .1);
     }
 
     @Test
     public void validateRowParsingForEventStopped() {
         String[] rowData = rowData("type: 0, log event ID: 15 (0x0F) - Event Stopped, payload: Event ID (130094) data(0001FC2E00)");
         Collection<PointData> data = parseRow(BuiltInAttribute.EVENT_STOPPED, rowData);
-        Assert.assertEquals(1, data.size());
+        assertEquals(1, data.size());
         PointData pointData = (PointData) data.toArray()[0];
         double value = pointData.getValue();
-        Assert.assertEquals(130094, value, .1);
+        assertEquals(130094, value, .1);
     }
 
     @Test
     public void validateRowParsingForEventCancelled() {
         String[] rowData = rowData("type: 1, log event ID: 16 (0x10) - Event Cancelled, payload: Event ID (645117902) data(2673B7CE00)");
         Collection<PointData> data = parseRow(BuiltInAttribute.EVENT_CANCELLED, rowData);
-        Assert.assertEquals(1, data.size());
+        assertEquals(1, data.size());
         PointData pointData = (PointData) data.toArray()[0];
         double value = pointData.getValue();
-        Assert.assertEquals(645117902, value, .1);
+        assertEquals(645117902, value, .1);
     }
 
     @Test
@@ -125,7 +125,7 @@ public class ItronDeviceDataParserTest {
         //0x960 = 2400 mV
         String[] rowData = rowData("type: 0, log event ID: 32924 (0x809C) - Vendor-specific or Unknown, payload:  data(0960000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.MINIMUM_VOLTAGE, rowData);
-        Assert.assertEquals(0, data.size());
+        assertEquals(0, data.size());
         
         String[] rowData2 = rowData("type: 0, log event ID: 32926 (0x809E) - Vendor-specific or Unknown, payload:  data(2712638700)");
         data = parseRow(BuiltInAttribute.MINIMUM_VOLTAGE, rowData2);
@@ -138,7 +138,7 @@ public class ItronDeviceDataParserTest {
         //0x4B5 = 1205 mV
         String[] rowData = rowData("type: 0, log event ID: 32923 (0x809B) - Vendor-specific or Unknown, payload:  data(04B5000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData);
-        Assert.assertEquals(0, data.size());
+        assertEquals(0, data.size());
         
         String[] rowData2 = rowData("type: 0, log event ID: 32927 (0x809F) - Vendor-specific or Unknown, payload:  data(2213E24400)");
         data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData2);
@@ -150,9 +150,9 @@ public class ItronDeviceDataParserTest {
         String[] rowData = rowData("type: 3, log event ID: 622133494, payload: ");
         try {
             Collection<PointData> data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData); //attribute doesn't matter here
-            Assert.assertEquals("Incorrect data size for empty payload.", data.size(), 0);
+            assertEquals( data.size(), 0, "Incorrect data size for empty payload.");
         } catch (Exception e) {
-            Assert.fail("Exception thrown parsing row with empty payload: " + e.getMessage());
+            fail("Exception thrown parsing row with empty payload: " + e.getMessage());
         }
     }
     
@@ -161,9 +161,9 @@ public class ItronDeviceDataParserTest {
         String[] rowData = rowData("duty cycle: 100, cycle period: 15, cycles number: 28, event control: 1, monitor event: 1, event state: 1");
         try {
             Collection<PointData> data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData); //attribute doesn't matter here
-            Assert.assertEquals("Incorrect data size for missing payload.", data.size(), 0);
+            assertEquals(data.size(), 0, "Incorrect data size for missing payload.");
         } catch (Exception e) {
-            Assert.fail("Exception thrown parsing row with empty payload: " + e.getMessage());
+            fail("Exception thrown parsing row with empty payload: " + e.getMessage());
         }
     }
     
@@ -256,15 +256,15 @@ public class ItronDeviceDataParserTest {
     }
     
     private void assertOnlyEntryEquals(Collection<PointData> data, double expectedEntryValue) {
-        Assert.assertEquals(1, data.size());
+        assertEquals(1, data.size());
         PointData pointData = (PointData) data.toArray()[0];
-        Assert.assertEquals(expectedEntryValue, pointData.getValue(), 0.1);
+        assertEquals(expectedEntryValue, pointData.getValue(), 0.1);
     }
 
     private void assertOnlyEntryTimestamp(Collection<PointData> data, Date expectedTimestamp) {
-        Assert.assertEquals(1, data.size());
+        assertEquals(1, data.size());
         PointData pointData = (PointData) data.toArray()[0];
-        Assert.assertEquals(expectedTimestamp, pointData.getPointDataTimeStamp());
+        assertEquals(expectedTimestamp, pointData.getPointDataTimeStamp());
     }
 
     private void setupMocksForLoadControlUnsupported() {

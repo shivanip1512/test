@@ -1,8 +1,8 @@
 package com.cannontech.database;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SqlUtilsTest {
 
@@ -18,8 +18,8 @@ public class SqlUtilsTest {
             String oracleValue = oracleTreatment(dbValue);
             String mssqlValue = mssqlTreatment(dbValue);
             
-            assertEquals("oracle conversion is broke", output[i], SqlUtils.convertDbValueToString(oracleValue));
-            assertEquals("mssqlValue conversion is broke", output[i], SqlUtils.convertDbValueToString(mssqlValue));
+            assertEquals(output[i], SqlUtils.convertDbValueToString(oracleValue), "oracle conversion is broke");
+            assertEquals(output[i], SqlUtils.convertDbValueToString(mssqlValue), "mssqlValue conversion is broke");
         }
     }
     

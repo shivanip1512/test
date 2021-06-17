@@ -1,6 +1,6 @@
 package com.cannontech.eim;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -31,6 +31,7 @@ public class EimJavaLibraryTest {
         "annotation-detector-3.0.4.jar",
         "annotations-api.jar",
         "apache-log4j-extras-1.0.jar",
+        "apiguardian-api-1.1.0.jar",
         "applicationinsights-core-1.0.2.jar",
         "applicationinsights-web-1.0.2.jar",
         "asm-5.0.4.jar",
@@ -67,7 +68,9 @@ public class EimJavaLibraryTest {
         "groovy-patch.jar",
         "gson-1.7.2.jar",
         "h2-1.4.178.jar",
-        "hamcrest-core-1.3.jar",
+        "hamcrest-2.2.jar",
+        "hamcrest-core-2.2.jar",
+        "hamcrest-library-2.2.jar",
         "itext.jar",
         "jasper-el.jar",
         "jasper.jar",
@@ -91,7 +94,12 @@ public class EimJavaLibraryTest {
         "jsch-0.1.54.jar",
         "jsoup-1.10.3.jar",
         "jsp-api.jar",
-        "junit-4.12.jar",
+        "junit-jupiter-api-5.7.1.jar",
+        "junit-jupiter-engine-5.7.1.jar",
+        "junit-jupiter-params-5.7.1.jar",
+        "junit-platform-commons-1.7.1.jar",
+        "junit-platform-console-standalone-1.7.1.jar",
+        "junit-platform-engine-1.7.1.jar",
         "lang-tag-1.5.jar",
         "logging-interceptor-3.12.2.jar",
         "lesscss-engine-1.4.2.jar",
@@ -121,6 +129,7 @@ public class EimJavaLibraryTest {
         "okhttp-urlconnection-3.12.2.jar",
         "okio-1.17.2.jar", 
         "objenesis-1.2.jar",
+        "opentest4j-1.2.0.jar",
         "poi.jar",
         "proton-j-0.33.4.jar",
         "protobuf-java-3.15.8.jar",
@@ -215,8 +224,8 @@ public class EimJavaLibraryTest {
         Set<String> thirdPartyFilenames = Sets.difference(classpathJars, IgnoredThirdPartyJavaLibraries.getFilenames());
         Set<String> newCommonJars = Sets.difference(thirdPartyFilenames, eimJars);
         Set<String> missingJars = Sets.difference(newCommonJars, excludedJars);
-        assertTrue("Unknown JAR files found. These must be added either in build.xml file of api-web "
-            + "or in excludedJars of this class: " + missingJars, missingJars.isEmpty());
+        assertTrue(missingJars.isEmpty(), "Unknown JAR files found. These must be added either in build.xml file of api-web "
+            + "or in excludedJars of this class: " + missingJars);
     }
 }
 
@@ -273,6 +282,30 @@ enum IgnoredThirdPartyJavaLibraries {
     ANT("ant.jar", IgnoreReason.ANT_BUILD_HELPERS),
     ANT_JUNIT4("ant-junit4.jar", IgnoreReason.ANT_BUILD_HELPERS),
     ANT_JUNIT("ant-junit.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_APACHE("ant-apache-bsf.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_CONTRIN("ant-contrib-1.0b3.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_APACHE_ORO("ant-apache-oro.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_APACHE_RESOLVER("ant-apache-resolver.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_JAVAMAIL("ant-javamail.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_NETREXX("ant-netrexx.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_ECJ("ecj-3.21.0.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_JDEPEND("ant-jdepend.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_JSCH("ant-jsch.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_JUNITLAUNCHER("ant-junitlauncher.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_SWING("ant-swing.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_TESTUTIL("ant-testutil.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_LR("ant-antlr.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_XZ("ant-xz.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_JMF("ant-jmf.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_XALAN("ant-apache-xalan2.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_LOG4J("ant-apache-log4j.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_IMAGEIO("ant-imageio.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_JAI("ant-jai.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_BCEL("ant-apache-bcel.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_NET("ant-commons-net.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_PLATFORM_LAUNCHER("junit-platform-launcher-1.7.1.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_REGXP("ant-apache-regexp.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_LOGGING("ant-commons-logging.jar", IgnoreReason.ANT_BUILD_HELPERS),
 
     ITRON_DEVICE_MANAGER_TYPES("itronDeviceManagerTypes_v1_8.jar", IgnoreReason.COMPILED_ITRON_WSDL),
     ITRON_SERVICE_POINT_MANAGER_TYPES("itronServicePointManagerTypes_v1_3.jar", IgnoreReason.COMPILED_ITRON_WSDL),

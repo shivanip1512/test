@@ -1,7 +1,7 @@
 package com.cannontech.common.events.service;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.Properties;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 
@@ -28,7 +28,7 @@ public class EventLogLocalizationTest {
         var metadataReaderFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
         var resources = resourcePatternResolver.getResources(packageSearchPath);
 
-        assertFalse("No resources", resources.length == 0);
+        assertFalse(resources.length == 0, "No resources");
 
         var classes = new ArrayList<Class<?>>();
         for (var resource : resources) {
@@ -38,7 +38,7 @@ public class EventLogLocalizationTest {
             classes.add(Class.forName(className));
         }
 
-        assertFalse("No classes found", classes.isEmpty());
+        assertFalse(classes.isEmpty(), "No classes found");
 
         var eventsXml = getClass().getClassLoader().getResourceAsStream(eventsXmlResourcePath);
         var localizationEntries = new Properties();
@@ -50,14 +50,14 @@ public class EventLogLocalizationTest {
                 .map(m -> "yukon.common.events." + m.getAnnotation(YukonEventLog.class).category() + "." + m.getName())
                 .collect(Collectors.toList());
 
-        assertFalse("No event log methods found", eventLogMethods.isEmpty());
+        assertFalse(eventLogMethods.isEmpty(), "No event log methods found");
 
         var missing = eventLogMethods.stream()
                 .filter(Predicate.not(localizationEntries::containsKey))
                 .sorted()
                 .collect(Collectors.toList());
 
-        assertTrue("Event log methods missing localization in events.xml: (" + missing.size() + " total)\n"
-                + String.join("\n", missing), missing.isEmpty());
+        assertTrue(missing.isEmpty(), "Event log methods missing localization in events.xml: (" + missing.size() + " total)\n"
+                + String.join("\n", missing));
     }
 }

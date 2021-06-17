@@ -1,5 +1,8 @@
 package com.cannontech.common.bulk.mapper;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.Instant;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
@@ -33,18 +38,16 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-import junit.framework.TestCase;
-
 /**
  * Test class for ObjectMapperFactoryImpl
  */
-public class ObjectMapperFactoryImplTest extends TestCase {
+public class ObjectMapperFactoryImplTest {
     private SimpleDevice testDevice = new SimpleDevice(1, PaoType.MCT310);
     private PaoDaoAdapter paoDaoAdapter;
     private DeviceDaoAdapter deviceDaoAdapter;
 
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         paoDaoAdapter = new PaoDaoAdapter() {
 
             private LiteYukonPAObject lite1 = new LiteYukonPAObject(1, null, PaoType.MCT310, null, null);
@@ -116,6 +119,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
     }
 
+    @Test
     public void testCreateBulkImporterToYukonDeviceMapper() throws Exception {
 
         ObjectMapper<String, SimpleDevice> testMapper;
@@ -134,10 +138,10 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         SimpleDevice device = testMapper.map("1");
-        assertEquals("Mapped device is not as expected", testDevice, device);
+        assertEquals(testDevice, device, "Mapped device is not as expected");
 
         device = testMapper.map("1,2,0");
-        assertEquals("Mapped device is not as expected", testDevice, device);
+        assertEquals(testDevice, device, "Mapped device is not as expected");
 
         try {
             testMapper.map("2");

@@ -1,8 +1,8 @@
 package com.cannontech.services.rfn.endpoint;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -15,13 +15,12 @@ import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.errors.dao.DeviceError;
@@ -38,7 +37,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
 
-@RunWith(Enclosed.class)
 public class MeterProgramStatusArchiveRequestListenerTest {
 
     //  Constants used to form up the MeterProgramStatus and MeterProgramStatusArchiveRequest
@@ -54,6 +52,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
     private static final UUID YUKON_GUID = UUID.fromString("EE8358B0-92B7-4603-A148-A06E5489D4C7");
     private static final String YUKON_CONFIG_ID = "R" + YUKON_GUID;
 
+    @Nested
     public static class TestUploadingIdle {
 
         private MeterProgramStatusArchiveRequestListener l = new MeterProgramStatusArchiveRequestListener();
@@ -75,7 +74,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
 
             l.process(m, "just testing");
 
-            assertFalse("Unexpected state update", updatedStatus.hasCaptured());
+            assertFalse(updatedStatus.hasCaptured(), "Unexpected state update");
         }
         
         @Test
@@ -93,17 +92,14 @@ public class MeterProgramStatusArchiveRequestListenerTest {
 
             l.process(m, "just testing");
 
-            assertTrue("State updated", updatedStatus.hasCaptured());
-            assertEquals("State updated once", updatedStatus.getValues().size(), 1);
-            assertEquals("State update matches", 
-                    updatedStatus.getValue(), 
-                    createMeterProgramStatus(
-                            UNKNOWN_CONFIG_ID, 
-                            ProgrammingStatus.MISMATCHED, 
-                            TIMED_OUT_TIMESTAMP));
+            assertTrue(updatedStatus.hasCaptured(), "State updated");
+            assertEquals(updatedStatus.getValues().size(), 1, "State updated once");
+            assertEquals(updatedStatus.getValue(),
+                    createMeterProgramStatus(UNKNOWN_CONFIG_ID, ProgrammingStatus.MISMATCHED, TIMED_OUT_TIMESTAMP),
+                    "State update matches");
         }
         
-        @Before
+        @BeforeEach
         public void init() {
             initializeMockRfnDeviceDao(l);
             initializeMockMeterProgrammingDao(l, updatedStatus,
@@ -117,8 +113,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
                     });
         }
     }
-    
-    @RunWith(Parameterized.class)
+    @Nested
     public static class TestAllStatusUpdates {
     
         private MeterProgramStatusArchiveRequestListener l = new MeterProgramStatusArchiveRequestListener();
@@ -127,38 +122,44 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         private Capture<MeterProgramStatus> updatedStatus = new Capture<>(CaptureType.ALL);
     
         //  ExistingState is a helper class that encapsulates a meter's assigned and reported programming state
-        @Parameter(0)
         public States state;
-        @Parameter(1)
         public Messages message;
-        @Parameter(2)
         public Optional<MeterProgramStatus> expectedUpdate;
     
-        @Parameters(name="state {0} msg {1}")
         public static Collection<Object[]> existingStates() {
             return getExpectedUpdates().cellSet().stream()
                     .map(c -> new Object[] { c.getRowKey(), c.getColumnKey(), c.getValue() })
                     .collect(Collectors.toList());
         }
 
-        @Test
-        public void test_newMessage() {
+        @ParameterizedTest
+        @MethodSource("existingStates")
+        public void test_newMessage(ArgumentsAccessor argumentsAccessor) {
+            state = (States) argumentsAccessor.get(0);
+            message = (Messages) argumentsAccessor.get(1);
+            expectedUpdate = (Optional<MeterProgramStatus>) argumentsAccessor.get(2);
+            init();
             var archiveRequest = message.getMessageWithTimestamp(NEW_TIMESTAMP);
             
             l.process(archiveRequest, "just testing");
 
             expectedUpdate.ifPresentOrElse(
                 expected -> {
-                    assertTrue("State updated", updatedStatus.hasCaptured());
-                    assertEquals("State updated once", updatedStatus.getValues().size(), 1);
-                    assertEquals("State update matches", expected, updatedStatus.getValue());
+                    assertTrue(updatedStatus.hasCaptured(), "State updated");
+                    assertEquals(updatedStatus.getValues().size(), 1, "State updated once");
+                    assertEquals(expected, updatedStatus.getValue(), "State update matches");
                 },
                 () ->
-                    assertFalse("Unexpected state update: " + updatedStatus, updatedStatus.hasCaptured()));
+                    assertFalse(updatedStatus.hasCaptured(), "Unexpected state update: " + updatedStatus));
         }
 
-        @Test
-        public void test_oldMessage() {
+        @ParameterizedTest
+        @MethodSource("existingStates")
+        public void test_oldMessage(ArgumentsAccessor argumentsAccessor) {
+            state = (States) argumentsAccessor.get(0);
+            message = (Messages) argumentsAccessor.get(1);
+            expectedUpdate = (Optional<MeterProgramStatus>) argumentsAccessor.get(2);
+            init();
             var archiveRequest = message.getMessageWithTimestamp(EXISTING_TIMESTAMP);
             
             l.process(archiveRequest, "just testing");
@@ -167,9 +168,9 @@ public class MeterProgramStatusArchiveRequestListenerTest {
             //    1. we've never heard from the device yet AND 
             //    2. this is a success/idle notification
             if (state == States.UNREPORTED && archiveRequest.getStatus() == ProgrammingStatus.IDLE) {
-                assertTrue("State updated", updatedStatus.hasCaptured());
+                assertTrue(updatedStatus.hasCaptured(), "State updated");
             } else {
-                assertFalse("Unexpected state update: " + updatedStatus, updatedStatus.hasCaptured());
+                assertFalse(updatedStatus.hasCaptured(), "Unexpected state update: " + updatedStatus);
             }
         }
 
@@ -430,18 +431,18 @@ public class MeterProgramStatusArchiveRequestListenerTest {
             var columnKeys = table.columnKeySet();
             table.rowMap().forEach((rowKey, rowTable) ->
                 columnKeys.forEach(columnKey ->
-                    assertTrue("Missing entry at\n" + rowKey + "\n" + columnKey, rowTable.containsKey(columnKey))));
+                    assertTrue(rowTable.containsKey(columnKey), "Missing entry at\n" + rowKey + "\n" + columnKey)));
 
             return table;
         }
 
-        @Before
         public void init() {
             initializeMockRfnDeviceDao(l);
-            initializeMockMeterProgrammingDao(l, updatedStatus, 
-                    state.getMeterProgramStatusAnswer(), 
+            initializeMockMeterProgrammingDao(l, updatedStatus,
+                    state.getMeterProgramStatusAnswer(),
                     state.getMeterProgramAnswer());
         }
+
     }
 
     private static void initializeMockRfnDeviceDao(MeterProgramStatusArchiveRequestListener l) {

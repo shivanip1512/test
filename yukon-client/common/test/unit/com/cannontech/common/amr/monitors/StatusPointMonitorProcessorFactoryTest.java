@@ -1,7 +1,8 @@
 package com.cannontech.common.amr.monitors;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.amr.monitors.impl.StatusPointMonitorProcessorFactory;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorProcessor;
@@ -23,7 +24,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(0.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -36,7 +37,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(1.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -49,7 +50,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(0.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -62,7 +63,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(0.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -75,7 +76,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(1.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -88,7 +89,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(1.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -101,7 +102,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(0.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -114,7 +115,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(1.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -127,7 +128,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(0.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -140,7 +141,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(1.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -153,7 +154,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(2.0);
         PointValueHolder pointNext = createPoint(2.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -166,7 +167,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(1.0);
         PointValueHolder pointNext = createPoint(2.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -179,7 +180,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(1.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -192,7 +193,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(3.0);
         PointValueHolder pointNext = createPoint(1.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -205,7 +206,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(1.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -218,7 +219,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(0.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -231,7 +232,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(1.0);
         PointValueHolder pointNext = createPoint(2.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -244,7 +245,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(2.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -257,7 +258,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(0.0);
         PointValueHolder pointNext = createPoint(1.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -270,7 +271,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         PointValueHolder pointPrev = createPoint(1.0);
         PointValueHolder pointNext = createPoint(2.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.shouldSendMessage(processor, pointNext, pointPrev);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -282,7 +283,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         
         PointValueHolder pointNext = createPoint(2.0);
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.isDifference(pointNext, null);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -292,7 +293,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         processor.setPrevState("0");
         
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.isExactMatch(processor.transientGetPrevStateInt(), null);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     
@@ -305,7 +306,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         processor.setNextState(StatusPointMonitorStateType.DONT_CARE.name());
         
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.needPreviousValue(processor);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -316,7 +317,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         processor.setNextState("3");
         
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.needPreviousValue(processor);
-        Assert.assertEquals(false, shouldSendMessage);
+        assertEquals(false, shouldSendMessage);
     }
     
     @Test
@@ -327,7 +328,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         processor.setNextState(StatusPointMonitorStateType.DIFFERENCE.name());
         
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.needPreviousValue(processor);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -338,7 +339,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         processor.setNextState(StatusPointMonitorStateType.DONT_CARE.name());
         
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.needPreviousValue(processor);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -349,7 +350,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         processor.setNextState(StatusPointMonitorStateType.DIFFERENCE.name());
         
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.needPreviousValue(processor);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -360,7 +361,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         processor.setNextState("0");
         
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.needPreviousValue(processor);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -371,7 +372,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         processor.setNextState(StatusPointMonitorStateType.DONT_CARE.name());
         
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.needPreviousValue(processor);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -382,7 +383,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         processor.setNextState(StatusPointMonitorStateType.DIFFERENCE.name());
         
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.needPreviousValue(processor);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     @Test
@@ -393,7 +394,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         processor.setNextState("1");
         
         boolean shouldSendMessage = StatusPointMonitorProcessorFactory.needPreviousValue(processor);
-        Assert.assertEquals(true, shouldSendMessage);
+        assertEquals(true, shouldSendMessage);
     }
     
     private PointData createPoint(double value) {

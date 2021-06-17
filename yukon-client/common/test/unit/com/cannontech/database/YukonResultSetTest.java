@@ -1,11 +1,17 @@
 package com.cannontech.database;
 
 import static com.cannontech.core.roleproperties.InputTypeFactory.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.sql.SQLException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.point.PointQuality;
@@ -50,9 +56,11 @@ public class YukonResultSetTest {
     	
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void test_bad_enum() throws SQLException {
-        resultSet.getEnum("MS1234", DatabaseVendor.class);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            resultSet.getEnum("MS1234", DatabaseVendor.class);
+        });
     }
     
     @Test
@@ -61,9 +69,11 @@ public class YukonResultSetTest {
         assertEquals(DatabaseVendor.MS2008, enum1);
     }
     
-    @Test(expected=SQLException.class)
+    @Test
     public void test_bad_drs_enum() throws SQLException {
-        resultSet.getEnum("foo", PaoClass.class);
+        Assertions.assertThrows(SQLException.class, () -> {
+            resultSet.getEnum("foo", PaoClass.class);
+        });
     }
 
     @Test
@@ -78,14 +88,18 @@ public class YukonResultSetTest {
         assertEquals(PointQuality.NonUpdated, enum1);
     }
     
-    @Test(expected=SQLException.class)
+    @Test
     public void test_bad_drs_numeric_enum_1() throws SQLException {
-        resultSet.getEnum("456", PointQuality.class);
+        Assertions.assertThrows(SQLException.class, () -> {
+            resultSet.getEnum("456", PointQuality.class);
+        });
     }
     
-    @Test(expected=SQLException.class)
+    @Test
     public void test_bad_drs_numeric_enum_2() throws SQLException {
-        resultSet.getEnum("NonUpdated", PointQuality.class);
+        Assertions.assertThrows(SQLException.class, () -> {
+            resultSet.getEnum("NonUpdated", PointQuality.class);
+        });
     }
 
     @Test
@@ -165,8 +179,10 @@ public class YukonResultSetTest {
     	}
     }
 
-    @Test(expected=UnsupportedOperationException.class)
+    @Test
     public void test_getObjectByInputType_unsupportedType() throws SQLException {
-    	resultSet.getObjectOfInputType("anything", new DateType());
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+            resultSet.getObjectOfInputType("anything", new DateType());
+        });
     }
 }

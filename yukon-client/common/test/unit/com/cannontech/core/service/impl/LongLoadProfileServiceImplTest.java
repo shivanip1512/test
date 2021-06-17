@@ -1,6 +1,8 @@
 package com.cannontech.core.service.impl;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -13,9 +15,9 @@ import java.util.TimeZone;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.exception.BadConfigurationException;
@@ -36,8 +38,6 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
-
-import junit.framework.Assert;
 
 public class LongLoadProfileServiceImplTest {
     private final class PorterConnection implements BasicServerConnection {
@@ -118,7 +118,7 @@ public class LongLoadProfileServiceImplTest {
     private ScheduledExecutorMock scheduledExecutorMock;
     private PorterQueueDataServiceMock queueDataService;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         System.setProperty("java.locale.providers", "COMPAT,SPI");
         serviceDebug = new LoadProfileServiceImpl();
@@ -156,14 +156,14 @@ public class LongLoadProfileServiceImplTest {
         this.service = serviceDebug;
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
     	Locale.setDefault(Locale.US);
     }
 
     public void testInitialize() {
         // initialize was already called
-        Assert.assertEquals("wrong number of listeners", 1, porterConnection.listeners.size());
+        assertEquals(1, porterConnection.listeners.size(), "wrong number of listeners");
     }
     
     
@@ -180,7 +180,7 @@ public class LongLoadProfileServiceImplTest {
         int channel = 4;
         
         //Using this DateFormat so that the date and time are being parsed the way porter would, regardless of locale
-        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm");
         Date start = dateTimeInstance.parse("5/5/05 4:30 pm");
         Date stop = dateTimeInstance.parse("10/9/06 1:50 am");
         service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, YukonUserContext.system);
@@ -190,8 +190,8 @@ public class LongLoadProfileServiceImplTest {
         Request reqMsg = (Request)message; // implicit instanceof check
         
         // check command string
-        String expectedCmd = "getvalue lp channel 4 05/05/2005 16:30 10/09/2006 01:50";
-        Assert.assertEquals("command is different than expected", expectedCmd, reqMsg.getCommandString());
+        String expectedCmd = "getvalue lp channel 4 05/05/2005 04:30 10/09/2006 01:50";
+        assertEquals(expectedCmd, reqMsg.getCommandString(), "command is different than expected");
     }
     
     //Same test performed in multiple locales to ensure same functionality
@@ -213,7 +213,7 @@ public class LongLoadProfileServiceImplTest {
     private void testInitiateLongLoadProfileBasic(Locale locale) throws ParseException {
         Locale.setDefault(locale);
         // check that outQueue is empty
-        Assert.assertEquals("out queue should be empty", 0, porterConnection.writtenOut.size());
+        assertEquals(0, porterConnection.writtenOut.size(), "out queue should be empty");
         LiteYukonPAObject myDevice = 
             new LiteYukonPAObject(5, 
                     "Test Device Id:5", 
@@ -224,38 +224,38 @@ public class LongLoadProfileServiceImplTest {
         int channel = 1;
         
         //Using this DateFormat so that the date and time are being parsed the way porter would, regardless of locale
-        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm");
         Date start = dateTimeInstance.parse("10/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
         service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, YukonUserContext.system);
         
         // check that outQueue has one message
-        Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
+        assertEquals(1, porterConnection.writtenOut.size(), "out queue should have one message");
         
         // check that runner hasn't run
-        Assert.assertEquals("runner should not have run", 0, successRan);
+        assertEquals(0, successRan, "runner should not have run");
         
         // get message that was written
         Message message = porterConnection.writtenOut.remove();
         Request reqMsg = (Request)message; // implicit instanceof check
         
         // check command string
-        String expectedCmd = "getvalue lp channel 1 10/13/2006 13:50 12/13/2006 13:50";
-        Assert.assertEquals("command is different than expected", expectedCmd, reqMsg.getCommandString());
+        String expectedCmd = "getvalue lp channel 1 10/13/2006 01:50 12/13/2006 01:50";
+        assertEquals(expectedCmd, reqMsg.getCommandString(), "command is different than expected");
         
         // send expect more response
         Return retMsg = createReturn(reqMsg, true);
         porterConnection.respond(retMsg);
         
         // check that runner hasn't run
-        Assert.assertEquals("runner should not have run", 0, successRan);
+        assertEquals(0, successRan, "runner should not have run");
         
         // send final response
         retMsg.setExpectMore(0);
         porterConnection.respond(retMsg);
         
         // check that runner has run
-        Assert.assertEquals("runner should have run", 1, successRan);
+        assertEquals(1, successRan, "runner should have run");
     }
 
     @Test
@@ -298,39 +298,39 @@ public class LongLoadProfileServiceImplTest {
         			"N");	 // eight is arbitrary
 
         int channel = 1;
-        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm");
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
         service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
         
         // check that outQueue has one message
-        Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
+        assertEquals(1, porterConnection.writtenOut.size(), "out queue should have one message");
         
         // check that runner hasn't run
-        Assert.assertEquals("runner should not have run", 0, successRan);
+        assertEquals(0, successRan, "runner should not have run");
         
         // attempt to request again
         service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
         
         // check that outQueue still has one message
-        Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
+        assertEquals(1, porterConnection.writtenOut.size(), "out queue should have one message");
         
         // attempt to request for device 2
         service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, YukonUserContext.system);
         
-        Assert.assertEquals("out queue should have two messages", 2, porterConnection.writtenOut.size());
+        assertEquals(2, porterConnection.writtenOut.size(), "out queue should have two messages");
         
         // attempt to request again for device 1
         service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
         
         // check that outQueue still has two messages
-        Assert.assertEquals("out queue should have two messages", 2, porterConnection.writtenOut.size());
+        assertEquals(2, porterConnection.writtenOut.size(), "out queue should have two messages");
         
         // check that runner still hasn't run
-        Assert.assertEquals("runner should not have run", 0, successRan);
+        assertEquals(0, successRan, "runner should not have run");
         
-        Assert.assertEquals("pending list should have three messages", 3, service.getPendingLoadProfileRequests(myDevice1).size());
-        Assert.assertEquals("pending list should have one message", 1, service.getPendingLoadProfileRequests(myDevice2).size());
+        assertEquals(3, service.getPendingLoadProfileRequests(myDevice1).size(), "pending list should have three messages");
+        assertEquals(1, service.getPendingLoadProfileRequests(myDevice2).size(), "pending list should have one message");
 
         int responses = 0;
         Set<Long> usedIds = new HashSet<Long>();
@@ -342,7 +342,7 @@ public class LongLoadProfileServiceImplTest {
             
             // check that id is unique
             boolean uniq = usedIds.add(reqMsg.getUserMessageID());
-            Assert.assertTrue("Non unique userMessageId " + reqMsg.getUserMessageID() + " in " + usedIds, uniq);
+            assertTrue(uniq, "Non unique userMessageId " + reqMsg.getUserMessageID() + " in " + usedIds);
             
             // send final response
             Return retMsg = createReturn(reqMsg, false);
@@ -350,13 +350,13 @@ public class LongLoadProfileServiceImplTest {
             responses++;
             
             // check that runner has run
-            Assert.assertEquals("runner should have run", responses, successRan);
+            assertEquals(responses, successRan, "runner should have run");
         }
         
-        Assert.assertEquals("wrong number of responses sent", 4, responses);
+        assertEquals(4, responses, "wrong number of responses sent");
 
         // did we leak anything?
-        Assert.assertEquals("still holding data", 0, serviceDebug.debugSizeOfCollections());
+        assertEquals(0, serviceDebug.debugSizeOfCollections(), "still holding data");
     }
     
     @Test
@@ -369,7 +369,7 @@ public class LongLoadProfileServiceImplTest {
         new LiteYukonPAObject(8, "Test Device Id:8", PaoType.MCT410IL, CtiUtilities.STRING_NONE, "N");
 
         int channel = 1;
-        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm");
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
         
@@ -382,7 +382,7 @@ public class LongLoadProfileServiceImplTest {
         } catch (RuntimeException e) {
             // expected
         }
-        Assert.assertEquals("Profile requests list should have 1 messages", 1, service.getPendingLoadProfileRequests(myDevice1).size());
+        assertEquals(1, service.getPendingLoadProfileRequests(myDevice1).size(), "Profile requests list should have 1 messages");
         
         porterConnection.failMode = false;
         
@@ -394,9 +394,9 @@ public class LongLoadProfileServiceImplTest {
             fail("should have not thrown an exception");
         }
         
-        Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
+        assertEquals(1, porterConnection.writtenOut.size(), "out queue should have one message");
         
-        Assert.assertEquals("runner should not have run", 0, successRan);
+        assertEquals(0, successRan, "runner should not have run");
     }
 
     @Test
@@ -416,7 +416,7 @@ public class LongLoadProfileServiceImplTest {
         			"N");	 // eight is arbitrary
 
         int channel = 1;
-        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm");
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
 
@@ -425,12 +425,12 @@ public class LongLoadProfileServiceImplTest {
         service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, YukonUserContext.system);
         service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
         service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, YukonUserContext.system);
-        Assert.assertEquals("wrong number of messages reached out queue", 2, porterConnection.writtenOut.size());
-        Assert.assertEquals("messages weren't queued", 2, service.getPendingLoadProfileRequests(myDevice1).size());
-        Assert.assertEquals("messages weren't queued", 2, service.getPendingLoadProfileRequests(myDevice2).size());
-        Assert.assertEquals("runner should not have run", 0, successRan);
-        Assert.assertEquals("runner should not have run", 0, failureRan);
-        Assert.assertEquals("runner should not have run", 0, cancelRan);
+        assertEquals(2, porterConnection.writtenOut.size(), "wrong number of messages reached out queue");
+        assertEquals(2, service.getPendingLoadProfileRequests(myDevice1).size(), "messages weren't queued");
+        assertEquals(2, service.getPendingLoadProfileRequests(myDevice2).size(), "messages weren't queued");
+        assertEquals(0, successRan, "runner should not have run");
+        assertEquals(0, failureRan, "runner should not have run");
+        assertEquals(0, cancelRan, "runner should not have run");
 
         // eat the two requests
         porterConnection.writtenOut.remove(); 
@@ -441,10 +441,10 @@ public class LongLoadProfileServiceImplTest {
         scheduledExecutorMock.doAllTasks();
 
         // this should have queued two LLP request
-        Assert.assertEquals("wrong number of messages reached out queue", 2, porterConnection.writtenOut.size());
-        //Assert.assertEquals("messages weren't queued", 1, service.getPendingLoadProfileRequests(myDevice1).size());
-        Assert.assertEquals("runner should not have run", 0, successRan);
-        Assert.assertEquals("runner should not have run", 2, failureRan);
+        assertEquals(2, porterConnection.writtenOut.size(), "wrong number of messages reached out queue");
+        //assertEquals("messages weren't queued", 1, service.getPendingLoadProfileRequests(myDevice1).size());
+        assertEquals(0, successRan, "runner should not have run");
+        assertEquals(2, failureRan, "runner should not have run");
         
         // respond to each
         Message message = porterConnection.writtenOut.remove();
@@ -459,18 +459,18 @@ public class LongLoadProfileServiceImplTest {
         
         scheduledExecutorMock.doAllTasks();
         // even though the queueDataService is still set to return 0, nothing should change
-        Assert.assertEquals("wrong number of messages reached out queue", 0, porterConnection.writtenOut.size());
-        Assert.assertEquals("runner should not have run", 0, successRan);
-        Assert.assertEquals("runner should not have run", 2, failureRan);
+        assertEquals(0, porterConnection.writtenOut.size(), "wrong number of messages reached out queue");
+        assertEquals(0, successRan, "runner should not have run");
+        assertEquals(2, failureRan, "runner should not have run");
         
         // more time has passed, but this time no expect more messages have been received, however porter is still working...
         queueDataService.setReturnValue(1);
         scheduledExecutorMock.doAllTasks();
        
         // nothing should change
-        Assert.assertEquals("wrong number of messages reached out queue", 0, porterConnection.writtenOut.size());
-        Assert.assertEquals("runner should not have run", 0, successRan);
-        Assert.assertEquals("runner should not have run", 2, failureRan);
+        assertEquals(0, porterConnection.writtenOut.size(), "wrong number of messages reached out queue");
+        assertEquals(0, successRan, "runner should not have run");
+        assertEquals(2, failureRan, "runner should not have run");
 
         
         // but all good things must come to an end
@@ -478,12 +478,12 @@ public class LongLoadProfileServiceImplTest {
         scheduledExecutorMock.doAllTasks();
         
         // nothing should be left
-        Assert.assertEquals("wrong number of messages reached out queue", 0, porterConnection.writtenOut.size());
-        Assert.assertEquals("runner should not have run", 0, successRan);
-        Assert.assertEquals("runner should not have run", 4, failureRan);
+        assertEquals(0, porterConnection.writtenOut.size(), "wrong number of messages reached out queue");
+        assertEquals(0, successRan, "runner should not have run");
+        assertEquals(4, failureRan, "runner should not have run");
 
         // did we leak anything?
-        Assert.assertEquals("still holding data", 0, serviceDebug.debugSizeOfCollections());
+        assertEquals(0, serviceDebug.debugSizeOfCollections(), "still holding data");
     }
 }
 
