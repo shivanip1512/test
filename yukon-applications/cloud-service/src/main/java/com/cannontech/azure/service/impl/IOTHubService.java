@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +22,7 @@ import com.cannontech.azure.service.AzureCloudService;
 import com.cannontech.data.provider.DataProvider;
 import com.cannontech.message.model.ConfigurationSettings;
 import com.cannontech.message.model.SystemData;
+import com.google.gson.Gson;
 import com.microsoft.azure.sdk.iot.device.DeviceClient;
 import com.microsoft.azure.sdk.iot.device.IotHubClientProtocol;
 import com.microsoft.azure.sdk.iot.device.IotHubEventCallback;
@@ -103,7 +103,7 @@ public class IOTHubService extends AzureCloudService {
     }
 
     private void prepareAndPushData() throws IllegalArgumentException, UnsupportedOperationException, IOException {
-        List<String> telemetryData = new ArrayList<>();
+        ConcurrentHashMap<String, String> telemetryData = new ConcurrentHashMap<String, String>();
 
         // Prepare telemetry data.
         prepareData(telemetryData);
@@ -112,29 +112,26 @@ public class IOTHubService extends AzureCloudService {
         pushTelemetryData(telemetryData);
     }
 
-    private void prepareData(List<String> telemetryData) {
+    private void prepareData(Map<String, String> telemetryData) {
         Map<String, SystemData> data = dataProviderService.getSystemInformation();
         for (Map.Entry<String, SystemData> entry : data.entrySet()) {
             IOTDataType dataType = entry.getValue().getIotDataType();
             String fieldName = entry.getValue().getFieldName();
             String fieldValue = entry.getValue().getFieldValue();
             if (dataType == IOTDataType.TELEMETRY) {
-                telemetryData.add(buildTelemetryDataString(fieldName, fieldValue));
+                telemetryData.put(fieldName, fieldValue);
             }
         }
     }
 
-    /**
-     * Build telemetry data string in {"fieldName": fieldValue} format.
-     */
-    private String buildTelemetryDataString (String fieldName, String fieldValue) {
-        return "{\"" + fieldName + "\":" + fieldValue + "}";
+    private void pushTelemetryData(Map<String, String> telemetryData) {
+        Gson gson = new Gson();
+        Message message = new Message(gson.toJson(telemetryData));
+        message.setContentEncoding("utf-8");
+        message.setContentTypeFinal("application/json");
+        client.sendEventAsync(message, new EventCallback(), message);
     }
 
-    private void pushTelemetryData(List<String> telemetryData) {
-        Message message = new Message(telemetryData.toString());
-        client.sendEventAsync(message, new EventCallback(), new Object());
-    }
 
     private class EventCallback implements IotHubEventCallback {
         public void execute(IotHubStatusCode status, Object context) {
