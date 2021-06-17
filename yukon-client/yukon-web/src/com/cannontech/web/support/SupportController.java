@@ -300,13 +300,8 @@ public class SupportController {
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
     public String viewRFBundle(ModelMap model) throws Exception {
 
-		
-		  model.addAttribute("rfSupportBundle", new RfSupportBundle());
-		  //model.addAttribute("now", new Date());
-		 
-        
         model.addAttribute("rfBundleList", getPreviousRfBundleNames());
-              
+
         return "supportBundle/rfPreviousBundleTab.jsp";
     }
 
@@ -446,7 +441,7 @@ public class SupportController {
      * Fetch previous RF bundle files and return them in list
      */
     private List<String> getPreviousRfBundleNames() {
-    	List<String> previousRfBundles = new ArrayList<>();
+        List<String> previousRfBundles = new ArrayList<>();
         for (File f : bundleService.getRfBundles()) {
             previousRfBundles.add(f.getName());
         }
