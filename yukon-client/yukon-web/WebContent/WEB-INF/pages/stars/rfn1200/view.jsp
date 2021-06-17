@@ -9,6 +9,11 @@
 <cti:standardPage module="operator" page="rfn1200Detail">
     <!-- Actions dropdown -->
     <div id="page-actions" class="dn">
+        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE"> 
+            <cti:msg2 key="yukon.web.modules.operator.commChannel.create" var="popupTitle"/>
+            <cti:url var="createUrl" value="/stars/device/commChannel/create" />
+            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" data-popup="#js-create-comm-channel-popup"/>
+        </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER"> 
             <!-- Delete -->
             <c:set var="toolTipMessage" value=""/>
@@ -21,6 +26,7 @@
                 </cti:list>
                 <cti:msg2 var="toolTipMessage" key="yukon.web.modules.operator.commChannel.delete.devicesAssigned.error" arguments="${arguments}"/>
             </c:if>
+            <li class="divider"></li>
             <cm:dropdownOption icon="icon-cross" title="${toolTipMessage}"  key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
                                data-ok-event="yukon:rfn1200:delete" disabled="${disableFlag}"/>
             <c:if test="${empty deviceNames}">
@@ -39,6 +45,17 @@
             </div>
         </div>
     </tags:widgetContainer>
-
-    <cti:includeScript link="/resources/js/pages/yukon.assets.rfn1200.js"/>
+    
+    <cti:msg2 var="saveText" key="components.button.save.label"/>
+    <div id="js-create-comm-channel-popup" 
+         class="dn"
+         data-title="${popupTitle}"
+         data-dialog
+         data-ok-text="${saveText}" 
+         data-width="500"
+         data-height="400"
+         data-event="yukon:assets:commChannel:create" 
+         data-url="${createUrl}"/>
+         
+    <cti:includeScript link="/resources/js/pages/yukon.assets.commChannel.js"/>
 </cti:standardPage>

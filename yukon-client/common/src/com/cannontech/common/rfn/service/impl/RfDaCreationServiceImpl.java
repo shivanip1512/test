@@ -66,7 +66,8 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
         
         // add event log
         
-        return retrieve(newDevice.getPaoIdentifier().getPaoId());
+        detail.setId(newDevice.getPaoIdentifier().getPaoId());
+        return detail;
     }
     
     @Override
@@ -82,7 +83,7 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
         dbPersistentDao.performDBChange(rfn1200, TransactionType.UPDATE);
         
         // add event log
-        
+
         return retrieve(rfn1200.getPAObjectID());
     }
     

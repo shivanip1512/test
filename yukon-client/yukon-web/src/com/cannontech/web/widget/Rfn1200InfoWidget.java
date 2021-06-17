@@ -1,5 +1,8 @@
 package com.cannontech.web.widget;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,11 +21,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.model.Rfn1200Detail;
 import com.cannontech.common.rfn.service.RfDaCreationService;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -39,6 +45,8 @@ public class Rfn1200InfoWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private Rfn1200Validator rfn1200Validator;
     @Autowired private RfDaCreationService rfdaCreationService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+
     private static final Logger log = YukonLogManager.getLogger(Rfn1200InfoWidget.class);
 
     @Autowired
@@ -53,7 +61,7 @@ public class Rfn1200InfoWidget extends AdvancedWidgetControllerBase {
         try {
             deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
             model.addAttribute("mode", PageEditMode.VIEW);
-            retrieveRfn1200(userContext, request, deviceId, model);
+            retrieveRfn1200(userContext, deviceId, model);
         } catch (ServletRequestBindingException e) {
             log.error("Error rendering RFN-1200 Information widget", e);
         }
@@ -62,36 +70,51 @@ public class Rfn1200InfoWidget extends AdvancedWidgetControllerBase {
 
     @GetMapping("/{id}/edit")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
-    public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, HttpServletRequest request) {
+    public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        retrieveRfn1200(userContext, request, id, model);
+        retrieveRfn1200(userContext, id, model);
         return "rfn1200InfoWidget/render.jsp";
     }
 
-    private void retrieveRfn1200(YukonUserContext userContext, HttpServletRequest request, int id, ModelMap model) {
-        model.addAttribute("rfn1200", rfdaCreationService.retrieve(id));
+    private void retrieveRfn1200(YukonUserContext userContext, int id, ModelMap model) {
+        try {
+            Rfn1200Detail rfn1200 = rfdaCreationService.retrieve(id);
+            model.addAttribute("rfn1200", rfn1200);
+        } catch (Exception e) {
+            log.error("Unable to retrieve RFN-1200 with id " + id, e);
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            String commChannelDeviceLabel = accessor.getMessage("yukon.common.pao.RFN_1200");
+            String errorMsg = accessor.getMessage("yukon.web.api.retrieve.error", commChannelDeviceLabel, e.getMessage());
+            model.addAttribute("errorMsg", errorMsg);
+        }
     }
 
     @PostMapping("/save")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
-    public String save(@ModelAttribute("rfn1200") Rfn1200Detail rfn1200, BindingResult result, YukonUserContext userContext,
-            FlashScope flash, HttpServletRequest request, ModelMap model, HttpServletResponse resp) {
-
+    public String save(@ModelAttribute("rfn1200") Rfn1200Detail rfn1200, BindingResult result, FlashScope flash, HttpServletResponse resp) {
         rfn1200Validator.validate(rfn1200, result);
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             return "rfn1200InfoWidget/render.jsp";
         }
 
-        
-        rfdaCreationService.update(rfn1200);
-        
-        //if success
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", rfn1200.getName()));
-        return null;
-        //if error
-        //flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", rfn1200.getName(), e.getMessage()));
-        //return "rfn1200InfoWidget/render.jsp";
+        try {
+            if (rfn1200.getId() == null) {
+                rfn1200 = rfdaCreationService.create(rfn1200);
+            } else {
+                rfn1200 = rfdaCreationService.update(rfn1200);
+            }
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", rfn1200.getName()));
+            Map<String, Object> json = new HashMap<>();
+            json.put("id", rfn1200.getId());
+            resp.setContentType("application/json");
+            JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
+            return null;
+        } catch (Exception e) {
+            log.error("Unable to create RFN-1200 " + rfn1200.getName(), e);
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", rfn1200.getName(), e.getMessage()));
+            return "rfn1200InfoWidget/render.jsp";
+        }
     }
 
 }

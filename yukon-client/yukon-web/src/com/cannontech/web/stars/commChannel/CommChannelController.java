@@ -42,6 +42,7 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.model.Rfn1200Detail;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -72,7 +73,7 @@ public class CommChannelController {
     @Autowired private CommChannelValidator<? extends PortBase<?>> commChannelValidator;
     @Autowired private CommChannelSetupHelper commChanelSetupHelper;
     @Autowired private ServerDatabaseCache dbCache;
-    private static final List<PaoType> webSupportedCommChannelTypes = Stream.of(PaoType.TSERVER_SHARED, PaoType.TCPPORT, PaoType.UDPPORT, PaoType.LOCAL_SHARED)
+    private static final List<PaoType> webSupportedCommChannelTypes = Stream.of(PaoType.TSERVER_SHARED, PaoType.TCPPORT, PaoType.UDPPORT, PaoType.LOCAL_SHARED, PaoType.RFN_1200)
                                                                             .sorted((p1, p2) -> p1.getDbString().compareTo(p2.getDbString()))
                                                                             .collect(Collectors.toList());
 
@@ -180,16 +181,30 @@ public class CommChannelController {
     public String create(ModelMap model, @PathVariable String type, @RequestParam String name,
             YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        PortBase commChannel = (PortBase) PaoModelFactory.getModel(PaoType.valueOf(type));
-        if (model.containsAttribute("commChannel")) {
-            commChannel = (PortBase) model.get("commChannel");
+        if (PaoType.valueOf(type).equals(PaoType.RFN_1200)) {
+            Rfn1200Detail rfn1200 = new Rfn1200Detail();
+            if (model.containsAttribute("rfn1200")) {
+                rfn1200 = (Rfn1200Detail) model.get("rfn1200");
+            } else {
+                rfn1200.setName(name);
+                rfn1200.setPaoType(PaoType.valueOf(type));
+                rfn1200.setEnabled(true);
+            }
+            model.addAttribute("webSupportedCommChannelTypes", webSupportedCommChannelTypes);
+            model.addAttribute("rfn1200", rfn1200);
+            return "../widget/rfn1200InfoWidget/render.jsp";
         } else {
-            commChannel.setName(name);
-            commChannel.setType(PaoType.valueOf(type));
+            PortBase commChannel = (PortBase) PaoModelFactory.getModel(PaoType.valueOf(type));
+            if (model.containsAttribute("commChannel")) {
+                commChannel = (PortBase) model.get("commChannel");
+            } else {
+                commChannel.setName(name);
+                commChannel.setType(PaoType.valueOf(type));
+            }
+            commChanelSetupHelper.setupCommChannelFields(commChannel, model);
+            setupDefaultFieldValue(commChannel, model);
+            return "/commChannel/create.jsp";
         }
-        commChanelSetupHelper.setupCommChannelFields(commChannel, model);
-        setupDefaultFieldValue(commChannel, model);
-        return "/commChannel/create.jsp";
     }
 
     @PostMapping("/save")

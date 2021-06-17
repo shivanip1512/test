@@ -57,33 +57,22 @@ public class Rfn1200Controller {
 
     @DeleteMapping("/delete/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
-    public String delete(@PathVariable int id, FlashScope flash) {
-        //TODO: Delete RFN 1200 Device and display success/failure message
-        String deviceName = dbCache.getAllPaosMap().get(id).getPaoName();
-        
-        
+    public String delete(@PathVariable int id, FlashScope flash, YukonUserContext userContext) {
         LiteYukonPAObject device = dbCache.getAllPaosMap().get(id);
-       // String meterName = serverDatabaseCache.getAllMeters().get(id).getMeterNumber();
         try {
             deviceDao.removeDevice(id);
             
             //clean up event log add to RfnDeviceEventLogService example below 
            // meteringEventLogService.meterDeleted(meter.getPaoName(), meterName, user.getUsername());
             
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.successful", deviceName));
-           // return "redirect:/meter/start";
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", device.getPaoName()));
+            return "redirect:" + "/stars/device/commChannel/list";
         }
         catch (Exception e) {
-            //log.error("Unable to delete meter with id " + meter.getPaoName(), e);
-           // flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.failure", meter.getPaoName()));
-           // return "redirect:/meter/home?deviceId="+id;
+            log.error("Unable to delete RFN-1200 " + device.getPaoName(), e);
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", device.getPaoName(), e.getMessage()));
+            return "redirect:" + "/stars/device/rfn1200/" + id;
         }
-        
-        //if success
-     //   flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", deviceName));
-        //if failure
-        //flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", deviceName, e.getMessage()));
-        return "redirect:" + "/stars/device/commChannel/list";
     }
 
     /**

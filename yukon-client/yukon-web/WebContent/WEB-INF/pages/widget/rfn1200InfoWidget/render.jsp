@@ -8,55 +8,48 @@
 <cti:msgScope paths="yukon.common,yukon.web.modules.operator.commChannelInfoWidget">
     <tags:setFormEditMode mode="${mode}" />
     <c:if test="${not empty errorMsg}"><tags:alertBox>${fn:escapeXml(errorMsg)}</tags:alertBox></c:if>
-    <div class="js-global-error">
-        <c:if test="${not empty uniqueErrorMsg}">
-            <c:forEach var="globalErrorMsg" items="${uniqueErrorMsg}">
-                <tags:alertBox>${fn:escapeXml(globalErrorMsg)}</tags:alertBox>
-            </c:forEach>
-        </c:if>
-    </div>
     <cti:url var="saveUrl" value="/widget/rfn1200InfoWidget/save"/>
     <form:form modelAttribute="rfn1200" method="post" action="${saveUrl}" id="rfn1200-info-form">
         <cti:csrfToken />
         <cti:msg2 var="milliseconds" key=".units.ms"/>
-        <cti:tabs>
-        <!-- Info Tab -->
-            <cti:msg2 var="infoTab" key=".info" />
-            <cti:tab title="${infoTab}">
-                <c:choose>
-                    <c:when test="${not empty rfn1200}">
-                        <tags:hidden path="id"/>
-                        <tags:hidden path="paoType"/>
-                        <tags:nameValueContainer2>
-                            <tags:nameValue2 nameKey=".name">
-                                <tags:input path="name" maxlength="60" inputClass="w300 wrbw dib"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".type">
-                                <i:inline key="${rfn1200.paoType}"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".serialNumber">
-                                <tags:input path="rfnAddress.serialNumber" maxlength="30"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".manufacturer">
-                                <tags:input path="rfnAddress.manufacturer" maxlength="60"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".model">
-                                <tags:input path="rfnAddress.model" maxlength="60"/>  
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".postCommWait">
-                                <tags:input path="postCommWait" units="${milliseconds}"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".status">
-                                <tags:switchButton path="enabled" offNameKey=".disabled.label" onNameKey=".enabled.label"/>
-                            </tags:nameValue2>
-                        </tags:nameValueContainer2>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="empty-list"><i:inline key=".search.noResultsFound"/></span>
-                    </c:otherwise>
-                </c:choose>
-            </cti:tab>
-        </cti:tabs>
+        <c:choose>
+            <c:when test="${not empty rfn1200}">
+                <tags:hidden path="id"/>
+                <tags:hidden path="paoType"/>
+                <input type="hidden" id="isRfn1200" value="true"/>
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey=".name">
+                        <tags:input id="js-comm-channel-name" path="name" maxlength="60" inputClass="w300 wrbw dib"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".type">
+                        <cti:displayForPageEditModes modes="CREATE">
+                            <tags:selectWithItems items="${webSupportedCommChannelTypes}" id="js-comm-channel-type" path="paoType"/>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW,EDIT">
+                            <i:inline key="${rfn1200.paoType}"/>
+                        </cti:displayForPageEditModes>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".serialNumber">
+                        <tags:input path="rfnAddress.serialNumber" maxlength="30"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".manufacturer">
+                        <tags:input path="rfnAddress.manufacturer" maxlength="60"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".model">
+                        <tags:input path="rfnAddress.model" maxlength="60"/>  
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".postCommWait">
+                        <tags:input path="postCommWait" units="${milliseconds}"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".status">
+                        <tags:switchButton path="enabled" offNameKey=".disabled.label" onNameKey=".enabled.label"/>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </c:when>
+            <c:otherwise>
+                <span class="empty-list"><i:inline key=".search.noResultsFound"/></span>
+            </c:otherwise>
+        </c:choose>
     </form:form>
     <cti:displayForPageEditModes modes="VIEW">
         <div class="action-area">
@@ -83,5 +76,6 @@
              data-url="${editUrl}"/>
         </div>
     </cti:displayForPageEditModes>
-    <cti:includeScript link="/resources/js/pages/yukon.assets.rfn1200.js"/>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.assets.commChannel.js"/>
 </cti:msgScope>
