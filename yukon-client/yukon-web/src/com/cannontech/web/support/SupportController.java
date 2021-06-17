@@ -188,19 +188,16 @@ public class SupportController {
         setUpLinks(model, context);
         setUpManuals(model);
         List<String> previousBundles = new ArrayList<>();
-        List<String> previousRfBundles = new ArrayList<>();
         for(File f : bundleService.getBundles()){
             previousBundles.add(f.getName());
         }
-        for (File f : bundleService.getRfBundles()) {
-            previousRfBundles.add(f.getName());
-        }
+        
         model.addAttribute("supportBundle", bundle);
         model.addAttribute("now", new Date());
         model.addAttribute("rfSupportBundle", new RfSupportBundle());
         model.addAttribute("bundleRangeSelectionOptions", BundleRangeSelection.values());
         model.addAttribute("bundleList", previousBundles);
-        model.addAttribute("rfBundleList", previousRfBundles);
+        model.addAttribute("rfBundleList", getPreviousRfBundleNames());
         model.addAttribute("writerList", writerList);
         model.addAttribute("inProgress", bundleService.isInProgress());
         return "support.jsp";
@@ -282,12 +279,8 @@ public class SupportController {
         detailsRfValidator.validate(rfSupportBundle, result);
         model.addAttribute("rfSupportBundle", rfSupportBundle);
         model.addAttribute("now", new Date());
-
-        List<String> previousRfBundles = new ArrayList<>();
-        for (File f : bundleService.getRfBundles()) {
-            previousRfBundles.add(f.getName());
-        }
-        model.addAttribute("rfBundleList", previousRfBundles);
+        model.addAttribute("rfBundleList", getPreviousRfBundleNames());
+        
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("errorMessage", accessor.getMessage("yukon.web.error.fieldErrorsExist"));
@@ -301,6 +294,18 @@ public class SupportController {
         rfNetworkSupportBundleService.send(rfRequest);
        
         return "rfSupportBundle.jsp";
+    }
+    
+    @GetMapping("viewRfBundle")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
+    public String viewRFBundle(ModelMap model) throws Exception {
+
+        model.addAttribute("rfSupportBundle", new RfSupportBundle());
+        model.addAttribute("now", new Date());
+        
+        model.addAttribute("rfBundleList", getPreviousRfBundleNames());
+              
+        return "supportBundle/rfPreviousBundleTab.jsp";
     }
 
     @GetMapping("viewBundleProgress")
@@ -433,5 +438,13 @@ public class SupportController {
             }
         }
         return null;
+    }
+    
+    private List<String> getPreviousRfBundleNames() {
+    	List<String> previousRfBundles = new ArrayList<>();
+        for (File f : bundleService.getRfBundles()) {
+            previousRfBundles.add(f.getName());
+        }
+        return previousRfBundles;
     }
 }

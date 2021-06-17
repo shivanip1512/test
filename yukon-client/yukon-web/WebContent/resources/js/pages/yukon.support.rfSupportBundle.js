@@ -66,6 +66,15 @@ yukon.support.rfSupportBundle = (function() {
                 });
             });
             
+            $(document).on('click','.js-previous-rf-bundles', function(event) {
+               $.ajax({
+                    url : yukon.url("/support/viewRfBundle"),
+                    type : "GET"
+                }).done(function(data) {                
+                    $('#rf-support-bundle-tab').html(data);
+                });
+            });
+            
             _initialized = true;
         }
     };
