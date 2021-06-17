@@ -150,11 +150,11 @@ catch( apache::thrift::TException )
 namespace Thrift
 {
 
-    bool ChannelInfo::operator<( const ChannelInfo & rhs ) const
-    {
-        return std::tie( UOM, uomModifier, channelNum, enabled )
-                < std::tie( rhs.UOM, rhs.uomModifier, rhs.channelNum, rhs.enabled );
-    }
+bool ChannelInfo::operator<( const ChannelInfo & rhs ) const
+{
+    return std::tie( UOM, uomModifier, channelNum, enabled )
+            < std::tie( rhs.UOM, rhs.uomModifier, rhs.channelNum, rhs.enabled );
+}
 
 }
 
