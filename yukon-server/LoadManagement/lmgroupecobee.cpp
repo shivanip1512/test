@@ -91,9 +91,9 @@ bool LMGroupEcobee::sendCycleControl( long dutyCycle,
 
 
 bool LMGroupEcobee::sendSetpointControl( long controlDurationSeconds,
-                                        bool temperatureOption,
-                                        bool mandatory,
-                                        long temperatureOffset )
+                                         bool temperatureOption,
+                                         bool mandatory,
+                                         long temperatureOffset )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
