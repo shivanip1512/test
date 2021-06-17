@@ -33,6 +33,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.stars.commChannel.CommChannelSetupHelper;
 import com.cannontech.web.stars.rfn1200.Rfn1200Validator;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
@@ -46,6 +47,7 @@ public class Rfn1200InfoWidget extends AdvancedWidgetControllerBase {
     @Autowired private Rfn1200Validator rfn1200Validator;
     @Autowired private RfDaCreationService rfdaCreationService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private CommChannelSetupHelper commChanelSetupHelper;
 
     private static final Logger log = YukonLogManager.getLogger(Rfn1200InfoWidget.class);
 
@@ -91,9 +93,11 @@ public class Rfn1200InfoWidget extends AdvancedWidgetControllerBase {
 
     @PostMapping("/save")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
-    public String save(@ModelAttribute("rfn1200") Rfn1200Detail rfn1200, BindingResult result, FlashScope flash, HttpServletResponse resp) {
+    public String save(@ModelAttribute("rfn1200") Rfn1200Detail rfn1200, BindingResult result, FlashScope flash, ModelMap model, HttpServletResponse resp) {
         rfn1200Validator.validate(rfn1200, result);
         if (result.hasErrors()) {
+            model.addAttribute("mode", rfn1200.getId() == null ? PageEditMode.CREATE : PageEditMode.EDIT);
+            model.addAttribute("webSupportedCommChannelTypes", commChanelSetupHelper.getWebSupportedCommChannelTypes());
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             return "rfn1200InfoWidget/render.jsp";
         }

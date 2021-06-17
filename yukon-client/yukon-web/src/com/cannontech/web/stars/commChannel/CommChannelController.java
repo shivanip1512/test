@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,9 +72,6 @@ public class CommChannelController {
     @Autowired private CommChannelValidator<? extends PortBase<?>> commChannelValidator;
     @Autowired private CommChannelSetupHelper commChanelSetupHelper;
     @Autowired private ServerDatabaseCache dbCache;
-    private static final List<PaoType> webSupportedCommChannelTypes = Stream.of(PaoType.TSERVER_SHARED, PaoType.TCPPORT, PaoType.UDPPORT, PaoType.LOCAL_SHARED, PaoType.RFN_1200)
-                                                                            .sorted((p1, p2) -> p1.getDbString().compareTo(p2.getDbString()))
-                                                                            .collect(Collectors.toList());
 
     @GetMapping("/list")
     public String list(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flash,
@@ -190,7 +186,7 @@ public class CommChannelController {
                 rfn1200.setPaoType(PaoType.valueOf(type));
                 rfn1200.setEnabled(true);
             }
-            model.addAttribute("webSupportedCommChannelTypes", webSupportedCommChannelTypes);
+            model.addAttribute("webSupportedCommChannelTypes", commChanelSetupHelper.getWebSupportedCommChannelTypes());
             model.addAttribute("rfn1200", rfn1200);
             return "../widget/rfn1200InfoWidget/render.jsp";
         } else {
@@ -321,13 +317,13 @@ public class CommChannelController {
         commChanelSetupHelper.setupPhysicalPort(commChannel, model);
         commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
         model.addAttribute("commChannel", commChannel);
-        model.addAttribute("webSupportedCommChannelTypes", webSupportedCommChannelTypes);
+        model.addAttribute("webSupportedCommChannelTypes", commChanelSetupHelper.getWebSupportedCommChannelTypes());
     }
 
     private void setupDefaultFieldValue(PortBase commChannel, ModelMap model) {
         commChannel.setBaudRate(BaudRate.BAUD_1200);
         commChannel.setEnable(true);
         model.addAttribute("commChannel", commChannel);
-        model.addAttribute("webSupportedCommChannelTypes", webSupportedCommChannelTypes);
+        model.addAttribute("webSupportedCommChannelTypes", commChanelSetupHelper.getWebSupportedCommChannelTypes());
     }
 }

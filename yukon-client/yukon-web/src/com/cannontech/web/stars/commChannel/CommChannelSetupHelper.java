@@ -2,6 +2,8 @@ package com.cannontech.web.stars.commChannel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
@@ -25,6 +27,14 @@ import com.google.common.collect.Lists;
 public class CommChannelSetupHelper {
 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    
+    private static final List<PaoType> webSupportedCommChannelTypes = Stream.of(PaoType.TSERVER_SHARED, PaoType.TCPPORT, PaoType.UDPPORT, PaoType.LOCAL_SHARED, PaoType.RFN_1200)
+            .sorted((p1, p2) -> p1.getDbString().compareTo(p2.getDbString()))
+            .collect(Collectors.toList());
+    
+    public List<PaoType> getWebSupportedCommChannelTypes() {
+        return webSupportedCommChannelTypes;
+    }
 
     public void setupCommChannelFields(PortBase commChannel, ModelMap model) {
         model.addAttribute("baudRateList", BaudRate.values());
