@@ -284,7 +284,7 @@ public class SupportController {
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("errorMessage", accessor.getMessage("yukon.web.error.fieldErrorsExist"));
-            return "rfSupportBundle.jsp";
+            return "supportBundle/rfSupportBundle.jsp";
         }
         String suffix = new DateTime().toString(DateTimeFormat.forPattern("yyyy-MM-dd-HHmmss"));
         String fileName = rfSupportBundle.getCustomerName() + "-" + suffix;
@@ -293,7 +293,7 @@ public class SupportController {
         rfRequest.setType(SupportBundleRequestType.NETWORK_DATA);
         rfNetworkSupportBundleService.send(rfRequest);
        
-        return "rfSupportBundle.jsp";
+        return "supportBundle/rfSupportBundle.jsp";
     }
     
     @GetMapping("viewRfBundle")
@@ -302,7 +302,7 @@ public class SupportController {
 
         model.addAttribute("rfBundleList", getPreviousRfBundleNames());
 
-        return "supportBundle/rfPreviousBundleTab.jsp";
+        return "supportBundle/rfSupportBundleTab.jsp";
     }
 
     @GetMapping("viewBundleProgress")
