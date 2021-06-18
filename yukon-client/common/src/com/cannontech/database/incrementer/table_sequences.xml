@@ -408,6 +408,12 @@
       <sequence name="SmartNotificationEvent">
         <table name="SmartNotificationEvent" identitycolumn="EventId" initsequence="true"/>
       </sequence>
+      <sequence name="SmartNotificationEmailHistory">
+        <table name="SmartNotificationEmailHistory" identitycolumn="HistoryId" initsequence="true"/>
+      </sequence>
+       <sequence name="SmartNotificationEventHistory">
+        <table name="SmartNotificationEventHistory" identitycolumn="EventHistoryId" initsequence="true"/>
+      </sequence>
       <sequence name="CollectionAction">
         <table name="CollectionAction" identitycolumn="CollectionActionId" initsequence="true"/>
       </sequence>

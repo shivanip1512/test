@@ -32,6 +32,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
+import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters.ProcessingType;
 import com.cannontech.services.smartNotification.service.impl.Intervals;
 import com.cannontech.services.smartNotification.service.impl.WaitTime;
 import com.cannontech.yukon.IDatabaseCache;
@@ -88,7 +89,8 @@ public abstract class SmartNotificationDecider {
                     validate(unprocessed), frequency);
 
             if (!subscriptions.isEmpty()) {
-                result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, subscriptions, 0));
+                result.addMessageParameters(
+                        MessageParametersHelper.getMessageParameters(eventType, subscriptions, 0, ProcessingType.START_UP));
                 logInfo("On Startup found: " + unprocessed.size() + " " + frequency + " events. Result:"
                         + result.loggingString(commsLogger.getLevel()));
             } else {
@@ -178,7 +180,7 @@ public abstract class SmartNotificationDecider {
                             // subscription found add info used to create email message
                             result.addMessageParameters(
                                     MessageParametersHelper.getMessageParameters(eventType, subscriptionsToEvents,
-                                            result.getInterval()));
+                                            result.getInterval(), ProcessingType.ON_INTERVAL));
 
                             cacheStatistics(cacheKey, result);
                         }
@@ -292,7 +294,8 @@ public abstract class SmartNotificationDecider {
                 validate(events), IMMEDIATE);
         ProcessorResult result = new ProcessorResult(this, now, new WaitTime(now, 0));
         if (!immediate.isEmpty()) {
-            result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, immediate, 0));
+            result.addMessageParameters(
+                    MessageParametersHelper.getMessageParameters(eventType, immediate, 0, ProcessingType.IMMEDIATE));
         }
         return result;
     }
@@ -337,7 +340,8 @@ public abstract class SmartNotificationDecider {
             int nextInterval = intervals.getNextInterval(firstInterval);
             addCachedInterval(cacheKey, nextInterval);
             if (!subscriptionsToEvents.isEmpty()) {
-                result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, subscriptionsToEvents, 0));
+                result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, subscriptionsToEvents, 0,
+                        ProcessingType.ON_INTERVAL));
             }
             cacheStatistics(cacheKey, result);
             eventDao.markEventsAsProcessed(new ArrayList<>(subscriptionsToEvents.values()), result.getProcessedTime(),
