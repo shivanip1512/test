@@ -112,6 +112,6 @@ public class SystemDataFieldType implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("DetailedConfigurationStatusCode [status=%s, code=%s]", fieldType, stringValue);
+        return "SystemDataFieldType [fieldType=" + fieldType + ", stringValue=" + stringValue + "]";
     }
 }
