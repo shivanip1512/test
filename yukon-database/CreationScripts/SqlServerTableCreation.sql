@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/14/2021 3:20:27 PM                         */
+/* Created on:     6/18/2021 2:01:57 PM                         */
 /*==============================================================*/
 
 
@@ -9216,6 +9216,38 @@ go
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 
 /*==============================================================*/
+/* Table: SmartNotificationEmailHistory                         */
+/*==============================================================*/
+create table SmartNotificationEmailHistory (
+   HistoryId            numeric              not null,
+   EventType            varchar(50)          not null,
+   Verbosity            varchar(10)          not null,
+   Media                varchar(10)          not null,
+   ProcessingType       varchar(10)          not null,
+   IntervalMinutes      numeric              not null,
+   TotalEvents          numeric              not null,
+   SendTime             datetime             not null,
+   constraint PK_SmartNotificationEmailHistory primary key (HistoryId)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_SmartNotificationEmailHistory_EventType          */
+/*==============================================================*/
+create index INDX_SmartNotificationEmailHistory_EventType on SmartNotificationEmailHistory (
+EventType ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_SmartNotificationEmailHistory_SendTime           */
+/*==============================================================*/
+create index INDX_SmartNotificationEmailHistory_SendTime on SmartNotificationEmailHistory (
+SendTime ASC
+)
+go
+
+/*==============================================================*/
 /* Table: SmartNotificationEvent                                */
 /*==============================================================*/
 create table SmartNotificationEvent (
@@ -9237,6 +9269,16 @@ Timestamp DESC
 go
 
 /*==============================================================*/
+/* Table: SmartNotificationEventHistory                         */
+/*==============================================================*/
+create table SmartNotificationEventHistory (
+   EventHistoryId       numeric              not null,
+   HistoryId            numeric              not null,
+   constraint PK_SmartNotificationEventHistory primary key (EventHistoryId)
+)
+go
+
+/*==============================================================*/
 /* Table: SmartNotificationEventParam                           */
 /*==============================================================*/
 create table SmartNotificationEventParam (
@@ -9244,6 +9286,27 @@ create table SmartNotificationEventParam (
    Name                 varchar(30)          not null,
    Value                varchar(500)         not null,
    constraint PK_SmartNotificationEventParam primary key (EventId, Name, Value)
+)
+go
+
+/*==============================================================*/
+/* Table: SmartNotificationEventParamHistory                    */
+/*==============================================================*/
+create table SmartNotificationEventParamHistory (
+   EventHistoryId       numeric              not null,
+   Name                 varchar(30)          not null,
+   Value                varchar(500)         not null,
+   constraint PK_SmartNotificationEventParamHistory primary key (EventHistoryId, Name, Value)
+)
+go
+
+/*==============================================================*/
+/* Table: SmartNotificationRecipientHistory                     */
+/*==============================================================*/
+create table SmartNotificationRecipientHistory (
+   HistoryId            numeric              not null,
+   Recipient            varchar(254)         not null,
+   constraint PK_SmartNotificationRecipientHistory primary key (HistoryId, Recipient)
 )
 go
 
@@ -15190,9 +15253,27 @@ alter table SiteInformation
       references Substation (SubstationID)
 go
 
+alter table SmartNotificationEventHistory
+   add constraint FK_SmrtNotifEventHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotificationEmailHistory (HistoryId)
+         on delete cascade
+go
+
 alter table SmartNotificationEventParam
    add constraint FK_SmartNotifEP_SmartNotifE foreign key (EventId)
       references SmartNotificationEvent (EventId)
+         on delete cascade
+go
+
+alter table SmartNotificationEventParamHistory
+   add constraint FK_SmrtNotifEvntPHist_SmrtNotifEmailHist foreign key (EventHistoryId)
+      references SmartNotificationEventHistory (EventHistoryId)
+         on delete cascade
+go
+
+alter table SmartNotificationRecipientHistory
+   add constraint FK_SmrtNotifRecipHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotificationEmailHistory (HistoryId)
          on delete cascade
 go
 

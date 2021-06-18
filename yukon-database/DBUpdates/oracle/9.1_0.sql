@@ -92,6 +92,64 @@ DELETE FROM Job WHERE BeanName = 'ecobeePointUpdateJobDefinition';
 INSERT INTO DBUpdates VALUES ('YUK-24557', '9.1.0', SYSDATE);
 /* @end YUK-24557 */
 
+/* @start YUK-24437 */
+create table SmartNotificationEmailHistory  (
+   HistoryId            NUMBER                          not null,
+   EventType            VARCHAR2(50)                    not null,
+   Verbosity            VARCHAR2(10)                    not null,
+   Media                VARCHAR2(10)                    not null,
+   ProcessingType       VARCHAR2(10)                    not null,
+   IntervalMinutes      NUMBER                          not null,
+   TotalEvents          NUMBER                          not null,
+   SendTime             DATE                            not null,
+   constraint PK_SmartNotificationEmailHistory primary key (HistoryId)
+);
+
+create index INDX_SmartNotificationEmailHistory_EventType on SmartNotificationEmailHistory (
+   EventType ASC
+);
+
+create index INDX_SmartNotificationEmailHistory_SendTime on SmartNotificationEmailHistory (
+   SendTime ASC
+);
+
+create table SmartNotificationEventHistory  (
+   EventHistoryId       NUMBER                          not null,
+   HistoryId            NUMBER                          not null,
+   constraint PK_SmartNotificationEventHistory primary key (EventHistoryId)
+);
+
+create table SmartNotificationEventParamHis  (
+   EventHistoryId       NUMBER                          not null,
+   Name                 VARCHAR2(30)                    not null,
+   Value                VARCHAR2(500)                   not null,
+   constraint PK_SmartNotificationEventParamHistory primary key (EventHistoryId, Name, Value)
+);
+
+create table SmartNotificationRecipientHist  (
+   HistoryId            NUMBER                          not null,
+   Recipient            VARCHAR2(254)                   not null,
+   constraint PK_SmartNotificationRecipientHistory primary key (HistoryId, Recipient)
+);
+
+alter table SmartNotificationEventHistory
+   add constraint FK_SmrtNotifEventHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotificationEmailHistory (HistoryId)
+      on delete cascade;
+      
+alter table SmartNotificationEventParamHis
+   add constraint FK_SmrtNotifEvntPHist_SmrtNotifEmailHist foreign key (EventHistoryId)
+      references SmartNotificationEventHistory (EventHistoryId)
+      on delete cascade;
+
+alter table SmartNotificationRecipientHist
+   add constraint FK_SmrtNotifRecipHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotificationEmailHistory (HistoryId)
+      on delete cascade;
+
+INSERT INTO DBUpdates VALUES ('YUK-24437', '9.1.0', SYSDATE);
+/* @end YUK-24437 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
