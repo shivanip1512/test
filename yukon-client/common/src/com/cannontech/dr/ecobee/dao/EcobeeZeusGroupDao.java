@@ -84,7 +84,7 @@ public interface EcobeeZeusGroupDao {
     List<String> getZeusGroupNames(int yukonGroupId);
 
     /**
-     * Return the List of Yukon groups associated with the inventory and Yukon programId.
+     * Return the Yukon group associated with the inventory and Yukon programId.
      */
     int getLmGroupsForInventory(int inventoryId, int programId);
 
@@ -96,12 +96,7 @@ public interface EcobeeZeusGroupDao {
     /**
      * Get Yukon program id for the specified zeusGroupId
      */
-    Integer getProgramIdForZeusGroup(String zeusGroupId);
-
-    /**
-     * Retrieve list of Zeus group IDs for a given inventoryId, lmGroupId and Yukon programId
-     */
-    List<String> getZeusGroupIds(int inventoryId, int lmGroupId, Integer programId);
+    int getProgramIdForZeusGroup(String zeusGroupId);
 
     /**
      * Retrieve List of enrolled yukon programId for the specified inventoryId and lmGroupId

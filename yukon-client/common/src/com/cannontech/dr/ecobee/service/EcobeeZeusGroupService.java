@@ -92,11 +92,6 @@ public interface EcobeeZeusGroupService {
     void updateProgramId(String zeusGroupId, int programId);
 
     /**
-     * Return true if the device is already enrolled for the specified Yukon group ID and Yukon program ID.
-     */
-    boolean isDeviceEnrolledForGroupAndProgram(int inventoryId, int lmGroupId, Integer programId);
-
-    /**
      * Return the program id to which inventory will be enrolled.
      */
     int getProgramIdToEnroll(int inventoryId, int lmGroupId);

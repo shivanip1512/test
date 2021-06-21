@@ -910,6 +910,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         innerSql.append("AND LMGroupID").eq(lmGroupId);
         innerSql.append("AND AccountID").eq(accountId);
         innerSql.append("AND GroupEnrollStop IS NULL");
+        innerSql.append("AND OptOutStart IS NULL");
         sql.in(innerSql);
         return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }

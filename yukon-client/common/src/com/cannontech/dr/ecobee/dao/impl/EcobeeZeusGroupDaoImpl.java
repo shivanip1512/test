@@ -22,9 +22,9 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EcobeeGroupId FROM LMGroupZeusMapping");
         sql.append("WHERE YukonGroupId").eq(yukonGroupId);
-        List<Integer> programIdList= new ArrayList<Integer>();
+        List<Integer> programIdList = new ArrayList<Integer>();
         programIdList.add(programId);
-        programIdList.add(-1);
+        programIdList.add(EcobeeZeusGroupService.DEFAULT_PROGRAM_ID);
         sql.append("AND ProgramId").in(programIdList);
         return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
@@ -180,22 +180,11 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
     }
 
     @Override
-    public Integer getProgramIdForZeusGroup(String zeusGroupId) {
+    public int getProgramIdForZeusGroup(String zeusGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ProgramId FROM LMGroupZeusMapping");
         sql.append("WHERE EcobeeGroupId").eq(zeusGroupId);
         return jdbcTemplate.queryForInt(sql);
-    }
-
-    @Override
-    public List<String> getZeusGroupIds(int inventoryId, int lmGroupId, Integer programId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT LGZM.EcobeeGroupId FROM LMGroupZeusMapping LGZM");
-        sql.append("JOIN ZeusGroupInventoryMapping ZGIM ON LGZM.EcobeeGroupId = ZGIM.EcobeeGroupId");
-        sql.append("AND ZGIM.InventoryID").eq(inventoryId);
-        sql.append("AND LGZM.YukonGroupId").eq(lmGroupId);
-        sql.append("AND LGZM.ProgramId").eq(programId);
-        return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
 
     @Override

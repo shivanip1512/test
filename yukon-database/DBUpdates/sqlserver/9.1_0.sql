@@ -98,6 +98,14 @@ DELETE FROM Job WHERE BeanName = 'ecobeePointUpdateJobDefinition';
 INSERT INTO DBUpdates VALUES ('YUK-24557', '9.1.0', GETDATE());
 /* @end YUK-24557 */
 
+/* @start YUK-24529 */
+ALTER TABLE LMGroupZeusMapping ADD ProgramId NUMERIC;
+GO
+
+UPDATE LMGroupZeusMapping SET ProgramId = -1;
+INSERT INTO DBUpdates VALUES ('YUK-24529', '9.1.0', GETDATE());
+/* @end YUK-24529 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

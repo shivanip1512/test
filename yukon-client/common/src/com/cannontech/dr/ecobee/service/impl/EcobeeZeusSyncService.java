@@ -20,8 +20,6 @@ import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
-import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 
@@ -30,8 +28,6 @@ public class EcobeeZeusSyncService {
     @Autowired private EcobeeZeusGroupService ecobeeZeusGroupService;
     @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
-    @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private LMHardwareControlGroupDao hardwareControlGroupDao;
     @Autowired private EcobeeZeusGroupDao ecobeeZeusGroupDao;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> scheduledFuture;

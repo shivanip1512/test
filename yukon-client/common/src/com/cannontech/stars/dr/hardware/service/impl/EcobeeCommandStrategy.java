@@ -109,16 +109,15 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                     if (CollectionUtils.isNotEmpty(removedEnrollmentGroupIds)) {
                         ecobeeZeusCommunicationService.unEnroll(removedEnrollmentGroupIds, serialNumber, device.getInventoryID(), true);
                     }
-                groupIds = getGroupId(inventoryId);
-                for (int tempGroupId : groupIds) {
-                    programId = ecobeeZeusGroupService.getProgramIdToEnroll(inventoryId, tempGroupId);
-                    if (ecobeeZeusGroupService.shouldEnrollToGroup(inventoryId, programId)) {
-                        groupId = tempGroupId;
-                        break;
+                    groupIds = getGroupId(inventoryId);
+                    for (int tempGroupId : groupIds) {
+                        programId = ecobeeZeusGroupService.getProgramIdToEnroll(inventoryId, tempGroupId);
+                        if (ecobeeZeusGroupService.shouldEnrollToGroup(inventoryId, programId)) {
+                            groupId = tempGroupId;
+                            break;
+                        }
                     }
-                }
-
-                ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID(), programId, true);
+                    ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID(), programId, true);
 
                     break;
                 case PERFORMANCE_VERIFICATION:

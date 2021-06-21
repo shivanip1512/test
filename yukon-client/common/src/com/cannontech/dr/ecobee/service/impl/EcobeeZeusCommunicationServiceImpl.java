@@ -62,7 +62,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private static final int thresholdThermostatCount = 5;
+    private static final int thresholdThermostatCount = 9900;
     private static final String YUKON_CYCLE_EVENT_NAME = "yukonCycle";
 
     @Override
@@ -170,8 +170,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             String createThermostatGroupURL = getUrlBase() + "tstatgroups";
 
             CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), Arrays.asList(serialNumber));
-            ZeusGroup group = new ZeusGroup(ecobeeZeusGroupService.getNextGroupName(lmGroupId, yukonProgramId),
-                    getZeusProgramId());
+            String newName = ecobeeZeusGroupService.getNextGroupName(lmGroupId, yukonProgramId);
+            ZeusGroup group = new ZeusGroup(newName, getZeusProgramId());
             ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
             ResponseEntity<Map> responseEntity = (ResponseEntity<Map>) requestHelper.callEcobeeAPIForObject(
@@ -211,7 +211,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         ResponseEntity<? extends Object> responseEntity = updateThermostatGroup(zeusGroupId, thermostatIds);
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             log.info("Thermostat serial number {} mapped successfully to the zeus group ID {}", serialNumber, zeusGroupId);
-            // Insert device to Zeus mapping only in case of enrollment. For Cancel OupOut, do not insert the mapping.
+            // Insert device to Zeus mapping table only in case of enrollment. For Cancel OupOut, do not insert the mapping.
             if (updateDeviceMapping) {
                 ecobeeZeusGroupService.mapInventoryToZeusGroupId(inventoryId, zeusGroupId);
             }
@@ -349,7 +349,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         String eventId = StringUtils.EMPTY;
         String issueDemandResponseUrl = getUrlBase() + "events/dr";
 
-        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(parameters.getGroupId(),0);
+        //TODO: Need to retrieve programId from C++ service. Will create JIRA for this.
+        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(parameters.getGroupId(), 0);
         for (String zeusGroupId : zeusGroupIds) {
             ZeusDemandResponseRequest dutyCycleDr = new ZeusDemandResponseRequest(buildZeusEvent(zeusGroupId,
                     parameters.getStartTime(), parameters.getEndTime(), parameters.isOptional()));
@@ -381,7 +382,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         String eventId = StringUtils.EMPTY;
         String issueDemandResponseUrl = getUrlBase() + "events/dr";
 
-        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(parameters.getGroupId(),0);
+        //TODO: Need to retrieve programId from C++ service. Will create JIRA for this.
+        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(parameters.getGroupId(), 0);
         for (String zeusGroupId : zeusGroupIds) {
             ZeusDemandResponseRequest setpointDr = new ZeusDemandResponseRequest(buildZeusEvent(zeusGroupId,
                     parameters.getStartTime(), parameters.getStopTime(), parameters.isOptional()));
@@ -413,7 +415,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         String eventId = StringUtils.EMPTY;
         String issueDemandResponseUrl = getUrlBase() + "events/dr";
 
-        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(parameters.getGroupId(),0);
+        //TODO: Need to retrieve programId from C++ service. Will create JIRA for this.
+        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(parameters.getGroupId(), 0);
         for (String zeusGroupId : zeusGroupIds) {
             ZeusDemandResponseRequest ecoPluspointDr = new ZeusDemandResponseRequest(buildZeusEcoPlusEvent(zeusGroupId,
                                                                                                            parameters.getStartTime(),

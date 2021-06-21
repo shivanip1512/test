@@ -157,18 +157,16 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     }
 
     @Override
-    public boolean isDeviceEnrolledForGroupAndProgram(int inventoryId, int lmGroupId, Integer programId) {
-        return ecobeeZeusGroupDao.getZeusGroupIds(inventoryId, lmGroupId, programId).size() > 0;
-    }
-
-    @Override
     public int getProgramIdToEnroll(int inventoryId, int lmGroupId) {
         List<Integer> programIds = getActiveEnrolmentProgramIds(inventoryId, lmGroupId);
-        if(programIds.size()>1) {
-            programIds.removeIf(programId -> isDeviceEnrolledForGroupAndProgram(inventoryId, lmGroupId, programId));
+        // In case of single program enrollment, only 1 program id will be available else multiple program ids will be there.
+        // Remove already enrolled program ids when multiple program ids are found.
+        if (programIds.size() > 1) {
+            List<Integer> ecobeeEnrolledProgramIds = ecobeeZeusGroupDao.getProgramIdsEnrolled(inventoryId, lmGroupId);
+            programIds.removeIf(programId -> ecobeeEnrolledProgramIds.contains(programId));
         }
         if (programIds.size() > 1) {
-            throw new BadConfigurationException("Number of Program IDs should not be more that 1.");
+            throw new BadConfigurationException("Number of Program IDs in Yukon enrollment should not be more that 1.");
         }
         return programIds.get(0);
     }
@@ -181,10 +179,17 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
     @Override
     public int getProgramIdToUnenroll(int inventoryId, int lmGroupId) {
         List<Integer> yukonEnrolledProgramIds = getActiveEnrolmentProgramIds(inventoryId, lmGroupId);
+        // In case of single program enrollment, only 1 program id will be available else multiple program ids will be there.
+        // Remove active enrollment program ids from ecobeeEnrolledProgramIds.
         List<Integer> ecobeeEnrolledProgramIds = ecobeeZeusGroupDao.getProgramIdsEnrolled(inventoryId, lmGroupId);
-        ecobeeEnrolledProgramIds.removeIf(programId -> yukonEnrolledProgramIds.contains(programId));
+        if (ecobeeEnrolledProgramIds.size() > 1) {
+            ecobeeEnrolledProgramIds.removeIf(programId -> yukonEnrolledProgramIds.contains(programId));
+        }
         if (ecobeeEnrolledProgramIds.size() == 0) {
             return DEFAULT_PROGRAM_ID;
+        }
+        if (ecobeeEnrolledProgramIds.size() > 1) {
+            throw new BadConfigurationException("Number of Program IDs in ecobee enrollment should not be more that 1.");
         } else {
             return ecobeeEnrolledProgramIds.get(0);
         }
