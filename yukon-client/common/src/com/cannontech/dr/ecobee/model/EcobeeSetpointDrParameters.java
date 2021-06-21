@@ -1,11 +1,13 @@
 package com.cannontech.dr.ecobee.model;
 
+import java.io.Serializable;
+
 import org.joda.time.Instant;
 
 /**
  * Contains all parameters required to initiate a duty cycle demand response event in Ecobee.
  */
-public final class EcobeeSetpointDrParameters {
+public final class EcobeeSetpointDrParameters implements Serializable {
     private final int groupId;
     private final boolean tempOptionHeat;
     private final boolean optional;

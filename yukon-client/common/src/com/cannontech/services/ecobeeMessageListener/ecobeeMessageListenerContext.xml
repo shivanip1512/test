@@ -10,7 +10,11 @@
     <context:annotation-config/>
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusRuntimeCalcServiceImpl"/>
     <bean id="ecobeeMessageListener" class="com.cannontech.dr.ecobee.EcobeeMessageListener"/>
-
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LMEcobeeCycleControlCommandSerializer"/>
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LMEcobeeSetpointControlCommandSerializer"/>
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LMEcobeeRestoreCommandSerializer"/>
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LMEcobeePlusControlCommandSerializer"/>
+    
     <jms:listener-container 
         connection-factory="connectionFactory" 
         destination-type="queue"
