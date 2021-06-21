@@ -493,16 +493,16 @@ catch( apache::thrift::TException )
     return {};
 }
 
+const std::map<LoadManagement::TempOptionTypes, Thrift::LMEcobeeTemperatureTypes::type>    tempTranslator
+{
+    { LoadManagement::TempOptionTypes::Heat, Thrift::LMEcobeeTemperatureTypes::HEAT },
+    { LoadManagement::TempOptionTypes::Cool, Thrift::LMEcobeeTemperatureTypes::COOL }
+}; 
+
 template<>
 std::vector<unsigned char> IM_EX_MSG MessageSerializer<LoadManagement::LMEcobeeSetpointControlMessage>::serialize(const LoadManagement::LMEcobeeSetpointControlMessage &m)
 try
 {
-    const std::map<LoadManagement::LMEcobeeSetpointControlMessage::TempOptionTypes, Thrift::LMEcobeeTemperatureTypes::type>    tempTranslator
-    {
-        { LoadManagement::LMEcobeeSetpointControlMessage::TempOptionTypes::Heat, Thrift::LMEcobeeTemperatureTypes::HEAT },
-        { LoadManagement::LMEcobeeSetpointControlMessage::TempOptionTypes::Cool, Thrift::LMEcobeeTemperatureTypes::COOL }
-    };
-
     Thrift::LMEcobeeSetpointControlCommand    msg;
 
     msg.__set__groupId               ( m._groupId           );
@@ -534,12 +534,6 @@ template<>
 std::vector<unsigned char> IM_EX_MSG MessageSerializer<LoadManagement::LMEcobeePlusControlMessage>::serialize(const LoadManagement::LMEcobeePlusControlMessage &m)
 try
 {
-    const std::map<LoadManagement::LMEcobeePlusControlMessage::TempOptionTypes, Thrift::LMEcobeeTemperatureTypes::type>   tempTranslator
-    {
-        { LoadManagement::LMEcobeePlusControlMessage::TempOptionTypes::Heat, Thrift::LMEcobeeTemperatureTypes::HEAT },
-        { LoadManagement::LMEcobeePlusControlMessage::TempOptionTypes::Cool, Thrift::LMEcobeeTemperatureTypes::COOL }
-    };
-
     Thrift::LMEcobeePlusControlCommand   msg;
 
     msg.__set__groupId               ( m._groupId           );

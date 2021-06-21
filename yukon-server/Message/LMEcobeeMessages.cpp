@@ -11,7 +11,7 @@ namespace LoadManagement {
 
 LMEcobeeCyclingControlMessage::LMEcobeeCyclingControlMessage( int  groupId,
                                                               int  dutyCycle,
-                                                              int  startTime,
+                                                              long long  startTime,
                                                               int  controlDuration,
                                                               bool mandatory,
                                                               bool rampInOut )
@@ -64,7 +64,7 @@ LMEcobeePlusControlMessage::LMEcobeePlusControlMessage( int groupId,
 /// 
 
 LMEcobeeRestoreMessage::LMEcobeeRestoreMessage( int groupId,
-                                                int restoreTime )
+                                                long long restoreTime )
     :   _groupId( groupId ),
         _restoreTime( restoreTime )
 {

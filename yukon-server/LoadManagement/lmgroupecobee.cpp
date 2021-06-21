@@ -49,7 +49,7 @@ bool LMGroupEcobee::sendCycleControl( long dutyCycle,
             {
                 getPAOId(),
                 dutyCycle,
-                static_cast<int>(localSeconds),
+                localSeconds,
                 controlDurationSeconds,
                 mandatory,
                 rampInOutOption
@@ -109,8 +109,8 @@ bool LMGroupEcobee::sendSetpointControl( long controlDurationSeconds,
                 localSeconds,
                 controlDurationSeconds,  
                 temperatureOption
-                ?LMEcobeeSetpointControlMessage::TempOptionTypes::Heat
-                :LMEcobeeSetpointControlMessage::TempOptionTypes::Cool,
+                    ? TempOptionTypes::Heat
+                    : TempOptionTypes::Cool,
                 mandatory,
                 temperatureOffset
             });
@@ -167,8 +167,8 @@ bool LMGroupEcobee::sendEcobeePlusControl( long controlDurationSeconds,
                 localSeconds,
                 controlDurationSeconds,
                 temperatureOption
-                ? LMEcobeePlusControlMessage::TempOptionTypes::Heat
-                : LMEcobeePlusControlMessage::TempOptionTypes::Cool,
+                    ? TempOptionTypes::Heat
+                    : TempOptionTypes::Cool,
                 randomTimeSeconds
             });
 
@@ -216,7 +216,7 @@ bool LMGroupEcobee::sendStopControl( bool stopImmediately /* unused */ )
         Serialization::MessageSerializer<LMEcobeeRestoreMessage>::serialize(
             {
                 getPAOId(),
-                static_cast<int>(localSeconds)
+                localSeconds
             });
 
     if (serializedMessage.empty())
@@ -258,7 +258,7 @@ bool LMGroupEcobee::sendShedControl( long controlMinutes )
             {
                 getPAOId(),
                 100,
-                static_cast<int>(localSeconds),
+                localSeconds,
                 controlMinutes * 60,
                 true,
                 false

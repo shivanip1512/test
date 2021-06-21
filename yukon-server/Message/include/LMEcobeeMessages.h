@@ -13,29 +13,31 @@ struct IM_EX_MSG LMEcobeeCyclingControlMessage
 
     LMEcobeeCyclingControlMessage( int  groupId,
                                    int  dutyCycle,
-                                   int  startTime,
+                                   long long startTime,
                                    int  controlDuration,
                                    bool mandatory,
                                    bool rampInOut);
 
     int  _groupId;
     char _dutyCycle;
-    int  _startTime;
-    int  _stopTime;
+    long long  _startTime;
+    long long  _stopTime;
     char _mandatory;
     bool _rampingOption;
 };
 
 ///
 
+enum class TempOptionTypes
+{
+    Heat,
+    Cool
+};
+
+/// 
+
 struct IM_EX_MSG LMEcobeeSetpointControlMessage 
 {
-
-    enum class TempOptionTypes
-    {
-        Heat,
-        Cool
-    };
 
     LMEcobeeSetpointControlMessage( int  groupId,
                                     long long startTime,
@@ -58,12 +60,6 @@ struct IM_EX_MSG LMEcobeeSetpointControlMessage
 struct IM_EX_MSG LMEcobeePlusControlMessage 
   
 {
-    enum class TempOptionTypes
-    {
-        Heat,
-        Cool
-    };
-
     LMEcobeePlusControlMessage( int groupId,
                                 long long startTime,
                                 int controlDuration,            
@@ -84,10 +80,10 @@ struct IM_EX_MSG LMEcobeeRestoreMessage
 {
 
     LMEcobeeRestoreMessage( int groupId,
-                            int restoreTime );
+                            long long restoreTime );
 
     int _groupId;
-    int _restoreTime;
+    long long _restoreTime;
 };
 
 }
