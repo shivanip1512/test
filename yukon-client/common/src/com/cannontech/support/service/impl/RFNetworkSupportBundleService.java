@@ -42,6 +42,7 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUtil;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
@@ -56,6 +57,7 @@ import com.cannontech.support.rfn.message.RfnSupportBundleResponse;
 import com.cannontech.support.rfn.message.RfnSupportBundleResponseType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.collect.ImmutableSet;
 
 public class RFNetworkSupportBundleService {
 
@@ -63,16 +65,20 @@ public class RFNetworkSupportBundleService {
     private final static String downloadRfSupportBundleURL = "/nmclient/DownloadRfSupportBundleServlet?fileName=";
     private final static String supportBundleDirectory = "/Server/SupportBundles/";
     private final static String locationDataDir = "locationData";
-    private final static int batchsize = 10;
+    private final static int batchsize = 1000;
     private final static int meterLocationcolumnCount = 11;
     private final static int relayLocationcolumnCount = 9;
     private final static String meterLocationFileName = "MeterLocationsInYukon";
     private final static String relayLocationFileName = "RelayLocationsInYukon";
+    private final static String gatewayLocationFileName = "GatewayLocationsInYukon";
     private static final int PAST_RF_BUNDLES_TO_KEEP = 5;
+    private final static ImmutableSet<PaoType> rfGatewayTypes = ImmutableSet.of(PaoType.RFN_GATEWAY, PaoType.GWY800, PaoType.GWY801);
+
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired GlobalSettingDao globalSettingDao;
     @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private RfnGatewayDataCache dataCache;
 
     private RequestReplyReplyTemplate<RfnSupportBundleResponse, RfnSupportBundleResponse> template;
     private RequestReplyTemplate<RfnMetadataMultiResponse> metaDataMultiRequestTemplate;
@@ -157,9 +163,11 @@ public class RFNetworkSupportBundleService {
      * Send data collection request for location data i.e meterLocation, relay location and gatewayLocation.
      */
     private void sendLocationDataRequest(RfnSupportBundleRequest request) {
-        sendLocationDataRequest(request, PaoType.getRfMeterTypes(), meterLocationFileName, meterLocationcolumnCount);
-        sendLocationDataRequest(request, PaoType.getRfRelayTypes(), relayLocationFileName, relayLocationcolumnCount);
-        // TODO : Call here for gateway location data.
+        String dateTime = getFormatedDateStr(request.getFromTimestamp());
+        String destDir = supportBundleDirectory + "RfNetworkData/" + request.getFileName() + File.separator + locationDataDir + "_" + dateTime;
+        sendLocationDataRequest(request, PaoType.getRfMeterTypes(), destDir, meterLocationFileName, meterLocationcolumnCount);
+        sendLocationDataRequest(request, PaoType.getRfRelayTypes(), destDir, relayLocationFileName, relayLocationcolumnCount);
+        buildAndWriteGatewayLocationData(request, destDir, gatewayLocationFileName);
     }
 
     /**
@@ -336,9 +344,9 @@ public class RFNetworkSupportBundleService {
         return new DateTime(millis).toString(DateTimeFormat.forPattern("yyyyMMddHHmmss"));
     }
     /**
-     * Send location data request to NM and write data to the file.
+     * Send location data (Meter or Relay) request to NM and write data to the file.
      */
-    private void sendLocationDataRequest(RfnSupportBundleRequest bundleRequest, Set<PaoType> paoTypes, String fileName, int coloumCount) {
+    private void sendLocationDataRequest(RfnSupportBundleRequest bundleRequest, Set<PaoType> paoTypes, String destDir, String fileName, int coloumCount) {
         int startIndex = 1;
         int endIndex = batchsize;
         List<LocationData> dataList = null;
@@ -360,8 +368,6 @@ public class RFNetworkSupportBundleService {
                     RfnMetadataMultiResponse response = replyHandler.waitForCompletion();
                     
                     // Write data to csv file.
-                    String dateTime = getFormatedDateStr(bundleRequest.getFromTimestamp());
-                    String destDir = supportBundleDirectory + bundleRequest.getFileName() + File.separator + locationDataDir + "_" + dateTime;
                     SupportBundleHelper.buildAndWriteLocationDataToDir(response, dataList, destDir, fileName, coloumCount);
                     startIndex = startIndex + batchsize;
                     endIndex = endIndex + batchsize;
@@ -371,6 +377,23 @@ public class RFNetworkSupportBundleService {
             } else {
                 log.info("No data found for " + fileName);
             }
+        }
+    }
+
+    /**
+     * Build gateway location data from RfnGatewayDataCache and write to the gateway location file.
+     */
+    private void buildAndWriteGatewayLocationData(RfnSupportBundleRequest request, String destDir, String fileName) {
+        int startIndex = 1;
+        int endIndex = batchsize;
+        List<LocationData> dataList = null;
+        while (dataList == null || dataList.size() >= batchsize) {
+            dataList = paoLocationDao.getLocationDetailForPaoType(rfGatewayTypes, startIndex, endIndex);
+            if (dataList != null && !dataList.isEmpty()) {
+                SupportBundleHelper.buildAndWriteGatewayLocationDataToDir(dataList, destDir, fileName, dataCache);
+            }
+            startIndex = startIndex + batchsize;
+            endIndex = endIndex + batchsize;
         }
     }
 }
