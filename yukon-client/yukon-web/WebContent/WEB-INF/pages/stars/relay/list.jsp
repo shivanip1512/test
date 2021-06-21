@@ -15,6 +15,7 @@
         <select name="type">
             <option value=""><i:inline key="yukon.common.allTypes"/></option>
             <c:forEach var="relayType" items="${relayTypes}">
+                <c:set var="selected"/>
                 <c:if test="${selectedRelayType == relayType}">
                     <c:set var="selected" value="selected='selected'"/>
                 </c:if>
