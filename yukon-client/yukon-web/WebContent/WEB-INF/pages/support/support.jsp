@@ -140,7 +140,7 @@
         </tags:sectionContainer2>
 
         <div id="rf-support-bundle-section">
-            <jsp:include page="rfSupportBundle.jsp"/>
+            <jsp:include page="supportBundle/rfSupportBundle.jsp"/>
         </div>
     
     </div>

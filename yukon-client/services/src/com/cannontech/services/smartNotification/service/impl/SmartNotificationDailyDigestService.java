@@ -26,6 +26,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
+import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters.ProcessingType;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.services.smartNotification.service.MessageParametersHelper;
@@ -88,7 +89,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionsToEvents =
             decider.mapSubscriptionsToEvents(subscriptions, events);
         List<SmartNotificationMessageParameters> messageParameters =
-            MessageParametersHelper.getMessageParameters(decider.getEventType(), subscriptionsToEvents, 0);
+            MessageParametersHelper.getMessageParameters(decider.getEventType(), subscriptionsToEvents, 0, ProcessingType.DIGEST);
         return messageParameters;
     }
     

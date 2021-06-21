@@ -3,6 +3,7 @@
     <highestOffsets>
         <analog offset="100"/>
         <status offset="102"/>
+        <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="20" type="Analog">
@@ -27,6 +28,13 @@
         <name>Outage Restore Count</name>
         <multiplier value="1"/>
         <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="24" type="Analog">
+        <name>RSSI</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="DBM"/>
         <decimalplaces value="0"/>
     </point>
     <point offset="100" type="Analog">
@@ -55,5 +63,10 @@
         <name>Outage Status</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Outage Status"/>
+    </point>
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Comm Status State"/>
     </point>
 </points>

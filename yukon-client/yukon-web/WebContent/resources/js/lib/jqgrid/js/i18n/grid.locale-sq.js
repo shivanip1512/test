@@ -1,11 +1,3 @@
-/**
- * jqGrid Vietnamese Translation
- * Lê Đình Dũng dungtdc@gmail.com
- * http://trirand.com/blog/ 
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
-**/
 /*global jQuery, define */
 (function( factory ) {
 	"use strict";
@@ -25,123 +17,124 @@ $.jgrid = $.jgrid || {};
 if(!$.jgrid.hasOwnProperty("regional")) {
 	$.jgrid.regional = [];
 }
-$.jgrid.regional["vi"] = {
+$.jgrid.regional["sq"] = {
 	defaults : {
-		recordtext: "View {0} - {1} of {2}",
-		emptyrecords: "Không có dữ liệu",
-		loadtext: "Đang nạp dữ liệu...",
-		pgtext : "Trang {0} trong tổng số {1}",
-		savetext: "Saving...",
-		pgfirst : "First Page",
-		pglast : "Last Page",
-		pgnext : "Next Page",
-		pgprev : "Previous Page",
-		pgrecs : "Records per Page",
-		showhide: "Toggle Expand Collapse Grid",
+		recordtext: "Shfaq {0} - {1}/{2}",
+		emptyrecords: "Nuk ka rreshta për të shfaqur",
+		loadtext: "Duke u ngarkuar...",
+		savetext: "Duke ruajtur...",
+		pgtext : "Faqja {0}/{1}",
+		pgfirst : "Faqja e parë",
+		pglast : "Faqja e fundit",
+		pgnext : "Faqja tjetër",
+		pgprev : "Faqja mëparshme",
+		pgrecs : "Rreshta për faqe",
+		showhide: "Shpalos ose mbyll tabelën",
 		// mobile
-		pagerCaption : "Grid::Page Settings",
-		pageText : "Page:",
-		recordPage : "Records per Page",
-		nomorerecs : "No more records...",
-		scrollPullup: "Pull up to load more...",
-		scrollPulldown : "Pull down to refresh...",
-		scrollRefresh : "Release to refresh..."
+		pagerCaption : "Tabela::Kruskoti i faqes",
+		pageText : "Faqja:",
+		recordPage : "Rreshta për faqe",
+		nomorerecs : "Nuk ka rreshta të tjerë...",
+		scrollPullup: "Tërhiq për lart për të tjerë...",
+		scrollPulldown : "Tërqiq për poshtë për rifreskim...",
+		scrollRefresh : "Lësho për rifreskim..."
 	},
 	search : {
-		caption: "Tìm kiếm...",
-		Find: "Tìm",
-		Reset: "Khởi tạo lại",
-		odata: [{ oper:'eq', text:"bằng"},{ oper:'ne', text:"không bằng"},{ oper:'lt', text:"bé hơn"},{ oper:'le', text:"bé hơn hoặc bằng"},{ oper:'gt', text:"lớn hơn"},{ oper:'ge', text:"lớn hơn hoặc bằng"},{ oper:'bw', text:"bắt đầu với"},{ oper:'bn', text:"không bắt đầu với"},{ oper:'in', text:"trong"},{ oper:'ni', text:"không nằm trong"},{ oper:'ew', text:"kết thúc với"},{ oper:'en', text:"không kết thúc với"},{ oper:'cn', text:"chứa"},{ oper:'nc', text:"không chứa"},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}, {oper:'bt', text:'between'}],
-		groupOps: [	{ op: "VÀ", text: "tất cả" },	{ op: "HOẶC",  text: "bất kỳ" }	],
-		operandTitle : "Click to select search operation.",
-		resetTitle : "Reset Search Value",
+		caption: "Kërko...",
+		Find: "Gjej",
+		Reset: "Pastro",
+		odata: [{ oper:'eq', text:'baraz'},{ oper:'ne', text:'jo baraz'},{ oper:'lt', text:'me e vogel'},{ oper:'le', text:'me e vogel ose baraz'},{ oper:'gt', text:'me e madhe'},{ oper:'ge', text:'me e madhe ose baraz'},{ oper:'bw', text:'fillon me'},{ oper:'bn', text:'nuk fillon me'},{ oper:'in', text:'brenda'},{ oper:'ni', text:'jo brenda'},{ oper:'ew', text:'mbaron me'},{ oper:'en', text:'nuk mbaron me'},{ oper:'cn', text:'permban'},{ oper:'nc', text:'nuk permban'},{ oper:'nu', text:'eshte bosh'},{ oper:'nn', text:'nuk eshte bosh'}, {oper:'bt', text:'between'}],
+		groupOps: [{ op: "AND", text: "te gjithe" },{ op: "OR",  text: "cfaredo" }],
+		operandTitle : "Kliko per te zgjedhur veprimin.",
+		resetTitle : "Fshi vlerat e kerkimit",
 		addsubgrup : "Add subgroup",
 		addrule : "Add rule",
 		delgroup : "Delete group",
 		delrule : "Delete rule"
+
 	},
 	edit : {
-		addCaption: "Thêm bản ghi",
-		editCaption: "Sửa bản ghi",
-		bSubmit: "Gửi",
-		bCancel: "Hủy bỏ",
-		bClose: "Đóng",
-		saveData: "Dữ liệu đã thay đổi! Có lưu thay đổi không?",
-		bYes : "Có",
-		bNo : "Không",
-		bExit : "Hủy bỏ",
+		addCaption: "Shto rresht",
+		editCaption: "Fshi rresht",
+		bSubmit: "Vendos",
+		bCancel: "Anullo",
+		bClose: "Mbyll",
+		saveData: "Te dhenat jane ndryshuar! Deshironi ti ruani ndryshimet?",
+		bYes : "Po",
+		bNo : "Jo",
+		bExit : "Anullo",
 		msg: {
-			required:"Trường dữ liệu bắt buộc có",
-			number:"Hãy điền đúng số",
-			minValue:"giá trị phải lớn hơn hoặc bằng với ",
-			maxValue:"giá trị phải bé hơn hoặc bằng",
-			email: "không phải là một email đúng",
-			integer: "Hãy điền đúng số nguyên",
-			date: "Hãy điền đúng ngày tháng",
-			url: "không phải là URL. Khởi đầu bắt buộc là ('http://' hoặc 'https://')",
-			nodefined : " chưa được định nghĩa!",
-			novalue : " giá trị trả về bắt buộc phải có!",
-			customarray : "Hàm nên trả về một mảng!",
-			customfcheck : "Custom function should be present in case of custom checking!"
+			required:"Kjo fushe eshte e detyrueshme",
+			number:"Ju lutem, vendosni nje numer te vlefshem",
+			minValue:"vlera duhet te jete me e madhe ose e njejte me ",
+			maxValue:"vlera duhet te jete me e vogel ose e njejte me",
+			email: "nuk eshte adrese poste elektronike e vlefshme",
+			integer: "Ju lutem, vendosni nje numer te plote te vlefshem",
+			date: "Ju lutem, vendosni nje date te vlefshme",
+			url: "nuk eshte URL e vlefshme. Nevojitet prefiksi ('http://' ose 'https://')",
+			nodefined : " nuk eshte percaktuar!",
+			novalue : " vlera si pergjigje eshte e detyreshme!",
+			customarray : "Funksioni i personalizuar duhet te ktheje nje array!",
+			customfcheck : "unksioni i personalizuar duhet te egzistoje ne rast kontrolli te personalizuar!"
 			
 		}
 	},
 	view : {
-		caption: "Xem bản ghi",
-		bClose: "Đóng"
+		caption: "Shfaq Rreshtin",
+		bClose: "Mbyll"
 	},
 	del : {
-		caption: "Xóa",
-		msg: "Xóa bản ghi đã chọn?",
-		bSubmit: "Xóa",
-		bCancel: "Hủy bỏ"
+		caption: "Fshi",
+		msg: "Deshironi te fshini rreshtin/rreshtat e zgjedhur?",
+		bSubmit: "Fshi",
+		bCancel: "Anullo"
 	},
 	nav : {
 		edittext: "",
-		edittitle: "Sửa dòng đã chọn",
+		edittitle: "Modifiko rreshtin e zgjedhur",
 		addtext:"",
-		addtitle: "Thêm mới 1 dòng",
+		addtitle: "Shto rresht te ri",
 		deltext: "",
-		deltitle: "Xóa dòng đã chọn",
+		deltitle: "Fshi rreshtin e zgjedhur",
 		searchtext: "",
-		searchtitle: "Tìm bản ghi",
+		searchtitle: "Gjej rreshtat",
 		refreshtext: "",
-		refreshtitle: "Nạp lại lưới",
-		alertcap: "Cảnh báo",
-		alerttext: "Hãy chọn một dòng",
+		refreshtitle: "Ringarko listen",
+		alertcap: "Paralajmerim",
+		alerttext: "Ju lutem, zgjidh nje rresht",
 		viewtext: "",
-		viewtitle: "Xem dòng đã chọn",
+		viewtitle: "Shfaq rreshtin e zgjedhur",
 		savetext: "",
-		savetitle: "Save row",
+		savetitle: "Ruaj rreshtin",
 		canceltext: "",
-		canceltitle : "Cancel row editing",
-		selectcaption : "Actions..."
+		canceltitle : "Anullo modifikim rreshti",
+		selectcaption : "Veprime..."
 	},
 	col : {
-		caption: "Chọn cột",
-		bSubmit: "OK",
-		bCancel: "Hủy bỏ"
+		caption: "Zgjidh kolona",
+		bSubmit: "Ok",
+		bCancel: "Anullo"
 	},
 	errors : {
-		errcap : "Lỗi",
-		nourl : "không url được đặt",
-		norecords: "Không có bản ghi để xử lý",
-		model : "Chiều dài của colNames <> colModel!"
+		errcap : "Gabim",
+		nourl : "Nuk eshte percaktuar asnje URL",
+		norecords: "Nuk ka rreshta per perpunim",
+		model : "Gjatesia e emrit te kolones <> modeli i kolones!"
 	},
 	formatter : {
-		integer : {thousandsSeparator: ".", defaultValue: '0'},
-		number : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: '0'},
-		currency : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0'},
+		integer : {thousandsSeparator: ",", defaultValue: '0'},
+		number : {decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2, defaultValue: '0.00'},
+		currency : {decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix:"", defaultValue: '0.00'},
 		date : {
 			dayNames:   [
-				"CN", "T2", "T3", "T4", "T5", "T6", "T7",
-				"Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"
+				"Dje", "Hën", "Mar", "Mër", "Enj", "Pre", "Sht",
+				"Djelë", "Hënë", "Martë", "Mërkurë", "Enjte", "Premte", "Shtunë"
 			],
 			monthNames: [
-				"Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12",
-				"Tháng một", "Tháng hai", "Tháng ba", "Tháng tư", "Tháng năm", "Tháng sáu", "Tháng bảy", "Tháng tám", "Tháng chín", "Tháng mười", "Tháng mười một", "Tháng mười hai"
+				"Jan", "Shk", "Mar", "Pri", "Maj", "Qer", "Kor", "Gus", "Sht", "Tet", "Nën", "Dhj",
+				"Janar", "Shkurt", "Mars", "Prill", "Maj", "Qershor", "Korrik", "Gusht", "Shtator", "Tetor", "Nëntor", "Dhjetor"
 			],
-			AmPm : ["sáng","chiều","SÁNG","CHIỀU"],
+			AmPm : ["am","pm","AM","PM"],
 			S: function (j) {return j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th';},
 			srcformat: 'Y-m-d',
 			newformat: 'n/j/Y',

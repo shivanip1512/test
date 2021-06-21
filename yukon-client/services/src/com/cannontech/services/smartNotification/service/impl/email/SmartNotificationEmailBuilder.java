@@ -8,6 +8,7 @@ import javax.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
@@ -27,6 +28,7 @@ public abstract class SmartNotificationEmailBuilder {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private WebserverUrlResolver webserverUrlResolver;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private SmartNotificationEventDao smartNotificationEventDao;
     protected MessageSourceAccessor messageSourceAccessor;
     
     @PostConstruct
@@ -70,6 +72,7 @@ public abstract class SmartNotificationEmailBuilder {
                                                                quantity + ".subject", subjectArguments);
         
         String sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
+        smartNotificationEventDao.createHistory(parameters, intervalMinutes);
         return EmailMessage.newMessageBccOnly(emailSubject, emailBody, sender, parameters.getRecipients());
     }
     

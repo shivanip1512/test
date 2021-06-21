@@ -14,6 +14,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventData;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
+import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.stars.scheduledDataImport.AssetImportResultType;
 import com.cannontech.common.util.Range;
 import com.google.common.collect.Multimap;
@@ -118,4 +119,11 @@ public interface SmartNotificationEventDao {
      * Returns events that have not been processed by event type and event params.
      */
     List<SmartNotificationEvent> getUnprocessedGroupedEvents(SmartNotificationEventType type, String name, String value);
+
+    /**
+     * Creates history to track the number of emails sent
+     */
+    void createHistory(SmartNotificationMessageParameters parameters, int intervalMinutes);
+
+
 }

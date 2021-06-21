@@ -12,6 +12,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
+import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters.ProcessingType;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
@@ -21,7 +22,8 @@ public class MessageParametersHelper {
      * Creates smart notification parameters.
      */
     public static List<SmartNotificationMessageParameters> getMessageParameters(SmartNotificationEventType type,
-            SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionToEvent, int eventPeriodMinutes) {
+            SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionToEvent, int eventPeriodMinutes, 
+            ProcessingType processingType) {
         List<SmartNotificationMessageParameters> params = new ArrayList<>();
         if(subscriptionToEvent.isEmpty()){
             return params;
@@ -42,7 +44,7 @@ public class MessageParametersHelper {
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 
             SmartNotificationMessageParameters param = new SmartNotificationMessageParameters(type, mv.media,
-                mv.verbosity, recipients, new ArrayList<>(events), eventPeriodMinutes);
+                mv.verbosity, recipients, new ArrayList<>(events), eventPeriodMinutes, processingType);
             params.add(param);
         }
         return params;

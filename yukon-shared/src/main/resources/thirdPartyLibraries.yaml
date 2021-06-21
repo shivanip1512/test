@@ -5896,15 +5896,15 @@ JavaScript :
     notes : Used for charting
 
   - project : jqgrid
-    version : 4.5.1
+    version : 5.5.5
     project URL : "https://github.com/tonytomov/jqGrid"
     license : MIT,GPL 2.0
     license URLs : "https://opensource.org/licenses/mit-license.php, http://www.gnu.org/licenses/gpl-2.0.html"
     npm URL : "https://www.npmjs.com/package/jqGrid"
-    md5 : ddea04189625973ff6cefc3b4c6086ba
-    sha1 : b57f57c9b79dc316ed9d678085c9ea36e02a0681
-    jira : YUK-13033
-    updated : 2014-02-17
+    md5 : 2b424c5bf3ac2f98b899f7dffdeaed9a
+    sha1 : a9349882d50edf6cd0c9f739d3a82de03ce67abb
+    jira : YUK-24549
+    updated : 2021-06-16
     notes : "This library is used to display a grid on the Collection Actions -> Device Report page. Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
 
   - project : jquery
