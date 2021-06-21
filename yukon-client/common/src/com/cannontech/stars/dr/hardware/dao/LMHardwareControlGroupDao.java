@@ -154,4 +154,9 @@ public interface LMHardwareControlGroupDao {
      */
     public List<EnrollmentJmsMessage> getEnrollmentSyncMessagesToSend();
 
+    /**
+     * Return the list active enrollment program Id for specified inventoryId, lmGroupId and accountId.
+     */
+    List<Integer> getActiveEnrolmentProgramIds(int inventoryId, int lmGroupId, int accountId);
+
 }

@@ -25,7 +25,6 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
-import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.HardwareStrategyType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandStrategy;
@@ -60,48 +59,66 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
         try {
             List<Integer> groupIds;
             Integer groupId = null ;
+            Integer programId = null;
             int inventoryId = device.getInventoryID();
-            LmHardwareCommandType type = command.getType();
-
-            if (type == LmHardwareCommandType.IN_SERVICE || type == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE || type == LmHardwareCommandType.CONFIG) {
-                groupId = ecobeeZeusGroupService.getGroupIdToEnroll(getGroupId(inventoryId), inventoryId);
-            }
 
             switch (command.getType()) {
                 case IN_SERVICE:
-                    ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID());
+                    groupIds = getGroupId(inventoryId);
+                    for (int tempGroupId : groupIds) {
+                        programId = ecobeeZeusGroupService.getProgramIdToEnroll(inventoryId, tempGroupId);
+                        if (ecobeeZeusGroupService.shouldEnrollToGroup(inventoryId, programId)) {
+                            groupId = tempGroupId;
+                            break;
+                        }
+                    }
+                    ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID(), programId, true);
                     break;
                 case OUT_OF_SERVICE:
 
                     Set<Integer> groupIdsFromCommandParam = (Set<Integer>) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
-                    ecobeeZeusCommunicationService.unEnroll(groupIdsFromCommandParam, serialNumber, device.getInventoryID());
+                    //Remove Device to Zeus group mapping. So pass updateDeviceMapping as true.
+                    ecobeeZeusCommunicationService.unEnroll(groupIdsFromCommandParam, serialNumber, device.getInventoryID(), true);
 
                     break;
                 case TEMP_OUT_OF_SERVICE:
 
                     groupIds = getGroupId(command.getDevice().getInventoryID());
                     // Remove the thermostat from the groups and then cancel the demand response for the thermostat
-                    ecobeeZeusCommunicationService.unEnroll(Sets.newHashSet(groupIds), serialNumber, device.getInventoryID());
+                    // Do not remove Device to Zeus group mapping. So pass updateDeviceMapping as false.
+                    ecobeeZeusCommunicationService.unEnroll(Sets.newHashSet(groupIds), serialNumber, device.getInventoryID(), false);
                     ecobeeZeusCommunicationService.cancelDemandResponse(groupIds, serialNumber);
 
                     break;
                 case CANCEL_TEMP_OUT_OF_SERVICE:
 
                     // Add the thermostat to the group when user cancel the opt out.
-                    ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID());
+                    // Do not remove Device to Zeus group mapping. So pass updateDeviceMapping as false.
+                    groupIds = getGroupId(inventoryId);
+                    groupIds.stream().forEach(tempGroupId -> {
+                    int tempProgramId = ecobeeZeusGroupService.getProgramIdToEnroll(inventoryId, tempGroupId);
+                    ecobeeZeusCommunicationService.enroll(tempGroupId, serialNumber, device.getInventoryID(), tempProgramId,
+                            false);
+                    });
 
                     break;
                 case CONFIG:
-                    groupIds = getGroupId(device.getInventoryID());
-
                     // When user change the Yukon group, 1st unenroll the thermostat then enroll it to the correct
                     // group.
                     Set<Integer> removedEnrollmentGroupIds = (Set<Integer>) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
                     if (CollectionUtils.isNotEmpty(removedEnrollmentGroupIds)) {
-                        ecobeeZeusCommunicationService.unEnroll(removedEnrollmentGroupIds, serialNumber, device.getInventoryID());
+                        ecobeeZeusCommunicationService.unEnroll(removedEnrollmentGroupIds, serialNumber, device.getInventoryID(), true);
                     }
+                groupIds = getGroupId(inventoryId);
+                for (int tempGroupId : groupIds) {
+                    programId = ecobeeZeusGroupService.getProgramIdToEnroll(inventoryId, tempGroupId);
+                    if (ecobeeZeusGroupService.shouldEnrollToGroup(inventoryId, programId)) {
+                        groupId = tempGroupId;
+                        break;
+                    }
+                }
 
-                    ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID());
+                ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID(), programId, true);
 
                     break;
                 case PERFORMANCE_VERIFICATION:

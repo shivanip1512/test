@@ -110,8 +110,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private YukonListDao listDao;
     @Autowired private DrJmsMessagingService drJmsMessagingService;
-    @Autowired private ConfigurationSource configurationSource;
-
     private final Map<Integer, Object> accountIdMutex = Collections.synchronizedMap(new HashMap<Integer, Object>());
     
     @Override
@@ -201,8 +199,17 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                     command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
                                 }
                                 if (hardwareType.isEcobee()) {
-                                    Set<Integer>  removedEnrollmentGroupIds = getRemovedEnrollmentGroupIds(originalEnrollments, requests);
-                                    command.getParams().put(LmHardwareCommandParam.GROUP_ID, removedEnrollmentGroupIds);
+                                    boolean unenRollFlag = isUnenrollmentFlow(originalEnrollments, requests,
+                                            liteHw.getInventoryID());
+                                    if (unenRollFlag) {
+                                        var groupIds = getAddedEnrollmentGroupIds(originalEnrollments, liteHw.getInventoryID());
+                                        command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
+                                        command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
+                                    } else {
+                                        Set<Integer> removedEnrollmentGroupIds = getRemovedEnrollmentGroupIds(originalEnrollments,
+                                                requests);
+                                        command.getParams().put(LmHardwareCommandParam.GROUP_ID, removedEnrollmentGroupIds);
+                                    }
                                 }
                                 
                                 lmHardwareCommandService.sendConfigCommand(command);
@@ -267,6 +274,25 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         }
     }
     
+    private boolean isUnenrollmentFlow(List<ProgramEnrollment> originalEnrollments, List<ProgramEnrollment> requests, int inventoryId) {
+
+        List<ProgramEnrollment> existingEnrolmentsForInventory = originalEnrollments.stream()
+                .filter(enroll -> enroll.getInventoryId() == inventoryId)
+                .collect(Collectors.toList());
+        List<ProgramEnrollment> newEnrolmentsForInventory = requests.stream()
+                .filter(enroll -> enroll.getInventoryId() == inventoryId)
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(newEnrolmentsForInventory)) {
+            return true;
+        } else if (existingEnrolmentsForInventory.size() > newEnrolmentsForInventory.size()) {
+            return true;
+        } else if (existingEnrolmentsForInventory.size() == newEnrolmentsForInventory.size()) {
+            return false;
+        } else {
+            return false;
+        }
+    }
+
     private Set<Integer> getRemovedEnrollmentGroupIds(Collection<ProgramEnrollment> originalEnrollments, 
                                                       Collection<ProgramEnrollment> updatedEnrollments) {
         
