@@ -238,7 +238,7 @@ public class DevAmrCreationServiceImpl extends DevObjectCreationBase implements 
                     if (meterType.getPaoType().isRfn()) {
                         if (meterType.getPaoType().isRfRelay()) {
                             RfnIdentifier rfId = new RfnIdentifier(String.valueOf(address), "EATON", "RFRelay");
-                            meter = deviceCreationService.createRfnDeviceByDeviceType(PaoType.RFN_RELAY, meterName, rfId, true);
+                            meter = deviceCreationService.createRfnDeviceByDeviceType(meterType.getPaoType(), meterName, rfId, true);
                         } else {
                             RfnManufacturerModel templateSettings = RfnManufacturerModel.getForType(meterType.getPaoType())
                                                                                         .get(0);
