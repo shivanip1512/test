@@ -124,6 +124,9 @@ public class IOTHubService extends AzureCloudService {
         }
     }
 
+    /**
+     * Build and push telemetry data in json format.
+     */
     private void pushTelemetryData(Map<String, String> telemetryData) {
         Gson gson = new Gson();
         Message message = new Message(gson.toJson(telemetryData));
