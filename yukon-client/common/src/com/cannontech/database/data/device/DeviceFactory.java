@@ -534,6 +534,9 @@ public final class DeviceFactory {
         case RFN_RELAY:
             returnDevice = new RfnRelay();
             break;
+        case CRLY856:
+            returnDevice = new CellularRelay856();
+            break;
         case VIRTUAL_GATEWAY:
             returnDevice = new RfnVirtualGateway();
             break;
