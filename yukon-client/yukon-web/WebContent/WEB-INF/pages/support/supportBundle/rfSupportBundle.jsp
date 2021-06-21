@@ -16,7 +16,7 @@
     <tags:sectionContainer2 nameKey="rfSupportBundle">
         <cti:tabs>
             <cti:msg2 key=".supportBundle.createNewHeading" var="createNewHeading"/>
-            <cti:tab title="${createNewHeading}">
+            <cti:tab title="${createNewHeading}" >
             
                 <cti:url value="/support/createRfBundle" var="createRfBundleURL"/>
                 <form:form id="rfSupportBundle-form" class="js-block-this" modelAttribute="rfSupportBundle" action="${createRfBundleURL}" method="POST">
@@ -39,28 +39,10 @@
             </cti:tab>
 
             <cti:msg2 key='.supportBundle.previousHeading' var="previousHeading" />
-            <cti:url value="/support/downloadBundle" var="downloadBundleURl" />
-            <cti:tab title="${previousHeading}">
-                <form id="previousRfBundlesForm" action="${downloadBundleURl}" method="POST">
-                    <cti:csrfToken />
-                    <input type="hidden" name="isRfBundle" value="true"></input>
-                    <c:if test="${empty rfBundleList}">
-                        <span class="empty-list"><i:inline key=".supportBundle.noPreviousBundlesLbl" /></span>
-                    </c:if>
-                    <c:if test="${not empty rfBundleList}">
-                        <ul class="simple-list">
-                            <c:forEach var="rfBundleName" varStatus="status" items="${rfBundleList}">
-                                <li>
-                                    <c:set var="checked" value="${status.first} ? 'checked=checked' : ''"/>
-                                    <label><input type="radio" name="fileName" value="${rfBundleName}" ${checked}>${fn:escapeXml(rfBundleName)}</label>
-                                </li>
-                            </c:forEach>
-                        </ul>
-                    </c:if>
-                    <div class="page-action-area">
-                        <cti:button nameKey="supportBundle.downloadBtn" type="submit" disabled="${empty rfBundleList}" icon="icon-download" />
-                    </div>
-                </form>
+            <cti:tab title="${previousHeading}" headerClasses="js-previous-rf-bundles">
+                <div id="rf-support-bundle-tab">
+                   <jsp:include page="rfPreviousBundleTab.jsp"/>
+                </div>
             </cti:tab>
         </cti:tabs>
     </tags:sectionContainer2>
