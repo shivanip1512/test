@@ -92,6 +92,15 @@ INSERT INTO State VALUES(-33, 1, 'On', 0, 6, 0);
 INSERT INTO DBUpdates VALUES ('YUK-24286', '9.1.0', GETDATE());
 /* @end YUK-24286 */
 
+/* @start YUK-23668 */
+INSERT INTO PortTiming (PORTID, PRETXWAIT, RTSTOTXWAIT, POSTTXWAIT, RECEIVEDATAWAIT, EXTRATIMEOUT, PostCommWait)
+SELECT PAObjectID, 0, 0, 0, 0, 0, 0 
+FROM YukonPAObject
+WHERE Type = 'RFN-1200';
+
+INSERT INTO DBUpdates VALUES ('YUK-23668', '9.1.0', GETDATE());
+/* @end YUK-23668 */
+
 /* @start YUK-24557 */
 DELETE FROM Job WHERE BeanName = 'ecobeePointUpdateJobDefinition';
 
