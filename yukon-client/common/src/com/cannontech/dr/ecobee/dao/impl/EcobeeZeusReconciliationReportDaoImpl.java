@@ -124,6 +124,15 @@ public class EcobeeZeusReconciliationReportDaoImpl implements EcobeeZeusReconcil
         return rowsAffected == 1;
     }
     
+    @Override
+    public void cleanUpReconciliationTables() {
+        deleteReport();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("delete from EcobeeReconReportError");
+
+        jdbcTemplate.update(sql);
+    }
+    
     private Integer findCurrentReportId() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select EcobeeReconReportId");
@@ -155,6 +164,7 @@ public class EcobeeZeusReconciliationReportDaoImpl implements EcobeeZeusReconcil
         return jdbcTemplate.update(sql);
     }
     
+
     /**
      * Adds a row with the current date and the specified id to EcobeeReconciliationReport.
      */
