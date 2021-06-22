@@ -19,12 +19,13 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
 
     @Override
     public List<String> getZeusGroupIdsForLmGroup(int yukonGroupId, int programId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EcobeeGroupId FROM LMGroupZeusMapping");
-        sql.append("WHERE YukonGroupId").eq(yukonGroupId);
         List<Integer> programIdList = new ArrayList<Integer>();
         programIdList.add(programId);
         programIdList.add(EcobeeZeusGroupService.DEFAULT_PROGRAM_ID);
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EcobeeGroupId FROM LMGroupZeusMapping");
+        sql.append("WHERE YukonGroupId").eq(yukonGroupId);
         sql.append("AND ProgramId").in(programIdList);
         return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
@@ -157,7 +158,7 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
     }
 
     @Override
-    public int getLmGroupsForInventory(int inventoryId, int programId) {
+    public int getLmGroupForInventory(int inventoryId, int programId) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT DISTINCT LGZM.YukonGroupId FROM LMGroupZeusMapping LGZM");
@@ -167,7 +168,7 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
             sql.append("AND LGZM.ProgramID").eq(programId);
             return jdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
-            return EcobeeZeusGroupService.DEFAULT_PROGRAM_ID;
+            return -1;
         }
     }
 

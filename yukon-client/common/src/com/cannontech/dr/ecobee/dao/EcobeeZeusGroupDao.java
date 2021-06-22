@@ -86,7 +86,7 @@ public interface EcobeeZeusGroupDao {
     /**
      * Return the Yukon group associated with the inventory and Yukon programId.
      */
-    int getLmGroupsForInventory(int inventoryId, int programId);
+    int getLmGroupForInventory(int inventoryId, int programId);
 
     /**
      * Update the Yukon programId for the specified zeusGroupId

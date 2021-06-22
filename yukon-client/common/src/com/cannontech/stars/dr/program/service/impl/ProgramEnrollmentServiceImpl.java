@@ -198,7 +198,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                     command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
                                 }
                                 if (hardwareType.isEcobee()) {
-                                    boolean unenRollFlag = isUnenrollmentFlow(originalEnrollments, requests,
+                                    boolean unenRollFlag = isUnenrollment(originalEnrollments, requests,
                                             liteHw.getInventoryID());
                                     if (unenRollFlag) {
                                         var groupIds = getAddedEnrollmentGroupIds(originalEnrollments, liteHw.getInventoryID());
@@ -281,7 +281,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
      * 3> If originalEnrollments contain has less enrollment than newRequests : Enrollment flow.<br>
      * 3> If originalEnrollments contain has equal enrollment as newRequests : User changed group.
      */
-    private boolean isUnenrollmentFlow(List<ProgramEnrollment> originalEnrollments, List<ProgramEnrollment> newRequests,
+    private boolean isUnenrollment(List<ProgramEnrollment> originalEnrollments, List<ProgramEnrollment> newRequests,
             int inventoryId) {
 
         List<ProgramEnrollment> originalEnrolmentsForInventory = originalEnrollments.stream()

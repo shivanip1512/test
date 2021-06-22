@@ -148,7 +148,7 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
 
     @Override
     public boolean shouldEnrollToGroup(int inventoryId, int programId) {
-        return ecobeeZeusGroupDao.getLmGroupsForInventory(inventoryId, programId) == DEFAULT_PROGRAM_ID;
+        return ecobeeZeusGroupDao.getLmGroupForInventory(inventoryId, programId) == -1;
     }
 
     @Override
