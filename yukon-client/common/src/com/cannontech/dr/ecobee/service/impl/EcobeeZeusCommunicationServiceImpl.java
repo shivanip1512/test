@@ -553,11 +553,9 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                                 isNotEmptyThermostats ? serialNumbers : "all");
                         if (!isNotEmptyThermostats) {
                             // For DR event cancellation, update the eventId to empty String for the Yukon group.
+                            // For Opt Out, just make call to Ecobee. Do not remove the mapping between inventory ID and Zeus
+                            // group ID.
                             ecobeeZeusGroupService.removeEventId(zeusEventId);
-                        } else {
-                            // For Opt Out remove the mapping between inventory ID and Zeus group ID.
-                            int inventoryId = lmHardwareBaseDao.getBySerialNumber(serialNumbers[0]).getInventoryId();
-                            ecobeeZeusGroupService.deleteZeusGroupMappingForInventory(inventoryId, "");
                         }
                     }
                 } catch (RestClientException | EcobeeAuthenticationException e) {

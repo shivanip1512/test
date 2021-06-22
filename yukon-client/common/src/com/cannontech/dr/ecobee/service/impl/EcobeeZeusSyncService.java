@@ -100,6 +100,8 @@ public class EcobeeZeusSyncService {
         // Old system does not support multiple program enrollment for Ecobee. So controlGroupList must contain same programId for
         // all the control groups.
         if (CollectionUtils.isNotEmpty(programIds)) {
+            log.info("Mapping programID : {} to Yukon group : {} with Zeus group {} as thermostats are enrolled.",
+                    programIds.get(0), yukonGroupId, zeusGroupId);
             ecobeeZeusGroupDao.updateProgramId(zeusGroupId, programIds.get(0));
         }
     }
