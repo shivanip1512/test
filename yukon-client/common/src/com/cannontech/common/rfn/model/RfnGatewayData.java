@@ -50,6 +50,7 @@ public final class RfnGatewayData {
     private final int gwTotalNodesNoInfo;
     private final String ipv6Prefix;
     private final String ipv6PrefixSuggested;
+    private final float controlRate;
     
     public RfnGatewayData(GatewayDataResponse dataResponse, String name) {
         
@@ -86,6 +87,7 @@ public final class RfnGatewayData {
         gwTotalNodesNoInfo = dataResponse.getGwTotalNodesNoInfo();
         ipv6Prefix = dataResponse.getIpv6Prefix();
         ipv6PrefixSuggested = dataResponse.getIpv6PrefixSuggested();
+        controlRate = dataResponse.getControlRate();
     }
     
     /** Private constructor for builder */
@@ -98,7 +100,8 @@ public final class RfnGatewayData {
                            short routeColor, String updateServerUrl, Authentication updateServerLogin,
                            double currentDataStreamingLoading, double maxDataStreamingLoading, int gwTotalNodes,
                            int gwTotalReadyNodes, int gwTotalNotReadyNodes, int gwTotalNodesWithSN, 
-                           int gwTotalNodesWithInfo, int gwTotalNodesNoInfo, String ipv6Prefix, String ipv6PrefixSuggested) {
+                           int gwTotalNodesWithInfo, int gwTotalNodesNoInfo, String ipv6Prefix, String ipv6PrefixSuggested,
+                           float controlRate) {
         this.name = name;
         this.hardwareVersion = hardwareVersion;
         this.softwareVersion = softwareVersion;
@@ -131,6 +134,7 @@ public final class RfnGatewayData {
         this.gwTotalNodesNoInfo = gwTotalNodesNoInfo;
         this.ipv6Prefix = ipv6Prefix;
         this.ipv6PrefixSuggested = ipv6PrefixSuggested;
+        this.controlRate = controlRate;
     }
     
     public String getName() {
@@ -300,6 +304,10 @@ public final class RfnGatewayData {
         return null;
     }
 
+    public float getControlRate() {
+        return controlRate;
+    }
+
     @Override
     public String toString() {
         return "RfnGatewayData [name=" + name + ", hardwareVersion=" + hardwareVersion + ", softwareVersion="
@@ -315,7 +323,7 @@ public final class RfnGatewayData {
                + ", gwTotalNodes=" + gwTotalNodes + ", gwTotalReadyNodes=" + gwTotalReadyNodes
                + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes + ", gwTotalNodesWithSN=" + gwTotalNodesWithSN
                + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo
-               + ", ipv6Prefix=" + ipv6Prefix + ", ipv6PrefixSuggested=" + ipv6PrefixSuggested + "]";
+               + ", ipv6Prefix=" + ipv6Prefix + ", ipv6PrefixSuggested=" + ipv6PrefixSuggested + ", controlRate=" + controlRate +"]";
     }
 
     @Override
@@ -578,6 +586,7 @@ public final class RfnGatewayData {
         private int gwTotalNodesNoInfo;
         private String ipv6Prefix;
         private String ipv6PrefixSuggested;
+        private float controlRate;
         
         public RfnGatewayData build() {
             
@@ -587,7 +596,7 @@ public final class RfnGatewayData {
                                       superAdmin, collectionSchedule, sequences, routeColor,updateServerUrl,
                                       updateServerLogin, currentDataStreamingLoading, maxDataStreamingLoading,
                                       gwTotalNodes, gwTotalReadyNodes, gwTotalNotReadyNodes, gwTotalNodesWithSN,
-                                      gwTotalNodesWithInfo, gwTotalNodesNoInfo, ipv6Prefix, ipv6PrefixSuggested);
+                                      gwTotalNodesWithInfo, gwTotalNodesNoInfo, ipv6Prefix, ipv6PrefixSuggested, controlRate);
             
         }
         
@@ -625,6 +634,7 @@ public final class RfnGatewayData {
             gwTotalNodesNoInfo = oldData.gwTotalNodes;
             ipv6Prefix = oldData.getIpv6Prefix();
             ipv6PrefixSuggested = oldData.getIpv6PrefixSuggested();
+            controlRate = oldData.getControlRate();
             return this;
         }
         
@@ -775,6 +785,11 @@ public final class RfnGatewayData {
 
         public Builder gwTotalNodesNoInfo(int gwTotalNodesNoInfo) {
             this.gwTotalNodesNoInfo = gwTotalNodesNoInfo;
+            return this;
+        }
+
+        public Builder controlRate(float controlRate) {
+            this.controlRate = controlRate;
             return this;
         }
     }

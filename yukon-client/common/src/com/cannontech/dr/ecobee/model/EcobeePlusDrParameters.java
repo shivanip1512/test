@@ -1,11 +1,13 @@
 package com.cannontech.dr.ecobee.model;
 
+import java.io.Serializable;
+
 import org.joda.time.Instant;
 
 /**
  * Contains all parameters required to initiate a eco+ demand response event in Ecobee.
  */
-public final class EcobeePlusDrParameters {
+public final class EcobeePlusDrParameters implements Serializable {
     private final int groupId;
     private final Instant startTime;
     private final Instant endTime;

@@ -515,6 +515,12 @@
     <ClCompile Include="Serialization\Thrift\RfnMeterReadRequest_types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMEcobeeCommandData_constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMEcobeeCommandData_types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Serialization\Thrift\CCCapBankMove_constants.h">
@@ -1019,6 +1025,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Serialization\Thrift\RfnMeterReadRequest_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\Thrift\LMEcobeeCommandData_constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\Thrift\LMEcobeeCommandData_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

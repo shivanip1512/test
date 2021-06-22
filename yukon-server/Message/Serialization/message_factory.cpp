@@ -20,6 +20,9 @@
 #include "LMEatonCloudMessages.h"
 #include "Thrift/LMEatonCloudCommandData_types.h"
 
+#include "LMEcobeeMessages.h"
+#include "Thrift/LMEcobeeCommandData_types.h"
+
 #include "std_helper.h"
 
 #include <boost/optional.hpp>
@@ -74,9 +77,9 @@ try
     Thrift::RfnIdentifier               identifier;
     Thrift::RfnSetChannelConfigRequest  request;
 
-    identifier.__set_sensorManufacturer ( m.rfnIdentifier.manufacturer ); 
+    identifier.__set_sensorManufacturer ( m.rfnIdentifier.manufacturer );
     identifier.__set_sensorModel        ( m.rfnIdentifier.model );
-    identifier.__set_sensorSerialNumber ( m.rfnIdentifier.serialNumber ); 
+    identifier.__set_sensorSerialNumber ( m.rfnIdentifier.serialNumber );
 
     request.__set_rfnIdentifier         ( identifier );
 
@@ -93,7 +96,7 @@ try
         header.__set_groupId    ( m.header->groupId );
         header.__set_priority   ( m.header->priority );
         header.__set_expiration ( m.header->expiration );
-        header.__set_lifetime   ( Thrift::NetworkManagerMessageLifetime::SESSION ); 
+        header.__set_lifetime   ( Thrift::NetworkManagerMessageLifetime::SESSION );
 
         request.__set_header    ( header );
     }
@@ -194,9 +197,9 @@ try
     Thrift::RfnIdentifier               identifier;
     Thrift::RfnGetChannelConfigRequest  request;
 
-    identifier.__set_sensorManufacturer ( m.rfnIdentifier.manufacturer ); 
+    identifier.__set_sensorManufacturer ( m.rfnIdentifier.manufacturer );
     identifier.__set_sensorModel        ( m.rfnIdentifier.model );
-    identifier.__set_sensorSerialNumber ( m.rfnIdentifier.serialNumber ); 
+    identifier.__set_sensorSerialNumber ( m.rfnIdentifier.serialNumber );
 
     request.__set_rfnIdentifier         ( identifier );
 
@@ -296,13 +299,13 @@ try
         msg.channelInfo.insert( info );
     }
 
-    msg.rfnIdentifier.manufacturer  = thriftMsg.rfnIdentifier.sensorManufacturer; 
-    msg.rfnIdentifier.model         = thriftMsg.rfnIdentifier.sensorModel; 
-    msg.rfnIdentifier.serialNumber  = thriftMsg.rfnIdentifier.sensorSerialNumber; 
+    msg.rfnIdentifier.manufacturer  = thriftMsg.rfnIdentifier.sensorManufacturer;
+    msg.rfnIdentifier.model         = thriftMsg.rfnIdentifier.sensorModel;
+    msg.rfnIdentifier.serialNumber  = thriftMsg.rfnIdentifier.sensorSerialNumber;
 
-    msg.recordingInterval   = thriftMsg.recordingInterval; 
-    msg.reportingInterval   = thriftMsg.reportingInterval; 
-    msg.replyCode           = thriftMsg.reply; 
+    msg.recordingInterval   = thriftMsg.recordingInterval;
+    msg.reportingInterval   = thriftMsg.reportingInterval;
+    msg.replyCode           = thriftMsg.reply;
 
     return msg;
 }
@@ -469,5 +472,111 @@ catch( apache::thrift::TException )
     return {};
 }
 
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<LoadManagement::LMEcobeeCyclingControlMessage>::serialize(const LoadManagement::LMEcobeeCyclingControlMessage &m)
+try
+{
+    Thrift::LMEcobeeCycleControlCommand    msg;
+    
+    msg.__set__groupId               ( m._groupId       );
+    msg.__set__controlStartDateTime  ( m._startTime     );
+    msg.__set__controlEndDateTime    ( m._stopTime      );
+    msg.__set__dutyCycle             ( m._dutyCycle     );
+    msg.__set__isRampInOut           ( m._rampingOption );
+    msg.__set__isMandatory           ( m._mandatory     );
+    
+    return SerializeThriftBytes( msg );
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return {};
+}
+
+const std::map<LoadManagement::TempOptionTypes, Thrift::LMEcobeeTemperatureTypes::type>    tempTranslator
+{
+    { LoadManagement::TempOptionTypes::Heat, Thrift::LMEcobeeTemperatureTypes::HEAT },
+    { LoadManagement::TempOptionTypes::Cool, Thrift::LMEcobeeTemperatureTypes::COOL }
+}; 
+
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<LoadManagement::LMEcobeeSetpointControlMessage>::serialize(const LoadManagement::LMEcobeeSetpointControlMessage &m)
+try
+{
+    Thrift::LMEcobeeSetpointControlCommand    msg;
+
+    msg.__set__groupId               ( m._groupId           );
+    msg.__set__controlStartDateTime  ( m._startTime         );
+    msg.__set__controlEndDateTime    ( m._stopTime          );
+    msg.__set__isMandatory           ( m._mandatory         );
+    msg.__set__temperatureOffset     ( m._temperatureOffset );
+
+    if ( auto result = mapFind(tempTranslator, m._temperatureOption ) )
+    {
+        msg.__set__temperatureOption ( *result );
+    }
+    else
+    {
+        CTILOG_ERROR( dout, "Unsupported Temperature Option type with key: '"<< static_cast<int>( m._temperatureOption )<< "'" );
+
+        return {};
+    }
+
+    return SerializeThriftBytes( msg );
+}
+catch( apache::thrift::TException )
+{
+    //log?
+    return {};
+}
+
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<LoadManagement::LMEcobeePlusControlMessage>::serialize(const LoadManagement::LMEcobeePlusControlMessage &m)
+try
+{
+    Thrift::LMEcobeePlusControlCommand   msg;
+
+    msg.__set__groupId               ( m._groupId           );
+    msg.__set__controlStartDateTime  ( m._startTime         );
+    msg.__set__controlEndDateTime    ( m._stopTime          );
+    msg.__set__randomTimeSeconds     ( m._randomTimeSeconds );
+
+    if (auto result = mapFind(tempTranslator, m._temperatureOption))       
+    {
+        msg.__set__temperatureOption ( *result );
+    }
+    else
+    {
+        CTILOG_ERROR(dout, "Unsupported Temperature Option type with key: '" << static_cast<int>( m._temperatureOption ) << "'");
+
+        return {};
+    }
+
+    return SerializeThriftBytes( msg );
+}
+catch( apache::thrift::TException )
+{
+    //log?
+    return {};
+}
+
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<LoadManagement::LMEcobeeRestoreMessage>::serialize(const LoadManagement::LMEcobeeRestoreMessage &m)
+try
+{
+    Thrift::LMEcobeeRestore msg;
+
+    msg.__set__groupId      ( m._groupId     );
+    msg.__set__restoreTime  ( m._restoreTime );
+
+    return SerializeThriftBytes( msg );
+}
+catch( apache::thrift::TException )
+{
+    //log?
+    return {};
+}
 
 }
+
+
