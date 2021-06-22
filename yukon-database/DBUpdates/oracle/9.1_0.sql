@@ -101,6 +101,28 @@ DELETE FROM Job WHERE BeanName = 'ecobeePointUpdateJobDefinition';
 INSERT INTO DBUpdates VALUES ('YUK-24557', '9.1.0', SYSDATE);
 /* @end YUK-24557 */
 
+/* @start YUK-24031 */
+INSERT INTO DeviceConfigCategoryItem
+SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryID) 
+           + (SELECT NVL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+       DeviceConfigCategoryID,
+       'minTapPosition',
+       '-16'
+FROM DeviceConfigCategory 
+WHERE CategoryType = 'regulatorCategory';
+
+INSERT INTO DeviceConfigCategoryItem
+SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryID) 
+           + (SELECT NVL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+       DeviceConfigCategoryID,
+       'maxTapPosition',
+       '16'
+FROM DeviceConfigCategory 
+WHERE CategoryType = 'regulatorCategory';
+
+INSERT INTO DBUpdates VALUES ('YUK-24031', '9.1.0', SYSDATE);
+/* @end YUK-24031 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
