@@ -93,59 +93,63 @@ INSERT INTO DBUpdates VALUES ('YUK-24557', '9.1.0', SYSDATE);
 /* @end YUK-24557 */
 
 /* @start YUK-24437 */
-create table SmartNotificationEmailHistory  (
-   HistoryId            NUMBER                          not null,
-   EventType            VARCHAR2(50)                    not null,
-   Verbosity            VARCHAR2(10)                    not null,
-   Media                VARCHAR2(10)                    not null,
-   ProcessingType       VARCHAR2(10)                    not null,
-   IntervalMinutes      NUMBER                          not null,
-   TotalEvents          NUMBER                          not null,
-   SendTime             DATE                            not null,
-   constraint PK_SmartNotificationEmailHistory primary key (HistoryId)
+CREATE TABLE SmartNotifEmailHistory  (
+   HistoryId            NUMBER                          NOT NULL,
+   EventType            VARCHAR2(50)                    NOT NULL,
+   Verbosity            VARCHAR2(20)                    NOT NULL,
+   Media                VARCHAR2(20)                    NOT NULL,
+   ProcessingType       VARCHAR2(20)                    NOT NULL,
+   IntervalMinutes      NUMBER                          NOT NULL,
+   TotalEvents          NUMBER                          NOT NULL,
+   SendTime             DATE                            NOT NULL,
+   CONSTRAINT PK_SmartNotificationEmailHistory PRIMARY KEY (HistoryId)
 );
 
-create index INDX_SmartNotificationEmailHistory_EventType on SmartNotificationEmailHistory (
+CREATE INDEX INDX_SmartNotifEmailHistory_EventType ON SmartNotifEmailHistory (
    EventType ASC
 );
 
-create index INDX_SmartNotificationEmailHistory_SendTime on SmartNotificationEmailHistory (
+CREATE INDEX INDX_SmartNotifEmailHistory_SendTime ON SmartNotifEmailHistory (
    SendTime ASC
 );
 
-create table SmartNotificationEventHistory  (
-   EventHistoryId       NUMBER                          not null,
-   HistoryId            NUMBER                          not null,
-   constraint PK_SmartNotificationEventHistory primary key (EventHistoryId)
+CREATE TABLE SmartNotifEventHistory  (
+   EventHistoryId       NUMBER                          NOT NULL,
+   HistoryId            NUMBER                          NOT NULL,
+   CONSTRAINT PK_SmartNotificationEventHistory PRIMARY KEY (EventHistoryId)
 );
 
-create table SmartNotificationEventParamHis  (
-   EventHistoryId       NUMBER                          not null,
-   Name                 VARCHAR2(30)                    not null,
-   Value                VARCHAR2(500)                   not null,
-   constraint PK_SmartNotificationEventParamHistory primary key (EventHistoryId, Name, Value)
+CREATE TABLE SmartNotifEventParamHistory  (
+   EventHistoryId       NUMBER                          NOT NULL,
+   Name                 VARCHAR2(30)                    NOT NULL,
+   Value                VARCHAR2(500)                   NOT NULL,
+   CONSTRAINT PK_SmartNotificationEventParamHistory PRIMARY KEY (EventHistoryId, Name, Value)
 );
 
-create table SmartNotificationRecipientHist  (
-   HistoryId            NUMBER                          not null,
-   Recipient            VARCHAR2(254)                   not null,
-   constraint PK_SmartNotificationRecipientHistory primary key (HistoryId, Recipient)
+CREATE TABLE SmartNotifRecipientHistory  (
+   HistoryId            NUMBER                          NOT NULL,
+   Recipient            VARCHAR2(254)                   NOT NULL,
+   CONSTRAINT PK_SmartNotificationRecipientHistory PRIMARY KEY (HistoryId, Recipient)
 );
 
-alter table SmartNotificationEventHistory
-   add constraint FK_SmrtNotifEventHist_SmrtNotifEmailHist foreign key (HistoryId)
-      references SmartNotificationEmailHistory (HistoryId)
-      on delete cascade;
-      
-alter table SmartNotificationEventParamHis
-   add constraint FK_SmrtNotifEvntPHist_SmrtNotifEmailHist foreign key (EventHistoryId)
-      references SmartNotificationEventHistory (EventHistoryId)
-      on delete cascade;
+CREATE INDEX INDX_SmartNotifRecipientHistory_Recipient ON SmartNotifRecipientHistory (
+   Recipient ASC
+);
 
-alter table SmartNotificationRecipientHist
-   add constraint FK_SmrtNotifRecipHist_SmrtNotifEmailHist foreign key (HistoryId)
-      references SmartNotificationEmailHistory (HistoryId)
-      on delete cascade;
+ALTER TABLE SmartNotifEventHistory
+   ADD CONSTRAINT FK_SmrtNotifEventHist_SmrtNotifEmailHist FOREIGN KEY (HistoryId)
+      REFERENCES SmartNotifEmailHistory (HistoryId)
+      ON DELETE CASCADE;
+
+ALTER TABLE SmartNotifEventParamHistory
+   ADD CONSTRAINT FK_SmrtNotifEvntPHist_SmrtNotifEmailHist FOREIGN KEY (EventHistoryId)
+      REFERENCES SmartNotifEventHistory (EventHistoryId)
+      ON DELETE CASCADE;
+
+ALTER TABLE SmartNotifRecipientHistory
+   ADD CONSTRAINT FK_SmrtNotifRecipHist_SmrtNotifEmailHist FOREIGN KEY (HistoryId)
+      REFERENCES SmartNotifEmailHistory (HistoryId)
+      ON DELETE CASCADE;
 
 INSERT INTO DBUpdates VALUES ('YUK-24437', '9.1.0', SYSDATE);
 /* @end YUK-24437 */
