@@ -11,6 +11,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.services.systemDataPublisher.service.model.RfnDeviceDescendantCountData;
 
 public interface RfnDeviceDao {
 
@@ -169,4 +170,8 @@ public interface RfnDeviceDao {
      * Returns device RfnIdentifiers by gateway ids
      */
     Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds);
+    /**
+     * Return RfnDeviceDescendantCountData for paoTypes.
+     */
+    RfnDeviceDescendantCountData getDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoTypes);
 }
