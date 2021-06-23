@@ -39,6 +39,9 @@ public class SystemDataFieldType implements Serializable {
         ROUTE_TABLE_REQUESTS("routetablerequests"),
         ROUTE_TABLE_RESPONSE("routetableresponse"),
         RFN_VERSION("rfversion"),
+        HEIGHEST_METER_DESCEDANT_COUNT_DATA("meterdescendantcount"),
+        HEIGHEST_RELAY_DESCEDANT_COUNT_DATA("relaydescendantcount"),
+        HEIGHEST_LCR_DESCEDANT_COUNT_DATA("lcrdescendantcount"),
         OTHER,
         ;
 

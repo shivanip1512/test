@@ -74,6 +74,24 @@ Yukon :
     iotType: Telemetry
     frequency : EverySixHours
 
+  - field: meterdescendantcount
+    description: Rf Meter descendant count
+    details: Detail of rf meter having highest descendant count
+    iotType: Telemetry
+    frequency : EverySixHours
+
+  - field: relaydescendantcount
+    description: Rf Relay descendant count
+    details: Detail of relay having highest descendant count
+    iotType: Telemetry
+    frequency : EverySixHours
+
+  - field: lcrdescendantcount
+    description: LCR descendant count
+    details: Detail of rf lcr having highest descendant count
+    iotType: Telemetry
+    frequency : EverySixHours
+
 Network Manager :
   - field: batterynodecount
     description: Battery Nodes

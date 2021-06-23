@@ -49,6 +49,7 @@ import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.services.systemDataPublisher.service.model.RfnDeviceDescendantCountData;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -599,6 +600,31 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             return jdbcTemplate.queryForObject(sql, rfnDynamicRfnDeviceDataRowMapper);
         } catch (EmptyResultDataAccessException e) {
             log.error("Device " + deviceId + " is not associated with a gateway.");
+            return null;
+        }
+    }
+
+    @Override
+    public RfnDeviceDescendantCountData getDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoTypes) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("Select Top 1 da.DescendantCount, ra.SerialNumber,");
+        sql.append("       ypo.PAOName as DeviceName, ypo.Type as DeviceType");
+        sql.append("FROM DynamicRfnDeviceData AS da");
+        sql.append("JOIN RfnAddress ra ON ra.DeviceId = da.DeviceId");
+        sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectID = da.DeviceId");
+        sql.append("WHERE ypo.type").in(paoTypes);
+        sql.append("ORDER BY da.DescendantCount DESC");
+        
+        try {
+            return jdbcTemplate.queryForObject(sql, (YukonResultSet rs) -> {
+                String deviceName = rs.getString("DeviceName");
+                long serialNumber = rs.getLong("SerialNumber");
+                long descendantCount = rs.getLong("DescendantCount");
+                String deviceType = rs.getEnum("DeviceType", PaoType.class).getDbString();
+                return new RfnDeviceDescendantCountData(deviceName, serialNumber, descendantCount, deviceType);
+                });
+        } catch (EmptyResultDataAccessException e) {
+            log.error("No DescendantCount data found for {}", paoTypes.toString());
             return null;
         }
     }
