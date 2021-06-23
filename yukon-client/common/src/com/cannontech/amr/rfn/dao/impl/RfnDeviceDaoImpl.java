@@ -605,9 +605,9 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     }
 
     @Override
-    public RfnDeviceDescendantCountData getDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoTypes) {
+    public RfnDeviceDescendantCountData findDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoTypes) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("Select Top 1 da.DescendantCount, ra.SerialNumber,");
+        sql.append("SELECT TOP 1 da.DescendantCount, ra.SerialNumber,");
         sql.append("       ypo.PAOName as DeviceName, ypo.Type as DeviceType");
         sql.append("FROM DynamicRfnDeviceData AS da");
         sql.append("JOIN RfnAddress ra ON ra.DeviceId = da.DeviceId");

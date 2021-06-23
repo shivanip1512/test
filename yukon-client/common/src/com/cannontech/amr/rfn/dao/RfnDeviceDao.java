@@ -173,5 +173,5 @@ public interface RfnDeviceDao {
     /**
      * Return RfnDeviceDescendantCountData for paoTypes.
      */
-    RfnDeviceDescendantCountData getDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoTypes);
+    RfnDeviceDescendantCountData findDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoTypes);
 }
