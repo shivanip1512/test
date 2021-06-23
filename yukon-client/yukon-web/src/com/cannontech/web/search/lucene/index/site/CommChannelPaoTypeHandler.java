@@ -38,10 +38,15 @@ public class CommChannelPaoTypeHandler implements PaoTypeHandler {
     public void buildDocument(DocumentBuilder builder, YukonResultSet rs, PaoIdentifier paoIdentifier) throws SQLException {
         int paoId = paoIdentifier.getPaoId();
 
-
         builder.module(SiteModule.OPERATOR.getName());
+        
         String path = "/stars/device/commChannel/" + paoId;
         String pageName = "commChannelDetail";
+        
+        if (paoIdentifier.getPaoType().equals(PaoType.RFN_1200)) {
+            path = "/stars/device/rfn1200/" + paoId;
+            pageName = "rfn1200Detail";
+        }
         
         builder.pageName(pageName);
         builder.path(path);

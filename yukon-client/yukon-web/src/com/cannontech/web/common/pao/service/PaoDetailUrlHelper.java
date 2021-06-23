@@ -63,6 +63,9 @@ public class PaoDetailUrlHelper {
         urlBuilder.put(PaoTag.PORT_DETAIL_DISPLAYABLE, pao -> "/stars/device/commChannel/" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.PORT_DETAIL_DISPLAYABLE, "commChannelDetail");
         
+        urlBuilder.put(PaoTag.RFN1200_DETAIL_DISPLAYABLE, pao -> "/stars/device/rfn1200/" + pao.getPaoIdentifier().getPaoId());
+        pageNameBuilder.put(PaoTag.RFN1200_DETAIL_DISPLAYABLE, "rfn1200Detail");
+        
         urlBuilder.put(PaoTag.VIRTUAL_DEVICE_DISPLAYABLE, pao -> "/stars/virtualDevice/" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.VIRTUAL_DEVICE_DISPLAYABLE, "virtualDevice.detail");
 
