@@ -114,7 +114,7 @@ public class SupportBundleHelper {
             String[] dataRow = new String[coloumNum];
             RfnIdentifier rfnIdentifier = loc.getRfnIdentifier();
             PaoIdentifier paoIdentifier = loc.getPaoIdentifier();
-            RfnGatewayData gatewatData = dataCache.getIfPresent(paoIdentifier);
+            RfnGatewayData gatewayData = dataCache.getIfPresent(paoIdentifier);
             RfnMetadataMultiQueryResult metaData = response.getQueryResults().get(rfnIdentifier);
             NodeComm nodeComm = null;
             NodeData nodeData = null;
@@ -129,7 +129,7 @@ public class SupportBundleHelper {
 
                 dataRow[index++] = nodeComm != null ? String.valueOf(nodeComm.getNodeCommStatusTimestamp()) : StringUtils.EMPTY;
                 dataRow[index++] = nodeComm != null ? nodeComm.getNodeCommStatus().toString() : StringUtils.EMPTY;
-                dataRow[index++] = gatewatData != null ? gatewatData.getName() : StringUtils.EMPTY;
+                dataRow[index++] = gatewayData != null ? gatewayData.getName() : StringUtils.EMPTY;
 
                 dataRow[index++] = nodeComm != null ? nodeComm.getDeviceRfnIdentifier()
                         .getSensorSerialNumber() : StringUtils.EMPTY;
