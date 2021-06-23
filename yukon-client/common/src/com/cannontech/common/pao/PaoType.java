@@ -1088,6 +1088,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return rfMeterTypes.contains(this);
     }
     
+    public static ImmutableSet<PaoType> getRftypes() {
+        return rfTypes;
+    }
+    
     public boolean isItron() {
         return itronTypes.contains(this);
     }

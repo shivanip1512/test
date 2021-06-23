@@ -15,6 +15,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
+import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
@@ -100,5 +101,57 @@ public class SupportBundleHelper {
         } catch (IOException ex) {
             log.error("Error found while builing location data for " + fileName, ex);
         }
+    }
+    
+    /**
+     * Write electric node data to the destination directory in passed fileName.
+     */
+    public static void buildAndWriteElectricNodeDataToDir(RfnMetadataMultiResponse response, List<LocationData> locationData,
+            String destDir, String fileName, RfnGatewayDataCache dataCache, int coloumNum) throws IOException {
+        List<String[]> dataRows = Lists.newArrayList();
+        for (LocationData loc : locationData) {
+            int index = 0;
+            String[] dataRow = new String[coloumNum];
+            RfnIdentifier rfnIdentifier = loc.getRfnIdentifier();
+            PaoIdentifier paoIdentifier = loc.getPaoIdentifier();
+            RfnGatewayData gatewatData = dataCache.getIfPresent(paoIdentifier);
+            RfnMetadataMultiQueryResult metaData = response.getQueryResults().get(rfnIdentifier);
+            NodeComm nodeComm = null;
+            NodeData nodeData = null;
+            if (metaData.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)
+                    && metaData.isValidResultForMulti(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM)) {
+
+                nodeComm = (NodeComm) metaData.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
+                nodeData = (NodeData) metaData.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
+
+                dataRow[index++] = nodeData != null ? nodeData.getNodeSerialNumber() : StringUtils.EMPTY;
+                dataRow[index++] = nodeData != null ? nodeData.getNodeType().toString() : StringUtils.EMPTY;
+
+                dataRow[index++] = nodeComm != null ? String.valueOf(nodeComm.getNodeCommStatusTimestamp()) : StringUtils.EMPTY;
+                dataRow[index++] = nodeComm != null ? nodeComm.getNodeCommStatus().toString() : StringUtils.EMPTY;
+                dataRow[index++] = gatewatData != null ? gatewatData.getName() : StringUtils.EMPTY;
+
+                dataRow[index++] = nodeComm != null ? nodeComm.getDeviceRfnIdentifier()
+                        .getSensorSerialNumber() : StringUtils.EMPTY;
+                dataRow[index++] = nodeComm != null ? nodeComm.getDeviceRfnIdentifier()
+                        .getSensorManufacturer() : StringUtils.EMPTY;
+                dataRow[index++] = nodeComm != null ? nodeComm.getDeviceRfnIdentifier().getSensorModel() : StringUtils.EMPTY;
+
+                dataRow[index++] = loc != null ? String.valueOf(loc.getPaoIdentifier().getPaoId()) : StringUtils.EMPTY;
+                dataRow[index++] = loc != null ? loc.getRfnIdentifier().getSensorModel() : StringUtils.EMPTY;
+                dataRow[index++] = loc != null ? loc.getRfnIdentifier().getSensorSerialNumber() : StringUtils.EMPTY;
+                dataRow[index++] = loc != null ? String.valueOf(loc.getLatitude()) : StringUtils.EMPTY;
+                dataRow[index++] = loc != null ? String.valueOf(loc.getLongitude()) : StringUtils.EMPTY;
+
+                dataRows.add(dataRow);
+            } else {
+                log.warn("Invalid electric data entry found.");
+            }
+        }
+        File temp = new File(CtiUtilities.getYukonBase() + destDir);
+        if (!temp.exists()) {
+            temp.mkdir();
+        }
+        FileUtil.writeToCSV(temp.getPath(), fileName, dataRows);
     }
 }

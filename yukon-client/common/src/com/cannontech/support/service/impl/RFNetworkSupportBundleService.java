@@ -65,12 +65,15 @@ public class RFNetworkSupportBundleService {
     private final static String downloadRfSupportBundleURL = "/nmclient/DownloadRfSupportBundleServlet?fileName=";
     private final static String supportBundleDirectory = "/Server/SupportBundles/";
     private final static String locationDataDir = "locationData";
+    private final static String networkSnapshotDataDir = "networkSnapshotData_Yukon";
     private final static int batchsize = 1000;
     private final static int meterLocationcolumnCount = 11;
     private final static int relayLocationcolumnCount = 9;
+    private final static int electricNodecolumnCount = 13;
     private final static String meterLocationFileName = "MeterLocationsInYukon";
     private final static String relayLocationFileName = "RelayLocationsInYukon";
     private final static String gatewayLocationFileName = "GatewayLocationsInYukon";
+    private final static String electricNodeLocationFileName = "yukonData";
     private static final int PAST_RF_BUNDLES_TO_KEEP = 5;
     private final static ImmutableSet<PaoType> rfGatewayTypes = ImmutableSet.of(PaoType.RFN_GATEWAY, PaoType.GWY800, PaoType.GWY801);
 
@@ -124,6 +127,7 @@ public class RFNetworkSupportBundleService {
                     File cutomerDir = createCutomerDirectory(request.getFileName());
                     sendRfSupportBundleDownloadRequest(token, cutomerDir.getPath(), request.getFileName());
                     sendLocationDataRequest(request);
+                    sendElectricNodeDataRequest(request);
                     zipRfSupportBundle(cutomerDir.getAbsolutePath());
                     removeOldFiles();
                 }
@@ -168,6 +172,17 @@ public class RFNetworkSupportBundleService {
         sendLocationDataRequest(request, PaoType.getRfMeterTypes(), destDir, meterLocationFileName, meterLocationcolumnCount);
         sendLocationDataRequest(request, PaoType.getRfRelayTypes(), destDir, relayLocationFileName, relayLocationcolumnCount);
         buildAndWriteGatewayLocationData(request, destDir, gatewayLocationFileName);
+    }
+    
+    /**
+     * Send electric node data request for network snapshot.
+     */
+    private void sendElectricNodeDataRequest(RfnSupportBundleRequest request) {
+        String dateTime = getFormatedDateStr(request.getFromTimestamp());
+        String destDir = supportBundleDirectory + "RfNetworkData/" + request.getFileName() + File.separator
+                + networkSnapshotDataDir + "_" + dateTime;
+        sendElectricNodeDataRequest(request, PaoType.getRftypes(), destDir, electricNodeLocationFileName,
+                electricNodecolumnCount);
     }
 
     /**
@@ -394,6 +409,45 @@ public class RFNetworkSupportBundleService {
             }
             startIndex = startIndex + batchsize;
             endIndex = endIndex + batchsize;
+        }
+    }
+    
+    /**
+     * Send network snapshot data (Electric Node) request to NM and write data to the file.
+     */
+    private void sendElectricNodeDataRequest(RfnSupportBundleRequest bundleRequest, Set<PaoType> paoTypes, String destDir,
+            String fileName, int coloumCount) {
+        int startIndex = 1;
+        int endIndex = batchsize;
+        List<LocationData> dataList = null;
+        while (dataList == null || dataList.size() >= batchsize) {
+            dataList = paoLocationDao.getLocationDetailForPaoType(PaoType.getRftypes(), startIndex, endIndex);
+            if (dataList != null && !dataList.isEmpty()) {
+                BlockingJmsReplyHandler<RfnMetadataMultiResponse> replyHandler = new BlockingJmsReplyHandler<>(
+                        RfnMetadataMultiResponse.class);
+                try {
+                    // Build Metadata Request
+                    RfnMetadataMultiRequest request = new RfnMetadataMultiRequest();
+                    request.setRfnMetadatas(RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
+                    Set<RfnIdentifier> rfnIdentifiers = new HashSet<RfnIdentifier>();
+                    dataList.stream().forEach(data -> rfnIdentifiers.add(data.getRfnIdentifier()));
+                    request.setRfnIdentifiers(rfnIdentifiers);
+
+                    // Send Request to collect Node data.
+                    metaDataMultiRequestTemplate.send(request, replyHandler);
+                    RfnMetadataMultiResponse response = replyHandler.waitForCompletion();
+
+                    // Write data to csv file.
+                    SupportBundleHelper.buildAndWriteElectricNodeDataToDir(response, dataList, destDir, fileName, dataCache,
+                            coloumCount);
+                    startIndex = startIndex + batchsize;
+                    endIndex = endIndex + batchsize;
+                } catch (ExecutionException | IOException ex) {
+                    log.error("Error found while sending RfnMetadataMultiRequest for " + fileName + " node data.", ex);
+                }
+            } else {
+                log.info("No data found for " + fileName);
+            }
         }
     }
 }
