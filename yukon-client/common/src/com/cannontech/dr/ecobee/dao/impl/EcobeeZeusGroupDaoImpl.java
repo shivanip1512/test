@@ -1,14 +1,20 @@
 package com.cannontech.dr.ecobee.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.dr.ecobee.dao.EcobeeZeusGroupDao;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
 
@@ -162,5 +168,31 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         sql.append("ON LGZM.EcobeeGroupId = ZGIM.EcobeeGroupId");
         sql.append("AND ZGIM.InventoryID").eq(inventoryId);
         return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+    }
+    
+    
+    @Override
+    public Multimap<String, String> getAllEcobeeGroupToSerialNumberMapping() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        Multimap<String, String> ecobeeGroupInYukonToInventory = ArrayListMultimap.create();
+        sql.append("SELECT ManufacturerSerialNumber, EcobeeGroupId");
+        sql.append("FROM ZeusGroupInventoryMapping mapping, LMHardwareBase hardwareBase");
+        sql.append("WHERE mapping.InventoryID = hardwareBase.InventoryID");
+        jdbcTemplate.query(sql, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                ecobeeGroupInYukonToInventory.put(rs.getString("ManufacturerSerialNumber"), rs.getString("EcobeeGroupId"));
+            }
+        });
+        return ecobeeGroupInYukonToInventory;
+    }
+    
+    @Override
+    public List<String> getGroupMapping(Set<Integer> lmGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EcobeeGroupId FROM LMGroupZeusMapping");
+        sql.append("WHERE YukonGroupId").in(lmGroupId);
+        return jdbcTemplate.query(sql, TypeRowMapper.STRING);
+
     }
 }

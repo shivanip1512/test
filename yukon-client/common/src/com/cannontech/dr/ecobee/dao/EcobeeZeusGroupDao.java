@@ -1,6 +1,9 @@
 package com.cannontech.dr.ecobee.dao;
 
 import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.Multimap;
 
 public interface EcobeeZeusGroupDao {
     /**
@@ -94,4 +97,14 @@ public interface EcobeeZeusGroupDao {
      * Return the List of Yukon groups associated with the inventory.
      */
     List<Integer> getLmGroupsForInventory(int inventoryId);
+    
+    /**
+     * Return list of Zeus group id for corrosponding yukon group ids.
+     */
+    List<String> getGroupMapping(Set<Integer> lmGroupId);
+
+    /**
+     * Return mapping of all ecobee group and serial numbers.
+     */
+    Multimap<String, String> getAllEcobeeGroupToSerialNumberMapping();
 }
