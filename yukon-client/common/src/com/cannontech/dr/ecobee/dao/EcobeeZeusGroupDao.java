@@ -1,22 +1,30 @@
 package com.cannontech.dr.ecobee.dao;
 
 import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.Multimap;
 
 public interface EcobeeZeusGroupDao {
     /**
-     * Retrieve List of Zeus group ID for a given Yukon LM group ID and yukon Program ID.
+     * Retrieve List of Zeus group ID for a given Yukon LM group ID.
      */
-    List<String> getZeusGroupIdsForLmGroup(int yukonGroupId, int programId);
+    List<String> getZeusGroupIdsForLmGroup(int yukonGroupId);
 
     /**
-     * Retrieve Zeus group ID for a given Yukon LM group ID, inventoryId and Yukon program ID.
+     * Retrieve list of Zeus group IDs for a given inventory ID.
      */
-    String getZeusGroupId(int yukonGroupId, int inventoryId, int programId);
+    List<String> getZeusGroupIdsForInventoryId(int inventoryId);
+
+    /**
+     * Retrieve Zeus group ID for a given Yukon LM group ID and inventoryId.
+     */
+    String getZeusGroupId(int yukonGroupId, int inventoryId);
 
     /**
      * Insert a mapping for Yukon group to Zeus group details.
      */
-    void mapGroupIdToZeusGroup(int yukonGroupId, String zeusGroupId, String zeusGroupName, int programId);
+    void mapGroupIdToZeusGroup(int yukonGroupId, String zeusGroupId, String zeusGroupName);
 
     /**
      * Remove a mapping for Yukon group to Zeus group ID.
@@ -29,9 +37,9 @@ public interface EcobeeZeusGroupDao {
     void mapInventoryToZeusGroupId(int inventoryId, String zeusGroupId);
 
     /**
-     * Delete Zeus group mapping for an inventory ID and corresponding zeusGroupId.
+     * Delete Zeus group mapping for an inventory ID.
      */
-    void deleteZeusGroupMappingForInventory(int inventoryId, String zeusGroupId);
+    void deleteZeusGroupMappingForInventoryId(int inventoryId);
 
     /**
      * Insert an event ID for a Zeus group ID (overwriting any existing value).
@@ -52,17 +60,19 @@ public interface EcobeeZeusGroupDao {
      * Retrieve all the inventory IDs for the specified Zeus group ID
      */
     List<Integer> getInventoryIdsForZeusGroupID(String zeusGroupId);
-
+    
+    
     /**
      * Retrieve list of inventory id for a given Yukon group.
      */
     List<Integer> getInventoryIdsForYukonGroupID(String lmGroup);
 
+
     /**
      * Return name of the specified Zeus group ID.
      */
     String getZeusGroupName(String zeusGroupId);
-
+    
     /**
      * Get count of zeus group in yukon
      */
@@ -84,23 +94,17 @@ public interface EcobeeZeusGroupDao {
     List<String> getZeusGroupNames(int yukonGroupId);
 
     /**
-     * Return the Yukon group associated with the inventory and Yukon programId.
+     * Return the List of Yukon groups associated with the inventory.
      */
-    int getLmGroupForInventory(int inventoryId, int programId);
+    List<Integer> getLmGroupsForInventory(int inventoryId);
+    
+    /**
+     * Return list of Zeus group id for corrosponding yukon group ids.
+     */
+    List<String> getGroupMapping(Set<Integer> lmGroupId);
 
     /**
-     * Update the Yukon programId for the specified zeusGroupId
+     * Return mapping of all ecobee group and serial numbers.
      */
-    void updateProgramId(String zeusGroupId, int programId);
-
-    /**
-     * Get Yukon program id for the specified zeusGroupId
-     */
-    int getProgramIdForZeusGroup(String zeusGroupId);
-
-    /**
-     * Retrieve List of enrolled yukon programId for the specified inventoryId and lmGroupId
-     */
-    List<Integer> getProgramIdsEnrolled(int inventoryId, int lmGroupId);
-
+    Multimap<String, String> getAllEcobeeGroupToSerialNumberMapping();
 }
