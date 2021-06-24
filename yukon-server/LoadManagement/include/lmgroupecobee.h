@@ -27,17 +27,20 @@ public:
 
     bool doesStopRequireCommandAt( const CtiTime & currentTime ) const override;
 
-    bool sendCycleControl( long dutyCycle,
+    bool sendCycleControl( long programId,
+                           long dutyCycle,
                            long controlDurationSeconds,
                            bool mandatory,
                            bool rampInOutOption ) override;
 
-    bool sendSetpointControl( long controlDurationSeconds,
+    bool sendSetpointControl( long programId,
+                              long controlDurationSeconds,
                               bool temperatureOption,
                               bool mandatory,
                               long temperatureOffset ) override;
 
-    bool sendEcobeePlusControl( long controlDurationSeconds,
+    bool sendEcobeePlusControl( long programId,
+                                long controlDurationSeconds,
                                 bool temperatureOption,
                                 long randomTimeSeconds ) override;                     
 

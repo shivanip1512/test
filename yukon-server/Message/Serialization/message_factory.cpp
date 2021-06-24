@@ -478,6 +478,7 @@ try
 {
     Thrift::LMEcobeeCycleControlCommand    msg;
     
+    msg.__set__programId             ( m._programId     );
     msg.__set__groupId               ( m._groupId       );
     msg.__set__controlStartDateTime  ( m._startTime     );
     msg.__set__controlEndDateTime    ( m._stopTime      );
@@ -505,6 +506,7 @@ try
 {
     Thrift::LMEcobeeSetpointControlCommand    msg;
 
+    msg.__set__programId             ( m._programId         );
     msg.__set__groupId               ( m._groupId           );
     msg.__set__controlStartDateTime  ( m._startTime         );
     msg.__set__controlEndDateTime    ( m._stopTime          );
@@ -536,6 +538,7 @@ try
 {
     Thrift::LMEcobeePlusControlCommand   msg;
 
+    msg.__set__programId             ( m._programId         );
     msg.__set__groupId               ( m._groupId           );
     msg.__set__controlStartDateTime  ( m._startTime         );
     msg.__set__controlEndDateTime    ( m._stopTime          );

@@ -5,12 +5,13 @@ namespace java com.cannontech.messaging.serialization.thrift.generated
 
 struct LMEcobeeCycleControlCommand {
 
-    1: required     i32                             _groupId;
-    2: required     i32                             _dutyCycle;
-    3: required     Types.Timestamp                 _controlStartDateTime;
-    4: required     Types.Timestamp                 _controlEndDateTime;
-    5: required     bool                            _isMandatory;
-    6: required     bool                            _isRampInOut;
+    1: required     i32                             _programId;
+    2: required     i32                             _groupId;
+    3: required     i32                             _dutyCycle;
+    4: required     Types.Timestamp                 _controlStartDateTime;
+    5: required     Types.Timestamp                 _controlEndDateTime;
+    6: required     bool                            _isMandatory;
+    7: required     bool                            _isRampInOut;
     
 }
 
@@ -21,22 +22,24 @@ enum LMEcobeeTemperatureTypes {
 
 struct LMEcobeeSetpointControlCommand {
 
-    1: required     i32                             _groupId;
-    2: required     Types.Timestamp                 _controlStartDateTime;
-    3: required     Types.Timestamp                 _controlEndDateTime;
-    4: required     LMEcobeeTemperatureTypes        _temperatureOption;
-    5: required     bool                            _isMandatory;
-    6: required     i32                             _temperatureOffset;
+    1: required     i32                             _programId;
+    2: required     i32                             _groupId;
+    3: required     Types.Timestamp                 _controlStartDateTime;
+    4: required     Types.Timestamp                 _controlEndDateTime;
+    5: required     LMEcobeeTemperatureTypes        _temperatureOption;
+    6: required     bool                            _isMandatory;
+    7: required     i32                             _temperatureOffset;
     
 }
 
 struct LMEcobeePlusControlCommand {
 
-    1: required     i32                             _groupId;
-    2: required     Types.Timestamp                 _controlStartDateTime;
-    3: required     Types.Timestamp                 _controlEndDateTime;
-    4: required     LMEcobeeTemperatureTypes        _temperatureOption;
-    5: required     i32                             _randomTimeSeconds;
+    1: required     i32                             _programId;
+    2: required     i32                             _groupId;
+    3: required     Types.Timestamp                 _controlStartDateTime;
+    4: required     Types.Timestamp                 _controlEndDateTime;
+    5: required     LMEcobeeTemperatureTypes        _temperatureOption;
+    6: required     i32                             _randomTimeSeconds;
     
 }
 
