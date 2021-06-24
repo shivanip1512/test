@@ -996,8 +996,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.12.3"
     md5 : 2e522914770d1d39b0a8aa31cbbaa798
     sha1 : 7275513412694a1aafd08c0287f48469fa0e6e17
-    updated : 2021-01-29
-    jira : YUK-23599
+    updated : 2021-06-23
+    jira : YUK-24554
     notes : Jackson Annotations
   
   - filename : jackson-core-2.12.3.jar
@@ -1010,8 +1010,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.12.3"
     md5 : 2f2db39bffd7e5ec8648977a740b870f
     sha1 : deb23fe2a7f2b773e18ced2b50d4acc1df8fa366
-    updated : 2021-01-29
-    jira : YUK-23599
+    updated : 2021-06-23
+    jira : YUK-24554
     notes : Jackson Core
   
   - filename : jackson-databind-2.12.3.jar
@@ -1024,8 +1024,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.12.3"
     md5 : 4e821fbfd2d3034ae84735b564c30fed
     sha1 : d6153f8fc60c479ab0f9efb35c034526436a4953
-    updated : 2021-01-29
-    jira : YUK-23599
+    updated : 2021-06-23
+    jira : YUK-24554
     notes : Jackson Databind
   
   - filename : jackson-dataformat-csv-2.9.6.jar
@@ -1052,7 +1052,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.12.3"
     md5 : e8a3f056ba4995bd5da9723f8c693fc1
     sha1 : d2a90460fecffa0c7ae9fd836272bbce91b5241a
-    updated : 2021-06-15
+    updated : 2021-06-23
     jira : YUK-24554
     notes :       
     
@@ -1067,7 +1067,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.12.2"
     md5 : 17a02fc1a2205dc41e76dbdc91f0cb41
     sha1 : f69c636438dcf19c49960c1fe8901320ab85f989
-    updated : 2021-06-15
+    updated : 2021-06-23
     jira : YUK-24554
     notes :       
     
@@ -1082,7 +1082,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.12.3"
     md5 : e7bd5a7545541bdfda494494cf950278
     sha1 : ea843951d2efdd5e6844d6faa8aabf71698463a8
-    updated : 2021-06-15
+    updated : 2021-06-23
     jira : YUK-24554
     notes :       
 
@@ -1096,7 +1096,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/jakarta.activation/jakarta.activation-api/1.2.1"
     md5 : 9b647398add993324d3d9e5effa6005a
     sha1 : 562a587face36ec7eff2db7f2fc95425c6602bc1
-    updated : 2021-06-15
+    updated : 2021-06-23
     jira : YUK-24554
     notes :       
     
@@ -1110,7 +1110,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2"
     md5 : dabb40ba58199304c640b7bd8bb2fbac
     sha1 : 8d49996a4338670764d7ca4b85a1c4ccf7fe665d
-    updated : 2021-06-15
+    updated : 2021-06-23
     jira : YUK-24554
     notes :   
   
