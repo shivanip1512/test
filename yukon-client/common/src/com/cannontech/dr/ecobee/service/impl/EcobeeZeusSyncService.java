@@ -8,12 +8,14 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.dr.ecobee.dao.EcobeeZeusGroupDao;
 import com.cannontech.dr.ecobee.dao.EcobeeZeusReconciliationReportDao;
 import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
@@ -31,6 +33,7 @@ public class EcobeeZeusSyncService {
     @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private EcobeeZeusGroupDao ecobeeZeusGroupDao;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> scheduledFuture;
 
@@ -57,10 +60,10 @@ public class EcobeeZeusSyncService {
             boolean groupMappingExists = ecobeeZeusGroupService.getGroupCount() == 0 ? false : true;
             boolean thermostatMappingExists = ecobeeZeusGroupService.getAllThermostatCount() == 0 ? false : true;
             if (!groupMappingExists || !thermostatMappingExists) {
-                log.debug("Tables are not empty starting process to populate data");
+                log.debug("Tables are empty starting process to populate data");
                 try {
                     List<ZeusGroup> zeusGroups = ecobeeZeusCommunicationService.getAllGroups();
-                    log.debug("No of ZeusGroups found " + zeusGroups.size());
+                    log.debug("Number of ZeusGroups found " + zeusGroups.size());
                     zeusGroups.forEach(zeusGroup -> {
                         int yukonGroupId;
                         String zeusGroupName = zeusGroup.getName();
@@ -72,14 +75,20 @@ public class EcobeeZeusSyncService {
                             }
                             String zeusGroupId = zeusGroup.getGroupId();
                             if (!groupMappingExists) {
-                                ecobeeZeusGroupService.mapGroupIdToZeusGroup(yukonGroupId, zeusGroupId, zeusGroupName);
+                                ecobeeZeusGroupService.mapGroupIdToZeusGroup(yukonGroupId, zeusGroupId, zeusGroupName,
+                                        EcobeeZeusGroupService.DEFAULT_PROGRAM_ID);
                             }
                             if (!thermostatMappingExists) {
                                 log.debug("Getting thermostats for group " + zeusGroupId);
                                 List<ZeusThermostat> zeusThermostats = ecobeeZeusCommunicationService
                                         .getThermostatsInGroup(zeusGroupId);
                                 mapInventoryToZeusGroup(zeusThermostats, zeusGroupId);
-
+                                // If thermostats are enrolled i.e Zeus group has thermostats, then only update the ProgramId.
+                                if (CollectionUtils.isNotEmpty(zeusThermostats)) {
+                                    // A thermostat can be mapped to an account only. So use a thermostat id to retrieve the
+                                    // programId
+                                    updateProgramId(yukonGroupId, zeusThermostats.get(0).getSerialNumber(), zeusGroupId);
+                                }
                             }
                         } else {
                             log.info("Skipping Zeus group " + zeusGroupName);
@@ -96,6 +105,18 @@ public class EcobeeZeusSyncService {
                 scheduledFuture.cancel(true);
                 scheduledExecutorService.shutdown();
             }
+        }
+    }
+
+    private void updateProgramId(int yukonGroupId, String serialNumber, String zeusGroupId) {
+        int inventoryId = lmHardwareBaseDao.getBySerialNumber(serialNumber).getInventoryId();
+        List<Integer> programIds = ecobeeZeusGroupService.getActiveEnrolmentProgramIds(inventoryId, yukonGroupId);
+        // Old system does not support multiple program enrollment for Ecobee. So controlGroupList must contain same programId for
+        // all the control groups.
+        if (CollectionUtils.isNotEmpty(programIds)) {
+            log.info("Mapping programID : {} to Yukon group : {} with Zeus group {} as thermostats are enrolled.",
+                    programIds.get(0), yukonGroupId, zeusGroupId);
+            ecobeeZeusGroupDao.updateProgramId(zeusGroupId, programIds.get(0));
         }
     }
 
