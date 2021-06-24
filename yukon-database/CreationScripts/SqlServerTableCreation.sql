@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/21/2021 4:59:56 AM                         */
+/* Created on:     6/21/2021 11:17:58 PM                        */
 /*==============================================================*/
 
 
@@ -3236,15 +3236,17 @@ INSERT INTO DeviceConfigCategoryItem VALUES (3, 0, 'timeOffset', 'UTC');
 INSERT INTO DeviceConfigCategoryItem VALUES (4, 0, 'enableUnsolicitedMessagesClass1', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (5, 0, 'enableUnsolicitedMessagesClass2', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (6, 0, 'enableUnsolicitedMessagesClass3', 'true');
-INSERT INTO DeviceConfigCategoryItem VALUES (7, 1, 'voltageChangePerTap', '0.75');
-INSERT INTO DeviceConfigCategoryItem VALUES (8, 1, 'voltageControlMode', 'DIRECT_TAP');
-INSERT INTO DeviceConfigCategoryItem VALUES (9, 1, 'installOrientation', 'FORWARD');
-INSERT INTO DeviceConfigCategoryItem VALUES (10, 2, 'regulatorHeartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (11, 2, 'regulatorHeartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (12, 2, 'regulatorHeartbeatMode', 'NONE');
-INSERT INTO DeviceConfigCategoryItem VALUES (13, 3, 'cbcHeartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (14, 3, 'cbcHeartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (15, 3, 'cbcHeartbeatMode', 'DISABLED');
+INSERT INTO DeviceConfigCategoryItem VALUES (7, 1, 'minTapPosition', '-16');
+INSERT INTO DeviceConfigCategoryItem VALUES (8, 1, 'maxTapPosition', '16');
+INSERT INTO DeviceConfigCategoryItem VALUES (9, 1, 'voltageChangePerTap', '0.75');
+INSERT INTO DeviceConfigCategoryItem VALUES (10, 1, 'voltageControlMode', 'DIRECT_TAP');
+INSERT INTO DeviceConfigCategoryItem VALUES (11, 1, 'installOrientation', 'FORWARD');
+INSERT INTO DeviceConfigCategoryItem VALUES (12, 2, 'regulatorHeartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (13, 2, 'regulatorHeartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (14, 2, 'regulatorHeartbeatMode', 'NONE');
+INSERT INTO DeviceConfigCategoryItem VALUES (15, 3, 'cbcHeartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (16, 3, 'cbcHeartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (17, 3, 'cbcHeartbeatMode', 'DISABLED');
 
 alter table DeviceConfigCategoryItem
    add constraint AK_DevConCatItem_CatIdItemName unique (DeviceConfigCategoryId, ItemName)
@@ -7157,7 +7159,6 @@ create table LMGroupZeusMapping (
    EcobeeGroupId        varchar(32)          not null,
    EcobeeEventId        varchar(50)          null,
    EcobeeGroupName      varchar(255)         null,
-   ProgramId            numeric              not null,
    constraint PK_LMGROUPZEUSMAPPING primary key (YukonGroupId, EcobeeGroupId)
 )
 go
