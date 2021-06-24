@@ -51,6 +51,7 @@ import com.cannontech.web.api.dr.setup.model.GearFilteredResult;
 import com.cannontech.web.api.dr.setup.model.LoadGroupFilteredResult;
 import com.cannontech.web.api.dr.setup.model.LoadProgramFilteredResult;
 import com.cannontech.web.api.dr.setup.model.MacroLoadGroupFilteredResult;
+import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.token.TokenHelper;
 
 public class ApiRequestHelper {
@@ -112,6 +113,8 @@ public class ApiRequestHelper {
         paramTypeRefMap.put(AttributeAssignment.class, new ParameterizedTypeReference<List<AttributeAssignment>>() {
         });
         paramTypeRefMap.put(CustomAttribute.class, new ParameterizedTypeReference<List<CustomAttribute>>() {
+        });
+        paramTypeRefMap.put(RouteBaseModel.class, new ParameterizedTypeReference<List<RouteBaseModel<?>>>() {
         });
     }
     
