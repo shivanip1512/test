@@ -19,6 +19,7 @@ public class LMEcobeeSetpointControlCommandSerializer extends SimpleThriftSerial
 
         deserialize(msgBytes, entity);
 
+        int programId = entity.get_programId();
         int groupId = entity.get_groupId();
         Instant startTime = new Instant(entity.get_controlStartDateTime() * 1000);
         Instant endTime = new Instant(entity.get_controlEndDateTime() * 1000);
@@ -26,15 +27,17 @@ public class LMEcobeeSetpointControlCommandSerializer extends SimpleThriftSerial
         boolean tempOptionHeat = entity.get_temperatureOption() == LMEcobeeTemperatureTypes.HEAT;
         int tempOffset = entity.get_temperatureOffset();
 
-        log.trace("Parsed setpoint dr parameters. GroupId: {} Start time: {} End time: {} Optional: {} Heat: {} Offset: {}",
-                  groupId, 
-                  startTime, 
-                  endTime, 
-                  optional, 
-                  tempOptionHeat, 
-                  tempOffset);
+        log.trace(
+                "Parsed setpoint dr parameters. GroupId: {} ProgramId: {} Start time: {} End time: {} Optional: {} Heat: {} Offset: {}",
+                groupId,
+                programId,
+                startTime,
+                endTime,
+                optional,
+                tempOptionHeat,
+                tempOffset);
 
-        return new EcobeeSetpointDrParameters(groupId, tempOptionHeat, optional, tempOffset, startTime, endTime);
+        return new EcobeeSetpointDrParameters(programId, groupId, tempOptionHeat, optional, tempOffset, startTime, endTime);
 
     }
 }

@@ -8,6 +8,7 @@ import org.joda.time.Instant;
  * Contains all parameters required to initiate a duty cycle demand response event in Ecobee.
  */
 public final class EcobeeSetpointDrParameters implements Serializable {
+    private final int programId;
     private final int groupId;
     private final boolean tempOptionHeat;
     private final boolean optional;
@@ -15,8 +16,10 @@ public final class EcobeeSetpointDrParameters implements Serializable {
     private final Instant startTime;
     private final Instant stopTime;
 
-    public EcobeeSetpointDrParameters(int groupId, boolean tempOptionHeat, boolean optional, int tempOffset, Instant startTime,
-            Instant stopTime) {
+    public EcobeeSetpointDrParameters(int programId, int groupId, boolean tempOptionHeat, boolean optional, int tempOffset,
+            Instant startTime, Instant stopTime) {
+        super();
+        this.programId = programId;
         this.groupId = groupId;
         this.tempOptionHeat = tempOptionHeat;
         this.optional = optional;
@@ -25,11 +28,15 @@ public final class EcobeeSetpointDrParameters implements Serializable {
         this.stopTime = stopTime;
     }
 
+    public int getProgramId() {
+        return programId;
+    }
+
     public int getGroupId() {
         return groupId;
     }
 
-    public boolean istempOptionHeat() {
+    public boolean isTempOptionHeat() {
         return tempOptionHeat;
     }
 
@@ -51,8 +58,9 @@ public final class EcobeeSetpointDrParameters implements Serializable {
 
     @Override
     public String toString() {
-        return "EcobeeSetpointDrParameters [groupId=" + groupId + ", tempOptionHeat=" + tempOptionHeat + ", optional=" + optional
-                + ", tempOffset=" + tempOffset + ", startTime=" + startTime + ", stopTime=" + stopTime + "]";
+        return "EcobeeSetpointDrParameters [programId=" + programId + ", groupId=" + groupId + ", tempOptionHeat="
+                + tempOptionHeat + ", optional=" + optional + ", tempOffset=" + tempOffset + ", startTime=" + startTime
+                + ", stopTime=" + stopTime + "]";
     }
 
 }
