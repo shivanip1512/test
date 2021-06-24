@@ -22,4 +22,9 @@ public interface EcobeeZeusReconciliationReportDao {
      * Delete the specified error from the report.
      */
     boolean removeError(int reportId, int errorId);
+    
+    /*
+     * Deleting rows from Reconciliation report and Reconciliation error tables.
+     */
+    void cleanUpReconciliationTables();
 }
