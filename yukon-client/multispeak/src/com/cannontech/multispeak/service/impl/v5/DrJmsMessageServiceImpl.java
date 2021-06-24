@@ -118,7 +118,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
-import com.microsoft.azure.servicebus.primitives.StringUtil;
 
 public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageListener {
 
@@ -560,7 +559,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             List<DrAttributeDataJmsMessage> drAttributeDataJmsMessages) {
         Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = ArrayListMultimap.create();
         for (DrAttributeDataJmsMessage message : drAttributeDataJmsMessages) {
-            String serialNumber = StringUtil.EMPTY;
+            String serialNumber = org.apache.commons.lang3.StringUtils.EMPTY;
             PaoIdentifier paoIdentifier = message.getPaoPointIdentifier().getPaoIdentifier();
             serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
             serialNumberAttributeDataMapping.put(serialNumber, message);

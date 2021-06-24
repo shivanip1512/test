@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.azure.messaging.servicebus.implementation.Messages;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.dr.honeywellWifi.azure.event.ApplicationAccessAddedEvent;
 import com.cannontech.dr.honeywellWifi.azure.event.ApplicationAccessRemovedEvent;
@@ -25,7 +26,6 @@ import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 import com.cannontech.dr.honeywellWifi.azure.event.Interval;
 import com.cannontech.dr.honeywellWifi.azure.event.UiDataBasicEvent;
 import com.cannontech.dr.honeywellWifi.azure.event.UnknownEvent;
-import com.microsoft.azure.servicebus.Message;
 
 /**
  * This is the unit test for status events that are read by HoneywellWifiDataListener
@@ -59,7 +59,7 @@ public class HoneywellWifiDataListenerEventTest {
         final String displayedTempStatus = "Measured";
         final Integer deviceId = 35219;
         final String macId = "00D02D831835";
-        Message message = new Message();
+        Messages message = new Messages();
         
         String json = "{\r\n" + 
                 "  \"identifier\": \"775b9f04-0d40-4d10-a4f4-bd5ab19ef99b\",\r\n" + 
@@ -111,7 +111,7 @@ public class HoneywellWifiDataListenerEventTest {
         final Instant startTime = Instant.now();
         final Integer deviceId = 35219;
         final String macId = "00D02D831835";
-        Message message = new Message();
+        Messages message = new Messages();
         
         String json = "{\r\n" + 
                 "  \"identifier\": \"46b965b7-f077-40cd-b37a-98d4beb18257\",\r\n" + 
@@ -145,7 +145,7 @@ public class HoneywellWifiDataListenerEventTest {
         final String previousFanStatus = "Off";
         final Integer deviceId = 35208;
         final String macId = "00D02D6317ED";
-        Message message = new Message();
+        Messages message = new Messages();
         
         String json ="{\r\n" + 
                 "  \"identifier\": \"8fce9913-0fe6-41f2-b0f9-4d1284c74cec\",\r\n" + 
@@ -170,7 +170,7 @@ public class HoneywellWifiDataListenerEventTest {
         final ConnectionStatus connectionStatus = ConnectionStatus.CONNECTION_LOST;
         final Integer deviceId = 35208;
         final String macId = "00D02D6317ED";
-        Message message = new Message();
+        Messages message = new Messages();
         
         String json = "{\r\n" + 
                 "  \"identifier\": \"fe68abb7-d994-41fb-b6d0-53e00e2bd941\",\r\n" + 
@@ -195,7 +195,7 @@ public class HoneywellWifiDataListenerEventTest {
         final int appId = 677;
         final String applicationName = "Clear Result APCo";
         final boolean isConfirmed = false;
-        Message message = new Message();
+        Messages message = new Messages();
         
         String json = "{\r\n" + 
                 "  \"identifier\": \"d1f6170e-5add-48cf-ba50-bdc7fcd4a3c1\",\r\n" + 
@@ -223,7 +223,7 @@ public class HoneywellWifiDataListenerEventTest {
         final String macId = "00D02D52330F";
         final Integer appId = 369;
         final String applicationName = "Eaton 2";
-        Message message = new Message();
+        Messages message = new Messages();
         
         String json = "{\r\n" + 
                 "  \"identifier\": \"94d65432-b994-493e-985f-8357205914eb\",\r\n" + 
@@ -245,7 +245,7 @@ public class HoneywellWifiDataListenerEventTest {
      
     @Test
     public void test_unknownEvent_BasicParsing() {
-        Message message = new Message();
+        Messages message = new Messages();
         
         String json = "{\r\n" + 
                 "  \"identifier\": \"fe68abb7-d994-41fb-b6d0-53e00e2bd941\",\r\n" + 

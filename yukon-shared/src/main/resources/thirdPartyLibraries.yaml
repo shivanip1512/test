@@ -7,34 +7,6 @@
 # - C++ libraries
 # -------
 Java :
-  - filename : accessors-smart-1.2.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.2.0
-    project URL : "http://www.minidev.net/"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/net.minidev/accessors-smart/1.2"
-    md5 : c28b871d258b4d347559d2eb7ecec4a3
-    sha1 : c592b500269bfde36096641b01238a8350f8aa31
-    updated : 2019-12-04
-    jira : YUK-20500
-    notes :
-  
-  - filename : activation-1.1.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.1.0
-    project URL : "http://java.sun.com/products/javabeans/jaf/index.jsp"
-    license : CDDL 1.0
-    license URLs : "https://glassfish.dev.java.net/public/CDDLv1.0.html"
-    maven URL : "https://mvnrepository.com/artifact/javax.activation/activation/1.1"
-    md5 : 8ae38e87cd4f86059c0294a8fe3e0b18
-    sha1 : e6cb541461c2834bdea3eb920f1884d1eb508b50
-    updated : 2019-12-04
-    jira : YUK-20500
-    notes :
-  
   - filename : activation.jar
     yukon group : Tomcat
     project : JavaBeans(TM) Activation Framework
@@ -118,34 +90,6 @@ Java :
     updated : 2016-08-22
     jira : YUK-15354
     notes : 
-  
-  - filename : adal4j-1.6.4.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.6.4
-    project URL : "https://github.com/AzureAD/azure-activedirectory-library-for-java"
-    license : MIT
-    license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/adal4j/1.6.4"
-    md5 : f24086faadafc03ff77c194ada73783e
-    sha1 : 064bc924839150a936672baa7b0218daede720d5
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :
-  
-  - filename : adapter-rxjava-2.7.2.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 2.7.2
-    project URL : "https://github.com/square/retrofit/tree/master/retrofit-adapters/rxjava2"
-    license : MIT
-    license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/com.squareup.retrofit2/adapter-rxjava/2.7.2"
-    md5 : f0085737eeb5713e66c3f52b46e58443
-    sha1 : 2e486aa2cb1d1401c12dda2be5f7404d37d174a7
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :
 
   - filename : ahessian.jar
     yukon group : Yet Another Java Service Wrapper
@@ -160,20 +104,6 @@ Java :
     updated : 2020-12-14
     jira : YUK-22557
     notes : YAJSW - Asynchronous Hessian.  Maven version is 11.11, not 12.15
-  
-  - filename : annotation-detector-3.0.4.jar
-    yukon group : Azure
-    project : Infomas ASL
-    version : 3.0.4
-    project URL : "https://github.com/rmuller/infomas-asl"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/eu.infomas/annotation-detector/3.0.4"
-    md5 : 63974b9b7ea6fafc4f6d0e9fb32f8fc2
-    sha1 : 9dacddd19f848bea5e7ba4dfadce37e0f710cd1b
-    updated : 2016-09-28
-    jira : YUK-15740
-    notes : 
   
   - filename : annotations-api.jar
     yukon group : Tomcat
@@ -230,48 +160,6 @@ Java :
     updated : 2021-05-24
     jira : YUK-24356
     notes : 
-    
-  - filename : applicationinsights-core-1.0.2.jar
-    yukon group : Azure
-    project : Azure Monitor - Application Insights SDK
-    version : 1.0.2
-    project URL : "https://azure.microsoft.com/en-us/services/monitor/"
-    license : MIT
-    license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/applicationinsights-core/1.0.2"
-    md5 : 7d0f77d76d3c0696dcd4103858802211
-    sha1 : c66a25f9e167fb963f7d9e7201870d3e224a4cac
-    updated : 2016-09-28
-    jira : YUK-15740
-    notes : 
-  
-  - filename : applicationinsights-web-1.0.2.jar
-    yukon group : Azure
-    project : Azure Monitor - Application Insights SDK
-    version : 1.0.2
-    project URL : "https://azure.microsoft.com/en-us/services/monitor/"
-    license : MIT
-    license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/applicationinsights-web/1.0.2"
-    md5 : 8d6c411eaef592ea7958ea325cd7e4c5
-    sha1 : cbaca301cce84eb2149560892d8b9ea233b60323
-    updated : 2016-09-28
-    jira : YUK-15740
-    notes : 
-  
-  - filename : asm-5.0.4.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 5.0.4
-    project URL : "https://asm.ow2.io/"
-    license : BSD
-    license URLs : "https://asm.ow2.io/license.html"
-    maven URL : "https://mvnrepository.com/artifact/org.ow2.asm/asm/5.0.4"
-    md5 : c8a73cdfdf802ab0220c860d590d0f84
-    sha1 : 0da08b8cce7bbf903602a25a3a163ae252435795
-    updated : 2019-12-04
-    jira : YUK-20500
-    notes :
   
   - filename : asm.jar
     yukon group : Hibernate
@@ -286,34 +174,6 @@ Java :
     updated : 2006-05-03
     jira : none
     notes : 
-    
-  - filename : async-http-client-2.12.1.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 2.12.1
-    project URL : "https://github.com/AsyncHttpClient/async-http-client"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.asynchttpclient/async-http-client/2.12.1"
-    md5 : 0332f4cda7ef98149f53c0ef3ae0ef71
-    sha1 : 9b1b2a8f5e836c68501a259baa6c6c3e8a7cb420
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :
-  
-  - filename : async-http-client-netty-utils-2.12.1.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 2.12.1
-    project URL : "https://github.com/AsyncHttpClient/async-http-client"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.html"
-    maven URL : "https://mvnrepository.com/artifact/org.asynchttpclient/async-http-client-netty-utils/2.12.1"
-    md5 : 91c199f574c0c1bb7efc3883537ee32c
-    sha1 : b7f586db0b554e2aaba9acd321a2e1d70efcf3db
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :
   
   - filename : axiom-api-1.2.22.jar
     yukon group : Spring Web Services
@@ -343,62 +203,89 @@ Java :
     jira : YUK-18680
     notes : 
   
-  - filename : azure-annotations-1.10.0.jar
+  - filename : azure-core-1.17.0.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 1.17.0
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.azure/azure-core/1.17.0"
+    md5 : fbea63902f386b58b5dfd16fb5021354
+    sha1 : 8b04db623e3681a770db397e5fd74b9e2dd15545
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :       
+
+  - filename : azure-core-amqp-2.2.0.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 2.2.0
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.azure/azure-core-amqp/2.2.0"
+    md5 : e399b83433daa4352187cd38d4d9ebba
+    sha1 : fdf56833f7d011f64b0c183e4564b43858ccb9b6
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :       
+
+  - filename : azure-core-http-netty-1.10.0.jar
     yukon group : Azure
     project : Microsoft Azure SDK
     version : 1.10.0
-    project URL : "https://github.com/Microsoft/java-api-annotations"
-    license : MIT
-    license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/azure-annotations/1.10.0"
-    md5 : 580218e81aaa2e91aba64c9a9e90d051
-    sha1 : 6131138b5897402e470202303b97af7a037defc0
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.azure/azure-core-http-netty/1.10.0"
+    md5 : 4db8337a4a116b6ae9ce7e752b9c062b
+    sha1 : b22ecd0714aeba85a3051940510aafd332a0eda5
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :   
   
-  - filename : azure-client-authentication-1.7.3.jar
+  - filename : azure-messaging-servicebus-7.2.3.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 1.7.3
-    project URL : "https://github.com/Azure/autorest-clientruntime-for-java"
-    license : MIT
-    license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/azure-client-authentication/1.7.3"
-    md5 : a1116b1a79494e4bb4f1b9ca2fe03ffb
-    sha1 : 84af906be23e345df7d73a05d8df29796c40fa30
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :
-  
-  - filename : azure-client-runtime-1.7.3.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.7.3
-    project URL : "https://github.com/Azure/autorest-clientruntime-for-java"
-    license : MIT
-    license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/azure-client-runtime/1.7.3"
-    md5 : a8853a38a9e70fe4475af0b42a1c067e
-    sha1 : 47ac45a58dce71e585a411aa037eaf2ad52156ea
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :    
-  
-  - filename : azure-servicebus-3.5.1.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 3.5.1
+    version : 7.2.3
     project URL : "https://github.com/Azure/azure-sdk-for-java"
     license : MIT
     license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/azure-servicebus/3.5.1"
-    md5 : f512d488fe5e35ce463811433b903966
-    sha1 : 4f5898b4892315be1c01f867624175fa36d1c221
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/com.azure/azure-messaging-servicebus/7.2.3"
+    md5 : 87b09216affbb2c365c64aed57aefd00
+    sha1 : 30ba94b5bebfafbd5500c8d8ba76002b95d172e6
+    updated : 2021-06-23
+    jira : YUK-24554
     notes : Microsoft Azure Service Bus
 
+  - filename : brave-5.13.3.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 5.13.3
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.zipkin.brave/brave/5.13.3"
+    md5 : 4ec2d2f201e2aef492fc10a1bb66a11c
+    sha1 : 2d8ecb2352108f95b3e66ccc8027e9343ad9852c
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :       
+    
+  - filename : brave-instrumentation-http-5.13.3.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 5.13.3
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.zipkin.brave/brave-instrumentation-http/5.13.3"
+    md5 : d48d4cf2be350155292fa54db925a547
+    sha1 : fe70809f06c786b171e4597747c6f5a8c911fe5f
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :  
   - filename : bc-fips-1.0.2.jar
     yukon group : Bouncy Castle
     project : Bouncy Castle FIPS
@@ -1127,44 +1014,44 @@ Java :
     jira : none
     notes : Discontinued in 2012, should no longer to be used for legal reasons
   
-  - filename : jackson-annotations-2.12.1.jar
+  - filename : jackson-annotations-2.12.3.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.12.1
+    version : 2.12.3
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.12.1"
-    md5 : ac96cb6fdf09ba1e2c41f461047f1eb4
-    sha1 : aa079f822ddce5548018286d19ccb15c2fc202d7
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.12.3"
+    md5 : 2e522914770d1d39b0a8aa31cbbaa798
+    sha1 : 7275513412694a1aafd08c0287f48469fa0e6e17
     updated : 2021-01-29
     jira : YUK-23599
     notes : Jackson Annotations
   
-  - filename : jackson-core-2.12.1.jar
+  - filename : jackson-core-2.12.3.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.12.1
+    version : 2.12.3
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.12.1"
-    md5 : 6a65df7a5e62df2754726857b4ab0257
-    sha1 : 7c5493930e439be6fcec80a9afd6516b8e5e8760
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.12.3"
+    md5 : 2f2db39bffd7e5ec8648977a740b870f
+    sha1 : deb23fe2a7f2b773e18ced2b50d4acc1df8fa366
     updated : 2021-01-29
     jira : YUK-23599
     notes : Jackson Core
   
-  - filename : jackson-databind-2.12.1.jar
+  - filename : jackson-databind-2.12.3.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.12.1
+    version : 2.12.3
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.12.1"
-    md5 : 1925b6e2feac7e63e164f57e6fb42c9d
-    sha1 : 8a97e00e429c42f74757b0a8cd1d39dddd41524f
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.12.3"
+    md5 : 4e821fbfd2d3034ae84735b564c30fed
+    sha1 : d6153f8fc60c479ab0f9efb35c034526436a4953
     updated : 2021-01-29
     jira : YUK-23599
     notes : Jackson Databind
@@ -1182,7 +1069,79 @@ Java :
     updated : 2018-07-18
     jira : YUK-18485
     notes : Jackson Dataformat CSV
-  
+
+  - filename : jackson-dataformat-xml-2.12.3.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 2.12.3
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.12.3"
+    md5 : e8a3f056ba4995bd5da9723f8c693fc1
+    sha1 : d2a90460fecffa0c7ae9fd836272bbce91b5241a
+    updated : 2021-06-15
+    jira : YUK-24554
+    notes :       
+    
+      
+  - filename : jackson-datatype-jsr310-2.12.3.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 1.12.3
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.12.2"
+    md5 : 17a02fc1a2205dc41e76dbdc91f0cb41
+    sha1 : f69c636438dcf19c49960c1fe8901320ab85f989
+    updated : 2021-06-15
+    jira : YUK-24554
+    notes :       
+    
+      
+  - filename : jackson-module-jaxb-annotations-2.12.3.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 2.12.3
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.12.3"
+    md5 : e7bd5a7545541bdfda494494cf950278
+    sha1 : ea843951d2efdd5e6844d6faa8aabf71698463a8
+    updated : 2021-06-15
+    jira : YUK-24554
+    notes :       
+
+  - filename : jakarta.activation-api-1.2.1.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 1.2.1
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/jakarta.activation/jakarta.activation-api/1.2.1"
+    md5 : 9b647398add993324d3d9e5effa6005a
+    sha1 : 562a587face36ec7eff2db7f2fc95425c6602bc1
+    updated : 2021-06-15
+    jira : YUK-24554
+    notes :       
+    
+  - filename : jakarta.xml.bind-api-2.3.2.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 2.3.2
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2"
+    md5 : dabb40ba58199304c640b7bd8bb2fbac
+    sha1 : 8d49996a4338670764d7ca4b85a1c4ccf7fe665d
+    updated : 2021-06-15
+    jira : YUK-24554
+    notes :   
+
   - filename : jackson-datatype-joda-2.10.1.jar
     yukon group : Azure 
     project : Microsoft Azure SDK
@@ -2065,116 +2024,130 @@ Java :
     jira : YUK-22557
     notes : 
   
-  - filename : netty-buffer-4.1.48.Final.jar
+  - filename : netty-buffer-4.1.65.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.48
+    version : 4.1.65
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-buffer/4.1.48.Final"
-    md5 : 98387e4959d8535c2f8b2871ea5ec5be
-    sha1 : 7fd3ebb659c628e0158c9c2c971f4d0734d7f4f0
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-buffer/4.1.65.Final"
+    md5 : b6072f5b74511dafc354686f30db4c28
+    sha1 : 9654d248812add4aa36a6201fab88ac5f13028c3
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
 
-  - filename : netty-codec-4.1.48.Final.jar
+  - filename : netty-codec-4.1.65.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.48
+    version : 4.1.65
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec/4.1.48.Final"
-    md5 : 2f438de6900babbedf5046dc117c3152
-    sha1 : 3142078325d745228da9d6d1f6f9931c63aaba16
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec/4.1.65.Final"
+    md5 : d8d5a9b359b4fa1e2b4d657e09fcbd1e
+    sha1 : 4a171d689d44df38d1b5b09cedee8584f858e702
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
 
-  - filename : netty-codec-dns-4.1.27.Final.jar
+  - filename : netty-codec-dns-4.1.63.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.27
+    version : 4.1.63
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-dns/4.1.27.Final"
-    md5 : 9a2efc47930de938879d4234a61e1496
-    sha1 : 860d46858b46706d96e562dbb53d13457a935872
-    updated : 2019-12-04
-    jira : YUK-20500
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-dns/4.1.63.Final"
+    md5 : d464e119d23b571165acf58550b317e8
+    sha1 : 91c445232b12e13bf6757579a39bab81e1233af5
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
 
-  - filename : netty-codec-http-4.1.48.Final.jar
+  - filename : netty-codec-http-4.1.65.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.48
+    version : 4.1.65
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http/4.1.48.Final"
-    md5 : f347c91af3a2f7dffa1b13acd2460618
-    sha1 : 8b18499a51367d291efd1f200a4e865370d38738
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http/4.1.65.Final"
+    md5 : cbdfdaaa3c8234fa373ee483e1e01978
+    sha1 : 0fdf0886e1a615ab4ccea96830d7e663a4349180
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
   
-  - filename : netty-codec-socks-4.1.48.Final.jar
+  - filename : netty-codec-http2-4.1.65.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.48
+    version : 4.1.65
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http/4.1.48.Final"
-    md5 : 7a1e10c42fcc7061ef4f00cd9d13d5e3
-    sha1 : 42b55c9ca8672ebb7160cadf3c70ffc11638f021
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http/4.1.65.Final"
+    md5 : a4cada9d98acf2dd020a04b80e971e85
+    sha1 : 0b98d8554d43bbf379883005d043484bafd47cf3
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
   
-  - filename : netty-common-4.1.48.Final.jar
+  - filename : netty-codec-socks-4.1.65.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.48
+    version : 4.1.65
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-common/4.1.48.Final"
-    md5 : 58d0b052076b27c3e8395e1444ef05ed
-    sha1 : ec27d04fd5e7b65ac171cd64734f9e4f1fc2a286
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http/4.1.65.Final"
+    md5 : 5e559dcc6580a4795ccb7f4acb3cceb5
+    sha1 : 6a9107f2be2b2566adf491dc53fd34b0faf9d13d
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :       
+  
+  - filename : netty-common-4.1.65.Final.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 4.1.65
+    project URL : "https://netty.io/index.html"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-common/4.1.65.Final"
+    md5 : aa7bef4bd7ecd9115612778cc289d8b6
+    sha1 : 3e5ad41e33add0fad197942e38a509f868aa2c5a
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
 
-  - filename : netty-handler-4.1.48.Final.jar
+  - filename : netty-handler-4.1.65.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.48
+    version : 4.1.65
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler/4.1.48.Final"
-    md5 : 58258ea4933da1b902c5be4e903c2856
-    sha1 : d459919c87dc1a2bf400b39053761ecc11c2e436
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler/4.1.65.Final"
+    md5 : 1dfca670a60efd964283ca1d501dbaa5
+    sha1 : 28313a14ddd2fc312f75e8f21a5a12ffac4ef0b6
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
 
-  - filename : netty-handler-proxy-4.1.48.Final.jar
+  - filename : netty-handler-proxy-4.1.65.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.48
+    version : 4.1.65
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler-proxy/4.1.48.Final"
-    md5 : 019138d39fe93eec6751c4c00fcf5a46
-    sha1 : 79910203db6a542189c9aaa9ec187bf5ee16248a
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler-proxy/4.1.65.Final"
+    md5 : 5c3dbd514b389508fccd4453e9c0b9f4
+    sha1 : 494094032106f27cb19f67a2ce88570d974438de
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
 
   - filename : netty-reactive-streams-2.0.4.jar
@@ -2187,106 +2160,120 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.typesafe.netty/netty-reactive-streams/2.0.4"
     md5 : a10a0d529ec175ec5d5401a394e785f0
     sha1 : 0f77c8eaa7d5e2f2160b6d21ba385cf726f164b2
-    updated : 2020-12-09
-    jira : YUK-22559
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
 
-  - filename : netty-resolver-4.1.48.Final.jar
+  - filename : netty-resolver-4.1.65.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.48
+    version : 4.1.65
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver/4.1.48.Final"
-    md5 : 141b239626d419ce037e39f4426b90dc
-    sha1 : 612ad2acc848ce46496095683eea621094763b80
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver/4.1.65.Final"
+    md5 : 12314caa0f5e7ecb0d8491eb690dc68b
+    sha1 : 561ff144d7ab425d74a2c54e8fb78865a6986063
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
 
-  - filename : netty-resolver-dns-4.1.27.Final.jar
+  - filename : netty-resolver-dns-4.1.63.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.27
+    version : 4.1.63
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns/4.1.27.Final"
-    md5 : f66d5ea5f21e582c4d07c394c3d15732
-    sha1 : 5e4892a62464f294be10dbc2f136bdeac390440c
-    updated : 2019-12-04
-    jira : YUK-20500
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns/4.1.63.Final"
+    md5 : 34a96aaa6924d23d47a734a605eb6db5
+    sha1 : f44dc8ed52ff8528a88c157879c9baffe464fa46
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
 
-  - filename : netty-transport-4.1.48.Final.jar
+  - filename : netty-resolver-dns-native-macos-4.1.63.Final-osx-x86_64.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.48
+    version : 4.1.63
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport/4.1.48.Final"
-    md5 : a68f4c14e544b572baedea644bf63b22
-    sha1 : d285e8d9af5be1fc146b91a1b0d211e7a6a7e7d4
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-native-macos-4.1.63.Final-osx-x86_64.jar"
+    md5 : cedc378086b915b81d043931d48b0103
+    sha1 : d72f13b680d361b0e217704bda59ccb4b3256297
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes : 
+
+  - filename : netty-tcnative-boringssl-static-2.0.39.Final.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 2.0.39
+    project URL : "https://netty.io/index.html"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-tcnative-boringssl-static/2.0.39.Final"
+    md5 : f7522e71908c54cffb0a1c0f7d723e9a
+    sha1 : dd888b781872571c3e069257689bc30437c2fa45
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :       
+
+  - filename : netty-transport-4.1.65.Final.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 4.1.65
+    project URL : "https://netty.io/index.html"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport/4.1.65.Final"
+    md5 : a4a6e16a9fd19f4c0820450042286cf1
+    sha1 : 14c0c0356af101fb7f6e2ba77b3e68d7b21dc37b
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
   
-  - filename : netty-transport-native-epoll-4.1.48.Final-linux-x86_64.jar
+  - filename : netty-transport-native-epoll-4.1.65.Final-linux-x86_64.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.48
+    version : 4.1.65
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-epoll/4.1.48.Final"
-    md5 : 5a1668504ac698fffa39c562ab932e8b
-    sha1 : 2b25233dda8b986297076a7d62552c1ec2f41ed8
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-epoll/4.1.65.Final"
+    md5 : 236bcc1a2e90221ff48d9f9ad6b30713
+    sha1 : 0ed1ce93ceaaec02c7d3d88daf82360745499747
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :      
 
-  - filename : netty-transport-native-unix-common-4.1.48.Final.jar
+  - filename : netty-transport-native-kqueue-4.1.65.Final-osx-x86_64.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.48
+    version : 4.1.65
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-unix-common/4.1.48.Final"
-    md5 : 1333ad8fb08fb1664944404898e32834
-    sha1 : fb0a76d5d201b59ec2b3721c66eda737b3176f30
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :       
- 
-  - filename : nimbus-jose-jwt-9.1.5.jar
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-kqueue/4.1.64.Final"
+    md5 : 9e3e10aecd5534c7f1c0fece085e11e9
+    sha1 : 502a18402e38131c669840363ad50fe60a899d0d
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :      
+
+  - filename : netty-transport-native-unix-common-4.1.65.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 9.1.5
-    project URL : "https://bitbucket.org/connect2id/nimbus-jose-jwt"
+    version : 4.1.65
+    project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt/9.1.5"
-    md5 : 660f61730d6854e039882c711f716b15
-    sha1 : 7a3d4eb9eb702315751752895b6c7dce20fbe94d
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :       
- 
-  - filename : oauth2-oidc-sdk-6.5.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 6.5
-    project URL : "https://bitbucket.org/connect2id/oauth-2.0-sdk-with-openid-connect-extensions"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk/6.5"
-    md5 : 4e31081d2d1d6d766a9c14b76eb79a7f
-    sha1 : 422759fc195f65345e8da3265c69dea3c6cf56a5
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-unix-common/4.1.65.Final"
+    md5 : aa766b71c05aebd63dd334d39f6f5ca4
+    sha1 : 6aea23759e5325309028ed239885fcd5a9075c66
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :       
   
   - filename : objenesis-1.2.jar
@@ -2316,49 +2303,7 @@ Java :
     updated : 2020-02-14
     jira : YUK-21477
     notes : ojdbc10 for Java 6+
-  
-  - filename : okhttp-3.14.7.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 3.14.7
-    project URL : "https://github.com/square/okhttp"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp/3.14.7"
-    md5 : 46fa74c5a760f81f448f3b86a3c1bddd
-    sha1 : a8656952ad4315057d92e7b58bfd232c823e034f
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :       
 
-  - filename : okhttp-urlconnection-3.12.2.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 3.12.2
-    project URL : "https://github.com/square/okhttp"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp-urlconnection/3.12.2"
-    md5 : 37045e6e653924cb9e4b20f9e5088cc8
-    sha1 : 9018b75da4d617a813af037fc4d4f94662655056
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :       
-
-  - filename : okio-1.17.2.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.17.2
-    project URL : "https://github.com/square/okio"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.squareup.okio/okio/1.17.2"
-    md5 : 54a6a8979bd8e64e1fbf21d511654737
-    sha1 : 78c7820b205002da4d2d137f6f312bd64b3d6049
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :       
-  
   - filename : opencsv-4.5.jar
     yukon group : Common
     project : opencsv
@@ -2457,32 +2402,32 @@ Java :
     jira : YUK-24160
     notes :
     
-  - filename : proton-j-0.33.4.jar
+  - filename : proton-j-0.33.8.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 0.33.4
+    version : 0.33.8
     project URL : "https://github.com/apache/qpid-proton-j/tree/master/proton-j"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.qpid/proton-j/0.33.4"
-    md5 : 1e03613999e16d99dfd735c7ae5befba
-    sha1 : ae78c5552b1ed6549fc5b51f9739e8dbd921ffc3
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/org.apache.qpid/proton-j/0.33.8"
+    md5 : cd1f6987b69e8f5bfc2847fe8695fd79
+    sha1 : f7e503d4505d73c604c3a4a8e190d461136c9797
+    updated : 2021-06-23
+    jira : YUK-24554
     notes :
   
-  - filename : qpid-proton-j-extensions-1.2.3.jar
+  - filename : qpid-proton-j-extensions-1.2.4.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 1.2.3
+    version : 1.2.4
     project URL : "https://github.com/apache/qpid-proton-j"
     license : MIT
     license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/qpid-proton-j-extensions/1.2.3"
-    md5 : ebe8651a7c1b6b9928f8d0891c76f153
-    sha1 : 748b2bdfcb17dfb7633a75ea1bf8dd33cb9cfe4a
-    updated : 2020-12-09
-    jira : YUK-22559
+    maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/qpid-proton-j-extensions/1.2.4"
+    md5 : f0a84bc7fa55bc3c750270e8043107f1
+    sha1 : ac59a0be85cfb43a9b2fe79d401bc37830329f48
+    updated : 2021-06-23
+    jira : YUK-24554
     notes : 
   
   - filename : quartz-2.3.2.jar
@@ -2497,6 +2442,76 @@ Java :
     sha1 : 18a6d6b5a40b77bd060b34cb9f2acadc4bae7c8a
     updated : 2020-07-23
     jira : YUK-23598
+    notes : 
+  
+  - filename : reactor-core-3.4.6.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 3.4.6
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.projectreactor/reactor-core/3.4.6"
+    md5 : 2f13b945f220dbbe4aee43ba73ac6ce7
+    sha1 : d8d52418db9eea651d4772a619d5c9ea820449b7
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :       
+
+  - filename : reactor-netty-1.0.7.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 1.0.7
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty/1.0.7"
+    md5 : 87887f7d42f9008164566ebf9c6ffc34
+    sha1 : 774f0f86d592586f92b751c4b4cdaea0c3f413c8
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :       
+    
+  - filename : reactor-netty-core-1.0.7.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 1.0.7
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty-http/1.0.7"
+    md5 : 74de0a56cf45501783f80638068b2d56
+    sha1 : f5819084c49d6651a3be5805c5e128e535bd8eb4
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :       
+
+  - filename : reactor-netty-http-1.0.7.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 1.0.7
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty-http/1.0.7"
+    md5 : c269cc48166dca5eaac57add6c30ec77
+    sha1 : 95106e62dce6e83933823bc54f4177c2a60c8028
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :       
+
+  - filename : reactor-netty-http-brave-1.0.7.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 1.0.7
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty-http-brave/1.0.7"
+    md5 : 8a51ee9344587df322dce3c827a4e64c
+    sha1 : 9f60a49202fae2d28dd8bd6a3f1942eba291a7cc
+    updated : 2021-06-23
+    jira : YUK-24554
     notes : 
   
   - filename : reactive-streams-1.0.3.jar
@@ -2540,34 +2555,6 @@ Java :
     updated : 2021-01-05
     jira : YUK-23433
     notes : 
-  
-  - filename : retrofit-2.7.2.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 2.7.2
-    project URL : "https://github.com/square/retrofit"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit/2.7.2"
-    md5 : 8dbee9c822e3bf4bcbfa4294117d2185
-    sha1 : b98baad220c2091db369e5943265f9d083cad1cc
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :       
-
-  - filename : rxjava-1.3.8.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.3.8
-    project URL : "https://github.com/ReactiveX/RxJava"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.reactivex/rxjava/1.3.8"
-    md5 : 62b34782c8ce3462d5796da7c1e9a9b5
-    sha1 : 8c192792ad2e65a90867ab418ac49703f44d2baf
-    updated : 2019-12-04
-    jira : YUK-20500
-    notes :       
   
   - filename : saaj.jar
     yukon group : Java API for XML Messaging
@@ -3074,18 +3061,18 @@ Java :
     jira : YUK-16362
     notes : 
   
-  - filename : stax2-api-3.1.4.jar
+  - filename : stax2-api-4.2.1.jar
     yukon group : XML parsing
     project : Stax2 API
-    version : 3.1.4
+    version : 4.2.1
     project URL : "http://wiki.fasterxml.com/WoodstoxStax2"
     license : BSD 2-clause
     license URLs : "https://opensource.org/licenses/bsd-license.php"
-    maven URL : "https://mvnrepository.com/artifact/org.codehaus.woodstox/stax2-api/3.1.4"
-    md5 : c08e89de601b0a78f941b2c29db565c3
-    sha1 : ac19014b1e6a7c08aad07fe114af792676b685b7
-    updated : 2014-04-10
-    jira : YUK-11706
+    maven URL : "https://mvnrepository.com/artifact/org.codehaus.woodstox/stax2-api/4.2.1"
+    md5 : af8377bc7882332e22456616a9f164f6
+    sha1 : a3f7325c52240418c2ba257b103c3c550e140c83
+    updated : 2021-06-23
+    jira : YUK-24554
     notes : 
   
   - filename : stax-ex-1.8.jar
@@ -3410,6 +3397,20 @@ Java :
     jira : YUK-22557
     notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.15.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
+  - filename : woodstox-core-6.2.4.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 6.2.4
+    project URL : "http://www.minidev.net/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core/6.2.4"
+    md5 : c72181f3fb82bda9aa724e6b0fed3395
+    sha1 : 16b9f8ab972e67eb21872ea2c40046249d543989
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :
+  
   - filename : wro4j-core-1.6.3.jar
     yukon group : UI
     project : Web Resource Optimizer
@@ -3507,6 +3508,48 @@ Java :
     updated : 2015-10-02
     jira : YUK-14596
     notes : 
+  
+  - filename : zipkin-2.23.2.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 2.23.2
+    project URL : "http://www.minidev.net/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.zipkin.zipkin2/zipkin/2.23.2"
+    md5 : ce30ac8103a89b0c8713aeaa621c2d5b
+    sha1 : 001c2c7f2e91a3749311f7f75d0535d14ba2e2f6
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :
+
+  - filename : zipkin-reporter-2.16.3.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 2.16.3
+    project URL : "http://www.minidev.net/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.zipkin.reporter2/zipkin-reporter-brave/2.16.3"
+    md5 : 656ce86131f12e1e9f5c0d8c1b826ce9
+    sha1 : 07e43d8be3376d305c355d969e8b9f3a62221380
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :
+  
+  - filename : zipkin-reporter-brave-2.16.3.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 2.16.3
+    project URL : "http://www.minidev.net/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.zipkin.reporter2/zipkin-reporter-brave/2.16.3"
+    md5 : 8ea0bf1755b23e313f9f2769911537e0
+    sha1 : 4d5017d71e4de139b6a31612cfd837b7c71d288c
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :
   
 Network Manager :
   - filename : activemq-all-5.15.10.jar
