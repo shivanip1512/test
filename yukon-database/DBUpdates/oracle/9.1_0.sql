@@ -83,14 +83,45 @@ INSERT INTO StateGroup VALUES(-33, 'OnOff', 'Status');
 INSERT INTO State VALUES(-33, 0, 'Off', 1, 6, 0);
 INSERT INTO State VALUES(-33, 1, 'On', 0, 6, 0);
 
-INSERT INTO DBUpdates VALUES ('YUK-24286', '9.0.0', SYSDATE);
+INSERT INTO DBUpdates VALUES ('YUK-24286', '9.1.0', SYSDATE);
 /* @end YUK-24286 */
+
+/* @start YUK-23668 */
+INSERT INTO PortTiming (PORTID, PRETXWAIT, RTSTOTXWAIT, POSTTXWAIT, RECEIVEDATAWAIT, EXTRATIMEOUT, PostCommWait)
+SELECT PAObjectID, 0, 0, 0, 0, 0, 0 
+FROM YukonPAObject
+WHERE Type = 'RFN-1200';
+
+INSERT INTO DBUpdates VALUES ('YUK-23668', '9.1.0', SYSDATE);
+/* @end YUK-23668 */
 
 /* @start YUK-24557 */
 DELETE FROM Job WHERE BeanName = 'ecobeePointUpdateJobDefinition';
 
 INSERT INTO DBUpdates VALUES ('YUK-24557', '9.1.0', SYSDATE);
 /* @end YUK-24557 */
+
+/* @start YUK-24031 */
+INSERT INTO DeviceConfigCategoryItem
+SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryID) 
+           + (SELECT NVL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+       DeviceConfigCategoryID,
+       'minTapPosition',
+       '-16'
+FROM DeviceConfigCategory 
+WHERE CategoryType = 'regulatorCategory';
+
+INSERT INTO DeviceConfigCategoryItem
+SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryID) 
+           + (SELECT NVL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+       DeviceConfigCategoryID,
+       'maxTapPosition',
+       '16'
+FROM DeviceConfigCategory 
+WHERE CategoryType = 'regulatorCategory';
+
+INSERT INTO DBUpdates VALUES ('YUK-24031', '9.1.0', SYSDATE);
+/* @end YUK-24031 */
 
 /* @start YUK-24529 */
 ALTER TABLE LMGroupZeusMapping ADD ProgramId NUMBER;

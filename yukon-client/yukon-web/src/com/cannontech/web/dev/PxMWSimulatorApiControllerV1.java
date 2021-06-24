@@ -47,7 +47,7 @@ public class PxMWSimulatorApiControllerV1 {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     private static final Logger log = YukonLogManager.getLogger(PxMWCommunicationServiceImplV1.class);
     
-    @GetMapping("/sites/{id}/devices")
+    @GetMapping("/v1/sites/{id}/devices")
     public ResponseEntity<Object> devicesV1(@PathVariable String id, @RequestParam(required=false) Boolean recursive,
             @RequestParam(required=false) Boolean includeDetail) {
         try {
@@ -62,7 +62,7 @@ public class PxMWSimulatorApiControllerV1 {
         }
     }
     
-    @PostMapping("/security/serviceaccount/token")
+    @PostMapping("/v1/security/serviceaccount/token")
     public ResponseEntity<Object> token(@RequestBody PxMWCredentialsV1  pxMWCredentialsV1) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
@@ -75,7 +75,7 @@ public class PxMWSimulatorApiControllerV1 {
         }
     }
     
-    @PutMapping("/devices/{id}/commands/{command_instance_id}")
+    @PutMapping("/v1/devices/{id}/commands/{command_instance_id}")
     public ResponseEntity<Object> sendCommandV1(@PathVariable String id, @PathVariable String command_instance_id,
             @RequestBody PxMWCommandRequestV1 pxMWCommandRequestV1) {
         try {
@@ -91,7 +91,7 @@ public class PxMWSimulatorApiControllerV1 {
         }
     }
 
-    @PostMapping("/devices/timeseries/")
+    @PostMapping("/v1/devices/timeseries/")
     public ResponseEntity<Object> timeseriesV1(@RequestBody PxMWTimeSeriesDataRequestV1 pxMWTimeSeriesDataRequestV1) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
@@ -106,7 +106,7 @@ public class PxMWSimulatorApiControllerV1 {
         }
     }
 
-    @GetMapping("/accesscontrol/sites")
+    @GetMapping("/v1/accesscontrol/sites")
     public ResponseEntity<Object> sitesV1(@RequestParam(required = true) String userId) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
@@ -120,7 +120,7 @@ public class PxMWSimulatorApiControllerV1 {
         }
     }
     
-    @GetMapping("/devices/{deviceId}/details")
+    @GetMapping("/v1/devices/{deviceId}")
     public ResponseEntity<Object> detailsV1(@PathVariable String deviceId, @RequestParam(required=false) Boolean recursive) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
