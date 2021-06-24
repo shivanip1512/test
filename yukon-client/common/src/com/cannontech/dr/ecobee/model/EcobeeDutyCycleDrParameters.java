@@ -18,7 +18,6 @@ public final class EcobeeDutyCycleDrParameters implements Serializable {
 
     public EcobeeDutyCycleDrParameters(int programId, Instant startTime, Instant endTime, int dutyCyclePercent,
             int randomTimeSeconds, boolean isOptional, int groupId) {
-        super();
         this.programId = programId;
         this.startTime = startTime;
         this.endTime = endTime;

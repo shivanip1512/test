@@ -17,7 +17,6 @@ public final class EcobeePlusDrParameters implements Serializable {
 
     public EcobeePlusDrParameters(int programId, int groupId, Instant startTime, Instant endTime, int randomTimeSeconds,
             boolean heatingEvent) {
-        super();
         this.programId = programId;
         this.groupId = groupId;
         this.startTime = startTime;

@@ -18,7 +18,6 @@ public final class EcobeeSetpointDrParameters implements Serializable {
 
     public EcobeeSetpointDrParameters(int programId, int groupId, boolean tempOptionHeat, boolean optional, int tempOffset,
             Instant startTime, Instant stopTime) {
-        super();
         this.programId = programId;
         this.groupId = groupId;
         this.tempOptionHeat = tempOptionHeat;
