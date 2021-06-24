@@ -109,6 +109,7 @@
         <include name="javax.jms-api-2.0.1.jar"/>
         <include name="micrometer-core-1.0.7.jar"/>
         <include name="reactive-streams-1.0.3.jar"/>
+        <include name="reactor-core-3.4.6.jar"/>
         <include name="sqljdbc42.jar"/>
         <include name="web-common.jar"/>
         <include name="wsdl4j-1.6.3.jar"/>
