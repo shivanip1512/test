@@ -45,7 +45,6 @@ Class-Path: ./
  spring-jcl-5.3.2.jar 
  spring-webflux-5.3.2.jar 
  javax.jms-api-2.0.1.jar 
- reactor-core-3.3.8.RELEASE.jar 
  micrometer-core-1.0.7.jar 
  reactive-streams-1.0.3.jar 
  spring-xml-3.0.10.RELEASE.jar 
@@ -103,8 +102,6 @@ Class-Path: ./
  azure-messaging-servicebus-7.2.3.jar 
  brave-5.13.3.jar 
  brave-instrumentation-http-5.13.3.jar 
- client-runtime-1.7.3.jar 
- converter-jackson-2.7.2.jar 
  commons-codec-1.10.jar 
  commons-lang3-3.8.1.jar 
  gson-1.7.2.jar 
@@ -115,18 +112,12 @@ Class-Path: ./
  jackson-core-2.12.3.jar 
  jackson-databind-2.12.3.jar 
  jackson-dataformat-csv-2.9.6.jar 
- jackson-datatype-joda-2.10.1.jar 
-  jackson-dataformat-xml-2.12.3.jar 
+ jackson-dataformat-xml-2.12.3.jar 
  jackson-datatype-jsr310-2.12.3.jar 
  jackson-module-jaxb-annotations-2.12.3.jar 
  jakarta.activation-api-1.2.1.jar 
  jakarta.xml.bind-api-2.3.2.jar
- javax.activation-1.2.0.jar 
- javax.mail-1.6.1.jar 
- jcip-annotations-1.0-1.jar 
  json-smart-2.3.jar 
- lang-tag-1.5.jar 
- logging-interceptor-3.12.2.jar 
  netty-buffer-4.1.65.Final.jar 
  netty-codec-4.1.65.Final.jar 
  netty-codec-dns-4.1.63.Final.jar 
@@ -156,7 +147,6 @@ Class-Path: ./
  jjwt-api-0.10.6.jar 
  jjwt-impl-0.10.6.jar 
  jjwt-jackson-0.10.6.jar 
- mail-1.4.5.jar 
  jaxws-api.jar 
  javax.annotation-api-1.3.2.jar 
  saaj-api-1.3.5.jar 

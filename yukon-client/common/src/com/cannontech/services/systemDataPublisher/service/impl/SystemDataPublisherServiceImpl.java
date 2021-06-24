@@ -14,7 +14,7 @@ import com.cannontech.services.systemDataPublisher.service.SystemDataPublisherSe
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 
 @Service
 public class SystemDataPublisherServiceImpl implements SystemDataPublisherService {
@@ -32,7 +32,7 @@ public class SystemDataPublisherServiceImpl implements SystemDataPublisherServic
     public void initialize() {
         converter = new MappingJackson2MessageConverter();
         ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JodaModule());
+        mapper.registerModule(new JSR310Module());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         converter.setObjectMapper(mapper);
 

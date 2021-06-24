@@ -454,20 +454,6 @@ Java :
     jira : none
     notes : 
   
-  - filename : client-runtime-1.7.3.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.7.3
-    project URL : "https://github.com/Azure/autorest-clientruntime-for-java"
-    license : MIT
-    license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/com.microsoft.rest/client-runtime/1.7.3"
-    md5 : 59f7656f7f268b4413ff3c84b599c73f
-    sha1 : fbcd29be5e5dc68166a94b7acb5141a6ad5c3c56
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :    
-  
   - filename : commons-beanutils-1.9.4.jar
     yukon group : Apache Commons
     project : Apache Commons BeanUtils
@@ -719,20 +705,6 @@ Java :
     updated : 2020-01-13
     jira : YUK-21104
     notes : YAJSW, Support Bundle, Itron SFTP file transfer 
-  
-  - filename : converter-jackson-2.7.2.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 2.7.2
-    project URL : "https://github.com/square/retrofit/tree/master/retrofit-converters/jackson"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.squareup.retrofit2/converter-jackson/2.7.2"
-    md5 : 5a7adc7c8d9905a13317e01298bd8708
-    sha1 : 6690e6eb98b2fa86a883f7ac5ccd4c3f58bc57d6
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :    
   
   - filename : dom4j-2.1.3.jar
     yukon group : XML parsing
@@ -1141,20 +1113,6 @@ Java :
     updated : 2021-06-15
     jira : YUK-24554
     notes :   
-
-  - filename : jackson-datatype-joda-2.10.1.jar
-    yukon group : Azure 
-    project : Microsoft Azure SDK
-    version : 2.10.1
-    project URL : "http://wiki.fasterxml.com/JacksonModuleJoda"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-joda/2.10.1"
-    md5 : d9547ca2a858e33aa66ad6a6ac8715ec
-    sha1 : 196fde0e416b00bbaf971b4c1c106fb4ee1512e1
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :    
   
   - filename : jasper-el.jar
     yukon group : Tomcat
@@ -1226,20 +1184,6 @@ Java :
     jira : YUK-23433
     notes : 
   
-  - filename : javax.activation-1.2.0.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.2.0
-    project URL : "https://github.com/javaee/activation/"
-    license : GPL 2.0
-    license URLs : "https://github.com/javaee/activation/blob/master/LICENSE.txt"
-    maven URL : "https://mvnrepository.com/artifact/javax.activation/javax.activation-api/1.2.0"
-    md5 : be7c430df50b330cffc4848a3abedbfb
-    sha1 : bf744c1e2776ed1de3c55c8dac1057ec331ef744
-    updated : 2019-12-04
-    jira : YUK-20500
-    notes :    
-  
   - filename : javax.annotation-api-1.3.2.jar
     yukon group : Common
     project : Javax Annotation API
@@ -1267,20 +1211,6 @@ Java :
     updated : 2018-10-24
     jira : YUK-18846
     notes : 
-  
-  - filename : javax.mail-1.6.1.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.6.1
-    project URL : "https://javaee.github.io/javamail"
-    license : GPL 2.0
-    license URLs : "https://javaee.github.io/javamail/LICENSE"
-    maven URL : "https://mvnrepository.com/artifact/com.sun.mail/javax.mail/1.6.1"
-    md5 : 95b39bf7494bbd3725861297206878a4
-    sha1 : 757ba4630692bb2a1ec2d9d57a616b63f15e947e
-    updated : 2019-12-04
-    jira : YUK-20500
-    notes :       
   
   - filename : jaxb2-basics-ant-0.6.3.jar
     yukon group : JAXB
@@ -1407,20 +1337,6 @@ Java :
     updated : 2003-11-04
     jira : none
     notes : 
-  
-  - filename : jcip-annotations-1.0-1.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.0.1
-    project URL : "http://stephenc.github.com/jcip-annotations"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.github.stephenc.jcip/jcip-annotations/1.0-1"
-    md5 : d62dbfa8789378457ada685e2f614846
-    sha1 : ef31541dd28ae2cefdd17c7ebf352d93e9058c63
-    updated : 2019-12-04
-    jira : YUK-20500
-    notes :       
   
   - filename : jcommon.jar
     yukon group : jfreereport
@@ -1771,20 +1687,6 @@ Java :
     updated : 2021-05-24
     jira : YUK-24356
     notes : 
-    
-  - filename : lang-tag-1.5.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.5
-    project URL : "https://bitbucket.org/connect2id/nimbus-language-tags"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.nimbusds/lang-tag/1.5"
-    md5 : ac21831d870da5d2d7be17711aa3229b
-    sha1 : 7e82e3c4c593f85addf4bd209abde4f8ff933a07
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :       
   
   - filename : lesscss-engine-1.4.2.jar
     yukon group : UI
@@ -1884,20 +1786,6 @@ Java :
     jira : YUK-23078
     notes : Apache Log4j 2 SLF4J Binding
   
-  - filename : logging-interceptor-3.12.2.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 3.12.2
-    project URL : "https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.squareup.okhttp3/logging-interceptor/3.12.2"
-    md5 : e90b7435c45b3471b46067e99af5cce9
-    sha1 : 6f05d9b0e3c390c63124cf958c6ca5192d74c2c2
-    updated : 2020-12-09
-    jira : YUK-22559
-    notes :       
-  
   - filename : lucene-analyzers-common-8.8.2.jar
     yukon group : Lucene
     project : Apache Lucene
@@ -1940,33 +1828,6 @@ Java :
     jira : YUK-24357
     notes : Apache Lucene Query Parser
   
-  - filename : mail-1.4.5.jar
-    yukon group : Azure
-    project : JavaMail API (compat)
-    version : 1.4.5
-    project URL : "https://projects.eclipse.org/projects/ee4j.javamail"
-    license : CDDL, GPLv2 with classpath exception
-    license URLs : "http://www.sun.com/cddl, https://glassfish.dev.java.net/public/CDDL+GPL.html"
-    maven URL : "https://mvnrepository.com/artifact/javax.mail/mail/1.4.5"
-    md5 : ec6e4e5ebd85a221b395b8f3b37545e6
-    sha1 : 85319c87280f30e1afc54c355f91f44741beac49
-    updated : 2016-09-28
-    jira : YUK-15740
-    notes : 
-  
-  - filename : mail-1.4.5-sources.jar
-    yukon group : Azure
-    project : JavaMail API (compat)
-    version : 1.4.5
-    project URL : "https://projects.eclipse.org/projects/ee4j.javamail"
-    license : CDDL, GPLv2 with classpath exception
-    license URLs : "http://www.sun.com/cddl, https://glassfish.dev.java.net/public/CDDL+GPL.html"
-    maven URL : "https://mvnrepository.com/artifact/javax.mail/mail/1.4.5"
-    md5 : 1f57d98f709492b31fffcd8b6627b107
-    sha1 : 98d67d8444a044109dcbb4ae4690022b5be1de44
-    updated : 2016-09-28
-    jira : YUK-15740
-    notes : Source, should move to sources folder
   
   - filename : mailapi-1.5.1.jar
     yukon group : JavaMail
@@ -2524,20 +2385,6 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.reactivestreams/reactive-streams/1.0.3"
     md5 : 69122b098fff1c6b1bf2cd3b355e7e03
     sha1 : d9fb7a7926ffa635b3dcaa5049fb2bfa25b3e7d0
-    updated : 2020-12-23
-    jira : YUK-22562
-    notes : 
-  
-  - filename : reactor-core-3.3.8.RELEASE.jar
-    yukon group : Spring
-    project : Reactor - Non-Blocking Reactive Foundation for the JVM
-    version : 3.3.8
-    project URL : "https://github.com/reactor/reactor-core"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.projectreactor/reactor-core/3.3.8.RELEASE"
-    md5 : 379a56c1864cbad50bafdcf194692318
-    sha1 : 0e6b2e8dc1f6548ae216b2ecdee0c0a32176317a
     updated : 2020-12-23
     jira : YUK-22562
     notes : 

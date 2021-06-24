@@ -109,7 +109,6 @@
         <include name="javax.jms-api-2.0.1.jar"/>
         <include name="micrometer-core-1.0.7.jar"/>
         <include name="reactive-streams-1.0.3.jar"/>
-        <include name="reactor-core-3.3.8.RELEASE.jar"/>
         <include name="sqljdbc42.jar"/>
         <include name="web-common.jar"/>
         <include name="wsdl4j-1.6.3.jar"/>
@@ -130,7 +129,6 @@
         <include name="itronServicePointManagerTypes_v1_3.jar"/>
         <include name="commons-compress-1.19.jar"/>
         <include name="opencsv-4.5.jar"/>
-        <include name="jackson-datatype-joda-2.10.1.jar"/>
     </fileset>
 
     <target name="compile">

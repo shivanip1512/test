@@ -319,11 +319,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/reactor-core-3.3.8.RELEASE.jar" sourcepath="/third-party/linked-sources/reactor-core-3.3.8.RELEASE.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/micrometer-core-1.0.7.jar" sourcepath="/third-party/linked-sources/micrometer-core-1.0.7.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -523,31 +518,18 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/mail-1.4.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-1.17.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-amqp-2.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-http-netty-1.10.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/azure-messaging-servicebus-7.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/brave-5.13.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/brave-instrumentation-http-5.13.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/client-runtime-1.7.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/converter-jackson-2.7.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/jackson-datatype-joda-2.10.1.jar">
-        <attributes>
-            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-        </attributes>	
-	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-xml-2.12.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jackson-datatype-jsr310-2.12.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jackson-module-jaxb-annotations-2.12.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jakarta.activation-api-1.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jakarta.xml.bind-api-2.3.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/javax.activation-1.2.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/javax.mail-1.6.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jcip-annotations-1.0-1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/json-smart-2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/lang-tag-1.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/logging-interceptor-3.12.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/netty-buffer-4.1.65.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-4.1.65.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-dns-4.1.63.Final.jar"/>
