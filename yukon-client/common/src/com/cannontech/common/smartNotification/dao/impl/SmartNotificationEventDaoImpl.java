@@ -182,6 +182,10 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM SmartNotificationEvent");
         jdbcTemplate.update(sql);
+        
+        sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM SmartNotifEmailHistory");
+        jdbcTemplate.update(sql);
     }
     
     @Transactional
@@ -668,7 +672,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         }).collect(Collectors.toList());
         
         SqlStatementBuilder recipientSql = new SqlStatementBuilder();
-        recipientSql.batchInsertInto("SmartNotificationRecipientHistory").columns("HistoryId", "Recipient").values(recipientValues);
+        recipientSql.batchInsertInto("SmartNotifRecipientHistory").columns("HistoryId", "Recipient").values(recipientValues);
         jdbcTemplate.yukonBatchUpdate(recipientSql);
     }
 
@@ -680,30 +684,30 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
             });
         });
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.batchInsertInto("SmartNotificationEventParamHistory").columns("EventHistoryId", "Name", "Value").values(values);
+        sql.batchInsertInto("SmartNotifEventParamHistory").columns("EventHistoryId", "Name", "Value").values(values);
         jdbcTemplate.yukonBatchUpdate(sql);
     }
 
     private Map<Integer, Map<String, Object>> createEventHistory(SmartNotificationMessageParameters parameters, Integer historyId) {
         SqlStatementBuilder createSql = new SqlStatementBuilder();
         Map<Integer, Map<String, Object>> params = new HashMap<>();
-        List<List<Object>> eventCreateValues = parameters.getEvents().stream().map(event -> {
-            Integer eventHistoryId = nextValueHelper.getNextValue("SmartNotificationEventHistory");
+        List<List<Object>> values = parameters.getEvents().stream().map(event -> {
+            Integer eventHistoryId = nextValueHelper.getNextValue("SmartNotifEventHistory");
             params.put(eventHistoryId, event.getParameters());
             List<Object> row = Lists.newArrayList(eventHistoryId, historyId);
             return row;
         }).collect(Collectors.toList());
-        createSql.batchInsertInto("SmartNotificationEventHistory")
+        createSql.batchInsertInto("SmartNotifEventHistory")
                 .columns("EventHistoryId", "HistoryId")
-                .values(eventCreateValues);
+                .values(values);
         jdbcTemplate.yukonBatchUpdate(createSql);
         return params;
     }
 
     private Integer createEmailHistory(SmartNotificationMessageParameters parameters, int intervalMinutes) {
-        Integer historyId = nextValueHelper.getNextValue("SmartNotificationEmailHistory");
+        Integer historyId = nextValueHelper.getNextValue("SmartNotifEmailHistory");
         SqlStatementBuilder createSql = new SqlStatementBuilder();
-        SqlParameterSink params = createSql.insertInto("SmartNotificationEmailHistory");
+        SqlParameterSink params = createSql.insertInto("SmartNotifEmailHistory");
         params.addValue("HistoryId", historyId);
         params.addValue("EventType", parameters.getType());
         params.addValue("Verbosity", parameters.getVerbosity());

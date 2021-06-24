@@ -89,8 +89,8 @@
             </tags:nameValueContainer>
             
             <div class="page-action-area">
+                <cti:button label="Clear All Events And Email History" type="button" href="clearAllEvents" busy="true"/>
                 <cti:button label="Create Test Events" type="submit" busy="true"/>
-                <cti:button label="Clear All Events" type="button" href="clearAllEvents" busy="true"/>
             </div>
     
         </form:form>
