@@ -129,6 +129,78 @@ WHERE CategoryType = 'regulatorCategory';
 INSERT INTO DBUpdates VALUES ('YUK-24031', '9.1.0', GETDATE());
 /* @end YUK-24031 */
 
+/* @start YUK-24437 */
+CREATE TABLE SmartNotifEmailHistory (
+   HistoryId            NUMERIC              NOT NULL,
+   EventType            VARCHAR(50)          NOT NULL,
+   Verbosity            VARCHAR(20)          NOT NULL,
+   Media                VARCHAR(20)          NOT NULL,
+   ProcessingType       VARCHAR(20)          NOT NULL,
+   IntervalMinutes      NUMERIC              NOT NULL,
+   TotalEvents          NUMERIC              NOT NULL,
+   SendTime             DATETIME             NOT NULL,
+   CONSTRAINT PK_SmartNotificationEmailHistory PRIMARY KEY (HistoryId)
+);
+GO
+
+CREATE INDEX INDX_SmartNotifEmailHistory_EventType ON SmartNotifEmailHistory (
+EventType ASC
+);
+GO
+
+CREATE INDEX INDX_SmartNotifEmailHistory_SendTime ON SmartNotifEmailHistory (
+SendTime ASC
+);
+GO
+
+CREATE TABLE SmartNotifEventHistory (
+   EventHistoryId       NUMERIC              NOT NULL,
+   HistoryId            NUMERIC              NOT NULL,
+   CONSTRAINT PK_SmartNotificationEventHistory PRIMARY KEY (EventHistoryId)
+);
+GO
+
+CREATE TABLE SmartNotifEventParamHistory (
+   EventHistoryId       NUMERIC              NOT NULL,
+   Name                 VARCHAR(30)          NOT NULL,
+   Value                VARCHAR(500)         NOT NULL,
+   CONSTRAINT PK_SmartNotificationEventParamHistory PRIMARY KEY (EventHistoryId, Name, Value)
+);
+GO
+
+CREATE TABLE SmartNotifRecipientHistory (
+   HistoryId            NUMERIC              NOT NULL,
+   Recipient            VARCHAR(254)         NOT NULL,
+   CONSTRAINT PK_SmartNotificationRecipientHistory PRIMARY KEY (HistoryId, Recipient)
+);
+GO
+
+CREATE INDEX INDX_SmartNotifRecipientHistory_Recipient ON SmartNotifRecipientHistory (
+Recipient ASC
+);
+GO
+
+ALTER TABLE SmartNotifEventHistory
+   ADD CONSTRAINT FK_SmrtNotifEventHist_SmrtNotifEmailHist FOREIGN KEY (HistoryId)
+      REFERENCES SmartNotifEmailHistory (HistoryId)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE SmartNotifEventParamHistory
+   ADD CONSTRAINT FK_SmrtNotifEvntPHist_SmrtNotifEmailHist FOREIGN KEY (EventHistoryId)
+      REFERENCES SmartNotifEventHistory (EventHistoryId)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE SmartNotifRecipientHistory
+   ADD CONSTRAINT FK_SmrtNotifRecipHist_SmrtNotifEmailHist FOREIGN KEY (HistoryId)
+      REFERENCES SmartNotifEmailHistory (HistoryId)
+         ON DELETE CASCADE;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-24437', '9.1.0', GETDATE());
+/* @end YUK-24437 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

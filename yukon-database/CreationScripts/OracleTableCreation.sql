@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/21/2021 10:42:54 PM                        */
+/* Created on:     6/22/2021 2:05:11 PM                         */
 /*==============================================================*/
 
 
@@ -8659,6 +8659,70 @@ create table SiteInformation  (
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 
 /*==============================================================*/
+/* Table: SmartNotifEmailHistory                                */
+/*==============================================================*/
+create table SmartNotifEmailHistory  (
+   HistoryId            NUMBER                          not null,
+   EventType            VARCHAR2(50)                    not null,
+   Verbosity            VARCHAR2(20)                    not null,
+   Media                VARCHAR2(20)                    not null,
+   ProcessingType       VARCHAR2(20)                    not null,
+   IntervalMinutes      NUMBER                          not null,
+   TotalEvents          NUMBER                          not null,
+   SendTime             DATE                            not null,
+   constraint PK_SmartNotificationEmailHistory primary key (HistoryId)
+);
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifEmailHistory_EventType                 */
+/*==============================================================*/
+create index INDX_SmartNotifEmailHistory_EventType on SmartNotifEmailHistory (
+   EventType ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifEmailHistory_SendTime                  */
+/*==============================================================*/
+create index INDX_SmartNotifEmailHistory_SendTime on SmartNotifEmailHistory (
+   SendTime ASC
+);
+
+/*==============================================================*/
+/* Table: SmartNotifEventHistory                                */
+/*==============================================================*/
+create table SmartNotifEventHistory  (
+   EventHistoryId       NUMBER                          not null,
+   HistoryId            NUMBER                          not null,
+   constraint PK_SmartNotificationEventHistory primary key (EventHistoryId)
+);
+
+/*==============================================================*/
+/* Table: SmartNotifEventParamHistory                           */
+/*==============================================================*/
+create table SmartNotifEventParamHistory  (
+   EventHistoryId       NUMBER                          not null,
+   Name                 VARCHAR2(30)                    not null,
+   Value                VARCHAR2(500)                   not null,
+   constraint PK_SmartNotificationEventParamHistory primary key (EventHistoryId, Name, Value)
+);
+
+/*==============================================================*/
+/* Table: SmartNotifRecipientHistory                            */
+/*==============================================================*/
+create table SmartNotifRecipientHistory  (
+   HistoryId            NUMBER                          not null,
+   Recipient            VARCHAR2(254)                   not null,
+   constraint PK_SmartNotificationRecipientHistory primary key (HistoryId, Recipient)
+);
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifRecipientHistory_Recipient             */
+/*==============================================================*/
+create index INDX_SmartNotifRecipientHistory_Recipient on SmartNotifRecipientHistory (
+   Recipient ASC
+);
+
+/*==============================================================*/
 /* Table: SmartNotificationEvent                                */
 /*==============================================================*/
 create table SmartNotificationEvent  (
@@ -13929,6 +13993,21 @@ alter table Shipment
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID);
+
+alter table SmartNotifEventHistory
+   add constraint FK_SmrtNotifEventHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotifEmailHistory (HistoryId)
+      on delete cascade;
+
+alter table SmartNotifEventParamHistory
+   add constraint FK_SmrtNotifEvntPHist_SmrtNotifEmailHist foreign key (EventHistoryId)
+      references SmartNotifEventHistory (EventHistoryId)
+      on delete cascade;
+
+alter table SmartNotifRecipientHistory
+   add constraint FK_SmrtNotifRecipHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotifEmailHistory (HistoryId)
+      on delete cascade;
 
 alter table SmartNotificationEventParam
    add constraint FK_SmartNotifEP_SmartNotifE foreign key (EventId)
