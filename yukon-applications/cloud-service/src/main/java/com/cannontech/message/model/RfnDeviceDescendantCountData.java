@@ -2,7 +2,7 @@ package com.cannontech.message.model;
 
 import java.io.Serializable;
 
-public class RfnDeviceDescedantCountData implements Serializable {
+public class RfnDeviceDescendantCountData implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
@@ -11,7 +11,7 @@ public class RfnDeviceDescedantCountData implements Serializable {
     private long descendantCount;
     private String deviceType;
 
-    public RfnDeviceDescedantCountData(String deviceName, long serialNumber, long descendantCount, String deviceType) {
+    public RfnDeviceDescendantCountData(String deviceName, long serialNumber, long descendantCount, String deviceType) {
         this.deviceName = deviceName;
         this.serialNumber = serialNumber;
         this.descendantCount = descendantCount;
@@ -65,7 +65,7 @@ public class RfnDeviceDescedantCountData implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RfnDeviceDescedantCountData other = (RfnDeviceDescedantCountData) obj;
+        RfnDeviceDescendantCountData other = (RfnDeviceDescendantCountData) obj;
         if (descendantCount != other.descendantCount)
             return false;
         if (deviceName == null) {
