@@ -18,8 +18,8 @@ import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
-import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
+import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
 import com.cannontech.dr.service.ControlHistoryService;
@@ -43,7 +43,7 @@ public class EatonCloudMessageListener {
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private OptOutEventDao optOutEventDao;
-    @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
+    @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private RecentEventParticipationService recentEventParticipationService;
     @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
@@ -83,7 +83,7 @@ public class EatonCloudMessageListener {
             return;  
         }   
 
-        Integer eventId = nextValueHelper.getNextValue("PxMWEventIdIncrementor");
+        Integer eventId = nextValueHelper.getNextValue("EatonCloudEventIdIncrementor");
         log.info("Sending LM Eaton Cloud Shed Command:{} devices:{} event id:{}", command, devices.size(), eventId);
    
         sendShedCommands(devices, command, eventId);
@@ -116,7 +116,7 @@ public class EatonCloudMessageListener {
                                                            .map(d -> d.getPaoName())
                                                            .orElse(null);
 
-                pxMWCommunicationService.sendCommand(guid, new PxMWCommandRequestV1("LCR_Control", params));
+                eatonCloudCommunicationService.sendCommand(guid, new EatonCloudCommandRequestV1("LCR_Control", params));
                 eatonCloudEventLogService.sendShed(deviceName, 
                                                    guid, 
                                                    command.getDutyCyclePercentage(),
@@ -139,7 +139,7 @@ public class EatonCloudMessageListener {
                         .map(d -> d.getPaoName())
                         .orElse(null);
                 
-                pxMWCommunicationService.sendCommand(guid, new PxMWCommandRequestV1("LCR_Control", params));
+                eatonCloudCommunicationService.sendCommand(guid, new EatonCloudCommandRequestV1("LCR_Control", params));
                 eatonCloudEventLogService.sendRestore(deviceName, guid);
             } catch (Exception e) {
                 log.error("Error sending command device id:{} params:{}", deviceId, params, e);

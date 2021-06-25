@@ -3,9 +3,9 @@ package com.cannontech.dr.recenteventparticipation;
 import java.util.*;
 import java.util.stream.*;
 
+import com.cannontech.dr.eatonCloud.model.EatonCloudEventStatus;
 import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
 import com.cannontech.dr.itron.service.impl.ItronLoadControlEventStatus;
-import com.cannontech.dr.pxmw.model.EatonCloudEventStatus;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 

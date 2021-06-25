@@ -134,11 +134,11 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_SFTP_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PRIVATE_KEY_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     RUNTIME_CALCULATION_INTERVAL_HOURS(GlobalSettingSubCategory.DR, 2, Range.inclusive(1, 24)),
-    PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL(GlobalSettingSubCategory.DR, 24, Range.inclusive(1,720)),
-    PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES(GlobalSettingSubCategory.DR, integerType(), 60),
-    PX_MIDDLEWARE_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
-    PX_MIDDLEWARE_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
-    PX_MIDDLEWARE_URL(GlobalSettingSubCategory.DR, stringType(), "https://blu-dr-api.eaton.com", GlobalSettingTypeValidators.urlValidator),
+    EATON_CLOUD_DEVICE_CREATION_INTERVAL(GlobalSettingSubCategory.DR, 24, Range.inclusive(1,720)),
+    EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES(GlobalSettingSubCategory.DR, integerType(), 60),
+    EATON_CLOUD_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
+    EATON_CLOUD_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
+    EATON_CLOUD_URL(GlobalSettingSubCategory.DR, stringType(), "https://blu-dr-api.eaton.com", GlobalSettingTypeValidators.urlValidator),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
@@ -258,8 +258,8 @@ public enum GlobalSettingType implements DisplayableEnum {
             ITRON_SFTP_PRIVATE_KEY_PASSWORD,
             NETWORK_MANAGER_DB_PASSWORD,
             CLOUD_IOT_HUB_CONNECTION_STRING,
-            PX_MIDDLEWARE_SERVICE_ACCOUNT_ID,
-            PX_MIDDLEWARE_SECRET);
+            EATON_CLOUD_SERVICE_ACCOUNT_ID,
+            EATON_CLOUD_SECRET);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {

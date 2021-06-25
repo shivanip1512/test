@@ -24,11 +24,11 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoDao.InfoKey;
-import com.cannontech.dr.pxmw.model.PxMWException;
-import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceDetail;
-import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
-import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
+import com.cannontech.dr.eatonCloud.model.EatonCloudException;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetail;
+import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
+import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.util.Validator;
@@ -48,8 +48,8 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
     @Autowired private DeviceCreationService creationService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private PxMWDataReadService readService;
-    @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationServiceV1;
+    @Autowired private EatonCloudDataReadService readService;
+    @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationServiceV1;
     @Autowired private PaoDao paoDao;
     
     @Override
@@ -60,7 +60,7 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
             }     
                         
             try {
-                PxMWDeviceDetail detail = pxMWCommunicationServiceV1.getDeviceDetails(hardware.getGuid(), false);
+                EatonCloudDeviceDetail detail = eatonCloudCommunicationServiceV1.getDeviceDetails(hardware.getGuid(), false);
                 if (!isSimulator(detail) && !isValidSerialNumber(detail, hardware)) {
                     throw new DeviceCreationException(
                             "Invalid serial number:" + hardware.getSerialNumber()
@@ -68,7 +68,7 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
                                     + hardware.getGuid() + ". Device cannot be added to Yukon at this time.",
                             "invalidDeviceCreation", Type.UNKNOWN);
                 }
-            } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
                 throw new DeviceCreationException("Unable to find a matching device identifier GUID:" + hardware.getGuid()
                         + " registered in your Brightlayer site. Device cannot be added to Yukon at this time.",
                         "invalidDeviceCreation", Type.GUID_DOES_NOT_EXIST);
@@ -82,7 +82,7 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
             DateTime end = start.minusDays(1);
             Range<Instant> range =  new Range<Instant>(end.toInstant(), false, start.toInstant(), true);
             readService.collectDataForRead(Set.of(pao.getDeviceId()), range);
-        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+        } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
             log.error("Unable to create device.", e);
             throw new DeviceCreationException(e.getMessage(), "invalidDeviceCreation", e);
         }
@@ -91,14 +91,14 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
     /**
      * To test invalid serial number error, make this method return false. Returns true if responses are simulated.
      */
-    private boolean isSimulator(PxMWDeviceDetail detail) {
+    private boolean isSimulator(EatonCloudDeviceDetail detail) {
         return !Strings.isNullOrEmpty(detail.getSoftware()) && detail.getSoftware().equals("YUKON_SIMULATOR");
     }
     
     /**
      * Returns true if the serial number matches serial number for the GUID in Brightlayer.
      */
-    private boolean isValidSerialNumber(PxMWDeviceDetail detail, Hardware hardware) {
+    private boolean isValidSerialNumber(EatonCloudDeviceDetail detail, Hardware hardware) {
         return !Strings.isNullOrEmpty(detail.getSerial()) && hardware.getSerialNumber().equals(detail.getSerial());
     }
 

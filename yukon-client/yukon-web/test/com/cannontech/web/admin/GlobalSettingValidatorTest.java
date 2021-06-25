@@ -47,7 +47,7 @@ public class GlobalSettingValidatorTest {
             messageSource.addMessage("yukon.common.setting.ITRON_HCM_DATA_COLLECTION_MINUTES", Locale.US, "Itron HCM Data Collection Interval");
             messageSource.addMessage("yukon.common.setting.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS", Locale.US, "Itron HCM Response Timeout");
             messageSource.addMessage("yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS", Locale.US, "Runtime Calculation Interval");
-            messageSource.addMessage("yukon.common.setting.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL", Locale.US, "PX Cellular LCR auto creation interval");
+            messageSource.addMessage("yukon.common.setting.EATON_CLOUD_DEVICE_CREATION_INTERVAL", Locale.US, "Eaton Cloud Cellular LCR auto creation interval");
         }
         YukonUserContextMessageSourceResolverMock messageResolver = new YukonUserContextMessageSourceResolverMock();
         messageResolver.setMessageSource(messageSource);
@@ -127,9 +127,9 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES, 15);
         globalSettings.put(GlobalSettingType.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS, 120);
         globalSettings.put(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS, 2);
-        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL, 24);
-        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES, 1);
-        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID, "fcbd4387-886b-4f89-98d0-7801ff7b75e3");
+        globalSettings.put(GlobalSettingType.EATON_CLOUD_DEVICE_CREATION_INTERVAL, 24);
+        globalSettings.put(GlobalSettingType.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES, 1);
+        globalSettings.put(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID, "fcbd4387-886b-4f89-98d0-7801ff7b75e3");
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
@@ -157,7 +157,7 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.HONEYWELL_SERVER_URL, "htt://127.0.0.1");
 //        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "htt://127.0.0.1");
         globalSettings.put(GlobalSettingType.ITRON_HCM_API_URL, "htt://127.0.0.1");
-        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID, "fcbd4387-886b-4f89-98d0-7801ff7b75e30");
+        globalSettings.put(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID, "fcbd4387-886b-4f89-98d0-7801ff7b75e30");
         
         command.setValues(globalSettings);
 

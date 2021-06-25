@@ -457,11 +457,11 @@
       <sequence name="ControlEvent">
         <table name="ControlEvent" identitycolumn="ControlEventId" initsequence="true"/>
       </sequence>
-      <sequence name="PxMWSimulatorNameIncrementor">
-        <table name="PxMWSimulatorNameIncrementor" identitycolumn="requestSeqNumber"/>
+      <sequence name="EatonCloudSimulatorNameIncrementor">
+        <table name="EatonCloudSimulatorNameIncrementor" identitycolumn="requestSeqNumber"/>
       </sequence>
-      <sequence name="PxMWEventIdIncrementor">
-        <table name="PxMWEventIdIncrementor" identitycolumn="requestSeqNumber"/>
+      <sequence name="EatonCloudEventIdIncrementor">
+        <table name="EatonCloudEventIdIncrementor" identitycolumn="requestSeqNumber"/>
       </sequence>
   </sequencetable>
 </sequencetables>

@@ -774,7 +774,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     MEMORY_MAP_LOST("Memory Map Lost", AttributeGroup.ITRON, false),
     RADIO_LINK_QUALITY("Radio Link Quality", AttributeGroup.ITRON, false),
 
-    // Eaton Cloud attribute mapping for PXMiddleware / Cellular LCR
+    // Eaton Cloud attribute mapping for Eaton Cloud / PXMiddleware / Cellular LCR
     COMMS_LOSS_COUNT("Comms Loss Count", AttributeGroup.SYSTEM),
     FIRMWARE_UPDATE_STATUS("Firmware Update Status", AttributeGroup.SYSTEM),
     FREQUENCY("Frequency", AttributeGroup.OTHER),
