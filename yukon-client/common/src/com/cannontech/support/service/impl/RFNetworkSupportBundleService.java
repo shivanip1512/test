@@ -43,6 +43,7 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUtil;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
@@ -82,6 +83,7 @@ public class RFNetworkSupportBundleService {
     @Autowired GlobalSettingDao globalSettingDao;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private RfnGatewayDataCache dataCache;
+    @Autowired private RfnGatewayService rfnGatewayService;
 
     private RequestReplyReplyTemplate<RfnSupportBundleResponse, RfnSupportBundleResponse> template;
     private RequestReplyTemplate<RfnMetadataMultiResponse> metaDataMultiRequestTemplate;
@@ -168,9 +170,12 @@ public class RFNetworkSupportBundleService {
      */
     private void sendLocationDataRequest(RfnSupportBundleRequest request) {
         String dateTime = getFormatedDateStr(request.getFromTimestamp());
-        String destDir = supportBundleDirectory + "RfNetworkData/" + request.getFileName() + File.separator + locationDataDir + "_" + dateTime;
-        sendLocationDataRequest(request, PaoType.getRfMeterTypes(), destDir, meterLocationFileName, meterLocationcolumnCount);
-        sendLocationDataRequest(request, PaoType.getRfRelayTypes(), destDir, relayLocationFileName, relayLocationcolumnCount);
+        String destDir = supportBundleDirectory + "RfNetworkData/" + request.getFileName() + File.separator + locationDataDir
+                + "_" + dateTime;
+        buildAndSendMutiDataRequest(request, PaoType.getRfMeterTypes(), destDir, meterLocationFileName, meterLocationcolumnCount,
+                RfnNetworkDataType.LOCATIONDATA, RfnMetadataMulti.NODE_DATA);
+        buildAndSendMutiDataRequest(request, PaoType.getRfRelayTypes(), destDir, relayLocationFileName, relayLocationcolumnCount,
+                RfnNetworkDataType.LOCATIONDATA, RfnMetadataMulti.NODE_DATA);
         buildAndWriteGatewayLocationData(request, destDir, gatewayLocationFileName);
     }
     
@@ -181,8 +186,9 @@ public class RFNetworkSupportBundleService {
         String dateTime = getFormatedDateStr(request.getFromTimestamp());
         String destDir = supportBundleDirectory + "RfNetworkData/" + request.getFileName() + File.separator
                 + networkSnapshotDataDir + "_" + dateTime;
-        sendElectricNodeDataRequest(request, PaoType.getRftypes(), destDir, electricNodeLocationFileName,
-                electricNodecolumnCount);
+        buildAndSendMutiDataRequest(request, PaoType.getRftypes(), destDir, electricNodeLocationFileName,
+                electricNodecolumnCount, RfnNetworkDataType.NETWORKSNAPSHOTDATA, RfnMetadataMulti.NODE_DATA,
+                RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
     }
 
     /**
@@ -358,43 +364,7 @@ public class RFNetworkSupportBundleService {
     private String getFormatedDateStr(long millis) {
         return new DateTime(millis).toString(DateTimeFormat.forPattern("yyyyMMddHHmmss"));
     }
-    /**
-     * Send location data (Meter or Relay) request to NM and write data to the file.
-     */
-    private void sendLocationDataRequest(RfnSupportBundleRequest bundleRequest, Set<PaoType> paoTypes, String destDir, String fileName, int coloumCount) {
-        int startIndex = 1;
-        int endIndex = batchsize;
-        List<LocationData> dataList = null;
-        while (dataList == null || dataList.size() >= batchsize) {
-            dataList = paoLocationDao.getLocationDetailForPaoType(paoTypes, startIndex, endIndex);
-            if (dataList != null && !dataList.isEmpty()) {
-                BlockingJmsReplyHandler<RfnMetadataMultiResponse> replyHandler = new BlockingJmsReplyHandler<>(
-                        RfnMetadataMultiResponse.class);
-                try {
-                    // Build Metadata Request
-                    RfnMetadataMultiRequest request = new RfnMetadataMultiRequest();
-                    request.setRfnMetadatas(RfnMetadataMulti.NODE_DATA);
-                    Set<RfnIdentifier> rfnIdentifiers = new HashSet<RfnIdentifier>();
-                    dataList.stream().forEach(data -> rfnIdentifiers.add(data.getRfnIdentifier()));
-                    request.setRfnIdentifiers(rfnIdentifiers);
-
-                    // Send Request to collect Node data.
-                    metaDataMultiRequestTemplate.send(request, replyHandler);
-                    RfnMetadataMultiResponse response = replyHandler.waitForCompletion();
-                    
-                    // Write data to csv file.
-                    SupportBundleHelper.buildAndWriteLocationDataToDir(response, dataList, destDir, fileName, coloumCount);
-                    startIndex = startIndex + batchsize;
-                    endIndex = endIndex + batchsize;
-                } catch (ExecutionException | IOException ex) {
-                    log.error("Error found while sending RfnMetadataMultiRequest for "+ fileName +" node data.", ex);
-                }
-            } else {
-                log.info("No data found for " + fileName);
-            }
-        }
-    }
-
+    
     /**
      * Build gateway location data from RfnGatewayDataCache and write to the gateway location file.
      */
@@ -411,24 +381,24 @@ public class RFNetworkSupportBundleService {
             endIndex = endIndex + batchsize;
         }
     }
-    
+
     /**
-     * Send network snapshot data (Electric Node) request to NM and write data to the file.
+     * Build Metadata Request, Send request to NM and write data to the csv file.
      */
-    private void sendElectricNodeDataRequest(RfnSupportBundleRequest bundleRequest, Set<PaoType> paoTypes, String destDir,
-            String fileName, int coloumCount) {
+    private void buildAndSendMutiDataRequest(RfnSupportBundleRequest bundleRequest, Set<PaoType> paoTypes, String destDir,
+            String fileName, int coloumCount, RfnNetworkDataType networkType, RfnMetadataMulti... rfnMetadatas) {
         int startIndex = 1;
         int endIndex = batchsize;
         List<LocationData> dataList = null;
         while (dataList == null || dataList.size() >= batchsize) {
-            dataList = paoLocationDao.getLocationDetailForPaoType(PaoType.getRftypes(), startIndex, endIndex);
+            dataList = paoLocationDao.getLocationDetailForPaoType(paoTypes, startIndex, endIndex);
             if (dataList != null && !dataList.isEmpty()) {
                 BlockingJmsReplyHandler<RfnMetadataMultiResponse> replyHandler = new BlockingJmsReplyHandler<>(
                         RfnMetadataMultiResponse.class);
                 try {
                     // Build Metadata Request
                     RfnMetadataMultiRequest request = new RfnMetadataMultiRequest();
-                    request.setRfnMetadatas(RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
+                    request.setRfnMetadatas(rfnMetadatas);
                     Set<RfnIdentifier> rfnIdentifiers = new HashSet<RfnIdentifier>();
                     dataList.stream().forEach(data -> rfnIdentifiers.add(data.getRfnIdentifier()));
                     request.setRfnIdentifiers(rfnIdentifiers);
@@ -438,8 +408,12 @@ public class RFNetworkSupportBundleService {
                     RfnMetadataMultiResponse response = replyHandler.waitForCompletion();
 
                     // Write data to csv file.
-                    SupportBundleHelper.buildAndWriteElectricNodeDataToDir(response, dataList, destDir, fileName, dataCache,
-                            coloumCount);
+                    if (networkType == RfnNetworkDataType.NETWORKSNAPSHOTDATA) {
+                        SupportBundleHelper.buildAndWriteElectricNodeDataToDir(response, dataList, destDir, fileName,
+                                rfnGatewayService, coloumCount);
+                    } else if (networkType == RfnNetworkDataType.LOCATIONDATA) {
+                        SupportBundleHelper.buildAndWriteLocationDataToDir(response, dataList, destDir, fileName, coloumCount);
+                    }
                     startIndex = startIndex + batchsize;
                     endIndex = endIndex + batchsize;
                 } catch (ExecutionException | IOException ex) {
