@@ -28,7 +28,8 @@ public class LMEcobeeCycleControlCommandSerializer extends SimpleThriftSerialize
         boolean optional = entity.is_isMandatory();
 
         log.trace(
-                "Parsed duty cycle dr parameters. ProgramI: {} Start time: {} End time: {} Random Time Seconds: {} Optional: {}",
+                "Parsed duty cycle dr parameters. GroupId: {} ProgramId: {} Start time: {} End time: {} Random Time Seconds: {} Optional: {}",
+                groupId,
                 programId,
                 startTime,
                 endTime,
