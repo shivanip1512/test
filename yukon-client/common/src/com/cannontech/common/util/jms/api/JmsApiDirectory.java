@@ -60,6 +60,7 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveResponse;
+import com.cannontech.broker.message.request.LoggingDbChangeRequest;
 import com.cannontech.broker.message.request.BrokerSystemMetricsRequest;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.data.collection.message.CollectionRequest;
@@ -1323,6 +1324,18 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
+    public static final JmsApi<LoggingDbChangeRequest,?,?> LOGGING_DB_CHANGE_REQUEST = 
+            JmsApi.builder(LoggingDbChangeRequest.class)
+                  .name("Logging database change event request")
+                  .description("Send Logging configs/logger DB change events to Message broker")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.logging.dbchange"))
+                  .requestMessage(LoggingDbChangeRequest.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .sender(YUKON_WATCHDOG)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_MESSAGE_BROKER)
+                  .build();
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1361,7 +1374,8 @@ public final class JmsApiDirectory {
                 RF_SUPPORT_BUNDLE,
                 RFN_DEVICE_CREATION_ALERT,
                 SYSTEM_DATA,
-                ZEUS_ECOBEE_AUTH_TOKEN);
+                ZEUS_ECOBEE_AUTH_TOKEN,
+                LOGGING_DB_CHANGE_REQUEST);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 

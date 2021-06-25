@@ -68,5 +68,12 @@
         <property name="loadAverageAttribute" value="MESSAGE_BROKER_CPU_UTILIZATION" />
         <property name="memoryAttribute" value="MESSAGE_BROKER_MEMORY_UTILIZATION" />
     </bean>
+
+    <bean id="loggingDbChangeListener" class="com.cannontech.broker.logging.LoggingDbChangeListener"/>
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="destinationName" value="com.eaton.eas.yukon.logging.dbchange" />
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="loggingDbChangeListener"/>
+    </bean>
      
 </beans>
