@@ -393,6 +393,10 @@ INIT_ATTRIBUTE( WiFiApConnectionFailure,                            "WIFI_AP_CON
 INIT_ATTRIBUTE( WiFiBssidChange,                                    "WIFI_BSSID_CHANGE" );
 INIT_ATTRIBUTE( WiFiPassphraseChange,                               "WIFI_PASSPHRASE_CHANGE" );
 INIT_ATTRIBUTE( WiFiSsidChange,                                     "WIFI_SSID_CHANGE" );
+INIT_ATTRIBUTE( CellularPppConnectionFailed,                        "CELLULAR_PPP_CONNECTION_FAILED" );
+INIT_ATTRIBUTE( CellularModemDisabled,                              "CELLULAR_MODEM_DISABLED" );
+INIT_ATTRIBUTE( CellularApnChanged,                                 "CELLULAR_APN_CHANGED" );
+INIT_ATTRIBUTE( CellularSimCardInsertedRemoved,                     "CELLULAR_SIM_CARD_INSERTED_REMOVED" );
 INIT_ATTRIBUTE( ZeroUsageFlag,                                      "ZERO_USAGE_FLAG" );
 INIT_ATTRIBUTE( ZigBeeLinkStatus,                                   "ZIGBEE_LINK_STATUS" );
 INIT_ATTRIBUTE( TerminalBlockCoverRemoval,                          "TERMINAL_BLOCK_COVER_REMOVAL_FLAG" );

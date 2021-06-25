@@ -393,6 +393,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     WIFI_BSSID_CHANGE("Wi-Fi BSSID Change", AttributeGroup.RFN_OTHER_EVENT, false),
     WIFI_PASSPHRASE_CHANGE("Wi-Fi Passphrase Change", AttributeGroup.RFN_OTHER_EVENT, false),
     WIFI_SSID_CHANGE("Wi-Fi SSID Change", AttributeGroup.RFN_OTHER_EVENT, false),
+    CELLULAR_PPP_CONNECTION_FAILED("Cellular Connection Failed", AttributeGroup.RFN_OTHER_EVENT, false),
+    CELLULAR_MODEM_DISABLED("Cellular Modem Disabled", AttributeGroup.RFN_OTHER_EVENT, false),
+    CELLULAR_APN_CHANGED("Cellular Network APN String Changed", AttributeGroup.RFN_OTHER_EVENT, false),
+    CELLULAR_SIM_CARD_INSERTED_REMOVED("Cellular SIM Card Inserted/Removed", AttributeGroup.RFN_OTHER_EVENT, false),
     ZERO_USAGE_FLAG("Zero Usage Flag", AttributeGroup.STATUS),
     ZIGBEE_LINK_STATUS("ZigBee Link Status", AttributeGroup.STATUS, false),
     TERMINAL_BLOCK_COVER_REMOVAL_FLAG("Terminal Block Cover Removal", AttributeGroup.STATUS, false),   //440 types only

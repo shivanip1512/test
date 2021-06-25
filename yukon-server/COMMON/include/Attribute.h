@@ -384,6 +384,10 @@ public:
     static const Attribute  WiFiBssidChange;
     static const Attribute  WiFiPassphraseChange;
     static const Attribute  WiFiSsidChange;
+    static const Attribute  CellularPppConnectionFailed;
+    static const Attribute  CellularModemDisabled;
+    static const Attribute  CellularApnChanged;
+    static const Attribute  CellularSimCardInsertedRemoved;
     static const Attribute  ZeroUsageFlag;
     static const Attribute  ZigBeeLinkStatus;
     static const Attribute  TerminalBlockCoverRemoval;
