@@ -19,7 +19,7 @@ public abstract class RfnDeviceDescendantCountDataProcessor extends YukonDataPro
 
     @Override
     public SystemData buildSystemData(CloudDataConfiguration cloudDataConfiguration) {
-        RfnDeviceDescendantCountData data = rfnDeviceDao.getDeviceDescendantCountDataForPaoTypes(getSupportedPaoTypes());
+        RfnDeviceDescendantCountData data = rfnDeviceDao.findDeviceDescendantCountDataForPaoTypes(getSupportedPaoTypes());
         SystemData systemData = null;
         if (data != null) {
             systemData = SystemDataProcessorHelper.buildSystemData(cloudDataConfiguration, data);

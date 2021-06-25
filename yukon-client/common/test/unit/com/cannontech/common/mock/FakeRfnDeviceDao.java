@@ -161,7 +161,7 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     }
 
     @Override
-    public RfnDeviceDescendantCountData getDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoType) {
+    public RfnDeviceDescendantCountData findDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoType) {
          throw new MethodNotImplementedException();
     }
 }
