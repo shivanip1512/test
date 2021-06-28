@@ -14,6 +14,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.services.systemDataPublisher.service.model.RfnDeviceDescendantCountData;
 
 public class FakeRfnDeviceDao implements RfnDeviceDao {
     @Override
@@ -157,5 +158,10 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     @Override
     public Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds) {
         throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public RfnDeviceDescendantCountData findDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoType) {
+         throw new MethodNotImplementedException();
     }
 }
