@@ -1,0 +1,17 @@
+<beans
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:jms="http://www.springframework.org/schema/jms"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+
+    <bean id="simulation" class="com.cannontech.services.eatonCloud.creation.service.EatonCloudDataRetrievalService" />
+    <jms:listener-container 
+        connection-factory="connectionFactory" 
+        destination-type="queue"
+        concurrency="1" 
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="yukon.notif.obj.simulator.EatonCloudDataRetrievalSimulatonRequest" ref="simulation" method="startSimulation"/>
+    </jms:listener-container>
+</beans>

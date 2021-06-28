@@ -453,16 +453,16 @@
     <entry key="yukon.common.setting.ITRON_SFTP_PRIVATE_KEY_PASSWORD.description">Optional password to encrypt the generated SFTP Private Key.</entry>
     <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS">Runtime Calculation Interval</entry>
     <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS.description">The interval, in hours, at which to calculate run time and shed time for devices that do not directly report it.</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL">Brightlayer Utilities Suite Demand Response Cellular LCR auto creation interval</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL.description">The interval, in hours of how often Yukon will try to auto create Eaton Cloud Cellular LCRs</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES">Brightlayer Utilities Suite Demand Response Cellular LCR auto read interval</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES.description">The interval, in minutes of how often Yukon will try to read Eaton Cloud Cellular LCRs</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID">Brightlayer Utilities Suite Demand Response System Service Account Id</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID.description">Service Account Id used to access Brightlayer Utilities Suite Demand Response functionality</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET">Brightlayer Utilities Suite Demand Response System Secret</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET.description">Secret used to access Brightlayer Utilities Suite Demand Response functionality</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_URL">Brightlayer Utilities Suite Demand Response URL</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_URL.description">API URL for Brightlayer Utilities Suite Demand Response functionality</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_CREATION_INTERVAL">Brightlayer Utilities Suite Demand Response Cellular LCR auto creation interval</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_CREATION_INTERVAL.description">The interval, in hours of how often Yukon will try to auto create Eaton Cloud Cellular LCRs</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES">Brightlayer Utilities Suite Demand Response Cellular LCR auto read interval</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES.description">The interval, in minutes of how often Yukon will try to read Eaton Cloud Cellular LCRs</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SERVICE_ACCOUNT_ID">Brightlayer Utilities Suite Demand Response System Service Account Id</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SERVICE_ACCOUNT_ID.description">Service Account Id used to access Brightlayer Utilities Suite Demand Response functionality</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET">Brightlayer Utilities Suite Demand Response System Secret</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET.description">Secret used to access Brightlayer Utilities Suite Demand Response functionality</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_URL">Brightlayer Utilities Suite Demand Response URL</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_URL.description">API URL for Brightlayer Utilities Suite Demand Response functionality</entry>
     <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID">Ecobee Zeus Program ID</entry>
     <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID.description">Program ID required for initiating Zeus API communications.</entry>
     

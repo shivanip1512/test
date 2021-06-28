@@ -1787,7 +1787,7 @@
           <page name="miscellaneousMethod" type="BASIC"/>
           <page name="deviceGroupSimulator" type="BASIC"/>
           <page name="itronKeyPair" type="BASIC"/>
-          <page name="pxMWToken" type="BASIC"/>
+          <page name="eatonCloudToken" type="BASIC"/>
           <page name="systemMetricsSimulator" type="BASIC"/>
           <page name="ivvc.ivvcSimulator" type="BASIC"/>
           <page name="sftp.sftpTest" type="BASIC"/>
@@ -1819,7 +1819,7 @@
           <page name="smartNotificationsSimulator" type="BASIC"/>
           <page name="cacheManagement" type="BASIC"/>
           <page name="itronSimulator" type="BASIC"/>
-          <page name="pxMWSimulator" type="BASIC"/>
+          <page name="eatonCloudSimulator" type="BASIC"/>
           <page name="jmsApis" type="BASIC"/>
           <page name="nest" type="BASIC">
           <link>/dev/nest/home</link>

@@ -19,7 +19,7 @@ import com.cannontech.core.dao.impl.DynamicPaoInfo;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.pxmw.model.MWChannel;
+import com.cannontech.dr.eatonCloud.model.EatonCloudChannel;
 
 public interface PaoDao {
 
@@ -206,13 +206,13 @@ public interface PaoDao {
     LiteYukonPAObject getLiteYukonPaoByPointId(int pointId);
 
     enum InfoKey {
-        FIRMWARE_VERSION(MWChannel.VERSION),
-        IMEI(MWChannel.IMEI),
-        ICCID(MWChannel.ICCID),
+        FIRMWARE_VERSION(EatonCloudChannel.VERSION),
+        IMEI(EatonCloudChannel.IMEI),
+        ICCID(EatonCloudChannel.ICCID),
         ECOBEEZEUS("Push API Configuration")
         ;
-        private MWChannel channel;
-        InfoKey(MWChannel channel){
+        private EatonCloudChannel channel;
+        InfoKey(EatonCloudChannel channel){
             this.channel = channel;
         }
         
@@ -220,14 +220,14 @@ public interface PaoDao {
         InfoKey(String value){
             this.value = value;
         }
-        public static InfoKey getKey(MWChannel channel) {
+        public static InfoKey getKey(EatonCloudChannel channel) {
             return Arrays.stream(values())
                     .filter(infoKey  -> infoKey.channel == channel)
                     .findAny()
                     .orElse(null);
         }
         
-        public static boolean hasKey(MWChannel channel) {
+        public static boolean hasKey(EatonCloudChannel channel) {
             return getKey(channel) != null; 
         }
         

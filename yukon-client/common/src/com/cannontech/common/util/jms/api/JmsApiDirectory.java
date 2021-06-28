@@ -114,8 +114,8 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.dr.dao.LmReportedAddress;
-import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequestV1;
-import com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenResponseV1;
+import com.cannontech.dr.eatonCloud.message.EatonCloudAuthTokenRequestV1;
+import com.cannontech.dr.eatonCloud.message.V1.EatonCloudAuthTokenResponseV1;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -140,7 +140,7 @@ import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
-import com.cannontech.simulators.message.request.PxMWDataRetrievalSimulatonRequest;
+import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.FieldSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.ModifyFieldSimulatorResponse;
@@ -1244,15 +1244,15 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_FIELD_SIMULATOR)
                   .build();
     
-    public static final JmsApi<PxMWAuthTokenRequestV1, ?, PxMWAuthTokenResponseV1> PX_MW_AUTH_TOKEN = 
-            JmsApi.builder(PxMWAuthTokenRequestV1.class, PxMWAuthTokenResponseV1.class)
-                  .name("PX Middleware Auth Token")
-                  .description("Generates a PX Middleware Auth Token")
+    public static final JmsApi<EatonCloudAuthTokenRequestV1, ?, EatonCloudAuthTokenResponseV1> EATON_CLOUD_AUTH_TOKEN = 
+            JmsApi.builder(EatonCloudAuthTokenRequestV1.class, EatonCloudAuthTokenResponseV1.class)
+                  .name("Eaton Cloud Auth Token")
+                  .description("Generates an Eaton Cloud Auth Token")
                   .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenRequestV1"))
+                  .queue(new JmsQueue("com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenRequestV1"))
                   .responseQueue(JmsQueue.TEMP_QUEUE)
-                  .requestMessage(PxMWAuthTokenRequestV1.class)
-                  .responseMessage(PxMWAuthTokenResponseV1.class)
+                  .requestMessage(EatonCloudAuthTokenRequestV1.class)
+                  .responseMessage(EatonCloudAuthTokenResponseV1.class)
                   .sender(YUKON_WEBSERVER)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
@@ -1313,13 +1313,13 @@ public final class JmsApiDirectory {
                   .build();
     
     
-    public static final JmsApi<PxMWDataRetrievalSimulatonRequest,?,?> PxMW_SIM_DEVICE_DATA_RETRIEVAL_REQUEST = 
-            JmsApi.builder(PxMWDataRetrievalSimulatonRequest.class)
-                  .name("PxMW Device Auto Creation Simulation Request")
+    public static final JmsApi<EatonCloudDataRetrievalSimulatonRequest,?,?> EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST = 
+            JmsApi.builder(EatonCloudDataRetrievalSimulatonRequest.class)
+                  .name("Eaton Cloud Device Auto Creation Simulation Request")
                   .description("WS sends request to SM start auto creation for simulated devices")
                   .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.simulator.PxMWDataRetrievalSimulatonRequest"))
-                  .requestMessage(PxMWDataRetrievalSimulatonRequest.class)
+                  .queue(new JmsQueue("yukon.notif.obj.simulator.EatonCloudDataRetrievalSimulatonRequest"))
+                  .requestMessage(EatonCloudDataRetrievalSimulatonRequest.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
@@ -1362,13 +1362,13 @@ public final class JmsApiDirectory {
                 BROKER_SYSTEM_METRICS,
                 CLOUD_CONFIGURATION_SETTINGS,
                 CLOUD_DATA_CONFIGURATIONS,
+                EATON_CLOUD_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LM_EATON_CLOUD_SCHEDULED_CYCLE_COMMAND,
                 LM_EATON_CLOUD_STOP_COMMAND,
                 LOCATION,
                 NM_HEARTBEAT,
                 PORTER_DYNAMIC_PAOINFO,
-                PX_MW_AUTH_TOKEN,
                 RF_SUPPORT_BUNDLE,
                 RFN_DEVICE_CREATION_ALERT,
                 SYSTEM_DATA,
@@ -1449,7 +1449,7 @@ public final class JmsApiDirectory {
                          PROGRAM_STATUS_NOTIFICATION);
         
         addApis(jmsApis, SIMULATOR, 
-                PxMW_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
+                EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
 
         return jmsApis;
     }
