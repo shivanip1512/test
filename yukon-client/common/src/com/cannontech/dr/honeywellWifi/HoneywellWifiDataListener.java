@@ -147,12 +147,12 @@ public class HoneywellWifiDataListener {
 
         try {
             receiveClient = new ServiceBusClientBuilder()
-                    .connectionString(connectionString)
-                    .transportType(AmqpTransportType.AMQP_WEB_SOCKETS)
-                    .receiver()
-                    .queueName(queueName)
-                    .receiveMode(ServiceBusReceiveMode.PEEK_LOCK)
-                    .buildAsyncClient();
+                           .connectionString(connectionString)
+                           .transportType(AmqpTransportType.AMQP_WEB_SOCKETS)
+                           .receiver()
+                           .queueName(queueName)
+                           .receiveMode(ServiceBusReceiveMode.PEEK_LOCK)
+                           .buildAsyncClient();
             log.info("Connection is established with Azure service bus");
         } catch (ServiceBusException e) {
             log.error("Error making connection to Azure service bus to EndPoint URI " + receiveClient.getFullyQualifiedNamespace()
@@ -177,12 +177,12 @@ public class HoneywellWifiDataListener {
                     + "-" + errorContext.getException());
         };
         ServiceBusProcessorClient processorClient = new ServiceBusClientBuilder()
-                .connectionString(connectionString)
-                .processor()
-                .queueName(queueName)
-                .processMessage(processMessage)
-                .processError(processError)
-                .buildProcessorClient();
+                                                       .connectionString(connectionString)
+                                                       .processor()
+                                                       .queueName(queueName)
+                                                       .processMessage(processMessage)
+                                                       .processError(processError)
+                                                       .buildProcessorClient();
         processorClient.start();
     }
 

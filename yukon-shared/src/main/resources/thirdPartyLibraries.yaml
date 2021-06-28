@@ -1948,7 +1948,7 @@ Java :
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http/4.1.65.Final"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http2/4.1.65.Final"
     md5 : a4cada9d98acf2dd020a04b80e971e85
     sha1 : 0b98d8554d43bbf379883005d043484bafd47cf3
     updated : 2021-06-23
@@ -2309,7 +2309,7 @@ Java :
     yukon group : Azure
     project : Microsoft Azure SDK
     version : 3.4.6
-    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    project URL : "https://github.com/reactor/reactor-core"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.projectreactor/reactor-core/3.4.6"
@@ -2323,7 +2323,7 @@ Java :
     yukon group : Azure
     project : Microsoft Azure SDK
     version : 1.0.7
-    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    project URL : "https://github.com/reactor/reactor-netty"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty/1.0.7"
@@ -2337,7 +2337,7 @@ Java :
     yukon group : Azure
     project : Microsoft Azure SDK
     version : 1.0.7
-    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    project URL : "https://github.com/reactor/reactor-netty"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty-http/1.0.7"
@@ -2351,7 +2351,7 @@ Java :
     yukon group : Azure
     project : Microsoft Azure SDK
     version : 1.0.7
-    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    project URL : "https://github.com/reactor/reactor-netty"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty-http/1.0.7"
@@ -2365,7 +2365,7 @@ Java :
     yukon group : Azure
     project : Microsoft Azure SDK
     version : 1.0.7
-    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    project URL : " https://github.com/reactor/reactor-netty"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty-http-brave/1.0.7"
@@ -3248,7 +3248,7 @@ Java :
     yukon group : Azure
     project : Microsoft Azure SDK
     version : 6.2.4
-    project URL : "http://www.minidev.net/"
+    project URL : "https://github.com/FasterXML/woodstox"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core/6.2.4"
@@ -3360,7 +3360,7 @@ Java :
     yukon group : Azure
     project : Microsoft Azure SDK
     version : 2.23.2
-    project URL : "http://www.minidev.net/"
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.zipkin.zipkin2/zipkin/2.23.2"
@@ -3374,7 +3374,7 @@ Java :
     yukon group : Azure
     project : Microsoft Azure SDK
     version : 2.16.3
-    project URL : "http://www.minidev.net/"
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.zipkin.reporter2/zipkin-reporter-brave/2.16.3"
