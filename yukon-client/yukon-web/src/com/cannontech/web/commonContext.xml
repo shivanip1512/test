@@ -440,4 +440,5 @@
     <bean class="com.cannontech.web.scheduledDataImport.service.impl.AssetScheduledImportServiceImpl"/>
     
     <bean class="com.cannontech.web.tools.device.programming.dao.impl.MeterProgrammingSummaryDaoImpl"/>
+    <bean class="com.cannontech.web.database.event.publisher.DatabaseChangePublisher"/>
 </beans>

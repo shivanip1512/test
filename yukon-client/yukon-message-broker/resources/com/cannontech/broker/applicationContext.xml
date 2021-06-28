@@ -69,11 +69,11 @@
         <property name="memoryAttribute" value="MESSAGE_BROKER_MEMORY_UTILIZATION" />
     </bean>
 
-    <bean id="loggingDbChangeListener" class="com.cannontech.broker.logging.LoggingDbChangeListener"/>
+    <bean id="dbChangeListener" class="com.cannontech.broker.database.event.listener.DatabaseChangeListener"/>
     <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
-        <property name="destinationName" value="com.eaton.eas.yukon.logging.dbchange" />
+        <property name="destinationName" value="com.eaton.eas.yukon.dbchange.event" />
         <property name="connectionFactory" ref="connectionFactory" />
-        <property name="messageListener" ref="loggingDbChangeListener"/>
+        <property name="messageListener" ref="dbChangeListener"/>
     </bean>
      
 </beans>

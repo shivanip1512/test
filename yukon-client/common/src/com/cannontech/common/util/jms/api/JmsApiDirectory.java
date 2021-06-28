@@ -60,7 +60,6 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveResponse;
-import com.cannontech.broker.message.request.LoggingDbChangeRequest;
 import com.cannontech.broker.message.request.BrokerSystemMetricsRequest;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.data.collection.message.CollectionRequest;
@@ -129,6 +128,7 @@ import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRequest;
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
 import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.porter.message.DynamicPaoInfoRequest;
 import com.cannontech.message.porter.message.DynamicPaoInfoResponse;
 import com.cannontech.message.porter.message.MeterProgramValidationRequest;
@@ -1324,15 +1324,13 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    public static final JmsApi<LoggingDbChangeRequest,?,?> LOGGING_DB_CHANGE_REQUEST = 
-            JmsApi.builder(LoggingDbChangeRequest.class)
-                  .name("Logging database change event request")
-                  .description("Send Logging configs/logger DB change events to Message broker")
+    public static final JmsApi<DatabaseChangeEvent,?,?> DATABASE_CHANGE_EVENT_REQUEST = 
+            JmsApi.builder(DatabaseChangeEvent.class)
+                  .name("Database change event request")
+                  .description("Webserver sends DB change events to Message broker")
                   .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("com.eaton.eas.yukon.logging.dbchange"))
-                  .requestMessage(LoggingDbChangeRequest.class)
-                  .sender(YUKON_SERVICE_MANAGER)
-                  .sender(YUKON_WATCHDOG)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.dbchange.event"))
+                  .requestMessage(DatabaseChangeEvent.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_MESSAGE_BROKER)
                   .build();
@@ -1375,7 +1373,7 @@ public final class JmsApiDirectory {
                 RFN_DEVICE_CREATION_ALERT,
                 SYSTEM_DATA,
                 ZEUS_ECOBEE_AUTH_TOKEN,
-                LOGGING_DB_CHANGE_REQUEST);
+                DATABASE_CHANGE_EVENT_REQUEST);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 
