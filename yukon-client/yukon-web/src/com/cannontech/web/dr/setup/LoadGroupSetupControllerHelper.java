@@ -46,6 +46,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
+import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.ImmutableList;
@@ -254,13 +255,17 @@ public class LoadGroupSetupControllerHelper {
      */
     private void setCommunicationRoute(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         // Give API call to get all routes
-        List<LiteYukonPAObject> routes = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
-        ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, request, url,
-            LiteYukonPAObject.class, HttpMethod.GET, LiteYukonPAObject.class);
+        List<RouteBaseModel> routes = new ArrayList<>();
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl + "/");
+        ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, 
+                                                                                          request, 
+                                                                                          url,
+                                                                                          RouteBaseModel.class, 
+                                                                                          HttpMethod.GET, 
+                                                                                          RouteBaseModel.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            routes = (List<LiteYukonPAObject>) response.getBody();
+            routes = (List<RouteBaseModel>) response.getBody();
         }
         model.addAttribute("routes", routes);
     }

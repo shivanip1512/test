@@ -53,7 +53,7 @@ public interface SmartNotificationEventDao {
     void save(SmartNotificationEventType type, List<SmartNotificationEvent> event);
     
     /**
-     * Deletes all events. Used by simulator.
+     * Deletes all events and email history. Used ONLY by simulator.
      */
     void deleteAllEvents();
 

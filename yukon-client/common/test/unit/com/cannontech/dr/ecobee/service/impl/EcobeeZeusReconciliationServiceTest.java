@@ -3,7 +3,7 @@ package com.cannontech.dr.ecobee.service.impl;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.easymock.EasyMock;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.dr.ecobee.dao.EcobeeZeusGroupDao;
@@ -61,38 +61,37 @@ public class EcobeeZeusReconciliationServiceTest {
         for (EcobeeZeusDiscrepancyType type : EcobeeZeusDiscrepancyType.values()) {
             if (type == EcobeeZeusDiscrepancyType.MISSING_GROUP) {
                 Collection<EcobeeZeusDiscrepancy> missingGroup = report.getErrors(type);
-                assertTrue("Group did not match ", missingGroup.size() == 1);
+                assertTrue(missingGroup.size() == 1, "Group did not match ");
                 missingGroup.stream().forEach(e -> {
-                    assertTrue("Missing group in ecobee ", e.getCorrectPath().equals("G3"));
+                    assertTrue(e.getCorrectPath().equals("G3"), "Missing group in ecobee ");
 
                 });
             } else if (type == EcobeeZeusDiscrepancyType.EXTRANEOUS_GROUP) {
                 Collection<EcobeeZeusDiscrepancy> extraneousGroup = report.getErrors(type);
-                assertTrue("Group did not match ", extraneousGroup.size() == 1);
+                assertTrue(extraneousGroup.size() == 1, "Group did not match ");
                 extraneousGroup.stream().forEach(e -> {
-                    assertTrue("Missing Group in Yukon ", e.getCurrentPath().equals("G4"));
+                    assertTrue(e.getCurrentPath().equals("G4"), "Missing Group in Yukon ");
 
                 });
             } else if (type == EcobeeZeusDiscrepancyType.MISSING_DEVICE) {
                 Collection<EcobeeZeusDiscrepancy> missingDevice = report.getErrors(type);
-                assertTrue("Group did not match ", missingDevice.size() == 2);
+                assertTrue(missingDevice.size() == 2, "Group did not match ");
                 missingDevice.stream().forEach(e -> {
-                    assertTrue("Missing devices in ecobee ",
-                            e.getSerialNumber().equals("T4") || e.getSerialNumber().equals("T5"));
+                    assertTrue(e.getSerialNumber().equals("T4") || e.getSerialNumber().equals("T5"), "Missing devices in ecobee ");
 
                 });
             } else if (type == EcobeeZeusDiscrepancyType.EXTRANEOUS_DEVICE) {
                 Collection<EcobeeZeusDiscrepancy> extraneousDevice = report.getErrors(type);
-                assertTrue("Group did not match ", extraneousDevice.size() == 1);
+                assertTrue(extraneousDevice.size() == 1, "Group did not match ");
                 extraneousDevice.stream().forEach(e -> {
-                    assertTrue("Missing devices in Yukon ", e.getSerialNumber().equals("T6"));
+                    assertTrue(e.getSerialNumber().equals("T6"), "Missing devices in Yukon ");
 
                 });
             } else if (type == EcobeeZeusDiscrepancyType.MISLOCATED_DEVICE) {
                 Collection<EcobeeZeusDiscrepancy> mislocatedDevices = report.getErrors(type);
-                assertTrue("Group did not match ", mislocatedDevices.size() == 2);
+                assertTrue(mislocatedDevices.size() == 2, "Group did not match ");
                 mislocatedDevices.stream().forEach(e -> {
-                    assertTrue("Misslocated devices ", e.getSerialNumber().equals("T2") || e.getSerialNumber().equals("T6"));
+                    assertTrue(e.getSerialNumber().equals("T2") || e.getSerialNumber().equals("T6"), "Misslocated devices ");
 
                 });
             }

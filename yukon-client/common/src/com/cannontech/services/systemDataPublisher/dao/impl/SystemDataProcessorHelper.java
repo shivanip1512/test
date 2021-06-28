@@ -19,13 +19,13 @@ public class SystemDataProcessorHelper {
      * 
      */
     public static SystemData processQueryResult(CloudDataConfiguration cloudDataConfiguration, List<Map<String, Object>> queryResult) {
-        String fieldValue = null;
+        Object fieldValue = null;
         if (!queryResult.isEmpty()) {
             if (queryResult.size() == 1 ) {
                 fieldValue = queryResult.get(0).entrySet()
                                                .stream()
                                                .map(entity -> entity.getValue())
-                                               .findFirst().get().toString();;
+                                               .findFirst().get();
             } else {
                 Double actual = queryResult.stream()
                                             .flatMap(entity -> entity.entrySet().stream())
@@ -43,7 +43,7 @@ public class SystemDataProcessorHelper {
     /**
      * Builds System Data object.
      */
-    public static SystemData buildSystemData(CloudDataConfiguration cloudDataConfiguration, String fieldValue) {
+    public static SystemData buildSystemData(CloudDataConfiguration cloudDataConfiguration, Object fieldValue) {
         SystemData systemData = new SystemData();
         systemData.setFieldName(cloudDataConfiguration.getField().getStringValue());
         systemData.setFieldValue(fieldValue);
