@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/24/2021 1:15:46 AM                         */
+/* Created on:     6/25/2021 4:37:51 AM                         */
 /*==============================================================*/
 
 
@@ -6757,7 +6757,6 @@ create table LMGroupZeusMapping  (
    EcobeeGroupId        VARCHAR2(32)                    not null,
    EcobeeEventId        VARCHAR2(50),
    EcobeeGroupName      VARCHAR2(255),
-   ProgramId            NUMBER                          not null,
    constraint PK_LMGROUPZEUSMAPPING primary key (YukonGroupId, EcobeeGroupId)
 );
 
@@ -8660,6 +8659,70 @@ create table SiteInformation  (
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 
 /*==============================================================*/
+/* Table: SmartNotifEmailHistory                                */
+/*==============================================================*/
+create table SmartNotifEmailHistory  (
+   HistoryId            NUMBER                          not null,
+   EventType            VARCHAR2(50)                    not null,
+   Verbosity            VARCHAR2(20)                    not null,
+   Media                VARCHAR2(20)                    not null,
+   ProcessingType       VARCHAR2(20)                    not null,
+   IntervalMinutes      NUMBER                          not null,
+   TotalEvents          NUMBER                          not null,
+   SendTime             DATE                            not null,
+   constraint PK_SmartNotificationEmailHistory primary key (HistoryId)
+);
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifEmailHistory_EventType                 */
+/*==============================================================*/
+create index INDX_SmartNotifEmailHistory_EventType on SmartNotifEmailHistory (
+   EventType ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifEmailHistory_SendTime                  */
+/*==============================================================*/
+create index INDX_SmartNotifEmailHistory_SendTime on SmartNotifEmailHistory (
+   SendTime ASC
+);
+
+/*==============================================================*/
+/* Table: SmartNotifEventHistory                                */
+/*==============================================================*/
+create table SmartNotifEventHistory  (
+   EventHistoryId       NUMBER                          not null,
+   HistoryId            NUMBER                          not null,
+   constraint PK_SmartNotificationEventHistory primary key (EventHistoryId)
+);
+
+/*==============================================================*/
+/* Table: SmartNotifEventParamHistory                           */
+/*==============================================================*/
+create table SmartNotifEventParamHistory  (
+   EventHistoryId       NUMBER                          not null,
+   Name                 VARCHAR2(30)                    not null,
+   Value                VARCHAR2(500)                   not null,
+   constraint PK_SmartNotificationEventParamHistory primary key (EventHistoryId, Name, Value)
+);
+
+/*==============================================================*/
+/* Table: SmartNotifRecipientHistory                            */
+/*==============================================================*/
+create table SmartNotifRecipientHistory  (
+   HistoryId            NUMBER                          not null,
+   Recipient            VARCHAR2(254)                   not null,
+   constraint PK_SmartNotificationRecipientHistory primary key (HistoryId, Recipient)
+);
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifRecipientHistory_Recipient             */
+/*==============================================================*/
+create index INDX_SmartNotifRecipientHistory_Recipient on SmartNotifRecipientHistory (
+   Recipient ASC
+);
+
+/*==============================================================*/
 /* Table: SmartNotificationEvent                                */
 /*==============================================================*/
 create table SmartNotificationEvent  (
@@ -10293,6 +10356,17 @@ insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 /*==============================================================*/
 create index Indx_YkLstDefID on YukonListEntry (
    YukonDefinitionID ASC
+);
+
+/*==============================================================*/
+/* Table: YukonLogging                                          */
+/*==============================================================*/
+create table YukonLogging  (
+   LoggerName           VARCHAR2(200)                   not null,
+   LoggerLevel          VARCHAR2(5)                     not null,
+   ExpirationDate       DATE,
+   Notes                VARCHAR2(300),
+   constraint PK_YUKONLOGGING primary key (LoggerName)
 );
 
 /*==============================================================*/
@@ -13930,6 +14004,21 @@ alter table Shipment
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID);
+
+alter table SmartNotifEventHistory
+   add constraint FK_SmrtNotifEventHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotifEmailHistory (HistoryId)
+      on delete cascade;
+
+alter table SmartNotifEventParamHistory
+   add constraint FK_SmrtNotifEvntPHist_SmrtNotifEmailHist foreign key (EventHistoryId)
+      references SmartNotifEventHistory (EventHistoryId)
+      on delete cascade;
+
+alter table SmartNotifRecipientHistory
+   add constraint FK_SmrtNotifRecipHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotifEmailHistory (HistoryId)
+      on delete cascade;
 
 alter table SmartNotificationEventParam
    add constraint FK_SmartNotifEP_SmartNotifE foreign key (EventId)

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/24/2021 1:17:52 AM                         */
+/* Created on:     6/25/2021 4:36:55 AM                         */
 /*==============================================================*/
 
 
@@ -7159,7 +7159,6 @@ create table LMGroupZeusMapping (
    EcobeeGroupId        varchar(32)          not null,
    EcobeeEventId        varchar(50)          null,
    EcobeeGroupName      varchar(255)         null,
-   ProgramId            numeric              not null,
    constraint PK_LMGROUPZEUSMAPPING primary key (YukonGroupId, EcobeeGroupId)
 )
 go
@@ -9219,6 +9218,77 @@ go
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 
 /*==============================================================*/
+/* Table: SmartNotifEmailHistory                                */
+/*==============================================================*/
+create table SmartNotifEmailHistory (
+   HistoryId            numeric              not null,
+   EventType            varchar(50)          not null,
+   Verbosity            varchar(20)          not null,
+   Media                varchar(20)          not null,
+   ProcessingType       varchar(20)          not null,
+   IntervalMinutes      numeric              not null,
+   TotalEvents          numeric              not null,
+   SendTime             datetime             not null,
+   constraint PK_SmartNotificationEmailHistory primary key (HistoryId)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifEmailHistory_EventType                 */
+/*==============================================================*/
+create index INDX_SmartNotifEmailHistory_EventType on SmartNotifEmailHistory (
+EventType ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifEmailHistory_SendTime                  */
+/*==============================================================*/
+create index INDX_SmartNotifEmailHistory_SendTime on SmartNotifEmailHistory (
+SendTime ASC
+)
+go
+
+/*==============================================================*/
+/* Table: SmartNotifEventHistory                                */
+/*==============================================================*/
+create table SmartNotifEventHistory (
+   EventHistoryId       numeric              not null,
+   HistoryId            numeric              not null,
+   constraint PK_SmartNotificationEventHistory primary key (EventHistoryId)
+)
+go
+
+/*==============================================================*/
+/* Table: SmartNotifEventParamHistory                           */
+/*==============================================================*/
+create table SmartNotifEventParamHistory (
+   EventHistoryId       numeric              not null,
+   Name                 varchar(30)          not null,
+   Value                varchar(500)         not null,
+   constraint PK_SmartNotificationEventParamHistory primary key (EventHistoryId, Name, Value)
+)
+go
+
+/*==============================================================*/
+/* Table: SmartNotifRecipientHistory                            */
+/*==============================================================*/
+create table SmartNotifRecipientHistory (
+   HistoryId            numeric              not null,
+   Recipient            varchar(254)         not null,
+   constraint PK_SmartNotificationRecipientHistory primary key (HistoryId, Recipient)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifRecipientHistory_Recipient             */
+/*==============================================================*/
+create index INDX_SmartNotifRecipientHistory_Recipient on SmartNotifRecipientHistory (
+Recipient ASC
+)
+go
+
+/*==============================================================*/
 /* Table: SmartNotificationEvent                                */
 /*==============================================================*/
 create table SmartNotificationEvent (
@@ -10917,6 +10987,18 @@ insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 /*==============================================================*/
 create index Indx_YkLstDefID on YukonListEntry (
 YukonDefinitionID ASC
+)
+go
+
+/*==============================================================*/
+/* Table: YukonLogging                                          */
+/*==============================================================*/
+create table YukonLogging (
+   LoggerName           varchar(200)         not null,
+   LoggerLevel          varchar(5)           not null,
+   ExpirationDate       datetime             null,
+   Notes                varchar(300)         null,
+   constraint PK_YUKONLOGGING primary key (LoggerName)
 )
 go
 
@@ -15191,6 +15273,24 @@ go
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID)
+go
+
+alter table SmartNotifEventHistory
+   add constraint FK_SmrtNotifEventHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotifEmailHistory (HistoryId)
+         on delete cascade
+go
+
+alter table SmartNotifEventParamHistory
+   add constraint FK_SmrtNotifEvntPHist_SmrtNotifEmailHist foreign key (EventHistoryId)
+      references SmartNotifEventHistory (EventHistoryId)
+         on delete cascade
+go
+
+alter table SmartNotifRecipientHistory
+   add constraint FK_SmrtNotifRecipHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotifEmailHistory (HistoryId)
+         on delete cascade
 go
 
 alter table SmartNotificationEventParam

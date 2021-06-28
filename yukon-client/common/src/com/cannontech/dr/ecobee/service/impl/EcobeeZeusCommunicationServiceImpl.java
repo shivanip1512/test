@@ -164,13 +164,13 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
      * Create a Ecobee Zeus group and return the group ID.
      */
     @SuppressWarnings("unchecked")
-    private String createEcobeeGroup(int lmGroupId, String serialNumber, int yukonProgramId) {
+    private String createEcobeeGroup(int lmGroupId, String serialNumber, int programId) {
         String zeusGroupId = StringUtils.EMPTY;
         try {
             String createThermostatGroupURL = getUrlBase() + "tstatgroups";
 
             CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), Arrays.asList(serialNumber));
-            String newName = ecobeeZeusGroupService.getNextGroupName(lmGroupId, yukonProgramId);
+            String newName = ecobeeZeusGroupService.getNextGroupName(lmGroupId, programId);
             ZeusGroup group = new ZeusGroup(newName, getZeusProgramId());
             ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
@@ -182,7 +182,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                 zeusGroupId = responseFields.get("id");
                 String groupName = responseFields.get("name");
                 String yukonGroupName = cache.getAllPaosMap().get(lmGroupId).getPaoName();
-                ecobeeZeusGroupService.mapGroupIdToZeusGroup(lmGroupId, zeusGroupId, groupName, yukonProgramId);
+                ecobeeZeusGroupService.mapGroupIdToZeusGroup(lmGroupId, zeusGroupId, groupName, programId);
                 log.info("Zeus group with ID: {} and Name: {} created successfully on Ecobee and Mapped to Yukon LM group {}.",
                         zeusGroupId, groupName, yukonGroupName);
             } else if (responseEntity.getStatusCode() == HttpStatus.PARTIAL_CONTENT) {

@@ -123,13 +123,79 @@ WHERE CategoryType = 'regulatorCategory';
 INSERT INTO DBUpdates VALUES ('YUK-24031', '9.1.0', SYSDATE);
 /* @end YUK-24031 */
 
-/* @start YUK-24529 */
-ALTER TABLE LMGroupZeusMapping ADD ProgramId NUMBER;
+/* @start YUK-24437 */
+CREATE TABLE SmartNotifEmailHistory  (
+   HistoryId            NUMBER                          NOT NULL,
+   EventType            VARCHAR2(50)                    NOT NULL,
+   Verbosity            VARCHAR2(20)                    NOT NULL,
+   Media                VARCHAR2(20)                    NOT NULL,
+   ProcessingType       VARCHAR2(20)                    NOT NULL,
+   IntervalMinutes      NUMBER                          NOT NULL,
+   TotalEvents          NUMBER                          NOT NULL,
+   SendTime             DATE                            NOT NULL,
+   CONSTRAINT PK_SmartNotificationEmailHistory PRIMARY KEY (HistoryId)
+);
 
-UPDATE LMGroupZeusMapping SET ProgramId = -1;
+CREATE INDEX INDX_SmartNotifEmailHistory_EventType ON SmartNotifEmailHistory (
+   EventType ASC
+);
 
-INSERT INTO DBUpdates VALUES ('YUK-24529', '9.1.0', SYSDATE);
-/* @end YUK-24529 */
+CREATE INDEX INDX_SmartNotifEmailHistory_SendTime ON SmartNotifEmailHistory (
+   SendTime ASC
+);
+
+CREATE TABLE SmartNotifEventHistory  (
+   EventHistoryId       NUMBER                          NOT NULL,
+   HistoryId            NUMBER                          NOT NULL,
+   CONSTRAINT PK_SmartNotificationEventHistory PRIMARY KEY (EventHistoryId)
+);
+
+CREATE TABLE SmartNotifEventParamHistory  (
+   EventHistoryId       NUMBER                          NOT NULL,
+   Name                 VARCHAR2(30)                    NOT NULL,
+   Value                VARCHAR2(500)                   NOT NULL,
+   CONSTRAINT PK_SmartNotificationEventParamHistory PRIMARY KEY (EventHistoryId, Name, Value)
+);
+
+CREATE TABLE SmartNotifRecipientHistory  (
+   HistoryId            NUMBER                          NOT NULL,
+   Recipient            VARCHAR2(254)                   NOT NULL,
+   CONSTRAINT PK_SmartNotificationRecipientHistory PRIMARY KEY (HistoryId, Recipient)
+);
+
+CREATE INDEX INDX_SmartNotifRecipientHistory_Recipient ON SmartNotifRecipientHistory (
+   Recipient ASC
+);
+
+ALTER TABLE SmartNotifEventHistory
+   ADD CONSTRAINT FK_SmrtNotifEventHist_SmrtNotifEmailHist FOREIGN KEY (HistoryId)
+      REFERENCES SmartNotifEmailHistory (HistoryId)
+      ON DELETE CASCADE;
+
+ALTER TABLE SmartNotifEventParamHistory
+   ADD CONSTRAINT FK_SmrtNotifEvntPHist_SmrtNotifEmailHist FOREIGN KEY (EventHistoryId)
+      REFERENCES SmartNotifEventHistory (EventHistoryId)
+      ON DELETE CASCADE;
+
+ALTER TABLE SmartNotifRecipientHistory
+   ADD CONSTRAINT FK_SmrtNotifRecipHist_SmrtNotifEmailHist FOREIGN KEY (HistoryId)
+      REFERENCES SmartNotifEmailHistory (HistoryId)
+      ON DELETE CASCADE;
+
+INSERT INTO DBUpdates VALUES ('YUK-24437', '9.1.0', SYSDATE);
+/* @end YUK-24437 */
+
+/* @start YUK-24460 */
+CREATE TABLE YukonLogging  (
+   LoggerName           VARCHAR2(200)                   NOT NULL,
+   LoggerLevel          VARCHAR2(5)                     NOT NULL,
+   ExpirationDate       DATE,
+   Notes                VARCHAR2(300),
+   CONSTRAINT PK_YUKONLOGGING PRIMARY KEY (LoggerName)
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-24460', '9.1.0', SYSDATE);
+/* @end YUK-24460 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
