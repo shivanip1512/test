@@ -43,7 +43,7 @@ import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
-import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetail;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorHandlerV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteV1;
@@ -187,7 +187,7 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
     }
     
     @Override
-    public EatonCloudDeviceDetail getDeviceDetails(String deviceGuid, Boolean recursive)
+    public EatonCloudDeviceDetailV1 getDeviceDetails(String deviceGuid, Boolean recursive)
             throws EatonCloudCommunicationExceptionV1, EatonCloudException {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         if (recursive != null) {
@@ -201,7 +201,7 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
 
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-            ResponseEntity<EatonCloudDeviceDetail> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, EatonCloudDeviceDetail.class);
+            ResponseEntity<EatonCloudDeviceDetailV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, EatonCloudDeviceDetailV1.class);
             log.debug("Got device info. Device Guid:{} Result:{}", deviceGuid,
                     new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
             return response.getBody();

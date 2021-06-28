@@ -26,7 +26,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoDao.InfoKey;
 import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
-import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetail;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
@@ -60,7 +60,7 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
             }     
                         
             try {
-                EatonCloudDeviceDetail detail = eatonCloudCommunicationServiceV1.getDeviceDetails(hardware.getGuid(), false);
+                EatonCloudDeviceDetailV1 detail = eatonCloudCommunicationServiceV1.getDeviceDetails(hardware.getGuid(), false);
                 if (!isSimulator(detail) && !isValidSerialNumber(detail, hardware)) {
                     throw new DeviceCreationException(
                             "Invalid serial number:" + hardware.getSerialNumber()
@@ -91,14 +91,14 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
     /**
      * To test invalid serial number error, make this method return false. Returns true if responses are simulated.
      */
-    private boolean isSimulator(EatonCloudDeviceDetail detail) {
+    private boolean isSimulator(EatonCloudDeviceDetailV1 detail) {
         return !Strings.isNullOrEmpty(detail.getSoftware()) && detail.getSoftware().equals("YUKON_SIMULATOR");
     }
     
     /**
      * Returns true if the serial number matches serial number for the GUID in Brightlayer.
      */
-    private boolean isValidSerialNumber(EatonCloudDeviceDetail detail, Hardware hardware) {
+    private boolean isValidSerialNumber(EatonCloudDeviceDetailV1 detail, Hardware hardware) {
         return !Strings.isNullOrEmpty(detail.getSerial()) && hardware.getSerialNumber().equals(detail.getSerial());
     }
 

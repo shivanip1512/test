@@ -20,7 +20,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
-import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetail;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDeviceV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
@@ -244,7 +244,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
             return new EatonCloudSimulatorResponse(new EatonCloudErrorV1(status, "Resource not found"), status);
         }
         creatingGuids.put(deviceId,deviceId);
-        EatonCloudDeviceDetail detail = new EatonCloudDeviceDetail(deviceId, "", "", "", "", "2143535", "", "", "", "", "", "", "", "", "", "YUKON_SIMULATOR", true, "");
+        EatonCloudDeviceDetailV1 detail = new EatonCloudDeviceDetailV1(deviceId, "", "", "", "", "2143535", "", "", "", "", "", "", "", "", "", "YUKON_SIMULATOR", true, "");
         return new EatonCloudSimulatorResponse(detail, status);
     }
 }

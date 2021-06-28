@@ -37,7 +37,7 @@ import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
 import com.cannontech.dr.eatonCloud.model.EatonCloudVersion;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
-import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetail;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDataRequestV1;
@@ -153,7 +153,7 @@ public class EatonCloudSimulatorController {
                         timeRange);
                 processSuccess(params, json, getFormattedJson(response));
             } else if (endpoint == EatonCloudRetrievalUrl.DEVICE_DETAIL) {
-                EatonCloudDeviceDetail detail = eatonCloudCommunicationServiceV1.getDeviceDetails(paramList.get(0), parseBoolean(paramList, 1));
+                EatonCloudDeviceDetailV1 detail = eatonCloudCommunicationServiceV1.getDeviceDetails(paramList.get(0), parseBoolean(paramList, 1));
                 processSuccess(params, json, getFormattedJson(detail));
             } 
             else if (endpoint == EatonCloudRetrievalUrl.SITES) {

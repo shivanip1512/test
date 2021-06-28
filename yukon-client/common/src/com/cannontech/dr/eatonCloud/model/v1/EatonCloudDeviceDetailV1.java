@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class EatonCloudDeviceDetail implements Serializable {
+public class EatonCloudDeviceDetailV1 implements Serializable {
     private String id;
     private String profileId;
     private String publisherId;
@@ -26,7 +26,7 @@ public class EatonCloudDeviceDetail implements Serializable {
     private boolean cloudEnabled;
     private String devices;
     
-    public EatonCloudDeviceDetail(@JsonProperty("id") String id, @JsonProperty("profile_id") String profileId,
+    public EatonCloudDeviceDetailV1(@JsonProperty("id") String id, @JsonProperty("profile_id") String profileId,
             @JsonProperty("publisher_id") String publisherId, @JsonProperty("site_id") String siteId,
             @JsonProperty("name") String name, @JsonProperty("serial") String serial,
             @JsonProperty("asset") String asset, @JsonProperty("mac") String macAddress,

@@ -8,7 +8,7 @@ import com.cannontech.common.util.Range;
 import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
-import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetail;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceResultV1;
@@ -93,7 +93,7 @@ public interface EatonCloudCommunicationServiceV1 {
      * 401 Unauthorized
      * 404 Not Found
      */
-    EatonCloudDeviceDetail getDeviceDetails(String deviceGuid, Boolean recursive) throws EatonCloudCommunicationExceptionV1, EatonCloudException;
+    EatonCloudDeviceDetailV1 getDeviceDetails(String deviceGuid, Boolean recursive) throws EatonCloudCommunicationExceptionV1, EatonCloudException;
 
     /**
      * Retrieves the list of sites
