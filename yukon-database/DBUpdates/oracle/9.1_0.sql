@@ -197,6 +197,14 @@ CREATE TABLE YukonLogging  (
 INSERT INTO DBUpdates VALUES ('YUK-24460', '9.1.0', SYSDATE);
 /* @end YUK-24460 */
 
+/* @start YUK-24529 */
+ALTER TABLE LMGroupZeusMapping ADD ProgramId NUMBER;
+
+UPDATE LMGroupZeusMapping SET ProgramId = -1;
+
+INSERT INTO DBUpdates VALUES ('YUK-24529', '9.1.0', SYSDATE);
+/* @end YUK-24529 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

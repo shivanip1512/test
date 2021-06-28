@@ -35,6 +35,7 @@ import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMislocatedDeviceDisc
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMissingDeviceDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMissingGroupDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
+import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.google.common.base.Functions;
@@ -54,6 +55,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private EcobeeZeusGroupDao ecobeeZeusGroupDao;
+    @Autowired private EcobeeZeusGroupService ecobeeZeusGroupService;
 
     // Fix issues in this order to avoid e.g. deleting an extraneous group containing a mislocated group.
     // (This should not be rearranged without some thought)
@@ -204,8 +206,10 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
                 int inventoryId = lmHardwareBaseDao.getBySerialNumber(error.getSerialNumber()).getInventoryId();
                 Set<Integer> groups = new HashSet<>();
                 groups.add(Integer.parseInt(error.getCurrentPath()));
-                communicationService.unEnroll(groups, error.getSerialNumber(), inventoryId);
-                communicationService.enroll(Integer.parseInt(error.getCorrectPath()), error.getSerialNumber(), inventoryId);
+                communicationService.unEnroll(groups, error.getSerialNumber(), inventoryId, true);
+                int lmGroupId = Integer.parseInt(error.getCorrectPath());
+                int programId = ecobeeZeusGroupService.getProgramIdToEnroll(inventoryId, lmGroupId);
+                communicationService.enroll(lmGroupId, error.getSerialNumber(), inventoryId, programId, true);
                 return EcobeeZeusReconciliationResult.newSuccess(error);
 
             // Device in Yukon, not in ecobee
