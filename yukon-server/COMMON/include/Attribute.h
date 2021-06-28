@@ -384,7 +384,7 @@ public:
     static const Attribute  WiFiBssidChange;
     static const Attribute  WiFiPassphraseChange;
     static const Attribute  WiFiSsidChange;
-    static const Attribute  CellularPppConnectionFailed;
+    static const Attribute  CellularConnectionFailed;
     static const Attribute  CellularModemDisabled;
     static const Attribute  CellularApnChanged;
     static const Attribute  CellularSimCardInsertedRemoved;
