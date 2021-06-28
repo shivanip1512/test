@@ -128,6 +128,7 @@ import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRequest;
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
 import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.porter.message.DynamicPaoInfoRequest;
 import com.cannontech.message.porter.message.DynamicPaoInfoResponse;
 import com.cannontech.message.porter.message.MeterProgramValidationRequest;
@@ -1323,6 +1324,16 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
+    public static final JmsApi<DatabaseChangeEvent,?,?> DATABASE_CHANGE_EVENT_REQUEST = 
+            JmsApi.builder(DatabaseChangeEvent.class)
+                  .name("Database change event request")
+                  .description("Webserver sends DB change events to Message broker")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.dbchange.event"))
+                  .requestMessage(DatabaseChangeEvent.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_MESSAGE_BROKER)
+                  .build();
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1361,7 +1372,8 @@ public final class JmsApiDirectory {
                 RF_SUPPORT_BUNDLE,
                 RFN_DEVICE_CREATION_ALERT,
                 SYSTEM_DATA,
-                ZEUS_ECOBEE_AUTH_TOKEN);
+                ZEUS_ECOBEE_AUTH_TOKEN,
+                DATABASE_CHANGE_EVENT_REQUEST);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 
