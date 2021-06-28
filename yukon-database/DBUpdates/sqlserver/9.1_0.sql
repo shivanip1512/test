@@ -201,6 +201,20 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-24437', '9.1.0', GETDATE());
 /* @end YUK-24437 */
 
+/* @start YUK-24460 */
+CREATE TABLE YukonLogging (
+   LoggerName           VARCHAR(200)         NOT NULL,
+   LoggerLevel          VARCHAR(5)           NOT NULL,
+   ExpirationDate       DATETIME             NULL,
+   Notes                VARCHAR(300)         NULL,
+   CONSTRAINT PK_YUKONLOGGING PRIMARY KEY (LoggerName)
+)
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-24460', '9.1.0', GETDATE());
+/* @end YUK-24460 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

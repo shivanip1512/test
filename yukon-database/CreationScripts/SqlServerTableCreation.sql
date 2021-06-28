@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/22/2021 2:03:46 PM                         */
+/* Created on:     6/25/2021 4:36:55 AM                         */
 /*==============================================================*/
 
 
@@ -10987,6 +10987,18 @@ insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 /*==============================================================*/
 create index Indx_YkLstDefID on YukonListEntry (
 YukonDefinitionID ASC
+)
+go
+
+/*==============================================================*/
+/* Table: YukonLogging                                          */
+/*==============================================================*/
+create table YukonLogging (
+   LoggerName           varchar(200)         not null,
+   LoggerLevel          varchar(5)           not null,
+   ExpirationDate       datetime             null,
+   Notes                varchar(300)         null,
+   constraint PK_YUKONLOGGING primary key (LoggerName)
 )
 go
 

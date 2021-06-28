@@ -185,6 +185,18 @@ ALTER TABLE SmartNotifRecipientHistory
 INSERT INTO DBUpdates VALUES ('YUK-24437', '9.1.0', SYSDATE);
 /* @end YUK-24437 */
 
+/* @start YUK-24460 */
+CREATE TABLE YukonLogging  (
+   LoggerName           VARCHAR2(200)                   NOT NULL,
+   LoggerLevel          VARCHAR2(5)                     NOT NULL,
+   ExpirationDate       DATE,
+   Notes                VARCHAR2(300),
+   CONSTRAINT PK_YUKONLOGGING PRIMARY KEY (LoggerName)
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-24460', '9.1.0', SYSDATE);
+/* @end YUK-24460 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
