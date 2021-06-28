@@ -39,8 +39,7 @@ public class RouteApiController {
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> create(@Valid @RequestBody RouteBaseModel<?> routeBaseModel, YukonUserContext userContext,
-            HttpServletRequest request) {
+    public ResponseEntity<Object> create(@Valid @RequestBody RouteBaseModel<?> routeBaseModel, YukonUserContext userContext) {
         RouteBaseModel<?> createdRoute = routeService.create(routeBaseModel, userContext.getYukonUser());
         return new ResponseEntity<>(createdRoute, HttpStatus.CREATED);
     }

@@ -73,7 +73,6 @@ public class CarrierRouteModel implements DBPersistentConverter<CarrierRoute> {
 
         if (getCcuVariableBits() != null) {
             carrierRoute.setCcuVariableBits(getCcuVariableBits());
-            ;
         }
 
         if (getResetRptSettings() != null) {

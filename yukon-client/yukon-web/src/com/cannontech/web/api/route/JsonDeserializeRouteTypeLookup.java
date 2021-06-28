@@ -39,25 +39,10 @@ public class JsonDeserializeRouteTypeLookup extends StdDeserializer<RouteBaseMod
 
         String signalTransmitterId = node.get("signalTransmitterId").toString();
 
-        String idStr = ServletUtils.getPathVariable("id");
-        PaoType paoType;
-        TreeNode typeTreeNode = node.get("type");
-        Integer id = null;
-        if (idStr == null) {
-            // Create Case
-            paoType = getPaoTypeFromCache(signalTransmitterId);
+        PaoType paoType = getPaoTypeFromCache(signalTransmitterId);
 
-        } else {
-            // Update case
-            // if pointType field is present in request, Validate pointType.
-            if (typeTreeNode != null) {
-                getPaoTypeFromJson(typeTreeNode);
-            }
-            id = Integer.valueOf(idStr);
-            paoType = getPaoTypeFromCache(signalTransmitterId);
-        }
         RouteBaseModel routeBaseModel = (RouteBaseModel) parser.getCodec().treeToValue(node,
-                getRouteFromModelFactory(getPaoTypeFromCache(signalTransmitterId), id).getClass());
+                getRouteFromModelFactory(getPaoTypeFromCache(signalTransmitterId)).getClass());
 
         return routeBaseModel;
     }
@@ -94,10 +79,8 @@ public class JsonDeserializeRouteTypeLookup extends StdDeserializer<RouteBaseMod
             paoType = serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(id)).getPaoType();
         } catch (NumberFormatException e) {
             throw new NotFoundException(id + " not a Signal transmitter id.");
-        } catch(NullPointerException e) {
-            throw new NotFoundException("Signal transmitter id " + id + " not found.");
         }
-        
+
         PaoType routePaoType = null;
         if (paoType != null) {
             if (paoType.isCcu() || paoType.isRepeater()) {
@@ -131,10 +114,9 @@ public class JsonDeserializeRouteTypeLookup extends StdDeserializer<RouteBaseMod
     /**
      * Retrieves RouteBaseModel from model factory.
      */
-    private RouteBaseModel getRouteFromModelFactory(PaoType paoType, Integer id) {
+    private RouteBaseModel getRouteFromModelFactory(PaoType paoType) {
         RouteBaseModel routeBaseModel = RouteModelFactory.getModel(paoType);
         if (routeBaseModel != null) {
-            routeBaseModel.setId(id);
             return routeBaseModel;
         } else {
             // throw exception for not supported pointType

@@ -46,9 +46,11 @@ public class RepeaterRouteModel implements DBPersistentConverter<RepeaterRoute> 
         if (getRepeaterId() != null) {
             repeaterRoute.setDeviceID(getRepeaterId());
         }
-
-        repeaterRoute.setVariableBits(getVariableBits() == null ? 0 : getVariableBits());
-
-        repeaterRoute.setRepeaterOrder(getRepeaterOrder() == null ? 0 : 1);
+        if (getVariableBits() != null) {
+            repeaterRoute.setVariableBits(getVariableBits());
+        }
+        if (getRepeaterOrder() != null) {
+            repeaterRoute.setRepeaterOrder(getRepeaterOrder());
+        }
     }
 }
