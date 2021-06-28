@@ -1246,7 +1246,7 @@ public final class JmsApiDirectory {
     public static final JmsApi<EatonCloudAuthTokenRequestV1, ?, EatonCloudAuthTokenResponseV1> EATON_CLOUD_AUTH_TOKEN = 
             JmsApi.builder(EatonCloudAuthTokenRequestV1.class, EatonCloudAuthTokenResponseV1.class)
                   .name("Eaton Cloud Auth Token")
-                  .description("Generates a Eaton Cloud Auth Token")
+                  .description("Generates an Eaton Cloud Auth Token")
                   .communicationPattern(REQUEST_RESPONSE)
                   .queue(new JmsQueue("com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenRequestV1"))
                   .responseQueue(JmsQueue.TEMP_QUEUE)
