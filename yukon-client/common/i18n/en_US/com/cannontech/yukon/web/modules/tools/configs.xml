@@ -600,7 +600,7 @@
         ]]>
     </entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.metrologyLibraryEnabled">Advanced Metrology Preferred</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.metrologyLibraryEnabled.description">When true, measurements, including TOU and demand, are determined by the AMI module instead of the meter.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.metrologyLibraryEnabled.description">When true, measurements, including TOU and demand, are determined by the AMI module instead of the meter. When false, the node is in Meter Biased mode and the measurements, including TOU and demand, are determined by the meter.</entry>
 
     <!-- help text used by all categories using attribute mapping inputs -->
     <entry key="yukon.web.modules.tools.configs.category.attributeMapping.helpText">The name of the point that will be associated with the specified attribute.  Overrides existing device attribute assignments.</entry>
