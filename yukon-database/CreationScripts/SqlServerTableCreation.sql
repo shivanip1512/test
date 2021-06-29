@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/28/2021 1:10:37 AM                         */
+/* Created on:     6/29/2021 8:09:16 AM                         */
 /*==============================================================*/
 
 
@@ -2165,6 +2165,8 @@ create table ControlEventDevice (
    OptOutEventId        numeric              null,
    Result               varchar(30)          not null,
    DeviceReceivedTime   datetime             null,
+   FailReason           varchar(100)         null,
+   RetryTime            datetime             null,
    constraint PK_ControlEventDevice primary key (DeviceId, ControlEventId)
 )
 go

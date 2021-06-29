@@ -205,6 +205,16 @@ UPDATE LMGroupZeusMapping SET ProgramId = -1;
 INSERT INTO DBUpdates VALUES ('YUK-24529', '9.1.0', SYSDATE);
 /* @end YUK-24529 */
 
+/* @start YUK-24593 */
+ALTER TABLE ControlEventDevice
+ADD FailReason VARCHAR2(100);
+
+ALTER TABLE ControlEventDevice
+ADD RetryTime DATE;
+
+INSERT INTO DBUpdates VALUES ('YUK-24593', '9.1.0', SYSDATE);
+/* @end YUK-24593 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

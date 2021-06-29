@@ -220,6 +220,18 @@ GO
 UPDATE LMGroupZeusMapping SET ProgramId = -1;
 INSERT INTO DBUpdates VALUES ('YUK-24529', '9.1.0', GETDATE());
 /* @end YUK-24529 */
+
+/* @start YUK-24593 */
+ALTER TABLE ControlEventDevice
+ADD FailReason VARCHAR(100) NULL;
+GO
+
+ALTER TABLE ControlEventDevice
+ADD RetryTime DATETIME NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-24593', '9.1.0', GETDATE());
+/* @end YUK-24593 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
