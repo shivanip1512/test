@@ -220,6 +220,23 @@ GO
 UPDATE LMGroupZeusMapping SET ProgramId = -1;
 INSERT INTO DBUpdates VALUES ('YUK-24529', '9.1.0', GETDATE());
 /* @end YUK-24529 */
+
+/* @start YUK-23375 */
+/* @start-block */
+IF (SELECT is_auto_create_stats_on FROM sys.databases WHERE name = DB_NAME()) = 0
+BEGIN
+    ALTER DATABASE CURRENT SET auto_create_statistics ON;
+END;
+/* @end-block */
+/* @start-block */
+IF (SELECT is_auto_update_stats_on FROM sys.databases WHERE name = DB_NAME()) = 0
+BEGIN
+    ALTER DATABASE CURRENT SET auto_update_statistics ON;
+END;
+
+INSERT INTO DBUpdates VALUES ('YUK-23375', '9.1.0', GETDATE());
+/* @end-block */
+/* @end YUK-23375 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
