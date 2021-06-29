@@ -27,13 +27,16 @@ public class RecentEventParticipationServiceImpl implements RecentEventParticipa
     public void updateDeviceControlEvent(int externalEventId, int deviceId, EventPhase eventPhase,
             Instant deviceReceivedTime) {
         ControlEventDeviceStatus receivedDeviceStatus = ControlEventDeviceStatus.getDeviceStatus(eventPhase);
-        recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(externalEventId), deviceId, receivedDeviceStatus, deviceReceivedTime);
+        recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(externalEventId), deviceId, receivedDeviceStatus,
+                deviceReceivedTime, null, null);
     }
 
     @Override
-    public void updateDeviceControlEvent(int externalEventId, int deviceId, ItronLoadControlEventStatus eventStatus, Instant deviceReceivedTime) {
+    public void updateDeviceControlEvent(int externalEventId, int deviceId, ItronLoadControlEventStatus eventStatus,
+            Instant deviceReceivedTime) {
         ControlEventDeviceStatus receivedDeviceStatus = ControlEventDeviceStatus.getDeviceStatus(eventStatus);
-        recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(externalEventId), deviceId, receivedDeviceStatus, deviceReceivedTime);
+        recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(externalEventId), deviceId, receivedDeviceStatus,
+                deviceReceivedTime, null, null);
     }
     
     @Override

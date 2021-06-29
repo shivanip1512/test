@@ -12,14 +12,19 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
+import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
 import com.cannontech.dr.service.ControlHistoryService;
@@ -85,8 +90,6 @@ public class EatonCloudMessageListener {
 
         Integer eventId = nextValueHelper.getNextValue("EatonCloudEventIdIncrementor");
         log.info("Sending LM Eaton Cloud Shed Command:{} devices:{} event id:{}", command, devices.size(), eventId);
-   
-        sendShedCommands(devices, command, eventId);
         
         List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(command.getGroupId());
         int programId = programsByLMGroupId.get(0).getPaobjectId();
@@ -96,6 +99,8 @@ public class EatonCloudMessageListener {
                 command.getGroupId(),
                 command.getControlStartDateTime(), 
                 command.getControlEndDateTime());
+        
+        sendShedCommands(devices, command, eventId);
         
         controlHistoryService.sendControlHistoryShedMessage(command.getGroupId(),
                 command.getControlStartDateTime(),
@@ -109,25 +114,48 @@ public class EatonCloudMessageListener {
         Map<String, Object> params = getShedParams(command, eventId);
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         guids.forEach((deviceId, guid) -> {
-            try {
-                String deviceName = dbCache.getAllDevices().stream()
-                                                           .filter(d -> d.getLiteID() == deviceId)
-                                                           .findAny()
-                                                           .map(d -> d.getPaoName())
-                                                           .orElse(null);
 
-                eatonCloudCommunicationService.sendCommand(guid, new EatonCloudCommandRequestV1("LCR_Control", params));
-                eatonCloudEventLogService.sendShed(deviceName, 
-                                                   guid, 
-                                                   command.getDutyCyclePercentage(),
-                                                   command.getDutyCyclePeriod(),
-                                                   command.getCriticality());
-            } catch (Exception e) {
+            String deviceName = dbCache.getAllDevices().stream()
+                    .filter(d -> d.getLiteID() == deviceId)
+                    .findAny()
+                    .map(d -> d.getPaoName())
+                    .orElse(null);
+
+            try {
+                EatonCloudCommandResponseV1 response = eatonCloudCommunicationService.sendCommand(guid,
+                        new EatonCloudCommandRequestV1("LCR_Control", params));
+                if (response.getStatusCode() == HttpStatus.OK.value()) {
+                    recentEventParticipationDao.updateDeviceControlEvent(eventId.toString(), deviceId,
+                            ControlEventDeviceStatus.SUCCESS_RECEIVED, new Instant(),
+                            null, null);
+                } else {
+                    throw new EatonCloudException(response.getMessage());
+                }
+            } catch (EatonCloudCommunicationExceptionV1 e) {
                 log.error("Error sending command device id:{} params:{}", deviceId, params, e);
+                processError(eventId, params, deviceId, e.getErrorMessage().getMessage());
+            } catch (EatonCloudException e) {
+                log.error("Error sending command device id:{} params:{}", deviceId, params, e);
+                processError(eventId, params, deviceId, e.getMessage());
             }
+              /*
+            eatonCloudEventLogService.sendShed(deviceName,
+                    guid,
+                    command.getDutyCyclePercentage(),
+                    command.getDutyCyclePeriod(),
+                    command.getCriticality());*/
         });
     }
 
+    private void processError(Integer eventId, Map<String, Object> params, Integer deviceId, String message) {
+        recentEventParticipationDao.updateDeviceControlEvent(eventId.toString(),
+                deviceId,
+                ControlEventDeviceStatus.FAILED, 
+                new Instant(),
+                message,
+                null);
+    }
+    
     private void sendRestoreCommands(Set<Integer> devices, LMEatonCloudStopCommand command, Integer eventId) {
         Map<String, Object> params = getRestoreParams(command, eventId);
         Map<Integer, String> guids = deviceDao.getGuids(devices);

@@ -14,7 +14,8 @@ public enum ControlEventDeviceStatus {
     UNKNOWN(0),
     SUCCESS_RECEIVED(1),
     SUCCESS_STARTED(2),
-    SUCCESS_COMPLETED(3);
+    SUCCESS_COMPLETED(3),
+    FAILED(4);
 
     private int messageOrder;
     
