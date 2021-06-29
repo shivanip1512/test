@@ -12,6 +12,7 @@ public enum PaoTypeIcon {
     GAS_METER("icon-gas-meter"),
     TRANSMITTER("icon-transmitter"),
     RFN_RELAY("icon-rfn-relay"),
+    RELAY_CELLULAR("icon-relay-cellular"),
     LCR("icon-lcr"),
     THERMOSTAT("icon-thermostat"),
     ;
