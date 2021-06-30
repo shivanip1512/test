@@ -408,11 +408,11 @@
       <sequence name="SmartNotificationEvent">
         <table name="SmartNotificationEvent" identitycolumn="EventId" initsequence="true"/>
       </sequence>
-      <sequence name="SmartNotificationEmailHistory">
-        <table name="SmartNotificationEmailHistory" identitycolumn="HistoryId" initsequence="true"/>
+      <sequence name="SmartNotifEmailHistory">
+        <table name="SmartNotifEmailHistory" identitycolumn="HistoryId" initsequence="true"/>
       </sequence>
-       <sequence name="SmartNotificationEventHistory">
-        <table name="SmartNotificationEventHistory" identitycolumn="EventHistoryId" initsequence="true"/>
+       <sequence name="SmartNotifEventHistory">
+        <table name="SmartNotifEventHistory" identitycolumn="EventHistoryId" initsequence="true"/>
       </sequence>
       <sequence name="CollectionAction">
         <table name="CollectionAction" identitycolumn="CollectionActionId" initsequence="true"/>
@@ -457,11 +457,11 @@
       <sequence name="ControlEvent">
         <table name="ControlEvent" identitycolumn="ControlEventId" initsequence="true"/>
       </sequence>
-      <sequence name="PxMWSimulatorNameIncrementor">
-        <table name="PxMWSimulatorNameIncrementor" identitycolumn="requestSeqNumber"/>
+      <sequence name="EatonCloudSimulatorNameIncrementor">
+        <table name="EatonCloudSimulatorNameIncrementor" identitycolumn="requestSeqNumber"/>
       </sequence>
-      <sequence name="PxMWEventIdIncrementor">
-        <table name="PxMWEventIdIncrementor" identitycolumn="requestSeqNumber"/>
+      <sequence name="EatonCloudEventIdIncrementor">
+        <table name="EatonCloudEventIdIncrementor" identitycolumn="requestSeqNumber"/>
       </sequence>
   </sequencetable>
 </sequencetables>

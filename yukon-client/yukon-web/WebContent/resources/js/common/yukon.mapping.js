@@ -116,6 +116,12 @@ yukon.mapping = (function () {
                 scale: _relayScale, 
                 anchor: _anchor }), 
             zIndex: _relayZIndex }),
+        'RELAY_CELLULAR': new ol.style.Style({
+            image: new ol.style.Icon({
+                src: yukon.url('/WebConfig/yukon/Icons/marker-relay-cell-grey.png'),
+                scale: _relayScale,
+                anchor: _anchor }),
+            zIndex: _relayZIndex }),
         'LCR' : new ol.style.Style({ 
             image: new ol.style.Icon({ 
                 src: yukon.url('/WebConfig/yukon/Icons/marker-lcr-grey.png'), 

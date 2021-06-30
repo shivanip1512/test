@@ -30,7 +30,8 @@ bool EcobeePlusGear::attemptControl( CtiLMGroupPtr currentLMGroup,
 
         expectedLoadReduced += ( currentLMGroup->getKWCapacity() * loadScalar );
 
-        return controllableGroup->sendEcobeePlusControl( controlSeconds,
+        return controllableGroup->sendEcobeePlusControl( getProgramPAOId(),
+                                                         controlSeconds,
                                                          isHeatControl(), 
                                                          getMethodRate() );
         return true;

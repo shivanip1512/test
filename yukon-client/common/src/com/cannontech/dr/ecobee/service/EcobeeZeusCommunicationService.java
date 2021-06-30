@@ -28,14 +28,14 @@ public interface EcobeeZeusCommunicationService {
     void deleteGroup(String zeusGroupId);
 
     /**
-     * Enroll the specified device to the specified group.
+     * Enroll the specified device to the specified group and Program.
      */
-    void enroll(int lmGroupId, String serialNumber, int inventoryId);
+    void enroll(int lmGroupId, String serialNumber, int inventoryId, int programId, boolean updateDeviceMapping);
 
     /**
      * Unenroll the specified device from the specified groups.
      */
-    void unEnroll(Set<Integer> lmGroupIds, String serialNumber, int inventoryId);
+    void unEnroll(Set<Integer> lmGroupIds, String serialNumber, int inventoryId, boolean updateDeviceMapping);
 
     
     /**

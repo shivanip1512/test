@@ -7,27 +7,27 @@ import com.cannontech.dr.ecobee.model.EcobeeZeusDiscrepancyType;
  */
 public class EcobeeZeusExtraneousDeviceDiscrepancy extends EcobeeZeusDiscrepancy {
     private final String serialNumber;
-    private final String currentPath;
-    
-    public EcobeeZeusExtraneousDeviceDiscrepancy(String serialNumber, String currentPath) {
+    private final String group;
+
+    public EcobeeZeusExtraneousDeviceDiscrepancy(String serialNumber, String group) {
         super(EcobeeZeusDiscrepancyType.EXTRANEOUS_DEVICE);
         this.serialNumber = serialNumber;
-        this.currentPath = currentPath;
+        this.group = group;
     }
-    
-    public EcobeeZeusExtraneousDeviceDiscrepancy(int errorId, String serialNumber, String currentPath) {
+
+    public EcobeeZeusExtraneousDeviceDiscrepancy(int errorId, String serialNumber, String group) {
         super(errorId, EcobeeZeusDiscrepancyType.EXTRANEOUS_DEVICE);
         this.serialNumber = serialNumber;
-        this.currentPath = currentPath;
+        this.group = group;
     }
-    
+
     @Override
     public String getSerialNumber() {
         return serialNumber;
     }
-    
-    @Override
-    public String getCurrentPath() {
-        return currentPath;
+
+    public String getGroup() {
+        return group;
     }
+
 }

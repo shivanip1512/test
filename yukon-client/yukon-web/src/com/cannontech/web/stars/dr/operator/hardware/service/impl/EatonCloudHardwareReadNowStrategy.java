@@ -14,9 +14,9 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.Range;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.dr.pxmw.model.PxMWException;
-import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
+import com.cannontech.dr.eatonCloud.model.EatonCloudException;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
+import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareReadNowStrategy;
@@ -28,7 +28,7 @@ public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrateg
     private static final Logger log = YukonLogManager.getLogger(EatonCloudHardwareReadNowStrategy.class);
     private static final String keyBase = "yukon.web.modules.operator.hardware.";
 
-    @Autowired private PxMWDataReadService readService;
+    @Autowired private EatonCloudDataReadService readService;
     @Autowired private IDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -48,7 +48,7 @@ public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrateg
             readService.collectDataForRead(deviceIds, range);
             json.put("success", true);
             json.put("message", accessor.getMessage(keyBase + "readNowSuccess"));
-        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+        } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
             log.debug("Read now failed for " + device);
             json.put("success", false);
             json.put("message", accessor.getMessage(keyBase + "error.readNowFailed", e.getMessage()));

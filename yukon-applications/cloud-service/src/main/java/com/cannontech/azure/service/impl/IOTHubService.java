@@ -103,7 +103,7 @@ public class IOTHubService extends AzureCloudService {
     }
 
     private void prepareAndPushData() throws IllegalArgumentException, UnsupportedOperationException, IOException {
-        ConcurrentHashMap<String, String> telemetryData = new ConcurrentHashMap<String, String>();
+        ConcurrentHashMap<String, Object> telemetryData = new ConcurrentHashMap<>();
 
         // Prepare telemetry data.
         prepareData(telemetryData);
@@ -112,12 +112,12 @@ public class IOTHubService extends AzureCloudService {
         pushTelemetryData(telemetryData);
     }
 
-    private void prepareData(Map<String, String> telemetryData) {
+    private void prepareData(Map<String, Object> telemetryData) {
         Map<String, SystemData> data = dataProviderService.getSystemInformation();
         for (Map.Entry<String, SystemData> entry : data.entrySet()) {
             IOTDataType dataType = entry.getValue().getIotDataType();
             String fieldName = entry.getValue().getFieldName();
-            String fieldValue = entry.getValue().getFieldValue();
+            Object fieldValue = entry.getValue().getFieldValue();
             if (dataType == IOTDataType.TELEMETRY) {
                 telemetryData.put(fieldName, fieldValue);
             }
@@ -127,7 +127,7 @@ public class IOTHubService extends AzureCloudService {
     /**
      * Build and push telemetry data in json format.
      */
-    private void pushTelemetryData(Map<String, String> telemetryData) {
+    private void pushTelemetryData(Map<String, Object> telemetryData) {
         Gson gson = new Gson();
         Message message = new Message(gson.toJson(telemetryData));
         message.setContentEncoding("utf-8");

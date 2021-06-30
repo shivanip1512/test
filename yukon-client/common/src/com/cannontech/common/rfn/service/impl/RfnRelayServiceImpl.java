@@ -33,9 +33,9 @@ public class RfnRelayServiceImpl implements RfnRelayService {
     }
     
     @Override
-    public Set<RfnRelay> searchRelays(RfnDeviceSearchCriteria criteria) {
+    public Set<RfnRelay> searchRelays(RfnDeviceSearchCriteria criteria, List<PaoType> relayTypes) {
         
-        List<RfnDevice> devices = rfnDeviceDao.searchDevicesByPaoTypes(PaoType.getRfRelayTypes(), criteria);
+        List<RfnDevice> devices = rfnDeviceDao.searchDevicesByPaoTypes(relayTypes, criteria);
         Set<RfnRelay> relays = getRelaysFromDevices(devices);
         
         return relays;

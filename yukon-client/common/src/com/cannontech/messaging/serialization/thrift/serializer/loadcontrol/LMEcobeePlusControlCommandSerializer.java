@@ -19,20 +19,23 @@ public class LMEcobeePlusControlCommandSerializer extends SimpleThriftSerializer
 
         deserialize(msgBytes, entity);
 
+        int programId = entity.get_programId();
         int groupId = entity.get_groupId();
         Instant startTime = new Instant(entity.get_controlStartDateTime() * 1000);
         Instant endTime = new Instant(entity.get_controlEndDateTime() * 1000);
         boolean heatingEvent = entity.get_temperatureOption() == LMEcobeeTemperatureTypes.HEAT;
         int randomTimeSeconds = entity.get_randomTimeSeconds();
 
-        log.trace("Parsed eco+ dr parameters. GroupId: {} Start time: {} End time: {} Heat: {} Random Time Seconds: {}",
-                  groupId,
-                  startTime,
-                  endTime,
-                  heatingEvent,
-                  randomTimeSeconds);
+        log.trace(
+                "Parsed eco+ dr parameters. GroupId: {} ProgramId: {} Start time: {} End time: {} Heat: {} Random Time Seconds: {}",
+                groupId,
+                programId,
+                startTime,
+                endTime,
+                heatingEvent,
+                randomTimeSeconds);
 
-        return new EcobeePlusDrParameters(groupId, startTime, endTime, randomTimeSeconds, heatingEvent);
+        return new EcobeePlusDrParameters(programId, groupId, startTime, endTime, randomTimeSeconds, heatingEvent);
     }
 
 }

@@ -92,11 +92,145 @@ INSERT INTO State VALUES(-33, 1, 'On', 0, 6, 0);
 INSERT INTO DBUpdates VALUES ('YUK-24286', '9.1.0', GETDATE());
 /* @end YUK-24286 */
 
+/* @start YUK-23668 */
+INSERT INTO PortTiming (PORTID, PRETXWAIT, RTSTOTXWAIT, POSTTXWAIT, RECEIVEDATAWAIT, EXTRATIMEOUT, PostCommWait)
+SELECT PAObjectID, 0, 0, 0, 0, 0, 0 
+FROM YukonPAObject
+WHERE Type = 'RFN-1200';
+
+INSERT INTO DBUpdates VALUES ('YUK-23668', '9.1.0', GETDATE());
+/* @end YUK-23668 */
+
 /* @start YUK-24557 */
 DELETE FROM Job WHERE BeanName = 'ecobeePointUpdateJobDefinition';
 
 INSERT INTO DBUpdates VALUES ('YUK-24557', '9.1.0', GETDATE());
 /* @end YUK-24557 */
+
+/* @start YUK-24031 */
+INSERT INTO DeviceConfigCategoryItem
+SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryID) 
+           + (SELECT ISNULL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+       DeviceConfigCategoryID,
+       'minTapPosition',
+       '-16'
+FROM DeviceConfigCategory 
+WHERE CategoryType = 'regulatorCategory';
+
+INSERT INTO DeviceConfigCategoryItem
+SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryID) 
+           + (SELECT ISNULL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+       DeviceConfigCategoryID,
+       'maxTapPosition',
+       '16'
+FROM DeviceConfigCategory 
+WHERE CategoryType = 'regulatorCategory';
+
+INSERT INTO DBUpdates VALUES ('YUK-24031', '9.1.0', GETDATE());
+/* @end YUK-24031 */
+
+/* @start YUK-24437 */
+CREATE TABLE SmartNotifEmailHistory (
+   HistoryId            NUMERIC              NOT NULL,
+   EventType            VARCHAR(50)          NOT NULL,
+   Verbosity            VARCHAR(20)          NOT NULL,
+   Media                VARCHAR(20)          NOT NULL,
+   ProcessingType       VARCHAR(20)          NOT NULL,
+   IntervalMinutes      NUMERIC              NOT NULL,
+   TotalEvents          NUMERIC              NOT NULL,
+   SendTime             DATETIME             NOT NULL,
+   CONSTRAINT PK_SmartNotificationEmailHistory PRIMARY KEY (HistoryId)
+);
+GO
+
+CREATE INDEX INDX_SmartNotifEmailHistory_EventType ON SmartNotifEmailHistory (
+EventType ASC
+);
+GO
+
+CREATE INDEX INDX_SmartNotifEmailHistory_SendTime ON SmartNotifEmailHistory (
+SendTime ASC
+);
+GO
+
+CREATE TABLE SmartNotifEventHistory (
+   EventHistoryId       NUMERIC              NOT NULL,
+   HistoryId            NUMERIC              NOT NULL,
+   CONSTRAINT PK_SmartNotificationEventHistory PRIMARY KEY (EventHistoryId)
+);
+GO
+
+CREATE TABLE SmartNotifEventParamHistory (
+   EventHistoryId       NUMERIC              NOT NULL,
+   Name                 VARCHAR(30)          NOT NULL,
+   Value                VARCHAR(500)         NOT NULL,
+   CONSTRAINT PK_SmartNotificationEventParamHistory PRIMARY KEY (EventHistoryId, Name, Value)
+);
+GO
+
+CREATE TABLE SmartNotifRecipientHistory (
+   HistoryId            NUMERIC              NOT NULL,
+   Recipient            VARCHAR(254)         NOT NULL,
+   CONSTRAINT PK_SmartNotificationRecipientHistory PRIMARY KEY (HistoryId, Recipient)
+);
+GO
+
+CREATE INDEX INDX_SmartNotifRecipientHistory_Recipient ON SmartNotifRecipientHistory (
+Recipient ASC
+);
+GO
+
+ALTER TABLE SmartNotifEventHistory
+   ADD CONSTRAINT FK_SmrtNotifEventHist_SmrtNotifEmailHist FOREIGN KEY (HistoryId)
+      REFERENCES SmartNotifEmailHistory (HistoryId)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE SmartNotifEventParamHistory
+   ADD CONSTRAINT FK_SmrtNotifEvntPHist_SmrtNotifEmailHist FOREIGN KEY (EventHistoryId)
+      REFERENCES SmartNotifEventHistory (EventHistoryId)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE SmartNotifRecipientHistory
+   ADD CONSTRAINT FK_SmrtNotifRecipHist_SmrtNotifEmailHist FOREIGN KEY (HistoryId)
+      REFERENCES SmartNotifEmailHistory (HistoryId)
+         ON DELETE CASCADE;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-24437', '9.1.0', GETDATE());
+/* @end YUK-24437 */
+
+/* @start YUK-24460 */
+CREATE TABLE YukonLogging (
+   LoggerName           VARCHAR(200)         NOT NULL,
+   LoggerLevel          VARCHAR(5)           NOT NULL,
+   ExpirationDate       DATETIME             NULL,
+   Notes                VARCHAR(300)         NULL,
+   CONSTRAINT PK_YUKONLOGGING PRIMARY KEY (LoggerName)
+)
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-24460', '9.1.0', GETDATE());
+/* @end YUK-24460 */
+
+/* @start YUK-24529 */
+ALTER TABLE LMGroupZeusMapping ADD ProgramId NUMERIC;
+GO
+UPDATE LMGroupZeusMapping SET ProgramId = -1;
+INSERT INTO DBUpdates VALUES ('YUK-24529', '9.1.0', GETDATE());
+/* @end YUK-24529 */
+
+/* @start YUK-24593 */
+ALTER TABLE ControlEventDevice
+ADD FailReason VARCHAR(100) NULL;
+GO
+
+ALTER TABLE ControlEventDevice
+ADD RetryTime DATETIME NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-24593', '9.1.0', GETDATE());
+/* @end YUK-24593 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

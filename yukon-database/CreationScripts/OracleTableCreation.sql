@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/14/2021 3:17:41 PM                         */
+/* Created on:     6/29/2021 8:26:26 AM                         */
 /*==============================================================*/
 
 
@@ -2022,6 +2022,8 @@ create table ControlEventDevice  (
    OptOutEventId        NUMBER,
    Result               VARCHAR2(30)                    not null,
    DeviceReceivedTime   DATE,
+   FailReason           VARCHAR2(100),
+   RetryTime            DATE,
    constraint PK_ControlEventDevice primary key (DeviceId, ControlEventId)
 );
 
@@ -3030,15 +3032,17 @@ INSERT INTO DeviceConfigCategoryItem VALUES (3, 0, 'timeOffset', 'UTC');
 INSERT INTO DeviceConfigCategoryItem VALUES (4, 0, 'enableUnsolicitedMessagesClass1', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (5, 0, 'enableUnsolicitedMessagesClass2', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (6, 0, 'enableUnsolicitedMessagesClass3', 'true');
-INSERT INTO DeviceConfigCategoryItem VALUES (7, 1, 'voltageChangePerTap', '0.75');
-INSERT INTO DeviceConfigCategoryItem VALUES (8, 1, 'voltageControlMode', 'DIRECT_TAP');
-INSERT INTO DeviceConfigCategoryItem VALUES (9, 1, 'installOrientation', 'FORWARD');
-INSERT INTO DeviceConfigCategoryItem VALUES (10, 2, 'regulatorHeartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (11, 2, 'regulatorHeartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (12, 2, 'regulatorHeartbeatMode', 'NONE');
-INSERT INTO DeviceConfigCategoryItem VALUES (13, 3, 'cbcHeartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (14, 3, 'cbcHeartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (15, 3, 'cbcHeartbeatMode', 'DISABLED');
+INSERT INTO DeviceConfigCategoryItem VALUES (7, 1, 'minTapPosition', '-16');
+INSERT INTO DeviceConfigCategoryItem VALUES (8, 1, 'maxTapPosition', '16');
+INSERT INTO DeviceConfigCategoryItem VALUES (9, 1, 'voltageChangePerTap', '0.75');
+INSERT INTO DeviceConfigCategoryItem VALUES (10, 1, 'voltageControlMode', 'DIRECT_TAP');
+INSERT INTO DeviceConfigCategoryItem VALUES (11, 1, 'installOrientation', 'FORWARD');
+INSERT INTO DeviceConfigCategoryItem VALUES (12, 2, 'regulatorHeartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (13, 2, 'regulatorHeartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (14, 2, 'regulatorHeartbeatMode', 'NONE');
+INSERT INTO DeviceConfigCategoryItem VALUES (15, 3, 'cbcHeartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (16, 3, 'cbcHeartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (17, 3, 'cbcHeartbeatMode', 'DISABLED');
 
 alter table DeviceConfigCategoryItem
    add constraint AK_DevConCatItem_CatIdItemName unique (DeviceConfigCategoryId, ItemName);
@@ -6755,6 +6759,7 @@ create table LMGroupZeusMapping  (
    EcobeeGroupId        VARCHAR2(32)                    not null,
    EcobeeEventId        VARCHAR2(50),
    EcobeeGroupName      VARCHAR2(255),
+   ProgramId            NUMBER                          not null,
    constraint PK_LMGROUPZEUSMAPPING primary key (YukonGroupId, EcobeeGroupId)
 );
 
@@ -8657,6 +8662,70 @@ create table SiteInformation  (
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 
 /*==============================================================*/
+/* Table: SmartNotifEmailHistory                                */
+/*==============================================================*/
+create table SmartNotifEmailHistory  (
+   HistoryId            NUMBER                          not null,
+   EventType            VARCHAR2(50)                    not null,
+   Verbosity            VARCHAR2(20)                    not null,
+   Media                VARCHAR2(20)                    not null,
+   ProcessingType       VARCHAR2(20)                    not null,
+   IntervalMinutes      NUMBER                          not null,
+   TotalEvents          NUMBER                          not null,
+   SendTime             DATE                            not null,
+   constraint PK_SmartNotificationEmailHistory primary key (HistoryId)
+);
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifEmailHistory_EventType                 */
+/*==============================================================*/
+create index INDX_SmartNotifEmailHistory_EventType on SmartNotifEmailHistory (
+   EventType ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifEmailHistory_SendTime                  */
+/*==============================================================*/
+create index INDX_SmartNotifEmailHistory_SendTime on SmartNotifEmailHistory (
+   SendTime ASC
+);
+
+/*==============================================================*/
+/* Table: SmartNotifEventHistory                                */
+/*==============================================================*/
+create table SmartNotifEventHistory  (
+   EventHistoryId       NUMBER                          not null,
+   HistoryId            NUMBER                          not null,
+   constraint PK_SmartNotificationEventHistory primary key (EventHistoryId)
+);
+
+/*==============================================================*/
+/* Table: SmartNotifEventParamHistory                           */
+/*==============================================================*/
+create table SmartNotifEventParamHistory  (
+   EventHistoryId       NUMBER                          not null,
+   Name                 VARCHAR2(30)                    not null,
+   Value                VARCHAR2(500)                   not null,
+   constraint PK_SmartNotificationEventParamHistory primary key (EventHistoryId, Name, Value)
+);
+
+/*==============================================================*/
+/* Table: SmartNotifRecipientHistory                            */
+/*==============================================================*/
+create table SmartNotifRecipientHistory  (
+   HistoryId            NUMBER                          not null,
+   Recipient            VARCHAR2(254)                   not null,
+   constraint PK_SmartNotificationRecipientHistory primary key (HistoryId, Recipient)
+);
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifRecipientHistory_Recipient             */
+/*==============================================================*/
+create index INDX_SmartNotifRecipientHistory_Recipient on SmartNotifRecipientHistory (
+   Recipient ASC
+);
+
+/*==============================================================*/
 /* Table: SmartNotificationEvent                                */
 /*==============================================================*/
 create table SmartNotificationEvent  (
@@ -10290,6 +10359,17 @@ insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 /*==============================================================*/
 create index Indx_YkLstDefID on YukonListEntry (
    YukonDefinitionID ASC
+);
+
+/*==============================================================*/
+/* Table: YukonLogging                                          */
+/*==============================================================*/
+create table YukonLogging  (
+   LoggerName           VARCHAR2(200)                   not null,
+   LoggerLevel          VARCHAR2(5)                     not null,
+   ExpirationDate       DATE,
+   Notes                VARCHAR2(300),
+   constraint PK_YUKONLOGGING primary key (LoggerName)
 );
 
 /*==============================================================*/
@@ -13927,6 +14007,21 @@ alter table Shipment
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID);
+
+alter table SmartNotifEventHistory
+   add constraint FK_SmrtNotifEventHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotifEmailHistory (HistoryId)
+      on delete cascade;
+
+alter table SmartNotifEventParamHistory
+   add constraint FK_SmrtNotifEvntPHist_SmrtNotifEmailHist foreign key (EventHistoryId)
+      references SmartNotifEventHistory (EventHistoryId)
+      on delete cascade;
+
+alter table SmartNotifRecipientHistory
+   add constraint FK_SmrtNotifRecipHist_SmrtNotifEmailHist foreign key (HistoryId)
+      references SmartNotifEmailHistory (HistoryId)
+      on delete cascade;
 
 alter table SmartNotificationEventParam
    add constraint FK_SmartNotifEP_SmartNotifE foreign key (EventId)

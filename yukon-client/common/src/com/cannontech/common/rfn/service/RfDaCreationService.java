@@ -4,6 +4,7 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.Rfn1200Detail;
 import com.cannontech.common.rfn.model.RfnDevice;
 
 public interface RfDaCreationService {
@@ -20,5 +21,10 @@ public interface RfDaCreationService {
     
     @ManagedAttribute
     public int getNewDeviceCreated();
+
+    Rfn1200Detail create(Rfn1200Detail detail);
     
+    Rfn1200Detail update(Rfn1200Detail detail);
+
+    Rfn1200Detail retrieve(int id);
 }

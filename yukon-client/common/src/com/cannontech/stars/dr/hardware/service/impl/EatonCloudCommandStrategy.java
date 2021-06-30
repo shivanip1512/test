@@ -18,8 +18,8 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.eatonCloud.EatonCloudMessageListener.CommandParam;
-import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
-import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
+import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -40,7 +40,7 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudCommandStrategy.class);
     @Autowired private DeviceDao deviceDao;
     @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
-    @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
+    @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private OptOutEventDao optOutEventDao;
@@ -79,7 +79,7 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
     private void sendRequest(LmHardwareCommand command, Map<String, Object> params) throws CommandCompletionException {
         String deviceGuid = deviceDao.getGuid(command.getDevice().getDeviceID());
         try {
-            pxMWCommunicationService.sendCommand(deviceGuid, new PxMWCommandRequestV1("LCR_Control", params));
+            eatonCloudCommunicationService.sendCommand(deviceGuid, new EatonCloudCommandRequestV1("LCR_Control", params));
         } catch (Exception e) {
             log.error("Error Sending Command : {} ", command, e);
             throw new CommandCompletionException("Error sending Command to device. See logs for details.", e);
@@ -102,7 +102,7 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
 
     private Map<String, Object> getShedParams(LmHardwareCommand command) {
         Map<String, Object> params = new LinkedHashMap<>();
-        Integer eventId = nextValueHelper.getNextValue("PxMWEventIdIncrementor");
+        Integer eventId = nextValueHelper.getNextValue("EatonCloudEventIdIncrementor");
         Integer relay = (Integer) command.getParams().get(LmHardwareCommandParam.RELAY);
         Duration duration = (Duration) command.getParams().get(LmHardwareCommandParam.DURATION);
         params.put(CommandParam.VRELAY.getParamName(), relay);

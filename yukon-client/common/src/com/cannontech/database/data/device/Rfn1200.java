@@ -33,10 +33,17 @@ public class Rfn1200 extends RfnBase {
     }
     
     @Override
+    public void update() throws SQLException {
+        super.update();
+        getTiming().update();
+    }
+
+    @Override
     public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
         getDevice().setDbConnection(conn);
         getTiming().setDbConnection(conn);
+        getCommPort().setDbConnection(conn);
     }
     
     @Override

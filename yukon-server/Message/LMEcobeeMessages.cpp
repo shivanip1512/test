@@ -9,13 +9,15 @@ namespace Cti            {
 namespace Messaging      {
 namespace LoadManagement {
 
-LMEcobeeCyclingControlMessage::LMEcobeeCyclingControlMessage( int  groupId,
+LMEcobeeCyclingControlMessage::LMEcobeeCyclingControlMessage( int  programId,
+                                                              int  groupId,
                                                               int  dutyCycle,
                                                               long long  startTime,
                                                               int  controlDuration,
                                                               bool mandatory,
                                                               bool rampInOut )
-    :   _groupId( groupId ),
+    :   _programId( programId ),
+        _groupId( groupId ),
         _dutyCycle( dutyCycle ),
         _startTime( startTime ),
         _stopTime( startTime + controlDuration ),
@@ -28,13 +30,15 @@ LMEcobeeCyclingControlMessage::LMEcobeeCyclingControlMessage( int  groupId,
 
 ///
 
-LMEcobeeSetpointControlMessage::LMEcobeeSetpointControlMessage( int  groupId,
+LMEcobeeSetpointControlMessage::LMEcobeeSetpointControlMessage( int  programId,
+                                                                int  groupId,
                                                                 long long startTime,
                                                                 int  controlDuration,
                                                                 TempOptionTypes temperatureOption,
                                                                 bool mandatory,
                                                                 int  temperatureOffset )
-    :   _groupId( groupId ),
+    :   _programId(programId),
+        _groupId( groupId ),
         _startTime( startTime ),
         _stopTime( startTime + controlDuration ),
         _temperatureOption( temperatureOption ),
@@ -46,13 +50,15 @@ LMEcobeeSetpointControlMessage::LMEcobeeSetpointControlMessage( int  groupId,
 
 ///
 
-LMEcobeePlusControlMessage::LMEcobeePlusControlMessage( int groupId,
+LMEcobeePlusControlMessage::LMEcobeePlusControlMessage( int programId,
+                                                        int groupId,
                                                         long long startTime,
                                                         int controlDuration,    
                                                         TempOptionTypes temperatureOption,
                                                         int randomTimeSeconds )
 
-    :   _groupId( groupId ),
+    :   _programId(programId),
+        _groupId( groupId ),
         _startTime( startTime ),
         _stopTime( startTime + controlDuration ),
         _temperatureOption( temperatureOption ),       

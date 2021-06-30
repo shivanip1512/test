@@ -6,7 +6,7 @@
     </pointFiles>
     <tags>
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
-        <tag name="DEVICE_ICON_TYPE" option="rfn_relay"/>
+        <tag name="DEVICE_ICON_TYPE" option="relay_cellular"/>
         <tag name="OUTAGE"/>
         <tag name="RELAY_DETAIL_DISPLAYABLE"/>
         <tag name="RFN_EVENTS"/>
