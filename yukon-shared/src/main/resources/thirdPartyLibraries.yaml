@@ -6060,10 +6060,10 @@ Icons :
     project URL : "http://www.famfamfam.com/lab/icons/silk/"
     license : Creative Commons Attribution 2.5
     license URLs : "https://creativecommons.org/licenses/by/2.5/"
-    md5 : 979694606c9fbabf75ce48c4cf4a19b3
-    sha1 : 5e53fdb51ac6e8def92ba334eec67b9e0fdc554c
-    updated : 2021-01-21
-    jira : YUK-23527
+    md5 : 7cf6875e4d551e98d8d0d8146ef03362
+    sha1 : a25eedb534d922e0ca6d891ceb41e45b0c45c499
+    updated : 2021-06-28
+    jira : YUK-24104
     notes : Custom built sprite assembled from the individual icons
     
   - path : icons-disabled.png
@@ -6072,10 +6072,10 @@ Icons :
     project URL : "http://www.famfamfam.com/lab/icons/silk/"
     license : Creative Commons Attribution 2.5
     license URLs : "https://creativecommons.org/licenses/by/2.5/"
-    md5 : 5f81b5586c3ddf257eca7ea4f97aa876
-    sha1 : 1447bc1ae9ed67b6d45d7da744fff2f4bee2d05c
-    updated : 2021-01-21
-    jira : YUK-23527
+    md5 : 8422f6c47d861d2225f557ece39f5ea1
+    sha1 : 6d9cfcdb284860ec6b03b9ac1030d95a3caa34b5
+    updated : 2021-06-28
+    jira : YUK-24104
     notes : Custom built sprite assembled from the individual icons
     
   - path : icons-app-32.png

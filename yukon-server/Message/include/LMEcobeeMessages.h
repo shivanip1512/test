@@ -11,13 +11,15 @@ namespace LoadManagement {
 struct IM_EX_MSG LMEcobeeCyclingControlMessage
 {
 
-    LMEcobeeCyclingControlMessage( int  groupId,
+    LMEcobeeCyclingControlMessage( int  programId,
+                                   int  groupId,
                                    int  dutyCycle,
                                    long long startTime,
                                    int  controlDuration,
                                    bool mandatory,
                                    bool rampInOut);
 
+    int  _programId;
     int  _groupId;
     char _dutyCycle;
     long long  _startTime;
@@ -39,7 +41,8 @@ enum class TempOptionTypes
 struct IM_EX_MSG LMEcobeeSetpointControlMessage 
 {
 
-    LMEcobeeSetpointControlMessage( int  groupId,
+    LMEcobeeSetpointControlMessage( int  programId,
+                                    int  groupId,
                                     long long startTime,
                                     int  controlDuration,
                                     TempOptionTypes temperatureOption,
@@ -47,6 +50,7 @@ struct IM_EX_MSG LMEcobeeSetpointControlMessage
                                     int  temperatureOffset );
 
 
+    int  _programId;
     int  _groupId;
     TempOptionTypes _temperatureOption;
     char _mandatory;
@@ -60,12 +64,14 @@ struct IM_EX_MSG LMEcobeeSetpointControlMessage
 struct IM_EX_MSG LMEcobeePlusControlMessage 
   
 {
-    LMEcobeePlusControlMessage( int groupId,
+    LMEcobeePlusControlMessage( int programId,
+                                int groupId,
                                 long long startTime,
                                 int controlDuration,            
                                 TempOptionTypes temperatureOption,
                                 int randomTimeSeconds );
 
+    int _programId;
     int _groupId;
     long long _startTime;
     long long _stopTime;

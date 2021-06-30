@@ -1114,6 +1114,8 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-virtual-device { background-position: -375px -416px; }
 .icon-virtual-meter { background-position: -392px -416px; }
 .icon-virtual-gateway { background-position: -410px -416px; }
+.icon-rfn-relay { background-position: -426px -416px; }
+.icon-relay-cellular { background-position: -442px -416px; }
 
 /* 32 pixel icons */
 .icon-32-blank  { background-position: 32px 32px; }
@@ -1328,7 +1330,6 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-arrow-down-orange-animated { background-image: url(../Icons/arrow_down_orange_anim.gif); }
 .icon-arrow-up-green-animated { background-image: url(../Icons/arrow_up_green_anim.gif); }
 .icon-arrow-up-orange-animated { background-image: url(../Icons/arrow_up_orange_anim.gif); }
-.icon-rfn-relay { background-image: url(../Icons/relay.png); }
 .icon-spinner { background-image: url(../Icons/spinner.gif); }
 .icon-spinner-white { background-image: url(../Icons/spinner-white.gif); }
 .icon-loading-bars { background-image: url(../../../resources/images/icons/loading.bars.gif); }

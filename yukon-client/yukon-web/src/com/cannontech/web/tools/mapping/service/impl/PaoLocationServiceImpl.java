@@ -57,9 +57,8 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         for (PaoType type : PaoType.getGasMeterTypes()) {
             icons.put(type, Icon.METER_GAS);
         }
-        for (PaoType type : PaoType.getRfRelayTypes()) {
-            icons.put(type,  Icon.RELAY);
-        }
+        icons.put(PaoType.RFN_RELAY, Icon.RELAY);
+        icons.put(PaoType.CRLY856, Icon.RELAY_CELLULAR);
         for (PaoType type : PaoType.getRfLcrTypes()) {
             icons.put(type,  Icon.LCR);
         }
