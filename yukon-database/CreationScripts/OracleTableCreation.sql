@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/28/2021 1:08:59 AM                         */
+/* Created on:     6/29/2021 8:26:26 AM                         */
 /*==============================================================*/
 
 
@@ -2022,6 +2022,8 @@ create table ControlEventDevice  (
    OptOutEventId        NUMBER,
    Result               VARCHAR2(30)                    not null,
    DeviceReceivedTime   DATE,
+   FailReason           VARCHAR2(100),
+   RetryTime            DATE,
    constraint PK_ControlEventDevice primary key (DeviceId, ControlEventId)
 );
 
