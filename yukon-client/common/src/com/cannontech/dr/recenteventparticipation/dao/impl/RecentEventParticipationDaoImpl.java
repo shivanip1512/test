@@ -211,7 +211,6 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("    ) outertable ");
         sql.append("WHERE RowNumber BETWEEN").append(pagingParameters.getOneBasedStartIndex());
         sql.append("  AND").append(pagingParameters.getOneBasedEndIndex());
-        System.out.println(sql.getDebugSql());
         List<RecentEventParticipationStats> recentEventParticipationStats = jdbcTemplate.query(sql, recentEventParticipationStatsRowMapper);
         return recentEventParticipationStats;
     }

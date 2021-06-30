@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -138,21 +139,21 @@ public class EatonCloudMessageListener {
                 log.error("Error sending command device id:{} params:{}", deviceId, params, e);
                 processError(eventId, params, deviceId, e.getMessage());
             }
-              /*
+  
             eatonCloudEventLogService.sendShed(deviceName,
                     guid,
                     command.getDutyCyclePercentage(),
                     command.getDutyCyclePeriod(),
-                    command.getCriticality());*/
+                    command.getCriticality());
         });
     }
 
     private void processError(Integer eventId, Map<String, Object> params, Integer deviceId, String message) {
         recentEventParticipationDao.updateDeviceControlEvent(eventId.toString(),
                 deviceId,
-                ControlEventDeviceStatus.FAILED, 
+                ControlEventDeviceStatus.FAILED,
                 new Instant(),
-                message,
+                StringUtils.isEmpty(message) ? null : message.substring(0, 100),
                 null);
     }
     
