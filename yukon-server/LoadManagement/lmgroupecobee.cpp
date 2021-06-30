@@ -32,7 +32,8 @@ CtiLMGroupBase* LMGroupEcobee::replicate() const
 }
 
 
-bool LMGroupEcobee::sendCycleControl( long dutyCycle,
+bool LMGroupEcobee::sendCycleControl( long programId,
+                                      long dutyCycle,
                                       long controlDurationSeconds,
                                       bool mandatory,
                                       bool rampInOutOption )
@@ -47,6 +48,7 @@ bool LMGroupEcobee::sendCycleControl( long dutyCycle,
     const auto serializedMessage =
         Serialization::MessageSerializer<LMEcobeeCyclingControlMessage>::serialize(
             {
+                programId,
                 getPAOId(),
                 dutyCycle,
                 localSeconds,
@@ -69,8 +71,11 @@ bool LMGroupEcobee::sendCycleControl( long dutyCycle,
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CTILOG_DEBUG(dout, "Sending ecobee Cycle command, LM Group: " << getPAOName() << ", control minutes: "
-             << ( controlDurationSeconds / 60 ) << ", percent: " << dutyCycle);
+        CTILOG_DEBUG( dout, "Sending ecobee Cycle command"
+                            ", LM Group: " << getPAOName() 
+                         << ", Program ID: " << programId 
+                         << ", control minutes: " << ( controlDurationSeconds / 60 ) 
+                         << ", percent: " << dutyCycle);
     }
 
     setLastControlSent( now );
@@ -90,7 +95,8 @@ bool LMGroupEcobee::sendCycleControl( long dutyCycle,
 }
 
 
-bool LMGroupEcobee::sendSetpointControl( long controlDurationSeconds,
+bool LMGroupEcobee::sendSetpointControl( long programId,
+                                         long controlDurationSeconds,
                                          bool temperatureOption,
                                          bool mandatory,
                                          long temperatureOffset )
@@ -105,6 +111,7 @@ bool LMGroupEcobee::sendSetpointControl( long controlDurationSeconds,
     const auto serializedMessage =
         Serialization::MessageSerializer<LMEcobeeSetpointControlMessage>::serialize(
             {
+                programId,
                 getPAOId(),
                 localSeconds,
                 controlDurationSeconds,  
@@ -128,9 +135,12 @@ bool LMGroupEcobee::sendSetpointControl( long controlDurationSeconds,
     
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CTILOG_DEBUG(dout, "Sending ecobee Setpoint command, LM Group: " << getPAOName() << ", control minutes: "
-             << ( controlDurationSeconds / 60 ) << ", control: " << ( temperatureOption ? "HEAT " : "COOL " )
-                     << temperatureOffset << " degrees" );
+        CTILOG_DEBUG( dout, "Sending ecobee Setpoint command"
+                            ", LM Group: " << getPAOName() 
+                         << ", Program ID: " << programId 
+                         << ", control minutes: " << ( controlDurationSeconds / 60 ) 
+                         << ", control: " << ( temperatureOption ? "HEAT" : "COOL" )
+                         << temperatureOffset << " degrees" );
     }
 
     setLastControlSent( now );
@@ -149,7 +159,8 @@ bool LMGroupEcobee::sendSetpointControl( long controlDurationSeconds,
     return true;
 }
 
-bool LMGroupEcobee::sendEcobeePlusControl( long controlDurationSeconds,
+bool LMGroupEcobee::sendEcobeePlusControl( long programId,
+                                           long controlDurationSeconds,
                                            bool temperatureOption,                                               
                                            long randomTimeSeconds )    
 {
@@ -163,6 +174,7 @@ bool LMGroupEcobee::sendEcobeePlusControl( long controlDurationSeconds,
     const auto serializedMessage =
         Serialization::MessageSerializer<LMEcobeePlusControlMessage>::serialize(
             {
+                programId,
                 getPAOId(),
                 localSeconds,
                 controlDurationSeconds,
@@ -185,8 +197,12 @@ bool LMGroupEcobee::sendEcobeePlusControl( long controlDurationSeconds,
     
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CTILOG_DEBUG(dout, "Sending ecobee Plus command, LM Group: " << getPAOName() << ", control minutes: "
-            << ( controlDurationSeconds / 60 ) << ", heating event: " << ( temperatureOption ? "HEAT " : "COOL " ) << ", random time: " << randomTimeSeconds );
+        CTILOG_DEBUG( dout, "Sending ecobee Plus command"
+                            ", LM Group: " << getPAOName() 
+                         << ", Program ID: " << programId 
+                         << ", control minutes: " << ( controlDurationSeconds / 60 ) 
+                         << ", heating event: " << ( temperatureOption ? "HEAT" : "COOL" ) 
+                         << ", random time: " << randomTimeSeconds );
     }
 
     setLastControlSent( now );
@@ -256,6 +272,7 @@ bool LMGroupEcobee::sendShedControl( long controlMinutes )
     const auto serializedMessage =
         Serialization::MessageSerializer<LMEcobeeCyclingControlMessage>::serialize(
             {
+                0,  // no program
                 getPAOId(),
                 100,
                 localSeconds,
@@ -278,7 +295,10 @@ bool LMGroupEcobee::sendShedControl( long controlMinutes )
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CTILOG_DEBUG(dout, "Sending ecobee Shed command, LM Group: " << getPAOName() << ", control minutes: " << controlMinutes);
+        CTILOG_DEBUG( dout, "Sending ecobee Shed command"
+                            ", LM Group: " << getPAOName()
+                         << ", control minutes: " << controlMinutes
+                         << ". This shed command was sent with no program ID." );
     }
 
     setLastControlSent( now );

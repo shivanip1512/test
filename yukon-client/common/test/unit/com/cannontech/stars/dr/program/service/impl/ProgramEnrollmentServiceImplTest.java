@@ -1,7 +1,7 @@
 package com.cannontech.stars.dr.program.service.impl;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +34,14 @@ public class ProgramEnrollmentServiceImplTest {
         originalEnrollments.add(enrollmentTwo);
         originalEnrollments.add(enrollmentThree);
         newRequests.add(enrollmentFour);
-        assertFalse(ReflectionTestUtils.invokeMethod(service, "isUnenrollment", originalEnrollments, newRequests, 4));
+        assertFalse((boolean)ReflectionTestUtils.invokeMethod(service, "isUnenrollment", originalEnrollments, newRequests, 4));
 
         // Config flow
         newRequests.add(enrollmentOne);
         newRequests.add(enrollmentTwo);
         newRequests.add(enrollmentThree);
         originalEnrollments.add(enrollmentFour);
-        assertFalse(ReflectionTestUtils.invokeMethod(service, "isUnenrollment", originalEnrollments, newRequests, 4));
+        assertFalse((boolean)ReflectionTestUtils.invokeMethod(service, "isUnenrollment", originalEnrollments, newRequests, 4));
 
         // Unenrollment flow 1
         newRequests.clear();
@@ -51,12 +51,12 @@ public class ProgramEnrollmentServiceImplTest {
         originalEnrollments.add(enrollmentThree);
         newRequests.add(enrollmentOne);
         newRequests.add(enrollmentTwo);
-        assertTrue(ReflectionTestUtils.invokeMethod(service, "isUnenrollment", originalEnrollments, newRequests, 3));
+        assertTrue((boolean)ReflectionTestUtils.invokeMethod(service, "isUnenrollment", originalEnrollments, newRequests, 3));
 
         // unenrollment flow 2 : Multiple program
         originalEnrollments.add(enrollmentThree);
         newRequests.add(enrollmentThree);
-        assertTrue(ReflectionTestUtils.invokeMethod(service, "isUnenrollment", originalEnrollments, newRequests, 3));
+        assertTrue((boolean)ReflectionTestUtils.invokeMethod(service, "isUnenrollment", originalEnrollments, newRequests, 3));
 
     }
 
