@@ -35,7 +35,8 @@ bool EcobeeCycleGear::attemptControl( CtiLMGroupPtr currentLMGroup,
         // Ecobee gears are repurposing the MethodObjectType column in LMProgramDirectGear for its "Mandatory" boolean
         const bool mandatory = ciStringEqual( getMethodOptionType(), "Mandatory" );
 
-        return controllableGroup->sendCycleControl( getMethodRate(), 
+        return controllableGroup->sendCycleControl( getProgramPAOId(),
+                                                    getMethodRate(), 
                                                     controlSeconds, 
                                                     mandatory, 
                                                     isRampInOut() );
