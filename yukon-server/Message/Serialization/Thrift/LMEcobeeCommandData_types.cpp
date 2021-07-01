@@ -47,6 +47,10 @@ LMEcobeeCycleControlCommand::~LMEcobeeCycleControlCommand() noexcept {
 }
 
 
+void LMEcobeeCycleControlCommand::__set__programId(const int32_t val) {
+  this->_programId = val;
+}
+
 void LMEcobeeCycleControlCommand::__set__groupId(const int32_t val) {
   this->_groupId = val;
 }
@@ -89,6 +93,7 @@ uint32_t LMEcobeeCycleControlCommand::read(::apache::thrift::protocol::TProtocol
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset__programId = false;
   bool isset__groupId = false;
   bool isset__dutyCycle = false;
   bool isset__controlStartDateTime = false;
@@ -106,13 +111,21 @@ uint32_t LMEcobeeCycleControlCommand::read(::apache::thrift::protocol::TProtocol
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->_programId);
+          isset__programId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->_groupId);
           isset__groupId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->_dutyCycle);
           isset__dutyCycle = true;
@@ -120,7 +133,7 @@ uint32_t LMEcobeeCycleControlCommand::read(::apache::thrift::protocol::TProtocol
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->_controlStartDateTime);
           isset__controlStartDateTime = true;
@@ -128,7 +141,7 @@ uint32_t LMEcobeeCycleControlCommand::read(::apache::thrift::protocol::TProtocol
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->_controlEndDateTime);
           isset__controlEndDateTime = true;
@@ -136,7 +149,7 @@ uint32_t LMEcobeeCycleControlCommand::read(::apache::thrift::protocol::TProtocol
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_BOOL) {
           xfer += iprot->readBool(this->_isMandatory);
           isset__isMandatory = true;
@@ -144,7 +157,7 @@ uint32_t LMEcobeeCycleControlCommand::read(::apache::thrift::protocol::TProtocol
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_BOOL) {
           xfer += iprot->readBool(this->_isRampInOut);
           isset__isRampInOut = true;
@@ -161,6 +174,8 @@ uint32_t LMEcobeeCycleControlCommand::read(::apache::thrift::protocol::TProtocol
 
   xfer += iprot->readStructEnd();
 
+  if (!isset__programId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__groupId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__dutyCycle)
@@ -181,27 +196,31 @@ uint32_t LMEcobeeCycleControlCommand::write(::apache::thrift::protocol::TProtoco
   ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
   xfer += oprot->writeStructBegin("LMEcobeeCycleControlCommand");
 
-  xfer += oprot->writeFieldBegin("_groupId", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeFieldBegin("_programId", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->_programId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("_groupId", ::apache::thrift::protocol::T_I32, 2);
   xfer += oprot->writeI32(this->_groupId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_dutyCycle", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeFieldBegin("_dutyCycle", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32(this->_dutyCycle);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_controlStartDateTime", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeFieldBegin("_controlStartDateTime", ::apache::thrift::protocol::T_I64, 4);
   xfer += oprot->writeI64(this->_controlStartDateTime);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_controlEndDateTime", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeFieldBegin("_controlEndDateTime", ::apache::thrift::protocol::T_I64, 5);
   xfer += oprot->writeI64(this->_controlEndDateTime);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_isMandatory", ::apache::thrift::protocol::T_BOOL, 5);
+  xfer += oprot->writeFieldBegin("_isMandatory", ::apache::thrift::protocol::T_BOOL, 6);
   xfer += oprot->writeBool(this->_isMandatory);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_isRampInOut", ::apache::thrift::protocol::T_BOOL, 6);
+  xfer += oprot->writeFieldBegin("_isRampInOut", ::apache::thrift::protocol::T_BOOL, 7);
   xfer += oprot->writeBool(this->_isRampInOut);
   xfer += oprot->writeFieldEnd();
 
@@ -212,6 +231,7 @@ uint32_t LMEcobeeCycleControlCommand::write(::apache::thrift::protocol::TProtoco
 
 void swap(LMEcobeeCycleControlCommand &a, LMEcobeeCycleControlCommand &b) {
   using ::std::swap;
+  swap(a._programId, b._programId);
   swap(a._groupId, b._groupId);
   swap(a._dutyCycle, b._dutyCycle);
   swap(a._controlStartDateTime, b._controlStartDateTime);
@@ -221,6 +241,7 @@ void swap(LMEcobeeCycleControlCommand &a, LMEcobeeCycleControlCommand &b) {
 }
 
 LMEcobeeCycleControlCommand::LMEcobeeCycleControlCommand(const LMEcobeeCycleControlCommand& other0) {
+  _programId = other0._programId;
   _groupId = other0._groupId;
   _dutyCycle = other0._dutyCycle;
   _controlStartDateTime = other0._controlStartDateTime;
@@ -229,6 +250,7 @@ LMEcobeeCycleControlCommand::LMEcobeeCycleControlCommand(const LMEcobeeCycleCont
   _isRampInOut = other0._isRampInOut;
 }
 LMEcobeeCycleControlCommand& LMEcobeeCycleControlCommand::operator=(const LMEcobeeCycleControlCommand& other1) {
+  _programId = other1._programId;
   _groupId = other1._groupId;
   _dutyCycle = other1._dutyCycle;
   _controlStartDateTime = other1._controlStartDateTime;
@@ -240,7 +262,8 @@ LMEcobeeCycleControlCommand& LMEcobeeCycleControlCommand::operator=(const LMEcob
 void LMEcobeeCycleControlCommand::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "LMEcobeeCycleControlCommand(";
-  out << "_groupId=" << to_string(_groupId);
+  out << "_programId=" << to_string(_programId);
+  out << ", " << "_groupId=" << to_string(_groupId);
   out << ", " << "_dutyCycle=" << to_string(_dutyCycle);
   out << ", " << "_controlStartDateTime=" << to_string(_controlStartDateTime);
   out << ", " << "_controlEndDateTime=" << to_string(_controlEndDateTime);
@@ -253,6 +276,10 @@ void LMEcobeeCycleControlCommand::printTo(std::ostream& out) const {
 LMEcobeeSetpointControlCommand::~LMEcobeeSetpointControlCommand() noexcept {
 }
 
+
+void LMEcobeeSetpointControlCommand::__set__programId(const int32_t val) {
+  this->_programId = val;
+}
 
 void LMEcobeeSetpointControlCommand::__set__groupId(const int32_t val) {
   this->_groupId = val;
@@ -296,6 +323,7 @@ uint32_t LMEcobeeSetpointControlCommand::read(::apache::thrift::protocol::TProto
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset__programId = false;
   bool isset__groupId = false;
   bool isset__controlStartDateTime = false;
   bool isset__controlEndDateTime = false;
@@ -313,13 +341,21 @@ uint32_t LMEcobeeSetpointControlCommand::read(::apache::thrift::protocol::TProto
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->_programId);
+          isset__programId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->_groupId);
           isset__groupId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->_controlStartDateTime);
           isset__controlStartDateTime = true;
@@ -327,7 +363,7 @@ uint32_t LMEcobeeSetpointControlCommand::read(::apache::thrift::protocol::TProto
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->_controlEndDateTime);
           isset__controlEndDateTime = true;
@@ -335,7 +371,7 @@ uint32_t LMEcobeeSetpointControlCommand::read(::apache::thrift::protocol::TProto
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast2;
           xfer += iprot->readI32(ecast2);
@@ -345,7 +381,7 @@ uint32_t LMEcobeeSetpointControlCommand::read(::apache::thrift::protocol::TProto
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_BOOL) {
           xfer += iprot->readBool(this->_isMandatory);
           isset__isMandatory = true;
@@ -353,7 +389,7 @@ uint32_t LMEcobeeSetpointControlCommand::read(::apache::thrift::protocol::TProto
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->_temperatureOffset);
           isset__temperatureOffset = true;
@@ -370,6 +406,8 @@ uint32_t LMEcobeeSetpointControlCommand::read(::apache::thrift::protocol::TProto
 
   xfer += iprot->readStructEnd();
 
+  if (!isset__programId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__groupId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__controlStartDateTime)
@@ -390,27 +428,31 @@ uint32_t LMEcobeeSetpointControlCommand::write(::apache::thrift::protocol::TProt
   ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
   xfer += oprot->writeStructBegin("LMEcobeeSetpointControlCommand");
 
-  xfer += oprot->writeFieldBegin("_groupId", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeFieldBegin("_programId", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->_programId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("_groupId", ::apache::thrift::protocol::T_I32, 2);
   xfer += oprot->writeI32(this->_groupId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_controlStartDateTime", ::apache::thrift::protocol::T_I64, 2);
+  xfer += oprot->writeFieldBegin("_controlStartDateTime", ::apache::thrift::protocol::T_I64, 3);
   xfer += oprot->writeI64(this->_controlStartDateTime);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_controlEndDateTime", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeFieldBegin("_controlEndDateTime", ::apache::thrift::protocol::T_I64, 4);
   xfer += oprot->writeI64(this->_controlEndDateTime);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_temperatureOption", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeFieldBegin("_temperatureOption", ::apache::thrift::protocol::T_I32, 5);
   xfer += oprot->writeI32((int32_t)this->_temperatureOption);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_isMandatory", ::apache::thrift::protocol::T_BOOL, 5);
+  xfer += oprot->writeFieldBegin("_isMandatory", ::apache::thrift::protocol::T_BOOL, 6);
   xfer += oprot->writeBool(this->_isMandatory);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_temperatureOffset", ::apache::thrift::protocol::T_I32, 6);
+  xfer += oprot->writeFieldBegin("_temperatureOffset", ::apache::thrift::protocol::T_I32, 7);
   xfer += oprot->writeI32(this->_temperatureOffset);
   xfer += oprot->writeFieldEnd();
 
@@ -421,6 +463,7 @@ uint32_t LMEcobeeSetpointControlCommand::write(::apache::thrift::protocol::TProt
 
 void swap(LMEcobeeSetpointControlCommand &a, LMEcobeeSetpointControlCommand &b) {
   using ::std::swap;
+  swap(a._programId, b._programId);
   swap(a._groupId, b._groupId);
   swap(a._controlStartDateTime, b._controlStartDateTime);
   swap(a._controlEndDateTime, b._controlEndDateTime);
@@ -430,6 +473,7 @@ void swap(LMEcobeeSetpointControlCommand &a, LMEcobeeSetpointControlCommand &b) 
 }
 
 LMEcobeeSetpointControlCommand::LMEcobeeSetpointControlCommand(const LMEcobeeSetpointControlCommand& other3) {
+  _programId = other3._programId;
   _groupId = other3._groupId;
   _controlStartDateTime = other3._controlStartDateTime;
   _controlEndDateTime = other3._controlEndDateTime;
@@ -438,6 +482,7 @@ LMEcobeeSetpointControlCommand::LMEcobeeSetpointControlCommand(const LMEcobeeSet
   _temperatureOffset = other3._temperatureOffset;
 }
 LMEcobeeSetpointControlCommand& LMEcobeeSetpointControlCommand::operator=(const LMEcobeeSetpointControlCommand& other4) {
+  _programId = other4._programId;
   _groupId = other4._groupId;
   _controlStartDateTime = other4._controlStartDateTime;
   _controlEndDateTime = other4._controlEndDateTime;
@@ -449,7 +494,8 @@ LMEcobeeSetpointControlCommand& LMEcobeeSetpointControlCommand::operator=(const 
 void LMEcobeeSetpointControlCommand::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "LMEcobeeSetpointControlCommand(";
-  out << "_groupId=" << to_string(_groupId);
+  out << "_programId=" << to_string(_programId);
+  out << ", " << "_groupId=" << to_string(_groupId);
   out << ", " << "_controlStartDateTime=" << to_string(_controlStartDateTime);
   out << ", " << "_controlEndDateTime=" << to_string(_controlEndDateTime);
   out << ", " << "_temperatureOption=" << to_string(_temperatureOption);
@@ -462,6 +508,10 @@ void LMEcobeeSetpointControlCommand::printTo(std::ostream& out) const {
 LMEcobeePlusControlCommand::~LMEcobeePlusControlCommand() noexcept {
 }
 
+
+void LMEcobeePlusControlCommand::__set__programId(const int32_t val) {
+  this->_programId = val;
+}
 
 void LMEcobeePlusControlCommand::__set__groupId(const int32_t val) {
   this->_groupId = val;
@@ -501,6 +551,7 @@ uint32_t LMEcobeePlusControlCommand::read(::apache::thrift::protocol::TProtocol*
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset__programId = false;
   bool isset__groupId = false;
   bool isset__controlStartDateTime = false;
   bool isset__controlEndDateTime = false;
@@ -517,13 +568,21 @@ uint32_t LMEcobeePlusControlCommand::read(::apache::thrift::protocol::TProtocol*
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->_programId);
+          isset__programId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->_groupId);
           isset__groupId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->_controlStartDateTime);
           isset__controlStartDateTime = true;
@@ -531,7 +590,7 @@ uint32_t LMEcobeePlusControlCommand::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->_controlEndDateTime);
           isset__controlEndDateTime = true;
@@ -539,7 +598,7 @@ uint32_t LMEcobeePlusControlCommand::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast5;
           xfer += iprot->readI32(ecast5);
@@ -549,7 +608,7 @@ uint32_t LMEcobeePlusControlCommand::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->_randomTimeSeconds);
           isset__randomTimeSeconds = true;
@@ -566,6 +625,8 @@ uint32_t LMEcobeePlusControlCommand::read(::apache::thrift::protocol::TProtocol*
 
   xfer += iprot->readStructEnd();
 
+  if (!isset__programId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__groupId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__controlStartDateTime)
@@ -584,23 +645,27 @@ uint32_t LMEcobeePlusControlCommand::write(::apache::thrift::protocol::TProtocol
   ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
   xfer += oprot->writeStructBegin("LMEcobeePlusControlCommand");
 
-  xfer += oprot->writeFieldBegin("_groupId", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeFieldBegin("_programId", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->_programId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("_groupId", ::apache::thrift::protocol::T_I32, 2);
   xfer += oprot->writeI32(this->_groupId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_controlStartDateTime", ::apache::thrift::protocol::T_I64, 2);
+  xfer += oprot->writeFieldBegin("_controlStartDateTime", ::apache::thrift::protocol::T_I64, 3);
   xfer += oprot->writeI64(this->_controlStartDateTime);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_controlEndDateTime", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeFieldBegin("_controlEndDateTime", ::apache::thrift::protocol::T_I64, 4);
   xfer += oprot->writeI64(this->_controlEndDateTime);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_temperatureOption", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeFieldBegin("_temperatureOption", ::apache::thrift::protocol::T_I32, 5);
   xfer += oprot->writeI32((int32_t)this->_temperatureOption);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_randomTimeSeconds", ::apache::thrift::protocol::T_I32, 5);
+  xfer += oprot->writeFieldBegin("_randomTimeSeconds", ::apache::thrift::protocol::T_I32, 6);
   xfer += oprot->writeI32(this->_randomTimeSeconds);
   xfer += oprot->writeFieldEnd();
 
@@ -611,6 +676,7 @@ uint32_t LMEcobeePlusControlCommand::write(::apache::thrift::protocol::TProtocol
 
 void swap(LMEcobeePlusControlCommand &a, LMEcobeePlusControlCommand &b) {
   using ::std::swap;
+  swap(a._programId, b._programId);
   swap(a._groupId, b._groupId);
   swap(a._controlStartDateTime, b._controlStartDateTime);
   swap(a._controlEndDateTime, b._controlEndDateTime);
@@ -619,6 +685,7 @@ void swap(LMEcobeePlusControlCommand &a, LMEcobeePlusControlCommand &b) {
 }
 
 LMEcobeePlusControlCommand::LMEcobeePlusControlCommand(const LMEcobeePlusControlCommand& other6) {
+  _programId = other6._programId;
   _groupId = other6._groupId;
   _controlStartDateTime = other6._controlStartDateTime;
   _controlEndDateTime = other6._controlEndDateTime;
@@ -626,6 +693,7 @@ LMEcobeePlusControlCommand::LMEcobeePlusControlCommand(const LMEcobeePlusControl
   _randomTimeSeconds = other6._randomTimeSeconds;
 }
 LMEcobeePlusControlCommand& LMEcobeePlusControlCommand::operator=(const LMEcobeePlusControlCommand& other7) {
+  _programId = other7._programId;
   _groupId = other7._groupId;
   _controlStartDateTime = other7._controlStartDateTime;
   _controlEndDateTime = other7._controlEndDateTime;
@@ -636,7 +704,8 @@ LMEcobeePlusControlCommand& LMEcobeePlusControlCommand::operator=(const LMEcobee
 void LMEcobeePlusControlCommand::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "LMEcobeePlusControlCommand(";
-  out << "_groupId=" << to_string(_groupId);
+  out << "_programId=" << to_string(_programId);
+  out << ", " << "_groupId=" << to_string(_groupId);
   out << ", " << "_controlStartDateTime=" << to_string(_controlStartDateTime);
   out << ", " << "_controlEndDateTime=" << to_string(_controlEndDateTime);
   out << ", " << "_temperatureOption=" << to_string(_temperatureOption);

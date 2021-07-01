@@ -174,7 +174,8 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
                     if (controlEventStatus != null) {
                         recentEventParticipationDao.updateDeviceControlEvent(externalEventId, device.getLiteID(),
                                 controlEventStatus,
-                                new Instant(value.getTimestamp() * 1000));
+                                new Instant(value.getTimestamp() * 1000), null,
+                                null);
                     }
                 } catch (Exception e) {
                     log.error("Unable to parse value:{} to update device participation status for device:{}({})", v,

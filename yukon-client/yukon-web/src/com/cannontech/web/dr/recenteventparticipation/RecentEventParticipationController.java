@@ -42,8 +42,8 @@ import com.google.common.collect.Lists;
 @Controller
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public class RecentEventParticipationController {
-    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired RecentEventParticipationService recentEventParticipationService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private RecentEventParticipationService recentEventParticipationService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DateFormattingService dateFormattingService;
 
@@ -142,6 +142,8 @@ public class RecentEventParticipationController {
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.participationState"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.serialNumber"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.optOutStatus"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.failReason"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.retryTime"));
         return columnNames;
     }
 
@@ -162,6 +164,10 @@ public class RecentEventParticipationController {
                 row.add(controlDeviceDetail.getParticipationState());
                 row.add(controlDeviceDetail.getSerialNumber());
                 row.add(controlDeviceDetail.getOptOutStatus().name());
+                row.add(controlDeviceDetail.getFailReason());
+                if(controlDeviceDetail.getRetryTime() != null) {
+                    row.add(controlDeviceDetail.getRetryTime().toString(formatter));
+                }
                 lists.add(row);
             }
         }

@@ -70,6 +70,17 @@ struct regulator_device_config_set_point_reversed_install : regulator_device_con
     }
 };
 
+struct regulator_device_config_direct_tap_with_limits : regulator_device_config_base
+{
+    regulator_device_config_direct_tap_with_limits()
+        :   regulator_device_config_base()
+    {
+        fixtureConfig->insertValue( "voltageControlMode",  "DIRECT_TAP" );
+
+        fixtureConfig->insertValue( "minTapPosition",  "-10" );
+        fixtureConfig->insertValue( "maxTapPosition",   "12" );
+    }
+};
 
 struct gang_operated_voltage_regulator_fixture_core
 {
@@ -199,6 +210,11 @@ struct gang_operated_voltage_regulator_fixture_setpoint_reversed_install
 
 }
 
+struct gang_operated_voltage_regulator_fixture_direct_tap_with_limits
+    :   gang_operated_voltage_regulator_fixture_core,
+        regulator_device_config_direct_tap_with_limits
+{
+};
 
 BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_DirectTap, gang_operated_voltage_regulator_fixture_direct_tap )
 
@@ -1554,6 +1570,32 @@ BOOST_AUTO_TEST_CASE( test_Determine_Power_Flow_Situation_input_output_codes_rev
 
         BOOST_CHECK( z.expected_output == regulator->determinePowerFlowSituation() );
     }
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_DirectTap_DefaultTapLimits, gang_operated_voltage_regulator_fixture_direct_tap )
+
+BOOST_AUTO_TEST_CASE( test_verify_default_tap_position_limits )
+{
+    regulator->loadAttributes( &attributes );
+
+    BOOST_CHECK_EQUAL(  -16,  regulator->getMinTapPosition()  );
+    BOOST_CHECK_EQUAL(   16,  regulator->getMaxTapPosition()  );
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_DirectTap_CustomTapLimits, gang_operated_voltage_regulator_fixture_direct_tap_with_limits )
+
+BOOST_AUTO_TEST_CASE( test_verify_custom_tap_position_limits )
+{
+    regulator->loadAttributes( &attributes );
+
+    BOOST_CHECK_EQUAL(  -10,  regulator->getMinTapPosition()  );
+    BOOST_CHECK_EQUAL(   12,  regulator->getMaxTapPosition()  );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

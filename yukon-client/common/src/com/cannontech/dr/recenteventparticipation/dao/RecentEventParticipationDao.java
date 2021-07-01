@@ -73,5 +73,6 @@ public interface RecentEventParticipationDao {
     /**
      * Updates event with new time and status
      */
-    public void updateDeviceControlEvent(String externalEventId, int deviceId, ControlEventDeviceStatus status, Instant deviceReceivedTime);
+    public void updateDeviceControlEvent(String externalEventId, int deviceId, ControlEventDeviceStatus status,
+            Instant deviceReceivedTime, String failReason, Instant retryTime);
 }

@@ -371,6 +371,8 @@ const string RegulatorStrings::heartbeatPeriod     = "regulatorHeartbeatPeriod";
 const string RegulatorStrings::heartbeatValue      = "regulatorHeartbeatValue";
 const string RegulatorStrings::heartbeatMode       = "regulatorHeartbeatMode";
 const string RegulatorStrings::installOrientation  = "installOrientation";
+const string RegulatorStrings::minTapPosition      = "minTapPosition";
+const string RegulatorStrings::maxTapPosition      = "maxTapPosition";
 
 // CBC
 const string CbcStrings::cbcHeartbeatPeriod     = "cbcHeartbeatPeriod";

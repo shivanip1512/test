@@ -34,6 +34,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
@@ -52,6 +53,7 @@ import com.google.common.cache.LoadingCache;
 public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenService, MessageListener {
     private static final Logger log = YukonLogManager.getLogger(EcobeeZeusAuthTokenServiceImpl.class);
 
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonJmsTemplate jmsTemplate;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
@@ -113,6 +115,14 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
                 throw new EcobeeAuthenticationException("One or more ecobee configuration settings is empty.");
             }
 
+            asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
+                if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_PASSWORD) ||
+                        globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_USERNAME) ||
+                        globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_SERVER_URL)) {
+                    cancelExistingScheduler();
+                    generateEcobeeAuthTokenResponse();
+                }
+            });
             String url = ecobeeServerURL + authUrlPart;
             log.debug("Attempting login with ecobeeUsername " + ecobeeUsername + " URL: " + url);
 

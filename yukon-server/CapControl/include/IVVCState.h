@@ -5,6 +5,7 @@
 #include "cccapbank.h"
 #include "PointDataRequest.h"
 #include "ccutil.h"
+#include "VoltageRegulator.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -115,6 +116,9 @@ class IVVCState
         TapOperationZoneMap     _tapOps;
         CtiTime                 _tapOpDelay;
         TapOperationZoneMap     _undoTapOps;    // keeps track of bump restoration to original state
+
+        using TapOperationInhibitMap = std::map<long, Cti::CapControl::VoltageRegulator::TapInhibit>;
+        TapOperationInhibitMap _tapOpInhibit;
 
         bool isIvvcOnline() const;
 

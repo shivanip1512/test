@@ -49,16 +49,19 @@ class LMEcobeeCycleControlCommand : public virtual ::apache::thrift::TBase {
 
   LMEcobeeCycleControlCommand(const LMEcobeeCycleControlCommand&);
   LMEcobeeCycleControlCommand& operator=(const LMEcobeeCycleControlCommand&);
-  LMEcobeeCycleControlCommand() : _groupId(0), _dutyCycle(0), _controlStartDateTime(0), _controlEndDateTime(0), _isMandatory(0), _isRampInOut(0) {
+  LMEcobeeCycleControlCommand() : _programId(0), _groupId(0), _dutyCycle(0), _controlStartDateTime(0), _controlEndDateTime(0), _isMandatory(0), _isRampInOut(0) {
   }
 
   virtual ~LMEcobeeCycleControlCommand() noexcept;
+  int32_t _programId;
   int32_t _groupId;
   int32_t _dutyCycle;
    ::Cti::Messaging::Serialization::Thrift::Timestamp _controlStartDateTime;
    ::Cti::Messaging::Serialization::Thrift::Timestamp _controlEndDateTime;
   bool _isMandatory;
   bool _isRampInOut;
+
+  void __set__programId(const int32_t val);
 
   void __set__groupId(const int32_t val);
 
@@ -74,6 +77,8 @@ class LMEcobeeCycleControlCommand : public virtual ::apache::thrift::TBase {
 
   bool operator == (const LMEcobeeCycleControlCommand & rhs) const
   {
+    if (!(_programId == rhs._programId))
+      return false;
     if (!(_groupId == rhs._groupId))
       return false;
     if (!(_dutyCycle == rhs._dutyCycle))
@@ -110,16 +115,19 @@ class LMEcobeeSetpointControlCommand : public virtual ::apache::thrift::TBase {
 
   LMEcobeeSetpointControlCommand(const LMEcobeeSetpointControlCommand&);
   LMEcobeeSetpointControlCommand& operator=(const LMEcobeeSetpointControlCommand&);
-  LMEcobeeSetpointControlCommand() : _groupId(0), _controlStartDateTime(0), _controlEndDateTime(0), _temperatureOption((LMEcobeeTemperatureTypes::type)0), _isMandatory(0), _temperatureOffset(0) {
+  LMEcobeeSetpointControlCommand() : _programId(0), _groupId(0), _controlStartDateTime(0), _controlEndDateTime(0), _temperatureOption((LMEcobeeTemperatureTypes::type)0), _isMandatory(0), _temperatureOffset(0) {
   }
 
   virtual ~LMEcobeeSetpointControlCommand() noexcept;
+  int32_t _programId;
   int32_t _groupId;
    ::Cti::Messaging::Serialization::Thrift::Timestamp _controlStartDateTime;
    ::Cti::Messaging::Serialization::Thrift::Timestamp _controlEndDateTime;
   LMEcobeeTemperatureTypes::type _temperatureOption;
   bool _isMandatory;
   int32_t _temperatureOffset;
+
+  void __set__programId(const int32_t val);
 
   void __set__groupId(const int32_t val);
 
@@ -135,6 +143,8 @@ class LMEcobeeSetpointControlCommand : public virtual ::apache::thrift::TBase {
 
   bool operator == (const LMEcobeeSetpointControlCommand & rhs) const
   {
+    if (!(_programId == rhs._programId))
+      return false;
     if (!(_groupId == rhs._groupId))
       return false;
     if (!(_controlStartDateTime == rhs._controlStartDateTime))
@@ -171,15 +181,18 @@ class LMEcobeePlusControlCommand : public virtual ::apache::thrift::TBase {
 
   LMEcobeePlusControlCommand(const LMEcobeePlusControlCommand&);
   LMEcobeePlusControlCommand& operator=(const LMEcobeePlusControlCommand&);
-  LMEcobeePlusControlCommand() : _groupId(0), _controlStartDateTime(0), _controlEndDateTime(0), _temperatureOption((LMEcobeeTemperatureTypes::type)0), _randomTimeSeconds(0) {
+  LMEcobeePlusControlCommand() : _programId(0), _groupId(0), _controlStartDateTime(0), _controlEndDateTime(0), _temperatureOption((LMEcobeeTemperatureTypes::type)0), _randomTimeSeconds(0) {
   }
 
   virtual ~LMEcobeePlusControlCommand() noexcept;
+  int32_t _programId;
   int32_t _groupId;
    ::Cti::Messaging::Serialization::Thrift::Timestamp _controlStartDateTime;
    ::Cti::Messaging::Serialization::Thrift::Timestamp _controlEndDateTime;
   LMEcobeeTemperatureTypes::type _temperatureOption;
   int32_t _randomTimeSeconds;
+
+  void __set__programId(const int32_t val);
 
   void __set__groupId(const int32_t val);
 
@@ -193,6 +206,8 @@ class LMEcobeePlusControlCommand : public virtual ::apache::thrift::TBase {
 
   bool operator == (const LMEcobeePlusControlCommand & rhs) const
   {
+    if (!(_programId == rhs._programId))
+      return false;
     if (!(_groupId == rhs._groupId))
       return false;
     if (!(_controlStartDateTime == rhs._controlStartDateTime))

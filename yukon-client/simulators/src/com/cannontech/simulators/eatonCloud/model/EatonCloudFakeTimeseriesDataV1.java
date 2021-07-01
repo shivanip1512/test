@@ -152,7 +152,7 @@ public class EatonCloudFakeTimeseriesDataV1 {
         sql.append("FROM ControlEventDevice ced");
         sql.append("JOIN DeviceGuid dg ON ced.DeviceId = dg.DeviceId");
         sql.append("JOIN ControlEvent ce ON ce.ControlEventId = ced.ControlEventId");
-        sql.append("WHERE Result").eq_k(ControlEventDeviceStatus.UNKNOWN);
+        sql.append("WHERE Result").in_k(List.of(ControlEventDeviceStatus.UNKNOWN, ControlEventDeviceStatus.SUCCESS_RECEIVED));
         sql.append("AND dg.Guid").eq(deviceGuid);
         return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
