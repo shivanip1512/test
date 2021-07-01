@@ -207,9 +207,20 @@ INSERT INTO DBUpdates VALUES ('YUK-24529', '9.1.0', SYSDATE);
 /* @end YUK-24529 */
 
 /* @start YUK-24461 */
-ALTER TABLE YukonLogging ADD LoggerId NUMBER;
+/* @error ignore-begin */
+DROP TABLE YukonLogging;
+
+CREATE TABLE YukonLogging  (
+   LoggerId             NUMBER                          NOT NULL,
+   LoggerName           VARCHAR2(200)                   NOT NULL,
+   LoggerLevel          VARCHAR2(5)                     NOT NULL,
+   ExpirationDate       DATE,
+   Notes                VARCHAR2(300),
+   CONSTRAINT PK_YUKONLOGGING PRIMARY KEY (LoggerId)
+);
 
 INSERT INTO DBUpdates VALUES ('YUK-24461', '9.1.0', SYSDATE);
+/* @error ignore-end */
 /* @end YUK-24461 */
 
 /**************************************************************/
