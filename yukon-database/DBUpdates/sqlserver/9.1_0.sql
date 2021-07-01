@@ -233,9 +233,8 @@ IF (SELECT is_auto_update_stats_on FROM sys.databases WHERE name = DB_NAME()) = 
 BEGIN
     ALTER DATABASE CURRENT SET auto_update_statistics ON;
 END;
-
-INSERT INTO DBUpdates VALUES ('YUK-23375', '9.1.0', GETDATE());
 /* @end-block */
+INSERT INTO DBUpdates VALUES ('YUK-23375', '9.1.0', GETDATE());
 /* @end YUK-23375 */
 /**************************************************************/
 /* VERSION INFO                                               */
