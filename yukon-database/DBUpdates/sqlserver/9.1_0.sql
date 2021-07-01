@@ -233,18 +233,9 @@ INSERT INTO DBUpdates VALUES ('YUK-24593', '9.1.0', GETDATE());
 /* @end YUK-24593 */
 
 /* @start YUK-23375 */
-/* @start-block */
-IF (SELECT is_auto_create_stats_on FROM sys.databases WHERE name = DB_NAME()) = 0
-BEGIN
-    ALTER DATABASE CURRENT SET auto_create_statistics ON;
-END;
-/* @end-block */
-/* @start-block */
-IF (SELECT is_auto_update_stats_on FROM sys.databases WHERE name = DB_NAME()) = 0
-BEGIN
-    ALTER DATABASE CURRENT SET auto_update_statistics ON;
-END;
-/* @end-block */
+ALTER DATABASE CURRENT SET auto_create_statistics ON;
+ALTER DATABASE CURRENT SET auto_update_statistics ON;
+
 INSERT INTO DBUpdates VALUES ('YUK-23375', '9.1.0', GETDATE());
 /* @end YUK-23375 */
 
