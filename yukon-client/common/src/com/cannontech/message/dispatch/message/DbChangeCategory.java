@@ -40,7 +40,8 @@ public enum DbChangeCategory {
     DASHBOARD_ASSIGNMENT,
     MULTISPEAK,
     ATTRIBUTE,
-    ATTRIBUTE_ASSIGNMENT
+    ATTRIBUTE_ASSIGNMENT,
+    LOGGER
     ;
     
     

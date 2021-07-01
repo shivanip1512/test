@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/28/2021 1:10:37 AM                         */
+/* Created on:     6/30/2021 11:12:55 PM                        */
 /*==============================================================*/
 
 
@@ -10995,11 +10995,12 @@ go
 /* Table: YukonLogging                                          */
 /*==============================================================*/
 create table YukonLogging (
+   LoggerId             numeric              not null,
    LoggerName           varchar(200)         not null,
    LoggerLevel          varchar(5)           not null,
    ExpirationDate       datetime             null,
    Notes                varchar(300)         null,
-   constraint PK_YUKONLOGGING primary key (LoggerName)
+   constraint PK_YUKONLOGGING primary key (LoggerId)
 )
 go
 
