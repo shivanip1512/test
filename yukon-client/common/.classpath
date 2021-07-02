@@ -533,7 +533,7 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/jackson-module-jaxb-annotations-2.12.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jakarta.activation-api-1.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jakarta.xml.bind-api-2.3.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/jackson-datatype-jsr310-2.12.3.jar">
+	<classpathentry kind="lib" path="/third-party/jackson-datatype-joda-2.12.3.jar">
         <attributes>
             <attribute name="org.eclipse.jst.component.dependency" value="../"/>
         </attributes>	

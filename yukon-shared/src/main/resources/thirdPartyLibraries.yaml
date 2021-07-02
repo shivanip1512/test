@@ -1041,6 +1041,20 @@ Java :
     updated : 2018-07-18
     jira : YUK-18485
     notes : Jackson Dataformat CSV
+  
+  - filename : jackson-datatype-joda-2.12.3.jar
+    yukon group : Azure 
+    project : Microsoft Azure SDK
+    version : 2.12.3
+    project URL : "http://wiki.fasterxml.com/JacksonModuleJoda"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-joda/2.12.3"
+    md5 : d50b732f49b35062536c086ba8be4f47
+    sha1 : 3b66fb3f8a4351c658ec4fa8301259a7426ca2ea
+    updated : 2021-06-23
+    jira : YUK-24554
+    notes :    
 
   - filename : jackson-dataformat-xml-2.12.3.jar
     yukon group : Azure

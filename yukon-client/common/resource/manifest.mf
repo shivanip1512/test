@@ -112,6 +112,7 @@ Class-Path: ./
  jackson-core-2.12.3.jar 
  jackson-databind-2.12.3.jar 
  jackson-dataformat-csv-2.9.6.jar 
+ jackson-datatype-joda-2.12.3.jar 
  jackson-dataformat-xml-2.12.3.jar 
  jackson-datatype-jsr310-2.12.3.jar 
  jackson-module-jaxb-annotations-2.12.3.jar 

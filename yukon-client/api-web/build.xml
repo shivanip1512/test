@@ -130,6 +130,7 @@
         <include name="itronServicePointManagerTypes_v1_3.jar"/>
         <include name="commons-compress-1.19.jar"/>
         <include name="opencsv-4.5.jar"/>
+        <include name="jackson-datatype-joda-2.12.3.jar"/>
     </fileset>
 
     <target name="compile">
