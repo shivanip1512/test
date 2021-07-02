@@ -21,7 +21,7 @@ public class YukonLoggingReloader extends YukonLoggingReloaderHelper{
                 reloadAppenderForMaxFileSize(true);
             } else if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.LOG_RETENTION_DAYS)) {
                 reloadAppenderForLogRetentionDays();
-            } else if(DbChangeCategory.isDbChangeForLogger(event)) {
+            } else if (DbChangeCategory.isDbChangeForLogger(event)) {
                 reloadYukonLoggers();
             }
         });
