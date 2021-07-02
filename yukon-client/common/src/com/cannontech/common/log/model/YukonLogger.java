@@ -11,18 +11,31 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonInclude(Include.NON_NULL)
 public class YukonLogger {
+    private int loggerId;
     private LoggerType loggerType;
     private LoggerLevel level;
     private String loggerName;
     private DateTime expirationDate;
     private String notes;
 
-    public YukonLogger(LoggerType loggerType, LoggerLevel level, String loggerName, DateTime expirationDate, String notes) {
-        this.loggerType = loggerType;
+    public YukonLogger() {
+    }
+
+    public YukonLogger(int loggerId, LoggerLevel level, String loggerName, DateTime expirationDate, String notes) {
+        this.setLoggerId(loggerId);
         this.level = level;
         this.loggerName = loggerName;
         this.expirationDate = expirationDate;
         this.notes = notes;
+        this.loggerType = SystemLogger.isSystemLogger(loggerName) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER;
+    }
+
+    public int getLoggerId() {
+        return loggerId;
+    }
+
+    public void setLoggerId(int loggerId) {
+        this.loggerId = loggerId;
     }
 
     public LoggerType getLoggerType() {
@@ -47,6 +60,7 @@ public class YukonLogger {
 
     public void setLoggerName(String loggerName) {
         this.loggerName = loggerName;
+        setLoggerType(SystemLogger.isSystemLogger(loggerName) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER);
     }
 
     @JsonSerialize(using = DateSerializer.class)

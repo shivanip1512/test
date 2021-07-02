@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/29/2021 8:26:26 AM                         */
+/* Created on:     6/30/2021 11:11:51 PM                        */
 /*==============================================================*/
 
 
@@ -10365,11 +10365,12 @@ create index Indx_YkLstDefID on YukonListEntry (
 /* Table: YukonLogging                                          */
 /*==============================================================*/
 create table YukonLogging  (
+   LoggerId             NUMBER                          not null,
    LoggerName           VARCHAR2(200)                   not null,
    LoggerLevel          VARCHAR2(5)                     not null,
    ExpirationDate       DATE,
    Notes                VARCHAR2(300),
-   constraint PK_YUKONLOGGING primary key (LoggerName)
+   constraint PK_YUKONLOGGING primary key (LoggerId)
 );
 
 /*==============================================================*/

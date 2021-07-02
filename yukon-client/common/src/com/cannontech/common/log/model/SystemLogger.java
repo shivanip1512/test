@@ -49,7 +49,7 @@ public enum SystemLogger {
         return logger;
     }
 
-    public boolean isSystemLogger(String loggerName) {
+    public static boolean isSystemLogger(String loggerName) {
         checkArgument(loggerName != null);
         return lookupByLoggerName.get(loggerName) != null;
     }
