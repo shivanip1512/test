@@ -22,6 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationResponse;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
 import com.cannontech.system.GlobalSettingType;
@@ -34,6 +35,7 @@ public class EcobeeZeusAuthTokenServiceImplTest {
     private EcobeeZeusAuthTokenServiceImpl impl;
     private HttpHeaders header = new HttpHeaders();
     private ScheduledExecutor scheduledExecutor;
+    private AsyncDynamicDataSource asyncDynamicDataSource;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -41,6 +43,7 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         impl = new EcobeeZeusAuthTokenServiceImpl(restTemplateMock);
         header.setContentType(MediaType.APPLICATION_JSON);
         scheduledExecutor = EasyMock.createMock(ScheduledExecutor.class);
+        asyncDynamicDataSource = EasyMock.createMock(AsyncDynamicDataSource.class);
     }
 
     @Test
@@ -137,6 +140,7 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         EasyMock.replay(mockGlobalSettingDao);
         ReflectionTestUtils.setField(impl, "globalSettingDao", mockGlobalSettingDao);
         ReflectionTestUtils.setField(impl, "scheduledExecutor", scheduledExecutor);
+        ReflectionTestUtils.setField(impl, "asyncDynamicDataSource", asyncDynamicDataSource);
 
     }
 
