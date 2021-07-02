@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/30/2021 11:11:51 PM                        */
+/* Created on:     6/29/2021 8:26:26 AM                         */
 /*==============================================================*/
 
 
@@ -2022,6 +2022,8 @@ create table ControlEventDevice  (
    OptOutEventId        NUMBER,
    Result               VARCHAR2(30)                    not null,
    DeviceReceivedTime   DATE,
+   FailReason           VARCHAR2(100),
+   RetryTime            DATE,
    constraint PK_ControlEventDevice primary key (DeviceId, ControlEventId)
 );
 
@@ -10363,12 +10365,11 @@ create index Indx_YkLstDefID on YukonListEntry (
 /* Table: YukonLogging                                          */
 /*==============================================================*/
 create table YukonLogging  (
-   LoggerId             NUMBER                          not null,
    LoggerName           VARCHAR2(200)                   not null,
    LoggerLevel          VARCHAR2(5)                     not null,
    ExpirationDate       DATE,
    Notes                VARCHAR2(300),
-   constraint PK_YUKONLOGGING primary key (LoggerId)
+   constraint PK_YUKONLOGGING primary key (LoggerName)
 );
 
 /*==============================================================*/

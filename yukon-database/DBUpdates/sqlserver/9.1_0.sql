@@ -203,12 +203,11 @@ INSERT INTO DBUpdates VALUES ('YUK-24437', '9.1.0', GETDATE());
 
 /* @start YUK-24460 */
 CREATE TABLE YukonLogging (
-   LoggerId             NUMERIC              NOT NULL,
    LoggerName           VARCHAR(200)         NOT NULL,
    LoggerLevel          VARCHAR(5)           NOT NULL,
    ExpirationDate       DATETIME             NULL,
    Notes                VARCHAR(300)         NULL,
-   CONSTRAINT PK_YUKONLOGGING PRIMARY KEY (LoggerId)
+   CONSTRAINT PK_YUKONLOGGING PRIMARY KEY (LoggerName)
 )
 GO
 
@@ -222,22 +221,17 @@ UPDATE LMGroupZeusMapping SET ProgramId = -1;
 INSERT INTO DBUpdates VALUES ('YUK-24529', '9.1.0', GETDATE());
 /* @end YUK-24529 */
 
-/* @start YUK-24461 */
-/* @error ignore-begin */
-DROP TABLE YukonLogging;
+/* @start YUK-24593 */
+ALTER TABLE ControlEventDevice
+ADD FailReason VARCHAR(100) NULL;
 GO
-CREATE TABLE YukonLogging (
-   LoggerId             NUMERIC              NOT NULL,
-   LoggerName           VARCHAR(200)         NOT NULL,
-   LoggerLevel          VARCHAR(5)           NOT NULL,
-   ExpirationDate       DATETIME             NULL,
-   Notes                VARCHAR(300)         NULL,
-   CONSTRAINT PK_YUKONLOGGING PRIMARY KEY (LoggerId)
-);
-GO
-INSERT INTO DBUpdates VALUES ('YUK-24461', '9.1.0', GETDATE());
-/* @error ignore-end */
-/* @end YUK-24461 */
+
+ALTER TABLE ControlEventDevice
+ADD RetryTime DATETIME NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-24593', '9.1.0', GETDATE());
+/* @end YUK-24593 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
