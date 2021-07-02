@@ -3,10 +3,14 @@ package com.cannontech.dr.recenteventparticipation.model;
 public class RecentEventParticipationEventStats {
     private final int numConfirmed;
     private final int numUnknowns;
+    private final int numFailed;
+    private final int numConfirmedAfterRetry;
 
-    public RecentEventParticipationEventStats(int numConfirmed, int numUnknowns) {
+    public RecentEventParticipationEventStats(int numConfirmed, int numUnknowns, int numFailed, int numConfirmedAfterRetry) {
         this.numConfirmed = numConfirmed;
         this.numUnknowns = numUnknowns;
+        this.numFailed = numFailed;
+        this.numConfirmedAfterRetry = numConfirmedAfterRetry;
     }
 
     public int getNumConfirmed() {
@@ -31,5 +35,13 @@ public class RecentEventParticipationEventStats {
             return 0.0;
         }
         return (double) numUnknowns / total;
+    }
+
+    public int getNumFailed() {
+        return numFailed;
+    }
+
+    public int getNumConfirmedAfterRetry() {
+        return numConfirmedAfterRetry;
     }
 }

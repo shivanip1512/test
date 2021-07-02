@@ -36,6 +36,7 @@ import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
 import com.cannontech.dr.eatonCloud.model.EatonCloudVersion;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
@@ -139,7 +140,8 @@ public class EatonCloudSimulatorController {
                 processSuccess(params, json, getFormattedJson(token));
             } else if (endpoint == EatonCloudRetrievalUrl.COMMANDS) {
                 EatonCloudCommandRequestV1 request = new ObjectMapper().readValue(jsonParam, EatonCloudCommandRequestV1.class);
-                eatonCloudCommunicationServiceV1.sendCommand(paramList.get(0), request);
+                EatonCloudCommandResponseV1 response = eatonCloudCommunicationServiceV1.sendCommand(paramList.get(0), request);
+                processSuccess(params, json, getFormattedJson(response));
             } else if (endpoint == EatonCloudRetrievalUrl.TREND_DATA_RETRIEVAL) {
                 EatonCloudTimeSeriesDataRequestV1 request = new ObjectMapper().readValue(jsonParam, EatonCloudTimeSeriesDataRequestV1.class);
                 String startTime = request.getStartTime();

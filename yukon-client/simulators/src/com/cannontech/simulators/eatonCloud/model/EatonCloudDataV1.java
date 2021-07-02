@@ -2,10 +2,8 @@ package com.cannontech.simulators.eatonCloud.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -221,10 +219,10 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
                     status);
         } 
         if (status == HttpStatus.NOT_FOUND.value()) {
-            return new EatonCloudSimulatorResponse(new EatonCloudErrorV1(status, "Resource not found"), status);
+            return new EatonCloudSimulatorResponse(new EatonCloudCommandResponseV1(status, "Resource not found"), HttpStatus.OK.value());
         }
         return new EatonCloudSimulatorResponse(
-                    new EatonCloudCommandResponseV1(0, "Success sending command for device guid:" + id + " command guid:" + command_instance_id),
+                    new EatonCloudCommandResponseV1(status, "Success sending command for device guid:" + id + " command guid:" + command_instance_id),
                     status);
         
     }

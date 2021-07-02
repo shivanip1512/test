@@ -7,6 +7,7 @@ import org.joda.time.Instant;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
@@ -68,6 +69,7 @@ public interface EatonCloudCommunicationServiceV1 {
      * Sends a command to a device.
      * 
      * EatonCloudCommunicationExceptionV1 contains the status
+     * @return EatonCloudCommandResponseV1
      * @throws EatonCloudCommunicationExceptionV1
      * @throws EatonCloudException
      * 
@@ -76,7 +78,7 @@ public interface EatonCloudCommunicationServiceV1 {
      * 401 Unauthorized
      * 404 Not Found
      */
-    void sendCommand(String deviceGuid, EatonCloudCommandRequestV1 request) throws EatonCloudCommunicationExceptionV1, EatonCloudException;
+    EatonCloudCommandResponseV1 sendCommand(String deviceGuid, EatonCloudCommandRequestV1 request) throws EatonCloudCommunicationExceptionV1, EatonCloudException;
 
     
     /**

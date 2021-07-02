@@ -213,7 +213,7 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
     }
     
     @Override
-    public void sendCommand(String deviceGuid, EatonCloudCommandRequestV1 request)
+    public EatonCloudCommandResponseV1 sendCommand(String deviceGuid, EatonCloudCommandRequestV1 request)
             throws EatonCloudCommunicationExceptionV1, EatonCloudException {
         String commandGuid = UUID.randomUUID().toString();
         URI uri = getUri(Map.of("id", deviceGuid, "command_instance_id", commandGuid), EatonCloudRetrievalUrl.COMMANDS);
@@ -226,6 +226,7 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
                     EatonCloudCommandResponseV1.class);
             log.debug("Sent command to device. Device Guid:{} Command Guid:{} Response:{}", deviceGuid, commandGuid,
                     new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
+            return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
             throw e;
         } catch (Exception e) {

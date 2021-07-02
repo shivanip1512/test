@@ -717,6 +717,8 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.participationState">Participation State</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.serialNumber">Serial Number</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.optOutStatus">OptOut Status</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.failReason">Fail Reason</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.retryTime">Retry Time</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.progress">Device Status</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.pageName">Event Participation Summary</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.dateRange">Date Range</entry>
