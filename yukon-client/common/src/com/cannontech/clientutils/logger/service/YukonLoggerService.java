@@ -23,7 +23,7 @@ public interface YukonLoggerService {
     YukonLogger updateLogger(YukonLogger logger) throws ExecutionException;
 
     /**
-     * Return the Logger ID after deleting the logger for specified logger ID.
+     * Return the loggerId after deleting the logger for specified loggerId.
      */
     int deleteLogger(int loggerId);
 

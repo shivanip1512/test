@@ -9,7 +9,6 @@ import com.cannontech.clientutils.logger.dao.YukonLoggerDao;
 import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -50,8 +49,4 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
         return loggers;
     }
 
-    @Override
-    public boolean isDbChangeForLogger(DatabaseChangeEvent event) {
-        return event.getChangeCategory() == DbChangeCategory.LOGGER;
-    }
 }

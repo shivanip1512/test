@@ -3,7 +3,6 @@ package com.cannontech.clientutils.logger.dao;
 import java.util.List;
 
 import com.cannontech.common.log.model.YukonLogger;
-import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 
 public interface YukonLoggerDao {
 
@@ -32,8 +31,4 @@ public interface YukonLoggerDao {
      */
     List<YukonLogger> getLoggers();
 
-    /**
-     * Returns true when the event category is LOGGER .
-     */
-    boolean isDbChangeForLogger(DatabaseChangeEvent event);
 }

@@ -118,4 +118,11 @@ public enum DbChangeCategory {
         return EnumSet.of(DEVICE_DATA_MONITOR, OUTAGE_MONITOR, TAMPER_FLAG_MONITOR, STATUS_POINT_MONITOR,
             PORTER_RESPONSE_MONITOR, VALIDATION_MONITOR);
     }
+
+    /**
+     * Returns true when the event category is LOGGER .
+     */
+    public static boolean isDbChangeForLogger(DatabaseChangeEvent event) {
+        return event.getChangeCategory() == LOGGER;
+    }
 }

@@ -1,14 +1,10 @@
 package com.cannontech.clientutils;
 
-import java.util.List;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.logger.service.YukonLoggerService;
-import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -18,7 +14,6 @@ public abstract class YukonLoggingReloaderHelper {
     static final Logger log = YukonLogManager.getLogger(YukonLoggingReloader.class);
 
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private YukonLoggerService yukonLoggerService;
 
     public static final long DEFAULT_MAX_FILE_SIZE = 1073741824L; // 1 GB
     private final static long gigaBytesToByteMultiplier = 1024 * 1024 * 1024;
@@ -56,7 +51,6 @@ public abstract class YukonLoggingReloaderHelper {
     }
 
     public void reloadYukonLoggers() {
-        List<YukonLogger> loggers = yukonLoggerService.getLoggers();
         //TODO: Reload the loggers in Configuration - YUK-24463
     }
 }
