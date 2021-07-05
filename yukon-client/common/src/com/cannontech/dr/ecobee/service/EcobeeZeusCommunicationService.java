@@ -3,6 +3,7 @@ package com.cannontech.dr.ecobee.service;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
@@ -73,9 +74,10 @@ public interface EcobeeZeusCommunicationService {
     void sendSetpointDR(EcobeeSetpointDrParameters parameters);
 
     /**
-     * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only.
+     * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only. Return ture if API
+     * call is successful.
      */
-    void cancelDemandResponse(List<Integer> groupIds, String... serialNumbers);
+    boolean cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException;
 
     /**
      * Initiates a eco+ demand response event in Ecobee.
