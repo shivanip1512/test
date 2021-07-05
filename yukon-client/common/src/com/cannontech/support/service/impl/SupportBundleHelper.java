@@ -31,47 +31,37 @@ import com.google.common.collect.Lists;
 public class SupportBundleHelper {
 
     private static Logger log = YukonLogManager.getLogger(SupportBundleHelper.class);
-    
-   
     /**
      * Write location data to the destination directory in passed fileName.
      */
     public static void buildAndWriteLocationDataToDir(RfnMetadataMultiResponse response, List<LocationData> locationData, String destDir, String fileName, int coloumNum) throws IOException {
         List<String[]> dataRows = Lists.newArrayList();
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> queryResult = response.getQueryResults();
         for (LocationData loc : locationData) {
             int index = 0;
             String[] dataRow = new String[coloumNum];
             RfnIdentifier rfnIdentifier = loc.getRfnIdentifier();
-            RfnMetadataMultiQueryResult metaData = response.getQueryResults().get(rfnIdentifier);
-            NodeData nodeData = null;
-            if (metaData.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
-                boolean isRelay = PaoType.RFN_RELAY == loc.getPaoIdentifier().getPaoType();
-                nodeData = (NodeData) metaData.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
-                dataRow[index++] = nodeData != null ? nodeData.getMacAddress() : StringUtils.EMPTY;
-                if (!isRelay) {
-                    dataRow[index++] = rfnIdentifier != null ? rfnIdentifier.getSensorSerialNumber() : StringUtils.EMPTY;
-                }
-                dataRow[index++] = nodeData != null ? nodeData.getNodeSerialNumber() : StringUtils.EMPTY;
-                dataRow[index++] = nodeData != null ? nodeData.getHardwareVersion() : StringUtils.EMPTY;
-                dataRow[index++] = nodeData != null ? nodeData.getFirmwareVersion() : StringUtils.EMPTY;
-                dataRow[index++] = nodeData != null ? "1" : StringUtils.EMPTY; // Set hard coded value.
-                dataRow[index++] = nodeData != null ? String.valueOf(nodeData.getInNetworkTimestamp()) : StringUtils.EMPTY;
-                dataRow[index++] = nodeData != null ? nodeData.getProductNumber() : StringUtils.EMPTY;
-                dataRow[index++] = loc != null ? String.valueOf(loc.getLatitude()) : StringUtils.EMPTY;
-                dataRow[index++] = loc != null ? String.valueOf(loc.getLongitude()) : StringUtils.EMPTY;
-                if (!isRelay) {
-                    dataRow[index++] = loc.getPaoIdentifier().getPaoType().toString();
-                }
-                dataRows.add(dataRow);
-            } else {
-                log.warn("Invalid location data entry found.");
+            RfnMetadataMultiQueryResult metaData = queryResult != null ? queryResult.get(rfnIdentifier) : null;
+            boolean isRelay = PaoType.RFN_RELAY == loc.getPaoIdentifier().getPaoType();
+            NodeData nodeData = metaData != null ? (NodeData) metaData.getMetadatas().get(RfnMetadataMulti.NODE_DATA) : null;
+            dataRow[index++] = nodeData != null ? nodeData.getMacAddress() : StringUtils.EMPTY;
+            if (!isRelay) {
+                dataRow[index++] = rfnIdentifier != null ? rfnIdentifier.getSensorSerialNumber() : StringUtils.EMPTY;
             }
+            dataRow[index++] = nodeData != null ? nodeData.getNodeSerialNumber() : StringUtils.EMPTY;
+            dataRow[index++] = nodeData != null ? nodeData.getHardwareVersion() : StringUtils.EMPTY;
+            dataRow[index++] = nodeData != null ? nodeData.getFirmwareVersion() : StringUtils.EMPTY;
+            dataRow[index++] = nodeData != null ? "1" : StringUtils.EMPTY; // Set hard coded value.
+            dataRow[index++] = nodeData != null ? String.valueOf(nodeData.getInNetworkTimestamp()) : StringUtils.EMPTY;
+            dataRow[index++] = nodeData != null ? nodeData.getProductNumber() : StringUtils.EMPTY;
+            dataRow[index++] = loc != null ? String.valueOf(loc.getLatitude()) : StringUtils.EMPTY;
+            dataRow[index++] = loc != null ? String.valueOf(loc.getLongitude()) : StringUtils.EMPTY;
+            if (!isRelay) {
+                dataRow[index++] = loc.getPaoIdentifier().getPaoType().toString();
+            }
+            dataRows.add(dataRow);
         }
-        File temp = new File(CtiUtilities.getYukonBase() + destDir);
-        if(!temp.exists()) {
-            temp.mkdir();
-        }
-        FileUtil.writeToCSV(temp.getPath(), fileName, dataRows);
+        writeToCsv(destDir, fileName, dataRows);
     }
 
     /**
@@ -97,16 +87,7 @@ public class SupportBundleHelper {
             dataRow[10] = String.valueOf(locData.getLongitude());
             dataRows.add(dataRow);
         }
-        File temp = new File(CtiUtilities.getYukonBase() + destDir);
-        if(!temp.exists()) {
-            temp.mkdir();
-        }
-  
-        try {
-            FileUtil.writeToCSV(temp.getPath(), fileName, dataRows);
-        } catch (IOException ex) {
-            log.error("Error found while builing location data for " + fileName, ex);
-        }
+        writeToCsv(destDir, fileName, dataRows);
     }
     
     /**
@@ -114,62 +95,62 @@ public class SupportBundleHelper {
      */
     public static void buildAndWriteElectricNodeDataToDir(RfnMetadataMultiResponse response, List<LocationData> locationData,
             String destDir, String fileName, RfnGatewayService rfnGatewayService, int coloumNum) throws IOException {
+        
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> queryResult = response.getQueryResults();
         List<String[]> dataRows = Lists.newArrayList();
 
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         Map<RfnIdentifier, String> rfGatewayMap = gateways.stream()
                 .collect(Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway.getName()));
         for (LocationData loc : locationData) {
-            int index = 0;
             String[] dataRow = new String[coloumNum];
             RfnIdentifier rfnIdentifier = loc.getRfnIdentifier();
 
-            RfnMetadataMultiQueryResult metaData = response.getQueryResults().get(rfnIdentifier);
-            NodeComm nodeComm = null;
-            NodeData nodeData = null;
+            RfnMetadataMultiQueryResult metaData = queryResult != null ? queryResult.get(rfnIdentifier) : null;
+            NodeComm nodeComm = metaData != null ? (NodeComm) metaData.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM) : null;
+            NodeData nodeData = metaData != null ? (NodeData) metaData.getMetadatas().get(RfnMetadataMulti.NODE_DATA) : null;
+            String gwName = null;
 
-            if (metaData.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)
-                    && metaData.isValidResultForMulti(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM)) {
-
-                nodeComm = (NodeComm) metaData.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
-                nodeData = (NodeData) metaData.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
-                String gwName = null;
-
-                if (nodeComm != null && nodeComm.getGatewayRfnIdentifier() != null) {
-                    RfnIdentifier gwRfnIdentifier = nodeComm.getGatewayRfnIdentifier();
-                    if (gwRfnIdentifier != null) {
-                        gwName = rfGatewayMap.get(gwRfnIdentifier);
-                    }
+            if (nodeComm != null && nodeComm.getGatewayRfnIdentifier() != null) {
+                RfnIdentifier gwRfnIdentifier = nodeComm.getGatewayRfnIdentifier();
+                if (gwRfnIdentifier != null) {
+                    gwName = rfGatewayMap.get(gwRfnIdentifier);
                 }
-
-                dataRow[index++] = nodeData != null ? nodeData.getNodeSerialNumber() : StringUtils.EMPTY;
-                dataRow[index++] = nodeData != null ? nodeData.getNodeType().toString() : StringUtils.EMPTY;
-
-                dataRow[index++] = nodeComm != null ? String.valueOf(nodeComm.getNodeCommStatusTimestamp()) : StringUtils.EMPTY;
-                dataRow[index++] = nodeComm != null ? nodeComm.getNodeCommStatus().toString() : StringUtils.EMPTY;
-                dataRow[index++] = gwName != null ? gwName : StringUtils.EMPTY;
-
-                dataRow[index++] = nodeComm != null ? nodeComm.getDeviceRfnIdentifier()
-                        .getSensorSerialNumber() : StringUtils.EMPTY;
-                dataRow[index++] = nodeComm != null ? nodeComm.getDeviceRfnIdentifier()
-                        .getSensorManufacturer() : StringUtils.EMPTY;
-                dataRow[index++] = nodeComm != null ? nodeComm.getDeviceRfnIdentifier().getSensorModel() : StringUtils.EMPTY;
-
-                dataRow[index++] = loc != null ? String.valueOf(loc.getPaoIdentifier().getPaoId()) : StringUtils.EMPTY;
-                dataRow[index++] = loc != null ? loc.getRfnIdentifier().getSensorModel() : StringUtils.EMPTY;
-                dataRow[index++] = loc != null ? loc.getRfnIdentifier().getSensorSerialNumber() : StringUtils.EMPTY;
-                dataRow[index++] = loc != null ? String.valueOf(loc.getLatitude()) : StringUtils.EMPTY;
-                dataRow[index++] = loc != null ? String.valueOf(loc.getLongitude()) : StringUtils.EMPTY;
-
-                dataRows.add(dataRow);
-            } else {
-                log.warn("Invalid electric data entry found.");
             }
+
+            dataRow[0] = nodeData != null ? nodeData.getNodeSerialNumber() : StringUtils.EMPTY;
+            dataRow[1] = nodeData != null ? nodeData.getNodeType().toString() : StringUtils.EMPTY;
+
+            dataRow[2] = nodeComm != null ? String.valueOf(nodeComm.getNodeCommStatusTimestamp()) : StringUtils.EMPTY;
+            dataRow[3] = nodeComm != null ? nodeComm.getNodeCommStatus().toString() : StringUtils.EMPTY;
+            dataRow[4] = gwName != null ? gwName : StringUtils.EMPTY;
+
+            dataRow[5] = nodeComm != null ? nodeComm.getDeviceRfnIdentifier().getSensorSerialNumber()
+                    : StringUtils.EMPTY;
+            dataRow[6] = nodeComm != null ? nodeComm.getDeviceRfnIdentifier().getSensorManufacturer()
+                    : StringUtils.EMPTY;
+            dataRow[7] = nodeComm != null ? nodeComm.getDeviceRfnIdentifier().getSensorModel() : StringUtils.EMPTY;
+
+            dataRow[8] = loc != null ? String.valueOf(loc.getPaoIdentifier().getPaoId()) : StringUtils.EMPTY;
+            dataRow[9] = loc != null ? loc.getRfnIdentifier().getSensorModel() : StringUtils.EMPTY;
+            dataRow[10] = loc != null ? loc.getRfnIdentifier().getSensorSerialNumber() : StringUtils.EMPTY;
+            dataRow[11] = loc != null ? String.valueOf(loc.getLatitude()) : StringUtils.EMPTY;
+            dataRow[12] = loc != null ? String.valueOf(loc.getLongitude()) : StringUtils.EMPTY;
+
+            dataRows.add(dataRow);
         }
+        writeToCsv(destDir, fileName, dataRows);
+    }
+
+    private static void writeToCsv(String destDir, String fileName, List<String[]> dataRows) {
         File temp = new File(CtiUtilities.getYukonBase() + destDir);
         if (!temp.exists()) {
             temp.mkdir();
         }
-        FileUtil.writeToCSV(temp.getPath(), fileName, dataRows);
+        try {
+            FileUtil.writeToCSV(temp.getPath(), fileName, dataRows);
+        } catch (IOException ex) {
+            log.error("Error found while builing location data for " + fileName, ex);
+        }
     }
 }
