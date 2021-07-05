@@ -41,6 +41,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -406,7 +407,10 @@ public class RFNetworkSupportBundleService {
                     // Send Request to collect Node data.
                     metaDataMultiRequestTemplate.send(request, replyHandler);
                     RfnMetadataMultiResponse response = replyHandler.waitForCompletion();
-
+                    if (RfnMetadataMultiResponseType.OK != response.getResponseType() || response.getQueryResults() == null) {
+                        log.error("Error response : {} found in the RfnMetadataMultiResponse." , response.getResponseType());
+                        return;
+                    }
                     // Write data to csv file.
                     if (networkType == RfnNetworkDataType.NETWORKSNAPSHOTDATA) {
                         SupportBundleHelper.buildAndWriteElectricNodeDataToDir(response, dataList, destDir, fileName,
