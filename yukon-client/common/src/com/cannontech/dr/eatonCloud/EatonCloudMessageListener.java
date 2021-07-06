@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -133,6 +134,7 @@ public class EatonCloudMessageListener {
     private void sendShedCommands(int programId, Set<Integer> devices, LMEatonCloudScheduledCycleCommand command, Integer eventId) {
         Map<String, Object> params = getShedParams(command, eventId);
         Map<Integer, String> guids = deviceDao.getGuids(devices);
+        AtomicInteger totalFailed = new AtomicInteger(0);
         guids.forEach((deviceId, guid) -> {
 
             String deviceName = dbCache.getAllDevices().stream()
@@ -140,7 +142,6 @@ public class EatonCloudMessageListener {
                     .findAny()
                     .map(d -> d.getPaoName())
                     .orElse(null);
-            int totalFailed = 0;
             try {
                 EatonCloudCommandResponseV1 response = eatonCloudCommunicationService.sendCommand(guid,
                         new EatonCloudCommandRequestV1("LCR_Control", params));
@@ -152,16 +153,14 @@ public class EatonCloudMessageListener {
                     throw new EatonCloudException(response.getMessage());
                 }
             } catch (EatonCloudCommunicationExceptionV1 e) {
-                totalFailed++;
+                totalFailed.getAndIncrement();
                 log.error("Error sending command device id:{} params:{}", deviceId, params, e);
                 processError(eventId, params, deviceId, e.getErrorMessage().getMessage());
             } catch (EatonCloudException e) {
-                totalFailed++;
+                totalFailed.getAndIncrement();
                 log.error("Error sending command device id:{} params:{}", deviceId, params, e);
                 processError(eventId, params, deviceId, e.getMessage());
             }
-  
-            sendSmartNotifications(command.getGroupId(), programId, devices.size(), totalFailed);
             
             eatonCloudEventLogService.sendShed(deviceName,
                     guid,
@@ -169,6 +168,8 @@ public class EatonCloudMessageListener {
                     command.getDutyCyclePeriod(),
                     command.getCriticality());
         });
+        
+        sendSmartNotifications(command.getGroupId(), programId, devices.size(), totalFailed.intValue());
     }
     
     private void sendSmartNotifications(int groupId, int programId, int totalDevices, int totalFailed) {
@@ -190,7 +191,7 @@ public class EatonCloudMessageListener {
                 deviceId,
                 ControlEventDeviceStatus.FAILED,
                 new Instant(),
-                StringUtils.isEmpty(message) ? null : message.substring(0, 100),
+                StringUtils.isEmpty(message) ? null : message.length() > 100 ? message.substring(0, 100) : message,
                 null);
     }
     
