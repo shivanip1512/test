@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
@@ -352,7 +353,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                 parameters.getProgramId());
         for (String zeusGroupId : zeusGroupIds) {
             ZeusDemandResponseRequest dutyCycleDr = new ZeusDemandResponseRequest(buildZeusEvent(zeusGroupId,
-                    parameters.getStartTime(), parameters.getEndTime(), parameters.isOptional()));
+                    parameters.getStartTime(), parameters.getEndTime(), parameters.isMandatory()));
             dutyCycleDr.getEvent().setDutyCyclePercentage(parameters.getDutyCyclePercent());
             dutyCycleDr.getEvent().setRandomTimeSeconds(parameters.getRandomTimeSeconds());
             if (log.isDebugEnabled()) {
@@ -385,7 +386,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                 parameters.getProgramId());
         for (String zeusGroupId : zeusGroupIds) {
             ZeusDemandResponseRequest setpointDr = new ZeusDemandResponseRequest(buildZeusEvent(zeusGroupId,
-                    parameters.getStartTime(), parameters.getStopTime(), parameters.isOptional()));
+                    parameters.getStartTime(), parameters.getStopTime(), parameters.isMandatory()));
             setpointDr.getEvent().setIsHeatingEvent(parameters.isTempOptionHeat());
             setpointDr.getEvent().setRelativeTemp((float) parameters.getTempOffset());
             if (log.isDebugEnabled()) {
@@ -447,7 +448,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     /**
      * Method to build Zeus event.
      */
-    private ZeusEvent buildZeusEvent(String zeusGroupId, Instant startTime, Instant stopTime, boolean optional) {
+    private ZeusEvent buildZeusEvent(String zeusGroupId, Instant startTime, Instant stopTime, boolean isMandatory) {
         DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         String eventDisplayMessage = messageSourceAccessor.getMessage("yukon.web.modules.dr.ecobee.eventDisplayMessage");
@@ -460,7 +461,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         Duration res = new Duration(startTime, stopTime);
         event.setDurationInMinutes(res.toStandardMinutes().getMinutes());
 
-        event.setMandatory(!optional);
+        event.setMandatory(isMandatory);
 
         event.setMessage(eventDisplayMessage);
         event.setSendEmail(settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
@@ -532,11 +533,10 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @Override
-    public void cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) {
+    public boolean cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException {
+        boolean cancelledAnyDREvents = false;
         for (int yukonGroupId : groupIds) {
             boolean isNotEmptyThermostats = ArrayUtils.isNotEmpty(serialNumbers);
-            log.debug("Sending Zeus cancel DR request for Yukon group : {} for {} thermostat(s)", yukonGroupId,
-                    isNotEmptyThermostats ? serialNumbers : "all");
 
             List<String> zeusEventIds = ecobeeZeusGroupService.getEventIds(yukonGroupId);
             for (String zeusEventId : zeusEventIds) {
@@ -545,6 +545,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                     cancelDrUrl = cancelDrUrl.concat("?thermostat_ids=").concat(String.join(",", serialNumbers));
                 }
                 try {
+                    log.debug("Sending Zeus cancel DR request for Yukon group : {} for {} thermostat(s)", yukonGroupId,
+                            isNotEmptyThermostats ? serialNumbers : "all");
                     ResponseEntity<?> responseEntity = requestHelper.callEcobeeAPIForObject(cancelDrUrl, HttpMethod.DELETE,
                             Map.class);
                     if (responseEntity.getStatusCode() == HttpStatus.OK) {
@@ -556,12 +558,19 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                             // group ID.
                             ecobeeZeusGroupService.removeEventId(zeusEventId);
                         }
+                        cancelledAnyDREvents = true;
                     }
                 } catch (RestClientException | EcobeeAuthenticationException e) {
                     throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
                 }
             }
         }
+        if (!cancelledAnyDREvents) {
+            log.info("There are no events for the provided groups/ serial numbers. No DR Event cancellation request"
+                    + " sent to Ecobee.");
+            throw new CommandCompletionException("No DR Event cancellation request sent to Ecobee.");
+        }
+        return cancelledAnyDREvents;
     }
 
     private String getUrlBase() {
