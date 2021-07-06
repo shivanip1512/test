@@ -155,7 +155,12 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         if (groups.isEmpty()) {
             return 0;
         } else if (groups.size() == 1) {
-            return deviceGroupDao.getDeviceCount(groups.iterator().next());
+            // group size is equal to 1 but value is zero
+            DeviceGroup deviceGroup = groups.iterator().next();
+            if (deviceGroup == null) {
+                return 0;
+            }
+            return deviceGroupDao.getDeviceCount(deviceGroup);
         } else {
             // this is not very efficient, but we don't have an easier way
             log.debug("getting device count on " + groups.size() + " groups, this is the slow way");

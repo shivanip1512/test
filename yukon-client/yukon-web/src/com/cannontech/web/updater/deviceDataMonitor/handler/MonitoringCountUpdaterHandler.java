@@ -38,6 +38,9 @@ public class MonitoringCountUpdaterHandler implements DeviceDataUpdaterHandler {
             if (cachedCount == null) {
                 DeviceDataMonitor monitor = cacheService.getDeviceMonitor(monitorId);
                 DeviceGroup group = monitor.getGroup();
+                if (group == null && monitor.getGroupName() != null) {
+                    group = deviceGroupService.findGroupName(monitor.getGroupName());
+                }
                 cachedCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
                 monitorIdToDeviceCount.put(monitorId, cachedCount);
             }
