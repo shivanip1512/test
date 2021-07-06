@@ -182,7 +182,7 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
         // In case of single program enrollment, only 1 program id will be available else multiple program ids will be there.
         // Remove active enrollment program ids from ecobeeEnrolledProgramIds.
         List<Integer> ecobeeEnrolledProgramIds = ecobeeZeusGroupDao.getProgramIdsEnrolled(inventoryId, lmGroupId);
-        if (ecobeeEnrolledProgramIds.size() > 1) {
+        if (ecobeeEnrolledProgramIds.size() > 0) {
             ecobeeEnrolledProgramIds.removeIf(programId -> yukonEnrolledProgramIds.contains(programId));
         }
         if (ecobeeEnrolledProgramIds.size() == 0) {

@@ -13,17 +13,17 @@ public final class EcobeeDutyCycleDrParameters implements Serializable {
     private final Instant endTime;
     private final int dutyCyclePercent;
     private final int randomTimeSeconds;
-    private final boolean isOptional;
+    private final boolean isMandatory;
     private final int groupId;
 
     public EcobeeDutyCycleDrParameters(int programId, Instant startTime, Instant endTime, int dutyCyclePercent,
-            int randomTimeSeconds, boolean isOptional, int groupId) {
+            int randomTimeSeconds, boolean isMandatory, int groupId) {
         this.programId = programId;
         this.startTime = startTime;
         this.endTime = endTime;
         this.dutyCyclePercent = dutyCyclePercent;
         this.randomTimeSeconds = randomTimeSeconds;
-        this.isOptional = isOptional;
+        this.isMandatory = isMandatory;
         this.groupId = groupId;
     }
 
@@ -47,8 +47,8 @@ public final class EcobeeDutyCycleDrParameters implements Serializable {
         return randomTimeSeconds;
     }
 
-    public boolean isOptional() {
-        return isOptional;
+    public boolean isMandatory() {
+        return isMandatory;
     }
 
     public int getGroupId() {

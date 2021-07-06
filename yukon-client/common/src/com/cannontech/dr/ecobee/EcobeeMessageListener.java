@@ -9,6 +9,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeePlusDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
@@ -81,7 +82,7 @@ public class EcobeeMessageListener {
                                                             controlCyclePercent);
     }
 
-    public void handleRestoreMessage(byte[] message) {
+    public void handleRestoreMessage(byte[] message) throws CommandCompletionException {
         log.debug("Received message on yukon.notif.stream.dr.EcobeeRestoreMessage queue.");
 
         LMEcobeeRestoreCommand ecobeeRestoreCommand = ecobeeRestoreCommandSerializer.fromBytes(message);

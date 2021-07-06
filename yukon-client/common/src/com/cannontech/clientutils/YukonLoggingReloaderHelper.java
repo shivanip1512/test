@@ -49,4 +49,8 @@ public abstract class YukonLoggingReloaderHelper {
             config.addAppender(appender);
         });
     }
+
+    public void reloadYukonLoggers() {
+        //TODO: Reload the loggers in Configuration - YUK-24463
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.broker.logging.YukonBrokerLoggingReloader;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
@@ -35,6 +36,8 @@ public class DatabaseChangeListener implements MessageListener {
                     } else if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.MAX_LOG_FILE_SIZE)) {
                         globalSettingDao.valueChanged();
                         reloader.reloadAppenderForMaxFileSize(true);
+                    } else if (DbChangeCategory.isDbChangeForLogger(event)) {
+                        reloader.reloadYukonLoggers();
                     }
                 }
             } catch (JMSException e) {
