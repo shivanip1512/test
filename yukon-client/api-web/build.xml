@@ -92,7 +92,8 @@
         <include name="lucene-core-8.8.2.jar"/>
         <include name="lucene-queryparser-8.8.2.jar"/>
         <include name="mailapi-1.5.1.jar"/>
-    	<include name="netty-all-4.1.53.Final.jar"/>
+        <include name="netty-all-4.1.53.Final.jar"/>
+        <include name="netty-transport-native-kqueue-4.1.65.Final-osx-x86_64.jar"/>
         <include name="smtp-1.5.1.jar"/>
         <include name="notification.jar"/>
         <include name="org.osgi.core-4.1.0.jar"/>
@@ -110,6 +111,10 @@
         <include name="micrometer-core-1.0.7.jar"/>
         <include name="reactive-streams-1.0.3.jar"/>
         <include name="reactor-core-3.4.6.jar"/>
+        <include name="reactor-netty-http-1.0.7.jar"/>
+        <include name="reactor-netty-http-brave-1.0.7.jar"/>
+        <include name="reactor-netty-core-1.0.7.jar"/>
+        <include name="reactor-netty-1.0.7.jar"/>
         <include name="sqljdbc42.jar"/>
         <include name="web-common.jar"/>
         <include name="wsdl4j-1.6.3.jar"/>
