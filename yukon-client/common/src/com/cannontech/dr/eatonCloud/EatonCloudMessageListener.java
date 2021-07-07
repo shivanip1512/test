@@ -221,10 +221,8 @@ public class EatonCloudMessageListener {
         
         DateTime dateTime = new DateTime();
         if (!successDeviceIds.isEmpty()) {
-            int readTimeFromNowInMinutes = 1; 
-            if(command.getDutyCyclePeriod() != null) {
-                readTimeFromNowInMinutes = IntMath.divide(command.getDutyCyclePeriod(), 2, RoundingMode.CEILING);
-            }
+            int readTimeFromNowInMinutes = command.getDutyCyclePeriod() == null ? 5 : IntMath.divide(command.getDutyCyclePeriod(),
+                    2, RoundingMode.CEILING);
             nextRead.put(Pair.of(dateTime.plusMinutes(readTimeFromNowInMinutes).toInstant(), sendTime), successDeviceIds);
         }
         sendSmartNotifications(command.getGroupId(), programId, devices.size(), totalFailed.intValue());
