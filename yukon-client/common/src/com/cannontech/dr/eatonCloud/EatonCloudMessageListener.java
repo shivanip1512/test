@@ -1,21 +1,31 @@
 package com.cannontech.dr.eatonCloud;
 
+import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -26,6 +36,8 @@ import com.cannontech.common.smartNotification.model.EatonCloudDrEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
+import com.cannontech.common.util.Range;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -34,6 +46,7 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
+import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
@@ -47,6 +60,7 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.math.IntMath;
 
 public class EatonCloudMessageListener {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudMessageListener.class);
@@ -65,6 +79,12 @@ public class EatonCloudMessageListener {
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private EatonCloudDataReadService eatonCloudDataReadService;
+    private Executor executor = Executors.newCachedThreadPool();
+    @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
+    
+    // next read time, send time, set of ids to read
+    private Map<Pair<Instant, Instant>, Set<Integer>> nextRead = Collections.synchronizedMap(new HashMap<Pair<Instant, Instant>, Set<Integer>>());
     
     private int failureNotificationPercent;
     
@@ -72,9 +92,35 @@ public class EatonCloudMessageListener {
     public void init() {
         failureNotificationPercent = configurationSource.getInteger(
             MasterConfigInteger.EATON_CLOUD_NOTIFICATION_COMMAND_FAILURE_PERCENT, 25);
+        scheduleReads();
     }
-            
-            
+                     
+    private void scheduleReads() {
+        scheduledExecutor.scheduleAtFixedRate(() -> {
+            try {
+                Iterator<Pair<Instant, Instant>> iter = nextRead.keySet().iterator();
+                // For each key in cache
+                while (iter.hasNext()) {
+                    Pair<Instant, Instant> time = iter.next();
+                    if (time.getKey().isEqualNow() || time.getKey().isBeforeNow()) {
+                        Instant max = Instant.now();
+                        // command send time
+                        Instant min = time.getValue();
+                        Range<Instant> range = new Range<Instant>(min, true, max, true);
+                        executor.execute(() -> {
+                            log.info("Reading devices {}  {}-{}", range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
+                                    range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
+                            eatonCloudDataReadService.collectDataForRead(nextRead.get(time), range);
+                        });
+                        iter.remove();
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error", e);
+            }
+        }, 0, 1, TimeUnit.MINUTES);
+    }
+
     public enum CommandParam {
         FLAGS("flags"),
         VRELAY("vrelay"),
@@ -135,8 +181,10 @@ public class EatonCloudMessageListener {
         Map<String, Object> params = getShedParams(command, eventId);
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         AtomicInteger totalFailed = new AtomicInteger(0);
+        Set<Integer> successDeviceIds = new HashSet<>();
+        Instant sendTime = new Instant();
+        
         guids.forEach((deviceId, guid) -> {
-
             String deviceName = dbCache.getAllDevices().stream()
                     .filter(d -> d.getLiteID() == deviceId)
                     .findAny()
@@ -149,6 +197,7 @@ public class EatonCloudMessageListener {
                     recentEventParticipationDao.updateDeviceControlEvent(eventId.toString(), deviceId,
                             ControlEventDeviceStatus.SUCCESS_RECEIVED, new Instant(),
                             null, null);
+                    successDeviceIds.add(deviceId);
                 } else {
                     throw new EatonCloudException(response.getMessage());
                 }
@@ -169,7 +218,16 @@ public class EatonCloudMessageListener {
                     command.getCriticality());
         });
         
+        DateTime dateTime = new DateTime();
+        if (!successDeviceIds.isEmpty()) {
+            int readTimeFromNowInMinutes = 5; 
+            if(command.getDutyCyclePeriod() != null) {
+                readTimeFromNowInMinutes = IntMath.divide(command.getDutyCyclePeriod(), 2, RoundingMode.CEILING);
+            }
+            nextRead.put(Pair.of(dateTime.plusMinutes(readTimeFromNowInMinutes).toInstant(), sendTime), successDeviceIds);
+        }
         sendSmartNotifications(command.getGroupId(), programId, devices.size(), totalFailed.intValue());
+        
     }
     
     private void sendSmartNotifications(int groupId, int programId, int totalDevices, int totalFailed) {
