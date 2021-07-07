@@ -240,7 +240,7 @@ public class EatonCloudMessageListener {
         params.put(CommandParam.STOP_TIME.getParamName(), stopTimeSeconds);
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
         params.put(CommandParam.CYCLE_PERCENT.getParamName(), command.getDutyCyclePercentage());
-        params.put(CommandParam.CYCLE_PERIOD.getParamName(), command.getDutyCyclePeriod());
+        params.put(CommandParam.CYCLE_PERIOD.getParamName(), command.getDutyCyclePeriod() / 60);
         params.put(CommandParam.CYCLE_COUNT.getParamName(), cycleCount);
         params.put(CommandParam.CRITICALITY.getParamName(), command.getCriticality());
         params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
