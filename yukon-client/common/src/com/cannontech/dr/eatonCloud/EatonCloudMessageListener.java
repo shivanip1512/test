@@ -107,10 +107,11 @@ public class EatonCloudMessageListener {
                         // command send time
                         Instant min = time.getValue();
                         Range<Instant> range = new Range<Instant>(min, true, max, true);
+                        Set<Integer> devicesToRead = nextRead.get(time);
                         executor.execute(() -> {
-                            log.info("Reading devices {}  {}-{}", range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
+                            log.debug("Reading devices {}  {}-{}", range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
                                     range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
-                            eatonCloudDataReadService.collectDataForRead(nextRead.get(time), range);
+                            eatonCloudDataReadService.collectDataForRead(devicesToRead, range);
                         });
                         iter.remove();
                     }
@@ -220,7 +221,7 @@ public class EatonCloudMessageListener {
         
         DateTime dateTime = new DateTime();
         if (!successDeviceIds.isEmpty()) {
-            int readTimeFromNowInMinutes = 5; 
+            int readTimeFromNowInMinutes = 1; 
             if(command.getDutyCyclePeriod() != null) {
                 readTimeFromNowInMinutes = IntMath.divide(command.getDutyCyclePeriod(), 2, RoundingMode.CEILING);
             }
