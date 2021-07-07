@@ -396,5 +396,26 @@
     <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentSuccess">Attribute: {0} has been successfully assigned to the following device types: {1}.</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentFailed">There was an error assigning Attribute: {0} to the following device types: {1}. Please see logs for more detail.</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentDeleteSuccess">Assignment for attribute: {0} has been successfully deleted.</entry>
+
+    <entry key="yukon.web.modules.adminSetup.config.loggers.pageName">Yukon Loggers</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.userLoggers.title">User Loggers</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.systemLoggers.title">System Loggers</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.allLoggers">All Loggers</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.allLoggerLevels">All Logger Levels</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.addLoggerTitle">Add User Logger</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.editUserLoggerTitle">Edit User Logger</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.editSystemLoggerTitle">Edit System Logger</entry>
     
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggerName">Logger Name</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggerLevel">Logger Level</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.expiration">Expiration Days</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.notes">Notes</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.config.loggers.viewNotes">View All Notes</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers..noteText.placeHolder">Note Text (255 characters max)</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.config.attributes.loggerConfirmDelete.title">Confirm Delete</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.loggerConfirmDelete.message">Are you sure you want to delete this logger from userLogger?</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.loggerConfirmDelete.ok">Delete</entry>
+
 </properties>
