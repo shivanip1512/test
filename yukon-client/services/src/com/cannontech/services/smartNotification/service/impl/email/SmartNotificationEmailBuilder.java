@@ -65,7 +65,8 @@ public abstract class SmartNotificationEmailBuilder {
         String emailBodyKeyBase = "yukon.web.modules.smartNotifications." + type + "." + quantity;;
         
         Object[] bodyArguments = getBodyArguments(events, verbosity, intervalMinutes);
-        String emailBody = messageSourceAccessor.getMessage(emailBodyKeyBase + "." + verbosity + ".text", bodyArguments);
+        String bodyKey = emailBodyKeyBase + "." + verbosity + ".text";
+        String emailBody = messageSourceAccessor.getMessage(bodyKey, bodyArguments);
         
         Object[] subjectArguments = getSubjectArguments(events, verbosity);
         String emailSubject = messageSourceAccessor.getMessage("yukon.web.modules.smartNotifications." + type + "." +

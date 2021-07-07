@@ -10,7 +10,8 @@ public enum SmartNotificationEventType implements DisplayableEnum {
     INFRASTRUCTURE_WARNING("infrastructureWarnings"),
     YUKON_WATCHDOG("watchdogWarnings"),
     ASSET_IMPORT("assetImport"),
-    METER_DR("meterDr") 
+    METER_DR("meterDr"),
+    EATON_CLOUD_DR("eatonCloudDr")
     ;
     
     private String urlPath;
