@@ -21,6 +21,7 @@ public enum GlobalSettingSubCategory implements DisplayableEnum {
     AMI(GlobalSettingCategory.SYSTEM_SETUP),
     AUTHENTICATION(GlobalSettingCategory.SYSTEM_SETUP),
     DR(GlobalSettingCategory.SYSTEM_SETUP),
+    YUKON_LOGGERS(GlobalSettingCategory.SYSTEM_SETUP),
     YUKON_SERVICES(GlobalSettingCategory.SYSTEM_SETUP),
     THEMES(GlobalSettingCategory.SYSTEM_SETUP),
     WEB_SERVER(GlobalSettingCategory.SYSTEM_SETUP),
