@@ -91,6 +91,7 @@ public class YukonLoggersController {
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("isEditMode", false);
         model.addAttribute("logger", logger);
+        model.addAttribute("allowDateTimeSelection", true);
 
         return "config/addLoggerPopup.jsp";
     }
@@ -111,6 +112,7 @@ public class YukonLoggersController {
         model.addAttribute("logger", cache.get(loggerId));
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("isEditMode", true);
+        model.addAttribute("allowDateTimeSelection", true);
         return "config/addLoggerPopup.jsp";
     }
 

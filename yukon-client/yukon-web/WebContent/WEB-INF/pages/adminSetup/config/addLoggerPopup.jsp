@@ -22,9 +22,16 @@
                 <tags:selectWithItems inputClass= "js-levels" path="level" items="${loggerLevels}"/>
             </tags:nameValue2>
 
-            <tags:nameValue2 nameKey=".expiration">
-                <dt:date name="expirationDate" value="${now}"/>
-            </tags:nameValue2>
+            <c:if test="${allowDateTimeSelection}">
+                <tags:nameValue2 nameKey=".expiration">
+                    <tags:switchButton name="specifiedDateTime" toggleGroup="js-date-time" toggleAction="hide" color="false"
+                       onNameKey="yukon.common.specified" offNameKey="yukon.common.now" checked="${specifiedDateTime}"/>
+                    <c:set var="specifiedClass" value="${specifiedDateTime ? '' : 'dn'}"/>
+                    <span data-toggle-group="js-date-time" class="${specifiedClass}">
+                        <dt:dateTime path="timestamp"/>
+                    </span>
+                </tags:nameValue2>
+            </c:if>
                 
             <tags:nameValue2 nameKey=".notes">
                 <cti:msg2 var="noteTextPlaceholder" key=".noteText.placeHolder"/>
