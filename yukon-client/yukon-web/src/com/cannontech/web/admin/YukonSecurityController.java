@@ -290,13 +290,11 @@ public class YukonSecurityController {
             String pushConfigDateTime = dateFormattingService.format(dynamicPaoInfo.getTimestamp(),
                     DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
             if (status == PushApiConfigurationStatus.SUCCESS) {
-				
-				  String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
-				  model.put("ecobeeZeusRegisteredDateTime", successMsg +" "+ pushConfigDateTime);
+                String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
+                model.put("ecobeeZeusRegisteredDateTime", successMsg + " " + pushConfigDateTime);
             } else {
-				
-				  String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyNotRegistered");
-				  model.put("ecobeeZeusRegisteredDateTime", errMsg +" "+ pushConfigDateTime);
+                String errMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyNotRegistered");
+                model.put("ecobeeZeusRegisteredDateTime", errMsg + " " + pushConfigDateTime);
             }
         }
          
@@ -687,9 +685,9 @@ public class YukonSecurityController {
         try {
             String privateKey = ecobeeZeusSecurityService.getZeusEncryptionKey().getPrivateKey();
             ecobeeZeusCommunicationService.createPushApiConfiguration(getReportingUrl(), privateKey);
-			String simpleTextSuccessMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
+            String simpleTextSuccessMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeyRegistered");
             String successMsg = accessor.getMessage(baseKey + ".ecobeeZeusKeySuccessfullyRegistered");
-			json.put("ecobeeZeusRegisteredDateTime", simpleTextSuccessMsg +" "+ registeredDateTime);
+            json.put("ecobeeZeusRegisteredDateTime", simpleTextSuccessMsg + " " + registeredDateTime);
             json.put("ecobeeZeusRegisteredDateTimeMsg", successMsg);
             json.put("success", true);
         } catch (Exception e) {
