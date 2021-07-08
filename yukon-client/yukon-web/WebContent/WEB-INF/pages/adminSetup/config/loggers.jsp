@@ -1,12 +1,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="adminSetup" page="config.loggers">
+    <dt:pickerIncludes/>
     <cti:msgScope paths="yukon.common,modules.adminSetup.config.loggers">
 
         <div class="box clear dashboard">
@@ -34,7 +36,7 @@
                         <cti:msg2 var="allLoggers" key=".allLoggers"/>&nbsp;
                         <select name="selectedLoggers" class="js-selected-loggers" multiple="multiple" size="1" 
                             data-placeholder="${allLoggers}" style="width:350px;">
-                            <c:forEach var="logger" items="${loggerName}">
+                            <c:forEach var="logger" items="${loggers}">
                                 <option value="${logger.loggerId}">${fn:escapeXml(logger.loggerName)}</option>
                             </c:forEach>
                         </select>
@@ -47,7 +49,6 @@
                             </c:forEach>
                         </select>
                     </span>
-                                        
                     <cti:button nameKey="filter" classes="js-filter-loggers action primary fn"/>
                 </form:form>
             </div>

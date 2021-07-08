@@ -127,7 +127,8 @@ public class YukonLoggersController {
     private void save(YukonLogger logger) {
         if (logger.getLoggerId() == 0) {
             List<Integer> sortedKeys = cache.keySet().stream().sorted().collect(Collectors.toList());
-            logger.setLoggerId(sortedKeys.get(sortedKeys.size() - 1));
+            sortedKeys.add(sortedKeys.size());
+            logger.setLoggerId(sortedKeys.get(sortedKeys.size()-1));
             cache.put(logger.getLoggerId(), logger);
         } else {
             cache.remove(logger.getLoggerId());
@@ -138,7 +139,7 @@ public class YukonLoggersController {
     @GetMapping("/config/loggers/filter")
     public String filter(@ModelAttribute YukonLogger loggerFilter,
             @DefaultSort(dir = Direction.asc, sort = "loggerName") SortingParameters sorting, YukonLogger[] selectedLoggers,
-            LoggerLevel[] loggerLevels,
+            String loggerName, LoggerLevel[] loggerLevels,
             ModelMap model, PagingParameters paging, YukonUserContext userContext, HttpServletRequest request,
             HttpServletResponse resp) {
         retrieveLoggers(sorting, selectedLoggers, loggerLevels, model, userContext, request, resp);
@@ -165,8 +166,9 @@ public class YukonLoggersController {
 
     public enum FilterSortBy implements DisplayableEnum {
 
-        NAME(SortBy.NAME),
-        LEVEL(SortBy.LEVEL);
+        loggerName(SortBy.NAME),
+        loggerLevel(SortBy.LEVEL),
+        expirationDate(SortBy.EXPIRATION);
 
         private final SortBy value;
 
@@ -180,14 +182,15 @@ public class YukonLoggersController {
 
         @Override
         public String getFormatKey() {
-            return "yukon.web.modules.dr.setup.filter." + name();
+            return "yukon.web.modules.adminSetup.config.loggers." + name();
 
         }
     }
 
     public enum SortBy {
         NAME("loggerName"),
-        LEVEL("loggerLevel");
+        LEVEL("loggerLevel"),
+        EXPIRATION("expirationDate");
 
         private final String dbString;
 

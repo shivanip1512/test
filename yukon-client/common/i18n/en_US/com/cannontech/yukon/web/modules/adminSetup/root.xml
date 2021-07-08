@@ -408,11 +408,11 @@
     
     <entry key="yukon.web.modules.adminSetup.config.loggers.loggerName">Logger Name</entry>
     <entry key="yukon.web.modules.adminSetup.config.loggers.loggerLevel">Logger Level</entry>
-    <entry key="yukon.web.modules.adminSetup.config.loggers.expiration">Expiration Days</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.expirationDate">Expiration Days</entry>
     <entry key="yukon.web.modules.adminSetup.config.loggers.notes">Notes</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.loggers.viewNotes">View All Notes</entry>
-    <entry key="yukon.web.modules.adminSetup.config.loggers..noteText.placeHolder">Note Text (255 characters max)</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.noteText.placeHolder">Note Text (255 characters max)</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.attributes.loggerConfirmDelete.title">Confirm Delete</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.loggerConfirmDelete.message">Are you sure you want to delete this logger from userLogger?</entry>
