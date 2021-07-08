@@ -66,10 +66,10 @@ yukon.adminSetup.yukonLoggers = (function () {
             
             $(document).on('yukon:logger:load', function (ev) {
                 var popup = $(ev.target);
+                yukon.ui.initDateTimePickers();
                 popup.find('.js-levels').chosen({'width': '350px'});
                 if (popup.find('.user-message').is(':visible')) {
                     $('.ui-dialog-buttonset').find('.js-primary-action').prop('disabled', true);
-                    yukon.ui.initDateTimePickers();
                 }
                 
             });  

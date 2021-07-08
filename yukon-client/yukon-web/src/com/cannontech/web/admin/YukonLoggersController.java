@@ -9,7 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.log.model.LoggerLevel;
@@ -31,12 +30,8 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.search.FilterCriteria;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.admin.AttributesController.AssignmentSortBy;
-import com.cannontech.web.api.dr.setup.dao.LMSetupDao.SortBy;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 
@@ -76,7 +71,7 @@ public class YukonLoggersController {
                 userLoggers.add(logger);
             }
         }
-        // add sorting here
+       // retrieveLoggers(sorting, selectedLoggers, loggerLevels, model, userContext, request, resp);
         model.addAttribute("userLoggers", userLoggers);
         model.addAttribute("systemLoggers", systemLoggers);
 
@@ -91,6 +86,8 @@ public class YukonLoggersController {
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("isEditMode", false);
         model.addAttribute("logger", logger);
+        DateTime expirationDate = new DateTime();
+        model.addAttribute("now", expirationDate.now());
         model.addAttribute("allowDateTimeSelection", true);
 
         return "config/addLoggerPopup.jsp";

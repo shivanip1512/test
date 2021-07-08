@@ -29,7 +29,8 @@
                        onNameKey="yukon.common.specified" offNameKey="yukon.common.never" checked="${specifiedDateTime}"/>
                     <c:set var="specifiedClass" value="${specifiedDateTime ? '' : 'dn'}"/>
                     <span data-toggle-group="js-date-time" class="${specifiedClass}">
-                        <dt:date name="p1" value="${now}" path="expirationDate"/>
+                        <dt:date name="p1" value="${now}" minDate="${now}" path="expirationDate"/>
+                       
                     </span>
                 </tags:nameValue2>
             </c:if>
