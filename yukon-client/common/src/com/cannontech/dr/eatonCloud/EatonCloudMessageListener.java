@@ -219,21 +219,29 @@ public class EatonCloudMessageListener {
      */
     private Map<String, Object> getShedParams(LMEatonCloudScheduledCycleCommand command, int eventId) {
         Map<String, Object> params = new HashMap<>();
+        long startTimeSeconds = System.currentTimeMillis() / 1000;
+        long stopTimeSeconds = 0;
+
         if (command.getControlStartDateTime() != null) {
-            params.put(CommandParam.START_TIME.getParamName(), command.getControlStartDateTime().getMillis() / 1000);
-        } else {
-            params.put(CommandParam.START_TIME.getParamName(), System.currentTimeMillis() / 1000);
+            startTimeSeconds = command.getControlStartDateTime().getMillis() / 1000;
         }
-        
+
         if (command.getControlEndDateTime() != null) {
-            params.put(CommandParam.STOP_TIME.getParamName(), command.getControlEndDateTime().getMillis() / 1000);
-        } else {
-            params.put(CommandParam.STOP_TIME.getParamName(), 0);
+            stopTimeSeconds = command.getControlEndDateTime().getMillis() / 1000;
         }
-        
+
+        double durationSeconds = stopTimeSeconds - startTimeSeconds;
+        double cycleCount = 1;
+        if (stopTimeSeconds != 0) {
+            cycleCount = Math.ceil(durationSeconds / command.getDutyCyclePeriod());
+        }
+
+        params.put(CommandParam.START_TIME.getParamName(), startTimeSeconds);
+        params.put(CommandParam.STOP_TIME.getParamName(), stopTimeSeconds);
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
         params.put(CommandParam.CYCLE_PERCENT.getParamName(), command.getDutyCyclePercentage());
-        params.put(CommandParam.CYCLE_COUNT.getParamName(), command.getDutyCyclePeriod());
+        params.put(CommandParam.CYCLE_PERIOD.getParamName(), command.getDutyCyclePeriod() / 60);
+        params.put(CommandParam.CYCLE_COUNT.getParamName(), cycleCount);
         params.put(CommandParam.CRITICALITY.getParamName(), command.getCriticality());
         params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
         return params;
