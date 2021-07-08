@@ -4,12 +4,11 @@ import static com.cannontech.common.smartNotification.model.SmartNotificationFre
 import static com.cannontech.common.smartNotification.model.SmartNotificationFrequency.IMMEDIATE;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -31,8 +30,8 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
-import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters.ProcessingType;
+import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.services.smartNotification.service.impl.Intervals;
 import com.cannontech.services.smartNotification.service.impl.WaitTime;
 import com.cannontech.yukon.IDatabaseCache;
@@ -65,9 +64,9 @@ public abstract class SmartNotificationDecider {
      * 
      * A subclass does not inherit the private members of its parent class. Cache is only 1 copy.
      */
-    private Map<String, WaitTime> intervalCache = Collections.synchronizedMap(new HashMap<String, WaitTime>());
+    private Map<String, WaitTime> intervalCache = new ConcurrentHashMap<String, WaitTime>();
 
-    private Map<String, List<Statistics>> statistics = Collections.synchronizedMap(new HashMap<String, List<Statistics>>());
+    private Map<String, List<Statistics>> statistics = new ConcurrentHashMap<String, List<Statistics>>();
 
     @PostConstruct
     private void init() {

@@ -2,7 +2,6 @@ package com.cannontech.dr.eatonCloud;
 
 import java.math.RoundingMode;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -84,7 +84,7 @@ public class EatonCloudMessageListener {
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     
     // next read time, send time, set of ids to read
-    private Map<Pair<Instant, Instant>, Set<Integer>> nextRead = Collections.synchronizedMap(new HashMap<Pair<Instant, Instant>, Set<Integer>>());
+    private Map<Pair<Instant, Instant>, Set<Integer>> nextRead = new ConcurrentHashMap<Pair<Instant, Instant>, Set<Integer>>();
     
     private int failureNotificationPercent;
     
@@ -107,11 +107,14 @@ public class EatonCloudMessageListener {
                         // command send time
                         Instant min = time.getValue();
                         Range<Instant> range = new Range<Instant>(min, true, max, true);
-                        Set<Integer> devicesToRead = nextRead.get(time);
+                        Set<Integer> devicesToRead = recentEventParticipationDao.getDeviceIdsByStatus(nextRead.get(time),
+                                ControlEventDeviceStatus.SUCCESS_RECEIVED, range);
                         executor.execute(() -> {
-                            log.debug("Reading devices {}  {}-{}", range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
+                            log.debug("Reading devices {}  {}-{}", devicesToRead.size(), range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
                                     range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
-                            eatonCloudDataReadService.collectDataForRead(devicesToRead, range);
+                            if (!devicesToRead.isEmpty()) {
+                                eatonCloudDataReadService.collectDataForRead(devicesToRead, range);
+                            }
                         });
                         iter.remove();
                     }

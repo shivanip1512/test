@@ -1,12 +1,13 @@
 package com.cannontech.dr.recenteventparticipation.dao.impl;
 
-import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.UNKNOWN;
 import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.FAILED;
+import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.UNKNOWN;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -17,12 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -408,4 +412,24 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("AND DeviceId").eq(deviceId);
         jdbcTemplate.update(sql);
     }
+    
+    @Override
+    public Set<Integer> getDeviceIdsByStatus(Set<Integer> deviceIds, ControlEventDeviceStatus status, Range<Instant> range) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = (subList) -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT DeviceId");
+            sql.append("FROM ControlEventDevice");
+            sql.append("WHERE DeviceId").in(subList);
+            sql.append("AND Result").eq(status);
+            sql.append("AND DeviceReceivedTime").gte(range.getMin());
+            sql.append("AND DeviceReceivedTime").lte(range.getMax());
+            return sql;
+        };
+
+        return template.query(sqlGenerator, deviceIds, TypeRowMapper.INTEGER)
+                .stream().distinct().collect(Collectors.toSet());
+
+    }
+
 }
