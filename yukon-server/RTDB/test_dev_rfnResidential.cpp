@@ -314,7 +314,7 @@ BOOST_AUTO_TEST_CASE(test_control_disconnect_failure)
     BOOST_CHECK_EQUAL(commandResults[0].description, 
         "RFN Meter Disconnect - Terminate service:"
         "\nUser message ID : 11235"
-        "\nReply type      : 1 - FAILURE"
+        "\nReply type      : 17 - FAILURE_SERVICE_DISCONNECT_NOT_ENABLED"
         "\nStatus          : 0 - UNKNOWN"
         "\nDetails         : Meter failure 6 - Command rejected because service disconnect is not enabled.");
     BOOST_CHECK_EQUAL(commandResults[0].status, 0);

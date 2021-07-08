@@ -166,6 +166,8 @@ try
         }
         case 0x01:
         {
+            using RT = ReplyType;
+
             gsl::span failure_payload { response.data() + 3, response.size() - 3 };
 
             validate(Condition(failure_payload.size() >= 2, ClientErrors::DataMissing)
@@ -174,34 +176,58 @@ try
             const auto type   = failure_payload[0];
             const auto length = failure_payload[1];
 
+            struct FailureDetail {
+                ReplyType type;
+                std::string description;
+            };
+
             switch( type )
             {
                 case 0x01:
                 {
-                    _response = makeFailureResponse(ReplyType::FAILURE);
+                    static const std::map<unsigned, FailureDetail> protocolFailures {
+                        { 0x00, { RT::FAILURE, 
+                                    "Request Accepted" } },
+                        { 0x01, { RT::FAILURE_REQUEST_REJECTED_REASON_UNKNOWN, 
+                                    "Request Rejected (reason unknown)" } },
+                        { 0x02, { RT::FAILURE_SERVICE_NOT_SUPPORTED, 
+                                    "Service Not Supported" } },
+                        { 0x03, { RT::FAILURE_INSUFFICIENT_SECURITY_CLEARANCE, 
+                                    "Insufficient Security Clearance" } },
+                        { 0x04, { RT::FAILURE_OPERATION_NOT_POSSIBLE, 
+                                    "Operation Not Possible (covers errors such as Invalid Length and Invalid Offset)" } },
+                        { 0x05, { RT::FAILURE_INAPPROPRIATE_ACTION_REQUESTED, 
+                                    "Inappropriate Action Requested (covers errors such as Writing to a Read-only table and Invalid Table ID)" } },
+                        { 0x06, { RT::FAILURE_DEVICE_BUSY, 
+                                    "Device Busy (request not acted upon because meter was busy)" } },
+                        { 0x07, { RT::FAILURE_DATA_NOT_READY, 
+                                    "Data Not Ready" } },
+                        { 0x08, { RT::FAILURE_DATA_LOCKED, 
+                                    "Data Locked (requested data cannot be accessed)" } },
+                        { 0x09, { RT::FAILURE_RENEGOTIATE_REQUEST, 
+                                    "Renegotiate Request (indicates that the meter has to return to the ID or base state and re-negotiate communication parameters)" } },
+                        { 0x0A, { RT::FAILURE_INVALID_STATE, 
+                                    "Invalid Service Sequence State indicates that node has not logged into the meter properly before making a request."
+                                    "  This can happen when power has been lost briefly and the meter’s processor has reset but the node has not reset." } } };
 
-                    static std::map<std::uint8_t, std::string> protocolFailureDescriptions {
-                        { 0x00, "Request Accepted" },
-                        { 0x01, "Request Rejected (reason unknown)" },
-                        { 0x02, "Service Not Supported" },
-                        { 0x03, "Insufficient Security Clearance" },
-                        { 0x04, "Operation Not Possible (covers errors such as Invalid Length and Invalid Offset)" },
-                        { 0x05, "Inappropriate Action Requested (covers errors such as Writing to a Read-only table and Invalid Table ID)" },
-                        { 0x06, "Device Busy (request not acted upon because meter was busy)" },
-                        { 0x07, "Data Not Ready" },
-                        { 0x08, "Data Locked (requested data cannot be accessed)" },
-                        { 0x09, "Renegotiate Request (indicates that the meter has to return to the ID or base state and re-negotiate communication parameters)" },
-                        { 0x0A, "Invalid Service Sequence State indicates that node has not logged into the meter properly before making a request."
-                                "  This can happen when power has been lost briefly and the meter’s processor has reset but the node has not reset." }};
+                    ReplyType replyType = RT::FAILURE;
 
                     if( length == 1 )
                     {
-                        details = "Protocol failure " + std::to_string(failure_payload[2]) + " - " + mapFindOrDefault(protocolFailureDescriptions, failure_payload[2], "<no description>");
+                        const unsigned protocolFailureCode = failure_payload[2];
+
+                        const auto protocolFailureDetail = mapFindOrDefault(protocolFailures, protocolFailureCode, { RT::FAILURE, "<no description>" });
+
+                        replyType = protocolFailureDetail.type;
+
+                        details = "Protocol failure " + std::to_string(protocolFailureCode) + " - " + protocolFailureDetail.description;
                     }
                     else
                     {
                         details = "Unsupported Protocol Failure TLV length " + std::to_string(length);
                     }
+
+                    _response = makeFailureResponse(replyType);
 
                     break;
                 }
@@ -213,38 +239,50 @@ try
                     validate(Condition(failure_payload.size() >= 3, ClientErrors::DataMissing)
                         << "RFN meter disconnect response does not include failure TLV value byte");
 
-                    static std::map<std::uint8_t, ReplyType> meterFailures{
-                        { 0x01, ReplyType::FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD },
-                        { 0x0a, ReplyType::FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT },
-                        { 0x0b, ReplyType::FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT },
-                    };
+                    static std::map<std::uint8_t, FailureDetail> meterFailures {
+                        { 0x00, { RT::FAILURE, 
+                                    "Command accepted." } },
+                        { 0x01, { RT::FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD, 
+                                    "Command rejected because a load side voltage higher than the configurable threshold prevented the switch from closing." } },
+                        { 0x02, { RT::FAILURE_ARM_REJECTED_SWITCH_NOT_OPEN, 
+                                    "Arm command rejected because the switch can only be armed when the switch is open." } },
+                        { 0x03, { RT::FAILURE_METER_IN_TEST_MODE, 
+                                    "Command rejected because the meter is in test mode." } },
+                        { 0x04, { RT::FAILURE_CLOSE_PRESSED_BUT_METER_NOT_ARMED, 
+                                    "Command rejected because the service disconnect close button was pressed but the meter was not armed." } },
+                        { 0x05, { RT::FAILURE_METER_NOT_CAPABLE_OF_SERVICE_DISCONNECT, 
+                                    "Command rejected because meter is not capable of service disconnect." } },
+                        { 0x06, { RT::FAILURE_SERVICE_DISCONNECT_NOT_ENABLED, 
+                                    "Command rejected because service disconnect is not enabled." } },
+                        { 0x07, { RT::FAILURE_SERVICE_DISCONNECT_IS_CHARGING, 
+                                    "Command rejected because service disconnect is currently charging." } },
+                        { 0x08, { RT::FAILURE_SERVICE_DISCONNECT_ALREADY_OPERATING, 
+                                    "Command rejected because service disconnect was already in operation." } },
+                        { 0x09, { RT::FAILURE_CAPACITOR_DISCHARGE_NOT_DETECTED, 
+                                    "Command failed because discharge of capacitor was not detected." } },
+                        { 0x0A, { RT::FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT, 
+                                    "Command failed because load side voltage was detected after completion of disconnect." } },
+                        { 0x0B, { RT::FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT,
+                                    "Command failed because no load side voltage was detected after completion of a connect." } }  };
 
-                    const auto failureType = mapFindOrDefault(meterFailures, failure_payload[2], ReplyType::FAILURE);
-
-                    _response = makeFailureResponse(failureType);
-
-                    static std::map<std::uint8_t, std::string> meterFailureDescriptions {
-                        { 0x00, "Command accepted." },
-                        { 0x01, "Command rejected because a load side voltage higher than the configurable threshold prevented the switch from closing." },
-                        { 0x02, "Arm command rejected because the switch can only be armed when the switch is open." },
-                        { 0x03, "Command rejected because the meter is in test mode." },
-                        { 0x04, "Command rejected because the service disconnect close button was pressed but the meter was not armed." },
-                        { 0x05, "Command rejected because meter is not capable of service disconnect." },
-                        { 0x06, "Command rejected because service disconnect is not enabled." },
-                        { 0x07, "Command rejected because service disconnect is currently charging." },
-                        { 0x08, "Command rejected because service disconnect was already in operation." },
-                        { 0x09, "Command failed because discharge of capacitor was not detected." },
-                        { 0x0A, "Error, load side voltage detected after completion of disconnect." },
-                        { 0x0B, "Error, no load side voltage detected after completion of a connect." }};
+                    ReplyType replyType = RT::FAILURE;
 
                     if( length == 1 )
                     {
-                        details += "Meter failure " + std::to_string(failure_payload[2]) + " - " + mapFindOrDefault(meterFailureDescriptions, failure_payload[2], "<no description>");
+                        const unsigned meterFailureCode = failure_payload[2];
+
+                        const auto meterFailureDetail = mapFindOrDefault(meterFailures, meterFailureCode, { RT::FAILURE, "<no description>" });
+
+                        replyType = meterFailureDetail.type;
+
+                        details += "Meter failure " + std::to_string(meterFailureCode) + " - " + meterFailureDetail.description;
                     }
                     else
                     {
                         details += "Unsupported Meter Failure TLV length " + std::to_string(length);
                     }
+
+                    _response = makeFailureResponse(replyType);
 
                     break;
                 }
@@ -281,26 +319,41 @@ try
     }
 
     FormattedList results;
-    
+
+#define STRINGIZE_REPLY_TYPE(x) { ReplyType::##x, #x }
     static const std::map<ReplyType, std::string> replyTypeDescriptions {
-        { ReplyType::SUCCESS,
-                    "SUCCESS" },
-        { ReplyType::FAILURE,
-                    "FAILURE" },
-        { ReplyType::FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD,
-                    "FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD" },
-        { ReplyType::FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT,
-                    "FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT" },
-        { ReplyType::FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT,
-                    "FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT" },
-        { ReplyType::FAILED_UNEXPECTED_STATUS,
-                    "FAILED_UNEXPECTED_STATUS" },
-        { ReplyType::NOT_SUPPORTED,
-                    "NOT_SUPPORTED" },
-        { ReplyType::NETWORK_TIMEOUT,
-                    "NETWORK_TIMEOUT" },
-        { ReplyType::TIMEOUT,
-                    "TIMEOUT" } };
+        STRINGIZE_REPLY_TYPE( SUCCESS ),
+
+        STRINGIZE_REPLY_TYPE( FAILURE ),
+
+        STRINGIZE_REPLY_TYPE( FAILURE_REQUEST_REJECTED_REASON_UNKNOWN ),
+        STRINGIZE_REPLY_TYPE( FAILURE_SERVICE_NOT_SUPPORTED ),
+        STRINGIZE_REPLY_TYPE( FAILURE_INSUFFICIENT_SECURITY_CLEARANCE ),
+        STRINGIZE_REPLY_TYPE( FAILURE_OPERATION_NOT_POSSIBLE ),
+        STRINGIZE_REPLY_TYPE( FAILURE_INAPPROPRIATE_ACTION_REQUESTED ),
+        STRINGIZE_REPLY_TYPE( FAILURE_DEVICE_BUSY ),
+        STRINGIZE_REPLY_TYPE( FAILURE_DATA_NOT_READY ),
+        STRINGIZE_REPLY_TYPE( FAILURE_DATA_LOCKED ),
+        STRINGIZE_REPLY_TYPE( FAILURE_RENEGOTIATE_REQUEST ),
+        STRINGIZE_REPLY_TYPE( FAILURE_INVALID_STATE ),
+
+        STRINGIZE_REPLY_TYPE( FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD ),
+        STRINGIZE_REPLY_TYPE( FAILURE_ARM_REJECTED_SWITCH_NOT_OPEN ),
+        STRINGIZE_REPLY_TYPE( FAILURE_METER_IN_TEST_MODE ),
+        STRINGIZE_REPLY_TYPE( FAILURE_CLOSE_PRESSED_BUT_METER_NOT_ARMED ),
+        STRINGIZE_REPLY_TYPE( FAILURE_METER_NOT_CAPABLE_OF_SERVICE_DISCONNECT ),
+        STRINGIZE_REPLY_TYPE( FAILURE_SERVICE_DISCONNECT_NOT_ENABLED ),
+        STRINGIZE_REPLY_TYPE( FAILURE_SERVICE_DISCONNECT_IS_CHARGING ),
+        STRINGIZE_REPLY_TYPE( FAILURE_SERVICE_DISCONNECT_ALREADY_OPERATING ),
+        STRINGIZE_REPLY_TYPE( FAILURE_CAPACITOR_DISCHARGE_NOT_DETECTED ),
+        STRINGIZE_REPLY_TYPE( FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT ),
+        STRINGIZE_REPLY_TYPE( FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT ),
+
+        STRINGIZE_REPLY_TYPE( FAILED_UNEXPECTED_STATUS ),
+        STRINGIZE_REPLY_TYPE( NOT_SUPPORTED ),
+        STRINGIZE_REPLY_TYPE( NETWORK_TIMEOUT ),
+        STRINGIZE_REPLY_TYPE( TIMEOUT ) };
+#undef STRINGIZE_REPLY_TYPE
 
     static const std::map<State, std::string> stateDescriptions {
         { State::UNKNOWN,
