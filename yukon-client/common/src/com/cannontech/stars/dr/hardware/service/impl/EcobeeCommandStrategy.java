@@ -84,11 +84,13 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                 case TEMP_OUT_OF_SERVICE:
 
                     groupIds = getGroupId(command.getDevice().getInventoryID());
-                    // Remove the thermostat from the groups and then cancel the demand response for the thermostat
-                    // Do not remove Device to Zeus group mapping. So pass updateDeviceMapping as false.
-                    ecobeeZeusCommunicationService.unEnroll(Sets.newHashSet(groupIds), serialNumber, device.getInventoryID(), false);
-                    ecobeeZeusCommunicationService.cancelDemandResponse(groupIds, serialNumber);
-
+                    // Cancel the demand response for the thermostat and then Remove the thermostat from the groups if event API call is successful.
+                    boolean cancelledAnyDREvents = ecobeeZeusCommunicationService.cancelDemandResponse(groupIds, serialNumber);
+                    if(cancelledAnyDREvents) {
+                        // Do not remove Device to Zeus group mapping. So pass updateDeviceMapping as false.
+                        ecobeeZeusCommunicationService.unEnroll(Sets.newHashSet(groupIds), serialNumber, device.getInventoryID(),
+                            false);
+                    }
                     break;
                 case CANCEL_TEMP_OUT_OF_SERVICE:
 

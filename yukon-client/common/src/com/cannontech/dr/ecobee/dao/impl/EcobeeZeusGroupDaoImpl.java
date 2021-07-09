@@ -99,6 +99,8 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EcobeeEventId FROM LMGroupZeusMapping");
         sql.append("WHERE YukonGroupId").eq(yukonGroupId);
+        sql.append("AND EcobeeEventId IS NOT NULL");
+        sql.append("AND EcobeeEventId !=''");
         return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
 

@@ -25,18 +25,18 @@ public class LMEcobeeCycleControlCommandSerializer extends SimpleThriftSerialize
         int dutyCyclePercent = entity.get_dutyCycle();
         boolean rampInOut = entity.is_isRampInOut();
         int randomTimeSeconds = (rampInOut ? 1800 : 0);
-        boolean optional = entity.is_isMandatory();
+        boolean isMandatory = entity.is_isMandatory();
 
         log.trace(
-                "Parsed duty cycle dr parameters. GroupId: {} ProgramId: {} Start time: {} End time: {} Random Time Seconds: {} Optional: {}",
+                "Parsed duty cycle dr parameters. GroupId: {} ProgramId: {} Start time: {} End time: {} Random Time Seconds: {} Mandatory: {}",
                 groupId,
                 programId,
                 startTime,
                 endTime,
                 randomTimeSeconds,
-                optional);
+                isMandatory);
 
-        return new EcobeeDutyCycleDrParameters(programId, startTime, endTime, dutyCyclePercent, randomTimeSeconds, optional,
+        return new EcobeeDutyCycleDrParameters(programId, startTime, endTime, dutyCyclePercent, randomTimeSeconds, isMandatory,
                 groupId);
     }
 }

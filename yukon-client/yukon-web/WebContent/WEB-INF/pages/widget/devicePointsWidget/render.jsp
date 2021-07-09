@@ -21,6 +21,7 @@
         </c:forEach>
     </select>
     <cti:button nameKey="filter" classes="action primary js-filter fn vab"/>
+    <cti:button nameKey="download" icon="icon-page-white-excel" classes="js-download fn vab"/>
 </form>
 <hr>
 

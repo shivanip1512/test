@@ -698,11 +698,20 @@ Examples of discrepancies that will be displayed:
 
 <!-- Recent Event Participation -->
 <entry key="yukon.web.modules.dr.home.recentEventParticipation.title">Recent Event Participation</entry>
-<entry key="yukon.web.modules.dr.home.recentEventParticipation.infoText"><![CDATA[<span style="background-color:green; color:white ;font-weight:bold">Confirmed Success</span>
+<entry key="yukon.web.modules.dr.home.recentEventParticipation.infoText">
+<![CDATA[<span class="fwb bg-color-green txt-color-white">Confirmed Success</span>
 <br>
 The devices in this category have reported DR message for the event.
-<br><br>
-<span style="background-color:orange; color:white ;font-weight:bold">Unreported</span>
+<br>
+<span class="fwb bg-color-blue txt-color-white">Confirmed Success After Retry</span>
+<br>
+The devices in this category have reported DR message for the event after retry.
+<br>
+<span class="fwb bg-color-orange txt-color-white">Failed</span>
+<br>
+The devices in this category have failed to receive the DR message for the event.
+<br>
+<span class="fwb bg-color-grey txt-color-white">Unreported</span>
 <br>
 The devices in this category have not reported DR message for the event.
 ]]></entry>
@@ -725,6 +734,8 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.numEvents">Events Found</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.download">Download</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.confirmed">{0} Confirmed</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.confirmedAfterRetry">{0} Confirmed After Retry</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.failed">{0} Failed</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.unreported">{0} Unreported</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.noRecentEvents">No Recent Events</entry>
 

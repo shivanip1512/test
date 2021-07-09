@@ -140,10 +140,8 @@ public class MockZeusResponseFactory {
         if (zeusEcobeeDataConfiguration.getGenerateDiscrepency() == 1) {
             // MISLOCATED_DEVICE discrepancy
             if (!thermostats.isEmpty() && thermostats.get(0) != null) {
-                ZeusGroup group = new ZeusGroup();
-                group.setGroupId("9999");
-                List<ZeusGroup> groups = new ArrayList<ZeusGroup>();
-                groups.add(group);
+                List<String> groups = new ArrayList<String>();
+                groups.add("9999");
                 thermostats.get(0).setZeusGroups(groups);
             }
 

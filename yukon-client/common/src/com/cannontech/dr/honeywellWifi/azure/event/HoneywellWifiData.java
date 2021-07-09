@@ -1,8 +1,7 @@
 package com.cannontech.dr.honeywellWifi.azure.event;
 
+import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
-import com.microsoft.azure.servicebus.IMessage;
-import com.microsoft.azure.servicebus.Message;
 
 
 /**
@@ -13,7 +12,7 @@ public interface HoneywellWifiData {
     /**
      * @return The original message as received from Azure.
      */
-     IMessage getOriginalMessage();
+    ServiceBusReceivedMessage getOriginalMessage();
     
     /**
      * @return The "wrapper" metadata that came with the message.
@@ -26,5 +25,5 @@ public interface HoneywellWifiData {
 
     String getMacId();
 
-    void setOriginalMessage(IMessage message);
+    void setOriginalMessage(ServiceBusReceivedMessage message);
 }

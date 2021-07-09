@@ -415,6 +415,9 @@
     <entry key="yukon.common.setting.ECOBEE_REPORTING_URL.description">URL for incoming ecobee data.</entry>
     <entry key="yukon.common.setting.ECOBEE_SEND_NOTIFICATIONS">ecobee email notification</entry>
     <entry key="yukon.common.setting.ECOBEE_SEND_NOTIFICATIONS.description">Enables/Disables notifications being sent by ecobee when a DR request is made through Yukon.</entry>
+    <entry key="yukon.common.setting.ECOBEE_PROGRAM_ID">ecobee Program ID</entry>
+    <entry key="yukon.common.setting.ECOBEE_PROGRAM_ID.description">Program ID required for initiating ecobee API communications.</entry>
+    
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING">Honeywell Wifi Connection</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING.description">Connection string for the Honeywell wifi service bus.</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_QUEUE">Honeywell Wifi Queue</entry>
@@ -465,8 +468,6 @@
     <entry key="yukon.common.setting.EATON_CLOUD_SECRET.description">Secret used to access Brightlayer Utilities Suite Demand Response functionality</entry>
     <entry key="yukon.common.setting.EATON_CLOUD_URL">Brightlayer Utilities Suite Demand Response URL</entry>
     <entry key="yukon.common.setting.EATON_CLOUD_URL.description">API URL for Brightlayer Utilities Suite Demand Response functionality</entry>
-    <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID">Ecobee Zeus Program ID</entry>
-    <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID.description">Program ID required for initiating Zeus API communications.</entry>
     
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>

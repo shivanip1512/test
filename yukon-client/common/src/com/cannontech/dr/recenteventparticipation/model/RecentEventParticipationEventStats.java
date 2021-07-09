@@ -20,21 +20,29 @@ public class RecentEventParticipationEventStats {
     public int getNumUnknowns() {
         return numUnknowns;
     }
-
-    public double getPercentConfirmed() {
-        int total = (numConfirmed + numUnknowns);
+    
+    public double getTotal() {
+        int total = (numConfirmed + numConfirmedAfterRetry + numFailed + numUnknowns);
         if (total <= 0) {
             return 0.0;
         }
-        return (double) numConfirmed / total;
+        return (double) total;
+    }
+
+    public double getPercentConfirmed() {
+        return (double) numConfirmed / getTotal();
+    }
+    
+    public double getPercentSuccessAfterRetry() {
+        return (double) numConfirmedAfterRetry / getTotal();
+    }
+    
+    public double getPercentFailed() {
+        return (double) numFailed / getTotal();
     }
 
     public double getPercentUnknown() {
-        int total = (numConfirmed + numUnknowns);
-        if (total <= 0) {
-            return 0.0;
-        }
-        return (double) numUnknowns / total;
+        return (double) numUnknowns / getTotal();
     }
 
     public int getNumFailed() {

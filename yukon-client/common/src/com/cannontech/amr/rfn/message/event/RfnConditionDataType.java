@@ -5,7 +5,7 @@ package com.cannontech.amr.rfn.message.event;
  * Type of extra data in events and alarms
  */
 public enum RfnConditionDataType {
-    
+    APN(String.class),
     CLEARED(Boolean.class), // True = Cleared, False = Active
     COUNT(Long.class),
     DIRECTION(Direction.class),
