@@ -3,6 +3,7 @@ package com.cannontech.dr.recenteventparticipation.dao;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.Instant;
 
@@ -75,4 +76,9 @@ public interface RecentEventParticipationDao {
      */
     public void updateDeviceControlEvent(String externalEventId, int deviceId, ControlEventDeviceStatus status,
             Instant deviceReceivedTime, String failReason, Instant retryTime);
+
+    /**
+     * Returns a subset of device ids with given status
+     */
+    Set<Integer> getDeviceIdsByStatus(Set<Integer> deviceIds, ControlEventDeviceStatus status, Range<Instant> range);
 }
