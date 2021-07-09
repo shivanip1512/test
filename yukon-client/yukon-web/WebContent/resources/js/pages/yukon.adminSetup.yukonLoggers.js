@@ -50,10 +50,9 @@ yukon.adminSetup.yukonLoggers = (function () {
     },
     
     mod = {
-    
         /** Initialize this module. */
         init: function () {
-            
+
             if (_initialized) return;
             
             $('.js-loggers-table').scrollTableBody();
@@ -63,7 +62,7 @@ yukon.adminSetup.yukonLoggers = (function () {
             $(document).on('click', '.js-filter-loggers', function() {
                 _refreshLoggersTable();
             });
-            
+
             $(document).on('yukon:logger:load', function (ev) {
                 var popup = $(ev.target);
                 yukon.ui.initDateTimePickers();
@@ -71,9 +70,8 @@ yukon.adminSetup.yukonLoggers = (function () {
                 if (popup.find('.user-message').is(':visible')) {
                     $('.ui-dialog-buttonset').find('.js-primary-action').prop('disabled', true);
                 }
-                
-            });  
-          
+            });
+
             $(document).on('click', '.js-edit-logger', function () {
                 var loggerId = $(this).data('loggerId'),
                     url = yukon.url('/admin/config/loggers?id=' + loggerId),
@@ -88,11 +86,9 @@ yukon.adminSetup.yukonLoggers = (function () {
                         "data-ok-text" : yg.text.save,
                         "data-destroy-dialog-on-close" : "",
                     };
-                
                 yukon.ui.dialog($("<div/>").attr(dialogDivJson));
             });
-            
-            
+
             $(document).on("yukon:logger:save", function (event) {
                 var popup = $(event.target),
                     loggerName = popup.find('#loggerId option:selected').text();

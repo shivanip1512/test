@@ -26,21 +26,14 @@
         </div>
 
         <tags:sectionContainer2 nameKey="userLoggers">
-        
             <div class="filter-section stacked-md">
                 <cti:url var="filterUrl" value="/admin/config/loggers/filter"/>
-                <form:form id="filter-form" method="get" modelAttribute="loggerFilter" action="${filterUrl}" >
+                <form:form id="filter-form" method="get" modelAttribute="filter" action="${filterUrl}" >
                     <span class="fl">
                         <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
-                        
                         <cti:msg2 var="allLoggers" key=".allLoggers"/>&nbsp;
-                        <select name="selectedLoggers" class="js-selected-loggers" multiple="multiple" size="1" 
-                            data-placeholder="${allLoggers}" style="width:350px;">
-                            <c:forEach var="logger" items="${loggers}">
-                                <option value="${logger.loggerId}">${fn:escapeXml(logger.loggerName)}</option>
-                            </c:forEach>
-                        </select>
-                        
+                        <tags:input path="loggerName" placeholder="${allLoggers}" inputClass="vat MR5" size="20"/>
+ 
                         <cti:msg2 var="allLoggerLevels" key=".allLoggerLevels"/>&nbsp;
                         <select name="loggerLevels" class="js-selected-levels" multiple="multiple" size="1" 
                             data-placeholder="${allLoggerLevels}" size="width:350px;">
@@ -54,10 +47,10 @@
             </div>
             <hr/>
 
-             <div id="logger-container" data-url="${filterUrl}">
+            <div id="logger-container" data-url="${filterUrl}">
                 <%@ include file="userLoggersTable.jsp" %>
             </div>
-            
+
             <cti:button nameKey="add" classes="fr" icon="icon-add" data-popup=".js-logger-popup"/>
             <cti:url var="addLoggerUrl" value="/admin/config/loggers" />
             <cti:msg2 var="addLoggerTitle" key=".addLoggerTitle"/>
@@ -72,9 +65,9 @@
                  data-ok-text="${saveText}"
                  data-event="yukon:logger:save">
             </div>
-        
+
         </tags:sectionContainer2>
-        
+
         <tags:sectionContainer2 nameKey="systemLoggers">
             <div id="system-logger-container">
                 <%@ include file="systemLoggersTable.jsp" %>

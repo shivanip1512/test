@@ -38,11 +38,11 @@
             </c:forEach>
         </tbody>
     </table>
-    
+
     <c:if test="${empty systemLoggers}">
         <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>
     </c:if>
-    
+
     <cti:msg2 var="editSystemLoggerTitle" key=".editSystemLoggerTitle"/>
     <div class="dn js-edit-logger-popup"
              data-popup

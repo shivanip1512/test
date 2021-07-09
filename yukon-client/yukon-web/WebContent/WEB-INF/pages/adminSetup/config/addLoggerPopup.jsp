@@ -18,7 +18,7 @@
             <tags:nameValue2 nameKey=".loggerName">
                 <tags:input path="loggerName" inputClass="js-logger-name" size="60"/>
             </tags:nameValue2>
-                
+
             <tags:nameValue2 nameKey=".loggerLevel">
                 <tags:selectWithItems inputClass= "js-levels" path="level" items="${loggerLevels}"/>
             </tags:nameValue2>
@@ -30,7 +30,6 @@
                     <c:set var="specifiedClass" value="${specifiedDateTime ? '' : 'dn'}"/>
                     <span data-toggle-group="js-date-time" class="${specifiedClass}">
                         <dt:date name="p1" value="${now}" minDate="${now}" path="expirationDate"/>
-                       
                     </span>
                 </tags:nameValue2>
             </c:if>

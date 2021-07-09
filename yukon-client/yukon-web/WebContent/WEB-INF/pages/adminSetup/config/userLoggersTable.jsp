@@ -18,6 +18,7 @@
     <table class="compact-results-table row-highlighting has-actions">
         <thead>
             <tr>
+                <th class="row-icon"/>
                 <tags:sort column="${loggerName}"/>
                 <tags:sort column="${loggerLevel}"/>
                 <tags:sort column="${expirationDate}"/>
@@ -39,8 +40,7 @@
 
                     <td>${fn:escapeXml(logger.loggerName)}</td>
                     <td><i:inline key="${logger.level}"/></td>
-                    <td><cti:formatDate type="BOTH" value="${logger.expirationDate}" /></td>
-                    
+                    <td><cti:formatDate type="DATE" value="${logger.expirationDate}" /></td>
                     <td>
                         <cm:dropdown icon="icon-cog">
                             <cm:dropdownOption key=".edit" icon="icon-pencil"/>
@@ -51,11 +51,10 @@
             </c:forEach>
         </tbody>
     </table>
-    
+
     <c:if test="${empty userLoggers}">
         <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>
     </c:if>
-    
     <cti:msg2 var="editUserLoggerTitle" key=".editUserLoggerTitle"/>
     <div class="dn js-edit-assignment-popup"
              data-popup
