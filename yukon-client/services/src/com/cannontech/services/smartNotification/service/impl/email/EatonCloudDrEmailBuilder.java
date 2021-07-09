@@ -11,6 +11,7 @@ import com.cannontech.common.smartNotification.model.EatonCloudDrEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
+import com.cannontech.common.util.WebserverUrlResolver;
 
 /**
  * Builds up text Strings for Meter Demand Response notification messages, based on the parameters passed in.
@@ -18,6 +19,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
 public class EatonCloudDrEmailBuilder extends SmartNotificationEmailBuilder {
     
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private WebserverUrlResolver webserverUrlResolver;
     private Integer failureNotificationPercent;
        
     @Override
@@ -44,6 +46,7 @@ public class EatonCloudDrEmailBuilder extends SmartNotificationEmailBuilder {
         argumentList.add(total);
         argumentList.add(Math.round((success * 100) / total));
         argumentList.add(Math.round((failed * 100) / total));
+        argumentList.add(webserverUrlResolver.getUrl("/dr/recenteventparticipation/details"));
         return argumentList.toArray();
     }
 
