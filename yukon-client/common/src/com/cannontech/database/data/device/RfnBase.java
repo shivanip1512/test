@@ -109,7 +109,7 @@ public abstract class RfnBase extends DeviceBase {
         return rfnAddress;
     }
 
-    public void setRfnAddress(RfnAddress rfmAddress) {
-        this.rfnAddress = rfmAddress;
+    public void setRfnAddress(RfnAddress rfnAddress) {
+        this.rfnAddress = rfnAddress;
     }
 }
