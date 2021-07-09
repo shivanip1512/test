@@ -20,6 +20,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.Rfn1200;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.port.PortTiming;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -53,7 +54,7 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
     
     @Override
     @Transactional
-    public Rfn1200Detail create(Rfn1200Detail detail) {
+    public Rfn1200Detail create(Rfn1200Detail detail, LiteYukonUser user) {
         RfnIdentifier rfnId = new RfnIdentifier(detail.getRfnAddress().getSerialNumber(), detail.getRfnAddress().getManufacturer(), detail.getRfnAddress().getModel());
         YukonDevice newDevice = deviceCreationService.createRfnDeviceByDeviceType(detail.getPaoType(), detail.getName(), rfnId,
             true);
@@ -64,7 +65,7 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
         pt.setPostCommWait(detail.getPostCommWait());
         dbPersistentDao.performDBChangeWithNoMsg(pt, TransactionType.UPDATE);
         
-        // add event log
+        rfnDeviceEventLogService.rfn1200Created(rfnId, detail.getName(), user.getUsername());
         
         detail.setId(newDevice.getPaoIdentifier().getPaoId());
         return detail;
@@ -72,19 +73,20 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
     
     @Override
     @Transactional
-    public Rfn1200Detail update(Rfn1200Detail detail) {
+    public Rfn1200Detail update(Rfn1200Detail detail, LiteYukonUser user) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(detail.getId());
-        Rfn1200 rfn1200 = (Rfn1200) dbPersistentDao.retrieveDBPersistent(pao);
-        rfn1200.setPAOName(detail.getName());
-        detail.getRfnAddress().setDeviceID(rfn1200.getPAObjectID());
-        rfn1200.setRfnAddress(detail.getRfnAddress());
-        rfn1200.getTiming().setPostCommWait(detail.getPostCommWait());
-        rfn1200.setDisableFlag(BooleanUtils.isFalse(detail.getEnabled()) ? 'Y' : 'N');
-        dbPersistentDao.performDBChange(rfn1200, TransactionType.UPDATE);
+        Rfn1200 updatedRfn1200 = (Rfn1200) dbPersistentDao.retrieveDBPersistent(pao);
+        Rfn1200 originalRfn1200 = (Rfn1200) dbPersistentDao.retrieveDBPersistent(pao);
+        updatedRfn1200.setPAOName(detail.getName());
+        detail.getRfnAddress().setDeviceID(updatedRfn1200.getPAObjectID());
+        updatedRfn1200.setRfnAddress(detail.getRfnAddress());
+        updatedRfn1200.getTiming().setPostCommWait(detail.getPostCommWait());
+        updatedRfn1200.setDisableFlag(BooleanUtils.isFalse(detail.getEnabled()) ? 'Y' : 'N');
+        dbPersistentDao.performDBChange(updatedRfn1200, TransactionType.UPDATE);
         
-        // add event log
+        rfnDeviceEventLogService.rfn1200Updated(originalRfn1200, updatedRfn1200, user.getUsername());
 
-        return retrieve(rfn1200.getPAObjectID());
+        return retrieve(updatedRfn1200.getPAObjectID());
     }
     
     @Override

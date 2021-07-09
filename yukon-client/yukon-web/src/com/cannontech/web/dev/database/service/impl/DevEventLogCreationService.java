@@ -69,8 +69,10 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.YNBoolean;
+import com.cannontech.database.data.device.Rfn1200;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.ecobee.model.EcobeeZeusDiscrepancyType;
 import com.cannontech.dr.nest.model.v3.EnrollmentState;
@@ -889,12 +891,30 @@ public class DevEventLogCreationService {
         executables.put(LogType.RFN_DEVICE, new DevEventLogExecutable() {
             @Override
             public void execute(DevEventLog devEventLog) {
+                String username = "Dev Setup Test User";
                 String templateName = devEventLog.getIndicatorString() + "TemplateName";
                 String sensorManufacturer = devEventLog.getIndicatorString() + "SensorManufacturer";
                 String sensorModel = devEventLog.getIndicatorString() + "SensorModel";
                 String sensorSerialNumber = "45666545";
                 RfnIdentifier rfnIdentifier = new RfnIdentifier(sensorSerialNumber, sensorManufacturer, sensorModel);
-                
+
+                RfnAddress rfnAddress = new RfnAddress();
+                rfnAddress.setManufacturer("Test Manufacturer");
+                rfnAddress.setSerialNumber("123456789");
+                rfnAddress.setModel("Test Mode");
+                rfnAddress.setDeviceID(987654321);
+
+                Rfn1200 oldRfn1200 = new Rfn1200();
+                oldRfn1200.setPAOName("Old RFN-1200");
+                oldRfn1200.setRfnAddress(rfnAddress);
+                oldRfn1200.setDisabled(false);
+                oldRfn1200.setDeviceID(998877);
+                Rfn1200 newRfn1200 = new Rfn1200();
+                newRfn1200.setPAOName("New RFN-1200");
+                newRfn1200.setRfnAddress(rfnAddress);
+                newRfn1200.setDisabled(false);
+                newRfn1200.setDeviceID(998877);
+
                 rfnDeviceEventLogService.createdNewDeviceAutomatically(rfnIdentifier, templateName,  templateName);
                 rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName, sensorSerialNumber);
                 rfnDeviceEventLogService.unableToCreateDeviceFromTemplate(templateName, sensorManufacturer, sensorModel, sensorSerialNumber);
@@ -902,6 +922,9 @@ public class DevEventLogCreationService {
                 rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnEvent", "Restore", new Instant(), new Instant());
                 rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnAlarm", "Outage", new Instant(), null);
                 rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnAlarm", "Restore", null, new Instant());
+                rfnDeviceEventLogService.rfn1200Created(rfnIdentifier, "Old RFN-1200", username);
+                rfnDeviceEventLogService.rfn1200Updated(oldRfn1200, newRfn1200, username);
+                rfnDeviceEventLogService.rfn1200Deleted("New RFN-1200", username);
             }
         });
         executables.put(LogType.STARS, new DevEventLogExecutable() {
@@ -1345,7 +1368,7 @@ public class DevEventLogCreationService {
         OUTAGE(OutageEventLogService.class, 10),
         POINT(PointEventLogService.class, 15),
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
-        RFN_DEVICE(RfnDeviceEventLogService.class, 4),
+        RFN_DEVICE(RfnDeviceEventLogService.class, 7),
         STARS(StarsEventLogService.class, 26),
         SYSTEM(SystemEventLogService.class, 41),
         TOOLS(ToolsEventLogService.class, 32),

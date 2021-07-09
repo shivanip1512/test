@@ -21,6 +21,7 @@ import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -43,6 +44,7 @@ public class Rfn1200Controller {
     private static final Logger log = YukonLogManager.getLogger(Rfn1200Controller.class);
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
+    @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
     @Autowired private ServerDatabaseCache dbCache;
     @Autowired private DeviceDao deviceDao;
 
@@ -64,6 +66,8 @@ public class Rfn1200Controller {
             
             //clean up event log add to RfnDeviceEventLogService example below 
            // meteringEventLogService.meterDeleted(meter.getPaoName(), meterName, user.getUsername());
+            
+            rfnDeviceEventLogService.rfn1200Deleted(device.getPaoName(), userContext.getYukonUser().getUsername());
             
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", device.getPaoName()));
             return "redirect:" + "/stars/device/commChannel/list";

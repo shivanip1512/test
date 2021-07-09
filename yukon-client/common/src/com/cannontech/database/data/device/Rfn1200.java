@@ -3,6 +3,9 @@ package com.cannontech.database.data.device;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -95,5 +98,15 @@ public class Rfn1200 extends RfnBase {
 
     public void setTiming(PortTiming timing) {
         this.timing = timing;
+    }
+
+    @Override
+    public String toString() {
+        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE);
+        tsb.append("paoName", getPAOName());
+        tsb.append("rfnAddress", getRfnAddress().toString());
+        tsb.append("postCommWait", getTiming().getPostCommWait());
+        tsb.append("disabled", getPAODisableFlag());
+        return tsb.toString();
     }
 }

@@ -285,6 +285,13 @@
     <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.3">Model</entry>
     <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.4">Serial Number</entry>
     
+    <entry key="yukon.common.events.system.rfn.rfn1200Created">New RFN-1200 created with name={2}, Identifier={1}, by user {3}</entry>
+    <entry key="yukon.common.events.system.rfn.rfn1200Deleted">RFN-1200 name={1} deleted by user {2}</entry>
+    
+    <entry key="yukon.common.events.system.rfn.rfn1200Updated">RFN-1200 updated by user {3}. Original: {1}. Updated: {2}</entry>
+    <entry key="yukon.common.events.system.rfn.rfn1200Updated.1">RFN-1200 Description</entry>
+    <entry key="yukon.common.events.system.rfn.rfn1200Updated.2">RFN-1200 Description</entry>
+    
     <!-- Wanted to format date so millis displayed but was unable to get DateFormatEnum syntax to work with java MessageSource 
          Default formatting of Dates in i18n is "MM/dd/yy, hh:mm a"
          Wanted to do something like the following but couldn't get it to work : start={11,date,FILE_DATA_BOTH}

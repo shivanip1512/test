@@ -93,7 +93,7 @@ public class Rfn1200InfoWidget extends AdvancedWidgetControllerBase {
 
     @PostMapping("/save")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
-    public String save(@ModelAttribute("rfn1200") Rfn1200Detail rfn1200, BindingResult result, FlashScope flash, ModelMap model, HttpServletResponse resp) {
+    public String save(@ModelAttribute("rfn1200") Rfn1200Detail rfn1200, BindingResult result, FlashScope flash, ModelMap model, HttpServletResponse resp, YukonUserContext userContext) {
         rfn1200Validator.validate(rfn1200, result);
         if (result.hasErrors()) {
             model.addAttribute("mode", rfn1200.getId() == null ? PageEditMode.CREATE : PageEditMode.EDIT);
@@ -104,9 +104,9 @@ public class Rfn1200InfoWidget extends AdvancedWidgetControllerBase {
 
         try {
             if (rfn1200.getId() == null) {
-                rfn1200 = rfdaCreationService.create(rfn1200);
+                rfn1200 = rfdaCreationService.create(rfn1200, userContext.getYukonUser());
             } else {
-                rfn1200 = rfdaCreationService.update(rfn1200);
+                rfn1200 = rfdaCreationService.update(rfn1200, userContext.getYukonUser());
             }
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", rfn1200.getName()));
             Map<String, Object> json = new HashMap<>();
