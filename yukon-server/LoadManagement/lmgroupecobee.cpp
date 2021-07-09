@@ -139,7 +139,7 @@ bool LMGroupEcobee::sendSetpointControl( long programId,
                             ", LM Group: " << getPAOName() 
                          << ", Program ID: " << programId 
                          << ", control minutes: " << ( controlDurationSeconds / 60 ) 
-                         << ", control: " << ( temperatureOption ? "HEAT" : "COOL" )
+                         << ", control: " << ( temperatureOption ? "HEAT " : "COOL " )
                          << temperatureOffset << " degrees" );
     }
 
