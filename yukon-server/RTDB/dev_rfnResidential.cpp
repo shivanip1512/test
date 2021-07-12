@@ -1332,9 +1332,9 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouHolidayCon
 
 void RfnResidentialDevice::storeTouHolidays(const Commands::RfnTouHolidayConfigurationCommand::Holidays holidays)
 {
-    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Holiday1, holidays[0].asStringUSFormat());
-    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Holiday2, holidays[1].asStringUSFormat());
-    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Holiday3, holidays[2].asStringUSFormat());
+    //setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Holiday1, holidays[0].asStringUSFormat());
+    //setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Holiday2, holidays[1].asStringUSFormat());
+    //setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Holiday3, holidays[2].asStringUSFormat());
 }
 
 }

@@ -287,9 +287,9 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
         { PI::Key_RFN_Schedule4Rate4, "A" },
         { PI::Key_RFN_Schedule4Rate5, "D" },
 
-        { PI::Key_RFN_Holiday1, "03/14/2018" },
-        { PI::Key_RFN_Holiday2, "06/27/2018" },
-        { PI::Key_RFN_Holiday3, "02/07/2018" },
+        //{ PI::Key_RFN_Holiday1, "03/14/2018" },
+        //{ PI::Key_RFN_Holiday2, "06/27/2018" },
+        //{ PI::Key_RFN_Holiday3, "02/07/2018" },
 
         { PI::Key_RFN_VoltageAveragingInterval, 105 },
         { PI::Key_RFN_LoadProfileInterval, 11 },
