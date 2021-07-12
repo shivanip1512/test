@@ -84,7 +84,25 @@ std::string to_string(const RfnMeterDisconnectInitialReplyType::type& val) {
 int _kRfnMeterDisconnectConfirmationReplyTypeValues[] = {
   RfnMeterDisconnectConfirmationReplyType::SUCCESS,
   RfnMeterDisconnectConfirmationReplyType::FAILURE,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_REQUEST_REJECTED_REASON_UNKNOWN,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_SERVICE_NOT_SUPPORTED,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_INSUFFICIENT_SECURITY_CLEARANCE,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_OPERATION_NOT_POSSIBLE,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_INAPPROPRIATE_ACTION_REQUESTED,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_DEVICE_BUSY,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_DATA_NOT_READY,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_DATA_LOCKED,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_RENEGOTIATE_REQUEST,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_INVALID_STATE,
   RfnMeterDisconnectConfirmationReplyType::FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_ARM_REJECTED_SWITCH_NOT_OPEN,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_METER_IN_TEST_MODE,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_CLOSE_PRESSED_BUT_METER_NOT_ARMED,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_METER_NOT_CAPABLE_OF_SERVICE_DISCONNECT,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_SERVICE_DISCONNECT_NOT_ENABLED,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_SERVICE_DISCONNECT_IS_CHARGING,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_SERVICE_DISCONNECT_ALREADY_OPERATING,
+  RfnMeterDisconnectConfirmationReplyType::FAILURE_CAPACITOR_DISCHARGE_NOT_DETECTED,
   RfnMeterDisconnectConfirmationReplyType::FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT,
   RfnMeterDisconnectConfirmationReplyType::FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT,
   RfnMeterDisconnectConfirmationReplyType::FAILED_UNEXPECTED_STATUS,
@@ -95,7 +113,25 @@ int _kRfnMeterDisconnectConfirmationReplyTypeValues[] = {
 const char* _kRfnMeterDisconnectConfirmationReplyTypeNames[] = {
   "SUCCESS",
   "FAILURE",
+  "FAILURE_REQUEST_REJECTED_REASON_UNKNOWN",
+  "FAILURE_SERVICE_NOT_SUPPORTED",
+  "FAILURE_INSUFFICIENT_SECURITY_CLEARANCE",
+  "FAILURE_OPERATION_NOT_POSSIBLE",
+  "FAILURE_INAPPROPRIATE_ACTION_REQUESTED",
+  "FAILURE_DEVICE_BUSY",
+  "FAILURE_DATA_NOT_READY",
+  "FAILURE_DATA_LOCKED",
+  "FAILURE_RENEGOTIATE_REQUEST",
+  "FAILURE_INVALID_STATE",
   "FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD",
+  "FAILURE_ARM_REJECTED_SWITCH_NOT_OPEN",
+  "FAILURE_METER_IN_TEST_MODE",
+  "FAILURE_CLOSE_PRESSED_BUT_METER_NOT_ARMED",
+  "FAILURE_METER_NOT_CAPABLE_OF_SERVICE_DISCONNECT",
+  "FAILURE_SERVICE_DISCONNECT_NOT_ENABLED",
+  "FAILURE_SERVICE_DISCONNECT_IS_CHARGING",
+  "FAILURE_SERVICE_DISCONNECT_ALREADY_OPERATING",
+  "FAILURE_CAPACITOR_DISCHARGE_NOT_DETECTED",
   "FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT",
   "FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT",
   "FAILED_UNEXPECTED_STATUS",
@@ -103,7 +139,7 @@ const char* _kRfnMeterDisconnectConfirmationReplyTypeNames[] = {
   "NETWORK_TIMEOUT",
   "TIMEOUT"
 };
-const std::map<int, const char*> _RfnMeterDisconnectConfirmationReplyType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(9, _kRfnMeterDisconnectConfirmationReplyTypeValues, _kRfnMeterDisconnectConfirmationReplyTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _RfnMeterDisconnectConfirmationReplyType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(27, _kRfnMeterDisconnectConfirmationReplyTypeValues, _kRfnMeterDisconnectConfirmationReplyTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 std::ostream& operator<<(std::ostream& out, const RfnMeterDisconnectConfirmationReplyType::type& val) {
   std::map<int, const char*>::const_iterator it = _RfnMeterDisconnectConfirmationReplyType_VALUES_TO_NAMES.find(val);
