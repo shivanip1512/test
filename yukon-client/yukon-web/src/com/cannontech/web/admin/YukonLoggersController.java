@@ -32,7 +32,7 @@ public class YukonLoggersController {
 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-    private static final String redirectLink = "redirect:/admin/config/loggers";
+    private static final String redirectLink = "redirect:/admin/config/loggers/allLoggers";
     private ConcurrentHashMap<Integer, YukonLogger> cache = new ConcurrentHashMap<Integer, YukonLogger>();
 
     @PostConstruct
@@ -51,22 +51,8 @@ public class YukonLoggersController {
     public String getAllLoggers(@DefaultSort(dir = Direction.asc, sort = "loggerName") SortingParameters sorting,
             String loggerName, LoggerLevel[] loggerLevels, ModelMap model, YukonUserContext userContext) {
 
-        List<YukonLogger> userLoggers = new ArrayList<YukonLogger>();
-        List<YukonLogger> systemLoggers = new ArrayList<YukonLogger>();
-
-        for (Entry<Integer, YukonLogger> loggerEntry : cache.entrySet()) {
-            YukonLogger logger = loggerEntry.getValue();
-            if (SystemLogger.isSystemLogger(logger.getLoggerName())) {
-                systemLoggers.add(logger);
-            } else {
-                userLoggers.add(logger);
-            }
-        }
         retrieveLoggers(sorting, loggerName, loggerLevels, model, userContext);
         model.addAttribute("filter", new YukonLogger());
-        model.addAttribute("userLoggers", userLoggers);
-        model.addAttribute("systemLoggers", systemLoggers);
-
         return "config/loggers.jsp";
     }
 
@@ -132,7 +118,18 @@ public class YukonLoggersController {
     private void retrieveLoggers(SortingParameters sorting, String loggerName, LoggerLevel[] loggerLevels,
             ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        
+        List<YukonLogger> userLoggers = new ArrayList<YukonLogger>();
+        List<YukonLogger> systemLoggers = new ArrayList<YukonLogger>();
+
+        for (Entry<Integer, YukonLogger> loggerEntry : cache.entrySet()) {
+            YukonLogger logger = loggerEntry.getValue();
+            if (SystemLogger.isSystemLogger(logger.getLoggerName())) {
+                systemLoggers.add(logger);
+            } else {
+                userLoggers.add(logger);
+            }
+        }
+
         FilterSortBy sortBy = FilterSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         List<SortableColumn> columns = new ArrayList<>();
@@ -142,6 +139,9 @@ public class YukonLoggersController {
             columns.add(col);
             model.addAttribute(column.name(), col);
         }
+
+        model.addAttribute("userLoggers", userLoggers);
+        model.addAttribute("systemLoggers", systemLoggers);
     }
 
     public enum FilterSortBy implements DisplayableEnum {

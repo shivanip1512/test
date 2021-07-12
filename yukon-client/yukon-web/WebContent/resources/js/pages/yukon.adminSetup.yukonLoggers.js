@@ -26,7 +26,6 @@ yukon.adminSetup.yukonLoggers = (function () {
         nameField.val(editSpan.find('[name="savedName"]').val());
         //remove any errors
         nameField.removeClass('error');
-        nameField.removeClass('error');
     },
     
     _refreshLoggersTable = function (successMessage, errorMessage) {
@@ -56,7 +55,6 @@ yukon.adminSetup.yukonLoggers = (function () {
             if (_initialized) return;
             
             $('.js-loggers-table').scrollTableBody();
-            $('.js-selected-loggers').chosen({'width': '350px'});
             $('.js-selected-levels').chosen({'width': '350px'});
 
             $(document).on('click', '.js-filter-loggers', function() {
@@ -66,7 +64,7 @@ yukon.adminSetup.yukonLoggers = (function () {
             $(document).on('yukon:logger:load', function (ev) {
                 var popup = $(ev.target);
                 yukon.ui.initDateTimePickers();
-                popup.find('.js-levels').chosen({'width': '350px'});
+                popup.find('.js-levels');
                 if (popup.find('.user-message').is(':visible')) {
                     $('.ui-dialog-buttonset').find('.js-primary-action').prop('disabled', true);
                 }

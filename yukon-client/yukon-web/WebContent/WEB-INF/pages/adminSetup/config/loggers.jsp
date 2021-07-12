@@ -1,8 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
@@ -31,8 +29,8 @@
                 <form:form id="filter-form" method="get" modelAttribute="filter" action="${filterUrl}" >
                     <span class="fl">
                         <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
-                        <cti:msg2 var="allLoggers" key=".allLoggers"/>&nbsp;
-                        <tags:input path="loggerName" placeholder="${allLoggers}" inputClass="vat MR5" size="20"/>
+                        <cti:msg2 var="loggerNamePlaceholder" key=".loggerName"/>&nbsp;
+                        <tags:input path="loggerName" placeholder="${loggerNamePlaceholder}" inputClass="vat MR5" size="20"/>
  
                         <cti:msg2 var="allLoggerLevels" key=".allLoggerLevels"/>&nbsp;
                         <select name="loggerLevels" class="js-selected-levels" multiple="multiple" size="1" 

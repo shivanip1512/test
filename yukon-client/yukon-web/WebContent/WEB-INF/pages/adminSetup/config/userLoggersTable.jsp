@@ -1,7 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -31,9 +30,9 @@
                     <c:set var="loggerId" value="${logger.loggerId}"/>
                     <td>
                         <c:if test="${not empty logger.notes}">
-                            <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
-                            <cti:icon icon="icon-notes-pin" title="${viewAllNotesTitle}" data-logger-id="${logger.loggerId}" data-popup="#logger-note"/>
-                            <div id="logger-note" class="dn" data-title="Notes" data-width="300" data-height="200">${logger.notes}</div>
+                            <cti:msg2 var="viewNoteTitle" key=".viewNote"/>
+                            <cti:icon icon="icon-notes-pin" title="${viewNoteTitle}" data-logger-id="${logger.loggerId}" data-popup="#logger-note-${logger.loggerId}"/>
+                            <div id="logger-note-${logger.loggerId}" class="dn" data-title="Notes" data-width="300" data-height="200">${logger.notes}</div>
                             <br/>
                         </c:if>
                     </td>
