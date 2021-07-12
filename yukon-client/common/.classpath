@@ -530,6 +530,7 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/brave-5.13.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/brave-instrumentation-http-5.13.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-xml-2.12.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-datatype-jsr310-2.12.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jackson-module-jaxb-annotations-2.12.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jakarta.activation-api-1.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jakarta.xml.bind-api-2.3.2.jar"/>
