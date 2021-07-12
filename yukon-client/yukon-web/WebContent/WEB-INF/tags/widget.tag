@@ -87,7 +87,11 @@
                     <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
                 </c:when>
                 <c:otherwise>
+                    <%  try { %>
                     <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+                    <%  } catch (Exception e) { %>
+                    	<cti:msg2 key="widgets.errorWithinWidget"/>
+                    <%  } %>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -119,7 +123,11 @@
                         <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
                     </c:when>
                     <c:otherwise>
-                        <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+                    <%  try { %>
+                    <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+                    <%  } catch (Exception e) { %>
+                    	<cti:msg2 key="widgets.errorWithinWidget"/>
+                    <%  } %>
                     </c:otherwise>
                 </c:choose>
             </div>
