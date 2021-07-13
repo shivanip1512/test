@@ -108,13 +108,13 @@
         </tags:boxContainer>
     </c:if>
     <c:if test="${container eq 'section'}">
-    <c:set var="widgetRenderContent">
-    <%  try { %>
-    <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
-    <%  } catch (Exception e) { %>
-        <cti:msg2 key="widgets.errorWithinWidget"/>
-    <%  } %>
-    </c:set>
+        <c:set var="widgetRenderContent">
+            <%  try { %>
+                <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+            <%  } catch (Exception e) { %>
+                <cti:msg2 key="widgets.errorWithinWidget"/>
+            <%  } %>
+        </c:set>
         <tags:sectionContainer title="${containerTitle}" 
                 id="widget-titled-container-${widgetParameters.widgetId}" 
                 styleClass="widget-container ${classes}" 
