@@ -228,7 +228,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFG301_PULSE));
         
         groupedMeterTypesBuilder.put("Relays", ImmutableList.of(
-            RfnManufacturerModel.RFN_RELAY));
+            RfnManufacturerModel.RFN_RELAY,
+            RfnManufacturerModel.CRLY_856));
         
         groupedMeterTypesBuilder.put("RFN-1200", RfnManufacturerModel.getRfn1200Models());
           
