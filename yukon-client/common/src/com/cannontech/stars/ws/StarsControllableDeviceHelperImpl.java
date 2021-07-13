@@ -42,6 +42,8 @@ import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.ecobee.EcobeeCommunicationException;
+import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -107,6 +109,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private LatitudeLongitudeBulkFieldProcessor latitudeLongitudeBulkFieldProcessor;
     @Autowired private ItronBuilder itronBuilder;
     @Autowired private HardwareUiService hardwareUiService;
+    @Autowired private EcobeeZeusCommunicationService zeusCommunicationService;
 
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -532,7 +535,14 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 throw new StarsClientRequestException("An error occurred trying to communicate with Itron.", e);
             }
         }
-        
+        // Ecobee devices require notifying Zeus API to remove the device from the thermostat group.
+        if (hardwareType.isEcobee()) {
+            try {
+                zeusCommunicationService.deleteDevice(dto.getSerialNumber());
+            } catch (EcobeeCommunicationException e) {
+                throw new StarsClientRequestException("An error occurred trying to communicate with Ecobee.", e);
+            }
+        }
         // Remove device from the account
         LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
         starsInventoryBaseService.removeDeviceFromAccount(liteInv, lsec, ecOperator);
