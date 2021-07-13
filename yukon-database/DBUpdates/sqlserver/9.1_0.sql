@@ -249,6 +249,14 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-24461', '9.1.0', GETDATE());
 /* @error ignore-end */
 /* @end YUK-24461 */
+
+/* @start YUK-23375 */
+ALTER DATABASE CURRENT SET auto_create_statistics ON;
+ALTER DATABASE CURRENT SET auto_update_statistics ON;
+
+INSERT INTO DBUpdates VALUES ('YUK-23375', '9.1.0', GETDATE());
+/* @end YUK-23375 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
