@@ -39,7 +39,10 @@
 
                     <td>${fn:escapeXml(logger.loggerName)}</td>
                     <td><i:inline key="${logger.level}"/></td>
-                    <td><cti:formatDate type="DATE" value="${logger.expirationDate}" /></td>
+                    <td>
+                        <cti:msg2 var="neverText" key="yukon.common.never"/>
+                        <cti:formatDate type="DATE" value="${logger.expirationDate}" nullText="${neverText}"/>
+                    </td>
                     <td>
                         <cm:dropdown icon="icon-cog">
                             <cm:dropdownOption key=".edit" icon="icon-pencil"/>

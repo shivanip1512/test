@@ -64,7 +64,6 @@ yukon.adminSetup.yukonLoggers = (function () {
             $(document).on('yukon:logger:load', function (ev) {
                 var popup = $(ev.target);
                 yukon.ui.initDateTimePickers();
-                popup.find('.js-levels');
                 if (popup.find('.user-message').is(':visible')) {
                     $('.ui-dialog-buttonset').find('.js-primary-action').prop('disabled', true);
                 }
@@ -88,9 +87,7 @@ yukon.adminSetup.yukonLoggers = (function () {
             });
 
             $(document).on("yukon:logger:save", function (event) {
-                var popup = $(event.target),
-                    loggerName = popup.find('#loggerId option:selected').text();
-                popup.find('#loggerName').val(yukon.escapeXml(loggerName));
+                var popup = $(event.target);
                 popup.find('#logger-form').ajaxSubmit({
                     success: function (data) {
                         popup.dialog('close');
@@ -99,7 +96,6 @@ yukon.adminSetup.yukonLoggers = (function () {
                     },
                     error: function (xhr) {
                         popup.html(xhr.responseText);
-                        popup.find('.js-levels').chosen({'width': '350px'});
                     }
                 });
             });

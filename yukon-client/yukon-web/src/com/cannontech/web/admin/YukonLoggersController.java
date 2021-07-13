@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -52,12 +54,11 @@ public class YukonLoggersController {
             String loggerName, LoggerLevel[] loggerLevels, ModelMap model, YukonUserContext userContext) {
 
         retrieveLoggers(sorting, loggerName, loggerLevels, model, userContext);
-        model.addAttribute("filter", new YukonLogger());
         return "config/loggers.jsp";
     }
 
     @GetMapping("/config/loggers")
-    public String addLogger(@ModelAttribute YukonLogger logger, ModelMap model, YukonUserContext userContext) {
+    public String addLogger(@ModelAttribute YukonLogger logger, ModelMap model) {
 
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("isEditMode", false);
@@ -70,8 +71,8 @@ public class YukonLoggersController {
     }
 
     @PostMapping("/config/loggers")
-    public String createLogger(@ModelAttribute YukonLogger logger) {
-        save(logger);
+    public String createLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime) {
+        save(logger, specifiedDateTime);
         return redirectLink;
     }
 
@@ -85,12 +86,15 @@ public class YukonLoggersController {
     }
 
     @PatchMapping("/config/loggers/{loggerId}")
-    public String saveLogger(@ModelAttribute YukonLogger logger, @PathVariable int loggerId) {
-        save(logger);
+    public String saveLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime, @PathVariable int loggerId) {
+        save(logger, specifiedDateTime);
         return redirectLink;
     }
 
-    private void save(YukonLogger logger) {
+    private void save(YukonLogger logger, Boolean specifiedDateTime) {
+        if(BooleanUtils.isNotTrue(specifiedDateTime)) {
+            logger.setExpirationDate(null);
+        }
         if (logger.getLoggerId() == 0) {
             List<Integer> sortedKeys = cache.keySet().stream().sorted().collect(Collectors.toList());
             sortedKeys.add(sortedKeys.size());
@@ -104,14 +108,10 @@ public class YukonLoggersController {
 
     // TODO: The filter and sorting remaining part will be covered in YUK-24684
     @GetMapping("/config/loggers/filter")
-    public String filter(@ModelAttribute("filter") YukonLogger loggerFilter,
-            @DefaultSort(dir = Direction.asc, sort = "loggerName") SortingParameters sorting, String loggerName,
+    public String filter(@DefaultSort(dir = Direction.asc, sort = "loggerName") SortingParameters sorting, String loggerName,
             LoggerLevel[] loggerLevels, ModelMap model, YukonUserContext userContext) {
         retrieveLoggers(sorting, loggerName, loggerLevels, model, userContext);
 
-        model.addAttribute("loggerName", loggerName);
-        model.addAttribute("loggerLevels", LoggerLevel.values());
-        model.addAttribute("filter", loggerFilter);
         return "config/userLoggersTable.jsp";
     }
     

@@ -26,11 +26,11 @@
         <tags:sectionContainer2 nameKey="userLoggers">
             <div class="filter-section stacked-md">
                 <cti:url var="filterUrl" value="/admin/config/loggers/filter"/>
-                <form:form id="filter-form" method="get" modelAttribute="filter" action="${filterUrl}" >
+                <form:form id="filter-form" method="get" action="${filterUrl}" >
                     <span class="fl">
                         <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
                         <cti:msg2 var="loggerNamePlaceholder" key=".loggerName"/>&nbsp;
-                        <tags:input path="loggerName" placeholder="${loggerNamePlaceholder}" inputClass="vat MR5" size="20"/>
+                        <input type="text" name="loggerName" placeholder="${loggerNamePlaceholder}" class="vat MR5" size="20"/>
  
                         <cti:msg2 var="allLoggerLevels" key=".allLoggerLevels"/>&nbsp;
                         <select name="loggerLevels" class="js-selected-levels" multiple="multiple" size="1" 
