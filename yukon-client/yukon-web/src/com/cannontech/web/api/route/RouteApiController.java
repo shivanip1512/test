@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +14,14 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
@@ -35,13 +36,21 @@ public class RouteApiController {
 
     @Autowired private RouteService routeService;
     @Autowired private RouteApiCreateValidator routeApiCreateValidator;
-    @Autowired private RouteApiValidator routeApiValidator;
+    @Autowired private List<RouteApiValidator<?>> routeApiValidator;
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody RouteBaseModel<?> routeBaseModel, YukonUserContext userContext) {
         RouteBaseModel<?> createdRoute = routeService.create(routeBaseModel, userContext.getYukonUser());
         return new ResponseEntity<>(createdRoute, HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
+    public ResponseEntity<Object> update(@PathVariable("id") int id, @Valid @RequestBody RouteBaseModel<?> routeBaseModel,
+            YukonUserContext userContext) {
+        RouteBaseModel<?> updateRoute = routeService.update(id, routeBaseModel, userContext.getYukonUser());
+        return new ResponseEntity<>(updateRoute, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -67,8 +76,11 @@ public class RouteApiController {
 
     @InitBinder("routeBaseModel")
     public void setupBinder(WebDataBinder binder) {
-        binder.addValidators(routeApiValidator);
-
+        routeApiValidator.stream().forEach(e -> {
+            if (e.supports(binder.getTarget().getClass())) {
+                binder.addValidators(e);
+            }
+        });
         String routeId = ServletUtils.getPathVariable("id");
         if (routeId == null) {
             binder.addValidators(routeApiCreateValidator);

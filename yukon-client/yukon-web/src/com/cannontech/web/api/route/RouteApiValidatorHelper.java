@@ -1,7 +1,5 @@
 package com.cannontech.web.api.route;
 
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +8,6 @@ import org.springframework.validation.Errors;
 import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.YukonApiValidationUtils;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
@@ -56,7 +53,7 @@ public class RouteApiValidatorHelper {
         boolean transmitterExists = dbCache.getAllDevices().stream()
                 .anyMatch(device -> device.getPaoType().isTransmitter() && !device.getPaoType().isRepeater()
                         && device.getLiteID() == signalTransmitterId);
-        if (transmitterExists) {
+        if (!transmitterExists) {
             errors.rejectValue("signalTransmitterId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
                     new Object[] { signalTransmitterId }, "");
         }
