@@ -9,14 +9,18 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.log.model.LoggerLevel;
@@ -25,8 +29,10 @@ import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 
 @Controller
@@ -36,6 +42,7 @@ public class YukonLoggersController {
 
     private static final String redirectLink = "redirect:/admin/config/loggers/allLoggers";
     private ConcurrentHashMap<Integer, YukonLogger> cache = new ConcurrentHashMap<Integer, YukonLogger>();
+    private static final Logger log = YukonLogManager.getLogger(YukonLoggersController.class);
 
     @PostConstruct
     public void init() {
@@ -104,6 +111,18 @@ public class YukonLoggersController {
             cache.remove(logger.getLoggerId());
             cache.put(logger.getLoggerId(), logger);
         }
+    }
+
+    @DeleteMapping("/config/loggers/{loggerId}")
+    public String deleteLogger(@PathVariable Integer loggerId, ModelMap model, FlashScope flashScope) {
+        if (cache.get(loggerId) != null) {
+            String loggerName = cache.get(loggerId).getLoggerName();
+            cache.remove(loggerId);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", loggerName));
+        } else {
+            log.error("Invalid LoggerId : {}", loggerId);
+        }
+        return redirectLink;
     }
 
     // TODO: The filter and sorting remaining part will be covered in YUK-24684

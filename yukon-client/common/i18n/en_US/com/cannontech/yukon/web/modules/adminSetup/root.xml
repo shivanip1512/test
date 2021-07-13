@@ -423,8 +423,8 @@
     <entry key="yukon.web.modules.adminSetup.config.loggers.viewNote">View Note</entry>
     <entry key="yukon.web.modules.adminSetup.config.loggers.noteText.placeHolder">Note Text (255 characters max)</entry>
     
-    <entry key="yukon.web.modules.adminSetup.config.attributes.loggerConfirmDelete.title">Confirm Delete</entry>
-    <entry key="yukon.web.modules.adminSetup.config.attributes.loggerConfirmDelete.message">Are you sure you want to delete this logger from userLogger?</entry>
-    <entry key="yukon.web.modules.adminSetup.config.attributes.loggerConfirmDelete.ok">Delete</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggerConfirmDelete.title">Confirm Delete</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggerConfirmDelete.message">Are you sure you want to delete {0} logger?</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggerConfirmDelete.ok">Delete</entry>
 
 </properties>
