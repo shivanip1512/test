@@ -351,7 +351,7 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
     <!-- Certificate Details Widget -->
     <entry key="yukon.web.widgets.certificateDetailsWidget">Certificate Details</entry>
 
-    <!-- If any widgwet fails to load -->
+    <!-- If any widget fails to load -->
     <entry key="yukon.web.widgets.errorWithinWidget">There was a problem loading this widget. Check your widget configuration or system logs for more information.</entry>
 
 </properties>
