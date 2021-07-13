@@ -59,7 +59,7 @@ public class EcobeeZeusSyncService {
             log.info("Populating table to Zeus mapping");
             boolean groupMappingExists = ecobeeZeusGroupService.getGroupCount() == 0 ? false : true;
             boolean thermostatMappingExists = ecobeeZeusGroupService.getAllThermostatCount() == 0 ? false : true;
-            if (!groupMappingExists || !thermostatMappingExists) {
+            if (!groupMappingExists && !thermostatMappingExists) {
                 log.debug("Tables are empty starting process to populate data");
                 try {
                     List<ZeusGroup> zeusGroups = ecobeeZeusCommunicationService.getAllGroups();
