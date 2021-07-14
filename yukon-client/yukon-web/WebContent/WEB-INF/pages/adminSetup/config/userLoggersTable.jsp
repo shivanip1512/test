@@ -50,12 +50,11 @@
                             <cm:dropdownOption key=".delete" icon="icon-cross" id="delete-logger-${loggerId}" 
                             data-ok-event="yukon:logger:delete" classes="js-hide-dropdown" data-logger-id="${loggerId}"/>
 
-                            <d:confirm on="#delete-logger-${loggerId}" nameKey="loggerConfirmDelete" argument="${logger.loggerName}"/>
-                                        <cti:url var="deleteUrl" value="/admin/config/loggers/${loggerId}"/>
-                                        <form:form id="delete-logger-form-${loggerId}" action="${deleteUrl}" method="DELETE">
-                                            <cti:csrfToken/>
-                                            <input type="hidden" name="name" value="${fn:escapeXml(logger.loggerName)}"/>
-                                        </form:form>
+                            <d:confirm on="#delete-logger-${loggerId}" nameKey="confirmDelete" argument="${logger.loggerName}"/>
+                            <cti:url var="deleteUrl" value="/admin/config/loggers/${loggerId}"/>
+                            <form:form id="delete-logger-form-${loggerId}" action="${deleteUrl}" method="DELETE">
+                                <cti:csrfToken/>
+                            </form:form>
                         </cm:dropdown>
                     </td>
                 </tr>
