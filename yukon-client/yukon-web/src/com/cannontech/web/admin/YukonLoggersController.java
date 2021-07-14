@@ -54,6 +54,7 @@ public class YukonLoggersController {
             String loggerName, LoggerLevel[] loggerLevels, ModelMap model, YukonUserContext userContext) {
 
         retrieveLoggers(sorting, loggerName, loggerLevels, model, userContext);
+        model.addAttribute("loggerLevels", LoggerLevel.values());
         return "config/loggers.jsp";
     }
 
