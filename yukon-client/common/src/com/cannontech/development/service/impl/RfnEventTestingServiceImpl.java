@@ -28,6 +28,7 @@ import javax.jms.Session;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -554,6 +555,10 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         }
         
         rfnEvent.setEventData(testEventMap);
+        if(testEvent.getRfnConditionType() == RfnConditionType.CELLULAR_APN_CHANGED) {
+            String generatedString = RandomStringUtils.random(5, true, false).toUpperCase();
+            rfnEvent.getEventData().put(RfnConditionDataType.APN, generatedString);
+        }
         return rfnEvent;
     }
     

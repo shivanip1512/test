@@ -23,5 +23,9 @@
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="RSSI" attributes="RADIO_SIGNAL_STRENGTH_INDICATOR"/>
         <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
+        <pointInfo name="Cellular Connection Failed" attributes="CELLULAR_CONNECTION_FAILED"/>
+        <pointInfo name="Cellular Modem Disabled" attributes="CELLULAR_MODEM_DISABLED"/>
+        <pointInfo name="Cellular Sim Card Inserted Removed" attributes="CELLULAR_SIM_CARD_INSERTED_REMOVED"/>
+        <pointInfo name="Cellular APN Changed" attributes="CELLULAR_APN_CHANGED"/>
     </pointInfos>
 </pao>
