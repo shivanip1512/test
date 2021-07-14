@@ -120,7 +120,7 @@ public class YukonLoggersController {
             cache.remove(loggerId);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", loggerName));
         } else {
-            log.error("Invalid LoggerId : {}", loggerId);
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", "Logger", "Invalid logger Id"));
         }
         return redirectLink;
     }
