@@ -20,11 +20,11 @@
      Documentation at /docs/config/server.html
  -->
 <Server port="8006" shutdown="SHUTDOWN">
- <!-- <Listener className="org.apache.catalina.startup.VersionLoggerListener" /> -->
+  <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
   <!-- Security listener. Documentation at /docs/config/listeners.html
   <Listener className="org.apache.catalina.security.SecurityListener" />
   -->
-  <!--APR library loader. Documentation at /docs/apr.html -->
+  <!-- APR library loader. Documentation at /docs/apr.html -->
   <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
   <!-- Prevent memory leaks due to use of particular java/javax APIs-->
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
@@ -66,7 +66,7 @@
          APR (HTTP/AJP) Connector: /docs/apr.html
          Define a non-SSL/TLS HTTP/1.1 Connector on port 8080
     -->
-    <Connector port="8081" protocol="HTTP/1.1"
+    <Connector port="8080" protocol="HTTP/1.1"
                connectionTimeout="20000"
                redirectPort="8443" />
     <!-- A "Connector" using the shared thread pool-->
@@ -164,7 +164,7 @@
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
                prefix="localhost_access_log" suffix=".txt"
                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
-        <Context docBase="api-web" path="/api" reloadable="false" source="org.eclipse.jst.j2ee.server:api-web"/>
+
       </Host>
     </Engine>
   </Service>
