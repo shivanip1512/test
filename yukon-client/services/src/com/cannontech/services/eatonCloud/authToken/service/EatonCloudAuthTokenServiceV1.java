@@ -1,5 +1,7 @@
 package com.cannontech.services.eatonCloud.authToken.service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -10,6 +12,8 @@ import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -33,6 +37,7 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
     
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
     private RestTemplate restTemplate;
     
     @PostConstruct
@@ -63,6 +68,7 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
                         String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, log, restTemplate);
                         log.info("Retrieving {} new Eaton Cloud token for {}.", url, credentials.getServiceAccountId());
                         try {
+                            restTemplate.setMessageConverters(Arrays.asList(mappingJackson2HttpMessageConverter));
                             EatonCloudTokenV1 newToken = restTemplate.postForObject(url, credentials, EatonCloudTokenV1.class);
                             log.info("Retrieved new Eaton Cloud token for {}.", credentials.getServiceAccountId());
                             tokenCache.put(credentials.getServiceAccountId(), newToken);
