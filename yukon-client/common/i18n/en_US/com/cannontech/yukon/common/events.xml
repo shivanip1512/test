@@ -13,6 +13,7 @@
     <!-- Event Log Arg Annotation i18n keys -->
     <entry key="yukon.common.events.accountNumber">Account Number</entry>
     <entry key="yukon.common.events.action">Action</entry>
+    <entry key="yukon.common.events.apn">APN</entry>
     <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
     <entry key="yukon.common.events.attributeId">Attribute Id</entry>
@@ -292,6 +293,8 @@
     <entry key="yukon.common.events.system.rfn.rfn1200Updated.1">RFN-1200 Description</entry>
     <entry key="yukon.common.events.system.rfn.rfn1200Updated.2">RFN-1200 Description</entry>
     
+    <entry key="yukon.common.events.system.rfn.apnChanged">Device {1} {2} has new APN {3}</entry>
+        
     <!-- Wanted to format date so millis displayed but was unable to get DateFormatEnum syntax to work with java MessageSource 
          Default formatting of Dates in i18n is "MM/dd/yy, hh:mm a"
          Wanted to do something like the following but couldn't get it to work : start={11,date,FILE_DATA_BOTH}

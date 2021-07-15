@@ -48,7 +48,7 @@ public class RfnMeterEventService {
      * status point), then continue on to our more specific processor
      */
     public void processEvent(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas) {
-        log.debug("Event Received - event: " + event + " Meter: " + device);
+        log.debug("Event Received - event: " + event + " Device: " + device);
 
         Instant now = Instant.now();
         

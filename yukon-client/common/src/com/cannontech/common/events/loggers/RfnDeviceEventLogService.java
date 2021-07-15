@@ -39,4 +39,7 @@ public interface RfnDeviceEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn")
     void rfn1200Deleted(@Arg(ArgEnum.paoName) String paoName,
                  @Arg(ArgEnum.username) String username);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn")
+    void apnChanged(@Arg(ArgEnum.paoName) String paoName, @Arg(ArgEnum.rfnId) RfnIdentifier rfnIdentifier,  @Arg(ArgEnum.apn) String apn);
 }
