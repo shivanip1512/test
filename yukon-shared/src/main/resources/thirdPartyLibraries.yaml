@@ -6002,10 +6002,10 @@ Icons :
     project URL : "https://www.fatcow.com/free-icons"
     license : Creative Commons Attribution 3.0
     license URLs : "https://www.fatcow.com/free-icons"
-    md5 : 7c9cb5c58d6e91f236e3215346baf792
-    sha1 : 49855ca93d8f9bd998743ea2abc29c0f75928a85
-    updated : 2020-07-02
-    jira : YUK-21827
+    md5 : 266d01d1dc55935e1843e28d6c917d75
+    sha1 : ead2a2517ac974b23ab7266d2bff41108df64a81
+    updated : 2020-07-12
+    jira : YUK-24495
     notes : Custom built sprite assembled from the individual icons
 
   - path : icons-app-32-disabled.png
@@ -6014,10 +6014,10 @@ Icons :
     project URL : "https://www.fatcow.com/free-icons"
     license : Creative Commons Attribution 3.0
     license URLs : "https://www.fatcow.com/free-icons"
-    md5 : 11920bef97f64a1e9ccbb28a6c032612
-    sha1 : d89e1f86e4409c6268f151a75d87c20ded04baa0
-    updated : 2020-07-02
-    jira : YUK-21827
+    md5 : 266d01d1dc55935e1843e28d6c917d75
+    sha1 : ead2a2517ac974b23ab7266d2bff41108df64a81
+    updated : 2020-07-12
+    jira : YUK-24495
     notes : Custom built sprite assembled from the individual icons
 
 

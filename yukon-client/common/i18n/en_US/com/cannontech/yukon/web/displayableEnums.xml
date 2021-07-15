@@ -173,6 +173,8 @@
     <entry key="yukon.common.setting.subcategory.DR.description">Opt outs, importing, switch command settings</entry>
     <entry key="yukon.common.setting.subcategory.AMI">Endpoint</entry>
     <entry key="yukon.common.setting.subcategory.AMI.description">Display templates, importer settings</entry>
+    <entry key="yukon.common.setting.subcategory.YUKON_LOGGERS">Yukon Loggers</entry>
+    <entry key="yukon.common.setting.subcategory.YUKON_LOGGERS.description">User loggers, system loggers</entry>
     <entry key="yukon.common.setting.subcategory.YUKON_SERVICES">Yukon Services</entry>
     <entry key="yukon.common.setting.subcategory.YUKON_SERVICES.description">Yukon services ip address, ports</entry>
     <entry key="yukon.common.setting.subcategory.WEB_SERVER">Web Server</entry>
