@@ -1319,6 +1319,7 @@
                         <labelArgument>${gateway.name}</labelArgument>
                         <pages>
                             <page name="wifiConnection" type="BASIC"/>
+                            <page name="cellConnection" type="BASIC"/>
                         </pages>
                     </page>
                     <page name="gateways.manageFirmware" type="BASIC">

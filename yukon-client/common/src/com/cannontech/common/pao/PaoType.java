@@ -353,6 +353,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> batteryAnalysisTypes;
     private final static ImmutableSet<PaoType> virtualTypes;
     private final static ImmutableSet<PaoType> cloudLcrTypes;
+    private final static ImmutableSet<PaoType> cellularTypes;
 
     public final static int INVALID = -1;
     
@@ -603,6 +604,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         wifiTypes = ImmutableSet.of(
             WRL420CL,
             WRL420CD
+        );
+        
+        cellularTypes = ImmutableSet.of(
+            CRLY856
         );
         
         mctTypes = ImmutableSet.of(
@@ -1205,6 +1210,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getWifiTypes() {
         return wifiTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getCellularTypes() {
+        return cellularTypes;
     }
 
     /**
