@@ -237,7 +237,8 @@ public class DevAmrCreationServiceImpl extends DevObjectCreationBase implements 
                     YukonPao meter;
                     if (meterType.getPaoType().isRfn()) {
                         if (meterType.getPaoType().isRfRelay()) {
-                            RfnIdentifier rfId = new RfnIdentifier(String.valueOf(address), "EATON", "RFRelay");
+                            RfnIdentifier rfId = new RfnIdentifier(String.valueOf(address), "EATON",
+                                    meterType.getPaoType() == PaoType.CRLY856 ? "CRLY856" : "RFRelay");
                             meter = deviceCreationService.createRfnDeviceByDeviceType(meterType.getPaoType(), meterName, rfId, true);
                         } else {
                             RfnManufacturerModel templateSettings = RfnManufacturerModel.getForType(meterType.getPaoType())
