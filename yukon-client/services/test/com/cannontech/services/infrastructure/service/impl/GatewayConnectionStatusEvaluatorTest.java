@@ -12,6 +12,7 @@ import org.easymock.EasyMock;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -69,13 +70,12 @@ public class GatewayConnectionStatusEvaluatorTest {
         
         // Build the connection status info, with warning duration of 60 minutes and no CONNECTED value
         
-        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator(null, null, null);
+        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator();
         
         Map.Entry<PaoIdentifier, PointValueQualityHolder> gatewayConnectionStatusEntry = 
                 new AbstractMap.SimpleEntry<>(gatewayPaoId, null);
         
-        ConnectionStatusInfo connectionStatusInfo = 
-                evaluator.buildConnectionStatusInfo(gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
         
         // Check for correct logic on whether to warn or not, based on point value timestamps
         
@@ -106,13 +106,13 @@ public class GatewayConnectionStatusEvaluatorTest {
         
         // Build the connection status info, with warning duration of 60 minutes
         
-        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator(null, null, mockRphDao);
+        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator();
+        ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
         
         Map.Entry<PaoIdentifier, PointValueQualityHolder> gatewayConnectionStatusEntry = 
                 Map.entry(gatewayPaoId, connectedPointValue);
         
-        ConnectionStatusInfo connectionStatusInfo = 
-                evaluator.buildConnectionStatusInfo(gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
         
         // Check for correct logic on whether to warn or not, based on point value timestamps
         
@@ -143,13 +143,13 @@ public class GatewayConnectionStatusEvaluatorTest {
         
         // Build the connection status info, with warning duration of 60 minutes
         
-        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator(null, null, mockRphDao);
+        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator();
+        ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
         
         Map.Entry<PaoIdentifier, PointValueQualityHolder> gatewayConnectionStatusEntry = 
                 Map.entry(gatewayPaoId, connectedPointValue);
         
-        ConnectionStatusInfo connectionStatusInfo = 
-                evaluator.buildConnectionStatusInfo(gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
         
         // Check for correct logic on whether to warn or not, based on point value timestamps
         
@@ -180,13 +180,13 @@ public class GatewayConnectionStatusEvaluatorTest {
         
         // Build the connection status info, with warning duration of 60 minutes
         
-        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator(null, null, mockRphDao);
+        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator();
+        ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
         
         Map.Entry<PaoIdentifier, PointValueQualityHolder> gatewayConnectionStatusEntry = 
                 Map.entry(gatewayPaoId, connectedPointValue);
         
-        ConnectionStatusInfo connectionStatusInfo = 
-                evaluator.buildConnectionStatusInfo(gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
         
         // Check for correct logic on whether to warn or not, based on point value timestamps
         
@@ -217,13 +217,13 @@ public class GatewayConnectionStatusEvaluatorTest {
         
         // Build the connection status info, with warning duration of 60 minutes
         
-        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator(null, null, mockRphDao);
+        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator();
+        ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
         
         Map.Entry<PaoIdentifier, PointValueQualityHolder> gatewayConnectionStatusEntry = 
                 Map.entry(gatewayPaoId, connectedPointValue);
         
-        ConnectionStatusInfo connectionStatusInfo = 
-                evaluator.buildConnectionStatusInfo(gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
         
         // Check for correct logic on whether to warn or not, based on point value timestamps
 
@@ -257,15 +257,15 @@ public class GatewayConnectionStatusEvaluatorTest {
         
         // Build the connection status info, with warning duration of 60 minutes
         
-        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator(null, null, mockRphDao);
+        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator();
+        ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
         
         Map.Entry<PaoIdentifier, PointValueQualityHolder> gatewayConnectionStatusEntry = 
                 Map.entry(gatewayPaoId, connectedPointValue);
         
-        ConnectionStatusInfo connectionStatusInfo = 
-                evaluator.buildConnectionStatusInfo(gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
         
-        InfrastructureWarning warning = GatewayConnectionStatusEvaluator.buildWarning(connectionStatusInfo);
+        InfrastructureWarning warning = ReflectionTestUtils.invokeMethod(evaluator, "buildWarning", connectionStatusInfo);
         
         assertEquals(gatewayPaoId,
                 warning.getPaoIdentifier(), "The infrastructure warning paoId does not match the original gateway ID.");
