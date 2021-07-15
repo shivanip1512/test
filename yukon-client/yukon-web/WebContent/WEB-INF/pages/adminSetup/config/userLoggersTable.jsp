@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -46,7 +47,14 @@
                     <td>
                         <cm:dropdown icon="icon-cog">
                             <cm:dropdownOption key=".edit" icon="icon-pencil"/>
-                            <cm:dropdownOption key=".delete" icon="icon-cross"/>
+                            <cm:dropdownOption key=".delete" icon="icon-cross" id="delete-logger-${loggerId}" 
+                            data-ok-event="yukon:logger:delete" classes="js-hide-dropdown" data-logger-id="${loggerId}"/>
+
+                            <d:confirm on="#delete-logger-${loggerId}" nameKey="confirmDelete" argument="${logger.loggerName}"/>
+                            <cti:url var="deleteUrl" value="/admin/config/loggers/${loggerId}"/>
+                            <form:form id="delete-logger-form-${loggerId}" action="${deleteUrl}" method="DELETE">
+                                <cti:csrfToken/>
+                            </form:form>
                         </cm:dropdown>
                     </td>
                 </tr>
@@ -65,3 +73,4 @@
     </div>
 
 </cti:msgScope>
+<cti:includeScript link="/resources/js/pages/yukon.adminSetup.yukonLoggers.js" />
