@@ -11,9 +11,7 @@ import com.cannontech.amr.rfn.message.event.RfnEvent;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
 import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHelper;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class CellularApnChangedEventProcessor extends RfnEventConditionDataProcessorHelper
@@ -24,15 +22,7 @@ public class CellularApnChangedEventProcessor extends RfnEventConditionDataProce
     @Override
     public void process(RfnDevice device, RfnEvent event,
             List<? super PointData> pointDatas, Instant now) {
-        Instant eventInstant = instantOf(event);
         var apn = (String) getEventDataWithType(event, RfnConditionDataType.APN);
-        pointDatas.clear();
-        rfnMeterEventService.processAttributePointData(device,
-                pointDatas,
-                BuiltInAttribute.CELLULAR_APN_CHANGED,
-                eventInstant,
-                EventStatus.ACTIVE.getRawState(),
-                now);
         rfnDeviceEventLogService.apnChanged(device.getName(), device.getRfnIdentifier(), apn);
     }
 
