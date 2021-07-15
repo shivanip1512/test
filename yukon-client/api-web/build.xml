@@ -106,7 +106,9 @@
         <include name="spring-ws-core-3.1.1.jar"/>
         <include name="stax-ex-1.8.jar"/>
         <include name="stax2-api-4.2.1.jar"/>
-        <include name="spring-*-5.3.2*.jar"/>
+        <include name="spring-*-5.3.8*.jar"/>
+        <include name="spring-integration-core-5.5.1.jar"/>
+        <include name="spring-integration-jms-5.5.1.jar"/>
         <include name="javax.jms-api-2.0.1.jar"/>
         <include name="micrometer-core-1.0.7.jar"/>
         <include name="reactive-streams-1.0.3.jar"/>
