@@ -236,16 +236,14 @@ public class DevAmrCreationServiceImpl extends DevObjectCreationBase implements 
                     String meterName = meterType.getPaoType().getPaoTypeName() + " " + address;
                     YukonPao meter;
                     if (meterType.getPaoType().isRfn()) {
+                        RfnManufacturerModel templateSettings = RfnManufacturerModel.getForType(meterType.getPaoType())
+                                .get(0);
+                        RfnIdentifier rfId = new RfnIdentifier(String.valueOf(address),
+                                templateSettings.getManufacturer(),
+                                templateSettings.getModel());
                         if (meterType.getPaoType().isRfRelay()) {
-                            RfnIdentifier rfId = new RfnIdentifier(String.valueOf(address), "EATON",
-                                    meterType.getPaoType() == PaoType.CRLY856 ? "CRLY856" : "RFRelay");
                             meter = deviceCreationService.createRfnDeviceByDeviceType(meterType.getPaoType(), meterName, rfId, true);
                         } else {
-                            RfnManufacturerModel templateSettings = RfnManufacturerModel.getForType(meterType.getPaoType())
-                                                                                        .get(0);
-                            RfnIdentifier rfId = new RfnIdentifier(String.valueOf(address),
-                                                                   templateSettings.getManufacturer(),
-                                                                   templateSettings.getModel());
                             meter = createRfnMeter(devAmr, meterType.getPaoType(), meterName, rfId, true);
                         }
                     } else {
