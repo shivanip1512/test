@@ -366,8 +366,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina/9.0.50"
     md5 : 212625b32146280217217b55e77f2035
     sha1 : 618b82a19b61cb2bccfad1d5cbf13e7512868aa0
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : catalina-ant.jar
@@ -380,8 +380,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ant/9.0.50"
     md5 : de54465e936454857c57b4297bf01851
     sha1 : e79310737952f97d78ffe2550088f4f562e8d7b1
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : catalina-ha.jar
@@ -394,8 +394,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ha/9.0.50"
     md5 : 785fe4888af85bdd2be44742a05718aa
     sha1 : 20a63dc47063b938305eebe6cd0c310af916d721
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
     
   - filename : catalina-ssi.jar
@@ -408,8 +408,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/"
     md5 : b70d2d1572c653ddeba8af1c36eecb4d
     sha1 : 7d5ac9158c28ac9648de386b2d0e123a811ba7fc
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : catalina-storeconfig.jar
@@ -422,8 +422,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-storeconfig/9.0.50"
     md5 : 331347acea297c752bf14e27ec74dc00
     sha1 : 7ea5decc0bc4d13c15203fea736885e053e6f33a
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : catalina-tribes.jar
@@ -436,8 +436,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-tribes/9.0.50"
     md5 : 22039b0a7d0db521e04c763353744cb5
     sha1 : 8302535b271f6545a6d7ad436f5a3b136f1abc50
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes :
   
   - filename : cglib-2.1.3.jar
@@ -744,8 +744,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.eclipse.jdt.core.compiler/ecj"
     md5 : ee47966a67cd4019f1b8ccac74ba8dca
     sha1 : 4837be609a3368a0f7e7cf0dc1bdbc7fe94993de
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : Included in Tomcat install, not typically available or installed from Maven
   
   - filename : ecs-1.4.2.jar
@@ -772,8 +772,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-el-api/9.0.50"
     md5 : 271aef3966b0dd7b5dd509391e3f9af8
     sha1 : e290c887d0089d51abaca1c2c6b37ca1a1459cb2
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : geojson-jackson-1.1.jar
@@ -1138,8 +1138,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper-el/9.0.50"
     md5 : 9199d8348d208dfe26ef5a593f043354
     sha1 : 9651dd4ec04b4a725f0250ccacce3ece0384d6f5
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : jasper.jar
@@ -1152,8 +1152,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper/9.0.50"
     md5 : 896196befd8bed03b85814cd755fec22
     sha1 : 7f1ee180f3383d3e5a500eb24913e1a4610e4cfa
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : jaspic-api.jar
@@ -1166,8 +1166,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jaspic-api/9.0.50"
     md5 : 64fc0f2804cd8af9360436046a5d3c55
     sha1 : 6532b8f4c615abbbe8d8d20d160ddb2011245bef
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : jasypt-1.9.2.jar
@@ -1614,8 +1614,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api/9.0.50"
     md5 : c9de8ca8a92acb69e0d5dee0bc16fa11
     sha1 : 81101360d68698394b2ea15e734e1cee56522d8f
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : Tomcat JSP API
   
   - filename : jtds-1.3.1.jar
@@ -2483,8 +2483,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api/9.0.50"
     md5 : d398110129d8692a1456caa20ad15eff
     sha1 : c667be72154204c9d6fdb01a5e260e40cebb2952
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : Tomcat Servlet API
   
   - filename : slf4j-api-1.7.30.jar
@@ -2974,8 +2974,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-api/9.0.50"
     md5 : 88d2b4066ef53bcc1421d5d08b7a144d
     sha1 : 05a5490895694df58800ee351c6fc04fe0cb0bb4
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : Tomcat API
   
   - filename : tomcat-coyote.jar
@@ -2988,8 +2988,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-coyote/9.0.50"
     md5 : 5d55ed4be67ec0c8a158b61032fd3ac1
     sha1 : ef20d9c87cdab3c667efb55091d8bd5f65b10735
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : tomcat-dbcp.jar
@@ -3002,8 +3002,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-dbcp/9.0.50"
     md5 : 53c1f52a1d50b1334b1d5f9f1df8ecd4
     sha1 : 7ae588075686c3eb1b637ac7915418f23c679bf2
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
     
   - filename : tomcat-i18n-cs.jar
@@ -3016,8 +3016,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-cs/9.0.50"
     md5 : e4b7bd361a4c9d26056a5b8541587024
     sha1 : 497005fac5f0a0fe39d401bf4c9279d4732d9b9f
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes :
     
   - filename : tomcat-i18n-de.jar
@@ -3030,8 +3030,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-de/9.0.50"
     md5 : 73188bb3dc877270dd30cc119e1ec03d
     sha1 : 7fa1fa6ff754e503f56d344278a774823c28e4a4
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes :
   
   - filename : tomcat-i18n-es.jar
@@ -3044,8 +3044,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-es/9.0.50"
     md5 : 62e4e08702f475848205b9ba84539e3a
     sha1 : b7b63e172f08ea15112d67abe5d47f4c1eab15fd
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : tomcat-i18n-fr.jar
@@ -3058,8 +3058,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-fr/9.0.50"
     md5 : 5c0d1b28363b61d689d96afd825d9e78
     sha1 : 4531f2c27640212fdc7e4cfebfa60b263935d2ed
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : tomcat-i18n-ja.jar
@@ -3072,8 +3072,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ja/9.0.50"
     md5 : e75f8e826ab17d90cac8cfdb54a596bc
     sha1 : 86aeacc9062d8781d0e9181d23c4eb8625561978
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
     
   - filename : tomcat-i18n-ko.jar
@@ -3086,8 +3086,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ko/9.0.50"
     md5 : 0380c06dd23416b090bc6da1130826bf
     sha1 : 43baaa831ae393bbbc52585a6605bb7512dccdd6
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes :   
     
   - filename : tomcat-i18n-pt-BR.jar
@@ -3100,8 +3100,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-pt-BR/9.0.50"
     md5 : 75c89651d7eb42dd7c473a870233c7fc
     sha1 : 9b7240cb4f317ea3a034f05af719f78ec2c00e7a
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes :    
   
   - filename : tomcat-i18n-ru.jar
@@ -3114,8 +3114,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ru/9.0.50"
     md5 : ac2d9e3248db5f45002e539153a48ec5
     sha1 : c2d6adb8f7f760568fa2841c185d262a684c666a
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
     
   - filename : tomcat-i18n-zh-CN.jar
@@ -3128,8 +3128,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-zh-CN/9.0.50"
     md5 : a11c7d16f7f7cd6ce388530da9355e50
     sha1 : e5e3955bbe789807e0df533d47e3bb3bfb18e7db
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes :    
   
   - filename : tomcat-jdbc.jar
@@ -3142,8 +3142,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc/9.0.50"
     md5 : f772a0568888b33122a6219c908d551c
     sha1 : e58b033e8c2814fb63135398191ecb06270a32d5
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : tomcat-jni.jar
@@ -3156,8 +3156,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jni/9.0.50"
     md5 : 6a3eb20ea84188b0f5295f8d2ee7aaf1
     sha1 : a8381606c5e6f534a9df0e9c5588b822922832cf
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : tomcat-juli-9.0.41.jar
@@ -3184,8 +3184,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util/9.0.50"
     md5 : ef539683a9f93fe8fec728767cfda0d7
     sha1 : 8bc1fdc9c8e889bf444f4f89b4503c65595d16af
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : tomcat-util-scan.jar
@@ -3198,8 +3198,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util-scan/9.0.50"
     md5 : 11b5d0b2ee22c74a7e2658363432f0e3
     sha1 : 70f604021660f775883798b9b25602ee30a6f34a
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
   
   - filename : tomcat-websocket.jar
@@ -3212,8 +3212,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket/9.0.50"
     md5 : 998037180f015e8c7370a9d94395920e
     sha1 : 019d9f5fdf138dc58b5296cfce791b9f2a101716
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-24693
     notes : 
 
   - filename : validation-api-2.0.1.Final.jar
@@ -3240,8 +3240,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket-api/9.0.50"
     md5 : 87b455eece9b4bc4480f4c0741824bae
     sha1 : 7fc2a8069883acde7a6fb20618ea38a9bcfca4ca
-    updated : 2021-01-11
-    jira : YUK-23077
+    updated : 2021-07-14
+    jira : YUK-246937
     notes : 
   
   - filename : wrapper.jar
