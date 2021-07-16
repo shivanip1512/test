@@ -12,22 +12,6 @@ yukon.adminSetup.yukonLoggers = (function () {
     
     var _initialized = false,
     
-    _toggleEditViewLogger = function (loggerId) {
-        var editSpan = $('.js-edit-logger-' + loggerId),
-            viewSpan = $('.js-view-logger-' + loggerId),
-            nameField = editSpan.find('[name="loggerName"]');
-        //start out with all in view mode again
-        $('[class*="js-edit-logger-"]').addClass('dn');
-        $('[class*="js-view-logger-"]').removeClass('dn');
-        //toggle the logger that was selected
-        editSpan.toggleClass('dn', !editMode);
-        viewSpan.toggleClass('dn', editMode);
-               //set name to saved name
-        nameField.val(editSpan.find('[name="savedName"]').val());
-        //remove any errors
-        nameField.removeClass('error');
-    },
-    
     _refreshLoggersTable = function (successMessage, errorMessage) {
         var tableContainer = $('#logger-container'),
             form = $('#filter-form');
@@ -77,8 +61,25 @@ yukon.adminSetup.yukonLoggers = (function () {
 
             $(document).on('click', '.js-edit-logger', function () {
                 var loggerId = $(this).data('loggerId'),
-                    url = yukon.url('/admin/config/loggers?id=' + loggerId),
+                    url = yukon.url('/admin/config/loggers/' + loggerId),
                     popup = $('.js-edit-logger-popup'),
+                    popupTitle = popup.data('title'),
+                    dialogDivJson = {
+                        "data-url" : url,
+                        "data-dialog": '',
+                        "data-load-event" : "yukon:logger:load",
+                        "data-event" : "yukon:logger:save",
+                        "data-title" : popupTitle,
+                        "data-ok-text" : yg.text.save,
+                        "data-destroy-dialog-on-close" : "",
+                    };
+                yukon.ui.dialog($("<div/>").attr(dialogDivJson));
+            });
+            
+            $(document).on('click', '.js-edit-system-logger', function () {
+                var loggerId = $(this).data('loggerId'),
+                    url = yukon.url('/admin/config/loggers/' + loggerId),
+                    popup = $('.js-edit-system-logger-popup'),
                     popupTitle = popup.data('title'),
                     dialogDivJson = {
                         "data-url" : url,
