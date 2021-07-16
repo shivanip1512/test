@@ -75,7 +75,7 @@ public class YukonLoggersController {
     }
 
     @PostMapping("/config/loggers")
-    public String createLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime) {
+    public String saveLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime) {
         save(logger, specifiedDateTime);
         return redirectLink;
     }
