@@ -1309,6 +1309,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public boolean isWifiDevice() {
         return wifiTypes.contains(this);
     }
+    
+    public boolean isCellularDevice() {
+        return cellularTypes.contains(this);
+    }
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static PaoType getPaoType(String paoTypeJsonString) {

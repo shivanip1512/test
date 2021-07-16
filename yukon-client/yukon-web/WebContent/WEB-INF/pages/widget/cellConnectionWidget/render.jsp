@@ -5,14 +5,14 @@
 
 <tags:nameValueContainer2>
 
-    <input type="hidden" id="baseUrl" value="/stars/wifiConnection"/>
+    <input type="hidden" id="baseUrl" value="/stars/cellConnection"/>
 
     <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.COMM_STATUS">
         <c:choose>
-            <c:when test="${wifiData.commStatusPoint.pointID != null}">
-                <cti:pointStatus pointId="${wifiData.commStatusPoint.pointID}"/>
-                <cti:pointValue pointId="${wifiData.commStatusPoint.pointID}" format="VALUE"/>&nbsp;
-                <tags:historicalValue pao="${device}" pointId="${wifiData.commStatusPoint.pointID}" format="DATE_QUALITY"/>
+            <c:when test="${cellData.commStatusPoint.pointID != null}">
+                <cti:pointStatus pointId="${cellData.commStatusPoint.pointID}"/>
+                <cti:pointValue pointId="${cellData.commStatusPoint.pointID}" format="VALUE"/>&nbsp;
+                <tags:historicalValue pao="${device}" pointId="${cellData.commStatusPoint.pointID}" format="DATE_QUALITY"/>
             </c:when>
             <c:otherwise>
                 <span class="error"><i:inline key="yukon.common.attributes.pointNotFound"/></span>
@@ -23,10 +23,22 @@
     <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">
         <tags:attributeValue pao="${device}" attribute="${rssiAttribute}"/>
     </tags:nameValue2>
+    
+    <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">
+        <tags:attributeValue pao="${device}" attribute="${rsrpAttribute}"/>
+    </tags:nameValue2>
+    
+    <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">
+        <tags:attributeValue pao="${device}" attribute="${rsrqAttribute}"/>
+    </tags:nameValue2>
+    
+    <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">
+        <tags:attributeValue pao="${device}" attribute="${sinrAttribute}"/>
+    </tags:nameValue2>
 
 </tags:nameValueContainer2>
 
-<div class="dn js-refresh-msg ML15 PT10"><i:inline key="yukon.web.modules.operator.wifiConnection.queryMsg"/></div>
+<div class="dn js-refresh-msg ML15 PT10"><i:inline key="yukon.web.modules.operator.cellConnection.queryMsg"/></div>
 
 <div class="action-area">
     <cti:msg2 var="labelBusy" key="yukon.web.components.button.query.labelBusy"/>

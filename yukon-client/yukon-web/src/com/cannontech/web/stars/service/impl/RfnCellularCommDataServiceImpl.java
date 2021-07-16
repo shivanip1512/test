@@ -35,7 +35,7 @@ public class RfnCellularCommDataServiceImpl implements RfnCellularCommDataServic
     public List<CellularDeviceCommData> getCellularDeviceCommDataForGateways(List<Integer> gatewayIds) {
         // Select all the Cellular devices in DynamicRfnDeviceData
         List<RfnDevice> cellDevices = rfnDeviceDao.getDevicesForGateways(gatewayIds, PaoType.getCellularTypes());
-        // Turn the list of RfnDevices into WiFiMeterCommData objects
+        // Turn the list of RfnDevices into CellularDeviceCommData objects
         List<CellularDeviceCommData> cellDeviceCommData = cellDevices.stream()
                                                               .map(this::buildCellularDeviceCommDataObject)
                                                               .filter(Objects::nonNull)
@@ -47,13 +47,14 @@ public class RfnCellularCommDataServiceImpl implements RfnCellularCommDataServic
     public CellularDeviceCommData buildCellularDeviceCommDataObject(RfnDevice rfnDevice) {
         PaoIdentifier paoIdentifier = rfnDevice.getPaoIdentifier();
         LitePoint commStatusPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.COMM_STATUS);
-        LitePoint rssiPoint = attributeService.findPointForAttribute(paoIdentifier,
-                BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
-        
-        //TODO: Get other points
+        LitePoint rssiPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
+        //TODO: Change these to the new attributes
+        LitePoint rsrpPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
+        LitePoint rsrqPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
+        LitePoint sinrPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
 
         CellularDeviceCommData cellDeviceCommData = new CellularDeviceCommData(rfnDevice, commStatusPoint, rssiPoint, 
-                                                                               rssiPoint, rssiPoint, rssiPoint);
+                                                                               rsrpPoint, rsrqPoint, sinrPoint);
         log.debug("Created CellularDeviceCommData object for {}", cellDeviceCommData);
 
         return cellDeviceCommData;
@@ -62,15 +63,15 @@ public class RfnCellularCommDataServiceImpl implements RfnCellularCommDataServic
     public void refreshCellularDeviceConnection(List<PaoIdentifier> paoIdentifiers, LiteYukonUser user) {
 
         paoIdentifiers.stream()
-                      .filter(pao -> pao.getPaoType().isWifiDevice())
+                      .filter(pao -> pao.getPaoType().isCellularDevice())
                       .forEach(pao -> initiateCellularDeviceStatusRefresh(pao, user));
     }
 
     private void initiateCellularDeviceStatusRefresh(PaoIdentifier paoIdentifier, LiteYukonUser user) {
-        //TODO: Change this method for Celular
+        //TODO: Verify what the new command will be
         CommandRequestDevice request = new CommandRequestDevice("getstatus cell", new SimpleDevice(paoIdentifier));
         CommandResultHolder result = commandExecutionService.execute(request,
-                DeviceRequestType.WIFI_METER_CONNECTION_STATUS_REFRESH, user);
+                DeviceRequestType.CELLULAR_CONNECTION_STATUS_REFRESH, user);
         log.debug("Cellular device connection refresh result: {}", result);
     }
 
