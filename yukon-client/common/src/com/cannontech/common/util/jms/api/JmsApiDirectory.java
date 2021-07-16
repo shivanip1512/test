@@ -38,6 +38,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.Duration;
+
 import com.cannontech.amr.monitors.message.DeviceDataMonitorMessage;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusRequest;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusResponse;
@@ -1310,6 +1312,7 @@ public final class JmsApiDirectory {
                   .responseMessage(NetworkManagerHeartbeatResponse.class)
                   .sender(YUKON_WATCHDOG)
                   .receiver(NETWORK_MANAGER)
+                  .timeToLive(Duration.standardMinutes(5))
                   .build();
     
     
