@@ -24,7 +24,7 @@ import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
 
 /**
- * Generates warnings for cellular relays whose connection status has been "disconnected for a configurable amount of time
+ * Generates warnings for devices whose connection status has been "disconnected" for a configurable amount of time
  */
 public abstract class BaseConnectionStatusEvaluator implements InfrastructureWarningEvaluator {
 
@@ -56,7 +56,7 @@ public abstract class BaseConnectionStatusEvaluator implements InfrastructureWar
     }
 
     /**
-     * Build an object containing all the relevant info for a gateway connection status check.
+     * Build an object containing all the relevant info for a device connection status check.
      */
     ConnectionStatusInfo buildConnectionStatusInfo(Map.Entry<PaoIdentifier, PointValueQualityHolder> entry, 
                                                    Instant evaluationTime, Duration warnableDuration) {
@@ -70,7 +70,7 @@ public abstract class BaseConnectionStatusEvaluator implements InfrastructureWar
     }
 
     /**
-     * Builds a CELLULAR_RELAY_CONNECTION_STATUS warning for the specified paoIdentifier and point value.
+     * Builds an infrastructure warning for the specified paoIdentifier and point value.
      */
     private InfrastructureWarning buildWarning(ConnectionStatusInfo info) {
         return new InfrastructureWarning(info.getDevicePaoId(),
