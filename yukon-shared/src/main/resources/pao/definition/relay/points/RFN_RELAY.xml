@@ -54,6 +54,26 @@
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>
+    <point offset="65" type="Status">
+        <name>Cellular Connection Failed</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="66" type="Status">
+        <name>Cellular Modem Disabled</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="67" type="Status">
+        <name>Cellular Sim Card Inserted Removed</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="68" type="Status">
+        <name>Cellular APN Changed</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="Event Status"/>
+    </point>
     <point offset="102" type="Status">
         <name>Ultra Capacitor Bad</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
