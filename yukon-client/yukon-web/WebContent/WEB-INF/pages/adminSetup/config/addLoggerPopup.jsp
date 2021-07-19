@@ -3,6 +3,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:flashScopeMessages/>
 
@@ -14,22 +15,38 @@
         <cti:csrfToken/>
         <tags:hidden path="loggerId"/>
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".loggerName">
+        <tags:nameValue2 nameKey=".loggerName">
+        <c:choose>
+             <c:when test="${isEditMode}">
+                ${fn:escapeXml(logger.loggerName)}
+                 <input type="hidden" name="loggerName" value="${fn:escapeXml(logger.loggerName)}"/>
+            </c:when>
+            <c:otherwise>
                 <tags:input path="loggerName" size="60"/>
-            </tags:nameValue2>
+             </c:otherwise>
+       </c:choose>
 
+       </tags:nameValue2>
             <tags:nameValue2 nameKey=".loggerLevel">
                 <tags:selectWithItems path="level" items="${loggerLevels}"/>
             </tags:nameValue2>
 
             <c:if test="${allowDateTimeSelection}">
                 <tags:nameValue2 nameKey=".expirationDate">
-                    <tags:switchButton name="specifiedDateTime" toggleGroup="js-date-time" toggleAction="hide" color="true"
+                <tags:switchButton name="specifiedDateTime" toggleGroup="js-date-time" toggleAction="hide" color="true"
                        onNameKey="yukon.common.specified" offNameKey="yukon.common.never" checked="${specifiedDateTime}"/>
-                    <c:set var="specifiedClass" value="${specifiedDateTime ? '' : 'dn'}"/>
-                    <span data-toggle-group="js-date-time" class="${specifiedClass}">
+                <c:set var="specifiedClass" value="${specifiedDateTime ? '' : 'dn'}"/>
+                <span data-toggle-group="js-date-time" class="${specifiedClass}">
+                <c:choose>
+                    <c:when test="${isEditMode}">
+                        <c:set var="expiration" value="${not empty logger.expirationDate ? logger.expirationDate : now}"/>
+                        <dt:date value="${expiration}" minDate="${now}" path="expirationDate"/>
+                    </c:when>
+                    <c:otherwise>
                         <dt:date value="${now}" minDate="${now}" path="expirationDate"/>
-                    </span>
+                    </c:otherwise>
+                </c:choose>
+                </span>
                 </tags:nameValue2>
             </c:if>
 

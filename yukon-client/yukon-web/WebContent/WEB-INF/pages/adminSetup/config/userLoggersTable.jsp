@@ -32,8 +32,8 @@
                     <td>
                         <c:if test="${not empty logger.notes}">
                             <cti:msg2 var="viewNoteTitle" key=".viewNote"/>
-                            <cti:icon icon="icon-notes-pin" title="${viewNoteTitle}" data-logger-id="${logger.loggerId}" data-popup="#logger-note-${logger.loggerId}"/>
-                            <div id="logger-note-${logger.loggerId}" class="dn" data-title="Notes" data-width="300" data-height="200">${logger.notes}</div>
+                            <cti:icon icon="icon-notes-pin" title="${viewNoteTitle}" data-logger-id="${loggerId}" data-popup="#logger-note-${loggerId}"/>
+                            <div id="logger-note-${loggerId}" class="dn" data-title="Notes" data-width="300" data-height="200">${logger.notes}</div>
                             <br/>
                         </c:if>
                     </td>
@@ -46,7 +46,9 @@
                     </td>
                     <td>
                         <cm:dropdown icon="icon-cog">
-                            <cm:dropdownOption key=".edit" icon="icon-pencil"/>
+                            <cti:msg2 var="editLoggerTitle" key=".editUserLoggerTitle"/>
+                            <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-logger" data-logger-id="${loggerId}" data-title="${editLoggerTitle}"/>
+
                             <cm:dropdownOption key=".delete" icon="icon-cross" id="delete-logger-${loggerId}" 
                             data-ok-event="yukon:logger:delete" classes="js-hide-dropdown" data-logger-id="${loggerId}"/>
 
@@ -65,11 +67,10 @@
     <c:if test="${empty userLoggers}">
         <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>
     </c:if>
-    <cti:msg2 var="editUserLoggerTitle" key=".editUserLoggerTitle"/>
-    <div class="dn js-edit-assignment-popup"
+    <div class="dn js-edit-logger-popup"
              data-popup
              data-dialog
-             data-title="${editUserLoggerTitle}">
+             data-title="${editLoggerTitle}">
     </div>
 
 </cti:msgScope>

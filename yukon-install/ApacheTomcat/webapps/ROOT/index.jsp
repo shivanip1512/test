@@ -127,7 +127,7 @@ request.setAttribute("tomcatExamplesUrl", "/examples/");
                         <ul>
                             <li><a href="https://tomcat.apache.org/bugreport.html">Tomcat 9.0 Bug Database</a></li>
                             <li><a href="${tomcatDocUrl}api/index.html">Tomcat 9.0 JavaDocs</a></li>
-                            <li><a href="https://github.com/apache/tomcat/tree/master">Tomcat 9.0 Git Repository at GitHub</a></li>
+                            <li><a href="https://github.com/apache/tomcat/tree/9.0.x">Tomcat 9.0 Git Repository at GitHub</a></li>
                         </ul>
                     </div>
                 </div>

@@ -13,6 +13,14 @@
                 $('#eventForm').submit();
             });
             $(".optional").prop("placeholder", "optional");
+            $('.js-event-type').change(function() {
+                var eventType = $('.js-event-type').val();
+                if (eventType === 'CELLULAR_APN_CHANGED') {
+                    yukon.ui.alertWarning('Random APN will be generated.');
+                } else {
+                    yukon.ui.removeAlerts();
+                }
+            })
         });
     </script>
 
@@ -39,7 +47,7 @@
                 </tags:nameValue>
                 
                 <tags:nameValue name="Event Type">
-                    <form:select path="rfnConditionType" items="${rfnConditionTypes}"/>
+                    <form:select cssClass="js-event-type" path="rfnConditionType" items="${rfnConditionTypes}"/>
                 </tags:nameValue>
                 
                 <tags:nameValue name="Num Events Per Meter">
