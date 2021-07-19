@@ -48,7 +48,7 @@ public class YukonLoggersController {
             logger.setLoggerId(id+1);
             logger.setLoggerName(loggers[id].getLoggerName());
             logger.setLevel(loggers[id].getLevel());
-            cache.put(id, logger);
+            cache.put(id+1, logger);
         }
     }
 
@@ -86,6 +86,8 @@ public class YukonLoggersController {
         model.addAttribute("logger", logger);
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("isEditMode", true);
+        Date expirationDate = new Date();
+        model.addAttribute("now", expirationDate);
         model.addAttribute("specifiedDateTime", logger.getExpirationDate() != null);
 
         boolean allowDateTimeSelection = !SystemLogger.isSystemLogger(logger.getLoggerName());
@@ -100,8 +102,7 @@ public class YukonLoggersController {
         }
         if (logger.getLoggerId() == 0) {
             List<Integer> sortedKeys = cache.keySet().stream().sorted().collect(Collectors.toList());
-            sortedKeys.add(sortedKeys.size());
-            logger.setLoggerId(sortedKeys.get(sortedKeys.size() - 1));
+            logger.setLoggerId(sortedKeys.size() + 1);
             cache.put(logger.getLoggerId(), logger);
         } else {
             cache.remove(logger.getLoggerId());
@@ -128,6 +129,14 @@ public class YukonLoggersController {
         retrieveLoggers(sorting, loggerName, loggerLevels, model, userContext);
 
         return "config/userLoggersTable.jsp";
+    }
+    
+    @GetMapping("/config/loggers/getSystemLoggers")
+    public String getSystemLoggers(@DefaultSort(dir = Direction.asc, sort = "loggerName") SortingParameters sorting, String loggerName,
+            LoggerLevel[] loggerLevels, ModelMap model, YukonUserContext userContext) {
+        retrieveLoggers(sorting, loggerName, loggerLevels, model, userContext);
+
+        return "config/systemLoggersTable.jsp";
     }
     
     private void retrieveLoggers(SortingParameters sorting, String loggerName, LoggerLevel[] loggerLevels,

@@ -16,8 +16,8 @@
         <thead>
             <tr>
                 <th class="row-icon"/>
-                <th><i:inline key=".loggerName"></i:inline></th>
-                <th><i:inline key=".loggerLevel"></i:inline></th>
+                <tags:sort column="${loggerName}"/>
+                <tags:sort column="${loggerLevel}"/>
                 <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
@@ -38,8 +38,8 @@
                     <td><i:inline key="${logger.level}"/></td>
                     <td>
                         <cm:dropdown icon="icon-cog">
-                            <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-system-logger" data-logger-id="${loggerId}"/>
-                                <input type="hidden" name="name" value="${fn:escapeXml(logger.loggerName)}"/>
+                            <cti:msg2 var="editLoggerTitle" key=".editSystemLoggerTitle"/>
+                            <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-logger" data-logger-id="${loggerId}" data-title="${editLoggerTitle}"/>
                         </cm:dropdown>
                     </td>
                 </tr>
@@ -51,11 +51,10 @@
         <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>
     </c:if>
 
-    <cti:msg2 var="editSystemLoggerTitle" key=".editSystemLoggerTitle"/>
-    <div class="dn js-edit-system-logger-popup"
+    <div class="dn js-edit-logger-popup"
              data-popup
              data-dialog
-             data-title="${editSystemLoggerTitle}">
+             data-title="${editLoggerTitle}">
     </div>
 </cti:msgScope>
 <cti:includeScript link="/resources/js/pages/yukon.adminSetup.yukonLoggers.js" />

@@ -39,7 +39,8 @@
                 <span data-toggle-group="js-date-time" class="${specifiedClass}">
                 <c:choose>
                     <c:when test="${isEditMode}">
-                            <dt:date value="${logger.expirationDate}" minDate="${now}" path="expirationDate"/>
+                        <c:set var="expiration" value="${not empty logger.expirationDate ? logger.expirationDate : now}"/>
+                        <dt:date value="${expiration}" minDate="${now}" path="expirationDate"/>
                     </c:when>
                     <c:otherwise>
                         <dt:date value="${now}" minDate="${now}" path="expirationDate"/>

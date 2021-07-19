@@ -67,7 +67,10 @@
         </tags:sectionContainer2>
 
         <tags:sectionContainer2 nameKey="systemLoggers">
-            <div id="system-logger-container">
+        <cti:url var="getUrl" value="/admin/config/loggers/getSystemLoggers"/>
+        <form:form id="systemLoggerForm" method="get" action="${getUrl}" >
+        </form:form>
+            <div id="system-logger-container" data-url="${getUrl}">
                 <%@ include file="systemLoggersTable.jsp" %>
             </div>
         </tags:sectionContainer2>
