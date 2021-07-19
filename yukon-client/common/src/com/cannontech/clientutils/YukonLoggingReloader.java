@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
@@ -22,11 +23,11 @@ public class YukonLoggingReloader extends YukonLoggingReloaderHelper{
             } else if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.LOG_RETENTION_DAYS)) {
                 reloadAppenderForLogRetentionDays();
             } else if (DbChangeCategory.isDbChangeForLogger(event)) {
-                reloadYukonLoggers();
+                reloadYukonLoggers(event.getChangeType());
             }
         });
         reloadAppenderForMaxFileSize(false);
         reloadAppenderForLogRetentionDays();
-        reloadYukonLoggers();
+        reloadYukonLoggers(DbChangeType.NONE);
     }
 }

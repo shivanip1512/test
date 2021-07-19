@@ -19,7 +19,7 @@ public interface YukonLoggerDao {
     /**
      * Update a Logger
      */
-    void updateLogger(YukonLogger logger);
+    void updateLogger(int loggerId, YukonLogger logger);
 
     /**
      * Delete a Logger
