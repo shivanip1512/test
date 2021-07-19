@@ -12,7 +12,7 @@ public class NodeWiFiComm implements Serializable{
     
     private RfnIdentifier gatewayRfnIdentifier; // null indicates no primary gateway
     
-    private NodeWiFiCommStatus nodeWiFiCommStatus; // null indicates unknown Communication Status
+    private NodeConnectionState nodeWiFiCommStatus; // null indicates unknown Communication Status
     
     private long wiFiCommStatusTimestamp; // Node Communication Status obtained at
     
@@ -34,11 +34,11 @@ public class NodeWiFiComm implements Serializable{
         this.gatewayRfnIdentifier = gatewayRfnIdentifier;
     }
 
-    public NodeWiFiCommStatus getNodeWiFiCommStatus() {
+    public NodeConnectionState getNodeWiFiCommStatus() {
         return nodeWiFiCommStatus;
     }
 
-    public void setNodeWiFiCommStatus(NodeWiFiCommStatus nodeWiFiCommStatus) {
+    public void setNodeWiFiCommStatus(NodeConnectionState nodeWiFiCommStatus) {
         this.nodeWiFiCommStatus = nodeWiFiCommStatus;
     }
 

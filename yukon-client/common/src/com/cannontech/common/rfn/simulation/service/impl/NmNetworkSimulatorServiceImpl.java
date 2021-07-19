@@ -433,7 +433,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         superMeterData.setConnectedApBssid("ab:cd:ef:01:23:45");
         superMeterData.setApSsid("ExampleUtilityISP");
         superMeterData.setSecurityType(WifiSecurityType.WPA2_PERSONAL);
-        superMeterData.setVirtualGatewayIpv6Address("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
+        superMeterData.setVirtualGwIpv6Addr("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
         return superMeterData;
     }
 

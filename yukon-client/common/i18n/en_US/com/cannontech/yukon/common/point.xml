@@ -840,6 +840,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_COLD_LOAD_PICKUP_TIME">Relay 3 Cold Load Pickup Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_ACTIVATION_STATUS">Relay 4 Activation Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_COLD_LOAD_PICKUP_TIME">Relay 4 Cold Load Pickup Time</entry>
+    
+    <entry key="yukon.common.attribute.builtINAttribute.REFERENCE_SIGNAL_RECEIVED_POWER">RSRP</entry>
+    <entry key="yukon.common.attribute.builtINAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY">RSRQ</entry>
+    <entry key="yukon.common.attribute.builtINAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO">SINR</entry>
 
     <!-- BuiltInAttribute see note above about changing values -->
 
