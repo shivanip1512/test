@@ -13,7 +13,7 @@ public class NodeData implements Serializable {
 
     private NodeType nodeType;
 
-    private long inNetworkTimestamp;
+    private Long inNetworkTimestamp;
 
     private String macAddress;
 
@@ -55,11 +55,11 @@ public class NodeData implements Serializable {
         this.nodeType = nodeType;
     }
 
-    public long getInNetworkTimestamp() {
+    public Long getInNetworkTimestamp() {
         return inNetworkTimestamp;
     }
 
-    public void setInNetworkTimestamp(long inNetworkTimestamp) {
+    public void setInNetworkTimestamp(Long inNetworkTimestamp) {
         this.inNetworkTimestamp = inNetworkTimestamp;
     }
 
@@ -160,7 +160,7 @@ public class NodeData implements Serializable {
                 + ((cellularIplinkRelayData == null) ? 0 : cellularIplinkRelayData.hashCode());
         result = prime * result + ((firmwareVersion == null) ? 0 : firmwareVersion.hashCode());
         result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
-        result = prime * result + (int) (inNetworkTimestamp ^ (inNetworkTimestamp >>> 32));
+        result = prime * result + ((inNetworkTimestamp == null) ? 0 : inNetworkTimestamp.hashCode());
         result = prime * result + ((macAddress == null) ? 0 : macAddress.hashCode());
         result = prime * result + ((meterConfigID == null) ? 0 : meterConfigID.hashCode());
         result = prime * result + ((networkAddress == null) ? 0 : networkAddress.hashCode());
@@ -203,7 +203,10 @@ public class NodeData implements Serializable {
                 return false;
         } else if (!hardwareVersion.equals(other.hardwareVersion))
             return false;
-        if (inNetworkTimestamp != other.inNetworkTimestamp)
+        if (inNetworkTimestamp == null) {
+            if (other.inNetworkTimestamp != null)
+                return false;
+        } else if (!inNetworkTimestamp.equals(other.inNetworkTimestamp))
             return false;
         if (macAddress == null) {
             if (other.macAddress != null)
