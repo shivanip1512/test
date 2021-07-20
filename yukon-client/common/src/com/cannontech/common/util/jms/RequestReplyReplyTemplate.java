@@ -47,7 +47,7 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         log.trace("Sending requestMessage to producer: {}", requestMessage.toString());
         
         logRequest(requestPayload.toString());
-        producer.send(requestMessage);
+        sendMessage(producer, requestMessage);
         
         handleRepliesAndOrTimeouts(callback, reply1Timeout, reply2Timeout, replyConsumer, requestPayload.toString());
         log.trace("Request replied or timed out: {}", requestMessage.toString());
