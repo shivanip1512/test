@@ -141,6 +141,7 @@ public enum UnitOfMeasureType {
     MEGABYTES("MEGABYTES"),
     DBM("DBM"),
     THERMS("THERMS");
+    // FIXME - I know I need to run that ant build.xml thing to populate it but it was failing so here is a reminder
     private final String value;
 
     UnitOfMeasureType(String v) {

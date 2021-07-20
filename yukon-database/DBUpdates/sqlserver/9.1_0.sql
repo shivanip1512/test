@@ -257,6 +257,12 @@ ALTER DATABASE CURRENT SET auto_update_statistics ON;
 INSERT INTO DBUpdates VALUES ('YUK-23375', '9.1.0', GETDATE());
 /* @end YUK-23375 */
 
+/* @start YUK-24730 */
+INSERT INTO UnitMeasure VALUES ( 59,'dB', 0, 'Decibels', '(none)');
+
+INSERT INTO DBUpdates VALUES ('YUK-24730', '9.1.0', GETDATE());
+/* @end YUK-24730 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

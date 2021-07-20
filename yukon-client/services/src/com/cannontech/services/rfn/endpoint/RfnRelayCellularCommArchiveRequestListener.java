@@ -118,8 +118,8 @@ public class RfnRelayCellularCommArchiveRequestListener implements RfnArchivePro
                 log.debug("{} generated {} {} {}", processor, pointData, rssi, rfnIdentifier);
             }
             
-            // I think I need to add archiving for the new attribute here
-            // Also add some logging similar to RSSI for them
+            // FIXME - I think I need to add archiving for the new attribute here
+            // FIXME - Also add some logging similar to RSSI for them
             
         } catch (IllegalUseOfAttribute e) {
             log.error("{} generation of point data for {} {} value {} failed", processor, rfnIdentifier, commStatus,

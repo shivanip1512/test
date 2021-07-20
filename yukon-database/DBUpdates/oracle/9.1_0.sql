@@ -233,6 +233,12 @@ INSERT INTO DBUpdates VALUES ('YUK-24461', '9.1.0', SYSDATE);
 /* @error ignore-end */
 /* @end YUK-24461 */
 
+/* @start YUK-24730 */
+INSERT INTO UnitMeasure VALUES ( 59,'dB', 0, 'Decibels', '(none)');
+
+INSERT INTO DBUpdates VALUES ('YUK-24730', '9.1.0', SYSDATE);
+/* @end YUK-24730 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

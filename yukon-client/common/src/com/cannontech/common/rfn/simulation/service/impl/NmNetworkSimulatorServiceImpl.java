@@ -62,6 +62,7 @@ import com.cannontech.common.rfn.message.neighbor.Neighbor;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.neighbor.NeighborFlag;
 import com.cannontech.common.rfn.message.neighbor.Neighbors;
+import com.cannontech.common.rfn.message.node.CellularIplinkRelayData;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
@@ -122,6 +123,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private YukonJmsTemplate rfnStatusArchiveJmsTemplate;
     private ScheduledFuture<?> task;
     private Set<PaoType> wiFiSuperMeters = Set.of(PaoType.WRL420CL, PaoType.WRL420CD);
+    private Set<PaoType> cellIPLinkRelays = Set.of(PaoType.CRLY856);
     private NetworkTreeUpdateTimeResponse networkTreeUpdateTimeResponse;
 
     private final Cache<RfnIdentifier, RfnVertex> vertexCache = CacheBuilder.newBuilder().expireAfterWrite(8, TimeUnit.HOURS)
@@ -396,6 +398,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         if (wiFiSuperMeters.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
             node.setWifiSuperMeterData(getSuperMeterData());
         }
+        if (cellIPLinkRelays.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
+            node.setCellularIplinkRelayData(getCellIPLinkData());
+        }
         return node;
     }
 
@@ -435,6 +440,19 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         superMeterData.setSecurityType(WifiSecurityType.WPA2_PERSONAL);
         superMeterData.setVirtualGwIpv6Addr("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
         return superMeterData;
+    }
+    
+    private CellularIplinkRelayData getCellIPLinkData() {
+        CellularIplinkRelayData cellIPLinkData = new CellularIplinkRelayData();
+        cellIPLinkData.setApn("internet.yukon");
+        cellIPLinkData.setFirmwareVersion("R1.3.37");
+        cellIPLinkData.setIccid("8981100022152967705");
+        cellIPLinkData.setImei("358295896516576");
+        cellIPLinkData.setImsi("310170845466094");
+        cellIPLinkData.setModemEnabled(true);
+        cellIPLinkData.setSimCardPresent(true);
+        cellIPLinkData.setVirtualGwIpv6Addr("AC07:2F23:85B0:70E5:59F6:F9A7:EC14:996F");
+        return cellIPLinkData;
     }
 
     private List<RfnIdentifier> getDevicesForGateway(RfnDevice gateway) {

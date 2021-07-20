@@ -761,4 +761,5 @@
     <entry key="yukon.common.unitOfMeasure.MEGABYTES">MB</entry>
     <entry key="yukon.common.unitOfMeasure.DBM">dBm</entry>
     <entry key="yukon.common.unitOfMeasure.THERMS">Therms</entry>
+    <entry key="yukon.common.unitOfMeasure.DB">dB</entry>
 </properties>
