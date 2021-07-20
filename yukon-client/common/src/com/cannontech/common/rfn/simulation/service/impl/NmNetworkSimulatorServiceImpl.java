@@ -317,7 +317,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private NodeNetworkInfo getNetworkInfo(RfnIdentifier rfnIdentifier) {
         NodeNetworkInfo info = new NodeNetworkInfo();
         info.setHostname("Hostname");
-        info.setIpv6Address("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
         info.addNodeGroupName("Group 1");
         info.addNodeName("Group 1");
         if (new Random().nextBoolean()) {
