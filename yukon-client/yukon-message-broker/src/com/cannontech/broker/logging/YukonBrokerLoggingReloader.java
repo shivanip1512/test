@@ -11,7 +11,7 @@ public class YukonBrokerLoggingReloader extends YukonLoggingReloaderHelper {
     public void initialize() {
         reloadAppenderForMaxFileSize(false);
         reloadAppenderForLogRetentionDays();
-        reloadYukonLoggers(DbChangeType.NONE);
+        reloadYukonLoggers(DbChangeType.NONE, -1);
     }
 
 }

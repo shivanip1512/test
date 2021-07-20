@@ -37,7 +37,7 @@ public class DatabaseChangeListener implements MessageListener {
                         globalSettingDao.valueChanged();
                         reloader.reloadAppenderForMaxFileSize(true);
                     } else if (DbChangeCategory.isDbChangeForLogger(event)) {
-                        reloader.reloadYukonLoggers(event.getChangeType());
+                        reloader.reloadYukonLoggers(event.getChangeType(), event.getPrimaryKey());
                     }
                 }
             } catch (JMSException e) {

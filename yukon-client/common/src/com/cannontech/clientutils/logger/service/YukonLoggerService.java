@@ -2,7 +2,9 @@ package com.cannontech.clientutils.logger.service;
 
 import java.util.List;
 
+import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.YukonLogger;
+import com.cannontech.common.model.Direction;
 
 public interface YukonLoggerService {
 
@@ -29,5 +31,21 @@ public interface YukonLoggerService {
     /**
      * Return all the Loggers
      */
-    List<YukonLogger> getLoggers();
+    List<YukonLogger> getLoggers(String loggerName, SortBy sortBy, Direction direction, List<LoggerLevel> loggerLevels);
+
+    public enum SortBy {
+        NAME("loggerName"),
+        LEVEL("loggerLevel"),
+        EXPIRATION("expirationDate");
+
+        private final String dbString;
+
+        private SortBy(String dbString) {
+            this.dbString = dbString;
+        }
+
+        public String getDbString() {
+            return dbString;
+        }
+    }
 }

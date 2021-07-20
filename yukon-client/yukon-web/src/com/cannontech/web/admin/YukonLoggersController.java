@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.log.model.LoggerLevel;
@@ -136,20 +137,20 @@ public class YukonLoggersController {
         if (BooleanUtils.isNotTrue(specifiedDateTime)) {
             logger.setExpirationDate(null);
         }
-        if (logger.getLoggerId() == 0) {
+        if (logger.getLoggerId() == -1) {
             String url = apiControllerHelper.findWebServerUrl(request, userContext, ApiURL.loggerUrl);
             return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, YukonLogger.class,
                     logger);
         } else {
             String url = apiControllerHelper.findWebServerUrl(request, userContext,
                     ApiURL.loggerUrl + "/" + logger.getLoggerId());
-            return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PUT, YukonLogger.class,
+            return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, YukonLogger.class,
                     logger);
         }
     }
 
     @DeleteMapping("/config/loggers/{loggerId}")
-    public String deleteLogger(@PathVariable Integer loggerId, ModelMap model, FlashScope flashScope,
+    public String deleteLogger(@PathVariable Integer loggerId, String loggerName, ModelMap model, FlashScope flashScope,
             HttpServletRequest request, YukonUserContext userContext) {
 
         String deleteUrl = apiControllerHelper.findWebServerUrl(request, userContext,
@@ -158,10 +159,11 @@ public class YukonLoggersController {
                 deleteUrl, HttpMethod.DELETE, Object.class, Integer.class);
 
         if (deleteResponse.getStatusCode() == HttpStatus.OK) {
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", /* loggerName */""));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", loggerName ));
         } else {
-            flashScope.setError(
-                    new YukonMessageSourceResolvable("yukon.web.api.delete.error", "Logger", "Invalid logger Id"));
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            String inValidId = accessor.getMessage(baseKey + "inValidId");
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", loggerName, inValidId));
         }
         return redirectLink;
     }
@@ -227,13 +229,11 @@ public class YukonLoggersController {
         } catch (RestClientException ex) {
             log.error("Error retrieving loggers. Error: {}", ex.getMessage());
             String loggersLabel = accessor.getMessage(baseKey + "loggersLabel");
-            flashScope.setError(
-                    new YukonMessageSourceResolvable("yukon.web.api.retrieve.error", loggersLabel, ex.getMessage()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.retrieve.error", loggersLabel, ex.getMessage()));
         } catch (URISyntaxException e) {
             log.error("URI syntax error while creating builder for retrieving loggers", e);
             String loggersLabel = accessor.getMessage(baseKey + "loggersLabel");
-            model.addAttribute("errorMessage",
-                    accessor.getMessage("yukon.web.api.retrieve.error", loggersLabel, e.getMessage()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.retrieve.error", loggersLabel, e.getMessage()));
         }
 
         loggers.stream().forEach(logger -> {
@@ -266,22 +266,6 @@ public class YukonLoggersController {
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.adminSetup.config.loggers." + name();
-        }
-    }
-
-    public enum SortBy {
-        NAME("loggerName"),
-        LEVEL("loggerLevel"),
-        EXPIRATION("expirationDate");
-
-        private final String dbString;
-
-        private SortBy(String dbString) {
-            this.dbString = dbString;
-        }
-
-        public String getDbString() {
-            return dbString;
         }
     }
 }

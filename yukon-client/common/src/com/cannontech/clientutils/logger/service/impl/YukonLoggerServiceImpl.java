@@ -6,37 +6,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.logger.dao.YukonLoggerDao;
 import com.cannontech.clientutils.logger.service.YukonLoggerService;
+import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.YukonLogger;
+import com.cannontech.common.model.Direction;
 
 public class YukonLoggerServiceImpl implements YukonLoggerService {
-	@Autowired
-	private YukonLoggerDao yukonLoggerDao;
+    @Autowired private YukonLoggerDao yukonLoggerDao;
 
-	@Override
-	public YukonLogger getLogger(int loggerId) {
-		return yukonLoggerDao.getLogger(loggerId);
-	}
+    @Override
+    public YukonLogger getLogger(int loggerId) {
+        return yukonLoggerDao.getLogger(loggerId);
+    }
 
-	@Override
-	public YukonLogger addLogger(YukonLogger logger) {
-		yukonLoggerDao.addLogger(logger);
-		return logger;
-	}
+    @Override
+    public YukonLogger addLogger(YukonLogger logger) {
+        yukonLoggerDao.addLogger(logger);
+        return logger;
+    }
 
-	@Override
-	public YukonLogger updateLogger(int loggerId, YukonLogger logger) {
-		yukonLoggerDao.updateLogger(loggerId, logger);
-		return logger;
-	}
+    @Override
+    public YukonLogger updateLogger(int loggerId, YukonLogger logger) {
+        yukonLoggerDao.updateLogger(loggerId, logger);
+        return logger;
+    }
 
-	@Override
-	public int deleteLogger(int loggerId) {
-		yukonLoggerDao.deleteLogger(loggerId);
-		return loggerId;
-	}
+    @Override
+    public int deleteLogger(int loggerId) {
+        yukonLoggerDao.deleteLogger(loggerId);
+        return loggerId;
+    }
 
-	@Override
-	public List<YukonLogger> getLoggers() {
-		return yukonLoggerDao.getLoggers();
-	}
+    @Override
+    public List<YukonLogger> getLoggers(String loggerName, SortBy sortBy, Direction direction, List<LoggerLevel> loggerLevels) {
+        return yukonLoggerDao.getLoggers(loggerName, sortBy, direction, loggerLevels);
+    }
 }

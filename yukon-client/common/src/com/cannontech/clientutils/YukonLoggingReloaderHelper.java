@@ -1,8 +1,12 @@
 package com.cannontech.clientutils;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -12,7 +16,10 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.logger.dao.YukonLoggerDao;
+import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
+import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.YukonLogger;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.system.GlobalSettingType;
@@ -37,7 +44,7 @@ public abstract class YukonLoggingReloaderHelper {
     }
 
     public void reloadAppenderForLogRetentionDays() {
-        int logRetentionDays =  globalSettingDao.getInteger(GlobalSettingType.LOG_RETENTION_DAYS);
+        int logRetentionDays = globalSettingDao.getInteger(GlobalSettingType.LOG_RETENTION_DAYS);
         if (logRetentionDays > 0) {
             reloadAppender(logRetentionDays, GlobalSettingType.LOG_RETENTION_DAYS);
             BootstrapUtils.setLogRetentionDays(logRetentionDays);
@@ -60,42 +67,56 @@ public abstract class YukonLoggingReloaderHelper {
         });
     }
 
-    public void reloadYukonLoggers(DbChangeType dbChangeType) {
-        {
+    public void reloadYukonLoggers(DbChangeType dbChangeType, int loggerId) {
+        // Do not load the Configuration on startup as YukonLogManager loads it for every application. When there user
+        // add/edit/delete a logger, reload the Configuration.
+        if (dbChangeType != DbChangeType.NONE) {
             // Get the current context and configuration
             LoggerContext ctx = YukonLogManager.getMyLogger().getContext();
             Configuration config = ctx.getConfiguration();
 
-            // Retrieve the all the loggers from DB table.
-            List<YukonLogger> loggers = yukonLoggerDao.getLoggers();
+            if (dbChangeType != DbChangeType.DELETE) {
+                // All the loggers should log the details in the log file and console. So retrieve these 2 appenders from
+                // configuration.
+                Appender appender = config.getAppender("yukonRollingFileAppender");
+                Appender consoleAppender = config.getAppender("console");
 
-            // The new class level loggers should log the details in the file and console. So retrieve these 2 appenders from
-            // configuration.
-            Appender appender = config.getAppender("yukonRollingFileAppender");
-            Appender consoleAppender = config.getAppender("console");
+                // Create the AppenderRef[] which will be used to create LoggerConfig
+                AppenderRef ref = AppenderRef.createAppenderRef(appender.getName(), null, config.getFilter());
+                AppenderRef consoleRef = AppenderRef.createAppenderRef(consoleAppender.getName(), null, config.getFilter());
+                AppenderRef[] refs = new AppenderRef[] { ref, consoleRef };
 
-            // Create the AppenderRef[] which will be used to create LoggerConfig
-            AppenderRef ref = AppenderRef.createAppenderRef(appender.getName(), null, config.getFilter());
-            AppenderRef consoleRef = AppenderRef.createAppenderRef(consoleAppender.getName(), null, config.getFilter());
-            AppenderRef[] refs = new AppenderRef[] { ref, consoleRef };
-
-            // Get existing loggers from configuration.
-            Map<String, LoggerConfig> existingLoggers = config.getLoggers();
-
-            // Iterate over the loggers and add them to configuration.Compare with existing loggers before creating LoggerConfig
-            for (YukonLogger logger : loggers) {
-                LoggerConfig oldConfig = existingLoggers.get(logger.getLoggerName());
-                if (oldConfig == null || oldConfig.getLevel() != YukonLogManager.getApacheLevel(logger.getLevel())) {
-                    LoggerConfig loggerConfig = LoggerConfig.createLogger(false,
-                            YukonLogManager.getApacheLevel(logger.getLevel()), logger.getLoggerName(),
-                            "true", refs, null, config, null);
-                    loggerConfig.addAppender(appender, null, config.getFilter());
-                    loggerConfig.addAppender(consoleAppender, null, config.getFilter());
-                    config.addLogger(logger.getLoggerName(), loggerConfig);
-                }
-                if (dbChangeType == DbChangeType.DELETE) {
-                    config.removeLogger(logger.getLoggerName());
-                }
+                YukonLogger logger = yukonLoggerDao.getLogger(loggerId);
+                Level level = YukonLogManager.getApacheLevel(logger.getLevel());
+                LoggerConfig loggerConfig = LoggerConfig.createLogger(false, level, logger.getLoggerName(), "true", refs, null,
+                        config, null);
+                loggerConfig.addAppender(appender, null, config.getFilter());
+                loggerConfig.addAppender(consoleAppender, null, config.getFilter());
+                // addLogger() does not add the logger if its already there.So first remove the logger and then add back to
+                // config
+                config.removeLogger(logger.getLoggerName());
+                config.addLogger(logger.getLoggerName(), loggerConfig);
+            } else {
+                // Retrieve the all the loggers from DB table.
+                List<YukonLogger> currentDbloggers = yukonLoggerDao.getLoggers(StringUtils.EMPTY, SortBy.NAME, Direction.asc,
+                        Collections.<LoggerLevel>emptyList());
+                // Get current loggerNames
+                Set<String> currentDbLoggerNames = currentDbloggers.stream()
+                                                                   .map(YukonLogger::getLoggerName)
+                                                                   .collect(Collectors.toSet());
+                // Get existing loggers from configuration.
+                Set<String> existingLoggers = config.getLoggers().keySet();
+                // remove the loggers if its there in database as we only need to delete the logger which is not available in
+                // database.
+                List<String> deletedLoggers = existingLoggers.stream()
+                                                             .filter(name -> !currentDbLoggerNames.contains(name))
+                                                             .collect(Collectors.toList());
+                deletedLoggers.stream()
+                        .forEach(name -> {
+                            if (StringUtils.isNotBlank(name)) {
+                                config.removeLogger(name);
+                            }
+                        });
             }
             ctx.updateLoggers(config);
         }

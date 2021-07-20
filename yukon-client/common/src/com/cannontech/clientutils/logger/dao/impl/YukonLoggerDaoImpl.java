@@ -3,11 +3,15 @@ package com.cannontech.clientutils.logger.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.logger.dao.YukonLoggerDao;
+import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
 import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.YukonLogger;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -59,7 +63,7 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
         sink.addValue("Notes", logger.getNotes());
         sql.append("WHERE LoggerId").eq(loggerId);
         jdbcTemplate.update(sql);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.LOGGER, logger.getLoggerId());
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.LOGGER, loggerId);
     }
 
     @Override
@@ -73,10 +77,31 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
     }
 
     @Override
-    public List<YukonLogger> getLoggers() {
+    public List<YukonLogger> getLoggers(String loggerName, SortBy sortBy, Direction direction, List<LoggerLevel> loggerLevels) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM");
         sql.append(TABLE_NAME);
+
+        if (CollectionUtils.isNotEmpty(loggerLevels)) {
+            sql.append("WHERE LoggerLevel").in(loggerLevels);
+        }
+        if (StringUtils.isNotEmpty(loggerName)) {
+            if (CollectionUtils.isEmpty(loggerLevels)) {
+                sql.append("WHERE UPPER(LoggerName) LIKE");
+                sql.append("%" + loggerName.toUpperCase() + "%");
+            } else {
+                sql.append("AND UPPER(LoggerName) LIKE");
+                sql.append("%" + loggerName.toUpperCase() + "%");
+            }
+        }
+        if (sortBy != null) {
+            sql.append("ORDER BY");
+            sql.append(sortBy.getDbString());
+            if (direction != null) {
+                sql.append(direction);
+            }
+        }
+
         return jdbcTemplate.query(sql, rowMapper);
     }
 

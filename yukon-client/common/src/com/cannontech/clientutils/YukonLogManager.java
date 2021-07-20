@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.builder.api.ComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
@@ -22,6 +21,8 @@ import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import com.cannontech.common.config.RemoteLoginSession;
 import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.SystemLogger;
+import com.cannontech.common.util.ApplicationIdUnknownException;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 
@@ -46,7 +47,14 @@ public class YukonLogManager {
 
     // initialize the logging at YukonLogManager creation
     static {
-        initialize();
+        try {
+            // Initialize loggers for valid application Ids only. For Test cases, Eclipse builders(like encryption.xml), ignore
+            // loading the logger. Test cases and builders will print the message default messages on eclipse console.
+            BootstrapUtils.getApplicationId();
+            initialize();
+        } catch (ApplicationIdUnknownException e) {
+            // Do nothing.
+        }
     }
 
     /**
@@ -58,7 +66,6 @@ public class YukonLogManager {
         if (shouldPopulateSystemLoggers()) {
             populateSystemLoggers();
         }
-
         // Create a ConfigurationBuilder Object.
         ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
         builder.setStatusLevel(Level.INFO);
@@ -66,72 +73,75 @@ public class YukonLogManager {
 
         // Create a default PatternLayout for ConsoleAppender and YukonRollingFileAppender.
         LayoutComponentBuilder patternLayout = builder.newLayout("PatternLayout")
-                .addAttribute("pattern", "%d %d{zzz} [%t] %-5p %c - %m%n%throwable");
+                                                      .addAttribute("pattern", "%d %d{zzz} [%t] %-5p %c - %m%n%throwable");
 
         // Create PatternLayout for custom Appenders like yukonRfnRollingFile, commsRollingFile and yukonApiRollingFile
-        // With default patternLayout, class name not getting logged for custom appenders. Do not use this unless its required as
-        // Generating the caller class information is slow.
+        // With default patternLayout, class name not getting logged for custom appenders. Difference : %c vs %C
+        //Do not use this unless its required as generating the caller class information is slow.
         LayoutComponentBuilder customPatternLayout = builder.newLayout("PatternLayout")
-                .addAttribute("pattern", "%d %d{zzz} [%t] %-5p %C - %m%n%throwable");
+                                                            .addAttribute("pattern", "%d %d{zzz} [%t] %-5p %C - %m%n%throwable");
 
         // Create triggeringPolicy as similar to yukonlogging.xml file
         ComponentBuilder<?> triggeringPolicy = builder.newComponent("Policies")
-                .addComponent(builder.newComponent("TimeBasedTriggeringPolicy")
-                        .addAttribute("interval", "1"));
+                                                      .addComponent(builder.newComponent("TimeBasedTriggeringPolicy")
+                                                                           .addAttribute("interval", "1"));
 
         // Create DirectWriteRolloverStrategy as similar to yukonlogging.xml file
         ComponentBuilder<?> strategyBuilder = builder.newComponent("DirectWriteRolloverStrategy")
-                .addAttribute("maxFiles", 1);
+                                                     .addAttribute("maxFiles", 1);
 
         // Create console appender as similar to yukonlogging.xml file with all similar properties and add it to the builder.
         builder.add(builder.newAppender("console", "Console")
-                .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT)
-                .add(patternLayout)
-                .addComponent(strategyBuilder));
+                           .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT)
+                           .add(patternLayout)
+                           .addComponent(strategyBuilder));
 
         // Create yukonRollingFileAppender and add it to the builder.
         builder.add(builder.newAppender("yukonRollingFileAppender", "YukonRollingFile")
-                .add(patternLayout)
-                .addComponent(triggeringPolicy)
-                .addComponent(strategyBuilder));
+                           .add(patternLayout)
+                           .addComponent(triggeringPolicy)
+                           .addComponent(strategyBuilder));
 
         // Create yukonRfnRollingFile and add it to the builder.
         builder.add(builder.newAppender("yukonRfnRollingFile", "YukonRfnRollingFile")
-                .add(customPatternLayout)
-                .addComponent(triggeringPolicy)
-                .addComponent(strategyBuilder));
+                           .add(customPatternLayout)
+                           .addComponent(triggeringPolicy)
+                           .addComponent(strategyBuilder));
 
         // Create commsRollingFile and add it to the builder.
         builder.add(builder.newAppender("commsRollingFile", "CommsRollingFile")
-                .add(customPatternLayout)
-                .addComponent(triggeringPolicy)
-                .addComponent(strategyBuilder));
+                           .add(customPatternLayout)
+                           .addComponent(triggeringPolicy)
+                           .addComponent(strategyBuilder));
 
         // Create yukonRfnRollingFile and add it to the builder.
         builder.add(builder.newAppender("yukonRfnRollingFile", "YukonRfnRollingFile")
-                .add(customPatternLayout)
-                .addComponent(triggeringPolicy)
-                .addComponent(strategyBuilder));
+                           .add(customPatternLayout)
+                           .addComponent(triggeringPolicy)
+                           .addComponent(strategyBuilder));
 
         // Create yukonApiRollingFile and add it to the builder.
         builder.add(builder.newAppender("yukonApiRollingFile", "YukonApiRollingFile")
-                .add(customPatternLayout)
-                .addComponent(triggeringPolicy)
-                .addComponent(strategyBuilder));
+                           .add(customPatternLayout)
+                           .addComponent(triggeringPolicy)
+                           .addComponent(strategyBuilder));
 
         // Load the other loggers which are there in DB table.User can add any class and corresponding logging level to the DB.
         // As of now I have created a dummy database and tested this.I am not committing the DB changes as it will fail in VM.
         getLoggers().forEach((loggerName, level) -> {
             if (SystemLogger.isCustomAppenderLogger(loggerName)) {
-                builder.add(builder.newLogger(loggerName, level).add(builder.newAppenderRef(getAppenderRef(loggerName)))
-                        .addAttribute("additivity", false));
+                builder.add(builder.newLogger(loggerName, level)
+                                   .add(builder.newAppenderRef(getAppenderRef(loggerName)))
+                                   .addAttribute("additivity", false));
             } else {
                 builder.add(builder.newLogger(loggerName, level));
             }
         });
+
         // Create root logger and add to the builder.
-        builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("console"))
-                .add(builder.newAppenderRef("yukonRollingFileAppender")));
+        builder.add(builder.newRootLogger(Level.INFO)
+                           .add(builder.newAppenderRef("console"))
+                           .add(builder.newAppenderRef("yukonRollingFileAppender")));
 
         // Build the configuration and initialize it by passing true.
         BuiltConfiguration configuration = builder.build(true);
@@ -140,6 +150,9 @@ public class YukonLogManager {
         getMyLogger().getContext().setConfiguration(configuration);
     }
 
+    /**
+     * Return custom appender name for the specified loggerName.
+     */
     public static String getAppenderRef(String loggerName) {
         switch (loggerName) {
         case "apiLogger":
@@ -152,59 +165,129 @@ public class YukonLogManager {
         return StringUtils.EMPTY;
     }
 
+    /**
+     * This method will verify YukonLogging table and return true if it is empty. 
+     */
     private static boolean shouldPopulateSystemLoggers() {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
             String sql = "SELECT COUNT(*) FROM YukonLogging";
-            Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
             while (rs.next()) {
                 return rs.getInt(1) == 0;
             }
-            return rs.next();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // do clean up activities
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                }
+            }
         }
         return false;
     }
 
+    /**
+     * This method will insert System Loggers(Default loggers) in YukonLogging table. Only execute once i.e for the 1st time with
+     * Log4j2 migration.
+     */
     private static void populateSystemLoggers() {
+        Connection conn = null;
+        PreparedStatement ps = null;
         try {
             String sql = "INSERT INTO YukonLogging(LoggerId, LoggerName, LoggerLevel, ExpirationDate, Notes) VALUES (?,?,?,?,?)";
-            Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-            PreparedStatement ps = conn.prepareStatement(sql);
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            ps = conn.prepareStatement(sql);
             SystemLogger[] loggers = SystemLogger.values();
             for (int i = 0; i < loggers.length; i++) {
-                ps.setInt(1, i + 1);
+                ps.setInt(1, i);
                 ps.setString(2, loggers[i].getLoggerName());
                 ps.setString(3, loggers[i].getLevel().name());
                 ps.setDate(4, null);
-                ps.setString(5, StringUtils.EMPTY);
+                ps.setString(5, null);
                 ps.execute();
             }
         } catch (SQLException e) {
         } finally {
-            // do clean up
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                }
+            }
+
         }
     }
 
+    /**
+     * Method to retrieve all the loggers with level for loading the BuiltConfiguration on startup.
+     */
     private static Map<String, Level> getLoggers() {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         Map<String, Level> loggers = new HashMap<String, Level>();
         try {
             String sql = "SELECT LoggerName, LoggerLevel FROM YukonLogging";
-            Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
             while (rs.next()) {
                 loggers.put(rs.getString("LoggerName"), getApacheLevel(LoggerLevel.valueOf(rs.getString("LoggerLevel"))));
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                }
+            }
+
         }
         return loggers;
     }
 
+    /**
+     * Method to convert from LoggerLevel to Apache Level.
+     */
     public static Level getApacheLevel(LoggerLevel level) {
         switch (level) {
         case DEBUG:
@@ -237,8 +320,6 @@ public class YukonLogManager {
     /**
      * Used for initializing the logging for clients
      * 
-     * @param hostname the IP address of the host
-     * @param port     the connection port number
      */
     public static synchronized void initialize(RemoteLoginSession remoteLoginSession) {
         initialize();
@@ -298,16 +379,5 @@ public class YukonLogManager {
      */
     public static Logger getApiLogger() {
         return getLogger("apiLogger");
-    }
-
-    /**
-     * Default Appender which will append messages to the console if configuration file is not found in
-     * Classpath as well as in Yukon Config Path.
-     */
-    private static void defaultConsoleAppender() {
-        Configurator.setRootLevel(Level.INFO);
-        //TODO: Fix me
-        getMyLogger().error(
-                "Unable to configure logging, using Basic Configuration to log to console");
     }
 }

@@ -464,7 +464,7 @@
         <table name="EatonCloudEventIdIncrementor" identitycolumn="requestSeqNumber"/>
       </sequence>
       <sequence name="YukonLoggingIncrementor">
-        <table name="YukonLogging" identitycolumn="LoggerId"/>
+        <table name="YukonLogging" identitycolumn="LoggerId" initsequence="true"/>
       </sequence>
   </sequencetable>
 </sequencetables>
