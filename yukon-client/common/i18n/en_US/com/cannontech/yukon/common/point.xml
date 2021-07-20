@@ -619,6 +619,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_D">Net Delivered kVArh Rate D</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH">Received kVAh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH_Q234">Received kVAh (Quadrants 2 3 4)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH_Q234_RATE_A">Received kVAh (Quadrants 2 3 4) Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH_Q234_RATE_B">Received kVAh (Quadrants 2 3 4) Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH_Q234_RATE_C">Received kVAh (Quadrants 2 3 4) Rate C</entry>
