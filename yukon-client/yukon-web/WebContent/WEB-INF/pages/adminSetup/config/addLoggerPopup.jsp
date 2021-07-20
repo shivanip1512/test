@@ -37,15 +37,8 @@
                        onNameKey="yukon.common.specified" offNameKey="yukon.common.never" checked="${specifiedDateTime}"/>
                 <c:set var="specifiedClass" value="${specifiedDateTime ? '' : 'dn'}"/>
                 <span data-toggle-group="js-date-time" class="${specifiedClass}">
-                <c:choose>
-                    <c:when test="${isEditMode}">
-                        <c:set var="expiration" value="${not empty logger.expirationDate ? logger.expirationDate : now}"/>
-                        <dt:date value="${expiration}" minDate="${now}" path="expirationDate"/>
-                    </c:when>
-                    <c:otherwise>
-                        <dt:date value="${now}" minDate="${now}" path="expirationDate"/>
-                    </c:otherwise>
-                </c:choose>
+                    <c:set var="expiration" value="${not empty logger.expirationDate ? logger.expirationDate : now}"/>
+                    <dt:date value="${expiration}" minDate="${now}" path="expirationDate"/>
                 </span>
                 </tags:nameValue2>
             </c:if>

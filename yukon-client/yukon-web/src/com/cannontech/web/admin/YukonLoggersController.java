@@ -2,11 +2,14 @@ package com.cannontech.web.admin;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,7 @@ import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -75,9 +79,12 @@ public class YukonLoggersController {
     }
 
     @PostMapping("/config/loggers")
-    public String saveLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime) {
+    public String saveLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime, ModelMap model,
+            HttpServletResponse resp) {
         save(logger, specifiedDateTime);
-        return redirectLink;
+        Map<String, Boolean> json = new HashMap<String, Boolean>();
+        json.put("isSystemLogger", SystemLogger.isSystemLogger(logger.getLoggerName()));
+        return JsonUtils.writeResponse(resp, json);
     }
 
     @GetMapping("/config/loggers/{loggerId}")
