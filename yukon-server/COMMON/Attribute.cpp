@@ -70,6 +70,10 @@ INIT_ATTRIBUTE( GeneralAlarmFlag,                                   "GENERAL_ALA
 INIT_ATTRIBUTE( IEDDemandResetCount,                                "IED_DEMAND_RESET_COUNT" );
 INIT_ATTRIBUTE( kVAh,                                               "KVAH" );
 INIT_ATTRIBUTE( kVAhLagging,                                        "DELIVERED_KVAH_LAGGING" );
+INIT_ATTRIBUTE( kVAhLaggingRateA,                                   "DELIVERED_KVAH_LAGGING_RATE_A" );
+INIT_ATTRIBUTE( kVAhLaggingRateB,                                   "DELIVERED_KVAH_LAGGING_RATE_B" );
+INIT_ATTRIBUTE( kVAhLaggingRateC,                                   "DELIVERED_KVAH_LAGGING_RATE_C" );
+INIT_ATTRIBUTE( kVAhLaggingRateD,                                   "DELIVERED_KVAH_LAGGING_RATE_D" );
 INIT_ATTRIBUTE( kVAhRateA,                                          "KVAH_RATE_A" );
 INIT_ATTRIBUTE( kVAhRateB,                                          "KVAH_RATE_B" );
 INIT_ATTRIBUTE( kVAhRateC,                                          "KVAH_RATE_C" );
@@ -80,6 +84,10 @@ INIT_ATTRIBUTE( NetkVAhRateB,                                       "NET_KVAH_RA
 INIT_ATTRIBUTE( NetkVAhRateC,                                       "NET_KVAH_RATE_C" );
 INIT_ATTRIBUTE( NetkVAhRateD,                                       "NET_KVAH_RATE_D" );
 INIT_ATTRIBUTE( ReceivedkVAhQ234,                                   "RECEIVED_KVAH_Q234" );
+INIT_ATTRIBUTE( ReceivedkVAhQ234RateA,                              "RECEIVED_KVAH_Q234_RATE_A" );
+INIT_ATTRIBUTE( ReceivedkVAhQ234RateB,                              "RECEIVED_KVAH_Q234_RATE_B" );
+INIT_ATTRIBUTE( ReceivedkVAhQ234RateC,                              "RECEIVED_KVAH_Q234_RATE_C" );
+INIT_ATTRIBUTE( ReceivedkVAhQ234RateD,                              "RECEIVED_KVAH_Q234_RATE_D" );
 INIT_ATTRIBUTE( ReceivedkVAhRateA,                                  "RECEIVED_KVAH_RATE_A" );
 INIT_ATTRIBUTE( ReceivedkVAhRateB,                                  "RECEIVED_KVAH_RATE_B" );
 INIT_ATTRIBUTE( ReceivedkVAhRateC,                                  "RECEIVED_KVAH_RATE_C" );

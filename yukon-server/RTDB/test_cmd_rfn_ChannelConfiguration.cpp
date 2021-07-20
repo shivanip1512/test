@@ -75,13 +75,13 @@ const std::vector<int> allMetrics = [] {
 
     const std::vector<int> metrics {
         //  0                    10                   20                   30                   40                   50                   60                     70                 80                   90
-            _,X,X,X,X,X,X,X,X,X, X,X,X,a,_,_,_,o,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,_,_,_,_, _,X,X,X,X,X,X,X,X,X,X, _,_,_,_,_,_,_,o,o, _,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
+            _,X,X,X,X,X,X,X,X,X, X,X,X,a,_,_,_,X,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,_,_,_,_, _,X,X,X,X,X,X,X,X,X,X, _,_,_,_,_,_,_,o,o, _,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
         
         //  100                  110                  120                  130                  140                  150                  160                    170                180                  190
             X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, o,o,_,_,A,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
 
         //  200                  210                  220                  230                  240                  250                  260                    270                280                  290
-            _,_,_,_,_,_,X,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,o,_,_,_,_,_,_,_, _,_,_,o,o,_,_,_,_,_, o,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
+            _,_,_,_,_,_,X,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,X,_,_,_,_,_,_,_, _,_,_,o,o,_,_,_,_,_, o,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
 
         //  300                  310                  320                  330                  340                  350
             _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, o,o,_,_,_,_,_,_,_,_, o,o,o,o,o,o,_,_,_,_, o,o,o,o,o,o
@@ -255,6 +255,7 @@ const std::vector<std::string> allDescriptions {
         "Watt hour delivered (Frozen), Rate A (1011)",
         "Watt hour received (Frozen), Rate A (1012)",
         "Watts, peak, Rate A (1013)",
+        "VA hour delivered lagging, Rate A (1017)",
         "Var hour delivered, Rate A (1021)",
         "Var hour received, Rate A (1022)",
         "Var hour total/sum, Rate A (1023)",
@@ -343,6 +344,7 @@ const std::vector<std::string> allDescriptions {
         "Sum Peak kVAr, Rate A (1184)",
         "Peak kVA (Quadrants 1 2), Rate A (1206)",
         "Sum Peak kVA, Rate A (1210)",
+        "Received kVAh (Quadrants 2 3 4), Rate A (1222)",
         "Time in Seconds, Rate A (1256)",
         "Watt hour delivered, Rate B (2001)",
         "Watt hour received, Rate B (2002)",
@@ -356,6 +358,7 @@ const std::vector<std::string> allDescriptions {
         "Watts received, peak demand (Frozen), Rate B (2010)",
         "Watt hour delivered (Frozen), Rate B (2011)",
         "Watt hour received (Frozen), Rate B (2012)",
+        "VA hour delivered lagging, Rate B (2017)",
         "Var hour delivered, Rate B (2021)",
         "Var hour received, Rate B (2022)",
         "Var hour total/sum, Rate B (2023)",
@@ -442,6 +445,7 @@ const std::vector<std::string> allDescriptions {
         "PF Phase B, Rate B (2163)",
         "PF Phase C, Rate B (2164)",
         "Peak kVA (Quadrants 1 2), Rate B (2206)",
+        "Received kVAh (Quadrants 2 3 4), Rate B (2222)",
         "Time in Seconds, Rate B (2256)",
         "Watt hour delivered, Rate C (3001)",
         "Watt hour received, Rate C (3002)",
@@ -455,6 +459,7 @@ const std::vector<std::string> allDescriptions {
         "Watts received, peak demand (Frozen), Rate C (3010)",
         "Watt hour delivered (Frozen), Rate C (3011)",
         "Watt hour received (Frozen), Rate C (3012)",
+        "VA hour delivered lagging, Rate C (3017)",
         "Var hour delivered, Rate C (3021)",
         "Var hour received, Rate C (3022)",
         "Var hour total/sum, Rate C (3023)",
@@ -541,6 +546,7 @@ const std::vector<std::string> allDescriptions {
         "PF Phase B, Rate C (3163)",
         "PF Phase C, Rate C (3164)",
         "Peak kVA (Quadrants 1 2), Rate C (3206)",
+        "Received kVAh (Quadrants 2 3 4), Rate C (3222)",
         "Time in Seconds, Rate C (3256)",
         "Watt hour delivered, Rate D (4001)",
         "Watt hour received, Rate D (4002)",
@@ -554,6 +560,7 @@ const std::vector<std::string> allDescriptions {
         "Watts received, peak demand (Frozen), Rate D (4010)",
         "Watt hour delivered (Frozen), Rate D (4011)",
         "Watt hour received (Frozen), Rate D (4012)",
+        "VA hour delivered lagging, Rate D (4017)",
         "Var hour delivered, Rate D (4021)",
         "Var hour received, Rate D (4022)",
         "Var hour total/sum, Rate D (4023)",
@@ -640,6 +647,7 @@ const std::vector<std::string> allDescriptions {
         "PF Phase B, Rate D (4163)",
         "PF Phase C, Rate D (4164)",
         "Peak kVA (Quadrants 1 2), Rate D (4206)",
+        "Received kVAh (Quadrants 2 3 4), Rate D (4222)",
         "Time in Seconds, Rate D (4256)",
  };
 

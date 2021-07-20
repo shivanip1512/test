@@ -21,13 +21,13 @@ import org.jdom2.input.SAXBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
+import com.cannontech.amr.rfn.service.pointmapping.icd.CoincidentGroupingCollector;
 import com.cannontech.amr.rfn.service.pointmapping.icd.ManufacturerModel;
 import com.cannontech.amr.rfn.service.pointmapping.icd.MeterClass;
 import com.cannontech.amr.rfn.service.pointmapping.icd.ModelPointDefinition;
 import com.cannontech.amr.rfn.service.pointmapping.icd.NameScale;
 import com.cannontech.amr.rfn.service.pointmapping.icd.Named;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointDefinition;
-import com.cannontech.amr.rfn.service.pointmapping.icd.CoincidentGroupingCollector;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointMapping;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointMappingIcd;
 import com.cannontech.amr.rfn.service.pointmapping.icd.RfnPointMappingParser;
@@ -489,6 +489,10 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAX, "Peak kVA Lagging Rate B");
         missing.put(PaoType.RFN520FAX, "Peak kVA Lagging Rate C");
         missing.put(PaoType.RFN520FAX, "Peak kVA Lagging Rate D");
+        missing.put(PaoType.RFN520FAX, "Delivered Lagging kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN520FAX, "Delivered Lagging kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN520FAX, "Delivered Lagging kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN520FAX, "Delivered Lagging kVAh (Rate D kVAh)");
         
         missing.put(PaoType.RFN520FAXD, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN520FAXD, "Peak kVA Lagging");
@@ -547,6 +551,10 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAXD, "Peak kVA Lagging Rate B");
         missing.put(PaoType.RFN520FAXD, "Peak kVA Lagging Rate C");
         missing.put(PaoType.RFN520FAXD, "Peak kVA Lagging Rate D");
+        missing.put(PaoType.RFN520FAXD, "Delivered Lagging kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered Lagging kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered Lagging kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered Lagging kVAh (Rate D kVAh)");
         
         missing.put(PaoType.RFN520FRX, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN520FRX, "Delivered Peak kVAr Frozen");
@@ -622,6 +630,10 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530FAX, "Peak kVA Lagging Rate B");
         missing.put(PaoType.RFN530FAX, "Peak kVA Lagging Rate C");
         missing.put(PaoType.RFN530FAX, "Peak kVA Lagging Rate D");
+        missing.put(PaoType.RFN530FAX, "Delivered Lagging kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530FAX, "Delivered Lagging kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530FAX, "Delivered Lagging kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530FAX, "Delivered Lagging kVAh (Rate D kVAh)");
 
         missing.put(PaoType.RFN530FRX, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN530FRX, "Delivered Peak kVAr Frozen");

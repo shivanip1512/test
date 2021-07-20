@@ -68,6 +68,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     // Treating "kVAh" as "Delivered kVAh". May need to created separate attributes in the future.
     KVAH("kVAh", AttributeGroup.USAGE),
     DELIVERED_KVAH_LAGGING("kVAh Lagging", AttributeGroup.REACTIVE),
+    DELIVERED_KVAH_LAGGING_RATE_A("Delivered Lagging kVAh (Rate A kVAh)", AttributeGroup.REACTIVE),
+    DELIVERED_KVAH_LAGGING_RATE_B("Delivered Lagging kVAh (Rate B kVAh)", AttributeGroup.REACTIVE),
+    DELIVERED_KVAH_LAGGING_RATE_C("Delivered Lagging kVAh (Rate C kVAh)", AttributeGroup.REACTIVE),
+    DELIVERED_KVAH_LAGGING_RATE_D("Delivered Lagging kVAh (Rate D kVAh)", AttributeGroup.REACTIVE),
     KVAH_RATE_A("kVAh Rate A", AttributeGroup.USAGE),
     KVAH_RATE_B("kVAh Rate B", AttributeGroup.USAGE),
     KVAH_RATE_C("kVAh Rate C", AttributeGroup.USAGE),
@@ -416,6 +420,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RECEIVED_KWH_RATE_E("Received kWh Rate E", AttributeGroup.USAGE),
     RECEIVED_KVAH("Received kVAh", AttributeGroup.USAGE),
     RECEIVED_KVAH_Q234("Received kVAh (Quadrants 2 3 4)", AttributeGroup.USAGE),
+    RECEIVED_KVAH_Q234_RATE_A("Received kVAh (Quadrants 2 3 4) Rate A", AttributeGroup.USAGE),
+    RECEIVED_KVAH_Q234_RATE_B("Received kVAh (Quadrants 2 3 4) Rate B", AttributeGroup.USAGE),
+    RECEIVED_KVAH_Q234_RATE_C("Received kVAh (Quadrants 2 3 4) Rate C", AttributeGroup.USAGE),
+    RECEIVED_KVAH_Q234_RATE_D("Received kVAh (Quadrants 2 3 4) Rate D", AttributeGroup.USAGE),
 
     NET_KWH("Net kWh", AttributeGroup.USAGE),
     NET_KWH_RATE_A("Net kWh Rate A", AttributeGroup.USAGE),

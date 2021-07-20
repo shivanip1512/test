@@ -61,6 +61,10 @@ public:
     static const Attribute  IEDDemandResetCount;
     static const Attribute  kVAh;
     static const Attribute  kVAhLagging;
+    static const Attribute  kVAhLaggingRateA;
+    static const Attribute  kVAhLaggingRateB;
+    static const Attribute  kVAhLaggingRateC;
+    static const Attribute  kVAhLaggingRateD;
     static const Attribute  kVAhRateA;
     static const Attribute  kVAhRateB;
     static const Attribute  kVAhRateC;
@@ -71,6 +75,10 @@ public:
     static const Attribute  NetkVAhRateC;
     static const Attribute  NetkVAhRateD;
     static const Attribute  ReceivedkVAhQ234;
+    static const Attribute  ReceivedkVAhQ234RateA;
+    static const Attribute  ReceivedkVAhQ234RateB;
+    static const Attribute  ReceivedkVAhQ234RateC;
+    static const Attribute  ReceivedkVAhQ234RateD;
     static const Attribute  ReceivedkVAhRateA;
     static const Attribute  ReceivedkVAhRateB;
     static const Attribute  ReceivedkVAhRateC;

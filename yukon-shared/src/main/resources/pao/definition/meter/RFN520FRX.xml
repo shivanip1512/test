@@ -37,10 +37,10 @@
         <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY"/>
         <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY"/>
         <pointInfo name="kVAh Lagging" attributes="DELIVERED_KVAH_LAGGING"/>
-        <pointInfo name="Delivered kVAh (Rate A kVAh)" attributes="KVAH_RATE_A"/>
-        <pointInfo name="Delivered kVAh (Rate B kVAh)" attributes="KVAH_RATE_B"/>
-        <pointInfo name="Delivered kVAh (Rate C kVAh)" attributes="KVAH_RATE_C"/>
-        <pointInfo name="Delivered kVAh (Rate D kVAh)" attributes="KVAH_RATE_D"/>
+        <pointInfo name="Delivered Lagging kVAh (Rate A kVAh)" attributes="DELIVERED_KVAH_LAGGING_RATE_A"/>
+        <pointInfo name="Delivered Lagging kVAh (Rate B kVAh)" attributes="DELIVERED_KVAH_LAGGING_RATE_B"/>
+        <pointInfo name="Delivered Lagging kVAh (Rate C kVAh)" attributes="DELIVERED_KVAH_LAGGING_RATE_C"/>
+        <pointInfo name="Delivered Lagging kVAh (Rate D kVAh)" attributes="DELIVERED_KVAH_LAGGING_RATE_D"/>
         <pointInfo name="Delivered kVArh" attributes="KVARH"/>
         <pointInfo name="Delivered kVArh (Rate A kVArh)" attributes="KVARH_RATE_A"/>
         <pointInfo name="Delivered kVArh (Rate B kVArh)" attributes="KVARH_RATE_B"/>
@@ -110,10 +110,10 @@
         <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
         <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
         <pointInfo name="Received kVAh" attributes="RECEIVED_KVAH_Q234"/>
-        <pointInfo name="Received kVAh (Rate A kVAh)" attributes="RECEIVED_KVAH_RATE_A"/>
-        <pointInfo name="Received kVAh (Rate B kVAh)" attributes="RECEIVED_KVAH_RATE_B"/>
-        <pointInfo name="Received kVAh (Rate C kVAh)" attributes="RECEIVED_KVAH_RATE_C"/>
-        <pointInfo name="Received kVAh (Rate D kVAh)" attributes="RECEIVED_KVAH_RATE_D"/>
+        <pointInfo name="Received kVAh (Rate A kVAh)" attributes="RECEIVED_KVAH_Q234_RATE_A"/>
+        <pointInfo name="Received kVAh (Rate B kVAh)" attributes="RECEIVED_KVAH_Q234_RATE_B"/>
+        <pointInfo name="Received kVAh (Rate C kVAh)" attributes="RECEIVED_KVAH_Q234_RATE_C"/>
+        <pointInfo name="Received kVAh (Rate D kVAh)" attributes="RECEIVED_KVAH_Q234_RATE_D"/>
         <pointInfo name="Received kVArh" attributes="RECEIVED_KVARH"/>
         <pointInfo name="Received kVArh (Rate A kVArh)" attributes="RECEIVED_KVARH_RATE_A"/>
         <pointInfo name="Received kVArh (Rate B kVArh)" attributes="RECEIVED_KVARH_RATE_B"/>
