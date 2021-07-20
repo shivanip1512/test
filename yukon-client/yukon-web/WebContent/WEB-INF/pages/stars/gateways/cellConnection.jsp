@@ -63,15 +63,15 @@
                     <i class="icon icon=blank"/>
                 </th>
                 <th data-sorted="false">
-                    RSRP
+                    <i:inline key="yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER"/>
                     <i class="icon icon=blank"/>
                 </th>
                 <th data-sorted="false">
-                    RSRQ
+                    <i:inline key="yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY"/>
                     <i class="icon icon=blank"/>
                 </th>
                 <th data-sorted="false">
-                    SINR
+                    <i:inline key="yukon.common.attribute.builtInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO"/>
                     <i class="icon icon=blank"/>
                 </th>
                 <th class="action-column"><cti:icon icon="icon-read" classes="M0"/></th>
@@ -93,16 +93,16 @@
                         <tags:historicalValue pao="${data.device}" pointId="${data.commStatusPoint.pointID}" format="DATE_QUALITY"/>
                     </td>
                     <td>
-                        <cti:pointValue pointId="${data.rssiPoint.pointID}" format="VALUE"/>
+                        <tags:historicalValue pao="${data.device}" pointId="${data.rssiPoint.pointID}" format="VALUE"/>
                     </td>
                     <td>
-                        <cti:pointValue pointId="${data.rsrpPoint.pointID}" format="VALUE"/>
+                        <tags:historicalValue pao="${data.device}" pointId="${data.rsrpPoint.pointID}" format="VALUE"/>
                     </td>
                     <td>
-                        <cti:pointValue pointId="${data.rsrqPoint.pointID}" format="VALUE"/>
+                        <tags:historicalValue pao="${data.device}" pointId="${data.rsrqPoint.pointID}" format="VALUE"/>
                     </td>
                     <td>
-                        <cti:pointValue pointId="${data.sinrPoint.pointID}" format="VALUE"/>
+                        <tags:historicalValue pao="${data.device}" pointId="${data.sinrPoint.pointID}" format="VALUE"/>
                     </td>
                     <td class="PL0">
                         <cti:msg2 var="queryTitle" key="yukon.web.modules.operator.connectedDevices.queryStatus"/>

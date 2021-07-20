@@ -48,10 +48,9 @@ public class RfnCellularCommDataServiceImpl implements RfnCellularCommDataServic
         PaoIdentifier paoIdentifier = rfnDevice.getPaoIdentifier();
         LitePoint commStatusPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.COMM_STATUS);
         LitePoint rssiPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
-        //TODO: Change these to the new attributes
-        LitePoint rsrpPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
-        LitePoint rsrqPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
-        LitePoint sinrPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
+        LitePoint rsrpPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER);
+        LitePoint rsrqPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY);
+        LitePoint sinrPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO);
 
         CellularDeviceCommData cellDeviceCommData = new CellularDeviceCommData(rfnDevice, commStatusPoint, rssiPoint, 
                                                                                rsrpPoint, rsrqPoint, sinrPoint);

@@ -86,9 +86,9 @@ public class CellularConnectionController {
         headerRow[1] = accessor.getMessage("yukon.common.attribute.builtInAttribute.COMM_STATUS");
         headerRow[2] = accessor.getMessage(baseKey + "statusLastUpdated");
         headerRow[3] = accessor.getMessage("yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR");
-        headerRow[4] = "RSRP";
-        headerRow[5] = "RSRQ";
-        headerRow[6] = "SINR";
+        headerRow[4] = accessor.getMessage("yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER");
+        headerRow[5] = accessor.getMessage("yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY");
+        headerRow[6] = accessor.getMessage("yukon.common.attribute.builtInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO");
         
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(gatewayId);
         List<CellularDeviceCommData> cellData = cellService.getCellularDeviceCommDataForGateways(Arrays.asList(gatewayId));

@@ -24,15 +24,15 @@
         <tags:attributeValue pao="${device}" attribute="${rssiAttribute}"/>
     </tags:nameValue2>
     
-    <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">
+    <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER">
         <tags:attributeValue pao="${device}" attribute="${rsrpAttribute}"/>
     </tags:nameValue2>
     
-    <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">
+    <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY">
         <tags:attributeValue pao="${device}" attribute="${rsrqAttribute}"/>
     </tags:nameValue2>
     
-    <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">
+    <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO">
         <tags:attributeValue pao="${device}" attribute="${sinrAttribute}"/>
     </tags:nameValue2>
 

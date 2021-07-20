@@ -41,10 +41,9 @@ public class CellularConnectionWidget extends AdvancedWidgetControllerBase {
         CellularDeviceCommData data = cellService.buildCellularDeviceCommDataObject(device);
         model.addAttribute("cellData", data);
         model.addAttribute("rssiAttribute", BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
-        //TODO: Change these to new attributes
-        model.addAttribute("rsrpAttribute", BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
-        model.addAttribute("rsrqAttribute", BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
-        model.addAttribute("sinrAttribute", BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
+        model.addAttribute("rsrpAttribute", BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER);
+        model.addAttribute("rsrqAttribute", BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY);
+        model.addAttribute("sinrAttribute", BuiltInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO);
 
         return "cellConnectionWidget/render.jsp";
     }
