@@ -5,6 +5,7 @@
 <%@ attribute name="deviceWarningsCount" required="true" description="Device Warnings Count" %>
 <%@ attribute name="deviceLabel" required="true" description="i18n text for Labels" %>
 <%@ attribute name="fromDetailPage" required="true" description="Checks whether the call is from infrastructure warnings widget or from details page" %>
+<%@ attribute name="deviceType" required="true" description="Device type" %>
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
     <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
