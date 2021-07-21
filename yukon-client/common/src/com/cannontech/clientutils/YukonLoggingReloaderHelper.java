@@ -76,9 +76,10 @@ public abstract class YukonLoggingReloaderHelper {
             Configuration config = ctx.getConfiguration();
 
             if (dbChangeType != DbChangeType.DELETE) {
+                YukonLogger logger = yukonLoggerDao.getLogger(loggerId);
                 // All the loggers should log the details in the log file and console. So retrieve these 2 appenders from
                 // configuration.
-                Appender appender = config.getAppender("yukonRollingFileAppender");
+                Appender appender = config.getAppender(YukonLogManager.getAppenderRef(logger.getLoggerName()));
                 Appender consoleAppender = config.getAppender("console");
 
                 // Create the AppenderRef[] which will be used to create LoggerConfig
@@ -86,7 +87,6 @@ public abstract class YukonLoggingReloaderHelper {
                 AppenderRef consoleRef = AppenderRef.createAppenderRef(consoleAppender.getName(), null, config.getFilter());
                 AppenderRef[] refs = new AppenderRef[] { ref, consoleRef };
 
-                YukonLogger logger = yukonLoggerDao.getLogger(loggerId);
                 Level level = YukonLogManager.getApacheLevel(logger.getLevel());
                 LoggerConfig loggerConfig = LoggerConfig.createLogger(false, level, logger.getLoggerName(), "true", refs, null,
                         config, null);

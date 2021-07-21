@@ -101,12 +101,6 @@ public class YukonLogManager {
                            .addComponent(triggeringPolicy)
                            .addComponent(strategyBuilder));
 
-        // Create yukonRfnRollingFile and add it to the builder.
-        builder.add(builder.newAppender("yukonRfnRollingFile", "YukonRfnRollingFile")
-                           .add(customPatternLayout)
-                           .addComponent(triggeringPolicy)
-                           .addComponent(strategyBuilder));
-
         // Create commsRollingFile and add it to the builder.
         builder.add(builder.newAppender("commsRollingFile", "CommsRollingFile")
                            .add(customPatternLayout)
@@ -161,7 +155,7 @@ public class YukonLogManager {
         case "rfnCommsLogger":
             return "yukonRfnRollingFile";
         }
-        return StringUtils.EMPTY;
+        return "yukonRollingFileAppender";
     }
 
     /**
