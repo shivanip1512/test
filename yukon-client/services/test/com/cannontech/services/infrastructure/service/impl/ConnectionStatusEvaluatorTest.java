@@ -62,7 +62,7 @@ public class ConnectionStatusEvaluatorTest {
     }
     
     @Test
-    public void testNoConnectedStatus() {
+    public void testGatewayNoConnectedStatus() {
         
         // Set up mocks so there's no CONNECTED status
         
@@ -87,7 +87,32 @@ public class ConnectionStatusEvaluatorTest {
     }
     
     @Test
-    public void testConnectedStatusWithNoDisconnectedStatus() {
+    public void testRelayNoConnectedStatus() {
+        
+        // Set up mocks so there's no CONNECTED status
+        
+        PaoIdentifier gatewayPaoId = new PaoIdentifier(1, PaoType.GWY800);
+        
+        // Build the connection status info, with warning duration of 60 minutes and no CONNECTED value
+        
+        CellularRelayConnectionStatusEvaluator evaluator = new CellularRelayConnectionStatusEvaluator();
+        
+        Map.Entry<PaoIdentifier, PointValueQualityHolder> relayConnectionStatusEntry = 
+                new AbstractMap.SimpleEntry<>(gatewayPaoId, null);
+        
+        ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", relayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        
+        // Check for correct logic on whether to warn or not, based on point value timestamps
+        
+        assertFalse(connectionStatusInfo.isLastConnectedTimestampWarnable(),
+                "ConnectionStatusInfo should not have connected timestamp warnable, "
+                        + "with no connected timestamp");
+
+        assertFalse(connectionStatusInfo.isWarnable(), "ConnectionStatusInfo should not be warnable with no connected timestamp");
+    }
+    
+    @Test
+    public void testGatewayConnectedStatusWithNoDisconnectedStatus() {
         
         // Set up mocks so that last CONNECTED status was 59 minutes ago, and no last DISCONNECTED status
         
@@ -125,7 +150,45 @@ public class ConnectionStatusEvaluatorTest {
     }
     
     @Test
-    public void testConnectedStatusWithinWarningDuration() {
+    public void testRelayConnectedStatusWithNoDisconnectedStatus() {
+        
+        // Set up mocks so that last CONNECTED status was 59 minutes ago, and no last DISCONNECTED status
+        
+        PaoIdentifier relayPaoId = new PaoIdentifier(1, PaoType.CRLY856);
+        
+        Date fiftyNineMinutesAgo = minutesAgo(59);
+        PointValueQualityHolder connectedPointValue = 
+                fakePointValue(fiftyNineMinutesAgo, CommStatusState.CONNECTED.getRawState());
+        
+        RawPointHistoryDao mockRphDao = EasyMock.createNiceMock(RawPointHistoryDao.class);
+        RawPointHistoryDao.AdjacentPointValues adjacentPointValues = 
+                new RawPointHistoryDao.AdjacentPointValues(null, null);
+        EasyMock.expect(mockRphDao.getAdjacentPointValues(connectedPointValue))
+                .andReturn(adjacentPointValues);
+        EasyMock.replay(mockRphDao);
+        
+        // Build the connection status info, with warning duration of 60 minutes
+        
+        CellularRelayConnectionStatusEvaluator evaluator = new CellularRelayConnectionStatusEvaluator();
+        ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
+        
+        Map.Entry<PaoIdentifier, PointValueQualityHolder> relayConnectionStatusEntry = 
+                Map.entry(relayPaoId, connectedPointValue);
+        
+        ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", relayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        
+        // Check for correct logic on whether to warn or not, based on point value timestamps
+        
+        assertFalse(connectionStatusInfo.isLastConnectedTimestampWarnable(),
+                "ConnectionStatusInfo considers last connected timestamp warnable, "
+                        + "but timestamp isn't outside the warnable duration");
+
+        assertFalse(connectionStatusInfo.isWarnable(), "ConnectionStatusInfo marked as warnable, "
+                + "but there is no DISCONNECTED status");
+    }
+    
+    @Test
+    public void testGatewayConnectedStatusWithinWarningDuration() {
         
         // Set up mocks so that last CONNECTED status was 59 minutes ago, and last DISCONNECTED status was 1 minute ago.
         
@@ -162,7 +225,44 @@ public class ConnectionStatusEvaluatorTest {
     }
     
     @Test
-    public void testConnectedStatusOutsideAndDisconnectedStatusInsideWarningDuration() {
+    public void testRelayConnectedStatusWithinWarningDuration() {
+        
+        // Set up mocks so that last CONNECTED status was 59 minutes ago, and last DISCONNECTED status was 1 minute ago.
+        
+        PaoIdentifier relayPaoId = new PaoIdentifier(1, PaoType.CRLY856);
+        
+        Date fiftyNineMinutesAgo = minutesAgo(59);
+        PointValueQualityHolder connectedPointValue = 
+                fakePointValue(fiftyNineMinutesAgo, CommStatusState.CONNECTED.getRawState());
+        
+        Date oneMinuteAgo = minutesAgo(1);
+        PointValueQualityHolder nextDisconnectedPointValue = 
+                fakePointValue(oneMinuteAgo, CommStatusState.DISCONNECTED.getRawState());
+        
+        RawPointHistoryDao mockRphDao = setupMockRphDao(connectedPointValue, nextDisconnectedPointValue);
+        
+        // Build the connection status info, with warning duration of 60 minutes
+        
+        CellularRelayConnectionStatusEvaluator evaluator = new CellularRelayConnectionStatusEvaluator();
+        ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
+        
+        Map.Entry<PaoIdentifier, PointValueQualityHolder> relayConnectionStatusEntry = 
+                Map.entry(relayPaoId, connectedPointValue);
+        
+        ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", relayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        
+        // Check for correct logic on whether to warn or not, based on point value timestamps
+        
+        assertFalse(connectionStatusInfo.isLastConnectedTimestampWarnable(),
+                "ConnectionStatusInfo considers last connected timestamp warnable, "
+                        + "but timestamp isn't outside the warnable duration");
+
+        assertFalse(connectionStatusInfo.isWarnable(), "ConnectionStatusInfo marked as warnable, "
+                + "but CONNECTED and DISCONNECTED timestamps aren't outside the warnable duration");
+    }
+    
+    @Test
+    public void testGatewayConnectedStatusOutsideAndDisconnectedStatusInsideWarningDuration() {
         
         // Set up mocks so that last CONNECTED status was 61 minutes ago, and last DISCONNECTED status was 59 minute ago.
         
@@ -199,7 +299,44 @@ public class ConnectionStatusEvaluatorTest {
     }
     
     @Test
-    public void testConnectedAndDisconnectedStatusOutsideWarningDuration() {
+    public void testRelayConnectedStatusOutsideAndDisconnectedStatusInsideWarningDuration() {
+        
+        // Set up mocks so that last CONNECTED status was 61 minutes ago, and last DISCONNECTED status was 59 minute ago.
+        
+        PaoIdentifier relayPaoId = new PaoIdentifier(1, PaoType.CRLY856);
+        
+        Date sixtyOneMinutesAgo = minutesAgo(61);
+        PointValueQualityHolder connectedPointValue = 
+                fakePointValue(sixtyOneMinutesAgo, CommStatusState.CONNECTED.getRawState());
+        
+        Date fiftyNineMinutesAgo = minutesAgo(59);
+        PointValueQualityHolder nextDisconnectedPointValue = 
+                fakePointValue(fiftyNineMinutesAgo, CommStatusState.DISCONNECTED.getRawState());
+        
+        RawPointHistoryDao mockRphDao = setupMockRphDao(connectedPointValue, nextDisconnectedPointValue);
+        
+        // Build the connection status info, with warning duration of 60 minutes
+        
+        CellularRelayConnectionStatusEvaluator evaluator = new CellularRelayConnectionStatusEvaluator();
+        ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
+        
+        Map.Entry<PaoIdentifier, PointValueQualityHolder> relayConnectionStatusEntry = 
+                Map.entry(relayPaoId, connectedPointValue);
+        
+        ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", relayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        
+        // Check for correct logic on whether to warn or not, based on point value timestamps
+        
+        assertTrue(connectionStatusInfo.isLastConnectedTimestampWarnable(),
+                "ConnectionStatusInfo doesn't consider last connected timestamp warnable, "
+                        + "but timestamp is beyond the warnable duration");
+
+        assertFalse(connectionStatusInfo.isWarnable(), "ConnectionStatusInfo marked as warnable, "
+                + "but DISCONNECTED timestamp isn't outside the warnable duration");
+    }
+    
+    @Test
+    public void testGatewayConnectedAndDisconnectedStatusOutsideWarningDuration() {
         
         // Set up mocks so that last CONNECTED status was 62 minutes ago, and last DISCONNECTED status was 61 minutes ago.
         
@@ -224,6 +361,46 @@ public class ConnectionStatusEvaluatorTest {
                 Map.entry(gatewayPaoId, connectedPointValue);
         
         ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        
+        // Check for correct logic on whether to warn or not, based on point value timestamps
+
+        assertTrue(connectionStatusInfo.isLastConnectedTimestampWarnable(),
+                "ConnectionStatusInfo doesn't consider last connected timestamp warnable, "
+                        + "but timestamp is beyond the warnable duration");
+
+        assertTrue(connectionStatusInfo.isWarnable(), "ConnectionStatusInfo not marked as warnable, "
+                + "but CONNECTED and DISCONNECTED timestamps are beyond the warnable duration");
+
+        assertEquals(new Instant(sixtyOneMinutesAgo), connectionStatusInfo.getNextDisconnectedTimestamp(),
+                "Incorrect DISCONNECTED timestamp");
+    }
+    
+    @Test
+    public void testRelayConnectedAndDisconnectedStatusOutsideWarningDuration() {
+        
+        // Set up mocks so that last CONNECTED status was 62 minutes ago, and last DISCONNECTED status was 61 minutes ago.
+        
+        PaoIdentifier relayPaoId = new PaoIdentifier(1, PaoType.GWY800);
+        
+        Date sixtyTwoMinutesAgo = minutesAgo(62);
+        PointValueQualityHolder connectedPointValue = 
+                fakePointValue(sixtyTwoMinutesAgo, CommStatusState.CONNECTED.getRawState());
+        
+        Date sixtyOneMinutesAgo = minutesAgo(61);
+        PointValueQualityHolder nextDisconnectedPointValue = 
+                fakePointValue(sixtyOneMinutesAgo, CommStatusState.DISCONNECTED.getRawState());
+        
+        RawPointHistoryDao mockRphDao = setupMockRphDao(connectedPointValue, nextDisconnectedPointValue);
+        
+        // Build the connection status info, with warning duration of 60 minutes
+        
+        CellularRelayConnectionStatusEvaluator evaluator = new CellularRelayConnectionStatusEvaluator();
+        ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
+        
+        Map.Entry<PaoIdentifier, PointValueQualityHolder> relayConnectionStatusEntry = 
+                Map.entry(relayPaoId, connectedPointValue);
+        
+        ConnectionStatusInfo connectionStatusInfo = ReflectionTestUtils.invokeMethod(evaluator, "buildConnectionStatusInfo", relayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
         
         // Check for correct logic on whether to warn or not, based on point value timestamps
 
