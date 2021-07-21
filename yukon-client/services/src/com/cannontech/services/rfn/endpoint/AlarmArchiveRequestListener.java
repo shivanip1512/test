@@ -56,7 +56,6 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
                 asyncDynamicDataSource.putValues(messagesToSend);
                 processedAlarmArchiveRequest.addAndGet(messagesToSend.size());
     
-                incrementProcessedArchiveRequest();
                 if (log.isDebugEnabled()) {
                     log.debug(messagesToSend.size() + " PointDatas generated for RfnAlarmArchiveRequest");
                 }

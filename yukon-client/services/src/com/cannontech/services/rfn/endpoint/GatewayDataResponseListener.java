@@ -84,7 +84,6 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                     missingGatewayFirstDataTimes.remove(identifier);
                     try {
                         RfnDevice device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(), identifier);
-                        rfnDeviceCreationService.incrementNewDeviceCreated();
                         log.debug("Created new gateway: " + device);
                         gatewayEventLogService.createdGatewayAutomatically(device.getName(), 
                                                                            device.getRfnIdentifier().getSensorSerialNumber());

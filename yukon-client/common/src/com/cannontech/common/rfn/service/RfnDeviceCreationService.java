@@ -2,8 +2,6 @@ package com.cannontech.common.rfn.service;
 
 import java.util.Set;
 
-import org.springframework.jmx.export.annotation.ManagedAttribute;
-
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -25,14 +23,6 @@ public interface RfnDeviceCreationService {
                                                                 GATEWAY_4_MODEL_STRING);
     
     /**
-     * Creates an rfn device using {@link DeviceCreationService} using an
-     * expected pao template name derived from the {@link RfnIdentifier}.
-     * If the device is a dr device, the stars tables will also be stubbed out (InventoryBase, LmHardwareBase)
-     * Returns the {@link RfnDevice} created.  Use this method for creation due to a NM archive request.
-     */
-    public RfnDevice create(final RfnIdentifier rfnIdentifier);
-    
-    /**
      * This method is for DR devices only.
      * Creates an rfn dr device, use this method when creating a device as an operator.
      */
@@ -40,19 +30,6 @@ public interface RfnDeviceCreationService {
     
     public RfnDevice createGateway(String name, RfnIdentifier rfnIdentifier);
     
-    public void incrementDeviceLookupAttempt();
-    
-    public void incrementNewDeviceCreated();
-    
-    @ManagedAttribute
-    public String getUnknownTemplates();
-    
-    @ManagedAttribute
-    public int getDeviceLookupAttempt();
-    
-    @ManagedAttribute
-    public int getNewDeviceCreated();
-
     /**
      * If device is not found creates device. Returns null if unable to create device
      */

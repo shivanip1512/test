@@ -346,6 +346,17 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     }
     
     @Override
+    public List<RfnDevice> getPartiallyMatchedDevices(String serialNumber, String manufacturer) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT pao.paoName, pao.Type, pao.PaobjectId, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("FROM YukonPaobject pao");
+        sql.append("  JOIN RfnAddress rfn ON rfn.DeviceId = pao.PaobjectId");
+        sql.append("WHERE SerialNumber").eq(serialNumber);
+        sql.append("AND Manufacture").eq(manufacturer);
+        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
+    }
+    
+    @Override
     public List<RfnDevice> getDevicesByPaoIds(Iterable<Integer> paoIds) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
 

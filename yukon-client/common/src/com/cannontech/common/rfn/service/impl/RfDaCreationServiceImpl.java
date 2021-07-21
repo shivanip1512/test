@@ -1,10 +1,7 @@
 package com.cannontech.common.rfn.service.impl;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.creation.DeviceCreationService;
@@ -34,7 +31,6 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DBPersistentDao dbPersistentDao;
 
-    private final AtomicInteger newDeviceCreated = new AtomicInteger();
 
     @Override
     @Transactional
@@ -111,16 +107,4 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
         detail.setEnabled(rfn1200.getPAODisableFlag() == 'N' ? true : false);
         return detail;
     }
-    
-    @Override
-    public void incrementNewDeviceCreated() {
-        newDeviceCreated.incrementAndGet();
-    }
-    
-    @Override
-    @ManagedAttribute
-    public int getNewDeviceCreated() {
-        return newDeviceCreated.get();
-    }
-    
 }

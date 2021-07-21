@@ -58,7 +58,6 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
                 if (log.isDebugEnabled()) {
                     log.debug(messagesToSend.size() + " PointDatas generated for RfnEventArchiveRequest");
                 }
-                incrementProcessedArchiveRequest();
             }
             sendAcknowledgement(eventRequest);
             

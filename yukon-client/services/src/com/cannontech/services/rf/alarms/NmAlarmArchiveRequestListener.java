@@ -61,7 +61,6 @@ public class NmAlarmArchiveRequestListener extends ArchiveRequestListenerBase<Al
                         rfnGatewayService.generatePointData(rfnDevice, alarmType.getAttribute(), value, true, data.getTimeStamp());
                     });
                     sendAcknowledgement(archiveRequest);
-                    incrementProcessedArchiveRequest();
                 } else {
                     log.warn("NM Alarm Data received for non-gateway device type {}.", rfnDevice.getPaoIdentifier().getPaoType());
                     // TODO should we "ack" this?

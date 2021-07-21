@@ -164,4 +164,9 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     public RfnDeviceDescendantCountData findDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoType) {
          throw new MethodNotImplementedException();
     }
+
+    @Override
+    public List<RfnDevice> getPartiallyMatchedDevices(String serialNumber, String manufacturer) {
+        throw new MethodNotImplementedException();
+    }
 }

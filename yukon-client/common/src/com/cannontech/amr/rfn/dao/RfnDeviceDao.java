@@ -174,4 +174,9 @@ public interface RfnDeviceDao {
      * Return RfnDeviceDescendantCountData for paoTypes.
      */
     RfnDeviceDescendantCountData findDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoTypes);
+
+    /**
+     * Returns devices with the same serial number and manufacturer
+     */
+    List<RfnDevice> getPartiallyMatchedDevices(String serialNumber, String manufacturer);
 }
