@@ -490,8 +490,8 @@
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS">Data Collection: Data Availability Window</entry>
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS.description">Window for minimum number of days required for a device's data to be considered available.</entry>
     
-    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Gateway connection warning minutes</entry>
-    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES.description">The number of minutes a gateway must be disconnected to generate a warning.</entry>
+    <entry key="yukon.common.setting.DEVICE_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Device connection warning minutes</entry>
+    <entry key="yukon.common.setting.DEVICE_CONNECTION_WARNING_MINUTES.description">The number of minutes a device must be disconnected to generate a warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD">Infrastructure Warnings: Gateway connected nodes warning threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD.description">The number of connected nodes a gateway must have to generate a warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD">Infrastructure Warnings: Gateway connected nodes critical threshold</entry>

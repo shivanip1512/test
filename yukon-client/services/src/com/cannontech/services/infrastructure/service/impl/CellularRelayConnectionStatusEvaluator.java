@@ -38,6 +38,6 @@ public class CellularRelayConnectionStatusEvaluator extends BaseConnectionStatus
     
     @Override
     protected int getWarnableMinutes() {
-        return globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTION_WARNING_MINUTES);
+        return globalSettingDao.getInteger(GlobalSettingType.DEVICE_CONNECTION_WARNING_MINUTES);
     }
 }

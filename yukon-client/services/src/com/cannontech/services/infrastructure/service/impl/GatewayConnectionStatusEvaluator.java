@@ -36,7 +36,7 @@ public class GatewayConnectionStatusEvaluator extends BaseConnectionStatusEvalua
 
     @Override
     int getWarnableMinutes() {
-        return globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTION_WARNING_MINUTES);
+        return globalSettingDao.getInteger(GlobalSettingType.DEVICE_CONNECTION_WARNING_MINUTES);
     }
     
 
