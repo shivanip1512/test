@@ -17,7 +17,7 @@ public interface YukonLoggerDao {
     /**
      * Add a Logger
      */
-    void addLogger(YukonLogger logger);
+    int addLogger(YukonLogger logger);
 
     /**
      * Update a Logger

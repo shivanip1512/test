@@ -9,8 +9,12 @@ import com.cannontech.clientutils.logger.service.YukonLoggerService;
 import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.model.Direction;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class YukonLoggerServiceImpl implements YukonLoggerService {
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonLoggerDao yukonLoggerDao;
 
     @Override
@@ -20,19 +24,22 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
 
     @Override
     public YukonLogger addLogger(YukonLogger logger) {
-        yukonLoggerDao.addLogger(logger);
+        int loggerId = yukonLoggerDao.addLogger(logger);
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.LOGGER, loggerId);
         return logger;
     }
 
     @Override
     public YukonLogger updateLogger(int loggerId, YukonLogger logger) {
         yukonLoggerDao.updateLogger(loggerId, logger);
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.LOGGER, loggerId);
         return logger;
     }
 
     @Override
     public int deleteLogger(int loggerId) {
         yukonLoggerDao.deleteLogger(loggerId);
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.LOGGER, loggerId);
         return loggerId;
     }
 

@@ -18,13 +18,9 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class YukonLoggerDaoImpl implements YukonLoggerDao {
 
-    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     private final YukonRowMapper<YukonLogger> rowMapper = createRowMapper();
@@ -40,7 +36,7 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
     }
 
     @Override
-    public void addLogger(YukonLogger logger) {
+    public int addLogger(YukonLogger logger) {
         int loggerId = nextValueHelper.getNextValue(TABLE_NAME);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto(TABLE_NAME);
@@ -50,7 +46,7 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
         sink.addValue("ExpirationDate", logger.getExpirationDate());
         sink.addValue("Notes", logger.getNotes());
         jdbcTemplate.update(sql);
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.LOGGER, loggerId);
+        return loggerId;
     }
 
     @Override
@@ -63,7 +59,6 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
         sink.addValue("Notes", logger.getNotes());
         sql.append("WHERE LoggerId").eq(loggerId);
         jdbcTemplate.update(sql);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.LOGGER, loggerId);
     }
 
     @Override
@@ -73,7 +68,6 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
         sql.append(TABLE_NAME);
         sql.append("WHERE LoggerId").eq_k(loggerId);
         jdbcTemplate.update(sql);
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.LOGGER, loggerId);
     }
 
     @Override

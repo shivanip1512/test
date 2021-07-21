@@ -75,5 +75,5 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="dbChangeListener"/>
     </bean>
-     
+     <bean class="com.cannontech.clientutils.logger.dao.impl.YukonLoggerDaoImpl"/>
 </beans>
