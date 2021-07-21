@@ -34,9 +34,9 @@ public interface YukonLoggerService {
     List<YukonLogger> getLoggers(String loggerName, SortBy sortBy, Direction direction, List<LoggerLevel> loggerLevels);
 
     public enum SortBy {
-        NAME("loggerName"),
-        LEVEL("loggerLevel"),
-        EXPIRATION("expirationDate");
+        NAME("LoggerName"),
+        LEVEL("LoggerLevel"),
+        EXPIRATION("ExpirationDate");
 
         private final String dbString;
 

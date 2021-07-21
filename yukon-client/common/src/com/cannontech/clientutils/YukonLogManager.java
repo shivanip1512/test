@@ -58,8 +58,7 @@ public class YukonLogManager {
     }
 
     /**
-     * Find the yukonLogging.xml configuration file depending on platform
-     * and load that particular file. Called once at the creation of YukonLogManager
+     * Load the loggers from YukonLogging table. Called once at the creation of YukonLogManager
      */
     private static synchronized void initialize() {
         // Add the system loggers with default value if there are no entries in YukonLogging table.
@@ -81,16 +80,16 @@ public class YukonLogManager {
         LayoutComponentBuilder customPatternLayout = builder.newLayout("PatternLayout")
                                                             .addAttribute("pattern", "%d %d{zzz} [%t] %-5p %C - %m%n%throwable");
 
-        // Create triggeringPolicy as similar to yukonlogging.xml file
+        // Create triggeringPolicy
         ComponentBuilder<?> triggeringPolicy = builder.newComponent("Policies")
                                                       .addComponent(builder.newComponent("TimeBasedTriggeringPolicy")
                                                                            .addAttribute("interval", "1"));
 
-        // Create DirectWriteRolloverStrategy as similar to yukonlogging.xml file
+        // Create DirectWriteRolloverStrategy
         ComponentBuilder<?> strategyBuilder = builder.newComponent("DirectWriteRolloverStrategy")
                                                      .addAttribute("maxFiles", 1);
 
-        // Create console appender as similar to yukonlogging.xml file with all similar properties and add it to the builder.
+        // Create console appender and add it to the builder.
         builder.add(builder.newAppender("console", "Console")
                            .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT)
                            .add(patternLayout)

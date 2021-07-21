@@ -88,7 +88,7 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
         if (StringUtils.isNotEmpty(loggerName)) {
             if (CollectionUtils.isEmpty(loggerLevels)) {
                 sql.append("WHERE UPPER(LoggerName) LIKE");
-                sql.append("%" + loggerName.toUpperCase() + "%");
+                sql.append("'%" + loggerName.toUpperCase() + "%'");
             } else {
                 sql.append("AND UPPER(LoggerName) LIKE");
                 sql.append("%" + loggerName.toUpperCase() + "%");

@@ -972,50 +972,6 @@ begin
 end;
 
 //--------------------------------------------------------------------------------
-// Check if backup files for yukonlogging.xml and remoteLogging.xml
-// are present inside Yukon\\Server\\Config\\Backup\\ directory.
-// Return true only if both files are present.
-//--------------------------------------------------------------------------------
-export prototype BOOL CheckForBackUpFiles();
-function BOOL CheckForBackUpFiles()
-string svResult;
-BOOL bResult1, bResult2;
-begin
-// Go to the backup location and check for the config files
-if (FindFile (TARGETDIR + "\\Server\\Config\\Backup\\", "yukonLogging_" + "*.*", svResult ) < 0) then 
-    bResult1 = FALSE;
-else 
-   bResult1 = TRUE;
-endif;
-if (FindFile (TARGETDIR + "\\Server\\Config\\Backup\\", "remoteLogging_" + "*.*", svResult ) < 0) then 
-   bResult2 = FALSE;
-else 
-   bResult2 = TRUE;
-endif;
-return bResult1 & bResult2;
-end;
-
-//--------------------------------------------------------------------------------
-// Rename old yukonlogging.xml and remoteLogging.xml files (based on passed suffix)
-// and take backup in Yukon\\Server\\Config\\Backup\\. 
-// Also remove old files from Yukon\\Server\\config directory
-//--------------------------------------------------------------------------------
-export prototype BackupLoggingConfigFiles(string);
-function BackupLoggingConfigFiles(suffix)
-string szFile;
-begin
-    Disable(LOGGING);
-    CopyFile(TARGETDIR + "\\Server\\Config\\yukonLogging.xml", TARGETDIR + "\\Server\\Config\\Backup\\yukonLogging_" + suffix + ".xml");
-    CopyFile(TARGETDIR + "\\Server\\Config\\remoteLogging.xml", TARGETDIR + "\\Server\\Config\\Backup\\remoteLogging_" + suffix + ".xml");
-    Enable(LOGGING);
-    // Delete old yukonLogging and remoteLogging files.
-    szFile = TARGETDIR ^ "\\Server\\Config\\yukonLogging.xml";
-    DeleteFile ( szFile );
-    szFile = TARGETDIR ^ "\\Server\\Config\\remoteLogging.xml";
-    DeleteFile ( szFile );
-end;
-
-//--------------------------------------------------------------------------------
 // Rename old encryptedSystemPublisherMetadataFile.yaml (based on passed suffix) 
 // if available and take backup in Yukon\\Server\\Config\\Backup\\. Also remove old 
 // files from Yukon\\Server\\config directory
