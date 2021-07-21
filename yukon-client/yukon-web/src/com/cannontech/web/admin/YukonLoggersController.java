@@ -2,25 +2,25 @@ package com.cannontech.web.admin;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.log.model.LoggerLevel;
@@ -29,6 +29,7 @@ import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -42,17 +43,16 @@ public class YukonLoggersController {
 
     private static final String redirectLink = "redirect:/admin/config/loggers/allLoggers";
     private ConcurrentHashMap<Integer, YukonLogger> cache = new ConcurrentHashMap<Integer, YukonLogger>();
-    private static final Logger log = YukonLogManager.getLogger(YukonLoggersController.class);
 
     @PostConstruct
     public void init() {
         SystemLogger loggers[] = SystemLogger.values();
         for (int id = 0; id < loggers.length; id++) {
             YukonLogger logger = new YukonLogger();
-            logger.setLoggerId(id);
+            logger.setLoggerId(id+1);
             logger.setLoggerName(loggers[id].getLoggerName());
             logger.setLevel(loggers[id].getLevel());
-            cache.put(id, logger);
+            cache.put(id+1, logger);
         }
     }
 
@@ -79,24 +79,28 @@ public class YukonLoggersController {
     }
 
     @PostMapping("/config/loggers")
-    public String createLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime) {
+    public String saveLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime, ModelMap model,
+            HttpServletResponse resp) {
         save(logger, specifiedDateTime);
-        return redirectLink;
+        Map<String, Boolean> json = new HashMap<String, Boolean>();
+        json.put("isSystemLogger", SystemLogger.isSystemLogger(logger.getLoggerName()));
+        return JsonUtils.writeResponse(resp, json);
     }
 
     @GetMapping("/config/loggers/{loggerId}")
-    public String editLogger(@ModelAttribute YukonLogger logger, @PathVariable Integer loggerId, ModelMap model) {
-        model.addAttribute("logger", cache.get(loggerId));
+    public String editLogger(@PathVariable Integer loggerId, ModelMap model) {
+        YukonLogger logger = cache.get(loggerId);
+        model.addAttribute("logger", logger);
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("isEditMode", true);
-        model.addAttribute("allowDateTimeSelection", true);
-        return "config/addLoggerPopup.jsp";
-    }
+        Date expirationDate = new Date();
+        model.addAttribute("now", expirationDate);
+        model.addAttribute("specifiedDateTime", logger.getExpirationDate() != null);
 
-    @PatchMapping("/config/loggers/{loggerId}")
-    public String saveLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime, @PathVariable int loggerId) {
-        save(logger, specifiedDateTime);
-        return redirectLink;
+        boolean allowDateTimeSelection = !SystemLogger.isSystemLogger(logger.getLoggerName());
+        model.addAttribute("allowDateTimeSelection", allowDateTimeSelection);
+
+        return "config/addLoggerPopup.jsp";
     }
 
     private void save(YukonLogger logger, Boolean specifiedDateTime) {
@@ -105,8 +109,7 @@ public class YukonLoggersController {
         }
         if (logger.getLoggerId() == 0) {
             List<Integer> sortedKeys = cache.keySet().stream().sorted().collect(Collectors.toList());
-            sortedKeys.add(sortedKeys.size());
-            logger.setLoggerId(sortedKeys.get(sortedKeys.size() - 1));
+            logger.setLoggerId(sortedKeys.size() + 1);
             cache.put(logger.getLoggerId(), logger);
         } else {
             cache.remove(logger.getLoggerId());
@@ -133,6 +136,14 @@ public class YukonLoggersController {
         retrieveLoggers(sorting, loggerName, loggerLevels, model, userContext);
 
         return "config/userLoggersTable.jsp";
+    }
+    
+    @GetMapping("/config/loggers/getSystemLoggers")
+    public String getSystemLoggers(@DefaultSort(dir = Direction.asc, sort = "loggerName") SortingParameters sorting, String loggerName,
+            LoggerLevel[] loggerLevels, ModelMap model, YukonUserContext userContext) {
+        retrieveLoggers(sorting, loggerName, loggerLevels, model, userContext);
+
+        return "config/systemLoggersTable.jsp";
     }
     
     private void retrieveLoggers(SortingParameters sorting, String loggerName, LoggerLevel[] loggerLevels,

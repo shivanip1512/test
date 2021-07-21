@@ -12,22 +12,6 @@ yukon.adminSetup.yukonLoggers = (function () {
     
     var _initialized = false,
     
-    _toggleEditViewLogger = function (loggerId) {
-        var editSpan = $('.js-edit-logger-' + loggerId),
-            viewSpan = $('.js-view-logger-' + loggerId),
-            nameField = editSpan.find('[name="loggerName"]');
-        //start out with all in view mode again
-        $('[class*="js-edit-logger-"]').addClass('dn');
-        $('[class*="js-view-logger-"]').removeClass('dn');
-        //toggle the logger that was selected
-        editSpan.toggleClass('dn', !editMode);
-        viewSpan.toggleClass('dn', editMode);
-               //set name to saved name
-        nameField.val(editSpan.find('[name="savedName"]').val());
-        //remove any errors
-        nameField.removeClass('error');
-    },
-    
     _refreshLoggersTable = function (successMessage, errorMessage) {
         var tableContainer = $('#logger-container'),
             form = $('#filter-form');
@@ -48,6 +32,25 @@ yukon.adminSetup.yukonLoggers = (function () {
         });  
     },
     
+    _refreshSystemLoggersTable = function (successMessage, errorMessage) {
+        var tableContainer = $('#system-logger-container'),
+            form = $('#systemLoggerForm');
+        form.ajaxSubmit({
+            success: function(data) {
+                tableContainer.html(data);
+                tableContainer.data('url', yukon.url('/admin/config/loggers/getSystemLoggers?' + form.serialize()));
+                if (successMessage) {
+                    $('.js-success-msg').append(yukon.escapeXml(successMessage)).removeClass('dn');
+                }
+                if (errorMessage) {
+                    $('.js-error-msg').append(yukon.escapeXml(errorMessage)).removeClass('dn');
+                }
+            },
+            error: function (xhr, status, error, $form) {
+                tableContainer.html(xhr.responseText);
+            },
+        });  
+    },
     mod = {
         /** Initialize this module. */
         init: function () {
@@ -77,9 +80,9 @@ yukon.adminSetup.yukonLoggers = (function () {
 
             $(document).on('click', '.js-edit-logger', function () {
                 var loggerId = $(this).data('loggerId'),
-                    url = yukon.url('/admin/config/loggers?id=' + loggerId),
+                    url = yukon.url('/admin/config/loggers/' + loggerId),
                     popup = $('.js-edit-logger-popup'),
-                    popupTitle = popup.data('title'),
+                    popupTitle = $(this).data('title'),
                     dialogDivJson = {
                         "data-url" : url,
                         "data-dialog": '',
@@ -97,8 +100,12 @@ yukon.adminSetup.yukonLoggers = (function () {
                 popup.find('#logger-form').ajaxSubmit({
                     success: function (data) {
                         popup.dialog('close');
-                        //refresh logger table
-                        _refreshLoggersTable(data.successMessage, data.errorMessage);
+                      //refresh logger table
+                        if(data.isSystemLogger) {
+                            _refreshSystemLoggersTable(data.successMessage, data.errorMessage)
+                        } else {
+                            _refreshLoggersTable(data.successMessage, data.errorMessage);
+                        }
                     },
                     error: function (xhr) {
                         popup.html(xhr.responseText);
