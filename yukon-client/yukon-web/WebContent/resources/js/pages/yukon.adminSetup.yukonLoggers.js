@@ -68,8 +68,6 @@ yukon.adminSetup.yukonLoggers = (function () {
 
             $(document).on('click', '.js-filter-loggers', function() {
                 _refreshLoggersTable();
-                _refreshSystemLoggersTable();
-                
             });
 
             $(document).on('yukon:logger:load', function (ev) {
@@ -102,9 +100,12 @@ yukon.adminSetup.yukonLoggers = (function () {
                 popup.find('#logger-form').ajaxSubmit({
                     success: function (data) {
                         popup.dialog('close');
-                        //refresh logger table
-                        _refreshLoggersTable(data.successMessage, data.errorMessage);
-                        _refreshSystemLoggersTable(data.successMessage, data.errorMessage)
+                      //refresh logger table
+                        if(data.isSystemLogger) {
+                            _refreshSystemLoggersTable(data.successMessage, data.errorMessage)
+                        } else {
+                            _refreshLoggersTable(data.successMessage, data.errorMessage);
+                        }
                     },
                     error: function (xhr) {
                         popup.html(xhr.responseText);

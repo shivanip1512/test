@@ -1436,47 +1436,47 @@ Java :
     jira : none
     notes : 
 
-  - filename : jjwt-impl-0.10.6.jar
+  - filename : jjwt-impl-0.11.2.jar
     yukon group : Spring Rest Services
     project : JSON Web Token
-    version : 0.10.6
+    version : 0.11.2
     project URL : "https://github.com/jwtk/jjwt"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl/0.10.6"
-    md5 : a38bc6fe2ccc617f602860dd51dcf630
-    sha1 : 64dc5fa8e9e478d81f1f43d8282e3c894ba8486c
-    updated : 2019-05-28
-    jira : YUK-19930
+    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl/0.11.2" 
+    md5 : c467a0094bd3764d749b249b009de656
+    sha1 : 8fd8acf9d3cb9a2db05bfa484c2a1408cc3507f9
+    updated : 2021-07-13
+    jira : YUK-24245
     notes : 
     
-  - filename : jjwt-api-0.10.6.jar
+  - filename : jjwt-api-0.11.2.jar
     yukon group : Spring Rest Services
     project : JSON Web Token
-    version : 0.10.6
+    version : 0.11.2
     project URL : "https://github.com/jwtk/jjwt"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api/0.10.6"
-    md5 : 39b470e7fa199e386108cd593c3b9d87
-    sha1 : 1584bf477855dc588c1c0e3eafab777e9a492fcc
-    updated : 2019-05-28
-    jira : YUK-19930
+    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api/0.11.2"
+    md5 : 19d7722419b64944d28b7432e596c94c
+    sha1 : 57c34dce3e88f2972c5c5465b6291acfb5628084
+    updated : 2021-07-13
+    jira : YUK-24245
     notes : 
     
-  - filename : jjwt-jackson-0.10.6.jar
+  - filename : jjwt-jackson-0.11.2.jar
     yukon group : Spring Rest Services
     project : JSON Web Token
-    version : 0.10.6
+    version : 0.11.2
     project URL : "https://github.com/jwtk/jjwt"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson/0.10.6"
-    md5 : 42fa46e851067098589210135ab6e908
-    sha1 : 42202de245848931bed85f269870e23b258f451a
-    updated : 2019-05-28
-    jira : YUK-19930
-    notes : 
+    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson/0.11.2"
+    md5 : 8f35ab366b0ba25447629d0a60264b82
+    sha1 : bff0b63d4cbace7b38551a70350875e69201ffeb
+    updated : 2021-07-13
+    jira : YUK-24245
+    notes :  
   
   - filename : jna-5.3.1.jar
     yukon group : Yet Another Java Service Wrapper
@@ -5625,46 +5625,46 @@ Network Manager :
     jira : NM-1552
     notes : 7zip is bundled in the nmee deploy scripts utilities.
     
-  - filename : jjwt-impl-0.10.6.jar
+  - filename : jjwt-impl-0.11.2.jar
     yukon group : Support bundle
     project : JSON Web Token
-    version : 0.10.6
+    version : 0.11.2
     project URL : "https://github.com/jwtk/jjwt"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl/0.10.6"
-    md5 : a38bc6fe2ccc617f602860dd51dcf630
-    sha1 : 64dc5fa8e9e478d81f1f43d8282e3c894ba8486c
-    updated : 2021-05-14
-    jira : NM-2064
+    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl/0.11.2"
+    md5 : c467a0094bd3764d749b249b009de656
+    sha1 : 8fd8acf9d3cb9a2db05bfa484c2a1408cc3507f9
+    updated : 2021-07-16
+    jira : NM-2127
     notes : Used for token service.
     
-  - filename : jjwt-api-0.10.6.jar
+  - filename : jjwt-api-0.11.2.jar
     yukon group : Support bundle
     project : JSON Web Token
-    version : 0.10.6
+    version : 0.11.2
     project URL : "https://github.com/jwtk/jjwt"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api/0.10.6"
-    md5 : 39b470e7fa199e386108cd593c3b9d87
-    sha1 : 1584bf477855dc588c1c0e3eafab777e9a492fcc
-    updated : 2021-05-14
-    jira : NM-2064
+    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api/0.11.2"
+    md5 : 19d7722419b64944d28b7432e596c94c
+    sha1 : 57c34dce3e88f2972c5c5465b6291acfb5628084
+    updated : 2021-07-16
+    jira : NM-2127
     notes : Used for token service.
     
-  - filename : jjwt-jackson-0.10.6.jar
+  - filename : jjwt-jackson-0.11.2.jar
     yukon group : Support bundle
     project : JSON Web Token
-    version : 0.10.6
+    version : 0.11.2
     project URL : "https://github.com/jwtk/jjwt"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson/0.10.6"
-    md5 : 42fa46e851067098589210135ab6e908
-    sha1 : 42202de245848931bed85f269870e23b258f451a
-    updated : 2021-05-14
-    jira : NM-2064
+    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson/0.11.2"
+    md5 : 8f35ab366b0ba25447629d0a60264b82
+    sha1 : bff0b63d4cbace7b38551a70350875e69201ffeb
+    updated : 2021-07-16
+    jira : NM-2127
     notes : Used for token service.
 
 # -------
