@@ -366,10 +366,6 @@ begin
 	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", sBackupDir + "web_" + sOldVersion + ".xml");
 	endif;
 	
-    // Take backup of logging config files if installedVersion < "7.1.0"
-    if(IsInstalledVersionLesser("7.1.0")) then 
-        BackupLoggingConfigFiles(sOldVersion);
-    endif;
     BackupEncryptedSystemPublisherMetadataFile(sOldVersion);
 	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
 	//so the new service installs correctly
