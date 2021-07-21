@@ -60,7 +60,7 @@ public class YukonLogManager {
     /**
      * Load the loggers from YukonLogging table. Called once at the creation of YukonLogManager
      */
-    private static synchronized void initialize() {
+    public static synchronized void initialize() {
         // Add the system loggers with default value if there are no entries in YukonLogging table.
         if (shouldPopulateSystemLoggers()) {
             populateSystemLoggers();
