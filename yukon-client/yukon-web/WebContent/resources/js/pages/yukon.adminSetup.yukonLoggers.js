@@ -40,10 +40,10 @@ yukon.adminSetup.yukonLoggers = (function () {
                 tableContainer.html(data);
                 tableContainer.data('url', yukon.url('/admin/config/loggers/getSystemLoggers?' + form.serialize()));
                 if (successMessage) {
-                    $('.js-success-msg').append(yukon.escapeXml(successMessage)).removeClass('dn');
+                    $('.js-success-msg-system').append(yukon.escapeXml(successMessage)).removeClass('dn');
                 }
                 if (errorMessage) {
-                    $('.js-error-msg').append(yukon.escapeXml(errorMessage)).removeClass('dn');
+                    $('.js-error-msg-system').append(yukon.escapeXml(errorMessage)).removeClass('dn');
                 }
             },
             error: function (xhr, status, error, $form) {
@@ -100,11 +100,16 @@ yukon.adminSetup.yukonLoggers = (function () {
                 popup.find('#logger-form').ajaxSubmit({
                     success: function (data) {
                         popup.dialog('close');
-                      //refresh logger table
-                        if(data.isSystemLogger) {
-                            _refreshSystemLoggersTable(data.successMessage, data.errorMessage)
-                        } else {
-                            _refreshLoggersTable(data.successMessage, data.errorMessage);
+                        if (data.successMessage) {
+                            yukon.ui.alertSuccess(data.successMessage);
+                            //refresh logger table
+                            if(data.isSystemLogger) {
+                                _refreshSystemLoggersTable();
+                            } else {
+                                _refreshLoggersTable();
+                            }
+                        } else if (data.errorMessage) {
+                            yukon.ui.alertError(data.errorMessage);
                         }
                     },
                     error: function (xhr) {
@@ -113,7 +118,7 @@ yukon.adminSetup.yukonLoggers = (function () {
                 });
             });
 
-            _initialized = true;
+        _initialized = true;
         }
 
     };

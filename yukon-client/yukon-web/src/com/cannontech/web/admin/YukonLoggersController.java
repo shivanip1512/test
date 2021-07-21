@@ -58,6 +58,7 @@ public class YukonLoggersController {
 
     private static final String baseKey = "yukon.web.modules.adminSetup.config.loggers.";
     private static final String redirectLink = "redirect:/admin/config/loggers/allLoggers";
+    private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
 
     @GetMapping("/config/loggers/allLoggers")
     public String getAllLoggers(@DefaultSort(dir = Direction.asc, sort = "loggerName") SortingParameters sorting,
@@ -84,19 +85,23 @@ public class YukonLoggersController {
     @PostMapping("/config/loggers")
     public String saveLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime, HttpServletRequest request,
             HttpServletResponse resp, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        Map<String, Object> json = new HashMap<String, Object>();
         try {
             ResponseEntity<? extends Object> response = save(logger, specifiedDateTime, request, userContext);
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
-                Map<String, Boolean> json = new HashMap<String, Boolean>();
                 json.put("isSystemLogger", SystemLogger.isSystemLogger(logger.getLoggerName()));
+                json.put("successMessage", accessor.getMessage("yukon.common.save.success", logger.getLoggerName()));
                 return JsonUtils.writeResponse(resp, json);
             }
         } catch (ApiCommunicationException e) {
             log.error(e);
+            json.put("errorMessage", accessor.getMessage(communicationKey));
         } catch (RestClientException ex) {
             log.error("Error saving logger. Error: {}", ex.getMessage());
+            json.put("errorMessage", accessor.getMessage("yukon.web.api.save.error", logger.getLoggerName(), ex.getMessage()));
         }
-        return null;
+        return JsonUtils.writeResponse(resp, json);
     }
 
     @GetMapping("/config/loggers/{loggerId}")

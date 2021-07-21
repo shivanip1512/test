@@ -10,11 +10,6 @@
 
 <cti:msgScope paths="modules.adminSetup.config.loggers,yukon.common">
     
-    <c:set var="errorClass" value="${not empty errorMessage ? '' : 'dn'}"/>
-    <tags:alertBox classes="js-error-msg ${errorClass}" includeCloseButton="true">${fn:escapeXml(errorMessage)}</tags:alertBox>
-    <c:set var="successClass" value="${not empty successMessage ? '' : 'dn'}"/>
-    <tags:alertBox type="success" classes="js-success-msg ${successClass}" includeCloseButton="true">${fn:escapeXml(successMessage)}</tags:alertBox>
-
     <div class="scroll-md">
         <table class="compact-results-table row-highlighting has-actions ">
             <thead>
