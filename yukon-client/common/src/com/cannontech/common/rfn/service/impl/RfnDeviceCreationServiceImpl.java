@@ -141,42 +141,20 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             String templateName = templatePrefix + identifier.getSensorManufacturer() + "_" + identifier.getSensorModel();
             SimpleDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
             if (templateYukonDevice.getPaoIdentifier().getPaoType() != partiallyMatchedDevice.getPaoIdentifier().getPaoType()) {
-                return changeDeviceType(identifier, partiallyMatchedDevice, templateYukonDevice);
+                try {
+                    changeDeviceTypeService.changeDeviceType(new SimpleDevice(partiallyMatchedDevice),
+                            templateYukonDevice.getPaoIdentifier().getPaoType(), new ChangeDeviceTypeInfo(identifier));
+                    return rfnDeviceDao.getDevice(partiallyMatchedDevice);
+                } catch (Exception ex) {
+                    log.warn("Unable to change device type for {} from {} to {}", partiallyMatchedDevice,  partiallyMatchedDevice.getPaoIdentifier().getPaoType(), templateYukonDevice.getPaoIdentifier().getPaoType());
+                    throw new RuntimeException("Unable to change device type for "+partiallyMatchedDevice+" from "+partiallyMatchedDevice.getPaoIdentifier().getPaoType()+" to ");
+                }
             } else {
-                return updateRfnIdentifier(identifier, partiallyMatchedDevice);
+                RfnDevice updatedDevice = new RfnDevice(partiallyMatchedDevice.getName(),
+                        partiallyMatchedDevice.getPaoIdentifier(), identifier);
+                rfnDeviceDao.updateDevice(updatedDevice);
+                return updatedDevice;
             }
-        }
-    }
-
-    private RfnDevice updateRfnIdentifier(RfnIdentifier identifier, RfnDevice partiallyMatchedDevice) {
-        try {
-            RfnDevice updatedDevice = new RfnDevice(partiallyMatchedDevice.getName(),
-                    partiallyMatchedDevice.getPaoIdentifier(), identifier);
-            rfnDeviceDao.updateDevice(updatedDevice);
-            return rfnDeviceDao.getDevice(updatedDevice);
-        } catch (Exception ex) {
-            log.warn("Unable to update device's rfn identifier {} from {} to {}", partiallyMatchedDevice,
-                    partiallyMatchedDevice.getRfnIdentifier(),
-                    identifier);
-            throw new RuntimeException("Unable to update device's rfn identifier " + partiallyMatchedDevice + " from "
-                    + partiallyMatchedDevice.getRfnIdentifier() + " to "
-                    + identifier);
-        }
-    }
-
-    private RfnDevice changeDeviceType(RfnIdentifier identifier, RfnDevice partiallyMatchedDevice,
-            SimpleDevice templateYukonDevice) {
-        try {
-            changeDeviceTypeService.changeDeviceType(new SimpleDevice(partiallyMatchedDevice),
-                    templateYukonDevice.getPaoIdentifier().getPaoType(), new ChangeDeviceTypeInfo(identifier));
-            return rfnDeviceDao.getDevice(partiallyMatchedDevice);
-        } catch (Exception ex) {
-            log.warn("Unable to change device type for {} from {} to {}", partiallyMatchedDevice,
-                    partiallyMatchedDevice.getPaoIdentifier().getPaoType(),
-                    templateYukonDevice.getPaoIdentifier().getPaoType());
-            throw new RuntimeException("Unable to change device type for " + partiallyMatchedDevice + " from "
-                    + partiallyMatchedDevice.getPaoIdentifier().getPaoType() + " to "
-                    + templateYukonDevice.getPaoIdentifier().getPaoType());
         }
     }
 

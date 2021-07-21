@@ -317,7 +317,13 @@ public class ComprehensiveMapController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         List<RfnDevice> devices = metaData.keySet().stream()
-            .map(rfnIdentifier -> rfnDeviceCreationService.createIfNotFound(rfnIdentifier))
+                .map(rfnIdentifier -> {
+                    try {
+                        return rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
             // remove devices not created or found
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
@@ -381,9 +387,11 @@ public class ComprehensiveMapController {
                     dataRow[11] = String.valueOf(routeData.getHopCount());
                     RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
                     if (nextHop != null) {
-                        RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop);
-                        if (nextHopDevice != null) {
+                        try {
+                            RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop);
                             dataRow[13] = nextHopDevice.getName();
+                        } catch (Exception e) {
+                            log.warn("Unable to find or create device for {}", nextHop);
                         }
                     }
                 }

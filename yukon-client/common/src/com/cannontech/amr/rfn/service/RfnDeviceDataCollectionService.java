@@ -92,7 +92,12 @@ public class RfnDeviceDataCollectionService implements MessageListener {
                             Set.of(PRIMARY_FORWARD_GATEWAY, PRIMARY_FORWARD_DESCENDANT_COUNT));
             Set<DynamicRfnDeviceData> deviceData = new HashSet<>();
             response.forEach((deviceRfnIdentifier, queryResult) -> {
-                RfnDevice device = rfnDeviceCreationService.createIfNotFound(deviceRfnIdentifier);
+                RfnDevice device = null;
+                try {
+                    device = rfnDeviceCreationService.createIfNotFound(deviceRfnIdentifier);
+                } catch (Exception e) {
+                    log.warn("Unable to find or create device for {}", deviceRfnIdentifier);
+                }
                 // Li confirmed PRIMARY_FORWARD_GATEWAY and PRIMARY_FORWARD_DESCENDANT_COUNT will always be returned
                 if (device != null && queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)
                         && queryResult.isValidResultForMulti(PRIMARY_FORWARD_DESCENDANT_COUNT)) {

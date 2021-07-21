@@ -111,11 +111,10 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
      * Attempts to create device
      */
     private void create(RfnIdentifier identifier, String processor) {
-        RfnDevice device = null;
         if (RfnManufacturerModel.is1200(identifier)) {
-            device = rfdaCreationService.create(identifier);
+            rfdaCreationService.create(identifier);
         } else {
-            device = rfnDeviceCreationService.createIfNotFound(identifier);
+            rfnDeviceCreationService.createIfNotFound(identifier);
         }
     }
 

@@ -87,27 +87,27 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         if (metadataMulti.isValidResultForMulti(RfnMetadataMulti.BATTERY_NODE_PARENT)) {
             RfnIdentifier rfnIdentifier = (RfnIdentifier) metadataMulti.getMetadatas()
                     .get(RfnMetadataMulti.BATTERY_NODE_PARENT);
-            if(rfnIdentifier.is_Empty_()) {
+            if (rfnIdentifier.is_Empty_()) {
                 return null;
             }
-            RfnDevice parent = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
-            if (parent == null) {
+            try {
+                RfnDevice parent = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+                PaoLocation parentLocation = paoLocationDao.getLocation(parent.getPaoIdentifier().getPaoId());
+                if (parentLocation == null) {
+                    return Pair.of(parent, null);
+                }
+                FeatureCollection feature = paoLocationService
+                        .getFeatureCollection(Lists.newArrayList(parentLocation));
+                if (deviceLocation != null && parentLocation != null) {
+                    double distanceTo = deviceLocation.distanceTo(parentLocation, DistanceUnit.MILES);
+                    DecimalFormat df = new DecimalFormat("#.####");
+                    feature.setProperty("distance", df.format(distanceTo));
+                }
+                return Pair.of(parent, feature);
+            } catch (Exception e) {
                 // couldn't find or create parent
                 return null;
             }
-            PaoLocation parentLocation = paoLocationDao.getLocation(parent.getPaoIdentifier().getPaoId());
-            if (parentLocation == null) {
-                return Pair.of(parent, null);
-            }
-            FeatureCollection feature = paoLocationService
-                    .getFeatureCollection(Lists.newArrayList(parentLocation));
-            if (deviceLocation != null && parentLocation != null) {
-                double distanceTo = deviceLocation.distanceTo(parentLocation, DistanceUnit.MILES);
-                DecimalFormat df = new DecimalFormat("#.####");
-                feature.setProperty("distance", df.format(distanceTo));
-            }
-            return Pair.of(parent, feature);
-
         } else {
             // no parent
             return null;
@@ -137,7 +137,13 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     // remove nulls returned from NM
                     .filter(Objects::nonNull)
                     .filter(identifier -> !identifier.is_Empty_())
-                    .map(identifier -> rfnDeviceCreationService.createIfNotFound(identifier))
+                    .map(rfnIdentifier -> {
+                        try {
+                            return rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+                        } catch (Exception e) {
+                            return null;
+                        }
+                    })
                     // remove devices not created or found
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
@@ -197,7 +203,13 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             Map<RfnIdentifier, RfnDevice> devices = neighbors.stream()
                     // remove devices that do not have identifier or identifier is not valid
                     .filter(neighbor -> neighbor.getRfnIdentifier() != null && !neighbor.getRfnIdentifier().is_Empty_())
-                    .map(neighbor -> rfnDeviceCreationService.createIfNotFound(neighbor.getRfnIdentifier()))
+                    .map(neighbor -> {
+                        try {
+                            return rfnDeviceCreationService.createIfNotFound(neighbor.getRfnIdentifier());
+                        } catch (Exception e) {
+                            return null;
+                        }
+                    })
                     // remove devices not created or found
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
