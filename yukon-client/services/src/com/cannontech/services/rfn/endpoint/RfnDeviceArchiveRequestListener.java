@@ -16,7 +16,6 @@ import com.cannontech.common.rfn.Acknowledgeable;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveRequest;
 import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveResponse;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfDaCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
