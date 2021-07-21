@@ -26,7 +26,7 @@ import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 
-public class GatewayConnectionStatusEvaluatorTest {
+public class ConnectionStatusEvaluatorTest {
     private static final Duration sixtyMinutes = Duration.standardMinutes(60);
     private static final String baseTimestamp = "2020-06-24T12:00:00";
     private static final Instant baseTimestampInstant = Instant.parse(baseTimestamp);
