@@ -19,12 +19,6 @@ yukon.adminSetup.yukonLoggers = (function () {
             success: function(data) {
                 tableContainer.html(data);
                 tableContainer.data('url', yukon.url('/admin/config/loggers/filter?' + form.serialize()));
-                if (successMessage) {
-                    $('.js-success-msg').append(yukon.escapeXml(successMessage)).removeClass('dn');
-                }
-                if (errorMessage) {
-                    $('.js-error-msg').append(yukon.escapeXml(errorMessage)).removeClass('dn');
-                }
             },
             error: function (xhr, status, error, $form) {
                 tableContainer.html(xhr.responseText);
@@ -39,12 +33,6 @@ yukon.adminSetup.yukonLoggers = (function () {
             success: function(data) {
                 tableContainer.html(data);
                 tableContainer.data('url', yukon.url('/admin/config/loggers/getSystemLoggers?' + form.serialize()));
-                if (successMessage) {
-                    $('.js-success-msg-system').append(yukon.escapeXml(successMessage)).removeClass('dn');
-                }
-                if (errorMessage) {
-                    $('.js-error-msg-system').append(yukon.escapeXml(errorMessage)).removeClass('dn');
-                }
             },
             error: function (xhr, status, error, $form) {
                 tableContainer.html(xhr.responseText);
@@ -78,9 +66,9 @@ yukon.adminSetup.yukonLoggers = (function () {
                 }
             });
 
-            $(document).on('click', '.js-edit-logger', function () {
+            $(document).on('click', '.js-logger-popup', function () {
                 var loggerId = $(this).data('loggerId'),
-                    url = yukon.url('/admin/config/loggers/' + loggerId),
+                    url = loggerId != null ? yukon.url('/admin/config/loggers/' + loggerId) : yukon.url('/admin/config/loggers'),
                     popup = $('.js-edit-logger-popup'),
                     popupTitle = $(this).data('title'),
                     dialogDivJson = {

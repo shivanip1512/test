@@ -34,7 +34,7 @@
                     <td>
                         <cm:dropdown icon="icon-cog">
                             <cti:msg2 var="editLoggerTitle" key=".editSystemLoggerTitle"/>
-                            <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-logger" data-logger-id="${loggerId}" data-title="${editLoggerTitle}"/>
+                            <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-logger-popup" data-logger-id="${loggerId}" data-title="${editLoggerTitle}"/>
                         </cm:dropdown>
                     </td>
                 </tr>

@@ -43,7 +43,7 @@
                         <td>
                             <cm:dropdown icon="icon-cog">
                                 <cti:msg2 var="editLoggerTitle" key=".editUserLoggerTitle"/>
-                                <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-logger" data-logger-id="${loggerId}" data-title="${editLoggerTitle}"/>
+                                <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-logger-popup" data-logger-id="${loggerId}" data-title="${editLoggerTitle}"/>
                                 
                                 <cm:dropdownOption key=".delete" icon="icon-cross" id="delete-logger-${loggerId}" 
                                     data-ok-event="yukon:logger:delete" classes="js-hide-dropdown" data-logger-id="${loggerId}"/>
