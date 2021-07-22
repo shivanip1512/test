@@ -1,9 +1,11 @@
 package com.cannontech.common.rfn.model;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.pao.YukonPao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class RfnRelay {
+public class RfnRelay implements YukonPao {
     
     private int deviceId;
     private String name;
@@ -72,6 +74,12 @@ public class RfnRelay {
         model.setType(device.getPaoIdentifier().getPaoType());
         
         return model;
+    }
+
+    @Override
+    @JsonIgnore
+    public PaoIdentifier getPaoIdentifier() {
+        return new PaoIdentifier(deviceId, type);
     }
 
 

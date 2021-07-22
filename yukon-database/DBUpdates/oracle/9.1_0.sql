@@ -216,6 +216,29 @@ ADD RetryTime DATE;
 INSERT INTO DBUpdates VALUES ('YUK-24593', '9.1.0', SYSDATE);
 /* @end YUK-24593 */
 
+/* @start YUK-24461 */
+/* @error ignore-begin */
+DROP TABLE YukonLogging;
+
+CREATE TABLE YukonLogging  (
+   LoggerId             NUMBER                          NOT NULL,
+   LoggerName           VARCHAR2(200)                   NOT NULL,
+   LoggerLevel          VARCHAR2(5)                     NOT NULL,
+   ExpirationDate       DATE,
+   Notes                VARCHAR2(300),
+   CONSTRAINT PK_YUKONLOGGING PRIMARY KEY (LoggerId)
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-24461', '9.1.0', SYSDATE);
+/* @error ignore-end */
+/* @end YUK-24461 */
+
+/* @start YUK-24110 */
+UPDATE GlobalSetting SET Name = 'DEVICE_CONNECTION_WARNING_MINUTES' WHERE Name = 'GATEWAY_CONNECTION_WARNING_MINUTES';
+
+INSERT INTO DBUpdates VALUES ('YUK-24110', '9.1.0', SYSDATE);
+/* @end YUK-24110 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
