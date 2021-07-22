@@ -294,6 +294,16 @@
     <entry key="yukon.common.events.system.rfn.rfn1200Updated.2">RFN-1200 Description</entry>
     
     <entry key="yukon.common.events.system.rfn.apnChanged">Device {1} {2} has new APN {3}</entry>
+    
+    <entry key="yukon.common.events.system.rfn.updatedModel">Device {1} {2} had Model updated. Old Model: {3} New Model: {4}</entry>
+    <entry key="yukon.common.events.system.rfn.updatedModel.3">Old Model</entry>
+    <entry key="yukon.common.events.system.rfn.updatedModel.4">New Model</entry>
+    
+    <entry key="yukon.common.events.system.rfn.updatedModelAndPaoType">Device {1} {2} had Model and PaoType updated. Old Model: {3} Old Type: {4} New Model: {5} New Type: {6}</entry>
+    <entry key="yukon.common.events.system.rfn.updatedModelAndPaoType.3">Old Model</entry>
+    <entry key="yukon.common.events.system.rfn.updatedModelAndPaoType.5">New Model</entry>
+    <entry key="yukon.common.events.system.rfn.updatedModelAndPaoType.4">Old Type</entry>
+    <entry key="yukon.common.events.system.rfn.updatedModelAndPaoType.6">New Type</entry>
         
     <!-- Wanted to format date so millis displayed but was unable to get DateFormatEnum syntax to work with java MessageSource 
          Default formatting of Dates in i18n is "MM/dd/yy, hh:mm a"

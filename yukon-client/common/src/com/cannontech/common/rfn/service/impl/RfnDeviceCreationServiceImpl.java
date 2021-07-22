@@ -120,7 +120,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
 
     @Override
     @Transactional
-    public RfnDevice createIfNotFound(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
+    public synchronized RfnDevice createIfNotFound(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
         
         //use UTC date if there is no time stamp, DataTimestamp we get get from NM is in UTC format
         dataTimestamp = dataTimestamp == null ? new DateTime(DateTimeZone.UTC).toInstant() : dataTimestamp;
@@ -212,6 +212,8 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         RfnDevice updatedDevice = new RfnDevice(partiallyMatchedDevice.getName(),
                 partiallyMatchedDevice.getPaoIdentifier(), identifier);
         rfnDeviceDao.updateDevice(updatedDevice);
+        rfnDeviceEventLogService.updatedModel(partiallyMatchedDevice.getName(), updatedDevice.getRfnIdentifier(),
+                partiallyMatchedDevice.getRfnIdentifier().getSensorModel(), updatedDevice.getRfnIdentifier().getSensorModel());
         return rfnDeviceDao.getDevice(updatedDevice);
     }
 
@@ -223,7 +225,12 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         try {
             changeDeviceTypeService.changeDeviceType(new SimpleDevice(partiallyMatchedDevice),
                     templateYukonDevice.getPaoIdentifier().getPaoType(), new ChangeDeviceTypeInfo(identifier));
-            return rfnDeviceDao.getDevice(partiallyMatchedDevice);
+            RfnDevice updatedDevice = rfnDeviceDao.getDevice(partiallyMatchedDevice);
+            rfnDeviceEventLogService.updatedModelAndPaoType(partiallyMatchedDevice.getName(), updatedDevice.getRfnIdentifier(),
+                    partiallyMatchedDevice.getRfnIdentifier().getSensorModel(),
+                    partiallyMatchedDevice.getPaoIdentifier().getPaoType(), updatedDevice.getRfnIdentifier().getSensorModel(),
+                    updatedDevice.getPaoIdentifier().getPaoType());
+            return updatedDevice;
         } catch (Exception ex) {
             throw createRuntimeException("Unable to change device type for " + partiallyMatchedDevice + " from "
                     + partiallyMatchedDevice.getPaoIdentifier().getPaoType() + " to "
