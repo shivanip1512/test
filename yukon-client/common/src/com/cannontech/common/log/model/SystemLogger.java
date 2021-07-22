@@ -3,6 +3,7 @@ package com.cannontech.common.log.model;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 public enum SystemLogger {
     // Custom appender loggers
@@ -19,12 +20,14 @@ public enum SystemLogger {
     SPRING_SERVER_MESSAGETRACING_LOGGER("org.springframework.ws.server.MessageTracing", LoggerLevel.TRACE);
 
     private final static ImmutableMap<String, SystemLogger> lookupByLoggerName;
+    private final static ImmutableSet<SystemLogger> customAppenderLoggers ;
     static {
         ImmutableMap.Builder<String, SystemLogger> nameBuilder = ImmutableMap.builder();
         for (SystemLogger logger : values()) {
             nameBuilder.put(logger.loggerName, logger);
         }
         lookupByLoggerName = nameBuilder.build();
+        customAppenderLoggers = ImmutableSet.of(API_LOGGER, COMMS_LOGGER, RFN_COMMS_LOGGER);
     }
 
     private LoggerLevel level;
@@ -52,5 +55,11 @@ public enum SystemLogger {
     public static boolean isSystemLogger(String loggerName) {
         checkArgument(loggerName != null);
         return lookupByLoggerName.get(loggerName) != null;
+    }
+
+    public static boolean isCustomAppenderLogger(String loggerName) {
+        checkArgument(loggerName != null);
+        return lookupByLoggerName.get(loggerName) != null ? customAppenderLoggers
+                .contains(lookupByLoggerName.get(loggerName)) : false;
     }
 }

@@ -401,11 +401,6 @@
     </servlet>
 
     <servlet>
-        <description>Returns an xml config file for log4j logging</description>
-        <servlet-name>LoggingServlet</servlet-name>
-        <servlet-class>com.cannontech.servlet.LoggingServlet</servlet-class>
-    </servlet>
-    <servlet>
         <description>Contains connection objects to various servers</description>
         <servlet-name>ConnServlet</servlet-name>
         <servlet-class>com.cannontech.servlet.ConnServlet</servlet-class>
@@ -711,11 +706,6 @@
     </servlet-mapping>
 
     <!-- The following mappings used to be handled by the invoker servlet -->
-    <servlet-mapping>
-        <servlet-name>LoggingServlet</servlet-name>
-        <url-pattern>/servlet/LoggingServlet</url-pattern>
-    </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>GraphGenerator</servlet-name>
         <url-pattern>/servlet/GraphGenerator</url-pattern>

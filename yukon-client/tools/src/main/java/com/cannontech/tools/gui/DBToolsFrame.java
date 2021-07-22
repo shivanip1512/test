@@ -36,6 +36,7 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileFilter;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.util.ApplicationId;
@@ -61,6 +62,7 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
 
     static {
         CtiUtilities.setClientAppName(ApplicationId.DB_TOOLS_FRAME);
+        YukonLogManager.initialize();
     }
     private static final String DEF_PATH =
         System.getProperty("user.dir") + IRunnableDBTool.FS;
