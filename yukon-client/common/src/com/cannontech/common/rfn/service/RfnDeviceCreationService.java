@@ -43,7 +43,7 @@ public interface RfnDeviceCreationService {
      * 
      * Change the PaoType of the device if applicable.
      * 
-     * @param  dataTimestamp, use null if the timestamp is not available 
+     * @param  dataTimestamp, use null if the time stamp is not available 
      * 
      * @throws RuntimeException if unable to create device. The exception is logged as warning. Calling method should deal with this exception.
      */
