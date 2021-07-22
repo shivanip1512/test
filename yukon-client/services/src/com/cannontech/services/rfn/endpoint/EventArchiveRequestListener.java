@@ -67,7 +67,11 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
 
         @Override
         protected Instant getDataTimestamp(RfnEventArchiveRequest request) {
-            return new Instant(request.getEvent().getTimeStamp());
+            try {
+                return new Instant(request.getEvent().getTimeStamp());
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
 

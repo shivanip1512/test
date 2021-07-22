@@ -11,6 +11,8 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,6 +121,10 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Override
     @Transactional
     public RfnDevice createIfNotFound(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
+        
+        //use UTC date if there is no time stamp, DataTimestamp we get get from NM is in UTC format
+        dataTimestamp = dataTimestamp == null ? new DateTime(DateTimeZone.UTC).toInstant() : dataTimestamp;
+        
         if (newDeviceIdentifier == null || newDeviceIdentifier.is_Empty_()) {
             throw createRuntimeException("Unable to create or find device for " + newDeviceIdentifier);
         }
@@ -155,11 +161,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             if (lastChangeDataTimestamp == null) {
                 return updateDeviceWithTheNewModel(newDeviceIdentifier, partiallyMatchedDevice, dataTimestamp);
             }
-
-            // we do not have the point data's time stamp so we can't determine what to do, create devices
-            if (dataTimestamp == null) {
-                return create(newDeviceIdentifier);
-            }
             
             // we probably made a model change recently, we found our device
             if (dataTimestamp.isBefore(lastChangeDataTimestamp) || lastChangeDataTimestamp.isEqual(dataTimestamp)) {
@@ -180,7 +181,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
      */
     private RfnDevice updateDeviceWithTheNewModel(RfnIdentifier newDeviceIdentifier, RfnDevice partiallyMatchedDevice,
             Instant dataTimestamp) {
-        dataTimestamp = dataTimestamp == null ? Instant.now() : dataTimestamp;
         String templateName = templatePrefix + newDeviceIdentifier.getSensorManufacturer() + "_" + newDeviceIdentifier.getSensorModel();
         SimpleDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
         RfnDevice updatedDevice = templateYukonDevice.getPaoIdentifier().getPaoType() != partiallyMatchedDevice.getPaoIdentifier()

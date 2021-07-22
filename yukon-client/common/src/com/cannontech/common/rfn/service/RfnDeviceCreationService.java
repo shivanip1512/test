@@ -42,7 +42,8 @@ public interface RfnDeviceCreationService {
      * newer model, then processes the data. (Device model remains unchanged). Generates an event log.
      * 
      * Change the PaoType of the device if applicable.
-     * @param  
+     * 
+     * @param  dataTimestamp, use null if the timestamp is not available 
      * 
      * @throws RuntimeException if unable to create device. The exception is logged as warning. Calling method should deal with this exception.
      */

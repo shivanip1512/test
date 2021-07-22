@@ -68,7 +68,11 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
 
         @Override
         protected Instant getDataTimestamp(RfnAlarmArchiveRequest request) {
-            return new Instant(request.getAlarm().getTimeStamp());
+            try {
+                return new Instant(request.getAlarm().getTimeStamp());
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
 

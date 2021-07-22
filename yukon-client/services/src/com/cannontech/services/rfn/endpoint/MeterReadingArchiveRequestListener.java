@@ -112,7 +112,11 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
 
         @Override
         protected Instant getDataTimestamp(RfnMeterReadingArchiveRequest request) {
-            return new Instant(request.getData().getTimeStamp());
+            try {
+                return new Instant(request.getData().getTimeStamp());
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
     

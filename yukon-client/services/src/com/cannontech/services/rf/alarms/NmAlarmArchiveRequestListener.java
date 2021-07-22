@@ -74,7 +74,11 @@ public class NmAlarmArchiveRequestListener extends ArchiveRequestListenerBase<Al
 
         @Override
         protected Instant getDataTimestamp(AlarmArchiveRequest request) {
-            return new Instant(request.getAlarmData().getTimeStamp());
+            try {
+                return new Instant(request.getAlarmData().getTimeStamp());
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
 
