@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
@@ -92,8 +91,7 @@ public class YukonLogManager {
         // Create console appender and add it to the builder.
         builder.add(builder.newAppender("console", "Console")
                            .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT)
-                           .add(patternLayout)
-                           .addComponent(strategyBuilder));
+                           .add(patternLayout));
 
         // Create yukonRollingFileAppender and add it to the builder.
         builder.add(builder.newAppender("yukonRollingFileAppender", "YukonRollingFile")

@@ -85,7 +85,7 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
                 sql.append("'%" + loggerName.toUpperCase() + "%'");
             } else {
                 sql.append("AND UPPER(LoggerName) LIKE");
-                sql.append("%" + loggerName.toUpperCase() + "%");
+                sql.append("'%" + loggerName.toUpperCase() + "%'");
             }
         }
         if (sortBy != null) {
