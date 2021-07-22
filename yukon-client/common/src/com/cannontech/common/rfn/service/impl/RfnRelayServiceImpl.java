@@ -33,12 +33,11 @@ public class RfnRelayServiceImpl implements RfnRelayService {
         return relays;
     }
     
-    public Set<RfnRelay> getAllCellularRelays() {
+    public Set<RfnRelay> getAllRelays(PaoType type) {
         
-        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfRelayTypes());
-        Set<RfnRelay> relays = getRelaysFromDevices(devices)
+        Set<RfnRelay> relays = getAllRelays()
                                    .stream()
-                                   .filter(relay -> relay.getType().equals(PaoType.CRLY856))
+                                   .filter(relay -> relay.getType().equals(type))
                                    .collect(Collectors.toSet());
 
         return relays;

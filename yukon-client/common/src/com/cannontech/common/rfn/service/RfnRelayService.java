@@ -20,7 +20,7 @@ public interface RfnRelayService {
     /**
      * Retrieves all cellular relays that have PAOs in the Yukon database.
      */
-    Set<RfnRelay> getAllCellularRelays();
+    Set<RfnRelay> getAllRelays(PaoType type);
 
     /**
      * Searches relays with the given criteria
