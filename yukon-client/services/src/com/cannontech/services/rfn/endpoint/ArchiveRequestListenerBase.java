@@ -11,6 +11,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
@@ -134,7 +135,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
          * @param request The original request message.  This is used by subclasses.
          */
         protected RfnDevice processCreation(T request, RfnIdentifier identifier) {
-           return rfnDeviceCreationService.createIfNotFound(identifier);
+           return rfnDeviceCreationService.createIfNotFound(identifier, getDataTimestamp(request));
         }
 
 
@@ -169,6 +170,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
         }
 
+        protected abstract Instant getDataTimestamp(T request);
         /**
          * Processes the data in the request for the given device.
          * @return the tracking information for the request, if any. 

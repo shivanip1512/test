@@ -2,6 +2,8 @@ package com.cannontech.common.rfn.service;
 
 import java.util.Set;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -40,10 +42,11 @@ public interface RfnDeviceCreationService {
      * newer model, then processes the data. (Device model remains unchanged). Generates an event log.
      * 
      * Change the PaoType of the device if applicable.
+     * @param  
      * 
      * @throws RuntimeException if unable to create device. The exception is logged as warning. Calling method should deal with this exception.
      */
-    RfnDevice createIfNotFound(RfnIdentifier identifier);
+    RfnDevice createIfNotFound(RfnIdentifier identifier, Instant dataTimestamp);
     
     /**
      * This method is used to create device manually from UI

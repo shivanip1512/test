@@ -153,6 +153,11 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             }
             return Optional.empty();  //  not tracking this point data yet
         }
+
+        @Override
+        protected Instant getDataTimestamp(RfnLcrArchiveRequest request) {
+            return null;
+        }
     }
     
     @Override

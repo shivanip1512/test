@@ -66,6 +66,11 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
             //no data to archive on this queue, just device creation requests that have no other payload
             return Optional.empty();  //  no point data to track
         }
+
+        @Override
+        protected Instant getDataTimestamp(GatewayArchiveRequest request) {
+            return null;
+        }
     }
     
     @Override

@@ -144,6 +144,11 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                 log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
             }
         }
+
+        @Override
+        protected Instant getDataTimestamp(RfnIdentifyingMessage request) {
+            return null;
+        }
     }
     
     @Override

@@ -10,6 +10,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
+import com.cannontech.common.rfn.model.RfnModelChange;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.services.systemDataPublisher.service.model.RfnDeviceDescendantCountData;
 
@@ -179,4 +180,9 @@ public interface RfnDeviceDao {
      * Returns devices with the same serial number and manufacturer
      */
     List<RfnDevice> getPartiallyMatchedDevices(String serialNumber, String manufacturer);
+
+    /**
+     * Creates or updated entry in RfnModelChange table with new and old model names
+     */
+    void updateRfnModelChange(RfnModelChange rfnModelChange);
 }

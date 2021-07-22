@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -69,6 +70,11 @@ public class NmAlarmArchiveRequestListener extends ArchiveRequestListenerBase<Al
                 log.error("Gateway not found in cache: {}.", raisedBy); 
             }
             return Optional.empty();  //  Need to rewrite this to get trackingIds for the pointData....skipping this for now.
+        }
+
+        @Override
+        protected Instant getDataTimestamp(AlarmArchiveRequest request) {
+            return new Instant(request.getAlarmData().getTimeStamp());
         }
     }
 

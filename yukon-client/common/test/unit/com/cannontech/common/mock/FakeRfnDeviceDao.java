@@ -12,6 +12,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
+import com.cannontech.common.rfn.model.RfnModelChange;
 import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.services.systemDataPublisher.service.model.RfnDeviceDescendantCountData;
@@ -167,6 +168,11 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
 
     @Override
     public List<RfnDevice> getPartiallyMatchedDevices(String serialNumber, String manufacturer) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public void updateRfnModelChange(RfnModelChange rfnModelChange) {
         throw new MethodNotImplementedException();
     }
 }

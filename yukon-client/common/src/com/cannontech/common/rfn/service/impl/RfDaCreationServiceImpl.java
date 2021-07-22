@@ -86,8 +86,7 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
                 detail.getRfnAddress().getManufacturer(), detail.getRfnAddress().getModel());
         try {
             YukonDevice newDevice = deviceCreationService.createRfnDeviceByDeviceType(detail.getPaoType(), detail.getName(),
-                    rfnId,
-                    true);
+                    rfnId, true);
 
             dbChangeManager.processPaoDbChange(newDevice, DbChangeType.ADD);
 

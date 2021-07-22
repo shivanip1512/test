@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -116,7 +117,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
 
     @Override
     @Transactional
-    public RfnDevice createIfNotFound(RfnIdentifier identifier) {
+    public RfnDevice createIfNotFound(RfnIdentifier identifier, Instant dataTimestamp) {
         if (identifier == null || identifier.is_Empty_()) {
             throw createRuntimeException("Unable to create or find device for " + identifier);
         }

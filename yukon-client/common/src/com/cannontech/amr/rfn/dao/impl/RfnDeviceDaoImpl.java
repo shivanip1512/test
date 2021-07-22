@@ -28,6 +28,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
+import com.cannontech.common.rfn.model.RfnModelChange;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -638,5 +639,30 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             log.error("No DescendantCount data found for {}", paoTypes.toString());
             return null;
         }
+    }
+    
+    
+    @Override
+    public synchronized void updateRfnModelChange(RfnModelChange rfnModelChange) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PaObjectId");
+        sql.append("FROM RfnModelChange");
+        sql.append("WHERE PaObjectId").eq(rfnModelChange.getDeviceId());
+
+        SqlStatementBuilder updateCreateSql = new SqlStatementBuilder();
+        try {
+            jdbcTemplate.queryForInt(sql);
+            SqlParameterSink params = updateCreateSql.update("RfnModelChange");
+            params.addValue("OldModel", rfnModelChange.getOldModel());
+            params.addValue("NewModel", rfnModelChange.getNewModel());
+            params.addValue("DataTimestamp", rfnModelChange.getDataTimestamp());
+        } catch (EmptyResultDataAccessException e) {
+            SqlParameterSink params = updateCreateSql.insertInto("DeviceMacAddress");
+            params.addValue("PaObjectId ", rfnModelChange.getDeviceId());
+            params.addValue("OldModel", rfnModelChange.getOldModel());
+            params.addValue("NewModel", rfnModelChange.getNewModel());
+            params.addValue("DataTimestamp", rfnModelChange.getDataTimestamp());
+        }
+        jdbcTemplate.update(updateCreateSql);
     }
 }

@@ -11,6 +11,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -107,6 +108,11 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
                             request.getReadingType(),
                             delimited(trackingInfo)));
             }
+        }
+
+        @Override
+        protected Instant getDataTimestamp(RfnMeterReadingArchiveRequest request) {
+            return new Instant(request.getData().getTimeStamp());
         }
     }
     

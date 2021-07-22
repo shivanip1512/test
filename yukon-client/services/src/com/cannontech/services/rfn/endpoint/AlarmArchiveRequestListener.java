@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -63,6 +64,11 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
             sendAcknowledgement(archiveRequest);
             
             return trackingIds;
+        }
+
+        @Override
+        protected Instant getDataTimestamp(RfnAlarmArchiveRequest request) {
+            return new Instant(request.getAlarm().getTimeStamp());
         }
     }
 

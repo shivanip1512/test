@@ -319,7 +319,7 @@ public class ComprehensiveMapController {
         List<RfnDevice> devices = metaData.keySet().stream()
                 .map(rfnIdentifier -> {
                     try {
-                        return rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+                        return rfnDeviceCreationService.createIfNotFound(rfnIdentifier, null);
                     } catch (Exception e) {
                         return null;
                     }
@@ -388,7 +388,7 @@ public class ComprehensiveMapController {
                     RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
                     if (nextHop != null) {
                         try {
-                            RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop);
+                            RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop, null);
                             dataRow[13] = nextHopDevice.getName();
                         } catch (Exception e) {
                             log.warn("Unable to find or create device for {}", nextHop);
