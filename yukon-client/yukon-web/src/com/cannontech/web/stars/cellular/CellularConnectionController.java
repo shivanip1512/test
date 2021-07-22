@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -36,6 +37,7 @@ import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
 @Controller
+@RequestMapping("/cellConnection/*")
 public class CellularConnectionController {
     
     @Autowired private RfnCellularCommDataService cellService;
@@ -49,14 +51,14 @@ public class CellularConnectionController {
 
     private final static String baseKey = "yukon.web.modules.operator.connectedDevices.";
 
-    @GetMapping("/cellConnection/refresh")
+    @GetMapping("refresh")
     public void refreshAllConnections(Integer[] deviceIds, HttpServletResponse resp, YukonUserContext userContext) {
         List<PaoIdentifier> paoIdentifiers = paoDao.getPaoIdentifiersForPaoIds(Arrays.asList(deviceIds));
         cellService.refreshCellularDeviceConnection(paoIdentifiers, userContext.getYukonUser());
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
-    @GetMapping("/cellConnection/connectedDevices/{gatewayId}")
+    @GetMapping("connectedDevices/{gatewayId}")
     public String connectedDevices(@PathVariable int gatewayId, ModelMap model) {
         List<CellularDeviceCommData> cellData = cellService.getCellularDeviceCommDataForGateways(Arrays.asList(gatewayId));
         model.addAttribute("cellData", cellData);
@@ -70,13 +72,13 @@ public class CellularConnectionController {
         return "gateways/cellConnection.jsp";
     }
     
-    @GetMapping("/cellConnection/connectedDevicesMapping")
+    @GetMapping("connectedDevicesMapping")
     public String connectedDevicesMapping(Integer[] connectedIds, Integer[] disconnectedIds, Integer[] filteredCommStatus, 
                                           YukonUserContext userContext, RedirectAttributes attrs) {
         return connectedDevicesHelper.getConnectedDevicesMappingData(connectedIds, disconnectedIds, filteredCommStatus, userContext, attrs);
     }
     
-    @GetMapping("/cellConnection/connectedDevicesDownload/{gatewayId}")
+    @GetMapping("connectedDevicesDownload/{gatewayId}")
     public String connectedDevicesDownload(@PathVariable int gatewayId, Integer[] filteredCommStatus, 
                                            YukonUserContext userContext, HttpServletResponse response) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
