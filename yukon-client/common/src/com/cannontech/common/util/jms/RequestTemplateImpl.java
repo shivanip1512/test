@@ -60,7 +60,7 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
             log.trace("Sending requestMessage to producer: {}", requestMessage.toString());
             
             logRequest(requestPayload.toString());
-            producer.send(requestQueue, requestMessage);
+            sendMessage(producer, requestMessage);
 
             handleReplyOrTimeout(callback, replyTimeout, consumer, requestPayload.toString());
             log.trace("Request replied or timed out: {}", requestMessage.toString());

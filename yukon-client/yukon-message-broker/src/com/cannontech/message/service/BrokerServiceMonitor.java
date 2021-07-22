@@ -34,13 +34,10 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
     /** General class logger */
     private Logger log = YukonLogManager.getLogger(BrokerServiceMonitor.class);
     
-    /** Put this under a sub-logger so it can be independently manipulated.
-     *  
-     * To enable, put this in yukonLogging.xml: 
+    /**
+     * Put this under a sub-logger so it can be independently manipulated.
      * 
-     *   <logger name="com.cannontech.services.jms.BrokerServiceMonitor.gc"> 
-     *     <level value="DEBUG"/>
-     *   </logger>
+     * To enable, Add this on Yukon Logger page "com.cannontech.services.jms.BrokerServiceMonitor.gc" with DEBUG level
      **/
     private Logger logGC = YukonLogManager.getLogger(BrokerServiceMonitor.class.getCanonicalName()+".gc");
 

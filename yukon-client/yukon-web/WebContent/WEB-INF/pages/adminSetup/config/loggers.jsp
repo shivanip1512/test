@@ -49,25 +49,16 @@
                 <%@ include file="userLoggersTable.jsp" %>
             </div>
 
-            <cti:button nameKey="add" classes="fr" icon="icon-add" data-popup=".js-logger-popup"/>
-            <cti:url var="addLoggerUrl" value="/admin/config/loggers" />
             <cti:msg2 var="addLoggerTitle" key=".addLoggerTitle"/>
-            <cti:msg2 var="saveText" key=".save"/>
-            <div class="dn js-logger-popup ov"
-                 data-popup
-                 data-dialog
-                 data-destroy-dialog-on-close
-                 data-title="${addLoggerTitle}"
-                 data-url="${addLoggerUrl}"
-                 data-load-event="yukon:logger:load"
-                 data-ok-text="${saveText}"
-                 data-event="yukon:logger:save">
-            </div>
+            <cti:button nameKey="add" classes="fr js-logger-popup" icon="icon-add" data-title="${addLoggerTitle}"/>
 
         </tags:sectionContainer2>
 
         <tags:sectionContainer2 nameKey="systemLoggers">
-            <div id="system-logger-container">
+        <cti:url var="getUrl" value="/admin/config/loggers/getSystemLoggers"/>
+        <form:form id="systemLoggerForm" method="get" action="${getUrl}" >
+        </form:form>
+            <div id="system-logger-container" data-url="${getUrl}">
                 <%@ include file="systemLoggersTable.jsp" %>
             </div>
         </tags:sectionContainer2>

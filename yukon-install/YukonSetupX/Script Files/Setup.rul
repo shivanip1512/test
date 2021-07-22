@@ -67,9 +67,6 @@ begin
     GetSystemInfo(DATE, nResult, sDateString);
     // Format date pattern in YYYYMMDD
     formattedDateString = FormatDatePattern(sDateString);
-    if(!CheckForBackUpFiles()) then
-    BackupLoggingConfigFiles(formattedDateString);
-    endif;
     BackupEncryptedSystemPublisherMetadataFile(formattedDateString);
     RenameInstalledJavaServicesAndClientLog(formattedDateString);
     // Delete Yukon Client if exist.
@@ -129,8 +126,6 @@ begin
 	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
 	
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\master.cfg");
-    AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\remoteLogging.xml");
-    AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\yukonLogging.xml");
     
     Dialog_MasterConfig:
     Disable(BACKBUTTON);
@@ -371,10 +366,6 @@ begin
 	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", sBackupDir + "web_" + sOldVersion + ".xml");
 	endif;
 	
-    // Take backup of logging config files if installedVersion < "7.1.0"
-    if(IsInstalledVersionLesser("7.1.0")) then 
-        BackupLoggingConfigFiles(sOldVersion);
-    endif;
     BackupEncryptedSystemPublisherMetadataFile(sOldVersion);
 	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
 	//so the new service installs correctly
