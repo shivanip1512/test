@@ -14,7 +14,7 @@ public class NodeWiFiComm implements Serializable{
     
     private NodeConnectionState nodeWiFiCommStatus; // null indicates unknown Communication Status
     
-    private long wiFiCommStatusTimestamp; // Node Communication Status obtained at
+    private Long wiFiCommStatusTimestamp; // Node Communication Status obtained at
     
     private Integer rssi; // nullable
 
@@ -42,11 +42,11 @@ public class NodeWiFiComm implements Serializable{
         this.nodeWiFiCommStatus = nodeWiFiCommStatus;
     }
 
-    public long getWiFiCommStatusTimestamp() {
+    public Long getWiFiCommStatusTimestamp() {
         return wiFiCommStatusTimestamp;
     }
 
-    public void setWiFiCommStatusTimestamp(long wiFiCommStatusTimestamp) {
+    public void setWiFiCommStatusTimestamp(Long wiFiCommStatusTimestamp) {
         this.wiFiCommStatusTimestamp = wiFiCommStatusTimestamp;
     }
 

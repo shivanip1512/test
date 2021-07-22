@@ -12,9 +12,9 @@ public class RelayCellularComm implements Serializable{
     
     private RfnIdentifier gatewayRfnIdentifier; // null indicates no primary gateway
     
-    private NodeConnectionState nodeConnectionState; // null indicates unknown Communication Status
+    private NodeConnectionState relayCellularCommStatus; // null indicates unknown Communication Status
     
-    private long cellularCommStatusTimestamp; // Node Communication Status obtained at
+    private Long cellularCommStatusTimestamp; // Node Communication Status obtained at
     
     private Integer rssi; // nullable
     
@@ -40,19 +40,19 @@ public class RelayCellularComm implements Serializable{
         this.gatewayRfnIdentifier = gatewayRfnIdentifier;
     }
 
-    public NodeConnectionState getNodeConnectionState() {
-        return nodeConnectionState;
+    public NodeConnectionState getRelayCellularCommStatus() {
+        return relayCellularCommStatus;
     }
 
-    public void setNodeConnectionState(NodeConnectionState nodeConnectionState) {
-        this.nodeConnectionState = nodeConnectionState;
+    public void setRelayCellularCommStatus(NodeConnectionState relayCellularCommStatus) {
+        this.relayCellularCommStatus = relayCellularCommStatus;
     }
 
-    public long getCellularCommStatusTimestamp() {
+    public Long getCellularCommStatusTimestamp() {
         return cellularCommStatusTimestamp;
     }
 
-    public void setCellularCommStatusTimestamp(long cellularCommStatusTimestamp) {
+    public void setCellularCommStatusTimestamp(Long cellularCommStatusTimestamp) {
         this.cellularCommStatusTimestamp = cellularCommStatusTimestamp;
     }
 
@@ -98,8 +98,8 @@ public class RelayCellularComm implements Serializable{
             prime * result + ((deviceRfnIdentifier == null) ? 0 : deviceRfnIdentifier.hashCode());
         result =
             prime * result + ((gatewayRfnIdentifier == null) ? 0 : gatewayRfnIdentifier.hashCode());
-        result =
-            prime * result + ((nodeConnectionState == null) ? 0 : nodeConnectionState.hashCode());
+        result = prime * result
+                + ((relayCellularCommStatus == null) ? 0 : relayCellularCommStatus.hashCode());
         result = prime * result + ((rsrp == null) ? 0 : rsrp.hashCode());
         result = prime * result + ((rsrq == null) ? 0 : rsrq.hashCode());
         result = prime * result + ((rssi == null) ? 0 : rssi.hashCode());
@@ -128,7 +128,7 @@ public class RelayCellularComm implements Serializable{
                 return false;
         } else if (!gatewayRfnIdentifier.equals(other.gatewayRfnIdentifier))
             return false;
-        if (nodeConnectionState != other.nodeConnectionState)
+        if (relayCellularCommStatus != other.relayCellularCommStatus)
             return false;
         if (rsrp == null) {
             if (other.rsrp != null)
@@ -156,8 +156,9 @@ public class RelayCellularComm implements Serializable{
     @Override
     public String toString() {
         return "RelayCellularComm [deviceRfnIdentifier=" + deviceRfnIdentifier
-            + ", gatewayRfnIdentifier=" + gatewayRfnIdentifier + ", nodeConnectionState="
-            + nodeConnectionState + ", cellularCommStatusTimestamp=" + cellularCommStatusTimestamp
-            + ", rssi=" + rssi + ", sinr=" + sinr + ", rsrp=" + rsrp + ", rsrq=" + rsrq + "]";
+                + ", gatewayRfnIdentifier=" + gatewayRfnIdentifier + ", relayCellularCommStatus="
+                + relayCellularCommStatus + ", cellularCommStatusTimestamp="
+                + cellularCommStatusTimestamp + ", rssi=" + rssi + ", sinr=" + sinr + ", rsrp=" + rsrp
+                + ", rsrq=" + rsrq + "]";
     }
 }

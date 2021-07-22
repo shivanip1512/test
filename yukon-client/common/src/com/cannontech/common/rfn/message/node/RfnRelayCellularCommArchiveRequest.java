@@ -17,7 +17,7 @@ public class RfnRelayCellularCommArchiveRequest implements Serializable {
         return relayCellularComms;
     }
 
-    public void setNodeComms(Map<Long, RelayCellularComm> relayCellularComms) {
+    public void setRelayCellularComms(Map<Long, RelayCellularComm> relayCellularComms) {
         this.relayCellularComms = relayCellularComms;
     }
 
