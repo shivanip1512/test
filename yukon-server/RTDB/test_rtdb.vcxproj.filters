@@ -239,9 +239,6 @@
     <ClCompile Include="test_cmd_rfn_MeterProgramming.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_cmd_rfn_Wifi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="test_cmd_rfn_Metrology.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -255,6 +252,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test_cmd_rfn_MeterDisconnect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_cmd_rfn_CommStatus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_dev_rf_cellular_relay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

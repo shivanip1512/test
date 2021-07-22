@@ -294,6 +294,9 @@ static const std::map<std::string, DeviceTypes> device_lookups
     { "rfg-201",            TYPE_RFG201 },
     { "rfg-301",            TYPE_RFG301 },
 
+    //  --- RF Cellular IPLink Relays ---
+    { "crly-856",           TYPE_CRLY856 },
+
     //  --- RTU devices ---
     { "rtu-dart",           TYPE_DARTRTU },
     { "rtu-dnp",            TYPE_DNPRTU },
@@ -444,7 +447,6 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "honeywell wi-fi thermostat",
         "honeywell wi-fi visionpro 8000",
         "rfn relay",
-        "crly-856",
         "nest"
     };
 
@@ -715,6 +717,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         TYPE_RFN1200,
         TYPE_RFW201,
         TYPE_RFG201,
+        TYPE_CRLY856,
         TYPE_RFN410FL,
         TYPE_RFN410FX,
         TYPE_RFN410FD,
