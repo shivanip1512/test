@@ -92,16 +92,15 @@ public class RfnRelayCellularCommArchiveRequestListener implements RfnArchivePro
      * be thrown and it will continue processing entries.
      */
     private Long publishPointData(Entry<Long, RelayCellularComm> entry, String processor) {
-        PointData pointData = null;
         RelayCellularComm relayCellComm = entry.getValue();
         Date commStatusTimestamp = new Date(relayCellComm.getCellularCommStatusTimestamp());
         RfnIdentifier rfnIdentifier = relayCellComm.getDeviceRfnIdentifier();
 
-        archiveAndLogPointData(pointData, rfnIdentifier, BuiltInAttribute.COMM_STATUS, getForWifiCommStatus(relayCellComm.getRelayCellularCommStatus()).getRawState(), commStatusTimestamp, processor);
-        archiveAndLogPointData(pointData, rfnIdentifier, BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER, relayCellComm.getRsrp(), commStatusTimestamp, processor);
-        archiveAndLogPointData(pointData, rfnIdentifier, BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY, relayCellComm.getRsrq(), commStatusTimestamp, processor);
-        archiveAndLogPointData(pointData, rfnIdentifier, BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR, relayCellComm.getRssi(), commStatusTimestamp, processor);
-        archiveAndLogPointData(pointData, rfnIdentifier, BuiltInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO, relayCellComm.getSinr(), commStatusTimestamp, processor);
+        archiveAndLogPointData(processor, rfnIdentifier, commStatusTimestamp, getForWifiCommStatus(relayCellComm.getRelayCellularCommStatus()).getRawState(), BuiltInAttribute.COMM_STATUS);
+        archiveAndLogPointData(processor, rfnIdentifier, commStatusTimestamp, relayCellComm.getRsrp(), BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER);
+        archiveAndLogPointData(processor, rfnIdentifier, commStatusTimestamp, relayCellComm.getRsrq(), BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY);
+        archiveAndLogPointData(processor, rfnIdentifier, commStatusTimestamp, relayCellComm.getRssi(), BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
+        archiveAndLogPointData(processor, rfnIdentifier, commStatusTimestamp, relayCellComm.getSinr(), BuiltInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO);
 
         return entry.getKey();
     }
@@ -122,11 +121,10 @@ public class RfnRelayCellularCommArchiveRequestListener implements RfnArchivePro
     }
 
     // Archive and log the point data
-    private void archiveAndLogPointData(PointData pointData, RfnIdentifier rfnIdentifier, BuiltInAttribute builtInAttribute,
-            Integer value, Date commStatusTimestamp, String processor) {
+    private void archiveAndLogPointData(String processor, RfnIdentifier rfnIdentifier, Date commStatusTimestamp, Integer value, BuiltInAttribute builtInAttribute) {
         try {
             if (value != null) {
-                pointData = buildPointData(rfnIdentifier, builtInAttribute, value, commStatusTimestamp);
+                PointData pointData = buildPointData(rfnIdentifier, builtInAttribute, value, commStatusTimestamp);
                 asyncDynamicDataSource.putValue(pointData);
 
                 log.debug("{} generated {} {} {}", processor, pointData, value, rfnIdentifier);
