@@ -93,68 +93,15 @@ public class RfnRelayCellularCommArchiveRequestListener implements RfnArchivePro
      */
     private Long publishPointData(Entry<Long, RelayCellularComm> entry, String processor) {
         PointData pointData = null;
-        BuiltInAttribute commStatus = BuiltInAttribute.COMM_STATUS;
-        BuiltInAttribute rsrp = BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER;
-        BuiltInAttribute rsrq = BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY;
-        BuiltInAttribute rssi = BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR;
-        BuiltInAttribute sinr = BuiltInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO;
-        
         RelayCellularComm relayCellComm = entry.getValue();
         Date commStatusTimestamp = new Date(relayCellComm.getCellularCommStatusTimestamp());
         RfnIdentifier rfnIdentifier = relayCellComm.getDeviceRfnIdentifier();
-        double commStatusValue = getForWifiCommStatus(relayCellComm.getRelayCellularCommStatus()).getRawState();
-        
-        Integer rsrpValue = relayCellComm.getRsrp();
-        Integer rsrqValue = relayCellComm.getRsrq();
-        Integer rssiValue = relayCellComm.getRssi();
-        Integer sinrValue = relayCellComm.getSinr();
-        try {
-            pointData = buildPointData(rfnIdentifier, commStatus, commStatusValue, commStatusTimestamp);
-            asyncDynamicDataSource.putValue(pointData);
 
-            log.debug("{} generated {} {} {}", processor, pointData, commStatus, rfnIdentifier);
-
-            // if the RSRP value is not null then archive it
-            if (rssiValue != null) {
-                pointData = buildPointData(rfnIdentifier, rsrp, rsrpValue, commStatusTimestamp);
-                asyncDynamicDataSource.putValue(pointData);
-
-                log.debug("{} generated {} {} {}", processor, pointData, rssi, rfnIdentifier);
-            }
-            
-            // if the RSRQ value is not null then archive it
-            if (rssiValue != null) {
-                pointData = buildPointData(rfnIdentifier, rsrq, rsrqValue, commStatusTimestamp);
-                asyncDynamicDataSource.putValue(pointData);
-
-                log.debug("{} generated {} {} {}", processor, pointData, rssi, rfnIdentifier);
-            }
-
-            // if the RSSI value is not null then archive it
-            if (rssiValue != null) {
-                pointData = buildPointData(rfnIdentifier, rssi, rssiValue, commStatusTimestamp);
-                asyncDynamicDataSource.putValue(pointData);
-
-                log.debug("{} generated {} {} {}", processor, pointData, rssi, rfnIdentifier);
-            }
-
-            // if the SINR value is not null then archive it
-            if (rssiValue != null) {
-                pointData = buildPointData(rfnIdentifier, sinr, sinrValue, commStatusTimestamp);
-                asyncDynamicDataSource.putValue(pointData);
-
-                log.debug("{} generated {} {} {}", processor, pointData, rssi, rfnIdentifier);
-            }
-            
-        } catch (IllegalUseOfAttribute e) {
-            log.error("{} generation of point data for {} {} value {} failed", processor, rfnIdentifier, commStatus,
-                    commStatusValue, e);
-
-            if (rssiValue != null) {
-                log.error("{} generation of point data for {} {} value {} failed", processor, rfnIdentifier, rssi,
-                        rssiValue, e);
-            }
-        }
+        archiveAndLogPointData(pointData, rfnIdentifier, BuiltInAttribute.COMM_STATUS, getForWifiCommStatus(relayCellComm.getRelayCellularCommStatus()).getRawState(), commStatusTimestamp, processor);
+        archiveAndLogPointData(pointData, rfnIdentifier, BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER, relayCellComm.getRsrp(), commStatusTimestamp, processor);
+        archiveAndLogPointData(pointData, rfnIdentifier, BuiltInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY, relayCellComm.getRsrq(), commStatusTimestamp, processor);
+        archiveAndLogPointData(pointData, rfnIdentifier, BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR, relayCellComm.getRssi(), commStatusTimestamp, processor);
+        archiveAndLogPointData(pointData, rfnIdentifier, BuiltInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO, relayCellComm.getSinr(), commStatusTimestamp, processor);
 
         return entry.getKey();
     }
@@ -172,6 +119,22 @@ public class RfnRelayCellularCommArchiveRequestListener implements RfnArchivePro
         pointData.setType(point.getPointType());
         pointData.setTagsPointMustArchive(false);
         return pointData;
+    }
+
+    // Archive and log the point data
+    private void archiveAndLogPointData(PointData pointData, RfnIdentifier rfnIdentifier, BuiltInAttribute builtInAttribute,
+            Integer value, Date commStatusTimestamp, String processor) {
+        try {
+            if (value != null) {
+                pointData = buildPointData(rfnIdentifier, builtInAttribute, value, commStatusTimestamp);
+                asyncDynamicDataSource.putValue(pointData);
+
+                log.debug("{} generated {} {} {}", processor, pointData, value, rfnIdentifier);
+            }
+        } catch (IllegalUseOfAttribute e) {
+            log.error("{} generation of point data for {} {} value {} failed", processor, rfnIdentifier, builtInAttribute,
+                    value, e);
+        }
     }
 
     /**
