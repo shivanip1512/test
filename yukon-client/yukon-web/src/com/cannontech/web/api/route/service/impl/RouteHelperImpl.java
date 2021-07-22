@@ -23,9 +23,7 @@ public class RouteHelperImpl implements RouteHelper{
         PaoType routePaoType = null;
         PaoType paoType = getPaoTypeFromCache(id);
         if (paoType != null) {
-            if (paoType.isCcu() || paoType.isRepeater()) {
-                routePaoType = PaoType.ROUTE_CCU;
-            } else if (paoType.isTcu()) {
+            if (paoType.isTcu()) {
                 routePaoType = PaoType.ROUTE_TCU;
             } else if (paoType.isLcu()) {
                 routePaoType = PaoType.ROUTE_LCU;
@@ -43,6 +41,8 @@ public class RouteHelperImpl implements RouteHelper{
                 routePaoType = PaoType.ROUTE_SERIES_5_LMI;
             } else if (paoType == PaoType.RDS_TERMINAL) {
                 routePaoType = PaoType.ROUTE_RDS_TERMINAL;
+            } else if (paoType.isCcu() || paoType.isRepeater()) {
+                routePaoType = PaoType.ROUTE_CCU;
             } else {
                 throw new NotFoundException("paoType - Unknown transmitter type");
             }

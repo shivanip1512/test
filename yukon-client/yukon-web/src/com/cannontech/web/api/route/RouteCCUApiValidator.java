@@ -30,7 +30,7 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
             }
 
             if (route.getCarrierRoute().getCcuFixBits() != null) {
-                validateCcuFixBits(route.getCarrierRoute().getBusNumber(), errors);
+                validateCcuFixBits(route.getCarrierRoute().getCcuFixBits(), errors);
             }
 
             if (route.getCarrierRoute().getCcuVariableBits() != null) {
@@ -42,8 +42,7 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
 
     @Autowired private IDatabaseCache dbCache;
 
-    private void validateRepeater(RepeaterRouteModel repeaterRouteModel, Errors errors, Integer repeaterArrSize,
-            Integer count) {
+    private void validateRepeater(RepeaterRouteModel repeaterRouteModel, Errors errors, Integer repeaterArrSize, Integer count) {
         int repeaterId = repeaterRouteModel.getRepeaterId();
         int variableBits = repeaterRouteModel.getVariableBits();
 
@@ -58,10 +57,10 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
                 if (repeaterArrSize != count) {
                     if (dbCache.getAllPaosMap().get(repeaterId).getPaoType() != PaoType.REPEATER_850) {
                         if (variableBits > 6) {
-                            YukonApiValidationUtils.checkRange(errors, "Variable Bits", variableBits, 0, 6, false);
+                            YukonApiValidationUtils.checkRange(errors, "repeaters[" + 0 + "].variableBits", variableBits, 0, 6, false);
                         }
                     } else {
-                        errors.rejectValue("RepeaterId", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
+                        errors.rejectValue("repeaters[" + 0 + "].repeaterId", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
                                 new Object[] { repeaterId }, "");
                     }
                 } else {
@@ -69,30 +68,30 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
 
                     } else {
                         if (variableBits != 7) {
-                            YukonApiValidationUtils.checkRange(errors, "Variable Bits", variableBits, 7, 7, false);
+                            YukonApiValidationUtils.checkRange(errors, "repeaters[" + 0 + "].variableBits", variableBits, 7, 7, false);
                         }
                     }
                 }
             } else {
-                errors.rejectValue("RepeaterId", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { repeaterId }, "");
+                errors.rejectValue("repeaters[" + 0 + "].repeaterId", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { repeaterId }, "");
             }
 
         } else {
-            errors.rejectValue("RepeaterId", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { repeaterId }, "");
+            errors.rejectValue("repeaters[" + 0 + "].repeaterId", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { repeaterId }, "");
         }
 
     }
 
     private void validateCcuVariableBits(Integer ccuVariableBits, Errors errors) {
-        YukonApiValidationUtils.checkRange(errors, "CCU Variable Bits", ccuVariableBits, 0, 6, false);
+        YukonApiValidationUtils.checkRange(errors, "carrierRoute.ccuVariableBits", ccuVariableBits, 0, 6, false);
     }
 
     private void validateCcuFixBits(Integer ccuFixBits, Errors errors) {
-        YukonApiValidationUtils.checkRange(errors, "CCU Fix Bits", ccuFixBits, 0, 31, false);
+        YukonApiValidationUtils.checkRange(errors, "carrierRoute.ccuFixBits", ccuFixBits, 0, 31, false);
 
     }
 
     private void validateBusNumber(Integer busNumber, Errors errors) {
-        YukonApiValidationUtils.checkRange(errors, "Bus Number", busNumber, 1, 8, false);
+        YukonApiValidationUtils.checkRange(errors, "carrierRoute.busNumber", busNumber, 1, 8, false);
     }
 }

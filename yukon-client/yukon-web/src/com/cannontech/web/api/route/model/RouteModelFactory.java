@@ -21,8 +21,10 @@ public class RouteModelFactory {
         case ROUTE_RTC:
         case ROUTE_RDS_TERMINAL:
             routeBaseModel = new RouteBaseModel();
+            break;
         case ROUTE_CCU:
             routeBaseModel = new CCURouteModel();
+            break;
         default:
             break;
         }
