@@ -39,6 +39,7 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnModelChange;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.ResolvableTemplate;
@@ -117,34 +118,81 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
 
     @Override
     @Transactional
-    public RfnDevice createIfNotFound(RfnIdentifier identifier, Instant dataTimestamp) {
-        if (identifier == null || identifier.is_Empty_()) {
-            throw createRuntimeException("Unable to create or find device for " + identifier);
+    public RfnDevice createIfNotFound(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
+        if (newDeviceIdentifier == null || newDeviceIdentifier.is_Empty_()) {
+            throw createRuntimeException("Unable to create or find device for " + newDeviceIdentifier);
         }
         try {
-            return rfnDeviceDao.getDeviceForExactIdentifier(identifier);
+            return rfnDeviceDao.getDeviceForExactIdentifier(newDeviceIdentifier);
         } catch (NotFoundException e) {
-            List<RfnDevice> devices = rfnDeviceDao.getPartiallyMatchedDevices(identifier.getSensorSerialNumber(),
-                    identifier.getSensorManufacturer());
+            // find partially matching devices
+            List<RfnDevice> devices = rfnDeviceDao.getPartiallyMatchedDevices(newDeviceIdentifier.getSensorSerialNumber(),
+                    newDeviceIdentifier.getSensorManufacturer());
+
+            // found multiple matching device, create exception
             if (devices.size() > 1) {
-                throw createRuntimeException("Unable to create for " + identifier + " found 2 or more partial matches " + devices);
+                throw createRuntimeException(
+                        "Unable to create for " + newDeviceIdentifier + " found 2 or more partial matches " + devices);
             }
+
+            // no partially matching devices, create devices
             if (devices.isEmpty()) {
-                return create(identifier);
+                return create(newDeviceIdentifier);
             }
 
             RfnDevice partiallyMatchedDevice = devices.get(0);
+            // partially matching device found, but it is not a meter, create new device
             if (!partiallyMatchedDevice.getPaoIdentifier().getPaoType().isMeter()) {
-                return create(identifier);
+                return create(newDeviceIdentifier);
             }
-            String templateName = templatePrefix + identifier.getSensorManufacturer() + "_" + identifier.getSensorModel();
-            SimpleDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
-            if (templateYukonDevice.getPaoIdentifier().getPaoType() != partiallyMatchedDevice.getPaoIdentifier().getPaoType()) {
-                return changeDeviceType(identifier, partiallyMatchedDevice, templateYukonDevice);
-            } else {
-                return updateRfnIdentifier(identifier, partiallyMatchedDevice);
+
+            
+            // time stamp of the last model change for this device
+            Instant lastChangeDataTimestamp = rfnDeviceDao
+                    .findModelChangeDataTimestamp(partiallyMatchedDevice.getPaoIdentifier().getPaoId());
+
+            // the model was not updated ever, update the model
+            if (lastChangeDataTimestamp == null) {
+                return updateDeviceWithTheNewModel(newDeviceIdentifier, partiallyMatchedDevice, dataTimestamp);
             }
+
+            // we do not have the point data's time stamp so we can't determine what to do, create devices
+            if (dataTimestamp == null) {
+                return create(newDeviceIdentifier);
+            }
+            
+            // we probably made a model change recently, we found our device
+            if (dataTimestamp.isBefore(lastChangeDataTimestamp) || lastChangeDataTimestamp.isEqual(dataTimestamp)) {
+                return partiallyMatchedDevice;
+            }
+            
+            //last change data stamp is older than this data's time stamp, update the model
+            if (dataTimestamp.isAfter(lastChangeDataTimestamp)) {
+                return updateDeviceWithTheNewModel(newDeviceIdentifier, partiallyMatchedDevice, dataTimestamp);
+            }
+            
+            throw createRuntimeException("Unable to create or find device for " + newDeviceIdentifier);
         }
+    }
+
+    /**
+     * Updates device with the new model and changes pao type is applicable
+     */
+    private RfnDevice updateDeviceWithTheNewModel(RfnIdentifier newDeviceIdentifier, RfnDevice partiallyMatchedDevice,
+            Instant dataTimestamp) {
+        dataTimestamp = dataTimestamp == null ? Instant.now() : dataTimestamp;
+        String templateName = templatePrefix + newDeviceIdentifier.getSensorManufacturer() + "_" + newDeviceIdentifier.getSensorModel();
+        SimpleDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
+        RfnDevice updatedDevice = templateYukonDevice.getPaoIdentifier().getPaoType() != partiallyMatchedDevice.getPaoIdentifier()
+                .getPaoType() ? changeDeviceType(newDeviceIdentifier, partiallyMatchedDevice,
+                        templateYukonDevice) : updateRfnIdentifier(newDeviceIdentifier, partiallyMatchedDevice);
+        RfnModelChange rfnModelChange = new RfnModelChange();
+        rfnModelChange.setDataTimestamp(dataTimestamp);
+        rfnModelChange.setDeviceId(partiallyMatchedDevice.getPaoIdentifier().getPaoId());
+        rfnModelChange.setNewModel(newDeviceIdentifier.getSensorModel());
+        rfnModelChange.setOldModel(partiallyMatchedDevice.getRfnIdentifier().getSensorModel());
+        rfnDeviceDao.updateRfnModelChange(rfnModelChange);
+        return updatedDevice;
     }
 
     private RuntimeException createRuntimeException(String error) {

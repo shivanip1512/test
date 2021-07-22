@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.Instant;
+
 import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -185,4 +187,6 @@ public interface RfnDeviceDao {
      * Creates or updated entry in RfnModelChange table with new and old model names
      */
     void updateRfnModelChange(RfnModelChange rfnModelChange);
+
+    Instant findModelChangeDataTimestamp(int deviceId);
 }

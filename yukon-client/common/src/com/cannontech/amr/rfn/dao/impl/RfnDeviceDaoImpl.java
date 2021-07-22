@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -41,6 +42,7 @@ import com.cannontech.common.util.SqlStatementBuilder.SqlBatchUpdater;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -84,7 +86,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                                                      rs.getStringSafe("Manufacturer"), 
                                                      rs.getStringSafe("Model"));
             RfnDevice rfnDevice = new RfnDevice(name, paoIdentifier, rfnIdentifier);
-            
+
             return rfnDevice;
         }
     };
@@ -344,17 +346,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
-    }
-    
-    @Override
-    public List<RfnDevice> getPartiallyMatchedDevices(String serialNumber, String manufacturer) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT pao.paoName, pao.Type, pao.PaobjectId, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
-        sql.append("FROM YukonPaobject pao");
-        sql.append("  JOIN RfnAddress rfn ON rfn.DeviceId = pao.PaobjectId");
-        sql.append("WHERE SerialNumber").eq(serialNumber);
-        sql.append("AND Manufacture").eq(manufacturer);
-        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
     
     @Override
@@ -664,5 +655,30 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             params.addValue("DataTimestamp", rfnModelChange.getDataTimestamp());
         }
         jdbcTemplate.update(updateCreateSql);
+    }
+    
+    @Override
+    public List<RfnDevice> getPartiallyMatchedDevices(String serialNumber, String manufacturer) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT pao.paoName, pao.Type, pao.PaobjectId, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("FROM YukonPaobject pao");
+        sql.append("  JOIN RfnAddress rfn ON rfn.DeviceId = pao.PaobjectId");
+        sql.append("WHERE SerialNumber").eq(serialNumber);
+        sql.append("AND Manufacture").eq(manufacturer);
+        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
+    }
+    
+    @Override
+    public Instant findModelChangeDataTimestamp(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DataTimestamp");
+        sql.append("FROM RfnModelChange");
+        sql.append("WHERE PaObjectId").eq(deviceId);
+        
+        try {
+            return jdbcTemplate.queryForObject(sql, TypeRowMapper.INSTANT);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }

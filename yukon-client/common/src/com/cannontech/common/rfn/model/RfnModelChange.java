@@ -5,14 +5,14 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 
 public class RfnModelChange {
-    private String deviceId;
+    private Integer deviceId;
     private String oldModel;
     private String newModel;
     private Instant dataTimestamp;
-    public String getDeviceId() {
+    public Integer getDeviceId() {
         return deviceId;
     }
-    public void setDeviceId(String deviceId) {
+    public void setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
     }
     public String getOldModel() {

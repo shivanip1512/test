@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.Instant;
+
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -173,6 +175,11 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
 
     @Override
     public void updateRfnModelChange(RfnModelChange rfnModelChange) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public Instant findModelChangeDataTimestamp(int deviceId) {
         throw new MethodNotImplementedException();
     }
 }
