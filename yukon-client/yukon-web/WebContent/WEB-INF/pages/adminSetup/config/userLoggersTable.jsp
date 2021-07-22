@@ -10,11 +10,6 @@
 
 <cti:msgScope paths="modules.adminSetup.config.loggers,yukon.common">
     
-    <c:set var="errorClass" value="${not empty errorMessage ? '' : 'dn'}"/>
-    <tags:alertBox classes="js-error-msg ${errorClass}" includeCloseButton="true">${fn:escapeXml(errorMessage)}</tags:alertBox>
-    <c:set var="successClass" value="${not empty successMessage ? '' : 'dn'}"/>
-    <tags:alertBox type="success" classes="js-success-msg ${successClass}" includeCloseButton="true">${fn:escapeXml(successMessage)}</tags:alertBox>
-
     <div class="scroll-md">
         <table class="compact-results-table row-highlighting has-actions ">
             <thead>
@@ -48,7 +43,7 @@
                         <td>
                             <cm:dropdown icon="icon-cog">
                                 <cti:msg2 var="editLoggerTitle" key=".editUserLoggerTitle"/>
-                                <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-logger" data-logger-id="${loggerId}" data-title="${editLoggerTitle}"/>
+                                <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-logger-popup" data-logger-id="${loggerId}" data-title="${editLoggerTitle}"/>
                                 
                                 <cm:dropdownOption key=".delete" icon="icon-cross" id="delete-logger-${loggerId}" 
                                     data-ok-event="yukon:logger:delete" classes="js-hide-dropdown" data-logger-id="${loggerId}"/>

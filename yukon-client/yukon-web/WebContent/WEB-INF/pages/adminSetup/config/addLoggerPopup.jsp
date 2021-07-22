@@ -5,7 +5,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<cti:flashScopeMessages/>
+<c:if test="${!empty errorMessage}">
+        <tags:alertBox type="error" includeCloseButton="true">${errorMessage}</tags:alertBox>
+    </c:if>
 
 <cti:msgScope paths="modules.adminSetup.config.loggers,yukon.common">
 
