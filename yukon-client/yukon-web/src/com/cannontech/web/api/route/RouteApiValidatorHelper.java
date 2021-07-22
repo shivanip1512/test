@@ -10,11 +10,15 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.api.route.service.RouteHelper;
+import com.cannontech.web.api.route.service.RouteService;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class RouteApiValidatorHelper {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private RouteService routeService;
+    @Autowired private RouteHelper routeHelper;
 
     private MessageSourceAccessor accessor;
 
@@ -49,7 +53,7 @@ public class RouteApiValidatorHelper {
         }
     }
 
-    public void validateSignalTransmitterId(Errors errors, Integer signalTransmitterId) {
+    public void validateSignalTransmitterId(Errors errors, Integer signalTransmitterId, Integer routeId) {
         boolean transmitterExists = dbCache.getAllDevices().stream()
                 .anyMatch(device -> device.getPaoType().isTransmitter() && !device.getPaoType().isRepeater()
                         && device.getLiteID() == signalTransmitterId);
@@ -57,6 +61,16 @@ public class RouteApiValidatorHelper {
             errors.rejectValue("signalTransmitterId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
                     new Object[] { signalTransmitterId }, "");
         }
-    }
 
+        if (routeId != null) {
+            String oldTransmitterId = routeService.retrieve(routeId).getSignalTransmitterId().toString();
+            if ((routeHelper.getPaoTypeFromCache(oldTransmitterId) != routeHelper
+                    .getPaoTypeFromCache(signalTransmitterId.toString()))) {
+                errors.rejectValue("signalTransmitterId", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
+                        new Object[] { signalTransmitterId }, "");
+
+            }
+        }
+
+    }
 }

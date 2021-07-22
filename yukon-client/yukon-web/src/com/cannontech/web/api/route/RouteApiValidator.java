@@ -32,7 +32,7 @@ public class RouteApiValidator<T extends RouteBaseModel<?>> extends SimpleValida
         }
 
         if (route.getSignalTransmitterId() != null) {
-            routeApiValidatorHelper.validateSignalTransmitterId(errors, route.getSignalTransmitterId());
+            routeApiValidatorHelper.validateSignalTransmitterId(errors, route.getSignalTransmitterId(), id);
         }
     }
 }
