@@ -26,7 +26,7 @@
                 <tr>
                     <c:set var="loggerId" value="${logger.loggerId}"/>
                     <td>
-                        <c:if test="${not empty logger.notes}">
+                        <c:if test="${not empty fn:trim(logger.notes)}">
                             <cti:msg2 var="viewNoteTitle" key=".viewNote"/>
                             <cti:icon icon="icon-notes-pin" title="${viewNoteTitle}" data-logger-id="${loggerId}" data-popup="#logger-note-${loggerId}"/>
                             <div id="logger-note-${loggerId}" class="dn" data-title="Notes" data-width="300" data-height="200">${logger.notes}</div>

@@ -35,5 +35,7 @@ public class ApiURL {
     public static final String attributeAssignmentsUrl = "/attributeAssignments";
     
     public static final String aggregateDataReportUrl = "/aggregateIntervalDataReport/report";
+    
+    public static final String loggerUrl = "/config/loggers";
 
 }

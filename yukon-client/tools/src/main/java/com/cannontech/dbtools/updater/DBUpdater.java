@@ -21,6 +21,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.exception.StarsNotCreatedException;
 import com.cannontech.common.util.ApplicationId;
@@ -193,6 +194,7 @@ public class DBUpdater extends MessageFrameAdaptor {
      */
     public static void main(String[] args) {
         CtiUtilities.setClientAppName(ApplicationId.DB_UPDATER);
+        YukonLogManager.initialize();
         DBUpdater updater = new DBUpdater();
 
         if (args.length < 1) // the user did not enter any params
