@@ -12,7 +12,7 @@ yukon.adminSetup.yukonLoggers = (function () {
     
     var _initialized = false,
     
-    _refreshLoggersTable = function (successMessage, errorMessage) {
+    _refreshLoggersTable = function () {
         var tableContainer = $('#logger-container'),
             form = $('#filter-form');
         form.ajaxSubmit({
@@ -26,7 +26,7 @@ yukon.adminSetup.yukonLoggers = (function () {
         });  
     },
     
-    _refreshSystemLoggersTable = function (successMessage, errorMessage) {
+    _refreshSystemLoggersTable = function () {
         var tableContainer = $('#system-logger-container'),
             form = $('#systemLoggerForm');
         form.ajaxSubmit({
