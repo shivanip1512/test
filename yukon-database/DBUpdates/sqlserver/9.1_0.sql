@@ -246,6 +246,12 @@ INSERT INTO UnitMeasure VALUES ( 59,'dB', 0, 'Decibels', '(none)');
 INSERT INTO DBUpdates VALUES ('YUK-24730', '9.1.0', GETDATE());
 /* @end YUK-24730 */
 
+/* @start YUK-24110 */
+UPDATE GlobalSetting SET Name = 'DEVICE_CONNECTION_WARNING_MINUTES' WHERE Name = 'GATEWAY_CONNECTION_WARNING_MINUTES';
+
+INSERT INTO DBUpdates VALUES ('YUK-24110', '9.1.0', GETDATE());
+/* @end YUK-24110 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
