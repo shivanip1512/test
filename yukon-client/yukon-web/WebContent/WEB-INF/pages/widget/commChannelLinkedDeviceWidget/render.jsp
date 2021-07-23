@@ -6,9 +6,12 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:msgScope paths="yukon.common,yukon.web.modules.operator.commChannelLinkedDeviceWidget">
-
     <c:choose>
         <c:when test="${not empty devicesList}">
+        <cti:url var="linkedDeviceUrl" value="/widget/commChannelLinkedDeviceWidget/render">
+           <cti:param name="deviceId" value="${deviceId}"/>
+        </cti:url>
+            <div data-url="${linkedDeviceUrl}">
                 <table class="compact-results-table row-highlighting results-table">
                     <thead>
                         <tr>
@@ -25,17 +28,19 @@
                                 <c:set var="cssClass" value="success" />
                                 <cti:msg2 var="deviceStatus" key="yukon.common.enabled"/>
                            </c:if>
-                        <tr>
-                           <td>
-                             <cti:paoDetailUrl paoId="${device.id}">${fn:escapeXml(device.name)}</cti:paoDetailUrl>
-                           </td>
-                           <td><i:inline key="${device.type}"/></td>
-                            
-                           <td class="${cssClass}">${deviceStatus}</td>
-                        </tr>
+                           <tr>
+                              <td>
+                                <cti:paoDetailUrl paoId="${device.id}">${fn:escapeXml(device.name)}</cti:paoDetailUrl>
+                              </td>
+                              <td><i:inline key="${device.type}"/></td>
+                               
+                              <td class="${cssClass}">${deviceStatus}</td>
+                           </tr>
                        </c:forEach>
                     </tbody>
                 </table>
+                <tags:pagingResultsControls result="${searchResult}" adjustPageCount="true"/>
+         </div>
         </c:when>
         <c:otherwise>
             <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
