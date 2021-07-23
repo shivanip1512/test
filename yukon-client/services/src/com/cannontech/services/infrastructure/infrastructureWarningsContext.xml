@@ -41,4 +41,5 @@
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayACPowerFailureEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayHighDiskUsageEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayRTCBatteryFailureEvaluator"/>
+    <bean class="com.cannontech.services.infrastructure.service.impl.CellularRelayConnectionStatusEvaluator"/>
 </beans>

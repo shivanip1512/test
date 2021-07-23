@@ -3,7 +3,6 @@ Route:
   required:
     - routeName
     - signalTransmitterId
-
   type: object
   properties:
     name:
@@ -13,6 +12,13 @@ Route:
     signalTransmitterId:
       type: integer
       description: 'Id for the signal transmitter.'
+    defaultRoute:
+      type: boolean
+      description: 'Setting up default Route.'
+    carrierRoute:
+      $ref: '#/carrierRoute'
+    repeaters:
+        $ref: '#/repeaters'
 
 id:
   title: id
@@ -33,25 +39,92 @@ routeId:
       type: integer
       description: 'Unique identifier for Route.'
 
+carrierRoute:
+  type: object
+  properties:
+      busNumber:
+        type: integer
+        default: 1
+        description: 'Carrier Route Bus number'
+      ccuFixBits: 
+        type: integer
+        default: 5
+        description: 'Carrier Route CCUFixBits'
+      ccuVariableBits: 
+        type: integer
+        default: 1
+        description: 'Carrier Route CCU Variable Bits'
+      userLocked: 
+        type: boolean
+        default: N
+        description: 'Carrier Route User Lock'
+      resetRptSettings: 
+        type: boolean
+        default: T
+        description: 'Carrier Route ResetRtrSettings'
+
+repeaters:
+  type: array
+  items:
+    required:
+    - repeaterId
+    type: object
+    properties:
+      repeaterId:
+        type: integer
+        description: 'Repeater Route Id.'
+      variableBits:
+        type: integer
+        description: 'VariableBits for Repeater Route.'
+      repeaterOrder:
+        type: integer
+        description: 'Order of the Repeater Route.'
+
 components:
   examples:
     Route:
       value:
         name: Test Route
         signalTransmitterId: 5
+        defaultRoute: true
+        carrierRoute:
+          busNumber: 1
+          ccuFixBits: 5
+          ccuVariableBits: 1
+          userLocked: N
+          resetRptSettings: T
+        repeaters:
+          repeaterId: 787
+          variableBits: 10
+          repeaterOrder: 1
     List Routes:
       value:
         - name: Test Route
           signalTransmitterId: 5
           defaultRoute: true
-          routeId : 273
-        - name: Test Route1
+          carrierRoute:
+            busNumber: 1
+            ccuFixBits: 5
+            ccuVariableBits: 1
+            userLocked: N
+            resetRptSettings: T
+          repeaters:
+            repeaterId: 787
+            variableBits: 10
+            repeaterOrder: 1
+        - name: Test Route 1
           signalTransmitterId: 5
           defaultRoute: true
-          routeId : 274
-    id:
-      value:
-        id: 572
+          carrierRoute:
+            busNumber: 1
+            ccuFixBits: 5
+            ccuVariableBits: 1
+            userLocked: N
+            resetRptSettings: T
+          repeaters:
+            repeaterId: 787
+            variableBits: 10
+            repeaterOrder: 1
     routeId:
       value:
-        routeId: 10
+      routeId: 10

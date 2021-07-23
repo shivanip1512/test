@@ -8,10 +8,10 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 
 /**
- * Contains all the relevant info for a gateway connection status check.
+ * Contains all the relevant info for a device connection status check.
  */
 public final class ConnectionStatusInfo {
-    private PaoIdentifier gateway;
+    private PaoIdentifier paoIdentifier;
     private Duration warnableDuration;
     private Instant evaluationTime;
     private PointValueQualityHolder lastConnectedPointValue;
@@ -20,14 +20,14 @@ public final class ConnectionStatusInfo {
     private Instant nextDisconnectedTimestamp;
     private boolean isNextDisconnectedTimestampWarnable;
     
-    public ConnectionStatusInfo(PaoIdentifier gateway, Duration warnableDuration, Instant evaluationTime,
+    public ConnectionStatusInfo(PaoIdentifier paoIdentifier, Duration warnableDuration, Instant evaluationTime,
                                 PointValueQualityHolder lastConnectedPointValue) {
-        this.gateway = gateway;
+        this.paoIdentifier = paoIdentifier;
         this.warnableDuration = warnableDuration;
         this.evaluationTime = evaluationTime;
         this.lastConnectedPointValue = lastConnectedPointValue;
         
-        // If the gateway has never shown CONNECTED, don't warn.
+        // If the device has never shown CONNECTED, don't warn.
         if (lastConnectedPointValue != null) {
             lastConnectedTimestamp = new Instant(lastConnectedPointValue.getPointDataTimeStamp());
             // Only warn if the last CONNECTED state occurred more than "warnableDuration" minutes ago.
@@ -55,8 +55,8 @@ public final class ConnectionStatusInfo {
         return lastConnectedPointValue;
     }
     
-    public PaoIdentifier getGatewayPaoId() {
-        return gateway;
+    public PaoIdentifier getDevicePaoId() {
+        return paoIdentifier;
     }
     
     public boolean isLastConnectedTimestampWarnable() {

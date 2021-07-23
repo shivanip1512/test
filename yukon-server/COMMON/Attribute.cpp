@@ -734,6 +734,8 @@ INIT_ATTRIBUTE( OpenOperationCount,                                 "OPEN_OPERAT
 INIT_ATTRIBUTE( OperationFailedNeutralCurrent,                      "OPERATION_FAILED_NEUTRAL_CURRENT" );
 INIT_ATTRIBUTE( OverUnderVoltageTrackTime,                          "OVER_UNDER_VOLTAGE_TRACKING_TIME" );
 INIT_ATTRIBUTE( OverVoltageCount,                                   "OVER_VOLTAGE_COUNT" );
+INIT_ATTRIBUTE( ReferenceSignalReceivedPower,                       "REFERENCE_SIGNAL_RECEIVED_POWER" );
+INIT_ATTRIBUTE( ReferenceSignalReceivedQuality,                     "REFERENCE_SIGNAL_RECEIVED_QUALITY" );
 INIT_ATTRIBUTE( RadioSignalStrengthIndicator,                       "RADIO_SIGNAL_STRENGTH_INDICATOR" );
 INIT_ATTRIBUTE( RecloseBlocked,                                     "RECLOSE_BLOCKED" );
 INIT_ATTRIBUTE( ScadaOverrideClear,                                 "SCADA_OVERRIDE_CLEAR" );
@@ -742,6 +744,7 @@ INIT_ATTRIBUTE( ScadaOverrideCountdownTimer,                        "SCADA_OVERR
 INIT_ATTRIBUTE( ScadaOverrideEnable,                                "SCADA_OVERRIDE_ENABLE" );
 INIT_ATTRIBUTE( ScadaOverrideHeartbeat,                             "SCADA_OVERRIDE_HEARTBEAT" );
 INIT_ATTRIBUTE( ScadaOverrideMode,                                  "SCADA_OVERRIDE_MODE" );
+INIT_ATTRIBUTE( SignalToInterferencePlusNoiseRatio,                 "SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO" );
 INIT_ATTRIBUTE( SourceVoltage,                                      "SOURCE_VOLTAGE" );
 INIT_ATTRIBUTE( TapDown,                                            "TAP_DOWN" );
 INIT_ATTRIBUTE( TapPosition,                                        "TAP_POSITION" );

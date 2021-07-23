@@ -12,19 +12,13 @@ yukon.adminSetup.yukonLoggers = (function () {
     
     var _initialized = false,
     
-    _refreshLoggersTable = function (successMessage, errorMessage) {
+    _refreshLoggersTable = function () {
         var tableContainer = $('#logger-container'),
             form = $('#filter-form');
         form.ajaxSubmit({
             success: function(data) {
                 tableContainer.html(data);
                 tableContainer.data('url', yukon.url('/admin/config/loggers/filter?' + form.serialize()));
-                if (successMessage) {
-                    $('.js-success-msg').append(yukon.escapeXml(successMessage)).removeClass('dn');
-                }
-                if (errorMessage) {
-                    $('.js-error-msg').append(yukon.escapeXml(errorMessage)).removeClass('dn');
-                }
             },
             error: function (xhr, status, error, $form) {
                 tableContainer.html(xhr.responseText);
@@ -32,19 +26,13 @@ yukon.adminSetup.yukonLoggers = (function () {
         });  
     },
     
-    _refreshSystemLoggersTable = function (successMessage, errorMessage) {
+    _refreshSystemLoggersTable = function () {
         var tableContainer = $('#system-logger-container'),
             form = $('#systemLoggerForm');
         form.ajaxSubmit({
             success: function(data) {
                 tableContainer.html(data);
                 tableContainer.data('url', yukon.url('/admin/config/loggers/getSystemLoggers?' + form.serialize()));
-                if (successMessage) {
-                    $('.js-success-msg').append(yukon.escapeXml(successMessage)).removeClass('dn');
-                }
-                if (errorMessage) {
-                    $('.js-error-msg').append(yukon.escapeXml(errorMessage)).removeClass('dn');
-                }
             },
             error: function (xhr, status, error, $form) {
                 tableContainer.html(xhr.responseText);
@@ -78,9 +66,9 @@ yukon.adminSetup.yukonLoggers = (function () {
                 }
             });
 
-            $(document).on('click', '.js-edit-logger', function () {
+            $(document).on('click', '.js-logger-popup', function () {
                 var loggerId = $(this).data('loggerId'),
-                    url = yukon.url('/admin/config/loggers/' + loggerId),
+                    url = loggerId != null ? yukon.url('/admin/config/loggers/' + loggerId) : yukon.url('/admin/config/loggers'),
                     popup = $('.js-edit-logger-popup'),
                     popupTitle = $(this).data('title'),
                     dialogDivJson = {
@@ -100,11 +88,16 @@ yukon.adminSetup.yukonLoggers = (function () {
                 popup.find('#logger-form').ajaxSubmit({
                     success: function (data) {
                         popup.dialog('close');
-                      //refresh logger table
-                        if(data.isSystemLogger) {
-                            _refreshSystemLoggersTable(data.successMessage, data.errorMessage)
-                        } else {
-                            _refreshLoggersTable(data.successMessage, data.errorMessage);
+                        if (data.successMessage) {
+                            yukon.ui.alertSuccess(data.successMessage);
+                            //refresh logger table
+                            if(data.isSystemLogger) {
+                                _refreshSystemLoggersTable();
+                            } else {
+                                _refreshLoggersTable();
+                            }
+                        } else if (data.errorMessage) {
+                            yukon.ui.alertError(data.errorMessage);
                         }
                     },
                     error: function (xhr) {
@@ -113,7 +106,7 @@ yukon.adminSetup.yukonLoggers = (function () {
                 });
             });
 
-            _initialized = true;
+        _initialized = true;
         }
 
     };
