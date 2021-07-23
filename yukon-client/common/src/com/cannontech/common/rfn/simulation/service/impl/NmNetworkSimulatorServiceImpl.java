@@ -394,6 +394,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         node.setProductNumber("123456789 (Sim)");
         node.setNodeSerialNumber("4260060913");
         node.setSecondaryModuleFirmwareVersion("R2.2.0Wp");
+        node.setNodeIpv6Address("2001:db8:3333:4444:5555:6666:7777:8888");
         if (wiFiSuperMeters.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
             node.setWifiSuperMeterData(getSuperMeterData());
         }
