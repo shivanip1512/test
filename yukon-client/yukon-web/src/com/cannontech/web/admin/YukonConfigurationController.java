@@ -75,6 +75,7 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.AMI, "icon-32-meter1");
         b.put(GlobalSettingSubCategory.AUTHENTICATION, "icon-app icon-app-32-lock");
         b.put(GlobalSettingSubCategory.DR, "icon-app icon-app-32-lightbulb");
+        b.put(GlobalSettingSubCategory.YUKON_LOGGERS, "icon-app icon-app-32-loggers");
         b.put(GlobalSettingSubCategory.YUKON_SERVICES, "icon-app icon-app-32-widgets");
         b.put(GlobalSettingSubCategory.WEB_SERVER, "icon-app icon-app-32-world");
         b.put(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, "icon-app icon-app-32-list");
@@ -126,6 +127,7 @@ public class YukonConfigurationController {
         systemSetup.add(Pair.of(GlobalSettingSubCategory.AUTHENTICATION, iconMap.get(GlobalSettingSubCategory.AUTHENTICATION)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.DASHBOARD_ADMIN,  iconMap.get(GlobalSettingSubCategory.DASHBOARD_ADMIN)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.DR, iconMap.get(GlobalSettingSubCategory.DR)));
+        systemSetup.add(Pair.of(GlobalSettingSubCategory.YUKON_LOGGERS, iconMap.get(GlobalSettingSubCategory.YUKON_LOGGERS)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.YUKON_SERVICES, iconMap.get(GlobalSettingSubCategory.YUKON_SERVICES)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.WEB_SERVER, iconMap.get(GlobalSettingSubCategory.WEB_SERVER)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.THEMES, iconMap.get(GlobalSettingSubCategory.THEMES)));
@@ -174,7 +176,10 @@ public class YukonConfigurationController {
             return "redirect:/dashboards/admin";
         } else if (category == GlobalSettingSubCategory.ATTRIBUTES) {
             return "redirect:/admin/config/attributes";
+        } else if (category == GlobalSettingSubCategory.YUKON_LOGGERS) {
+            return "redirect:/admin/config/loggers/allLoggers";
         }
+        
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         

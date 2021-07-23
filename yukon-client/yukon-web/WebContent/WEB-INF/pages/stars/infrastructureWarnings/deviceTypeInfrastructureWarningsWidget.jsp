@@ -10,7 +10,8 @@
                 <tags:infrastructureWarningsCount deviceTotalCount="${deviceTotalCount}" 
                                                   deviceWarningsCount="${deviceWarningsCount}" 
                                                   deviceLabel="${deviceLabel}" 
-                                                  fromDetailPage="${fromDetailPage}"/>
+                                                  fromDetailPage="${fromDetailPage}"
+                                                  deviceType="${deviceType}"/>
             </c:if>
         </tr>
     </table>

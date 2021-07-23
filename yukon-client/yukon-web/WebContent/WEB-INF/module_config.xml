@@ -983,6 +983,7 @@
                     <page name="config.attributes" type="BLANK">
                         <requireRoleProperty value="ADMIN_MANAGE_ATTRIBUTES" level="OWNER"/>
                     </page>
+                    <page name="config.loggers" type="BLANK" />
                 </pages>
             </page>
             

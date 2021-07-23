@@ -173,6 +173,8 @@
     <entry key="yukon.common.setting.subcategory.DR.description">Opt outs, importing, switch command settings</entry>
     <entry key="yukon.common.setting.subcategory.AMI">Endpoint</entry>
     <entry key="yukon.common.setting.subcategory.AMI.description">Display templates, importer settings</entry>
+    <entry key="yukon.common.setting.subcategory.YUKON_LOGGERS">Yukon Loggers</entry>
+    <entry key="yukon.common.setting.subcategory.YUKON_LOGGERS.description">User loggers, system loggers</entry>
     <entry key="yukon.common.setting.subcategory.YUKON_SERVICES">Yukon Services</entry>
     <entry key="yukon.common.setting.subcategory.YUKON_SERVICES.description">Yukon services ip address, ports</entry>
     <entry key="yukon.common.setting.subcategory.WEB_SERVER">Web Server</entry>
@@ -490,8 +492,8 @@
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS">Data Collection: Data Availability Window</entry>
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS.description">Window for minimum number of days required for a device's data to be considered available.</entry>
     
-    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Gateway connection warning minutes</entry>
-    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES.description">The number of minutes a gateway must be disconnected to generate a warning.</entry>
+    <entry key="yukon.common.setting.DEVICE_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Device connection warning minutes</entry>
+    <entry key="yukon.common.setting.DEVICE_CONNECTION_WARNING_MINUTES.description">The number of minutes a device must be disconnected to generate a warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD">Infrastructure Warnings: Gateway connected nodes warning threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD.description">The number of connected nodes a gateway must have to generate a warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD">Infrastructure Warnings: Gateway connected nodes critical threshold</entry>
@@ -759,4 +761,5 @@
     <entry key="yukon.common.unitOfMeasure.MEGABYTES">MB</entry>
     <entry key="yukon.common.unitOfMeasure.DBM">dBm</entry>
     <entry key="yukon.common.unitOfMeasure.THERMS">Therms</entry>
+    <entry key="yukon.common.unitOfMeasure.DB">dB</entry>
 </properties>

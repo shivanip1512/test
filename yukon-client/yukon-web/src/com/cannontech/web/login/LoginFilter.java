@@ -91,8 +91,6 @@ public class LoginFilter implements Filter {
                          "/common/config/deviceDefinition",
                          "/common/config/rfn",
                          "/remote/MasterConfig",
-                         // URL to get remote logging configuration.
-                         "/servlet/LoggingServlet",
                          // URL to actually do remote logging.
                          "/remote/remoteLogin");
     

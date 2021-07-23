@@ -2,14 +2,14 @@ package com.cannontech.common.rfn.message.node;
 
 import java.util.Arrays;
 
-public enum NodeWiFiCommStatus {
+public enum NodeConnectionState {
     NOT_ACTIVE(1),
     ACTIVE(2),
     ;
 
     private final short nodeWiFiCommStatusCodeID;
 
-    private NodeWiFiCommStatus(int nodeWiFiCommStatusCodeID) {
+    private NodeConnectionState(int nodeWiFiCommStatusCodeID) {
         this.nodeWiFiCommStatusCodeID = (short) nodeWiFiCommStatusCodeID;
     }
 
@@ -21,8 +21,8 @@ public enum NodeWiFiCommStatus {
      * @return the Enum representation for the given nodeCommStatusCodeID.
      *         null if unknown nodeCommStatusCodeID.
      */
-    public static NodeWiFiCommStatus fromNodeWiFiCommStatusCodeID(short nodeCommStatusCodeID) {
-        return Arrays.stream(NodeWiFiCommStatus.values())
+    public static NodeConnectionState fromNodeWiFiCommStatusCodeID(short nodeCommStatusCodeID) {
+        return Arrays.stream(NodeConnectionState.values())
                 .filter(v -> v.getNodeWiFiCommStatusCodeID() == nodeCommStatusCodeID)
                 .findFirst()
                 .orElse(null);

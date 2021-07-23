@@ -45,8 +45,8 @@ public class RequestReplyTemplateImpl<R extends Serializable> extends RequestRep
         requestMessage.setJMSReplyTo(replyQueue);
         log.trace("Sending requestMessage to producer: {}", requestMessage.toString());
         logRequest(requestPayload.toString());
+        sendMessage(producer, requestMessage);
         
-        producer.send(requestMessage);
         handleReplyOrTimeout(callback, replyTimeout, replyConsumer, requestPayload.toString());
         log.trace("Request replied or timed out: {}", requestMessage.toString());
         

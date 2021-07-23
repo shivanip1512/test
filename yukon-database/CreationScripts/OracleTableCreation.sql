@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/30/2021 11:11:51 PM                        */
+/* Created on:     7/19/2021 8:49:22 PM                         */
 /*==============================================================*/
 
 
@@ -9503,6 +9503,7 @@ INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
 INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
 INSERT INTO UnitMeasure VALUES ( 58,'Therms', 0, 'Therms', '(none)');
+INSERT INTO UnitMeasure VALUES ( 59,'dB', 0, 'Decibels', '(none)');
 
 /*==============================================================*/
 /* Table: UsageThresholdReport                                  */

@@ -136,24 +136,28 @@ public class InfrastructureWarningsController {
             model.addAttribute("deviceWarningsCount", summary.getWarningRelays());
             deviceLabel = accessor.getMessage(baseKey + "relays");
             model.addAttribute("deviceLabel", deviceLabel);
+            model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.RELAY);
             break;
         case CCU:
             model.addAttribute("deviceTotalCount", summary.getTotalCcus());
             model.addAttribute("deviceWarningsCount", summary.getWarningCcus());
             deviceLabel = accessor.getMessage(baseKey + "CCUs");
             model.addAttribute("deviceLabel", deviceLabel);
+            model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.CCU);
             break;
         case REPEATER:
             model.addAttribute("deviceTotalCount", summary.getTotalRepeaters());
             model.addAttribute("deviceWarningsCount", summary.getWarningRepeaters());
             deviceLabel = accessor.getMessage(baseKey + "repeaters");
             model.addAttribute("deviceLabel", deviceLabel);
+            model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.REPEATER);
             break;
         default:
             model.addAttribute("deviceTotalCount", summary.getTotalGateways());
             model.addAttribute("deviceWarningsCount", summary.getWarningGateways());
             deviceLabel = accessor.getMessage(baseKey + "gateways");
             model.addAttribute("deviceLabel", deviceLabel);
+            model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.GATEWAY);
             break;
         }
     }

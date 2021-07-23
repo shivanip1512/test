@@ -444,6 +444,7 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "honeywell wi-fi thermostat",
         "honeywell wi-fi visionpro 8000",
         "rfn relay",
+        "crly-856",
         "nest"
     };
 

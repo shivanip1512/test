@@ -38,6 +38,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.Duration;
+
 import com.cannontech.amr.monitors.message.DeviceDataMonitorMessage;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusRequest;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusResponse;
@@ -107,6 +109,8 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
+import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveRequest;
+import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveResponse;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
@@ -1310,6 +1314,7 @@ public final class JmsApiDirectory {
                   .responseMessage(NetworkManagerHeartbeatResponse.class)
                   .sender(YUKON_WATCHDOG)
                   .receiver(NETWORK_MANAGER)
+                  .timeToLive(Duration.standardMinutes(5))
                   .build();
     
     
@@ -1333,6 +1338,20 @@ public final class JmsApiDirectory {
                   .requestMessage(DatabaseChangeEvent.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_MESSAGE_BROKER)
+                  .build();
+
+    public static JmsApi<RfnRelayCellularCommArchiveRequest,?,RfnRelayCellularCommArchiveResponse> RFN_RELAY_CELL_COMM_ARCHIVE =
+            JmsApi.builder(RfnRelayCellularCommArchiveRequest.class, RfnRelayCellularCommArchiveResponse.class)
+                  .name("RFN Relay Cellular Comm Archive")
+                  .description("A notification from Network Manager to Yukon to archive the Cellular IPLink Relay's cellular connection status.")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnRelayCellularCommArchiveRequest"))
+                  .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnRelayCellularCommArchiveResponse"))
+                  .requestMessage(RfnRelayCellularCommArchiveRequest.class)
+                  .responseMessage(RfnRelayCellularCommArchiveResponse.class)
+                  .sender(NETWORK_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
                   .build();
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
@@ -1424,6 +1443,7 @@ public final class JmsApiDirectory {
                 RFN_DEVICE_ARCHIVE,
                 RFN_STATUS_ARCHIVE,
                 RFN_NODE_WIFI_COMM_ARCHIVE,
+                RFN_RELAY_CELL_COMM_ARCHIVE,
                 DYNAMIC_RFN_DEVICE_DATA_COLLECTION);
         
         addApis(jmsApis, SIMULATOR_MANAGEMENT,

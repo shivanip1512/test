@@ -396,5 +396,33 @@
     <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentSuccess">Attribute: {0} has been successfully assigned to the following device types: {1}.</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentFailed">There was an error assigning Attribute: {0} to the following device types: {1}. Please see logs for more detail.</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentDeleteSuccess">Assignment for attribute: {0} has been successfully deleted.</entry>
-    
+
+    <!-- Yukon Loggers -->
+    <entry key="yukon.web.modules.adminSetup.config.loggers.OFF">Off</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.FATAL">Fatal</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.ERROR">Error</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.WARN">Warn</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.INFO">Info</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.DEBUG">Debug</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.TRACE">Trace</entry>
+
+    <entry key="yukon.web.modules.adminSetup.config.loggers.pageName">Yukon Loggers</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.userLoggers.title">User Loggers</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.systemLoggers.title">System Loggers</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.allLoggerLevels">All Logger Levels</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.addLoggerTitle">Add User Logger</entry>
+
+    <entry key="yukon.web.modules.adminSetup.config.loggers.editUserLoggerTitle">Edit User Logger</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.editSystemLoggerTitle">Edit System Logger</entry>
+
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggerName">Logger Name</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggerLevel">Logger Level</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.expirationDate">Expiration</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.notes">Notes</entry>
+
+    <entry key="yukon.web.modules.adminSetup.config.loggers.viewNote">View Note</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.noteText.placeHolder">Note Text (255 characters max)</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggersLabel">Logger(s)</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.inValidId">Invalid Logger Id</entry>
+
 </properties>
