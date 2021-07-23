@@ -20,12 +20,12 @@ auto RfnGetCommunicationStatusUpdateCommand::getApplicationServiceId() const -> 
 
 auto RfnGetCommunicationStatusUpdateCommand::getCommandHeader() -> Bytes
 {
-    return { static_cast<uint8_t>(Command::Request) };
+    return { as_underlying(Command::Request) };
 }
 
 auto RfnGetCommunicationStatusUpdateCommand::getCommandData() -> Bytes
 {
-    return { static_cast<uint8_t>(Operation::GetCommunicationStatusUpdate) };
+    return { as_underlying(Operation::GetCommunicationStatusUpdate) };
 }
 
 std::string RfnGetCommunicationStatusUpdateCommand::getCommandName() const
