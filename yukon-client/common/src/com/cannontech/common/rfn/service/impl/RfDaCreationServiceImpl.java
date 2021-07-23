@@ -81,7 +81,7 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
     
     @Override
     @Transactional
-    public Rfn1200Detail create(Rfn1200Detail detail, LiteYukonUser user) {
+    public synchronized Rfn1200Detail create(Rfn1200Detail detail, LiteYukonUser user) {
         RfnIdentifier rfnId = new RfnIdentifier(detail.getRfnAddress().getSerialNumber(),
                 detail.getRfnAddress().getManufacturer(), detail.getRfnAddress().getModel());
         try {
