@@ -121,6 +121,7 @@ public class RelayController {
         
         model.addAttribute("deviceId", deviceId);
         model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
+        model.addAttribute("showCellularConnection", device.getDeviceType().isCellularDevice());
 
         return "/relay/relayHome.jsp";
     }

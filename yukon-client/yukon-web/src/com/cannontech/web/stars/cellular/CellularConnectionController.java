@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.wifi;
+package com.cannontech.web.stars.cellular;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,17 +30,17 @@ import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.stars.gateway.model.CellularDeviceCommData;
 import com.cannontech.web.stars.gateway.model.ConnectedDevicesHelper;
-import com.cannontech.web.stars.gateway.model.WiFiMeterCommData;
-import com.cannontech.web.stars.service.RfnWiFiCommDataService;
+import com.cannontech.web.stars.service.RfnCellularCommDataService;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
 @Controller
-@RequestMapping("/wifiConnection/*")
-public class WifiConnectionController {
+@RequestMapping("/cellConnection/*")
+public class CellularConnectionController {
     
-    @Autowired private RfnWiFiCommDataService wifiService;
+    @Autowired private RfnCellularCommDataService cellService;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DateFormattingService dateFormattingService;
@@ -54,22 +54,22 @@ public class WifiConnectionController {
     @GetMapping("refresh")
     public void refreshAllConnections(Integer[] deviceIds, HttpServletResponse resp, YukonUserContext userContext) {
         List<PaoIdentifier> paoIdentifiers = paoDao.getPaoIdentifiersForPaoIds(Arrays.asList(deviceIds));
-        wifiService.refreshWiFiMeterConnection(paoIdentifiers, userContext.getYukonUser());
+        cellService.refreshCellularDeviceConnection(paoIdentifiers, userContext.getYukonUser());
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
     @GetMapping("connectedDevices/{gatewayId}")
     public String connectedDevices(@PathVariable int gatewayId, ModelMap model) {
-        List<WiFiMeterCommData> wifiData = wifiService.getWiFiMeterCommDataForGateways(Arrays.asList(gatewayId));
-        model.addAttribute("wifiData", wifiData);
-        String deviceIdList = wifiData.stream()
+        List<CellularDeviceCommData> cellData = cellService.getCellularDeviceCommDataForGateways(Arrays.asList(gatewayId));
+        model.addAttribute("cellData", cellData);
+        String deviceIdList = cellData.stream()
                 .map(d -> String.valueOf(d.getDevice().getPaoIdentifier().getPaoId()))
                 .collect(Collectors.joining(","));
         model.addAttribute("deviceIds", deviceIdList);
         
         connectedDevicesHelper.setupConnectedDevicesModel(gatewayId, model);
         
-        return "gateways/wifiConnection.jsp";
+        return "gateways/cellConnection.jsp";
     }
     
     @GetMapping("connectedDevicesMapping")
@@ -82,21 +82,23 @@ public class WifiConnectionController {
     public String connectedDevicesDownload(@PathVariable int gatewayId, Integer[] filteredCommStatus, 
                                            YukonUserContext userContext, HttpServletResponse response) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String[] headerRow = new String[5];
+        String[] headerRow = new String[7];
 
         headerRow[0] = accessor.getMessage("yukon.common.name");
         headerRow[1] = accessor.getMessage("yukon.common.attribute.builtInAttribute.COMM_STATUS");
         headerRow[2] = accessor.getMessage(baseKey + "statusLastUpdated");
         headerRow[3] = accessor.getMessage("yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR");
-        headerRow[4] = accessor.getMessage(baseKey + "rssiLastUpdated");
+        headerRow[4] = accessor.getMessage("yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER");
+        headerRow[5] = accessor.getMessage("yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY");
+        headerRow[6] = accessor.getMessage("yukon.common.attribute.builtInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO");
         
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(gatewayId);
-        List<WiFiMeterCommData> wifiData = wifiService.getWiFiMeterCommDataForGateways(Arrays.asList(gatewayId));
+        List<CellularDeviceCommData> cellData = cellService.getCellularDeviceCommDataForGateways(Arrays.asList(gatewayId));
         
         List<String[]> dataRows = Lists.newArrayList();
         List<Integer> selectedCommStatuses = Arrays.asList(filteredCommStatus);
-        for (WiFiMeterCommData data : wifiData) {
-            String[] dataRow = new String[5];
+        for (CellularDeviceCommData data : cellData) {
+            String[] dataRow = new String[7];
             dataRow[0] = data.getDevice().getName();
             PointValueQualityHolder commStatus = asyncDynamicDataSource.getPointValue(data.getCommStatusPoint().getPointID());
             if (selectedCommStatuses.isEmpty() || selectedCommStatuses.contains(Integer.valueOf((int)commStatus.getValue()))) {
@@ -104,13 +106,18 @@ public class WifiConnectionController {
                 dataRow[2] = pointFormattingService.getValueString(commStatus, Format.DATE, userContext);
                 PointValueQualityHolder rssi = asyncDynamicDataSource.getPointValue(data.getRssiPoint().getPointID());
                 dataRow[3] = pointFormattingService.getValueString(rssi, Format.VALUE, userContext);
-                dataRow[4] = pointFormattingService.getValueString(rssi, Format.DATE, userContext);
+                PointValueQualityHolder rsrp = asyncDynamicDataSource.getPointValue(data.getRsrpPoint().getPointID());
+                dataRow[4] = pointFormattingService.getValueString(rsrp, Format.VALUE, userContext);
+                PointValueQualityHolder rsrq = asyncDynamicDataSource.getPointValue(data.getRsrqPoint().getPointID());
+                dataRow[5] = pointFormattingService.getValueString(rsrq, Format.VALUE, userContext);
+                PointValueQualityHolder sinr = asyncDynamicDataSource.getPointValue(data.getSinrPoint().getPointID());
+                dataRow[6] = pointFormattingService.getValueString(sinr, Format.VALUE, userContext);
                 dataRows.add(dataRow);
             }
         }
         
         String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, gateway.getName() + "_WiFiConnectedDevices" + "_" + now + ".csv");
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, gateway.getName() + "_CellularConnectedDevices" + "_" + now + ".csv");
         return null;
     }
     

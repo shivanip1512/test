@@ -5,13 +5,13 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="operator" page="wifiConnection">
+<cti:standardPage module="operator" page="cellConnection">
 
     <tags:alertBox type="success" key=".queryMsg" classes="js-refresh-msg dn" includeCloseButton="true"></tags:alertBox>
     <input type="hidden" id="gatewayId" value="${gateway.id}"/>
     <input type="hidden" id="deviceIds" value="${deviceIds}"/>
     <input type="hidden" id="connectedStatusValue" value="${connectedStatusValue}"/>
-    <input type="hidden" id="baseUrl" value="/stars/wifiConnection"/>
+    <input type="hidden" id="baseUrl" value="/stars/cellConnection"/>
 
     <div>
         <hr/>
@@ -26,9 +26,9 @@
     </div>
 
     <span class="fwn"><i:inline key="yukon.common.filteredResults"/>
-    <span class="badge js-count">${wifiData.size()}</span>&nbsp;<i:inline key="yukon.common.devices"/>
+    <span class="badge js-count">${cellData.size()}</span>&nbsp;<i:inline key="yukon.common.devices"/>
     
-    <c:if test="${wifiData.size() > 0}">
+    <c:if test="${cellData.size() > 0}">
         <span class="js-cog-menu">
             <cm:dropdown icon="icon-cog">
                 <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
@@ -63,7 +63,15 @@
                     <i class="icon icon=blank"/>
                 </th>
                 <th data-sorted="false">
-                    <i:inline key="yukon.web.modules.operator.connectedDevices.rssiLastUpdated"/>
+                    <i:inline key="yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER"/>
+                    <i class="icon icon=blank"/>
+                </th>
+                <th data-sorted="false">
+                    <i:inline key="yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY"/>
+                    <i class="icon icon=blank"/>
+                </th>
+                <th data-sorted="false">
+                    <i:inline key="yukon.common.attribute.builtInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO"/>
                     <i class="icon icon=blank"/>
                 </th>
                 <th class="action-column"><cti:icon icon="icon-read" classes="M0"/></th>
@@ -71,7 +79,7 @@
         </thead>
         <tfoot></tfoot>
         <tbody>
-            <c:forEach var="data" items="${wifiData}">
+            <c:forEach var="data" items="${cellData}">
                 <tr class="js-table-row" data-device-id="${data.device.paoIdentifier.paoId}">
                     <td>
                         <cti:paoDetailUrl yukonPao="${data.device}" newTab="true">${fn:escapeXml(data.device.name)}</cti:paoDetailUrl>
@@ -85,10 +93,16 @@
                         <tags:historicalValue pao="${data.device}" pointId="${data.commStatusPoint.pointID}" format="DATE_QUALITY"/>
                     </td>
                     <td>
-                        <cti:pointValue pointId="${data.rssiPoint.pointID}" format="VALUE"/>
+                        <tags:historicalValue pao="${data.device}" pointId="${data.rssiPoint.pointID}" format="VALUE"/>
                     </td>
                     <td>
-                        <tags:historicalValue pao="${data.device}" pointId="${data.rssiPoint.pointID}" format="DATE_QUALITY"/>
+                        <tags:historicalValue pao="${data.device}" pointId="${data.rsrpPoint.pointID}" format="VALUE"/>
+                    </td>
+                    <td>
+                        <tags:historicalValue pao="${data.device}" pointId="${data.rsrqPoint.pointID}" format="VALUE"/>
+                    </td>
+                    <td>
+                        <tags:historicalValue pao="${data.device}" pointId="${data.sinrPoint.pointID}" format="VALUE"/>
                     </td>
                     <td class="PL0">
                         <cti:msg2 var="queryTitle" key="yukon.web.modules.operator.connectedDevices.queryStatus"/>

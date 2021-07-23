@@ -1,13 +1,13 @@
-yukon.namespace('yukon.assets.wifi.connection');
+yukon.namespace('yukon.assets.gateway.connectedDevices');
  
 /**
- * Module to handle the Wifi Connection Status.
+ * Module to handle the Wifi Connected Devices and Cellular Connected Devices pages.
  * 
- * @module yukon.assets.wifi.connection
+ * @module yukon.assets.gateway.connectedDevices
  * @requires yukon
  * @requires JQUERY
  */
-yukon.assets.wifi.connection = (function () {
+yukon.assets.gateway.connectedDevices = (function () {
  
     var
     _initialized = false,
@@ -20,9 +20,10 @@ yukon.assets.wifi.connection = (function () {
             if (_initialized) return;
             
             $("#commStatusFilter").chosen({width: '250px'});
+            var baseUrl = $('#baseUrl').val();
             
             //refresh connection status for a device
-            $(document).on('click', '.js-refresh-wifi', function () {
+            $(document).on('click', '.js-refresh-status', function () {
                 var btn = $(this),
                     deviceId = btn.data('deviceId'),
                     refreshMsg = $('.js-refresh-msg');
@@ -30,7 +31,7 @@ yukon.assets.wifi.connection = (function () {
                 yukon.ui.busy(btn);
                 
                 $.ajax({
-                    url: yukon.url('/stars/wifiConnection/refresh?deviceIds=' + deviceId)
+                    url: yukon.url(baseUrl + '/refresh?deviceIds=' + deviceId)
                 }).done(function () {
                     refreshMsg.removeClass('dn');
                     setTimeout(function() {yukon.ui.unbusy(btn); }, 1000);
@@ -65,7 +66,7 @@ yukon.assets.wifi.connection = (function () {
                 var gatewayId = $('#gatewayId').val(),
                     selectedStatuses = $('#commStatusFilter').chosen().val();
                 $('.js-refresh-msg').addClass('dn');
-                window.location.href = yukon.url('/stars/wifiConnection/connectedDevicesDownload/' + gatewayId 
+                window.location.href = yukon.url(baseUrl + '/connectedDevicesDownload/' + gatewayId 
                         + '?filteredCommStatus=' + selectedStatuses);
             });
             
@@ -81,7 +82,7 @@ yukon.assets.wifi.connection = (function () {
                         deviceId = $(this).data('deviceId');
                     commStatus == connectedStatusValue ? connectedIds.push(deviceId) : disconnectedIds.push(deviceId);
                 });
-                window.open(yukon.url('/stars/wifiConnection/connectedDevicesMapping?connectedIds=' + connectedIds + 
+                window.open(yukon.url(baseUrl + '/connectedDevicesMapping?connectedIds=' + connectedIds + 
                         '&disconnectedIds=' + disconnectedIds + '&filteredCommStatus=' + selectedStatuses));
             });
             
@@ -93,7 +94,7 @@ yukon.assets.wifi.connection = (function () {
                 var deviceIdArray = deviceIds.split(',');
                 
                 $.ajax({
-                    url: yukon.url('/stars/wifiConnection/refresh?deviceIds=' + deviceIdArray)
+                    url: yukon.url(baseUrl + '/refresh?deviceIds=' + deviceIdArray)
                 }).done(function () {
                     refreshMsg.removeClass('dn');
                 });
@@ -107,4 +108,4 @@ yukon.assets.wifi.connection = (function () {
     return mod;
 })();
  
-$(function () { yukon.assets.wifi.connection.init(); });
+$(function () { yukon.assets.gateway.connectedDevices.init(); });
