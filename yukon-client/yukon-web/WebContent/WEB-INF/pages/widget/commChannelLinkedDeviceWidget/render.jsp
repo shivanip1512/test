@@ -1,0 +1,44 @@
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+
+<cti:msgScope paths="yukon.common,yukon.web.modules.operator.commChannelLinkedDeviceWidget">
+
+    <c:choose>
+        <c:when test="${not empty devicesList}">
+                <table class="compact-results-table row-highlighting results-table">
+                    <thead>
+                        <tr>
+                            <tags:sort column="${name}" />
+                            <tags:sort column="${type}" />
+                            <tags:sort column="${status}" />
+                        </tr>
+                    </thead>
+                    <tbody>
+                       <c:forEach var="device" items="${devicesList}">
+                           <c:set var="cssClass" value="error" />
+                           <cti:msg2 var="deviceStatus" key="yukon.common.disabled"/>
+                           <c:if test="${device.enable}">
+                                <c:set var="cssClass" value="success" />
+                                <cti:msg2 var="deviceStatus" key="yukon.common.enabled"/>
+                           </c:if>
+                        <tr>
+                           <td>
+                             <cti:paoDetailUrl paoId="${device.id}">${fn:escapeXml(device.name)}</cti:paoDetailUrl>
+                           </td>
+                           <td><i:inline key="${device.type}"/></td>
+                            
+                           <td class="${cssClass}">${deviceStatus}</td>
+                        </tr>
+                       </c:forEach>
+                    </tbody>
+                </table>
+        </c:when>
+        <c:otherwise>
+            <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
+        </c:otherwise>
+    </c:choose>
+</cti:msgScope>

@@ -45,6 +45,13 @@
             </div>
         </div>
     </tags:widgetContainer>
+    <tags:widgetContainer deviceId="${id}" identify="false">
+        <div class="column-12-12 clearfix">
+            <div class="">
+                <tags:widget bean="commChannelLinkedDeviceWidget"/>
+            </div>
+        </div>
+    </tags:widgetContainer>
 
     <cti:msg2 var="saveText" key="components.button.save.label"/>
     <div id="js-create-comm-channel-popup" 
