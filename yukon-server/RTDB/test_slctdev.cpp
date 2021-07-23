@@ -54,13 +54,13 @@ BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  60
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
-    (_)(_)(_)(_)(_) (_)(X)(_)(_)(_)  //  90
+    (_)(_)(_)(_)(_) (_)(_)(X)(_)(_)  //  90
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  100
 */
     expected[ 46 ] = true;
     expected[ 47 ] = true;
     expected[ 49 ] = true;
-    expected[ 96 ] = true;
+    expected[ 97 ] = true;
 
     std::vector<bool> results;
 
@@ -179,8 +179,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
-    *i++ = "class CtiDeviceCCU710";
+    *i++ = "class Cti::Devices::RfCellularRelayDevice";
     //  90
+    *i++ = "class CtiDeviceCCU710";
     *i++ = "class CtiDeviceCCU710";
     *i++ = "class CtiDeviceCCU";
     *i++ = "class Cti::Devices::Ccu721Device";
@@ -190,8 +191,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::DnpRtuDevice";
     *i++ = "class Cti::Devices::DnpRtuDevice";
     *i++ = "class CtiDeviceION";
-    *i++ = "class CtiDeviceION";
     //  100
+    *i++ = "class CtiDeviceION";
     *i++ = "class CtiDeviceION";
     *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceLCU";
@@ -201,8 +202,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceTCU";
     *i++ = "class CtiDeviceMarkV";
     *i++ = "class CtiDeviceDavis";
-    *i++ = "class CtiDeviceAlphaPPlus";
     //  110
+    *i++ = "class CtiDeviceAlphaPPlus";
     *i++ = "class CtiDeviceFulcrum";
     *i++ = "class CtiDeviceLandisGyrS4";
     *i++ = "class CtiDeviceVectron";
@@ -212,8 +213,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceKV2";
     *i++ = "class Cti::Devices::CtiDeviceSentinel";
     *i++ = "class Cti::Devices::CtiDeviceFocus";
-    *i++ = "class CtiDeviceKV2";
     //  120
+    *i++ = "class CtiDeviceKV2";
     *i++ = "class CtiDeviceSixnet";
     *i++ = "class Cti::Devices::Ipc410ALDevice";
     *i++ = "class Cti::Devices::Ipc420ADDevice";
@@ -223,8 +224,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceWctpTerminal";
     *i++ = "class Cti::Devices::RDSTransmitter";
     *i++ = "class CtiDeviceSnppPagingTerminal";
-    *i++ = "class CtiDevicePagingReceiver";
     //  130
+    *i++ = "class CtiDevicePagingReceiver";
     *i++ = "class CtiDeviceTnppPagingTerminal";
     *i++ = "class CtiDeviceRTC";
     *i++ = "class CtiDeviceRTM";
@@ -234,14 +235,15 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceGridAdvisor";
     *i++ = "class CtiDeviceGridAdvisor";
     *i++ = "class CtiDeviceGroupEmetcon";
-    *i++ = "class CtiDeviceGroupVersacom";
     //  140
+    *i++ = "class CtiDeviceGroupVersacom";
     *i++ = "class CtiDeviceGroupRipple";
     *i++ = "class CtiDeviceGroupPoint";
     *i++ = "class CtiDeviceGroupExpresscom";
     *i++ = "class CtiDeviceGroupRfnExpresscom";
-    i += 6;
+    i += 5;
     //  150
+    i++;
     *i++ = "class CtiDeviceGroupMCT";
     i++;
     *i++ = "class CtiDeviceGroupGolay";
@@ -250,11 +252,11 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceGroupSA205";
     *i++ = "class CtiDeviceGroupSA305";
     *i++ = "class Cti::Devices::MctBroadcastDevice";
-    i += 2;
+    i++;
     //  160
     i += 10;
     //  170
-    i++;
+    i += 2;
     *i++ = "class CtiDeviceMacro";
     *i++ = "class CtiDeviceSystem";
 
