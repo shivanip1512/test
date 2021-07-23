@@ -113,7 +113,7 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
         if (RfnManufacturerModel.is1200(identifier)) {
             rfdaCreationService.create(identifier);
         } else {
-            rfnDeviceCreationService.createIfNotFound(identifier, null);
+            rfnDeviceCreationService.createIfNotFound(identifier);
         }
     }
 

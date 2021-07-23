@@ -95,7 +95,7 @@ import com.opencsv.CSVWriter;
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class ComprehensiveMapController {
-    
+
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private NmNetworkService nmNetworkService;
     @Autowired private NetworkTreeService networkTreeService;
@@ -116,17 +116,17 @@ public class ComprehensiveMapController {
     private Instant networkTreeUpdateTime = null;
 
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
-    
+
     @GetMapping("home")
     public String home(ModelMap model) {
-        
+
         NetworkMapFilter filter = new NetworkMapFilter();
         model.addAttribute("filter", filter);
 
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
-        
+
         model.addAttribute("colorCodeByOptions", ColorCodeBy.values());
         model.addAttribute("linkQualityOptions", LinkQuality.values());
         model.addAttribute("descendantCountOptions", DescendantCount.values());
@@ -134,12 +134,13 @@ public class ComprehensiveMapController {
         model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
         model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
         model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
-        
+
         return "comprehensiveMap/map.jsp";
     }
-    
+
     @GetMapping("filter")
-    public @ResponseBody Map<String, Object> filter(@ModelAttribute("filter") NetworkMapFilter filter, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object> filter(@ModelAttribute("filter") NetworkMapFilter filter,
+            YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         NetworkMap map = null;
@@ -167,32 +168,32 @@ public class ComprehensiveMapController {
         json.put("map", map);
         return json;
     }
-    
+
     @GetMapping("search")
     public @ResponseBody Map<String, Object> searchForNode(String searchText) {
         Map<String, Object> json = new HashMap<>();
         Set<Integer> foundPaoIds = new HashSet<Integer>();
-        //search for a Sensor Serial Number with the provided text
+        // search for a Sensor Serial Number with the provided text
         RfnDevice sensor = rfnDeviceDao.findDeviceBySensorSerialNumber(searchText);
         if (sensor != null) {
             foundPaoIds.add(sensor.getPaoIdentifier().getPaoId());
         }
-        //search for a Meter Number with the provided text
+        // search for a Meter Number with the provided text
         try {
             YukonMeter meter = meterDao.getForMeterNumber(searchText);
             if (meter != null) {
                 foundPaoIds.add(meter.getDeviceId());
             }
         } catch (NotFoundException e) {
-            //continue looking for matches
+            // continue looking for matches
         }
-        //search by partial device name
+        // search by partial device name
         List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(searchText, true);
         if (!paos.isEmpty()) {
             List<Integer> paoIds = paos.stream().map(pao -> pao.getPaoIdentifier().getPaoId()).collect(Collectors.toList());
             foundPaoIds.addAll(paoIds);
         }
-        
+
         json.put("paoIds", foundPaoIds);
         return json;
     }
@@ -220,7 +221,7 @@ public class ComprehensiveMapController {
         } catch (NmCommunicationException e1) {
             log.warn("caught exception in download", e1);
         }
-        
+
         List<String[]> dataRows = retrieveDownloadDataRows(metaData, userContext);
 
         String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
@@ -230,41 +231,41 @@ public class ComprehensiveMapController {
     @GetMapping("downloadNetworkInfo")
     public void downloadNetworkInfo(YukonUserContext userContext, HttpServletResponse response) throws IOException {
         String[] headerRow = retrieveDownloadHeaderRow(userContext);
-        
+
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        
+
         Set<RfnIdentifier> gatewayRfnIdentifiers = gateways.stream()
                 .map(gateway -> gateway.getRfnIdentifier())
                 .collect(Collectors.toSet());
 
-       Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
-       log.debug("Getting data for download for {} gateways", gatewayRfnIdentifiers.size());
-       
-       response.setContentType("text/csv");
-       response.setHeader("Content-Type", "application/force-download");
-       String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-       String fileName = "NetworkInformationDownload_" + now + ".csv";
-       response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-       
-       try (Writer writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
-               CSVWriter csvWriter = new CSVWriter(writer);) {
-           csvWriter.writeNext(headerRow);
-       
-           for (List<RfnIdentifier> splitGateways : Iterables.partition(gatewayRfnIdentifiers, 5)) {
-               try {
-                   metaData = metadataMultiService.getMetadataForGatewayRfnIdentifiers(new HashSet<RfnIdentifier>(splitGateways),
-                           Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM,
-                                   RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
-                                   RfnMetadataMulti.NODE_DATA,
-                                   RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
-                   List<String[]> dataRows = retrieveDownloadDataRows(metaData, userContext);
-                   csvWriter.writeAll(dataRows);
-               } catch (NmCommunicationException e1) {
-                   log.warn("caught exception in download", e1);
-               }
-           }
-       
-       }
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
+        log.debug("Getting data for download for {} gateways", gatewayRfnIdentifiers.size());
+
+        response.setContentType("text/csv");
+        response.setHeader("Content-Type", "application/force-download");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        String fileName = "NetworkInformationDownload_" + now + ".csv";
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+        try (Writer writer = new BufferedWriter(
+                new OutputStreamWriter(response.getOutputStream())); CSVWriter csvWriter = new CSVWriter(writer);) {
+            csvWriter.writeNext(headerRow);
+
+            for (List<RfnIdentifier> splitGateways : Iterables.partition(gatewayRfnIdentifiers, 5)) {
+                try {
+                    metaData = metadataMultiService.getMetadataForGatewayRfnIdentifiers(new HashSet<RfnIdentifier>(splitGateways),
+                            Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM,
+                                    RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
+                                    RfnMetadataMulti.NODE_DATA,
+                                    RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
+                    List<String[]> dataRows = retrieveDownloadDataRows(metaData, userContext);
+                    csvWriter.writeAll(dataRows);
+                } catch (NmCommunicationException e1) {
+                    log.warn("caught exception in download", e1);
+                }
+            }
+
+        }
     }
 
     /**
@@ -285,7 +286,7 @@ public class ComprehensiveMapController {
         }
         return tempGroup.getFullName();
     }
-    
+
     private String[] retrieveDownloadHeaderRow(YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         // device name, meter number, device type, sensor s/n, lat, long, primary gateway, comm status, mac address, node s/n,
@@ -308,31 +309,31 @@ public class ComprehensiveMapController {
         headerRow[11] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.HOP_COUNT");
         headerRow[12] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.DESCENDANT_COUNT");
         headerRow[13] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nextHop");
-        
+
         return headerRow;
     }
-    
-    private List<String[]> retrieveDownloadDataRows(Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData, 
-                                                    YukonUserContext userContext) {
+
+    private List<String[]> retrieveDownloadDataRows(Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData,
+            YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        
+
         List<RfnDevice> devices = metaData.keySet().stream()
                 .map(rfnIdentifier -> {
                     try {
-                        return rfnDeviceCreationService.createIfNotFound(rfnIdentifier, null);
+                        return rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
                     } catch (Exception e) {
                         return null;
                     }
                 })
-            // remove devices not created or found
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+                // remove devices not created or found
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
-        //Get Pao Locations for all devices
+        // Get Pao Locations for all devices
         Map<Integer, PaoLocation> locations = paoLocationDao.getLocations(devices).stream()
                 .collect(Collectors.toMap(l -> l.getPaoIdentifier().getPaoId(), l -> l));
-        
-        //Get Rfn Device Data for all devices
+
+        // Get Rfn Device Data for all devices
         List<DynamicRfnDeviceData> data = rfnDeviceDao.getDynamicRfnDeviceData(devices.stream()
                 .map(device -> device.getPaoIdentifier().getPaoId()).collect(Collectors.toList()));
         Map<RfnIdentifier, DynamicRfnDeviceData> deviceDataMap = data.stream()
@@ -388,7 +389,7 @@ public class ComprehensiveMapController {
                     RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
                     if (nextHop != null) {
                         try {
-                            RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop, null);
+                            RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop);
                             dataRow[13] = nextHopDevice.getName();
                         } catch (Exception e) {
                             log.warn("Unable to find or create device for {}", nextHop);
@@ -400,7 +401,7 @@ public class ComprehensiveMapController {
         }
 
         log.debug("Generated {} rows for CSV file", dataRows.size());
-        
+
         return dataRows;
     }
 
@@ -409,20 +410,20 @@ public class ComprehensiveMapController {
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         return paoLocationService.getLocationsAsGeoJson(gateways);
     }
-    
+
     @GetMapping("allRelays")
     public @ResponseBody FeatureCollection allRelays() {
         List<RfnDevice> relays = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfRelayTypes());
         return paoLocationService.getLocationsAsGeoJson(relays);
     }
-    
+
     @GetMapping("allPrimaryRoutes")
     public @ResponseBody Map<String, Object> primaryRoutes(Integer[] gatewayIds) {
         return getNetworkTree(Arrays.asList(gatewayIds));
     }
-    
+
     private Map<String, Object> getNetworkTree(List<Integer> gatewayIds) {
-        Map<String, Object> json = new HashMap<>();  
+        Map<String, Object> json = new HashMap<>();
         try {
             List<Node<Pair<Integer, FeatureCollection>>> tree = networkTreeService.getNetworkTree(gatewayIds);
             json.put("tree", tree);
@@ -432,14 +433,14 @@ public class ComprehensiveMapController {
         } catch (NmNetworkException | NmCommunicationException e) {
             json.put("errorMsg", e.getMessage());
         }
-        
+
         return json;
     }
-    
+
     @GetMapping("networkTree")
     public @ResponseBody Map<String, Object> primaryRoutes(Integer deviceId) {
         Set<Integer> gatewayIds = new HashSet<Integer>();
-        //check if device is gateway
+        // check if device is gateway
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         if (device.getPaoIdentifier().getPaoType().isRfGateway()) {
             gatewayIds.add(deviceId);
@@ -448,9 +449,9 @@ public class ComprehensiveMapController {
         }
         return getNetworkTree(new ArrayList<>(gatewayIds));
     }
-    
+
     @GetMapping("getRouteDetails")
-    public @ResponseBody Map<String, Object> getRouteDetails () {
+    public @ResponseBody Map<String, Object> getRouteDetails() {
         Map<String, Object> json = Maps.newHashMap();
         Instant lastUpdateDateTime = networkTreeService.getNetworkTreeUpdateTime();
         json.put("routeLastUpdatedDateTime", lastUpdateDateTime == null ? null : lastUpdateDateTime.getMillis());
@@ -460,15 +461,17 @@ public class ComprehensiveMapController {
     }
 
     @PostMapping("requestNetworkTreeUpdate")
-    public @ResponseBody Map<String, Object> requestNetworkTreeUpdate (YukonUserContext yukonUserContext) {
+    public @ResponseBody Map<String, Object> requestNetworkTreeUpdate(YukonUserContext yukonUserContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
         Map<String, Object> json = Maps.newHashMap();
         boolean isUpdateRequestSent = networkTreeService.requestNetworkTreeUpdate();
         json.put("isUpdateRequestSent", isUpdateRequestSent);
         if (isUpdateRequestSent) {
-            json.put("msgText", accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.successMsg"));
+            json.put("msgText",
+                    accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.successMsg"));
         } else {
-            json.put("msgText", accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.errorMsg"));
+            json.put("msgText",
+                    accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.errorMsg"));
         }
         return json;
     }

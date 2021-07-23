@@ -120,10 +120,14 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
 
     @Override
     @Transactional
+    public synchronized RfnDevice createIfNotFound(RfnIdentifier newDeviceIdentifier) {
+        //use UTC date DataTimestamp we get it from NM is in UTC format
+        return createIfNotFound(newDeviceIdentifier, new DateTime(DateTimeZone.UTC).toInstant());
+    }
+    
+    @Override
+    @Transactional
     public synchronized RfnDevice createIfNotFound(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
-        
-        //use UTC date if there is no time stamp, DataTimestamp we get get from NM is in UTC format
-        dataTimestamp = dataTimestamp == null ? new DateTime(DateTimeZone.UTC).toInstant() : dataTimestamp;
         
         if (newDeviceIdentifier == null || newDeviceIdentifier.is_Empty_()) {
             throw createRuntimeException("Unable to create or find device for " + newDeviceIdentifier);

@@ -94,7 +94,7 @@ public class RfnDeviceDataCollectionService implements MessageListener {
             response.forEach((deviceRfnIdentifier, queryResult) -> {
                 RfnDevice device = null;
                 try {
-                    device = rfnDeviceCreationService.createIfNotFound(deviceRfnIdentifier, null);
+                    device = rfnDeviceCreationService.createIfNotFound(deviceRfnIdentifier);
                 } catch (Exception e) {
                     log.warn("Unable to find or create device for {}", deviceRfnIdentifier);
                 }

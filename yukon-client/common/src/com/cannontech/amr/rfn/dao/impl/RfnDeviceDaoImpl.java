@@ -634,7 +634,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
     
     @Override
-    public synchronized void updateRfnModelChange(RfnModelChange rfnModelChange) {
+    public void updateRfnModelChange(RfnModelChange rfnModelChange) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PaObjectId");
         sql.append("FROM RfnModelChange");

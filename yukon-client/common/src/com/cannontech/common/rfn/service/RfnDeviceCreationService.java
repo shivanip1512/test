@@ -50,6 +50,11 @@ public interface RfnDeviceCreationService {
     RfnDevice createIfNotFound(RfnIdentifier identifier, Instant dataTimestamp);
     
     /**
+     * Same as above but uses now (UTC) for DataTimestamp  
+     */
+    RfnDevice createIfNotFound(RfnIdentifier identifier);
+    
+    /**
      * This method is used to create device manually from UI
      */
     public RfnDevice create(RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user);

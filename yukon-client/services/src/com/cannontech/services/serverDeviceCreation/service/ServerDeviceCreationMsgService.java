@@ -22,7 +22,7 @@ public class ServerDeviceCreationMsgService extends ThriftServiceBase<RfnDeviceC
         //create new device
         RfnIdentifier rfnId = new RfnIdentifier(request.getRfnIdentifier().getSensorSerialNumber(), request.getRfnIdentifier().getSensorManufacturer(), request.getRfnIdentifier().getSensorModel());
         // throws and exception if device was not found or created
-        RfnDevice newDevice = rfnDeviceCreationService.createIfNotFound(rfnId, null);
+        RfnDevice newDevice = rfnDeviceCreationService.createIfNotFound(rfnId);
         log.debug("Created new RFN device: " + newDevice.toString());
         //build reply message
         PaoIdentifier paoId = newDevice.getPaoIdentifier();

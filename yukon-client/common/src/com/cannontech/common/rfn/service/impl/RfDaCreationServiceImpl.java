@@ -42,7 +42,7 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
 
     @Override
     @Transactional
-    public RfnDevice create(RfnIdentifier identifier) {
+    public synchronized RfnDevice create(RfnIdentifier identifier) {
         try {
             String deviceName = identifier.getCombinedIdentifier();
 

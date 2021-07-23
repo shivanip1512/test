@@ -91,7 +91,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 return null;
             }
             try {
-                RfnDevice parent = rfnDeviceCreationService.createIfNotFound(rfnIdentifier, null);
+                RfnDevice parent = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
                 PaoLocation parentLocation = paoLocationDao.getLocation(parent.getPaoIdentifier().getPaoId());
                 if (parentLocation == null) {
                     return Pair.of(parent, null);
@@ -139,7 +139,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     .filter(identifier -> !identifier.is_Empty_())
                     .map(rfnIdentifier -> {
                         try {
-                            return rfnDeviceCreationService.createIfNotFound(rfnIdentifier, null);
+                            return rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
                         } catch (Exception e) {
                             return null;
                         }
@@ -205,7 +205,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     .filter(neighbor -> neighbor.getRfnIdentifier() != null && !neighbor.getRfnIdentifier().is_Empty_())
                     .map(neighbor -> {
                         try {
-                            return rfnDeviceCreationService.createIfNotFound(neighbor.getRfnIdentifier(), null);
+                            return rfnDeviceCreationService.createIfNotFound(neighbor.getRfnIdentifier());
                         } catch (Exception e) {
                             return null;
                         }
