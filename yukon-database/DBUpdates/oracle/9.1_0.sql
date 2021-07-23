@@ -216,6 +216,12 @@ ADD RetryTime DATE;
 INSERT INTO DBUpdates VALUES ('YUK-24593', '9.1.0', SYSDATE);
 /* @end YUK-24593 */
 
+/* @start YUK-24730 */
+INSERT INTO UnitMeasure VALUES ( 59,'dB', 0, 'Decibels', '(none)');
+
+INSERT INTO DBUpdates VALUES ('YUK-24730', '9.1.0', SYSDATE);
+/* @end YUK-24730 */
+
 /* @start YUK-24461 */
 /* @error ignore-begin */
 DROP TABLE YukonLogging;
