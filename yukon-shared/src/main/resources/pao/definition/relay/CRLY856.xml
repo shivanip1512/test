@@ -21,7 +21,10 @@
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Outage Restore Count" init="true" attributes="RFN_OUTAGE_RESTORE_COUNT"/>
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
+        <pointInfo name="RSRP" attributes="REFERENCE_SIGNAL_RECEIVED_POWER"/>
+        <pointInfo name="RSRQ" attributes="REFERENCE_SIGNAL_RECEIVED_QUALITY"/>
         <pointInfo name="RSSI" attributes="RADIO_SIGNAL_STRENGTH_INDICATOR"/>
+        <pointInfo name="SINR" attributes="SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO"/>
         <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
         <pointInfo name="Cellular Connection Failed" attributes="CELLULAR_CONNECTION_FAILED"/>
         <pointInfo name="Cellular Modem Disabled" attributes="CELLULAR_MODEM_DISABLED"/>

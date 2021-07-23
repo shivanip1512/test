@@ -725,6 +725,8 @@ public:
     static const Attribute  OperationFailedNeutralCurrent;
     static const Attribute  OverUnderVoltageTrackTime;
     static const Attribute  OverVoltageCount;
+    static const Attribute  ReferenceSignalReceivedPower;
+    static const Attribute  ReferenceSignalReceivedQuality;
     static const Attribute  RadioSignalStrengthIndicator;
     static const Attribute  RecloseBlocked;
     static const Attribute  ScadaOverrideClear;
@@ -733,6 +735,7 @@ public:
     static const Attribute  ScadaOverrideEnable;
     static const Attribute  ScadaOverrideHeartbeat;
     static const Attribute  ScadaOverrideMode;
+    static const Attribute  SignalToInterferencePlusNoiseRatio;
     static const Attribute  SourceVoltage;
     static const Attribute  TapDown;
     static const Attribute  TapPosition;
