@@ -1,12 +1,8 @@
 package com.cannontech.services.infrastructure.service.impl;
 
-import static org.junit.jupiter.api.DynamicTest.stream;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,9 +45,10 @@ public class CellularRelayDescendantCountEvaluator implements InfrastructureWarn
         
         int descendantWarningLimit = globalSettingDao.getInteger(GlobalSettingType.CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD);
         Set<RfnRelay> relays = rfnRelayService.getRelaysOfType(PaoType.CRLY856);
-        Map<Integer, RfnRelay> idToRelay = relays.stream()
-                                       .collect(Collectors.toMap(relay -> relay.getDeviceId(), relay -> relay));
-        List<DynamicRfnDeviceData> deviceDatas = rfnDeviceDao.getDynamicRfnDeviceData(idToRelay.keySet());
+        Set<Integer> relayIds = relays.stream()
+                                      .map(relay -> relay.getPaoIdentifier().getPaoId())
+                                      .collect(Collectors.toSet());
+        List<DynamicRfnDeviceData> deviceDatas = rfnDeviceDao.getDynamicRfnDeviceData(relayIds);
         
         return deviceDatas.stream()
                           .filter(data -> data.getDescendantCount() >= descendantWarningLimit)
