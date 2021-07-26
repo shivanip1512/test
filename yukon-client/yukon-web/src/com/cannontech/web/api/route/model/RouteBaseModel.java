@@ -5,10 +5,15 @@ import org.apache.commons.lang3.BooleanUtils;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.data.route.RouteBase;
+import com.cannontech.web.api.route.JsonDeserializeRouteTypeLookup;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+@JsonIgnoreProperties(value = { "id" }, allowGetters = true, ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
+@JsonDeserialize(using = JsonDeserializeRouteTypeLookup.class)
 public class RouteBaseModel<T extends RouteBase> extends DeviceBaseModel implements DBPersistentConverter<T> {
 
     private Integer signalTransmitterId;
@@ -31,24 +36,25 @@ public class RouteBaseModel<T extends RouteBase> extends DeviceBaseModel impleme
     }
 
     @Override
-    public void buildModel(T route) {
-        setId(route.getRouteID());
-        setName(route.getRouteName());
-        setDefaultRoute(route.getDefaultRoute() == "N" ? true : false);
-        setSignalTransmitterId(route.getDeviceID());
+    public void buildModel(RouteBase routeBase) {
+        setId(routeBase.getRouteID());
+        setName(routeBase.getRouteName());
+        setDefaultRoute(routeBase.getDefaultRoute() == "N" ? true : false);
+        setSignalTransmitterId(routeBase.getDeviceID());
     }
 
     @Override
-    public void buildDBPersistent(T route) {
+    public void buildDBPersistent(RouteBase routeBase) {
         if (getId() != null) {
-            route.setRouteID(getId());
+            routeBase.setRouteID(getId());
         }
         if (getName() != null) {
-            route.setRouteName(getName());
+            routeBase.setRouteName(getName());
         }
         if (getSignalTransmitterId() != null) {
-            route.setDeviceID(getSignalTransmitterId());
+            routeBase.setDeviceID(getSignalTransmitterId());
         }
-        route.setDefaultRoute(BooleanUtils.isFalse(getDefaultRoute()) ? "Y" : "N");
+        routeBase.setDefaultRoute(BooleanUtils.isFalse(getDefaultRoute()) ? "Y" : "N");
     }
+
 }

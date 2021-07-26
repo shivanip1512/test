@@ -6,17 +6,23 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.route.model.RouteBaseModel;
+import com.cannontech.web.tools.points.model.PointBaseModel;
 
 @SuppressWarnings("rawtypes")
-public class RouteApiValidator extends SimpleValidator<RouteBaseModel> {
+public class RouteApiValidator<T extends RouteBaseModel<?>> extends SimpleValidator<T> {
     @Autowired private RouteApiValidatorHelper routeApiValidatorHelper;
 
+    @SuppressWarnings("unchecked")
     public RouteApiValidator() {
-        super(RouteBaseModel.class);
+        super((Class<T>) RouteBaseModel.class);
     }
 
+    public RouteApiValidator(Class<T> objectType) {
+        super(objectType);
+    }
+    
     @Override
-    protected void doValidation(RouteBaseModel route, Errors errors) {
+    protected void doValidation(T route, Errors errors) {
 
         String strRouteId = ServletUtils.getPathVariable("id");
         Integer id = strRouteId == null ? null : Integer.valueOf(strRouteId);
@@ -26,7 +32,7 @@ public class RouteApiValidator extends SimpleValidator<RouteBaseModel> {
         }
 
         if (route.getSignalTransmitterId() != null) {
-            routeApiValidatorHelper.validateSignalTransmitterId(errors, route.getSignalTransmitterId());
+            routeApiValidatorHelper.validateSignalTransmitterId(errors, route.getSignalTransmitterId(), id);
         }
     }
 }
