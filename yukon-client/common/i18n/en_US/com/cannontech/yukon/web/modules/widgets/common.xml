@@ -330,6 +330,9 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
     <!-- Comm Channel Information Widget -->
     <entry key="yukon.web.widgets.commChannelInfoWidget">Comm Channel Information</entry>
     
+    <!-- Comm Channel linked devices Widget -->
+    <entry key="yukon.web.widgets.commChannelLinkedDeviceWidget">Linked Devices</entry>
+    
     <!-- RFN 1200 Information Widget -->
     <entry key="yukon.web.widgets.rfn1200InfoWidget">Comm Channel Information</entry>
     
