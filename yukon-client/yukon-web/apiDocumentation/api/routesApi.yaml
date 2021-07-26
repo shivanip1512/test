@@ -86,3 +86,35 @@ get-update-delete-operation:
             examples:
               RouteId:
                 $ref: '../schemas/routesSchema.yaml#/components/examples/routeId'
+
+  patch:
+    tags:
+     - Route
+    summary: 'Update Route'
+    description: 'API to update Route based on passed id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'Unique identifier for Route.'
+        required: true
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/routesSchema.yaml#/Route'
+          examples:
+            Route:
+              $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/routesSchema.yaml#/Route'
+            examples:
+              Route:
+                $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
