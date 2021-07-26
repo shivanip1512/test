@@ -33,7 +33,7 @@ public class RfnRelayServiceImpl implements RfnRelayService {
         return relays;
     }
     
-    public Set<RfnRelay> getAllRelays(PaoType type) {
+    public Set<RfnRelay> getRelaysOfType(PaoType type) {
         
         Set<RfnRelay> relays = getAllRelays()
                                    .stream()

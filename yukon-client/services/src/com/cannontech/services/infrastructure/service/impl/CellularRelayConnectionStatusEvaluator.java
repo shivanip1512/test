@@ -28,7 +28,7 @@ public class CellularRelayConnectionStatusEvaluator extends BaseConnectionStatus
     
     @Override
     protected Iterable<? extends YukonPao> getDevices() {
-        return rfnRelayService.getAllRelays(PaoType.CRLY856);
+        return rfnRelayService.getRelaysOfType(PaoType.CRLY856);
     }
     
     @Override
