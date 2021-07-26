@@ -18,9 +18,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.meter.model.PointSortField;
 import com.cannontech.common.device.model.DeviceBaseModel;
-import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
@@ -33,7 +31,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiControllerHelper;
-import com.cannontech.web.common.pao.service.LiteYukonPoint;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.stars.commChannel.CommChannelController.CommChannelSortBy;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
@@ -61,7 +58,7 @@ public class CommChannelLinkedDeviceWidget extends AdvancedWidgetControllerBase 
     @GetMapping("render")
     public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
                          @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,
-                         @DefaultItemsPerPage(value=250) PagingParameters paging)
+                         @DefaultItemsPerPage(value=25) PagingParameters paging)
             throws ServletRequestBindingException {
         CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");

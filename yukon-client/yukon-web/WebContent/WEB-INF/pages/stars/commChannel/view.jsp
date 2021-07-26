@@ -44,12 +44,8 @@
                 <tags:widget bean="commChannelInfoWidget"/>
             </div>
         </div>
-    </tags:widgetContainer>
-    <tags:widgetContainer deviceId="${id}" identify="false">
-        <div class="column-12-12 clearfix">
-            <div class="">
+        <div class="">
                 <tags:widget bean="commChannelLinkedDeviceWidget"/>
-            </div>
         </div>
     </tags:widgetContainer>
 
