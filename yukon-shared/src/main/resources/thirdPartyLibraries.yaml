@@ -6079,6 +6079,20 @@ C++ :
     jira : YUK-18343
     notes : Apache Portable Runtime utilities
 
+  - project : Apache Qpid Proton
+    path : QPID_PROTON
+    version : 0.35.0
+    project URL : "https://qpid.apache.org/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.html"
+    md5 : 32acddd8289ff11550ecf12542b8bb62
+    sha1 : 7152218dd788726fadf133c27d8c054ccb605d2b
+    fileCount : 216
+    totalSize : 5495980
+    updated : 2021-07-26  
+    jira : YUK-24536
+    notes : 
+
   - project : Boost 
     path : BOOST
     version : 1.76.0

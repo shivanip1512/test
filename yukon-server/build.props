@@ -23,6 +23,7 @@
     <DBGHELP>$(MICROSOFT)\dbghelp\6.12.2.633-vc140-1</DBGHELP>
     <YAML_CPP>$(CPP_LIBRARIES)\yaml-cpp\0.6.2-vc141</YAML_CPP>
     <RMP_CONVERTER>$(CPP_LIBRARIES)\eaton\eas\rfn\meter-program-converter\1.0.2</RMP_CONVERTER>
+    <QPID_PROTON>$(CPP_LIBRARIES)\apache\qpid-proton\0.35.0-vc142-1</QPID_PROTON>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
@@ -106,6 +107,10 @@
     </BuildMacro>
     <BuildMacro Include="RMP_CONVERTER">
       <Value>$(RMP_CONVERTER)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="QPID_PROTON">
+      <Value>$(QPID_PROTON)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

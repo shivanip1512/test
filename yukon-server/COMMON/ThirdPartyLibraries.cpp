@@ -65,6 +65,7 @@ std::map<std::string, std::string> ThirdPartyLibraries::getKnownLibraryPaths()
         LIBRARY_ENTRY(THRIFT),
         LIBRARY_ENTRY(XERCES),
         LIBRARY_ENTRY(YAML_CPP),
+        LIBRARY_ENTRY(QPID_PROTON),
     };
 }
 

@@ -83,6 +83,19 @@ XERCES_DLL      = xerces-c_3_2D.dll
 XERCES_DLL      = xerces-c_3_2.dll
 !ENDIF
 
+QPID_PROTON_BIN = $(QPID_PROTON)\bin
+!IF "$(CONFIGURATION)"=="DEBUG"
+QPID_PROTON_DLL_1 = qpid-protond.dll
+QPID_PROTON_DLL_2 = qpid-proton-cored.dll
+QPID_PROTON_DLL_3 = qpid-proton-cppd.dll
+QPID_PROTON_DLL_4 = qpid-proton-proactord.dll
+!ELSE
+QPID_PROTON_DLL_1 = qpid-proton.dll
+QPID_PROTON_DLL_2 = qpid-proton-core.dll
+QPID_PROTON_DLL_3 = qpid-proton-cpp.dll
+QPID_PROTON_DLL_4 = qpid-proton-proactor.dll
+!ENDIF
+
 ALL: $(BIN) $(LIB) $(PDB) \
   $(BIN)\$(ACTIVEMQ_DLL) \
   $(BIN)\$(APR_DLL) \
@@ -105,7 +118,12 @@ ALL: $(BIN) $(LIB) $(PDB) \
   $(BIN)\$(RMP_CONVERTER_DLL) \
   $(BIN)\$(SQLAPI_DLL) \
   $(BIN)\$(TCL_DLL) \
-  $(BIN)\$(XERCES_DLL)
+  $(BIN)\$(XERCES_DLL) \
+  $(BIN)\$(QPID_PROTON_DLL_1) \
+  $(BIN)\$(QPID_PROTON_DLL_2) \
+  $(BIN)\$(QPID_PROTON_DLL_3) \
+  $(BIN)\$(QPID_PROTON_DLL_4)
+
 
 $(BIN):; md $(BIN)
 $(LIB):; md $(LIB)
@@ -144,4 +162,8 @@ $(BIN)\$(TCL_DLL):$(TCL_BIN)\$(TCL_DLL); copy $? $@
 
 $(BIN)\$(XERCES_DLL):$(XERCES_BIN)\$(XERCES_DLL); copy $? $@
 
+$(BIN)\$(QPID_PROTON_DLL_1):$(QPID_PROTON_BIN)\$(QPID_PROTON_DLL_1); copy $? $@
+$(BIN)\$(QPID_PROTON_DLL_2):$(QPID_PROTON_BIN)\$(QPID_PROTON_DLL_2); copy $? $@
+$(BIN)\$(QPID_PROTON_DLL_3):$(QPID_PROTON_BIN)\$(QPID_PROTON_DLL_3); copy $? $@
+$(BIN)\$(QPID_PROTON_DLL_4):$(QPID_PROTON_BIN)\$(QPID_PROTON_DLL_4); copy $? $@
 
