@@ -1,0 +1,34 @@
+MacroRoute:
+  title: MacroRoute
+  required:
+    - routeName
+    - routeList
+
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the macroRoute.'
+    routeList:
+      $ref: '#/routeList'
+
+routeList:
+  type: array
+  items:
+    required:
+    - routeId
+    type: object
+    properties:
+      routeId:
+        type: integer
+        description: 'Route Id.'
+      
+components:
+  examples:
+    MacroRoute:
+      value:
+        name: Test MacroRoute
+        routeList:
+          - routeId: 1
+            		

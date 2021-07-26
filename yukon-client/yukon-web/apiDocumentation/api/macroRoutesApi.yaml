@@ -1,0 +1,25 @@
+post-operation:
+  post:
+    tags:
+     - Macro Route
+    summary: 'Create Macro Route'
+    description: 'API to create MocroRoute.'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
+          examples:
+            MacroRoute:
+              $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
+      required: true
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
+            examples:
+              MacroRoute:
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'

@@ -107,6 +107,9 @@ paths:
   /routes/{id}:
     $ref: 'api/routesApi.yaml#/get-update-delete-operation'
 
+  /macroRoutes:
+    $ref: 'api/macroRoutesApi.yaml#/post-operation'
+
 components:
   securitySchemes:
     bearerAuth:
