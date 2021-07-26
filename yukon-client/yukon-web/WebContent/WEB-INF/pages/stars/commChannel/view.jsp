@@ -44,7 +44,7 @@
                 <tags:widget bean="commChannelInfoWidget"/>
             </div>
         </div>
-        <div class="">
+        <div>
                 <tags:widget bean="commChannelLinkedDeviceWidget"/>
         </div>
     </tags:widgetContainer>
