@@ -72,6 +72,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="MEGABYTES"/>
  *     &lt;enumeration value="DBM"/>
  *     &lt;enumeration value="THERMS"/>
+ *     &lt;enumeration value="DB"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -140,7 +141,8 @@ public enum UnitOfMeasureType {
     CUBIC_METERS("CUBIC_METERS"),
     MEGABYTES("MEGABYTES"),
     DBM("DBM"),
-    THERMS("THERMS");
+    THERMS("THERMS"),
+    DB("DB");
     private final String value;
 
     UnitOfMeasureType(String v) {

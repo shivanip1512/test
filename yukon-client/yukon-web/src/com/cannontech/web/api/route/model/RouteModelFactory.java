@@ -1,14 +1,14 @@
 package com.cannontech.web.api.route.model;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.route.RouteBase;
 
 public class RouteModelFactory {
 
-    public static RouteBaseModel getModel(PaoType paoType) {
+    public static RouteBaseModel<? extends RouteBase> getModel(PaoType paoType) {
         RouteBaseModel routeBaseModel = null;
 
         switch (paoType) {
-        case ROUTE_CCU:
         case ROUTE_MACRO:
         case ROUTE_TCU:
         case ROUTE_LCU:
@@ -21,6 +21,10 @@ public class RouteModelFactory {
         case ROUTE_RTC:
         case ROUTE_RDS_TERMINAL:
             routeBaseModel = new RouteBaseModel();
+            break;
+        case ROUTE_CCU:
+            routeBaseModel = new CCURouteModel();
+            break;
         default:
             break;
         }

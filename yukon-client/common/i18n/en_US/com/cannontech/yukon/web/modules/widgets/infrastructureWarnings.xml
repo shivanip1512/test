@@ -44,6 +44,8 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RTC_BATTERY_FAILURE.CLEAR">Gateway no longer detecting RTC battery failure.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.LOW">Gateway detecting AC power failure.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.CLEAR">Gateway no longer detecting AC power failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_CONNECTION_STATUS.LOW">Cellular Relay communications interrupted since {0}.</entry>"
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_CONNECTION_STATUS.CLEAR">Cellular Relay communications restored.</entry>
     
     <entry key="yukon.web.widgets.infrastructureWarnings.gateways">Gateways</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.relays">Relays</entry>

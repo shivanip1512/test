@@ -44,6 +44,9 @@
                 <tags:widget bean="commChannelInfoWidget"/>
             </div>
         </div>
+        <div>
+                <tags:widget bean="commChannelLinkedDeviceWidget"/>
+        </div>
     </tags:widgetContainer>
 
     <cti:msg2 var="saveText" key="components.button.save.label"/>

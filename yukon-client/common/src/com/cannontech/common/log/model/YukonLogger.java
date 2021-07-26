@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 public class YukonLogger {
-    private int loggerId;
+    private int loggerId = -1;
     private LoggerType loggerType;
     private LoggerLevel level;
     private String loggerName;
@@ -72,7 +72,7 @@ public class YukonLogger {
     }
 
     public void setNotes(String notes) {
-        this.notes = notes;
+        this.notes = notes != null ? notes.trim() : notes;
     }
 
 }

@@ -302,7 +302,7 @@ public class SupportController {
 
         model.addAttribute("rfBundleList", getPreviousRfBundleNames());
 
-        return "supportBundle/rfSupportBundleTab.jsp";
+        return "supportBundle/rfPreviousBundleTab.jsp";
     }
 
     @GetMapping("viewBundleProgress")

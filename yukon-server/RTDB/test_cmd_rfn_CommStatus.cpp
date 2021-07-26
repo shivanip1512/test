@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "ctidate.h"
-#include "cmd_rfn_Wifi.h"
+#include "cmd_rfn_CommStatus.h"
 #include "boost_test_helpers.h"
 
 namespace Cti::Messaging::Rfn {
@@ -13,7 +13,7 @@ static std::ostream& operator<<(std::ostream& o, const ApplicationServiceIdentif
 
 }
 
-BOOST_AUTO_TEST_SUITE( test_cmd_rfn_WifiCommunicationStatus )
+BOOST_AUTO_TEST_SUITE( test_cmd_rfn_CommunicationStatus )
 
 const CtiTime execute_time( CtiDate( 29, 7, 2013 ) , 11 );
 
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE( test_getStatusCommand )
 {
     using ASID = Cti::Messaging::Rfn::ApplicationServiceIdentifiers;
 
-    Cti::Devices::Commands::RfnWifiGetCommunicationStatusUpdateCommand command;
+    Cti::Devices::Commands::RfnGetCommunicationStatusUpdateCommand command;
 
     BOOST_CHECK( ! command.isPost());
     BOOST_CHECK(command.isOneWay());

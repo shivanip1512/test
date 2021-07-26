@@ -5,7 +5,7 @@
 
 namespace Cti::Devices::Commands {
 
-class IM_EX_DEVDB RfnWifiGetCommunicationStatusUpdateCommand : public RfnOneWayCommand
+class IM_EX_DEVDB RfnGetCommunicationStatusUpdateCommand : public RfnOneWayCommand
 {
 public:
 

@@ -196,7 +196,8 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
         { "RFN530S4ERX",                 TYPE_RFN530S4ERX },
         { "RFN530S4ERXR",                TYPE_RFN530S4ERXR },
 
-        { "RFN1200", TYPE_RFN1200 },
+        //  --- RF DA nodes ---
+        { "RFN1200",                     TYPE_RFN1200 },
 
         //  --- RF water meters ---
         { "RFW201",                      TYPE_RFW201 },
@@ -204,6 +205,9 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
         //  --- RF gas meters ---
         { "RFG201",                      TYPE_RFG201 },
         { "RFG301",                      TYPE_RFG301 },
+
+        //  --- RF Cellular IPLink Relays ---
+        { "CRLY856",                     TYPE_CRLY856 },
 
         //  --- RTU devices ---
         { "RTU_DART",                    TYPE_DARTRTU },

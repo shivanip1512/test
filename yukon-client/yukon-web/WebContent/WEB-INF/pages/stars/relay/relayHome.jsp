@@ -45,6 +45,7 @@
         <div class="column-12-12 clear">
             <div class="one column">
                 <tags:widget bean="relayInformationWidget"/>
+                <c:if test="${showCellularConnection}"><tags:widget bean="cellularConnectionWidget"/></c:if>
                 <tags:widget bean="rfnDeviceMetadataWidget"/>
                 <tags:widget bean="paoNotesWidget"/>
                 <tags:widget bean="deviceGroupWidget"/>

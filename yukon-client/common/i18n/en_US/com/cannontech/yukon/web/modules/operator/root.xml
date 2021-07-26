@@ -121,7 +121,9 @@
     <entry key="yukon.web.modules.operator.gateways.detail.gatewayEvents.title">Gateway Events</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.wifiCapableCount">Wi-Fi Capable Count</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.viewWiFiMeters">View Wi-Fi Meters</entry>
-
+    <entry key="yukon.web.modules.operator.gateways.detail.cellularCapableCount">Cellular Capable Count</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.viewCellularDevices">View Cellular Devices</entry>
+    
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.note"><![CDATA[The certificate update tool is only applicable for legacy Gateway 1.5.<br>For all other gateways, certificates are updated using the firmware upgrade tool.]]></entry>
@@ -279,14 +281,20 @@
     <entry key="yukon.web.modules.operator.gateways.streamingDetail">View Data Streaming Summary</entry>
     <entry key="yukon.web.modules.operator.gateways.streamingCapacityHistory">View History</entry>
     
+    <!-- Connected Devices pages -->
+    <entry key="yukon.web.modules.operator.connectedDevices.statusLastUpdated">Status Last Updated</entry>
+    <entry key="yukon.web.modules.operator.connectedDevices.rssiLastUpdated">RSSI Last Updated</entry>
+    <entry key="yukon.web.modules.operator.connectedDevices.queryStatus">Query Communication Status</entry>
+    <entry key="yukon.web.modules.operator.connectedDevices.allStatuses">All Communication Statuses</entry>
+    <entry key="yukon.web.modules.operator.connectedDevices.queryAll">Query Status</entry>
+    
     <!-- WiFi Connection Status page -->
     <entry key="yukon.web.modules.operator.wifiConnection.queryMsg">A query of the Wi-Fi Connection data has been requested. It may take a few minutes for the data to update.</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.pageName">Connected Devices</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.statusLastUpdated">Status Last Updated</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.rssiLastUpdated">RSSI Last Updated</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.queryStatus">Query Communication Status</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.allStatuses">All Communication Statuses</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.queryAll">Query Status</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.pageName">Wi-Fi Connected Devices</entry>
+    
+    <!-- Cellular Connection Status page -->
+    <entry key="yukon.web.modules.operator.cellConnection.queryMsg">A query of the Cellular Connection data has been requested. It may take a few minutes for the data to update.</entry>
+    <entry key="yukon.web.modules.operator.cellConnection.pageName">Cellular Connected Devices</entry>
     
     <!-- Virtual Devices pages -->
     <entry key="yukon.web.modules.operator.virtualDevices.list.pageName">Virtual Devices</entry>

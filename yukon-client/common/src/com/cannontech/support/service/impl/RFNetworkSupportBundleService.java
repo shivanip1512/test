@@ -406,7 +406,6 @@ public class RFNetworkSupportBundleService {
                     // Send Request to collect Node data.
                     metaDataMultiRequestTemplate.send(request, replyHandler);
                     RfnMetadataMultiResponse response = replyHandler.waitForCompletion();
-
                     // Write data to csv file.
                     if (networkType == RfnNetworkDataType.NETWORKSNAPSHOTDATA) {
                         SupportBundleHelper.buildAndWriteElectricNodeDataToDir(response, dataList, destDir, fileName,

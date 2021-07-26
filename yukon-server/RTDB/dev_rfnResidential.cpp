@@ -172,7 +172,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
 
         if ( isMetrologyLibraryDisabled( deviceConfig ) )
         {
-            return ClientErrors::NoMethod;
+            return ClientErrors::ConfigCurrent;
         }
 
         const unsigned char configFreezeDay               = getConfigData   <unsigned char> ( deviceConfig, Config::RfnStrings::demandFreezeDay );
@@ -489,7 +489,7 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
 
         if ( isMetrologyLibraryDisabled( deviceConfig ) )
         {
-            return ClientErrors::NoMethod;
+            return ClientErrors::ConfigCurrent;
         }
 
         const bool sendForced = parse.isKeyValid("force");
@@ -802,7 +802,7 @@ try
 
     if ( isMetrologyLibraryDisabled( deviceConfig ) )
     {
-        return ClientErrors::NoMethod;
+        return ClientErrors::ConfigCurrent;
     }
 
     const bool sendForced = parse.isKeyValid("force");

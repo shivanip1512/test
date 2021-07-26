@@ -112,6 +112,9 @@ enum DeviceTypes {
     TYPE_RFG201,
     TYPE_RFG301,
 
+    // RF Cellular IPLink Relay
+    TYPE_CRLY856,
+
     // Substation device identifiers
     TYPE_CCU700,
     TYPE_CCU710,
