@@ -3,35 +3,21 @@
 #include <string>
 #include "dlldefs.h"
 #include "readers_writer_lock.h"
-#include "cms/Connection.h"
-#include "cms/MessageListener.h"
-#include "cms/Queue.h"
-#include "cms/Session.h"
-#include "cms/TemporaryQueue.h"
-#include "activemq/commands/DestinationInfo.h"
+
+#include <proton/connection.hpp>
+#include <proton/receiver.hpp>
+#include <proton/messaging_handler.hpp>
+#include <proton/source.hpp>
+#include <proton/session.hpp>
+
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 
-namespace Cti {
-namespace Messaging {
-namespace ActiveMQ {
+namespace Cti::Messaging::Qpid {
 
-/*-----------------------------------------------------------------------------
-  Initiliaze ActiveMQ Lib and create connection
------------------------------------------------------------------------------*/
 class IM_EX_MSG ConnectionFactory
 {
-    bool _isInitialized;
-
-    CRITICAL_SECTION _cs;
-
-    void initializeLib();
-
-public:
-    ConnectionFactory();
-    virtual ~ConnectionFactory();
-
-    std::unique_ptr<cms::Connection> createConnection( const std::string &brokerUri );
+    std::unique_ptr<proton::connection> createConnection( const std::string &brokerUri );
 };
 
 
@@ -44,17 +30,17 @@ IM_EX_MSG extern ConnectionFactory g_connectionFactory;
 /*-----------------------------------------------------------------------------
   Message listener template
 -----------------------------------------------------------------------------*/
-class MessageListener : public cms::MessageListener
+class MessageListener : public proton::messaging_handler
 {
-    typedef std::function<void (const cms::Message*)> Callback;
+    typedef std::function<void (const proton::message&)> Callback;
     Callback _callback;
 
 public:
     MessageListener ( Callback c ) : _callback( c ) {}
     virtual ~MessageListener () {}
-    virtual void onMessage ( const cms::Message* message )
+    void on_message(proton::delivery& d, proton::message& msg) override {
     {
-        _callback( message );
+        _callback( msg );
     }
 };
 
@@ -110,7 +96,7 @@ class IM_EX_MSG ManagedConnection
     boost::condition_variable _closeCond;
     boost::mutex              _closeMux;
 
-    std::unique_ptr<cms::Connection> _connection;
+    std::unique_ptr<proton::connection> _connection;
 
     typedef Cti::readers_writer_lock_t Lock;
     typedef Lock::reader_lock_guard_t  ReaderGuard;
@@ -185,7 +171,7 @@ public:
 
     void setTimeToLiveMillis ( long long time );
 
-    void send (cms::Message *message);
+    void send (proton::message *message);
 };
 
 
@@ -206,11 +192,11 @@ public:
 
     void setMessageListener (cms::MessageListener * listener);
 
-    cms::Message* receive ();
+    proton::message* receive ();
 
-    cms::Message* receive ( int millisecs );
+    proton::message* receive ( int millisecs );
 
-    cms::Message* receiveNoWait ();
+    proton::message* receiveNoWait ();
 };
 
 
@@ -230,7 +216,7 @@ public:
 
     virtual ~DestinationProducer ();
 
-    const cms::Destination* getDestination () const;
+    const proton::cms::Destination* getDestination () const;
 };
 
 /*-----------------------------------------------------------------------------
@@ -255,7 +241,7 @@ public:
 class IM_EX_MSG QueueProducer : public DestinationProducer
 {
 public:
-    QueueProducer ( cms::Session &session, cms::Queue* dest );
+    QueueProducer ( proton::session &session, proton::cms::Queue* dest );
 
     virtual ~QueueProducer ();
 };

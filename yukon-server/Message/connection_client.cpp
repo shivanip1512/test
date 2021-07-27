@@ -6,9 +6,6 @@
 #include "amq_util.h"
 #include "GlobalSettings.h"
 
-#include <activemq/core/ActiveMQConnection.h>
-#include <decaf/lang/Thread.h>
-
 #include <atomic>
 
 using namespace std;

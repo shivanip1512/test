@@ -12,13 +12,14 @@
 #include <condition_variable>
 #include <variant>
 
-namespace cms {
-class Connection;
-class Session;
-class Message;
+namespace proton {
+class connection;
+class session;
+class message;
 class MessageProducer;
 class MessageListener;
-class Destination;
+class messaging_handler;
+class Address;
 class TemporaryQueue;
 }
 
@@ -49,9 +50,7 @@ public:
     {
         std::string type;
         SerializedMessage msg;
-        const cms::Destination* replyTo = nullptr;
-
-        ~MessageDescriptor();
+        const std::string replyTo;
     };
 
     struct MessageCallback
@@ -118,12 +117,12 @@ public:
 
     static void start();
 
-    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message);
+    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessagePtr message);
     static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message);
 
     template<class Msg>
     static void enqueueMessageWithCallbackFor(
-            const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message,
+            const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessagePtr message,
             typename CallbackFor<Msg>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
     template<class Msg>
     static void enqueueMessageWithCallbackFor(
@@ -167,7 +166,7 @@ protected:
 
         ReturnLabel returnAddress;
 
-        virtual std::unique_ptr<cms::Message> extractMessage(cms::Session &session) const = 0;
+        virtual std::unique_ptr<proton::message> extractMessage(proton::session &session) const = 0;
 
         virtual ~Envelope() = default;
     };
@@ -175,7 +174,7 @@ protected:
     struct Reply
     {
         SerializedMessage message;
-        std::shared_ptr<cms::Destination> dest;
+        std::string dest;
     };
 
     using EnvelopeQueue        = std::queue<std::unique_ptr<Envelope>>;
@@ -204,25 +203,25 @@ protected:
 
     void processTasks(MessagingTasks tasks);
 
-    const cms::Destination* makeDestinationForReturnAddress(ReturnAddress returnAddress);
+    const std::string makeDestinationForReturnAddress(ReturnAddress returnAddress);
 
     virtual void enqueueOutgoingMessage(
             const std::string &queueName,
-            StreamableMessage::auto_type&& message,
+            StreamableMessagePtr message,
             ReturnLabel returnAddress);
     virtual void enqueueOutgoingMessage(
             const std::string &queueName,
             const SerializedMessage &message,
             ReturnLabel returnAddress);
     virtual void enqueueOutgoingReply(
-            std::shared_ptr<cms::Destination> dest,
+            std::string dest,
             const SerializedMessage& message);
 
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr callback);
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
     void addNewCallback(const ActiveMQ::Queues::InboundQueue& queue, MessageCallbackWithReplies callback);
         
-    virtual void emplaceNamedMessage(const ActiveMQ::Queues::InboundQueue* queue, const std::string type, std::vector<unsigned char> payload, cms::Destination* replyTo);
+    virtual void emplaceNamedMessage(const ActiveMQ::Queues::InboundQueue* queue, const std::string type, std::vector<unsigned char> payload, std::string replyTo);
 
     virtual void kickstart();
     virtual void createConsumersForCallbacks(const CallbacksPerQueue &callbacks);
@@ -238,8 +237,8 @@ private:
 
     //  Connection/session objects
     std::unique_ptr<ActiveMQ::ManagedConnection> _connection;
-    std::unique_ptr<cms::Session> _producerSession;
-    std::unique_ptr<cms::Session> _consumerSession;
+    std::unique_ptr<proton::session> _producerSession;
+    std::unique_ptr<proton::session> _consumerSession;
 
     MessagingTasks _newTasks;
 
@@ -255,7 +254,7 @@ private:
     struct QueueConsumerWithListener
     {
         std::unique_ptr<ActiveMQ::QueueConsumer> managedConsumer;
-        std::unique_ptr<cms::MessageListener> listener;
+        std::unique_ptr<proton::messaging_handler> listener;
     };
 
     using NamedConsumerMap = std::map<const ActiveMQ::Queues::InboundQueue *, std::unique_ptr<QueueConsumerWithListener>>;
@@ -273,7 +272,7 @@ private:
     //  temp consumer that only lasts as long as the first reply - binds to acceptSingleReply
     TemporaryConsumersByDestination _replyConsumers;
 
-    using DestinationsBySessionCallback = std::map<SessionCallback, const cms::Destination*>;
+    using DestinationsBySessionCallback = std::map<SessionCallback, const std::string>;
 
     //  temp queues that last the lifetime of the session - binds to acceptSessionReply, no timeouts
     TemporaryConsumersByDestination _sessionConsumers;
@@ -301,19 +300,19 @@ private:
     void updateCallbacks(CallbacksPerQueue newCallbacks);
 
     void createNamedConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue);
-    auto createSessionConsumer(const SessionCallback callback) -> const cms::Destination*;
+    auto createSessionConsumer(const SessionCallback callback) -> const std::string;
 
     void sendOutgoingMessages(EnvelopeQueue messages);
     void sendOutgoingReplies (ReplyQueue replies);
-    ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
+    ActiveMQ::QueueProducer &getQueueProducer(proton::session &session, const std::string &queue);
 
     void dispatchIncomingMessages(IncomingPerQueue incomingMessages);
     void dispatchTempQueueReplies(RepliesByDestination tempQueueReplies);
     void dispatchSessionReplies  (RepliesByDestination sessionReplies);
 
-    void acceptNamedMessage(const cms::Message *message, const ActiveMQ::Queues::InboundQueue *queue);
-    void acceptSingleReply (const cms::Message *message);
-    void acceptSessionReply(const cms::Message *message);
+    void acceptNamedMessage(const proton::message *message, const ActiveMQ::Queues::InboundQueue *queue);
+    void acceptSingleReply (const proton::message *message);
+    void acceptSessionReply(const proton::message *message);
 };
 
 }

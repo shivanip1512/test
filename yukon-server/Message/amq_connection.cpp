@@ -12,7 +12,7 @@
 
 #include "utility.h"
 
-#include "cms/connectionfactory.h"
+#include "proton/connection.hpp"
 
 #include "logger.h"
 #include "dllbase.h"  //  for getDebugLevel() and DEBUGLEVEL_ACTIVITY_INFO
@@ -39,10 +39,6 @@ namespace Cti::Messaging {
 extern IM_EX_MSG std::unique_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
 std::atomic_size_t ActiveMQConnectionManager::SessionCallback::globalId;
-
-ActiveMQConnectionManager::MessageDescriptor::~MessageDescriptor() {
-    delete replyTo;
-}
 
 ActiveMQConnectionManager::ActiveMQConnectionManager() = default;
 
@@ -573,7 +569,7 @@ void ActiveMQConnectionManager::dispatchSessionReplies(RepliesByDestination repl
 }
 
 
-void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message)
+void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessagePtr message)
 {
     gActiveMQConnection->enqueueOutgoingMessage(queue.name, std::move(message), nullptr);
 }
@@ -608,7 +604,7 @@ struct DeserializationHelper : ActiveMQConnectionManager::MessageCallback
 template<typename Msg>
 void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
         const ActiveMQ::Queues::OutboundQueue &queue,
-        StreamableMessage::auto_type&& message,
+        StreamableMessagePtr message,
         typename CallbackFor<Msg>::type callback,
         std::chrono::seconds timeout,
         TimeoutCallback timedOut)
@@ -710,7 +706,7 @@ void ActiveMQConnectionManager::kickstart()
 
 void ActiveMQConnectionManager::enqueueOutgoingMessage(
         const std::string &queueName,
-        StreamableMessage::auto_type&& message,
+        StreamableMessagePtr message,
         ReturnLabel returnAddress)
 {
     //  ensure the message is not null
@@ -725,9 +721,17 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
 
         std::unique_ptr<cms::Message> extractMessage(cms::Session &session) const
         {
-            std::unique_ptr<cms::StreamMessage> streamMessage { session.createStreamMessage() };
+            std::unique_ptr<Proton::EncoderProxy> streamMessage { session.createStreamMessage() };
 
-            message->streamInto(*streamMessage);
+            proton::value v;
+
+            proton::codec::encoder enc { v };
+
+            enc << proton::codec::start::list();
+
+            message->streamInto(enc);
+
+            enc << proton::codec::finish();
 
             return std::move(streamMessage);  //  move to downcast to cms::Message
         }
@@ -987,7 +991,7 @@ void ActiveMQConnectionManager::acceptSessionReply(const cms::Message *message)
 }
 
 
-template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessagePtr message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
 template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnSetChannelConfigReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::RfnSetChannelConfigReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 

@@ -1,62 +1,12 @@
 #include "precompiled.h"
 
-#include "cms/ConnectionFactory.h"
-#include "activemq/library/activemqcpp.h"
-#include "activemq/core/ActiveMQConnection.h"
 #include "amq_util.h"
 
 #include "logger.h"
 
-namespace Cti {
-namespace Messaging {
-namespace ActiveMQ {
+namespace Cti::Messaging::Qpid {
 
 namespace {
-
-struct ActiveMQIntializer
-{
-    ActiveMQIntializer()
-    {
-        activemq::library::ActiveMQCPP::initializeLibrary(); // can throw std::runtime_exception
-    }
-
-    ~ActiveMQIntializer()
-    {
-        activemq::library::ActiveMQCPP::shutdownLibrary(); // can throw std::runtime_exception
-    }
-};
-
-std::unique_ptr<ActiveMQIntializer> g_activeMQIntializer;
-
-}
-
-
-ConnectionFactory::ConnectionFactory() :
-    _isInitialized(false)
-{
-    InitializeCriticalSection(&_cs);
-}
-
-ConnectionFactory::~ConnectionFactory()
-{
-}
-
-/*-----------------------------------------------------------------------------
-    Intialize activemq library
------------------------------------------------------------------------------*/
-void ConnectionFactory::initializeLib()
-{
-    EnterCriticalSection(&_cs);
-
-    if( g_activeMQIntializer.get() == NULL )
-    {
-        g_activeMQIntializer = std::make_unique<ActiveMQIntializer>();
-    }
-
-    LeaveCriticalSection(&_cs);
-
-    _isInitialized = true;
-}
 
 /*-----------------------------------------------------------------------------
     Intialize activemq library and create a new connection
@@ -66,11 +16,6 @@ void ConnectionFactory::initializeLib()
 -----------------------------------------------------------------------------*/
 std::unique_ptr<cms::Connection> ConnectionFactory::createConnection( const std::string &brokerUri )
 {
-    if( !_isInitialized )
-    {
-        initializeLib();
-    }
-
     std::unique_ptr<cms::ConnectionFactory> connectionFactory { cms::ConnectionFactory::createCMSConnectionFactory( brokerUri ) };
 
     return std::unique_ptr<cms::Connection> { connectionFactory->createConnection() };
