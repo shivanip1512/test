@@ -245,6 +245,23 @@ UPDATE GlobalSetting SET Name = 'DEVICE_CONNECTION_WARNING_MINUTES' WHERE Name =
 INSERT INTO DBUpdates VALUES ('YUK-24110', '9.1.0', SYSDATE);
 /* @end YUK-24110 */
 
+/* @start YUK-24057 */
+CREATE TABLE RfnModelChange  (
+   PAObjectID           NUMBER                          NOT NULL,
+   OldModel             VARCHAR2(80)                    NOT NULL,
+   NewModel             VARCHAR2(80)                    NOT NULL,
+   DataTimestamp        DATE                            NOT NULL,
+   CONSTRAINT PK_RfnModelChange PRIMARY KEY (PAObjectID)
+);
+
+ALTER TABLE RfnModelChange
+   ADD CONSTRAINT FK_RfnModelChange_YukonPAObject FOREIGN KEY (PAObjectID)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
+
+INSERT INTO DBUpdates VALUES ('YUK-24057', '9.1.0', SYSDATE);
+/* @end YUK-24057 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

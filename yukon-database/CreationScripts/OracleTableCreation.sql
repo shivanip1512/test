@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/19/2021 8:49:22 PM                         */
+/* Created on:     7/27/2021 2:04:47 PM                         */
 /*==============================================================*/
 
 
@@ -8461,6 +8461,17 @@ create table RfnBroadcastEventSummary  (
 );
 
 /*==============================================================*/
+/* Table: RfnModelChange                                        */
+/*==============================================================*/
+create table RfnModelChange  (
+   PAObjectID           NUMBER                          not null,
+   OldModel             VARCHAR2(80)                    not null,
+   NewModel             VARCHAR2(80)                    not null,
+   DataTimestamp        DATE                            not null,
+   constraint PK_RfnModelChange primary key (PAObjectID)
+);
+
+/*==============================================================*/
 /* Table: Route                                                 */
 /*==============================================================*/
 create table Route  (
@@ -13963,6 +13974,11 @@ alter table RfnBroadcastEventDeviceStatus
 alter table RfnBroadcastEventSummary
    add constraint FK_RFNBROAD_REFERENCE_RFNBROAD foreign key (RfnBroadcastEventId)
       references RfnBroadcastEvent (RfnBroadcastEventId)
+      on delete cascade;
+
+alter table RfnModelChange
+   add constraint FK_RfnModelChange_YukonPAObject foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
       on delete cascade;
 
 alter table Route
