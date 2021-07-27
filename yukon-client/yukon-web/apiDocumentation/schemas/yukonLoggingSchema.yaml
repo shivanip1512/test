@@ -1,0 +1,70 @@
+Logger:
+  title: Logger
+  required:
+    - id
+    - type
+    - level
+    - name
+    - expirationDate
+    - notes
+  type: object
+  properties:
+    id:
+      type: integer
+      default: -1
+    type:
+        type: string
+        default: 
+        description: 'Logger Type of Yukon Logger.'
+        enum:
+          - SYSTEM_LOGGER
+          - USER_LOGGER
+    level:
+        type: string
+        default: OFF
+        description: 'Logger level of Yukon Logger.'
+        enum:
+           - OFF
+           - FATAL
+           - ERROR
+           - WARN
+           - INFO
+           - DEBUG
+           - TRACE
+    name:
+        type: string
+        default: 
+        description: 'Yukon Logger Name.'
+    expirationDate:
+        type: Date
+        default: 
+        description: 'Expiration Date of Yukon Logger.'
+    notes:
+        type: string
+        default: 
+        maxLength: 255
+        description: 'Notes'
+id:
+  title: id
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for Logger.'
+      
+
+
+components:
+  examples:
+    Logger:
+      value:
+        loggerName: com.cannontech.test
+        loggerType: USER_LOGGER
+        loggerLevel: ERROR
+        expirationDate: 07/27/2021
+        notes: Sample logger
+    id:
+      value:
+        id: 11
