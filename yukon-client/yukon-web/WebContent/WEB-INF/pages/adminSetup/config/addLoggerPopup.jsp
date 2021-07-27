@@ -48,7 +48,7 @@
             <tags:nameValue2 nameKey=".notes">
                 <cti:msg2 var="noteTextPlaceholder" key=".noteText.placeHolder"/>
                     <tags:textarea rows="3" cols="0" path="notes" isResizable="false" classes="tadw js-notes"
-                                   placeholder="${noteTextPlaceholder}" maxLength="255" forceDisplayTextarea="true"/>
+                                   placeholder="${fn:escapeXml(noteTextPlaceholder)}" maxLength="255" forceDisplayTextarea="true"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>
     </form:form>
