@@ -14,6 +14,7 @@
     </tags>
     <pointInfos>
         <pointInfo name="Battery Voltage" init="true" attributes="BATTERY_VOLTAGE"/>
+        <pointInfo name="Device Type Changed" attributes="DEVICE_TYPE_CHANGED"/>
         <pointInfo name="Gas Usage" init="true" attributes="USAGE_GAS, USAGE"/>
         <pointInfo name="Gas Usage per Interval" init="true" attributes="GAS_USAGE_PER_INTERVAL"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>

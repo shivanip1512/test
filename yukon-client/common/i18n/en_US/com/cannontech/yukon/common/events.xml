@@ -299,7 +299,7 @@
     <entry key="yukon.common.events.system.rfn.updatedModel.3">Old Model</entry>
     <entry key="yukon.common.events.system.rfn.updatedModel.4">New Model</entry>
     
-    <entry key="yukon.common.events.system.rfn.updatedModelAndPaoType">Device {1} {2} had Model and PaoType updated. Old Model: {3} Old Type: {4} New Model: {5} New Type: {6}</entry>
+    <entry key="yukon.common.events.system.rfn.updatedModelAndPaoType">Device {1} {2} had Model and PaoType updated. Old Model/Type: {3}/{4} New Model/Type: {5}/{6}</entry>
     <entry key="yukon.common.events.system.rfn.updatedModelAndPaoType.3">Old Model</entry>
     <entry key="yukon.common.events.system.rfn.updatedModelAndPaoType.5">New Model</entry>
     <entry key="yukon.common.events.system.rfn.updatedModelAndPaoType.4">Old Type</entry>

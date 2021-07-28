@@ -375,6 +375,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.DEMAND_OVERLOAD">Demand Overload</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DEMAND_READS_AND_RESET">Demand Reads And Reset</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DEMAND_THRESHOLD_EXCEEDED_WARNING">Demand Threshold Exceeded Warning</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DEVICE_TYPE_CHANGED">Device Type Changed</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DISPLAY_LOCKED_BY_WARNING">Display Locked By Warning</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DNP3_ADDRESS_CHANGED">DNP3 Address Changed</entry>
     <entry key="yukon.common.attribute.builtInAttribute.EEPROM_ACCESS_ERROR">Eeprom Access Error</entry>

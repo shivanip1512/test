@@ -1,10 +1,14 @@
 package com.cannontech.common.rfn.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +24,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
+import com.cannontech.amr.rfn.message.event.RfnConditionType;
+import com.cannontech.amr.rfn.message.event.RfnEvent;
+import com.cannontech.amr.rfn.message.event.RfnEventArchiveRequest;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.model.SimpleAlert;
@@ -34,6 +42,7 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoType;
@@ -56,12 +65,14 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ConcurrentHashMultiset;
@@ -84,13 +95,17 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ChangeDeviceTypeService changeDeviceTypeService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     private YukonJmsTemplate jmsTemplate;
+    private YukonJmsTemplate eventArchiveJmsTemplate;
     private String templatePrefix;
     private Cache<String, Boolean> recentlyUncreatableTemplates;
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
     private ConcurrentHashMultiset<RfnIdentifier> uncreatableDevices = ConcurrentHashMultiset.create();
     private Set<String> templatesToIgnore;
+    private ExecutorService executor = Executors.newCachedThreadPool();
+    private static Logger commsLogger = YukonLogManager.getCommsLogger();
 
     @PostConstruct
     public void init() {
@@ -116,12 +131,13 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         
         templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_DEVICE_CREATION_ALERT);
+        eventArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_EVENT_ARCHIVE);
     }
 
     @Override
     @Transactional
     public synchronized RfnDevice createIfNotFound(RfnIdentifier newDeviceIdentifier) {
-        //use UTC date DataTimestamp we get it from NM is in UTC format
+        //uses UTC date,  DataTimestamp we get it from NM is in UTC format
         return createIfNotFound(newDeviceIdentifier, new DateTime(DateTimeZone.UTC).toInstant());
     }
     
@@ -139,20 +155,23 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             List<RfnDevice> devices = rfnDeviceDao.getPartiallyMatchedDevices(newDeviceIdentifier.getSensorSerialNumber(),
                     newDeviceIdentifier.getSensorManufacturer());
 
-            // found multiple matching device, create exception
             if (devices.size() > 1) {
+                log.debug(
+                        "Multiple matching devices found. Unable to create or update device. Device to be created:{} Matching devices found:{}",
+                        newDeviceIdentifier, devices);
                 throw createRuntimeException(
                         "Unable to create for " + newDeviceIdentifier + " found 2 or more partial matches " + devices);
             }
 
-            // no partially matching devices, create devices
             if (devices.isEmpty()) {
+                log.debug("No matching devices found. Creating new device. Device to be created:{}", newDeviceIdentifier);
                 return create(newDeviceIdentifier);
             }
 
             RfnDevice partiallyMatchedDevice = devices.get(0);
-            // partially matching device found, but it is not a meter, create new device
             if (!partiallyMatchedDevice.getPaoIdentifier().getPaoType().isMeter()) {
+                log.warn("Matching device found but it is not a meter. Creating new device. Device to be created:{}. Device found:{}",
+                        newDeviceIdentifier, partiallyMatchedDevice);
                 return create(newDeviceIdentifier);
             }
 
@@ -161,18 +180,25 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             Instant lastChangeDataTimestamp = rfnDeviceDao
                     .findModelChangeDataTimestamp(partiallyMatchedDevice.getPaoIdentifier().getPaoId());
 
-            // the model was not updated ever, update the model
             if (lastChangeDataTimestamp == null) {
+                log.debug(
+                        "Matching device found. This device never had a model change. Updating exiting device. Device found:{} to be updating to:{}",
+                        partiallyMatchedDevice, newDeviceIdentifier);
                 return updateDeviceWithTheNewModel(newDeviceIdentifier, partiallyMatchedDevice, dataTimestamp);
             }
-            
-            // we probably made a model change recently, we found our device
+
+            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
             if (dataTimestamp.isBefore(lastChangeDataTimestamp) || lastChangeDataTimestamp.isEqual(dataTimestamp)) {
+                log.debug("The date of the point data {} is after the date of most recent device model change date {}. Using existing partially matched device without any modifications. Device found: {}",
+                        format.format(dataTimestamp), format.format(lastChangeDataTimestamp), partiallyMatchedDevice);
                 return partiallyMatchedDevice;
             }
             
-            //last change data stamp is older than this data's time stamp, update the model
             if (dataTimestamp.isAfter(lastChangeDataTimestamp)) {
+                log.debug(
+                        "The most recent device model change date {} is after point data date {}. Updating exiting device. Device found:{} to be updating to:{}",
+                        format.format(dataTimestamp), format.format(lastChangeDataTimestamp), partiallyMatchedDevice,
+                        newDeviceIdentifier);
                 return updateDeviceWithTheNewModel(newDeviceIdentifier, partiallyMatchedDevice, dataTimestamp);
             }
             
@@ -185,11 +211,14 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
      */
     private RfnDevice updateDeviceWithTheNewModel(RfnIdentifier newDeviceIdentifier, RfnDevice partiallyMatchedDevice,
             Instant dataTimestamp) {
-        String templateName = templatePrefix + newDeviceIdentifier.getSensorManufacturer() + "_" + newDeviceIdentifier.getSensorModel();
+        String templateName = templatePrefix + newDeviceIdentifier.getSensorManufacturer() + "_"
+                + newDeviceIdentifier.getSensorModel();
         SimpleDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
+
         RfnDevice updatedDevice = templateYukonDevice.getPaoIdentifier().getPaoType() != partiallyMatchedDevice.getPaoIdentifier()
                 .getPaoType() ? changeDeviceType(newDeviceIdentifier, partiallyMatchedDevice,
                         templateYukonDevice) : updateRfnIdentifier(newDeviceIdentifier, partiallyMatchedDevice);
+
         RfnModelChange rfnModelChange = new RfnModelChange();
         rfnModelChange.setDataTimestamp(dataTimestamp);
         rfnModelChange.setDeviceId(partiallyMatchedDevice.getPaoIdentifier().getPaoId());
@@ -198,7 +227,31 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         rfnDeviceDao.updateRfnModelChange(rfnModelChange);
         return updatedDevice;
     }
+    
+    private void createAndSendEvent(RfnIdentifier rfnIdentifier, boolean isCleared) {
+        RfnEvent rfnEvent = new RfnEvent();
+        rfnEvent.setRfnIdentifier(rfnIdentifier);
+        rfnEvent.setType(RfnConditionType.DEVICE_TYPE_CHANGED);
+        rfnEvent.setTimeStamp(System.currentTimeMillis());
+        Map<RfnConditionDataType, Object> rfnEventMap = new HashMap<>();
+        rfnEventMap.put(RfnConditionDataType.CLEARED, isCleared);
+        rfnEvent.setEventData(rfnEventMap);
+        RfnEventArchiveRequest archiveRequest = new RfnEventArchiveRequest();
+        archiveRequest.setEvent(rfnEvent);
+        archiveRequest.setDataPointId(1);
+        commsLogger.info("<<< Sent" + archiveRequest);
+        eventArchiveJmsTemplate.convertAndSend(archiveRequest);
+        log.debug("Generating Device Type Changed event for {} isCleared: {}", rfnIdentifier, isCleared);
+    }
 
+    private void createAndSendAlert(AlertType type, Map<String, String> data) {
+        ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts."+type);
+        data.forEach((key, value) -> resolvableTemplate.addData(key, value));
+        SimpleAlert simpleAlert = new SimpleAlert(type, new Date(), resolvableTemplate);
+        log.debug("Generating Alert {} {}", type, data);
+        jmsTemplate.convertAndSend(simpleAlert);
+    }
+    
     private RuntimeException createRuntimeException(String error) {
         log.warn(error);
         return new RuntimeException(error);
@@ -210,19 +263,33 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     }
 
     /**
-     * Updating existing device with new rfn identifier, in this case a new model.
+     * Updates existing device with new rfn identifier, in this case a new model. Sends Model change alert.
+     * 
+     * @return updated device
      */
     private RfnDevice updateRfnIdentifier(RfnIdentifier identifier, RfnDevice partiallyMatchedDevice) {
         RfnDevice updatedDevice = new RfnDevice(partiallyMatchedDevice.getName(),
                 partiallyMatchedDevice.getPaoIdentifier(), identifier);
+
+        String oldModel = partiallyMatchedDevice.getRfnIdentifier().getSensorModel();
+        String newModel = updatedDevice.getRfnIdentifier().getSensorModel();
+
         rfnDeviceDao.updateDevice(updatedDevice);
         rfnDeviceEventLogService.updatedModel(partiallyMatchedDevice.getName(), updatedDevice.getRfnIdentifier(),
-                partiallyMatchedDevice.getRfnIdentifier().getSensorModel(), updatedDevice.getRfnIdentifier().getSensorModel());
-        return rfnDeviceDao.getDevice(updatedDevice);
+                oldModel, newModel);
+
+        createAndSendAlert(AlertType.RFN_DEVICE_MODEL_CHANGED, Map.of("deviceName", partiallyMatchedDevice.getName(), "oldModel",
+                oldModel, "newModel", newModel));
+        RfnDevice device = rfnDeviceDao.getDevice(updatedDevice);
+        log.debug("Updated model from {} to {} result: {}", oldModel, newModel, device.getRfnIdentifier());
+        return device;
     }
 
     /**
-     * Changing the device type and updating existing device with new rfn identifier, in this case a new model.
+     * Updates existing device with new rfn identifier and new device type, in this case a new model. Sends Model and Type change
+     * alert. Sends Type change event.
+     * 
+     *  @return updated device
      */
     private RfnDevice changeDeviceType(RfnIdentifier identifier, RfnDevice partiallyMatchedDevice,
             SimpleDevice templateYukonDevice) {
@@ -230,10 +297,37 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             changeDeviceTypeService.changeDeviceType(new SimpleDevice(partiallyMatchedDevice),
                     templateYukonDevice.getPaoIdentifier().getPaoType(), new ChangeDeviceTypeInfo(identifier));
             RfnDevice updatedDevice = rfnDeviceDao.getDevice(partiallyMatchedDevice);
+            
+            String oldModel =  partiallyMatchedDevice.getRfnIdentifier().getSensorModel();
+            PaoType oldPaoType = partiallyMatchedDevice.getPaoIdentifier().getPaoType();
+            String newModel =  updatedDevice.getRfnIdentifier().getSensorModel();
+            PaoType newPaoType = updatedDevice.getPaoIdentifier().getPaoType();
+            
             rfnDeviceEventLogService.updatedModelAndPaoType(partiallyMatchedDevice.getName(), updatedDevice.getRfnIdentifier(),
-                    partiallyMatchedDevice.getRfnIdentifier().getSensorModel(),
-                    partiallyMatchedDevice.getPaoIdentifier().getPaoType(), updatedDevice.getRfnIdentifier().getSensorModel(),
-                    updatedDevice.getPaoIdentifier().getPaoType());
+                    oldModel, oldPaoType, newModel, newPaoType);
+            
+            log.debug("Updated model from {}/{} to {}/{} result: {}", oldModel, oldPaoType, newModel, newPaoType, updatedDevice);
+            
+            executor.submit(() -> {
+                //alert
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+                createAndSendAlert(AlertType.RFN_DEVICE_MODEL_AND_TYPE_CHANGED, Map.of("deviceName", partiallyMatchedDevice.getName(),
+                        "oldModel", oldModel,
+                        "oldType", accessor.getMessage(oldPaoType.getFormatKey()),
+                        "newType", accessor.getMessage(newPaoType.getFormatKey()),
+                        "newModel", newModel));
+                //event
+                createAndSendEvent(updatedDevice.getRfnIdentifier(), false);
+                try {
+                    //2 seconds
+                    Thread.sleep(2000);
+                    //event cleared
+                    createAndSendEvent(updatedDevice.getRfnIdentifier(), true);
+                } catch (InterruptedException e) {
+                    log.error("Error", e);
+                }    
+            });
+            
             return updatedDevice;
         } catch (Exception ex) {
             throw createRuntimeException("Unable to change device type for " + partiallyMatchedDevice + " from "
@@ -242,6 +336,9 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         }
     }
 
+    /**
+     * Creates device
+     */
     private RfnDevice create(RfnIdentifier identifier) {
         try {
             return create(identifier, null, null);
@@ -265,7 +362,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                 // Only log full exception when trace is on so lots of failed creations don't kill performance.
                 throw createRuntimeException("Creation failed for " + identifier, e);
             } else {
-                throw createRuntimeException("Creation failed for " + identifier +" : "+e);
+                throw createRuntimeException("Creation failed for " + identifier + " : " + e);
             }
         }
     }

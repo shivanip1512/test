@@ -30,6 +30,7 @@
         <pointInfo name="Tamper - Cable Cut" attributes="TAMPER_CABLE_CUT"/>
         <pointInfo name="Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
         <pointInfo name="Temperature Out Of Range" attributes="TEMPERATURE_OUT_OF_RANGE"/>
+        <pointInfo name="Device Type Changed" attributes="DEVICE_TYPE_CHANGED"/>
         <pointInfo name="Thirty Days No Usage" attributes="THIRTY_DAYS_NO_USAGE"/>
         <pointInfo name="Water Usage" init="true" attributes="USAGE_WATER, USAGE"/>
         <pointInfo name="Water Usage per Interval" init="true" attributes="WATER_USAGE_PER_INTERVAL"/>
