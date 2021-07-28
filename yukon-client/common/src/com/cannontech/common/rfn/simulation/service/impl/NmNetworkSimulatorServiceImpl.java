@@ -317,6 +317,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private NodeNetworkInfo getNetworkInfo(RfnIdentifier rfnIdentifier) {
         NodeNetworkInfo info = new NodeNetworkInfo();
         info.setHostname("Hostname");
+        info.setSensorFirmwareVersion("R31.3.37");
         info.addNodeGroupName("Group 1");
         info.addNodeName("Group 1");
         if (new Random().nextBoolean()) {
