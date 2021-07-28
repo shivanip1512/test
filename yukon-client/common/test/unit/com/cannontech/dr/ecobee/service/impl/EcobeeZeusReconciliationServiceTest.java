@@ -63,14 +63,14 @@ public class EcobeeZeusReconciliationServiceTest {
                 Collection<EcobeeZeusDiscrepancy> missingGroup = report.getErrors(type);
                 assertTrue(missingGroup.size() == 1, "Group did not match ");
                 missingGroup.stream().forEach(e -> {
-                    assertTrue(e.getCorrectPath().equals("G3"), "Missing group in ecobee ");
+                    assertTrue(e.getCorrectPath().equals("G4"), "Missing group in ecobee ");
 
                 });
             } else if (type == EcobeeZeusDiscrepancyType.EXTRANEOUS_GROUP) {
                 Collection<EcobeeZeusDiscrepancy> extraneousGroup = report.getErrors(type);
                 assertTrue(extraneousGroup.size() == 1, "Group did not match ");
                 extraneousGroup.stream().forEach(e -> {
-                    assertTrue(e.getCurrentPath().equals("G4"), "Missing Group in Yukon ");
+                    assertTrue(e.getCurrentPath().equals("G3"), "Missing Group in Yukon ");
 
                 });
             } else if (type == EcobeeZeusDiscrepancyType.MISSING_DEVICE) {
