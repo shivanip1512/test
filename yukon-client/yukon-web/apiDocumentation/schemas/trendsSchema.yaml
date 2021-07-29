@@ -52,6 +52,7 @@ trendSeries:
         - PINK
         - RED
         - YELLOW
+        - PURPLE
       axis:
         type: string
         default: LEFT
