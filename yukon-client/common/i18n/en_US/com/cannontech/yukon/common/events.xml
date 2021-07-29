@@ -64,7 +64,7 @@
     <entry key="yukon.common.events.ipAddress">IP Address</entry>
     <entry key="yukon.common.events.jobId">Job Id</entry>
     <entry key="yukon.common.events.key">Key</entry>
-    <entry key="yukon.common.events.loggerLevel">Level</entry>
+    <entry key="yukon.common.events.level">Level</entry>
     <entry key="yukon.common.events.loadGroupIds">Load Group Ids</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
     <entry key="yukon.common.events.loadProgramNames">Load Program Name(s)</entry>
