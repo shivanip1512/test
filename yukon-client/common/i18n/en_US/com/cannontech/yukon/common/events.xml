@@ -64,6 +64,7 @@
     <entry key="yukon.common.events.ipAddress">IP Address</entry>
     <entry key="yukon.common.events.jobId">Job Id</entry>
     <entry key="yukon.common.events.key">Key</entry>
+    <entry key="yukon.common.events.loggerLevel">Level</entry>
     <entry key="yukon.common.events.loadGroupIds">Load Group Ids</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
     <entry key="yukon.common.events.loadProgramNames">Load Program Name(s)</entry>
@@ -713,6 +714,9 @@
     <!-- Configuration -->
     <entry key="yukon.common.events.system.configuration.globalSettingChanged">Global Setting {2} changed to {3} by {1}.</entry>
     <entry key="yukon.common.events.system.configuration.sensitiveGlobalSettingChanged">Global Setting {2} changed by {1}.</entry>
+    <entry key="yukon.common.events.system.configuration.loggerAdded">Logger {1} added by {3}. Logger level: {2}, Expiration date: {11}</entry>
+    <entry key="yukon.common.events.system.configuration.loggerUpdated">Logger {1} updated by {3}. Logger level: {2}, Expiration date: {11}</entry>
+    <entry key="yukon.common.events.system.configuration.loggerDeleted">Logger {1} deleted by {2}.</entry>
     
     <!-- Honeywell Key Configuration -->
     <entry key="yukon.common.events.system.configuration.importedKeyFile">{2} Key file imported by {1}.</entry>
