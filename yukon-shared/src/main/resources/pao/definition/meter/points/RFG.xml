@@ -78,4 +78,9 @@
         <name>Reverse Flow</name>
         <stategroup value="TrueFalse"/>
     </point>
+    <point offset="96" type="Status">
+        <name>Device Type Changed</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
 </points>

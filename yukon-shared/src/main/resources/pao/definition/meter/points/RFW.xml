@@ -106,4 +106,9 @@
         <name>Thirty Days No Usage</name>
         <stategroup value="TrueFalse"/>
     </point>
+    <point offset="101" type="Status">
+        <name>Device Type Changed</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
 </points>
