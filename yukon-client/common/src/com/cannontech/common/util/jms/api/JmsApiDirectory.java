@@ -823,6 +823,7 @@ public final class JmsApiDirectory {
                   .requestMessage(RfnEventArchiveRequest.class)
                   .responseMessage(RfnEventArchiveResponse.class)
                   .sender(NETWORK_MANAGER)
+                  .sender(YUKON_SERVICE_MANAGER)
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .logger(YukonLogManager.getRfnLogger())

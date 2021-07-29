@@ -529,6 +529,7 @@ INIT_ATTRIBUTE( CurrentWaveformDistortion,                          "CURRENT_WAV
 INIT_ATTRIBUTE( DemandOverload,                                     "DEMAND_OVERLOAD" );
 INIT_ATTRIBUTE( DemandReadsAndReset,                                "DEMAND_READS_AND_RESET" );
 INIT_ATTRIBUTE( DemandThresholdExceededWarning,                     "DEMAND_THRESHOLD_EXCEEDED_WARNING" );
+INIT_ATTRIBUTE( Device Type Changed,                                "DEVICE_TYPE_CHANGED" );
 INIT_ATTRIBUTE( DNP3AddressChanged,                                 "DNP3_ADDRESS_CHANGED" );
 INIT_ATTRIBUTE( DisplayLockedByWarning,                             "DISPLAY_LOCKED_BY_WARNING" );
 INIT_ATTRIBUTE( EepromAccessError,                                  "EEPROM_ACCESS_ERROR" );
