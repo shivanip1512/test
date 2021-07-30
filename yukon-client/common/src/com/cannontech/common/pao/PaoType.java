@@ -146,9 +146,15 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFN520FRX(DeviceTypes.RFN520FRX, "RFN-520fRX", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN520FAXD(DeviceTypes.RFN520FAXD, "RFN-520fAXD", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN520FRXD(DeviceTypes.RFN520FRXD, "RFN-520fRXD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN520FAXE(DeviceTypes.RFN520FAXE, "RFN-520fAXe", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN520FRXE(DeviceTypes.RFN520FRXE, "RFN-520fRXe", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN520FAXED(DeviceTypes.RFN520FAXED, "RFN-520fAXeD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN520FRXED(DeviceTypes.RFN520FRXED, "RFN-520fRXeD", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFN530FAX(DeviceTypes.RFN530FAX, "RFN-530fAX", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN530FRX(DeviceTypes.RFN530FRX, "RFN-530fRX", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN530FAXE(DeviceTypes.RFN530FAXE, "RFN-530fAXe", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN530FRXE(DeviceTypes.RFN530FRXE, "RFN-530fRXe", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFN530S4X(DeviceTypes.RFN530S4X, "RFN-530S4x", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN530S4EAX(DeviceTypes.RFN530S4EAX, "RFN-530S4eAX", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -526,8 +532,14 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN520FRX,
             RFN520FAXD,
             RFN520FRXD,
+            RFN520FAXE,
+            RFN520FRXE,
+            RFN520FAXED,
+            RFN520FRXED,
             RFN530FAX,
             RFN530FRX,
+            RFN530FAXE,
+            RFN530FRXE,
             RFN530S4X,
             RFN530S4EAX,
             RFN530S4EAXR,
@@ -576,8 +588,14 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN520FRX,
             RFN520FAXD,
             RFN520FRXD,
+            RFN520FAXE,
+            RFN520FRXE,
+            RFN520FAXED,
+            RFN520FRXED,
             RFN530FAX,
             RFN530FRX,
+            RFN530FAXE,
+            RFN530FRXE,
             RFN530S4X,
             RFN530S4EAX,
             RFN530S4EAXR,
@@ -1248,16 +1266,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return device.getDeviceTypeId();
     }
     
-    /**
-     * Maps integer device IDs to their corresponding PaoType String IDs.
-     * @param typeId
-     * @return
-     */
-    public static String getPaoTypeString(int typeId) {
-        PaoType paoTypeObject = getForId(typeId);
-        return paoTypeObject.getDbString();
-    }
-
     @Override
     public String getFormatKey() {
         return "yukon.common.pao." + name();
@@ -1318,7 +1326,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public static PaoType getPaoType(String paoTypeJsonString) {
         try {
             return PaoType.valueOf(paoTypeJsonString);
-        } catch (IllegalArgumentException e) {
+        } catch (@SuppressWarnings("unused") IllegalArgumentException e) {
             throw new TypeNotSupportedException(paoTypeJsonString + " paoType is not valid.");
         }
     }
