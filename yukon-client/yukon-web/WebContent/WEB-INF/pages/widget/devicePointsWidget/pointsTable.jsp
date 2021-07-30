@@ -87,6 +87,21 @@
                             <cm:dropdownOption key="yukon.common.point.manualEntry.title" icon="icon-pencil"
                                                data-point-id="${point.pointId}" data-popup-title="${popupTitle}" 
                                                classes="js-manual-entry" id="manualEntry-${point.pointId}"/>
+                            <tags:dynamicChoose updaterString="TDC/MAN_CONTROL/${point.pointId}" suffix="${point.pointId}">
+                                <cti:msg2 key="yukon.web.modules.tools.tdc.manualControl.title" var="title"/>
+                                <cti:list var="arguments">
+                                    <cti:item value="${title}"/>
+                                    <cti:item value="${device.paoName}"/>
+                                    <cti:item value="${point.pointName}"/>
+                                </cti:list>
+                                <cti:msg2 key="yukon.web.modules.tools.tdc.popupTitle" arguments="${arguments}" var="popupTitle"/>
+                                <tags:dynamicChooseOption optionId="TRUE">
+                                    <cm:dropdownOption key="yukon.web.modules.tools.tdc.manualControl.title" icon="icon-wrench" 
+                                        data-point-id="${point.pointId}" data-popup-title="${popupTitle}" 
+                                        data-device-id="${device.liteID}" classes="js-manual-control" 
+                                        id="manualControl-${point.pointId}"/>
+                                </tags:dynamicChooseOption>
+                            </tags:dynamicChoose>
                         </cm:dropdown>
                     </td>
                 </cti:checkRolesAndProperties>

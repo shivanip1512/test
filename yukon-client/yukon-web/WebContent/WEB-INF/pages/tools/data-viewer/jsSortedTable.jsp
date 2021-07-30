@@ -220,7 +220,7 @@
                                                     data-point-id="${row.pointId}" 
                                                     data-popup-title="${popupTitle}" 
                                                     data-device-id="${row.device.deviceId}" 
-                                                    classes="js-tdc-manual-control" 
+                                                    classes="js-manual-control" 
                                                     id="manualControl-${row.pointId}"/>
                                             </tags:dynamicChooseOption>
                                         </tags:dynamicChoose>
