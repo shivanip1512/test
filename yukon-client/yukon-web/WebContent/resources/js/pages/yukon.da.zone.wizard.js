@@ -85,13 +85,13 @@ yukon.da.zone.wizard = (function () {
               text: yg.text.deleteButton,
               'class': "delete",
                click: function () {
-                var popup = $('#zoneWizardPopup'),
-                confirmText = popup.find('.js-confirm-delete')[0].value;
-                yukon.ui.confirm({
-                    confirmText: confirmText,
-                    dialog: popup,
-                    event: 'yukon:da:zone:delete',
-                });   
+                   var popup = $('#zoneWizardPopup'),
+                       confirmText = popup.find('.js-confirm-delete')[0].value;
+                   yukon.ui.confirm({
+                       confirmText: confirmText,
+                       dialog: popup,
+                       event: 'yukon:da:zone:delete',
+                   });   
               }
           },
          {
