@@ -170,6 +170,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.selectZoneType.label.zoneType">Zone Type</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.selectZoneType.label.parentZone">Parent Zone</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.selectZoneType.label.zonePhase">Phase</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.confirmDelete">Are you sure you want to delete {0}?</entry>
     
     <!-- Zone Types -->
     <entry key="yukon.web.modules.capcontrol.ivvc.zone.GANG_OPERATED">Gang Operated</entry>

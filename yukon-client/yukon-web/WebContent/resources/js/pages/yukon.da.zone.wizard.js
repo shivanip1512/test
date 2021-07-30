@@ -12,6 +12,8 @@ yukon.da.zone.wizard = (function () {
     
     var _initialized = false,
     
+    
+    
     _zoneDetailButtons = [
          { 
              text: yg.text.back, 
@@ -84,9 +86,14 @@ yukon.da.zone.wizard = (function () {
           {
               text: yg.text.deleteButton,
               'class': "delete",
-              click: function () {
-                  var zoneId = $('#zoneId').val();
-                  window.location.href = yukon.url('/capcontrol/ivvc/wizard/deleteZone?zoneId=' + zoneId);
+               click: function () {
+                var popup = $('#zoneWizardPopup'),
+                confirmText = popup.find('.js-confirm-delete')[0].value;
+                yukon.ui.confirm({
+                    confirmText: confirmText,
+                    dialog: popup,
+                    event: 'yukon:da:zone:delete',
+                });   
               }
           },
          {
@@ -200,6 +207,11 @@ yukon.da.zone.wizard = (function () {
             });
 
             _initialized = true;
+            
+            $(document).on('yukon:da:zone:delete', function (ev) {
+                var zoneId = $('#zoneId').val();
+                window.location.href = yukon.url('/capcontrol/ivvc/wizard/deleteZone?zoneId=' + zoneId);
+            });
         }
 
     };
