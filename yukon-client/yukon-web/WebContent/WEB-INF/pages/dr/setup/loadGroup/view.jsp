@@ -78,7 +78,7 @@
                     <c:if test="${isLoadGroupSupportRoute}">
                         <tags:nameValue2 nameKey=".route" rowClass="noswitchtype">
                             <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                <tags:selectWithItems items="${routes}" id="route" itemLabel="name" path="routeId" itemValue="id"/>
+                                <tags:selectWithItems items="${routes}" id="route" itemLabel="name" path="routeId" itemValue="routeId"/>
                             </cti:displayForPageEditModes>
                             <cti:displayForPageEditModes modes="VIEW">
                                 <cti:deviceName deviceId="${loadGroup.routeId}"/>
