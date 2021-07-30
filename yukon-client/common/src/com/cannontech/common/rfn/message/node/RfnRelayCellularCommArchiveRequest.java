@@ -10,7 +10,7 @@ public class RfnRelayCellularCommArchiveRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // Map referenceID to nodeComm
+    // Map referenceID to relayCellularComm
     private Map<Long, RelayCellularComm> relayCellularComms;
 
     public Map<Long, RelayCellularComm> getRelayCellularComms() {
@@ -48,6 +48,7 @@ public class RfnRelayCellularCommArchiveRequest implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("RfnRelayCellularCommArchiveRequest [nodeComms=%s]", relayCellularComms);
+        return String.format("RfnRelayCellularCommArchiveRequest [relayCellularComms=%s]",
+                                                                  relayCellularComms);
     }
 }

@@ -18,6 +18,8 @@ public class NodeNetworkInfo implements Serializable {
     private final Set<String> nodeNames = new HashSet<>();
     
     private String hostname;
+    
+    private String sensorFirmwareVersion;
 
     public String getHostname() {
         return hostname;
@@ -25,6 +27,14 @@ public class NodeNetworkInfo implements Serializable {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
+    }
+
+    public String getSensorFirmwareVersion() {
+        return sensorFirmwareVersion;
+    }
+
+    public void setSensorFirmwareVersion(String sensorFirmwareVersion) {
+        this.sensorFirmwareVersion = sensorFirmwareVersion;
     }
 
     public List<String> getNodeGroupNames() {
@@ -50,6 +60,8 @@ public class NodeNetworkInfo implements Serializable {
         result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
         result = prime * result + ((nodeGroupNames == null) ? 0 : nodeGroupNames.hashCode());
         result = prime * result + ((nodeNames == null) ? 0 : nodeNames.hashCode());
+        result = prime * result
+            + ((sensorFirmwareVersion == null) ? 0 : sensorFirmwareVersion.hashCode());
         return result;
     }
 
@@ -77,12 +89,17 @@ public class NodeNetworkInfo implements Serializable {
                 return false;
         } else if (!nodeNames.equals(other.nodeNames))
             return false;
+        if (sensorFirmwareVersion == null) {
+            if (other.sensorFirmwareVersion != null)
+                return false;
+        } else if (!sensorFirmwareVersion.equals(other.sensorFirmwareVersion))
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return String.format("NodeNetworkInfo [nodeGroupNames=%s, nodeNames=%s, hostname=%s]", nodeGroupNames,
-                nodeNames, hostname);
+        return String.format("NodeNetworkInfo [nodeGroupNames=%s, nodeNames=%s, hostname=%s, sensorFirmwareVersion=%s]"
+                                             , nodeGroupNames,    nodeNames,    hostname,    sensorFirmwareVersion);
     }
 }
