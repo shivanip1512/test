@@ -648,8 +648,8 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             params.addValue("NewModel", rfnModelChange.getNewModel());
             params.addValue("DataTimestamp", rfnModelChange.getDataTimestamp());
         } catch (EmptyResultDataAccessException e) {
-            SqlParameterSink params = updateCreateSql.insertInto("DeviceMacAddress");
-            params.addValue("PaObjectId ", rfnModelChange.getDeviceId());
+            SqlParameterSink params = updateCreateSql.insertInto("RfnModelChange");
+            params.addValue("PaObjectId", rfnModelChange.getDeviceId());
             params.addValue("OldModel", rfnModelChange.getOldModel());
             params.addValue("NewModel", rfnModelChange.getNewModel());
             params.addValue("DataTimestamp", rfnModelChange.getDataTimestamp());
@@ -664,7 +664,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         sql.append("FROM YukonPaobject pao");
         sql.append("  JOIN RfnAddress rfn ON rfn.DeviceId = pao.PaobjectId");
         sql.append("WHERE SerialNumber").eq(serialNumber);
-        sql.append("AND Manufacture").eq(manufacturer);
+        sql.append("AND Manufacturer").eq(manufacturer);
         return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
     

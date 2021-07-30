@@ -45,9 +45,9 @@ public interface RfnDeviceEventLogService {
     void apnChanged(@Arg(ArgEnum.paoName) String paoName, @Arg(ArgEnum.rfnId) RfnIdentifier rfnIdentifier,  @Arg(ArgEnum.apn) String apn);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn")
-    void updatedModel(@Arg(ArgEnum.paoName) String paoName, @Arg(ArgEnum.rfnId) RfnIdentifier rfnIdentifier, String oldModel, String newModel);
+    void modelUpdated(@Arg(ArgEnum.paoName) String paoName, @Arg(ArgEnum.rfnId) RfnIdentifier rfnIdentifier, String oldModel, String newModel);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn")
-    void updatedModelAndPaoType(@Arg(ArgEnum.paoName) String paoName, @Arg(ArgEnum.rfnId) RfnIdentifier rfnIdentifier,
+    void modelAndPaoTypeUpdated(@Arg(ArgEnum.paoName) String paoName, @Arg(ArgEnum.rfnId) RfnIdentifier rfnIdentifier,
             String oldModel, PaoType oldType, String newModel, PaoType newType);
 }

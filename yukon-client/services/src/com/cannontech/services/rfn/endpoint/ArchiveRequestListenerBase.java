@@ -157,7 +157,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                 boolean isDev = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
                 boolean isAcknowledgeable = e.getCause() instanceof Acknowledgeable;
                 if (isDev || isAcknowledgeable) {
-                    log.info("Exception:" + e.getMessage());
+                    log.info("Exception:" + e.getMessage(), e);
                     sendAcknowledgement(request);
                     return Optional.empty();
                 }

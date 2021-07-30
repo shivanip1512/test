@@ -197,7 +197,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             if (dataTimestamp.isAfter(lastChangeDataTimestamp)) {
                 log.debug(
                         "The most recent device model change date {} is after point data date {}. Updating exiting device. Device found:{} to be updating to:{}",
-                        format.format(dataTimestamp), format.format(lastChangeDataTimestamp), partiallyMatchedDevice,
+                        format.format(dataTimestamp.toDate()), format.format(lastChangeDataTimestamp.toDate()), partiallyMatchedDevice,
                         newDeviceIdentifier);
                 return updateDeviceWithTheNewModel(newDeviceIdentifier, partiallyMatchedDevice, dataTimestamp);
             }
@@ -215,16 +215,16 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                 + newDeviceIdentifier.getSensorModel();
         SimpleDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
 
-        RfnDevice updatedDevice = templateYukonDevice.getPaoIdentifier().getPaoType() != partiallyMatchedDevice.getPaoIdentifier()
-                .getPaoType() ? changeDeviceType(newDeviceIdentifier, partiallyMatchedDevice,
-                        templateYukonDevice) : updateRfnIdentifier(newDeviceIdentifier, partiallyMatchedDevice);
-
         RfnModelChange rfnModelChange = new RfnModelChange();
         rfnModelChange.setDataTimestamp(dataTimestamp);
         rfnModelChange.setDeviceId(partiallyMatchedDevice.getPaoIdentifier().getPaoId());
         rfnModelChange.setNewModel(newDeviceIdentifier.getSensorModel());
         rfnModelChange.setOldModel(partiallyMatchedDevice.getRfnIdentifier().getSensorModel());
         rfnDeviceDao.updateRfnModelChange(rfnModelChange);
+        
+        RfnDevice updatedDevice = templateYukonDevice.getPaoIdentifier().getPaoType() != partiallyMatchedDevice.getPaoIdentifier()
+                .getPaoType() ? changeDeviceType(newDeviceIdentifier, partiallyMatchedDevice,
+                        templateYukonDevice) : updateRfnIdentifier(newDeviceIdentifier, partiallyMatchedDevice);
         return updatedDevice;
     }
     
@@ -275,7 +275,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         String newModel = updatedDevice.getRfnIdentifier().getSensorModel();
 
         rfnDeviceDao.updateDevice(updatedDevice);
-        rfnDeviceEventLogService.updatedModel(partiallyMatchedDevice.getName(), updatedDevice.getRfnIdentifier(),
+        rfnDeviceEventLogService.modelUpdated(partiallyMatchedDevice.getName(), updatedDevice.getRfnIdentifier(),
                 oldModel, newModel);
 
         createAndSendAlert(AlertType.RFN_DEVICE_MODEL_CHANGED, Map.of("deviceName", partiallyMatchedDevice.getName(), "oldModel",
@@ -303,7 +303,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             String newModel =  updatedDevice.getRfnIdentifier().getSensorModel();
             PaoType newPaoType = updatedDevice.getPaoIdentifier().getPaoType();
             
-            rfnDeviceEventLogService.updatedModelAndPaoType(partiallyMatchedDevice.getName(), updatedDevice.getRfnIdentifier(),
+            rfnDeviceEventLogService.modelAndPaoTypeUpdated(partiallyMatchedDevice.getName(), updatedDevice.getRfnIdentifier(),
                     oldModel, oldPaoType, newModel, newPaoType);
             
             log.debug("Updated model from {}/{} to {}/{} result: {}", oldModel, oldPaoType, newModel, newPaoType, updatedDevice);
