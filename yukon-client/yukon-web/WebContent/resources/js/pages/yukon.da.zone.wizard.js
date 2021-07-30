@@ -12,8 +12,6 @@ yukon.da.zone.wizard = (function () {
     
     var _initialized = false,
     
-    
-    
     _zoneDetailButtons = [
          { 
              text: yg.text.back, 
