@@ -79,8 +79,14 @@
         </div>
         
         <div class="yukon-page">
+        
+            <!-- Needed to render React Navigation menu -->
+            <c:set var="path" value='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}'/>
+            <c:set var="reactPath" value='${pageContext.request.scheme}://${pageContext.request.serverName}:3000'/>
+            <div id="navigation" style="position:sticky;top:0;z-index:1200" data-path="${path}" data-react-path="${reactPath}"></div>
+            
             <header class="yukon-header">
-                <div class="toolbar-outer">
+<%--                 <div class="toolbar-outer">
                     <div class="toolbar-inner">
                         <div class="toolbar">
                             <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get"
@@ -120,7 +126,7 @@
                             </ul>
                         </nav>
                     </div>
-                </div>
+                </div> --%>
                 <div class="bars">
                     <div class="bc-bar">
                         <div class="inner clearfix">
@@ -200,7 +206,7 @@
                 <tags:analyticsTrackPage/>
                 <%-- <tags:feedback/> TODO: uncomment when ready for feedback --%>
             </section>
-            
+<%--             
             <footer id="yukon-footer" class="yukon-footer">
                 <div class="utility">
                     <nav>
@@ -268,7 +274,7 @@
                         </div>
                     </div>
                 </div>
-            </footer>
+            </footer> --%>
             
         </div>
     </cti:msgScope>
@@ -282,5 +288,11 @@
         data-width="600" data-load-event="yukon:notifications:load"
         data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"></div>
     </c:if>
+    
+    <!-- Renders React Navigation Menu -->
+    <script src="<c:url value="/resources/js/lib/react/react.production.min.js"/>"></script>
+    <script src="<c:url value="/resources/js/common/react/yukon.react.navigationContainer.js"/>"></script>
+    
 </body>
+
 </html>
