@@ -49,6 +49,7 @@ public:
     static const Attribute  CurrentWithoutVoltage;
     static const Attribute  Demand;
     static const Attribute  DeliveredDemand;
+    static const Attribute  DeviceTypeChanged;
     static const Attribute  ReceivedDemand;
     static const Attribute  DemandPeakkVACoin;
     static const Attribute  InstantaneouskW;
