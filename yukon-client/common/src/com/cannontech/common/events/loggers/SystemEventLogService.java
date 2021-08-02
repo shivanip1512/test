@@ -188,14 +188,14 @@ public interface SystemEventLogService {
             @Arg(ArgEnum.serverIdentifier) String serverIdentifier, @Arg(ArgEnum.type) String typeOrValue, @Arg(ArgEnum.startTime) Instant timeStamp);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void loggerAdded(@Arg(ArgEnum.name) String logger, @Arg(ArgEnum.level) String loggerLevel,
+    public void loggerAdded(@Arg(ArgEnum.name) String loggerName, @Arg(ArgEnum.level) String loggerLevel,
             @Arg(ArgEnum.endDate) Date expirationDate, @Arg(ArgEnum.username) LiteYukonUser user);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void loggerUpdated(@Arg(ArgEnum.name) String logger, @Arg(ArgEnum.level) String loggerLevel,
+    public void loggerUpdated(@Arg(ArgEnum.name) String loggerName, @Arg(ArgEnum.level) String loggerLevel,
             @Arg(ArgEnum.endDate) Date date, @Arg(ArgEnum.username) LiteYukonUser user);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void loggerDeleted(@Arg(ArgEnum.name) String logger, @Arg(ArgEnum.username) LiteYukonUser user);
+    public void loggerDeleted(@Arg(ArgEnum.name) String loggerName, @Arg(ArgEnum.username) LiteYukonUser user);
 
 }
