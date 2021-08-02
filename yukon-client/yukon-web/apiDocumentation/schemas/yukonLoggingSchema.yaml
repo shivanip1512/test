@@ -1,12 +1,9 @@
 Logger:
   title: Logger
   required:
-    - id
     - type
     - level
     - name
-    - expirationDate
-    - notes
   type: object
   properties:
     id:
@@ -33,15 +30,13 @@ Logger:
            - TRACE
     name:
         type: string
-        default: 
         description: 'Yukon Logger Name.'
+        maxLength: 200
     expirationDate:
         type: Date
-        default: 
         description: 'Expiration Date of Yukon Logger.'
     notes:
         type: string
-        default: 
         maxLength: 255
         description: 'Notes'
 id:

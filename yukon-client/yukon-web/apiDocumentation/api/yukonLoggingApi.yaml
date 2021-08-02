@@ -28,7 +28,7 @@ get-update-delete-operation:
     tags:
      - Logger
     summary: 'Retrieve Logger'
-    description: 'API to retrieve yukon loggerbased on passed id.'
+    description: 'API to retrieve yukon logger based on passed id.'
     parameters:
       - name: id
         in: path
