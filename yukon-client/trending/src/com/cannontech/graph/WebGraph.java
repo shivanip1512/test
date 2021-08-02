@@ -264,10 +264,10 @@ public class WebGraph implements Runnable {
      * @param args java.lang.String[]
      */
     public static void main(String[] args) {
-        CTILogger.info("WebGraph - Yukon Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION()
-            + " - Yukon Database Version: " + com.cannontech.common.version.VersionTools.getDatabaseVersion());
-
         CtiUtilities.setClientAppName(ApplicationId.WEB_GRAPH);
+
+        CTILogger.info("WebGraph - Yukon Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION()
+        + " - Yukon Database Version: " + com.cannontech.common.version.VersionTools.getDatabaseVersion());
         WebGraph webGraph = new WebGraph();
 
         // start the process

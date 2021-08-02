@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -35,6 +36,7 @@ public class MockZeusResponseFactory {
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private EnrollmentDao enrollementDao;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
     
     private Cache<String, ZeusAuthenticationResponse> mockEcobeeAuthTokenResponseCache = CacheBuilder.newBuilder()
             .expireAfterWrite(1440, TimeUnit.MINUTES).build();
@@ -81,19 +83,42 @@ public class MockZeusResponseFactory {
         response.setDeletedThermostatsCount(thermostatGroupIDs.size());
         return response;
     }
-    
-    
+
     public ZeusGroupResponse retrieveGroups() {
+
         List<ZeusGroup> groups = new ArrayList<ZeusGroup>();
         List<LiteYukonPAObject> paoObjects = serverDatabaseCache.getAllLoadManagement().stream()
                 .filter(pao -> pao.getPaoType() == PaoType.LM_GROUP_ECOBEE)
                 .collect(Collectors.toList());
+
+        // Considering first group as a parent group of other groups.
+        String parentGroupId = String.valueOf(paoObjects.get(0).getLiteID());
         paoObjects.forEach(pao -> {
+
             ZeusGroup group = new ZeusGroup();
             group.setGroupId(String.valueOf(pao.getLiteID()));
             group.setName(String.valueOf(pao.getLiteID()));
+            if (!groups.isEmpty()) {
+                group.setParentGroupId(parentGroupId);
+            }
             groups.add(group);
         });
+
+        if (zeusEcobeeDataConfiguration.getGenerateDiscrepency() == 1) {
+            // MISSING_GROUP discrepancy
+            if (groups.size() >= 2 && groups.get(1) != null) {
+                groups.remove(1);
+            }
+
+            // EXTRANEOUS_GROUP discrepancy
+            ZeusGroup group = new ZeusGroup();
+            group.setGroupId(String.valueOf("8000"));
+            group.setName("EcobeeGroupDecrepency");
+            if (!groups.isEmpty()) {
+                group.setParentGroupId(parentGroupId);
+            }
+            groups.add(group);
+        }
         ZeusGroupResponse response = new ZeusGroupResponse();
         response.setGroups(groups);
         return response;
@@ -112,7 +137,25 @@ public class MockZeusResponseFactory {
 
         });
         ZeusThermostatsResponse response = new ZeusThermostatsResponse();
+        if (zeusEcobeeDataConfiguration.getGenerateDiscrepency() == 1) {
+            // MISLOCATED_DEVICE discrepancy
+            if (!thermostats.isEmpty() && thermostats.get(0) != null) {
+                List<String> groups = new ArrayList<String>();
+                groups.add("9999");
+                thermostats.get(0).setZeusGroups(groups);
+            }
+
+            // MISSING_DEVICE discrepancy
+            if (thermostats.size() >= 2 && thermostats.get(1) != null) {
+                thermostats.remove(1);
+            }
+            // EXTRANEOUS_DEVICE discrepancy
+            ZeusThermostat descrepencythermostat = new ZeusThermostat();
+            descrepencythermostat.setSerialNumber("9000");
+            descrepencythermostat.setState(ZeusThermostatState.ENROLLED);
+            thermostats.add(descrepencythermostat);
+        }
         response.setThermostats(thermostats);
         return response;
     }
-}       
+}

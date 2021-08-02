@@ -18,14 +18,20 @@ yukon.smart.notifications = (function () {
         var type = popup.find('.js-type').val(),
             deviceDataMonitor = type === $(".js-event-type-ddm").val(),
             assetImport = type === $(".js-event-type-asset-import").val(),
-            meterDisconnect = type === 'METER_DR';
+            meterDisconnect = type === $(".js-event-type-meter-dr").val(),
+            eatonCloudDR = type === $('.js-event-type-eaton-cloud-dr').val();
         popup.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);
         popup.find('.js-import-result').toggleClass('dn', !assetImport);
-        if (meterDisconnect) {
+        if (meterDisconnect || eatonCloudDR) {
             popup.find('.js-frequency').val('IMMEDIATE');
         }
-        popup.find('.js-frequency').prop('disabled', meterDisconnect);
-        popup.find('.js-frequency-hidden').prop('disabled', !meterDisconnect);
+        if (eatonCloudDR) {
+            popup.find('.js-detail').val('SUMMARY');
+        }
+        popup.find('.js-frequency').prop('disabled', meterDisconnect || eatonCloudDR);
+        popup.find('.js-frequency-hidden').prop('disabled', !meterDisconnect && !eatonCloudDR);
+        popup.find('.js-detail').prop('disabled', eatonCloudDR);
+        popup.find('.js-detail-hidden').prop('disabled', !eatonCloudDR);
         updateFrequencyFields(popup);
         /* We need to disable these fields even if it is hidden to prevent this value for 
          * being passed to the controller as a subscription parameter to be saved to the DB.*/

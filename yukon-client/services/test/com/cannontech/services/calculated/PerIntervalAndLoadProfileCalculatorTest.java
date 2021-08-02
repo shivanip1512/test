@@ -1,7 +1,8 @@
 package com.cannontech.services.calculated;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,9 +17,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.easymock.IAnswer;
 import org.joda.time.Instant;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.rfn.model.CalculationData;
@@ -64,7 +64,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
     private AttributeService attributeService;
     private RawPointHistoryDao rphDao;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         calculator = new PerIntervalAndLoadProfileCalculator();
 
@@ -91,7 +91,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
                                                  
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(4, messagesToSend.size());
+        assertEquals(4, messagesToSend.size());
     }
 
     @Test
@@ -101,7 +101,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
                                                      
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(0, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
     
     @Test
@@ -111,7 +111,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
                                                        
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(0, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
     
     @Test
@@ -120,7 +120,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
                                                       
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(0, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
     
     @Test
@@ -128,7 +128,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         Instant instant = new Instant(1478415600000l); // Overlap --> true, DST ->false, time -> Sun Nov 06 01:00:00 CST 2016 (CDT to CST)
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(0, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
     
 
@@ -137,7 +137,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         Instant instant = new Instant(1478415662950l); // Overlap --> true, DST -> false, time->Sun Nov 06 01:01:02 CST 2016
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(0, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
 
     @Test
@@ -145,7 +145,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         Instant instant = new Instant(1478419199999l); // Overlap --> true, DST -> false, time->Sun Nov 06 01:59:59 CST 2016
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(0, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
     
     @Test
@@ -153,7 +153,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         Instant instant = new Instant(1478419200000l); // Overlap --> false, DST -> false, time->Sun Nov 06 02:00:00 CST 2016
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(0, messagesToSend.size());
+        assertEquals(0, messagesToSend.size());
     }
     
     @Test
@@ -161,7 +161,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         Instant instant = new Instant(1478419268633l); // Overlap --> false, DST -> false, time->Sun Nov 06 02:01:08 CST 2016
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(4, messagesToSend.size());
+        assertEquals(4, messagesToSend.size());
     }
     
     @Test
@@ -169,7 +169,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         Instant instant = new Instant(1489302000000l); // Overlap --> false, DST -> false, time->Sun March 12 01:00:00 CST 2017
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(4, messagesToSend.size());
+        assertEquals(4, messagesToSend.size());
     }
     
     @Test
@@ -177,7 +177,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         Instant instant = new Instant(1489305599999l); // Overlap --> false, DST -> false, time->Sun March 12 01:59:59 CST 2017
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(4, messagesToSend.size());
+        assertEquals(4, messagesToSend.size());
     }
     
     @Test
@@ -185,7 +185,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         Instant instant = new Instant(1489305600000l); // Overlap --> false, DST -> false, time->Sun March 12 03:00:00 CDT 2017 (forward 1 hour)
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        Assert.assertEquals(4, messagesToSend.size());
+        assertEquals(4, messagesToSend.size());
     }
     
     private void buildRequestParameters(Instant instant) {
@@ -257,7 +257,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
             calculator.calculate(recentReadings, calculationData, messagesToSend);
         }
 
-        Assert.assertEquals(numMessages, messagesToSend.size());
+        assertEquals(numMessages, messagesToSend.size());
     }
     
     @Test

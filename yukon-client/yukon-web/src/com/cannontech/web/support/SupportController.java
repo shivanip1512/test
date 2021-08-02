@@ -15,9 +15,11 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
 import org.jsoup.helper.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -189,11 +191,13 @@ public class SupportController {
         for(File f : bundleService.getBundles()){
             previousBundles.add(f.getName());
         }
+        
         model.addAttribute("supportBundle", bundle);
         model.addAttribute("now", new Date());
         model.addAttribute("rfSupportBundle", new RfSupportBundle());
         model.addAttribute("bundleRangeSelectionOptions", BundleRangeSelection.values());
         model.addAttribute("bundleList", previousBundles);
+        model.addAttribute("rfBundleList", getPreviousRfBundleNames());
         model.addAttribute("writerList", writerList);
         model.addAttribute("inProgress", bundleService.isInProgress());
         return "support.jsp";
@@ -275,19 +279,30 @@ public class SupportController {
         detailsRfValidator.validate(rfSupportBundle, result);
         model.addAttribute("rfSupportBundle", rfSupportBundle);
         model.addAttribute("now", new Date());
-
+        model.addAttribute("rfBundleList", getPreviousRfBundleNames());
+        
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("errorMessage", accessor.getMessage("yukon.web.error.fieldErrorsExist"));
-            return "rfSupportBundle.jsp";
+            return "supportBundle/rfSupportBundle.jsp";
         }
-
-        rfRequest.setFileName(rfSupportBundle.getCustomerName());
+        String suffix = new DateTime().toString(DateTimeFormat.forPattern("yyyy-MM-dd-HHmmss"));
+        String fileName = rfSupportBundle.getCustomerName() + "-" + suffix;
+        rfRequest.setFileName(fileName);
         rfRequest.setFromTimestamp(rfSupportBundle.getDate().getTime());
         rfRequest.setType(SupportBundleRequestType.NETWORK_DATA);
         rfNetworkSupportBundleService.send(rfRequest);
        
-        return "rfSupportBundle.jsp";
+        return "supportBundle/rfSupportBundle.jsp";
+    }
+    
+    @GetMapping("viewRfBundle")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
+    public String viewRFBundle(ModelMap model) throws Exception {
+
+        model.addAttribute("rfBundleList", getPreviousRfBundleNames());
+
+        return "supportBundle/rfPreviousBundleTab.jsp";
     }
 
     @GetMapping("viewBundleProgress")
@@ -367,7 +382,7 @@ public class SupportController {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         Map<String, String> json = Maps.newHashMapWithExpectedSize(3);
 
-        File bundle = getBundleFileForFileName(fileName);
+        File bundle = getBundleFileForFileName(fileName, false);
         if (bundle == null){
             json.put("fileName", accessor.getMessage(baseKey + ".ftpUpload.failed.NO_FILE", ""));
             json.put("fileSize", "");
@@ -385,13 +400,18 @@ public class SupportController {
 
     @PostMapping("downloadBundle")
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
-    public void downloadBundle(HttpServletResponse resp, String fileName) throws IOException {
+    public void downloadBundle(HttpServletResponse resp, String fileName, boolean isRfBundle) throws IOException {
 
-        File bundleToDownload = getBundleFileForFileName(fileName);
+        File bundleToDownload = null;
+        if (isRfBundle) {
+            bundleToDownload = getBundleFileForFileName(fileName, true);
+        } else {
+            bundleToDownload = getBundleFileForFileName(fileName, false);
+        }
         if (bundleToDownload == null) {
             return;
         }
-
+        
         resp.setContentType("application/zip");
 
         // set response header to the filename
@@ -402,12 +422,29 @@ public class SupportController {
         FileCopyUtils.copy(new FileInputStream(bundleToDownload), resp.getOutputStream());
     }
 
-    private File getBundleFileForFileName(String fileName){
-        for(File f : supportBundleService.getBundles()) {
-            if(fileName.equals(f.getName())) {
+    private File getBundleFileForFileName(String fileName, boolean isRfBundle) {
+        List<File> files = null;
+        if (isRfBundle) {
+            files = supportBundleService.getRfBundles();
+        } else {
+            files = supportBundleService.getBundles();
+        }
+        for (File f : files) {
+            if (fileName.equals(f.getName())) {
                 return f;
             }
         }
         return null;
+    }
+
+    /**
+     * Fetch previous RF bundle files and return them in list
+     */
+    private List<String> getPreviousRfBundleNames() {
+        List<String> previousRfBundles = new ArrayList<>();
+        for (File f : bundleService.getRfBundles()) {
+            previousRfBundles.add(f.getName());
+        }
+        return previousRfBundles;
     }
 }

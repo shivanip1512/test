@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
@@ -17,8 +18,8 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.eatonCloud.EatonCloudMessageListener.CommandParam;
-import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
-import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
+import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -38,7 +39,8 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudCommandStrategy.class);
     @Autowired private DeviceDao deviceDao;
-    @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
+    @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
+    @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private OptOutEventDao optOutEventDao;
@@ -46,18 +48,28 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
 
     @Override
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
+        int deviceId = command.getDevice().getDeviceID();
+        String deviceName = command.getDevice().getDeviceLabel();
+        String deviceGuid = deviceDao.getGuid(deviceId);
+        Map<String, Object> shedParams = getShedParams(command);
         switch (command.getType()) {
         case SHED:
             checkOptout(command);
-            sendRequest(command, getShedParams(command));
+            sendRequest(command, shedParams);
+            eatonCloudEventLogService.sendShed(deviceName, 
+                                               deviceGuid,
+                                               (Integer) shedParams.get(CommandParam.CYCLE_PERCENT.getParamName()),
+                                               (Integer) shedParams.get(CommandParam.CYCLE_PERIOD.getParamName()),
+                                               (Integer) shedParams.get(CommandParam.CRITICALITY.getParamName()));
             break;
         case RESTORE:
             checkOptout(command);
             sendRequest(command, getRestoreParams(command));
+            eatonCloudEventLogService.sendRestore(deviceName, deviceGuid);
             break;
         case TEMP_OUT_OF_SERVICE:
             sendRequest(command, null);
-            break;            
+            break;
         default:
             log.info("Sending {} is not supported for device:{}", command.getType(), command.getDevice());
             break;
@@ -67,7 +79,7 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
     private void sendRequest(LmHardwareCommand command, Map<String, Object> params) throws CommandCompletionException {
         String deviceGuid = deviceDao.getGuid(command.getDevice().getDeviceID());
         try {
-            pxMWCommunicationService.sendCommand(deviceGuid, new PxMWCommandRequestV1("LCR_Control", params));
+            eatonCloudCommunicationService.sendCommand(deviceGuid, new EatonCloudCommandRequestV1("LCR_Control", params));
         } catch (Exception e) {
             log.error("Error Sending Command : {} ", command, e);
             throw new CommandCompletionException("Error sending Command to device. See logs for details.", e);
@@ -90,11 +102,12 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
 
     private Map<String, Object> getShedParams(LmHardwareCommand command) {
         Map<String, Object> params = new LinkedHashMap<>();
-        Integer eventId = nextValueHelper.getNextValue("PxMWEventIdIncrementor");
+        Integer eventId = nextValueHelper.getNextValue("EatonCloudEventIdIncrementor");
         Integer relay = (Integer) command.getParams().get(LmHardwareCommandParam.RELAY);
         Duration duration = (Duration) command.getParams().get(LmHardwareCommandParam.DURATION);
         params.put(CommandParam.VRELAY.getParamName(), relay);
         params.put(CommandParam.CYCLE_PERCENT.getParamName(), 100);
+        params.put(CommandParam.CYCLE_PERIOD.getParamName(), (duration.getMillis() / 1000) / 60);
         params.put(CommandParam.CYCLE_COUNT.getParamName(), 1);
         params.put(CommandParam.START_TIME.getParamName(), System.currentTimeMillis() / 1000);
         params.put(CommandParam.STOP_TIME.getParamName(), (System.currentTimeMillis() + duration.getMillis()) / 1000);

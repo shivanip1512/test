@@ -23,6 +23,6 @@
     
     <bean class="com.cannontech.dr.itron.service.impl.ItronPeriodicDataCollectionService"/>
     
-    <bean class="com.cannontech.dr.itron.service.impl.ItronRuntimeCalcServiceImpl"/>
+    <bean class="com.cannontech.dr.itron.service.ItronRuntimeCalcService"/>
 
 </beans>

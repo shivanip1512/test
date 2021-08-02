@@ -1,6 +1,6 @@
 package com.cannontech.web.api;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -9,7 +9,7 @@ import java.util.Set;
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +43,7 @@ public class ApiMethodSignatureTest {
                                 boolean pathVariableFound = (annotation.annotationType() == PathVariable.class);
                                 if (pathVariableFound) {
                                     log.error("Path variable must be first parameter: " + aClass.getName() + " Method " + method);
-                                    assertFalse("Path variable must be first parameter", pathVariableFound);
+                                    assertFalse(pathVariableFound, "Path variable must be first parameter");
                                 }
                             }
                         }

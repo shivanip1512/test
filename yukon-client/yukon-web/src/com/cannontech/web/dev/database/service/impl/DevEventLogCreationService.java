@@ -25,6 +25,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.port.BaudRate;
+import com.cannontech.common.events.helper.EventLogHelper;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.CommChannelEventLogService;
 import com.cannontech.common.events.loggers.CommandRequestExecutorEventLogService;
@@ -36,6 +37,7 @@ import com.cannontech.common.events.loggers.DemandResetEventLogService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
+import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.common.events.loggers.EcobeeEventLogService;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
@@ -67,10 +69,12 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.YNBoolean;
+import com.cannontech.database.data.device.Rfn1200;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
+import com.cannontech.dr.ecobee.model.EcobeeZeusDiscrepancyType;
 import com.cannontech.dr.nest.model.v3.EnrollmentState;
 import com.cannontech.dr.nest.model.v3.RushHourEventType;
 import com.cannontech.dr.nest.model.v3.SchedulabilityError;
@@ -98,6 +102,7 @@ public class DevEventLogCreationService {
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private DeviceConfigEventLogService deviceConfigEventLogService;
     @Autowired private DisconnectEventLogService disconnectEventLogService;
+    @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
     @Autowired private EndpointEventLogService endPointEventLogService;
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private GatewayEventLogService gatewayEventLogService;
@@ -118,6 +123,7 @@ public class DevEventLogCreationService {
     @Autowired private UsersEventLogService usersEventLogService;
     @Autowired private ValidationEventLogService validationEventLogService;
     @Autowired private ZigbeeEventLogService zigbeeEventLogService;
+    @Autowired private EventLogHelper eventLogHelper;
 
     private Map<LogType, DevEventLogExecutable> eventLogExecutables;
 
@@ -885,12 +891,30 @@ public class DevEventLogCreationService {
         executables.put(LogType.RFN_DEVICE, new DevEventLogExecutable() {
             @Override
             public void execute(DevEventLog devEventLog) {
+                String username = "Dev Setup Test User";
                 String templateName = devEventLog.getIndicatorString() + "TemplateName";
                 String sensorManufacturer = devEventLog.getIndicatorString() + "SensorManufacturer";
                 String sensorModel = devEventLog.getIndicatorString() + "SensorModel";
                 String sensorSerialNumber = "45666545";
                 RfnIdentifier rfnIdentifier = new RfnIdentifier(sensorSerialNumber, sensorManufacturer, sensorModel);
-                
+
+                RfnAddress rfnAddress = new RfnAddress();
+                rfnAddress.setManufacturer("Test Manufacturer");
+                rfnAddress.setSerialNumber("123456789");
+                rfnAddress.setModel("Test Mode");
+                rfnAddress.setDeviceID(987654321);
+
+                Rfn1200 oldRfn1200 = new Rfn1200();
+                oldRfn1200.setPAOName("Old RFN-1200");
+                oldRfn1200.setRfnAddress(rfnAddress);
+                oldRfn1200.setDisabled(false);
+                oldRfn1200.setDeviceID(998877);
+                Rfn1200 newRfn1200 = new Rfn1200();
+                newRfn1200.setPAOName("New RFN-1200");
+                newRfn1200.setRfnAddress(rfnAddress);
+                newRfn1200.setDisabled(false);
+                newRfn1200.setDeviceID(998877);
+
                 rfnDeviceEventLogService.createdNewDeviceAutomatically(rfnIdentifier, templateName,  templateName);
                 rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName, sensorSerialNumber);
                 rfnDeviceEventLogService.unableToCreateDeviceFromTemplate(templateName, sensorManufacturer, sensorModel, sensorSerialNumber);
@@ -898,6 +922,9 @@ public class DevEventLogCreationService {
                 rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnEvent", "Restore", new Instant(), new Instant());
                 rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnAlarm", "Outage", new Instant(), null);
                 rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnAlarm", "Restore", null, new Instant());
+                rfnDeviceEventLogService.rfn1200Created(rfnIdentifier, "Old RFN-1200", username);
+                rfnDeviceEventLogService.rfn1200Updated(oldRfn1200, newRfn1200, username);
+                rfnDeviceEventLogService.rfn1200Deleted("New RFN-1200", username);
             }
         });
         executables.put(LogType.STARS, new DevEventLogExecutable() {
@@ -1012,6 +1039,11 @@ public class DevEventLogCreationService {
                 systemEventLogService.attributeDeleted(user, attributeName);
                 systemEventLogService.attributeAssigned(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
                 systemEventLogService.attributeAssignmentDeleted(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
+                
+                String yukonService = "Web Server";
+                String typeOrValue = "Ecobee Private Key";
+                eventLogHelper.decryptionFailedEventLog(yukonService, typeOrValue);
+        
             }
         });
         executables.put(LogType.TOOLS, new DevEventLogExecutable() {
@@ -1186,15 +1218,10 @@ public class DevEventLogCreationService {
             @Override
             public void execute(DevEventLog devEventLog) {
                 LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
-                LocalDate endDate = LocalDate.now();
-                LocalDate startDate = LocalDate.now().minusDays(1);
-                String loadGroupIds = devEventLog.getIndicatorString() + "123, 456, 789";
-
-                ecobeeEventLogService.reconciliationCompleted(0, "123453625", EcobeeDiscrepancyType.MISSING_DEVICE.toString(),
+                ecobeeEventLogService.reconciliationCompleted(0, "123453625", EcobeeZeusDiscrepancyType.MISSING_DEVICE.toString(),
                         yukonUser, 1);
                 ecobeeEventLogService.reconciliationStarted(1, yukonUser);
                 ecobeeEventLogService.reconciliationResults(10, 5, 4, 1);
-                ecobeeEventLogService.dataDownloaded(yukonUser, startDate, endDate, loadGroupIds, devEventLog.getEventSource());
             }
         });
         executables.put(LogType.GATEWAY, new DevEventLogExecutable() {
@@ -1296,6 +1323,18 @@ public class DevEventLogCreationService {
                 infrastructureEventLogService.warningCleared(testPaoName, warningType.toString());
             }
         });
+        executables.put(LogType.EATON_CLOUD, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                String guid = "60521f5e-8af1-4a78-abba-abb4f94ed6ba";
+                String deviceLabel = "91564844";
+                int dutyCyclePercent = 50;
+                int dutyCyclePeriod = 900;
+                int criticality = 100;
+                eatonCloudEventLogService.sendShed(deviceLabel, guid, dutyCyclePercent, dutyCyclePeriod, criticality);
+                eatonCloudEventLogService.sendRestore(deviceLabel, guid);
+            }
+        });
         eventLogExecutables = ImmutableMap.copyOf(executables);
     }
 
@@ -1315,6 +1354,7 @@ public class DevEventLogCreationService {
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 54),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
         DISCONNECT(DisconnectEventLogService.class, 10),
+        EATON_CLOUD(EatonCloudEventLogService.class, 2),
         ECOBEE(EcobeeEventLogService.class, 4),
         ENDPOINT(EndpointEventLogService.class, 11),
         GATEWAY(GatewayEventLogService.class, 9),
@@ -1328,9 +1368,9 @@ public class DevEventLogCreationService {
         OUTAGE(OutageEventLogService.class, 10),
         POINT(PointEventLogService.class, 15),
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
-        RFN_DEVICE(RfnDeviceEventLogService.class, 4),
+        RFN_DEVICE(RfnDeviceEventLogService.class, 7),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 40),
+        SYSTEM(SystemEventLogService.class, 41),
         TOOLS(ToolsEventLogService.class, 32),
         USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),

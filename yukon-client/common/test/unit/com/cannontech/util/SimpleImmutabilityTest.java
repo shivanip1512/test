@@ -1,6 +1,6 @@
 package com.cannontech.util;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -11,7 +11,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;
@@ -241,30 +241,8 @@ import com.cannontech.database.dbchange.ChangeSequenceStrategyEnum;
 import com.cannontech.dr.ThermostatRampRateValues;
 import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
-import com.cannontech.dr.ecobee.dao.EcobeeQueryCount;
-import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
-import com.cannontech.dr.ecobee.message.AuthenticationRequest;
-import com.cannontech.dr.ecobee.message.AuthenticationResponse;
-import com.cannontech.dr.ecobee.message.CreateSetRequest;
-import com.cannontech.dr.ecobee.message.DrRestoreRequest;
-import com.cannontech.dr.ecobee.message.EcobeeReportJob;
-import com.cannontech.dr.ecobee.message.MoveDeviceRequest;
-import com.cannontech.dr.ecobee.message.MoveSetRequest;
-import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
-import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
-import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationResponse;
-import com.cannontech.dr.ecobee.message.partial.DemandResponseRef;
-import com.cannontech.dr.ecobee.message.partial.Status;
-import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
-import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
-import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyCategory;
-import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
-import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
-import com.cannontech.dr.ecobee.model.EcobeeQueryStatistics;
-import com.cannontech.dr.ecobee.model.discrepancy.EcobeeMislocatedDeviceDiscrepancy;
-import com.cannontech.dr.ecobee.model.discrepancy.EcobeeMislocatedSetDiscrepancy;
 import com.cannontech.dr.model.PerformanceVerificationAverageReports;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
@@ -475,40 +453,18 @@ public class SimpleImmutabilityTest {
         // @formatter:off
         assertImmutability(
             AllRelayCommunicationTimes.class,
-            AuthenticationRequest.class,
-            AuthenticationResponse.class,
-            CreateSetRequest.class,
-            DemandResponseRef.class,
-            DrRestoreRequest.class,
-            EcobeeDeviceReading.class,
-            EcobeeDeviceReadings.class,
-            EcobeeDiscrepancyCategory.class,
-            EcobeeDiscrepancyType.class,
-            EcobeeDutyCycleDrParameters.class,
-            EcobeeMislocatedDeviceDiscrepancy.class,
-            EcobeeMislocatedSetDiscrepancy.class,
-            EcobeeQueryCount.class,
-            EcobeeQueryStatistics.class,
-            EcobeeQueryType.class,
-            EcobeeReportJob.class,
             InventoryRelayAppliances.class,
-            MoveDeviceRequest.class,
-            MoveSetRequest.class,
             PerformanceVerificationAverageReports.class,
             PerformanceVerificationEventMessage.class,
             PerformanceVerificationEventMessageStats.class,
             PerformanceVerificationEventStats.class,
             PerformanceVerificationMessageStatus.class,
-            RegisterDeviceRequest.class,
             RfnExpressComUnicastDataReplyType.class,
             RfnExpressComUnicastReplyType.class,
             RfnLcrPointDataMap.class,
             RfnLcrReadSimulatorDeviceParameters.class,
             RfnLcrReadingType.class,
             RfnLcrRelayDataMap.class,
-            RuntimeReportJobResponse.class,
-            StandardResponse.class,
-            Status.class,
             ThermostatRampRateValues.class,
             RfnLcrTlvPointDataType.class,
             RfnLcr6700RelayMap.class,

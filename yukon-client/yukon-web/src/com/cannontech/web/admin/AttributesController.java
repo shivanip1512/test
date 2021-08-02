@@ -112,6 +112,7 @@ public class AttributesController {
     private String saveAttribute(CustomAttribute attribute, BindingResult result, ModelMap model, YukonUserContext userContext, HttpServletRequest request, 
                                  HttpServletResponse resp, FlashScope flashScope, RedirectAttributes redirectAttributes, Boolean isEditMode) {
         attributeValidator.validate(attribute, result);
+        Boolean isCreate = attribute.getCustomAttributeId() == null;
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             setupErrorModel(redirectAttributes, attribute, result, isEditMode);
@@ -120,16 +121,16 @@ public class AttributesController {
 
         try {
             ResponseEntity<? extends Object> response = null;
-            if (attribute.getCustomAttributeId() != null) {
+            if (!isCreate) {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl + "/" + attribute.getCustomAttributeId());
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, CustomAttribute.class, attribute);
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, Object.class, attribute);
             } else {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl);
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, CustomAttribute.class, attribute);
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, attribute);
             }
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                BindException error = new BindException(attribute, "editAttribute");
+                BindException error = new BindException(attribute, isCreate ? "createAttribute" : "editAttribute");
                 result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 if (result.hasErrors()) {
                     resp.setStatus(HttpStatus.BAD_REQUEST.value());

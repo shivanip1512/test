@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
@@ -28,11 +30,9 @@ import com.cannontech.dr.ecobee.message.CriteriaSelector;
 import com.cannontech.dr.ecobee.message.DrEventState;
 import com.cannontech.dr.ecobee.message.EcoplusSelector;
 import com.cannontech.dr.ecobee.message.Selector;
-
 import com.cannontech.dr.ecobee.message.ZeusCreatePushConfig;
 import com.cannontech.dr.ecobee.message.ZeusDemandResponseRequest;
 import com.cannontech.dr.ecobee.message.ZeusEvent;
-
 import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusGroupResponse;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
@@ -41,6 +41,7 @@ import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeePlusDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
@@ -97,6 +98,19 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
     }
+    
+    /**
+     * Delete a thermostat group
+     */
+    @Override
+    public void deleteGroup(String zeusGroupId) {
+        try {
+            String deleteGroupURL = getUrlBase() + "tstatgroups/" + zeusGroupId;
+            requestHelper.callEcobeeAPIForObject(deleteGroupURL, HttpMethod.DELETE, Object.class);
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+    }
 
     /**
      * Retrieve root_tstatgroup_id from Ecobee by using programID.
@@ -116,37 +130,49 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @Override
-    public void enroll(int lmGroupId, String serialNumber, int inventoryId) {
-        String zeusGroupId = ecobeeZeusGroupService.getZeusGroupIdForLmGroup(lmGroupId);
-        // For a new customer, zeusGroupId might be empty. So create a new Ecobee group.
-        if (StringUtils.isEmpty(zeusGroupId)) {
-            zeusGroupId = createEcobeeGroup(lmGroupId, serialNumber);
-        }
+    public void enroll(int lmGroupId, String serialNumber, int inventoryId, int programId, boolean updateDeviceMapping) {
         synchronized (this) {
-            int deviceCount = ecobeeZeusGroupService.getDeviceCount(zeusGroupId);
-            if (deviceCount < thresholdThermostatCount) {
-                addThermostatToGroup(zeusGroupId, serialNumber, inventoryId);
+            String zeusGroupId = StringUtils.EMPTY;
+            List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(lmGroupId, programId);
+            // For new system and when there are no suitable Ecobee group available for enrollment, create a new Ecobee group.
+            if (CollectionUtils.isEmpty(zeusGroupIds) || getSuitableGroupForEnrolment(zeusGroupIds).isEmpty()) {
+                zeusGroupId = createEcobeeGroup(lmGroupId, serialNumber, programId);
             } else {
-                String groupName = cache.getAllPaosMap().get(lmGroupId).getPaoName();
-                throw new EnrollmentException("Yukon Ecobee group " + groupName + " can not contain more than "
-                        + thresholdThermostatCount
-                        + " thermostats. Create new group and attach it to the program before enrolling.");
+                zeusGroupId = getSuitableGroupForEnrolment(zeusGroupIds);
+            }
+            addThermostatToGroup(zeusGroupId, serialNumber, inventoryId, updateDeviceMapping);
+            if (ecobeeZeusGroupService.shouldUpdateProgramId(zeusGroupId)) {
+                ecobeeZeusGroupService.updateProgramId(zeusGroupId, programId);
             }
         }
+    }
+
+    /**
+     * Return the 1st group which can accommodate the thermostat. Return Empty String if all group have reached the threshold limit.
+     */
+    private String getSuitableGroupForEnrolment(List<String> zeusGroupIds) {
+        String zeusGroupId = StringUtils.EMPTY;
+        for (String groupId : zeusGroupIds) {
+            if (ecobeeZeusGroupService.getDeviceCount(groupId) < thresholdThermostatCount) {
+                zeusGroupId = groupId;
+                break;
+            }
+        }
+        return zeusGroupId;
     }
 
     /**
      * Create a Ecobee Zeus group and return the group ID.
      */
     @SuppressWarnings("unchecked")
-    private String createEcobeeGroup(int lmGroupId, String serialNumber) {
+    private String createEcobeeGroup(int lmGroupId, String serialNumber, int programId) {
         String zeusGroupId = StringUtils.EMPTY;
         try {
             String createThermostatGroupURL = getUrlBase() + "tstatgroups";
 
             CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), Arrays.asList(serialNumber));
-            String groupName = cache.getAllPaosMap().get(lmGroupId).getPaoName();
-            ZeusGroup group = new ZeusGroup(groupName, getZeusProgramId());
+            String newName = ecobeeZeusGroupService.getNextGroupName(lmGroupId, programId);
+            ZeusGroup group = new ZeusGroup(newName, getZeusProgramId());
             ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
             ResponseEntity<Map> responseEntity = (ResponseEntity<Map>) requestHelper.callEcobeeAPIForObject(
@@ -155,10 +181,11 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
                 Map<String, String> responseFields = (Map<String, String>) responseEntity.getBody().get("group");
                 zeusGroupId = responseFields.get("id");
-                groupName = responseFields.get("name");
-                ecobeeZeusGroupService.mapGroupIdToZeusGroup(lmGroupId, zeusGroupId, groupName);
+                String groupName = responseFields.get("name");
+                String yukonGroupName = cache.getAllPaosMap().get(lmGroupId).getPaoName();
+                ecobeeZeusGroupService.mapGroupIdToZeusGroup(lmGroupId, zeusGroupId, groupName, programId);
                 log.info("Zeus group with ID: {} and Name: {} created successfully on Ecobee and Mapped to Yukon LM group {}.",
-                        zeusGroupId, groupName, groupName);
+                        zeusGroupId, groupName, yukonGroupName);
             } else if (responseEntity.getStatusCode() == HttpStatus.PARTIAL_CONTENT) {
                 Map<String, Object> response = (Map<String, Object>) responseEntity.getBody();
                 List<String> failedThermostatIds = (List<String>) response.get("failed_thermostat_ids");
@@ -174,7 +201,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @SuppressWarnings("unchecked")
-    private void addThermostatToGroup(String zeusGroupId, String serialNumber, int inventoryId) {
+    private void addThermostatToGroup(String zeusGroupId, String serialNumber, int inventoryId, boolean updateDeviceMapping) {
         List<Integer> inventoryIds = ecobeeZeusGroupService.getInventoryIdsForZeusGrouID(zeusGroupId);
         List<String> thermostatIds = new ArrayList<String>();
         for (int id : inventoryIds) {
@@ -185,7 +212,10 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         ResponseEntity<? extends Object> responseEntity = updateThermostatGroup(zeusGroupId, thermostatIds);
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             log.info("Thermostat serial number {} mapped successfully to the zeus group ID {}", serialNumber, zeusGroupId);
-            ecobeeZeusGroupService.mapInventoryToZeusGroupId(inventoryId, zeusGroupId);
+            // Insert device to Zeus mapping table only in case of enrollment. For Cancel OupOut, do not insert the mapping.
+            if (updateDeviceMapping) {
+                ecobeeZeusGroupService.mapInventoryToZeusGroupId(inventoryId, zeusGroupId);
+            }
         } else if (responseEntity.getStatusCode() == HttpStatus.PARTIAL_CONTENT) {
             Map<String, Object> response = (Map<String, Object>) responseEntity.getBody();
             List<String> failedThermostatIds = (List<String>) response.get("failed_thermostat_ids");
@@ -198,23 +228,31 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
     @SuppressWarnings("unchecked")
     @Override
-    public void unEnroll(int lmGroupId, String serialNumber, int inventoryId) {
+    public void unEnroll(Set<Integer> lmGroupIds, String serialNumber, int inventoryId, boolean updateDeviceMapping) {
         try {
-            String zeusGroupId = ecobeeZeusGroupService.getZeusGroupIdForLmGroup(lmGroupId);
+            for (int lmGroupId : lmGroupIds) {
+                int programId = ecobeeZeusGroupService.getProgramIdToUnenroll(inventoryId, lmGroupId);
+                if (programId != EcobeeZeusGroupService.DEFAULT_PROGRAM_ID) {
+                    String zeusGroupId = ecobeeZeusGroupService.getZeusGroupId(lmGroupId, inventoryId, programId);
 
-            String deleteThermostatsURL = getUrlBase() + "tstatgroups/" + zeusGroupId + "/thermostats?thermostat_ids="
-                    + serialNumber;
-            ResponseEntity<? extends Object> responseEntiry = requestHelper.callEcobeeAPIForObject(deleteThermostatsURL,
-                    HttpMethod.DELETE, Object.class);
-            if (responseEntiry.getStatusCode() == HttpStatus.OK) {
-                Map<String, Integer> response = (Map<String, Integer>) responseEntiry.getBody();
-                if (response.get("deleted") == 1) {
-                    log.info("Thermostat serial number {} removed successfully from the zeus group ID {}", serialNumber,
-                            zeusGroupId);
-                    ecobeeZeusGroupService.deleteZeusGroupMappingForInventoryId(inventoryId);
-                } else {
-                    throw new EnrollmentException("Error occurred while unenrolling thermostat " + serialNumber
-                            + " from the zeus group ID " + zeusGroupId);
+                    String deleteThermostatsURL = getUrlBase() + "tstatgroups/" + zeusGroupId + "/thermostats?thermostat_ids="
+                            + serialNumber;
+                    ResponseEntity<? extends Object> responseEntiry = requestHelper.callEcobeeAPIForObject(deleteThermostatsURL,
+                            HttpMethod.DELETE, Object.class);
+                    if (responseEntiry.getStatusCode() == HttpStatus.OK) {
+                        Map<String, Integer> response = (Map<String, Integer>) responseEntiry.getBody();
+                        if (response.get("deleted") == 1) {
+                            log.info("Thermostat serial number {} removed successfully from the zeus group ID {}", serialNumber,
+                                    zeusGroupId);
+                            // Delete device to Zeus mapping only in case of Unenrollment. For OupOut, do not remove the mapping.
+                            if (updateDeviceMapping) {
+                                ecobeeZeusGroupService.deleteZeusGroupMappingForInventory(inventoryId, zeusGroupId);
+                            }
+                        } else {
+                            throw new EnrollmentException("Error occurred while unenrolling thermostat " + serialNumber
+                                    + " from the zeus group ID " + zeusGroupId);
+                        }
+                    }
                 }
             }
         } catch (RestClientException | EcobeeAuthenticationException e) {
@@ -233,6 +271,25 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
         try {
             return requestHelper.callEcobeeAPIForObject(updateThermostatURL, HttpMethod.PUT, Object.class,
+                    zeusThermostatGroup);
+
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+    }
+
+    @Override
+    public void createThermostatGroup(String zeusGroupId, List<String> thermostatIds) {
+
+        String createThermostatURL = getUrlBase() + "tstatgroups";
+
+        String groupName = ecobeeZeusGroupService.zeusGroupName(zeusGroupId);
+        CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), thermostatIds);
+        ZeusGroup group = new ZeusGroup(groupName, getZeusProgramId());
+        ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
+
+        try {
+            requestHelper.callEcobeeAPIForObject(createThermostatURL, HttpMethod.POST, Object.class,
                     zeusThermostatGroup);
 
         } catch (RestClientException | EcobeeAuthenticationException e) {
@@ -288,69 +345,113 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @Override
-    public String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters) {
+    public void sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters) {
         String eventId = StringUtils.EMPTY;
-
         String issueDemandResponseUrl = getUrlBase() + "events/dr";
-        ZeusDemandResponseRequest dutyCycleDr = new ZeusDemandResponseRequest(buildZeusEvent(parameters.getGroupId(),
-                parameters.getStartTime(), parameters.getEndTime(), parameters.isOptional()));
-        dutyCycleDr.getEvent().setDutyCyclePercentage(parameters.getDutyCyclePercent());
-        if (log.isDebugEnabled()) {
+
+        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(parameters.getGroupId(),
+                parameters.getProgramId());
+        for (String zeusGroupId : zeusGroupIds) {
+            ZeusDemandResponseRequest dutyCycleDr = new ZeusDemandResponseRequest(buildZeusEvent(zeusGroupId,
+                    parameters.getStartTime(), parameters.getEndTime(), parameters.isMandatory()));
+            dutyCycleDr.getEvent().setDutyCyclePercentage(parameters.getDutyCyclePercent());
+            dutyCycleDr.getEvent().setRandomTimeSeconds(parameters.getRandomTimeSeconds());
+            if (log.isDebugEnabled()) {
+                try {
+                    log.debug("Sending ecobee duty cycle DR with body: {}", JsonUtils.toJson(dutyCycleDr));
+                } catch (JsonProcessingException e) {
+                    log.warn("Error parsing json in debug.", e);
+                }
+            }
             try {
-                log.debug("Sending ecobee duty cycle DR with body: {}", JsonUtils.toJson(dutyCycleDr));
-            } catch (JsonProcessingException e) {
-                log.warn("Error parsing json in debug.", e);
+                ResponseEntity<ZeusDemandResponseRequest> zeusDrResponseEntity = requestHelper
+                        .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class,
+                                dutyCycleDr);
+                if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
+                    eventId = zeusDrResponseEntity.getBody().getEvent().getId();
+                    ecobeeZeusGroupService.updateEventId(eventId, zeusGroupId);
+                }
+            } catch (RestClientException | EcobeeAuthenticationException e) {
+                throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
             }
         }
-        try {
-            ResponseEntity<ZeusDemandResponseRequest> zeusDrResponseEntity = requestHelper
-                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class,
-                            dutyCycleDr);
-            if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
-                eventId = zeusDrResponseEntity.getBody().getEvent().getId();
-            }
-        } catch (RestClientException | EcobeeAuthenticationException e) {
-            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
-        }
-        return eventId;
     }
 
     @Override
-    public String sendSetpointDR(EcobeeSetpointDrParameters parameters) {
+    public void sendSetpointDR(EcobeeSetpointDrParameters parameters) {
         String eventId = StringUtils.EMPTY;
-
         String issueDemandResponseUrl = getUrlBase() + "events/dr";
-        ZeusDemandResponseRequest setpointDr = new ZeusDemandResponseRequest(buildZeusEvent(parameters.getGroupId(),
-                parameters.getStartTime(), parameters.getStopTime(), parameters.isOptional()));
-        setpointDr.getEvent().setIsHeatingEvent(parameters.istempOptionHeat());
-        setpointDr.getEvent().setRelativeTemp((float) parameters.getTempOffset());
-        if (log.isDebugEnabled()) {
+
+        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(parameters.getGroupId(),
+                parameters.getProgramId());
+        for (String zeusGroupId : zeusGroupIds) {
+            ZeusDemandResponseRequest setpointDr = new ZeusDemandResponseRequest(buildZeusEvent(zeusGroupId,
+                    parameters.getStartTime(), parameters.getStopTime(), parameters.isMandatory()));
+            setpointDr.getEvent().setIsHeatingEvent(parameters.isTempOptionHeat());
+            setpointDr.getEvent().setRelativeTemp((float) parameters.getTempOffset());
+            if (log.isDebugEnabled()) {
+                try {
+                    log.debug("Sending ecobee set point DR with body: {}", JsonUtils.toJson(setpointDr));
+                } catch (JsonProcessingException e) {
+                    log.warn("Error parsing json in debug.", e);
+                }
+            }
             try {
-                log.debug("Sending ecobee set point DR with body: {}", JsonUtils.toJson(setpointDr));
-            } catch (JsonProcessingException e) {
-                log.warn("Error parsing json in debug.", e);
+                ResponseEntity<ZeusDemandResponseRequest> zeusDrResponseEntity = requestHelper
+                        .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class,
+                                setpointDr);
+                if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
+                    eventId = zeusDrResponseEntity.getBody().getEvent().getId();
+                    ecobeeZeusGroupService.updateEventId(eventId, zeusGroupId);
+                }
+            } catch (RestClientException | EcobeeAuthenticationException e) {
+                throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
             }
         }
-        try {
-            ResponseEntity<ZeusDemandResponseRequest> zeusDrResponseEntity = requestHelper
-                    .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class, setpointDr);
-            if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
-                eventId = zeusDrResponseEntity.getBody().getEvent().getId();
-            }
-        } catch (RestClientException | EcobeeAuthenticationException e) {
-            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
-        }
-        return eventId;
     }
 
+    @Override
+    public void sendEcoPlusDR(EcobeePlusDrParameters parameters) {
+        String eventId = StringUtils.EMPTY;
+        String issueDemandResponseUrl = getUrlBase() + "events/dr";
+
+        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(parameters.getGroupId(),
+                parameters.getProgramId());
+        for (String zeusGroupId : zeusGroupIds) {
+            ZeusDemandResponseRequest ecoPluspointDr = new ZeusDemandResponseRequest(buildZeusEcoPlusEvent(zeusGroupId,
+                                                                                                           parameters.getStartTime(),
+                                                                                                           parameters.getEndTime(),
+                                                                                                           parameters.getRandomTimeSeconds(),
+                                                                                                           parameters.isHeatingEvent()));
+
+            if (log.isDebugEnabled()) {
+                try {
+                    log.debug("Sending eco+ point DR with body: {}", JsonUtils.toJson(ecoPluspointDr));
+                } catch (JsonProcessingException e) {
+                    log.warn("Error parsing json in debug.", e);
+                }
+            }
+            try {
+                ResponseEntity<ZeusDemandResponseRequest> zeusDrResponseEntity = requestHelper
+                        .callEcobeeAPIForObject(issueDemandResponseUrl, HttpMethod.POST, ZeusDemandResponseRequest.class,
+                                                ecoPluspointDr);
+                if (zeusDrResponseEntity.getStatusCode() == HttpStatus.CREATED) {
+                    eventId = zeusDrResponseEntity.getBody().getEvent().getId();
+                    ecobeeZeusGroupService.updateEventId(eventId, zeusGroupId);
+                }
+            } catch (RestClientException | EcobeeAuthenticationException e) {
+                throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+            }
+        }
+        
+    }
     /**
      * Method to build Zeus event.
      */
-    private ZeusEvent buildZeusEvent(int groupId, Instant startTime, Instant stopTime, boolean optional) {
+    private ZeusEvent buildZeusEvent(String zeusGroupId, Instant startTime, Instant stopTime, boolean isMandatory) {
         DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         String eventDisplayMessage = messageSourceAccessor.getMessage("yukon.web.modules.dr.ecobee.eventDisplayMessage");
-        String zeusGroupId = ecobeeZeusGroupService.getZeusGroupIdForLmGroup(groupId);
 
         ZeusEvent event = new ZeusEvent();
         event.setName(YUKON_CYCLE_EVENT_NAME);
@@ -360,7 +461,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         Duration res = new Duration(startTime, stopTime);
         event.setDurationInMinutes(res.toStandardMinutes().getMinutes());
 
-        event.setMandatory(!optional);
+        event.setMandatory(isMandatory);
 
         event.setMessage(eventDisplayMessage);
         event.setSendEmail(settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
@@ -372,7 +473,28 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         return event;
     }
 
-    @SuppressWarnings("unchecked")
+    
+    /**
+     * Method to build Zeus eco+ event.
+     */
+    private ZeusEvent buildZeusEcoPlusEvent(String zeusGroupId, Instant startTime, Instant stopTime, Integer randomTimeSeconds, Boolean isHeatingEvent) {
+        DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
+
+        ZeusEvent event = new ZeusEvent();
+        event.setName(YUKON_CYCLE_EVENT_NAME);
+        event.setTstatGroupId(zeusGroupId);
+
+        event.setRandomTimeSeconds(randomTimeSeconds);
+        event.setIsHeatingEvent(isHeatingEvent);
+
+        event.setEventStartTime(startTime.toString(dateTimeFormmater));
+        Duration res = new Duration(startTime, stopTime);
+        event.setDurationInMinutes(res.toStandardMinutes().getMinutes());
+
+        event.setEcoplusSelector(EcoplusSelector.ECOPLUS);
+        return event;
+    }
+
     @Override
     public List<ZeusGroup> getAllGroups() {
         String getAllGroups = getUrlBase() + "tstatgroups";
@@ -392,7 +514,6 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<ZeusThermostat> getThermostatsInGroup(String thermostatGroupID) {
         String getThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats";
@@ -412,32 +533,44 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @Override
-    public void cancelDemandResponse(int yukonGroupId, String... serialNumbers) {
-        boolean isNotEmptyThermostats = ArrayUtils.isNotEmpty(serialNumbers);
-        log.debug("Sending Zeus cancel DR request for Yukon group : {} for {} thermostat(s)", yukonGroupId,
-                isNotEmptyThermostats ? serialNumbers : "all");
-        String zeusEventId = ecobeeZeusGroupService.getEventId(yukonGroupId);
-        String cancelDrUrl = getUrlBase() + "/events/dr/" + zeusEventId;
-        if (isNotEmptyThermostats) {
-            cancelDrUrl = cancelDrUrl.concat("?thermostat_ids=").concat(String.join(",", serialNumbers));
-        }
-        try {
-            ResponseEntity<?> responseEntity = requestHelper.callEcobeeAPIForObject(cancelDrUrl, HttpMethod.DELETE, Map.class);
-            if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                log.debug("Canceled DR request for Yukon group : {} for {} thermostat(s)", yukonGroupId,
-                        isNotEmptyThermostats ? serialNumbers : "all");
-                if (!isNotEmptyThermostats) {
-                    // For DR event cancellation, update the eventId to empty String for the Yukon group.
-                    ecobeeZeusGroupService.updateEventId(StringUtils.EMPTY, yukonGroupId);
-                } else {
-                    // For Opt Out remove the mapping between inventory ID and Zeus group ID.
-                    int inventoryId = lmHardwareBaseDao.getBySerialNumber(serialNumbers[0]).getInventoryId();
-                    ecobeeZeusGroupService.deleteZeusGroupMappingForInventoryId(inventoryId);
+    public boolean cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException {
+        boolean cancelledAnyDREvents = false;
+        for (int yukonGroupId : groupIds) {
+            boolean isNotEmptyThermostats = ArrayUtils.isNotEmpty(serialNumbers);
+
+            List<String> zeusEventIds = ecobeeZeusGroupService.getEventIds(yukonGroupId);
+            for (String zeusEventId : zeusEventIds) {
+                String cancelDrUrl = getUrlBase() + "/events/dr/" + zeusEventId;
+                if (isNotEmptyThermostats) {
+                    cancelDrUrl = cancelDrUrl.concat("?thermostat_ids=").concat(String.join(",", serialNumbers));
+                }
+                try {
+                    log.debug("Sending Zeus cancel DR request for Yukon group : {} for {} thermostat(s)", yukonGroupId,
+                            isNotEmptyThermostats ? serialNumbers : "all");
+                    ResponseEntity<?> responseEntity = requestHelper.callEcobeeAPIForObject(cancelDrUrl, HttpMethod.DELETE,
+                            Map.class);
+                    if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                        log.debug("Canceled DR request for Yukon group : {} for {} thermostat(s)", yukonGroupId,
+                                isNotEmptyThermostats ? serialNumbers : "all");
+                        if (!isNotEmptyThermostats) {
+                            // For DR event cancellation, update the eventId to empty String for the Yukon group.
+                            // For Opt Out, just make call to Ecobee. Do not remove the mapping between inventory ID and Zeus
+                            // group ID.
+                            ecobeeZeusGroupService.removeEventId(zeusEventId);
+                        }
+                        cancelledAnyDREvents = true;
+                    }
+                } catch (RestClientException | EcobeeAuthenticationException e) {
+                    throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
                 }
             }
-        } catch (RestClientException | EcobeeAuthenticationException e) {
-            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
+        if (!cancelledAnyDREvents) {
+            log.info("There are no events for the provided groups/ serial numbers. No DR Event cancellation request"
+                    + " sent to Ecobee.");
+            throw new CommandCompletionException("No DR Event cancellation request sent to Ecobee.");
+        }
+        return cancelledAnyDREvents;
     }
 
     private String getUrlBase() {
@@ -446,7 +579,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     private String getZeusProgramId() {
-        String programId = settingDao.getString(GlobalSettingType.ECOBEE_ZEUS_PROGRAM_ID);
+        String programId = settingDao.getString(GlobalSettingType.ECOBEE_PROGRAM_ID);
         if (StringUtils.isEmpty(programId)) {
             throw new EcobeeCommunicationException("Ecobee Zeus program id is empty.");
         }

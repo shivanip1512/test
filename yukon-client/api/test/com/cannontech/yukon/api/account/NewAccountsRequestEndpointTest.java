@@ -1,5 +1,9 @@
 package com.cannontech.yukon.api.account;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -7,10 +11,8 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.transform.JDOMSource;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
@@ -33,7 +35,7 @@ public class NewAccountsRequestEndpointTest {
 
 	private NewAccountsRequestEndpoint impl;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         impl = new NewAccountsRequestEndpoint();
         impl.setAccountService(new AccountServiceAdapter() {
@@ -78,7 +80,7 @@ public class NewAccountsRequestEndpointTest {
         // Test response against schema definition
         TestUtils.validateAgainstSchema(successOutputElement, respSchemaResource);
         
-        Assert.assertNotNull("Missing output element from NewAccountsResponse.", successOutputElement);
+        assertNotNull(successOutputElement, "Missing output element from NewAccountsResponse.");
         
         new XMLOutputter(Format.getPrettyFormat()).output(successOutputElement, System.out);
 
@@ -88,13 +90,13 @@ public class NewAccountsRequestEndpointTest {
 
         List<Node> successResultList = template.evaluateAsNodeList("//y:accountResultList/y:accountResult");
         
-        Assert.assertNotNull("Missing CustomerAccountResult list from NewAccountsResponse.", successResultList);
-        Assert.assertTrue("CustomerAccountResult list from NewAccountsResponse should not be empty.", successResultList.size() > 0);
+        assertNotNull(successResultList, "Missing CustomerAccountResult list from NewAccountsResponse.");
+        assertTrue(successResultList.size() > 0, "CustomerAccountResult list from NewAccountsResponse should not be empty.");
         
         for(Node node : successResultList) {
-            Assert.assertEquals("Invalid result node structure.", 2, node.getChildNodes().getLength());
+            assertEquals(2, node.getChildNodes().getLength(), "Invalid result node structure.");
             Node successNode = node.getChildNodes().item(1);
-            Assert.assertEquals("Missing success node.", "success", successNode.getLocalName());
+            assertEquals("success", successNode.getLocalName(), "Missing success node.");
         }
 
         /*
@@ -113,7 +115,7 @@ public class NewAccountsRequestEndpointTest {
         // Test request against schema definition
         TestUtils.validateAgainstSchema(dupAccountNumOutputElement, respSchemaResource);
         
-        Assert.assertNotNull("Missing output element from NewAccountsResponse.", dupAccountNumOutputElement);
+        assertNotNull(dupAccountNumOutputElement, "Missing output element from NewAccountsResponse.");
 
         new XMLOutputter(Format.getPrettyFormat()).output(dupAccountNumOutputElement, System.out);
 
@@ -122,13 +124,14 @@ public class NewAccountsRequestEndpointTest {
 
         List<Node> dupAccountNumResultList = template.evaluateAsNodeList("//y:accountResultList/y:accountResult");
         
-        Assert.assertNotNull("Missing CustomerAccountResult list from NewAccountsResponse.", dupAccountNumResultList);
-        Assert.assertTrue("CustomerAccountResult list from NewAccountsResponse should not be empty.", dupAccountNumResultList.size() > 0);
+        assertNotNull(dupAccountNumResultList, "Missing CustomerAccountResult list from NewAccountsResponse.");
+        assertTrue(dupAccountNumResultList.size() > 0,
+                "CustomerAccountResult list from NewAccountsResponse should not be empty.");
         
         for(Node node : dupAccountNumResultList) {
-            Assert.assertEquals("Invalid result node structure.", 2, node.getChildNodes().getLength());
+            assertEquals(2, node.getChildNodes().getLength(), "Invalid result node structure.");
             Node failureNode = node.getChildNodes().item(1);
-            Assert.assertEquals("Missing failure node.", "failure", failureNode.getLocalName());
+            assertEquals("failure", failureNode.getLocalName(), "Missing failure node.");
         }
         
         Resource dupUsernameResource = new ClassPathResource("duplicateUsernameNewAccountsRequest.xml", NewAccountsRequestEndpointTest.class);
@@ -136,7 +139,7 @@ public class NewAccountsRequestEndpointTest {
         //Note: AUTH_USER is never actually used in accountServiceAdapter.addAccount
         Element dupUsernameOutputElement = impl.invoke(dupUsernameInputElement, AUTH_USER);
         
-        Assert.assertNotNull("Missing output element from NewAccountsResponse.", dupUsernameOutputElement);
+        assertNotNull(dupUsernameOutputElement, "Missing output element from NewAccountsResponse.");
 
         new XMLOutputter(Format.getPrettyFormat()).output(dupUsernameOutputElement, System.out);
 
@@ -145,13 +148,13 @@ public class NewAccountsRequestEndpointTest {
 
         List<Node> dupUsernameResultList = template.evaluateAsNodeList("//y:accountResultList/y:accountResult");
         
-        Assert.assertNotNull("Missing CustomerAccountResult list from NewAccountsResponse.", dupUsernameResultList);
-        Assert.assertTrue("CustomerAccountResult list from NewAccountsResponse should not be empty.", dupUsernameResultList.size() > 0);
+        assertNotNull(dupUsernameResultList, "Missing CustomerAccountResult list from NewAccountsResponse.");
+        assertTrue(dupUsernameResultList.size() > 0, "CustomerAccountResult list from NewAccountsResponse should not be empty.");
         
         for(Node node : dupUsernameResultList) {
-            Assert.assertEquals("Invalid result node structure.", 2, node.getChildNodes().getLength());
+            assertEquals(2, node.getChildNodes().getLength(), "Invalid result node structure.");
             Node successNode = node.getChildNodes().item(1);
-            Assert.assertEquals("Missing failure node.", "failure", successNode.getLocalName());
+            assertEquals("failure", successNode.getLocalName(), "Missing failure node.");
         }
     }
 }

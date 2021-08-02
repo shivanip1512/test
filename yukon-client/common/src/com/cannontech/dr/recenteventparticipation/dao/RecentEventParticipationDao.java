@@ -3,6 +3,7 @@ package com.cannontech.dr.recenteventparticipation.dao;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.Instant;
 
@@ -19,13 +20,6 @@ public interface RecentEventParticipationDao {
      * Creates new control event associated with the specified load program & group
      */
     public void createNewEventMapping(int programId, long eventId, int groupId, Instant startTime, Instant stopTime, String externalEventId);
-
-    /**
-     * Update device status (({@link ControlEventDeviceStatus}, deviceReceivedTime)) for which response is
-     * received.
-     */
-    void updateDeviceControlEvent(int eventId, int deviceId, List<ControlEventDeviceStatus> skipUpdateForStatus,
-            ControlEventDeviceStatus receivedMessageStatus, Instant deviceReceivedTime);
 
     /**
      * Insert event information for the device (in the specified load group) for which event as sent.
@@ -76,4 +70,15 @@ public interface RecentEventParticipationDao {
      * Returns event id for group id. Row with the most recent start time is used to find the event id;
      */
     Integer getExternalEventId(int groupId);
+
+    /**
+     * Updates event with new time and status
+     */
+    public void updateDeviceControlEvent(String externalEventId, int deviceId, ControlEventDeviceStatus status,
+            Instant deviceReceivedTime, String failReason, Instant retryTime);
+
+    /**
+     * Returns a subset of device ids with given status
+     */
+    Set<Integer> getDeviceIdsByStatus(Set<Integer> deviceIds, ControlEventDeviceStatus status, Range<Instant> range);
 }

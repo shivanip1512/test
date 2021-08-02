@@ -125,22 +125,6 @@ yukon.admin.security = (function () {
                 var formId = $(event.target).data('form-id');
                 _submitForm(formId);
             });
-            
-            $(document).on('yukon:admin:security:generateEcobeeKey', function(event) {
-                $.ajax({
-                    url : "generateEcobeeKey",
-                    type : "GET",
-                }).done(function(data) {
-                    $('.js-ecobee-key-generated').hide();
-                    $('.js-ecobee-key-not-generated').hide();
-                    if (data.ecobeeKeyGeneratedDateTime) {
-                        $('.js-ecobee-key-date-time').html(data.ecobeeKeyGeneratedDateTime);
-                        $('.js-ecobee-key-generated').show();
-                        
-                    }
-                });
-            });
-            
             $(document).on('yukon:admin:security:generateEcobeeZeusKey', function(event) {
                 yukon.ui.busy($('#generateEcobeeZeusKey'));
                 $('#generateEcobeeZeusKeyDialog').dialog('close');
@@ -156,6 +140,7 @@ yukon.admin.security = (function () {
                         $('#viewEcobeeZeusKey').prop('disabled', false);
                         $('#registerConfigurationEcobeeZeusKey').prop('disabled', false);
                         $('#checkRegistrationEcobeeZeusKey').prop('disabled', false);
+                        $('#registerEcobeeZeusKey').prop('disabled', false);
                     }
                     yukon.ui.unbusy($('#generateEcobeeZeusKey'));
                 });
@@ -169,20 +154,15 @@ yukon.admin.security = (function () {
                     type : "POST",
                     dataType : "json"
                 }).done(function(data) {
-                    $('.js-ecobee-zeus-key-not-registered').hide();
-                    $('.js-ecobee-zeus-key-registered').hide();
                     
-                    if (data.success) {
-                        $('#ecobee-zeus-js-message').addMessage({
-                            message : data.ecobeeKeyZeusRegisteredDateTime,
-                            messageClass : 'success'
-                        });
-                    } else {
-                        $('#ecobee-zeus-js-message').addMessage({
-                            message : data.ecobeeKeyZeusRegisteredDateTime,
-                            messageClass : 'error'
-                        });
-                    }
+                    var messageClass = data.success ? 'success' : 'error';
+                    $('.js-ecobee-zeus-key-register-date-time').html(data.ecobeeZeusRegisteredDateTime);
+                    $('.js-ecobee-zeus-key-registered').show();
+                    $('#ecobee-zeus-js-message').addMessage({
+                        message : data.ecobeeZeusRegisteredDateTimeMsg,
+                        messageClass : messageClass
+                    });
+                    
                     yukon.ui.unbusy($('#registerConfigurationEcobeeZeusKey'));
                 });
             });
@@ -203,6 +183,17 @@ yukon.admin.security = (function () {
                     }
                     
                 });
+            });
+            
+            $(document).on('click', '#registerEcobeeZeusKey', function() {
+                yukon.ui.busy($('#registerEcobeeZeusKey'));
+                $('#js-url-message').hide();
+                $('#ecobee-zeus-js-message').addMessage({
+                    message : $('.js-ecobee-url').val(),
+                    messageClass : 'error'
+                });
+                
+                yukon.ui.unbusy($('#registerEcobeeZeusKey'));
             });
             
             $(document).on('click', '#checkRegistrationEcobeeZeusKey', function() {

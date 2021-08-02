@@ -13,6 +13,7 @@ import com.cannontech.database.data.device.lm.BeatThePeakGear;
 import com.cannontech.database.data.device.lm.EatonCloudCycleGear;
 import com.cannontech.database.data.device.lm.EcobeeCycleGear;
 import com.cannontech.database.data.device.lm.EcobeeSetpointGear;
+import com.cannontech.database.data.device.lm.EcobeePlusGear;
 import com.cannontech.database.data.device.lm.HoneywellCycleGear;
 import com.cannontech.database.data.device.lm.HoneywellSetpointGear;
 import com.cannontech.database.data.device.lm.ItronCycleGear;
@@ -41,6 +42,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     SepCycle(SepCycleGear.class, "SEP Cycle", PaoType.LM_SEP_PROGRAM),
     EcobeeCycle(EcobeeCycleGear.class, "ecobee Cycle", PaoType.LM_ECOBEE_PROGRAM),
     EcobeeSetpoint(EcobeeSetpointGear.class, "ecobee Setpoint", PaoType.LM_ECOBEE_PROGRAM),
+    EcobeePlus(EcobeePlusGear.class, "ecobee Plus", PaoType.LM_ECOBEE_PROGRAM),
     HoneywellCycle(HoneywellCycleGear.class, "Honeywell Cycle", PaoType.LM_HONEYWELL_PROGRAM),
     HoneywellSetpoint(HoneywellSetpointGear.class, "Honeywell Setpoint", PaoType.LM_HONEYWELL_PROGRAM),
     ItronCycle(ItronCycleGear.class, "Itron Cycle", PaoType.LM_ITRON_PROGRAM),

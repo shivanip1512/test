@@ -393,6 +393,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     WIFI_BSSID_CHANGE("Wi-Fi BSSID Change", AttributeGroup.RFN_OTHER_EVENT, false),
     WIFI_PASSPHRASE_CHANGE("Wi-Fi Passphrase Change", AttributeGroup.RFN_OTHER_EVENT, false),
     WIFI_SSID_CHANGE("Wi-Fi SSID Change", AttributeGroup.RFN_OTHER_EVENT, false),
+    CELLULAR_CONNECTION_FAILED("Cellular Connection Failed", AttributeGroup.RFN_OTHER_EVENT, false),
+    CELLULAR_MODEM_DISABLED("Cellular Modem Disabled", AttributeGroup.RFN_OTHER_EVENT, false),
+    CELLULAR_APN_CHANGED("Cellular Network APN String Changed", AttributeGroup.RFN_OTHER_EVENT, false),
+    CELLULAR_SIM_CARD_INSERTED_REMOVED("Cellular SIM Card Inserted/Removed", AttributeGroup.RFN_OTHER_EVENT, false),
     ZERO_USAGE_FLAG("Zero Usage Flag", AttributeGroup.STATUS),
     ZIGBEE_LINK_STATUS("ZigBee Link Status", AttributeGroup.STATUS, false),
     TERMINAL_BLOCK_COVER_REMOVAL_FLAG("Terminal Block Cover Removal", AttributeGroup.STATUS, false),   //440 types only
@@ -737,6 +741,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     OPERATION_FAILED_NEUTRAL_CURRENT("Operation Failed Neutral Current", AttributeGroup.CAPCONTROL, false),
     OVER_UNDER_VOLTAGE_TRACKING_TIME("OvUv Tracking Time", AttributeGroup.CAPCONTROL, false),
     OVER_VOLTAGE_COUNT("Over Voltage Count", AttributeGroup.CAPCONTROL, false),
+    REFERENCE_SIGNAL_RECEIVED_POWER("RSRP", AttributeGroup.OTHER, false),
+    REFERENCE_SIGNAL_RECEIVED_QUALITY("RSRQ", AttributeGroup.OTHER, false),
     RADIO_SIGNAL_STRENGTH_INDICATOR("RSSI", AttributeGroup.OTHER, false),
     RECLOSE_BLOCKED("Reclose Blocked", AttributeGroup.CAPCONTROL, false),
     SCADA_OVERRIDE_CLEAR("SCADA Override Clear", AttributeGroup.CAPCONTROL, false),
@@ -745,6 +751,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SCADA_OVERRIDE_ENABLE("SCADA Override Enable", AttributeGroup.CAPCONTROL, false),
     SCADA_OVERRIDE_HEARTBEAT("SCADA Override Heartbeat", AttributeGroup.CAPCONTROL, false),
     SCADA_OVERRIDE_MODE("SCADA Override Mode", AttributeGroup.CAPCONTROL, false),
+    SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO("SINR", AttributeGroup.OTHER, false),
     SOURCE_VOLTAGE("Source Voltage", AttributeGroup.CAPCONTROL, false),
     TAP_DOWN("Tap Down", AttributeGroup.CAPCONTROL, false),
     TAP_POSITION("Tap Position", AttributeGroup.CAPCONTROL, false),
@@ -774,14 +781,18 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     MEMORY_MAP_LOST("Memory Map Lost", AttributeGroup.ITRON, false),
     RADIO_LINK_QUALITY("Radio Link Quality", AttributeGroup.ITRON, false),
 
-    // Eaton Cloud attribute mapping for PXMiddleware / Cellular LCR
+    // Eaton Cloud attribute mapping for Cellular LCR
     COMMS_LOSS_COUNT("Comms Loss Count", AttributeGroup.SYSTEM),
     FIRMWARE_UPDATE_STATUS("Firmware Update Status", AttributeGroup.SYSTEM),
     FREQUENCY("Frequency", AttributeGroup.OTHER),
     RELAY_1_ACTIVATION_STATUS("Relay 1 Activation Status", AttributeGroup.RELAY),
+    RELAY_1_COLD_LOAD_PICKUP_TIME("Relay 1 Cold Load Pickup Time", AttributeGroup.RELAY),
     RELAY_2_ACTIVATION_STATUS("Relay 2 Activation Status", AttributeGroup.RELAY),
+    RELAY_2_COLD_LOAD_PICKUP_TIME("Relay 2 Cold Load Pickup Time", AttributeGroup.RELAY),
     RELAY_3_ACTIVATION_STATUS("Relay 3 Activation Status", AttributeGroup.RELAY),
-    RELAY_4_ACTIVATION_STATUS("Relay 4 Activation Status", AttributeGroup.RELAY)
+    RELAY_3_COLD_LOAD_PICKUP_TIME("Relay 3 Cold Load Pickup Time", AttributeGroup.RELAY),
+    RELAY_4_ACTIVATION_STATUS("Relay 4 Activation Status", AttributeGroup.RELAY),
+    RELAY_4_COLD_LOAD_PICKUP_TIME("Relay 4 Cold Load Pickup Time", AttributeGroup.RELAY)
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";

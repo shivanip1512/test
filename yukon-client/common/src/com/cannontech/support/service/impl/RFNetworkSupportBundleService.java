@@ -9,8 +9,14 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -28,9 +34,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.LocationData;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
+import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileUtil;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
+import com.cannontech.common.util.jms.RequestReplyTemplate;
+import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -39,24 +58,43 @@ import com.cannontech.support.rfn.message.RfnSupportBundleResponse;
 import com.cannontech.support.rfn.message.RfnSupportBundleResponseType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.collect.ImmutableSet;
 
 public class RFNetworkSupportBundleService {
 
     private final static Logger log = YukonLogManager.getLogger(RFNetworkSupportBundleService.class);
     private final static String downloadRfSupportBundleURL = "/nmclient/DownloadRfSupportBundleServlet?fileName=";
-    private final static String supportBundleDirectory = "/Server/SupportBundles/RfNetworkData/";
+    private final static String supportBundleDirectory = "/Server/SupportBundles/";
+    private final static String locationDataDir = "locationData";
+    private final static String networkSnapshotDataDir = "networkSnapshotData_Yukon";
+    private final static int batchsize = 1000;
+    private final static int meterLocationcolumnCount = 11;
+    private final static int relayLocationcolumnCount = 9;
+    private final static int electricNodecolumnCount = 13;
+    private final static String meterLocationFileName = "MeterLocationsInYukon";
+    private final static String relayLocationFileName = "RelayLocationsInYukon";
+    private final static String gatewayLocationFileName = "GatewayLocationsInYukon";
+    private final static String electricNodeLocationFileName = "yukonData";
+    private static final int PAST_RF_BUNDLES_TO_KEEP = 5;
+    private final static ImmutableSet<PaoType> rfGatewayTypes = ImmutableSet.of(PaoType.RFN_GATEWAY, PaoType.GWY800, PaoType.GWY801);
 
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired GlobalSettingDao globalSettingDao;
+    @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private RfnGatewayDataCache dataCache;
+    @Autowired private RfnGatewayService rfnGatewayService;
 
     private RequestReplyReplyTemplate<RfnSupportBundleResponse, RfnSupportBundleResponse> template;
+    private RequestReplyTemplate<RfnMetadataMultiResponse> metaDataMultiRequestTemplate;
     private RfnSupportBundleResponseType responseStatus;
 
     @PostConstruct
     public void initialize() {
         YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_SUPPORT_BUNDLE);
         template = new RequestReplyReplyTemplate<>("RF_SUPPORT_BUNDLE", configurationSource, jmsTemplate);
+        YukonJmsTemplate metadataMultiJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_METADATA_MULTI);
+        metaDataMultiRequestTemplate = new RequestReplyTemplateImpl<>("RF_METADATA_MULTI", configurationSource, metadataMultiJmsTemplate, true);
     }
 
     public void send(RfnSupportBundleRequest request) {
@@ -88,11 +126,12 @@ public class RFNetworkSupportBundleService {
                 log.info(request + " - received reply2(" + statusReply.getResponseType() + ") from NM ");
                 String token = statusReply.getToken();
                 if (RfnSupportBundleResponseType.COMPLETED == statusReply.getResponseType()) {
-                    // TODO : FileName needs to remove after the code changes for NM side for unique customer name. This
-                    // will be collected in the response object.
-                    String suffix = new DateTime(request.getFromTimestamp()).toString(DateTimeFormat.forPattern("yyyyMMddHHmmss"));
-                    String fileName = "historicalData" + "_" + suffix;
-                    sendRfSupportBundleDownloadRequest(token, fileName);
+                    File cutomerDir = createCutomerDirectory(request.getFileName());
+                    sendRfSupportBundleDownloadRequest(token, cutomerDir.getPath(), request.getFileName());
+                    sendLocationDataRequest(request);
+                    sendElectricNodeDataRequest(request);
+                    zipRfSupportBundle(cutomerDir.getAbsolutePath());
+                    removeOldFiles();
                 }
                 responseStatus = statusReply.getResponseType();
             }
@@ -127,11 +166,51 @@ public class RFNetworkSupportBundleService {
     }
 
     /**
+     * Send data collection request for location data i.e meterLocation, relay location and gatewayLocation.
+     */
+    private void sendLocationDataRequest(RfnSupportBundleRequest request) {
+        String dateTime = getFormatedDateStr(request.getFromTimestamp());
+        String destDir = supportBundleDirectory + "RfNetworkData/" + request.getFileName() + File.separator + locationDataDir
+                + "_" + dateTime;
+        buildAndSendMutiDataRequest(request, PaoType.getRfMeterTypes(), destDir, meterLocationFileName, meterLocationcolumnCount,
+                RfnNetworkDataType.LOCATIONDATA, RfnMetadataMulti.NODE_DATA);
+        buildAndSendMutiDataRequest(request, PaoType.getRfRelayTypes(), destDir, relayLocationFileName, relayLocationcolumnCount,
+                RfnNetworkDataType.LOCATIONDATA, RfnMetadataMulti.NODE_DATA);
+        buildAndWriteGatewayLocationData(request, destDir, gatewayLocationFileName);
+    }
+    
+    /**
+     * Send electric node data request for network snapshot.
+     */
+    private void sendElectricNodeDataRequest(RfnSupportBundleRequest request) {
+        String dateTime = getFormatedDateStr(request.getFromTimestamp());
+        String destDir = supportBundleDirectory + "RfNetworkData/" + request.getFileName() + File.separator
+                + networkSnapshotDataDir + "_" + dateTime;
+        buildAndSendMutiDataRequest(request, PaoType.getRftypes(), destDir, electricNodeLocationFileName,
+                electricNodecolumnCount, RfnNetworkDataType.NETWORKSNAPSHOTDATA, RfnMetadataMulti.NODE_DATA,
+                RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
+    }
+
+    /**
+     * Zip Rf Support Bundle directory and delete the original directory once zipping is done.
+     */
+    private void zipRfSupportBundle(String dirPath) {
+        try {
+            String zippedDirPath = dirPath + ".zip";
+            FileUtil.zipFolder(dirPath, zippedDirPath);
+            FileUtil.deleteAllFilesInDirectory(dirPath);
+            Files.deleteIfExists(Paths.get(dirPath));
+        } catch (IOException ex) {
+            log.error("Error fould while zipping Rfn Support Bundle directory.");
+        }
+    }
+
+    /**
      * Send https request to Network Manager server for downloading RfSupportBundle.
      * @param token : token which is generated at NM server side and shared through RfnSupportBundleResponse.
      * @param fileName : Name of file which needs to be download from NM server.
      */
-    private void sendRfSupportBundleDownloadRequest(String token, String fileName) {
+    private void sendRfSupportBundleDownloadRequest(String token, String destDir, String fileName) {
         initializeHttpsSetting();
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> true);
         HttpURLConnection conn = null;
@@ -147,14 +226,10 @@ public class RFNetworkSupportBundleService {
             conn.connect();
 
             InputStream in = conn.getInputStream();
-            // Check If rf support bundle directory exist. If not, create it.
-            if(!getRfBundleDir().isDirectory()) {
-                getRfBundleDir().mkdir();
-            }
-            String destDir = getRfBundleDir() + File.separator + fileName;
+            // Write support bundle data to the destination directory.
             writeSupportBundleData(in, destDir);
         } catch (FileNotFoundException ex) {
-            log.error("Error while sending DownloadRfSupportBundle request. Check global settings for Network Manager server URL. " + url);
+            log.error("Error while sending DownloadRfSupportBundle request. Check global settings for Network Manager server URL. " + ex);
         } catch (Exception ex) {
             log.error("Error while sending DownloadRfSupportBundle request. " + ex);
         } finally {
@@ -190,6 +265,19 @@ public class RFNetworkSupportBundleService {
             bos.write(bytesIn, 0, read);
         }
         bos.close();
+    }
+
+    /**
+     * Create customer directory inside Rf support bundle directory.
+     */
+    private File createCutomerDirectory(String customerDir) {
+        File file = getRfBundleDir();
+        if(!file.isDirectory()) {
+            file.mkdir();
+        }
+        File customerDataDir = new File (file + File.separator + customerDir);
+        customerDataDir.mkdir();
+        return customerDataDir;
     }
 
     private void initializeHttpsSetting() {
@@ -249,6 +337,90 @@ public class RFNetworkSupportBundleService {
      * Return File for Rf Support bundle directory.
      */
     private File getRfBundleDir() {
-        return new File(CtiUtilities.getYukonBase() + supportBundleDirectory);
+        String supportBundleDir = CtiUtilities.getYukonBase() + supportBundleDirectory;
+        if (!new File(supportBundleDir).exists()) {
+            File file = new File(supportBundleDir);
+            file.mkdir();
+        }
+        return new File(supportBundleDir + "RfNetworkData");
+    }
+
+    /**
+     * Deleted Old RF Support Bundle files from RfNetworkData directory.
+     */
+    private void removeOldFiles() {
+        if (PAST_RF_BUNDLES_TO_KEEP >= 0) {
+            List<File> allFiles = FileUtil.filterAndOrderZipFile(getRfBundleDir());
+            for (int i = PAST_RF_BUNDLES_TO_KEEP; i < allFiles.size(); i++) {
+                log.info("Deleted Old RF Support Bundle: " + allFiles.get(i).getName());
+                allFiles.get(i).delete();
+            }
+        }
+    }
+
+    /**
+     * Return date string in yyyyMMddHHmmss format.
+     */
+    private String getFormatedDateStr(long millis) {
+        return new DateTime(millis).toString(DateTimeFormat.forPattern("yyyyMMddHHmmss"));
+    }
+    
+    /**
+     * Build gateway location data from RfnGatewayDataCache and write to the gateway location file.
+     */
+    private void buildAndWriteGatewayLocationData(RfnSupportBundleRequest request, String destDir, String fileName) {
+        int startIndex = 1;
+        int endIndex = batchsize;
+        List<LocationData> dataList = null;
+        while (dataList == null || dataList.size() >= batchsize) {
+            dataList = paoLocationDao.getLocationDetailForPaoType(rfGatewayTypes, startIndex, endIndex);
+            if (dataList != null && !dataList.isEmpty()) {
+                SupportBundleHelper.buildAndWriteGatewayLocationDataToDir(dataList, destDir, fileName, dataCache);
+            }
+            startIndex = startIndex + batchsize;
+            endIndex = endIndex + batchsize;
+        }
+    }
+
+    /**
+     * Build Metadata Request, Send request to NM and write data to the csv file.
+     */
+    private void buildAndSendMutiDataRequest(RfnSupportBundleRequest bundleRequest, Set<PaoType> paoTypes, String destDir,
+            String fileName, int coloumCount, RfnNetworkDataType networkType, RfnMetadataMulti... rfnMetadatas) {
+        int startIndex = 1;
+        int endIndex = batchsize;
+        List<LocationData> dataList = null;
+        while (dataList == null || dataList.size() >= batchsize) {
+            dataList = paoLocationDao.getLocationDetailForPaoType(paoTypes, startIndex, endIndex);
+            if (dataList != null && !dataList.isEmpty()) {
+                BlockingJmsReplyHandler<RfnMetadataMultiResponse> replyHandler = new BlockingJmsReplyHandler<>(
+                        RfnMetadataMultiResponse.class);
+                try {
+                    // Build Metadata Request
+                    RfnMetadataMultiRequest request = new RfnMetadataMultiRequest();
+                    request.setRfnMetadatas(rfnMetadatas);
+                    Set<RfnIdentifier> rfnIdentifiers = new HashSet<RfnIdentifier>();
+                    dataList.stream().forEach(data -> rfnIdentifiers.add(data.getRfnIdentifier()));
+                    request.setRfnIdentifiers(rfnIdentifiers);
+
+                    // Send Request to collect Node data.
+                    metaDataMultiRequestTemplate.send(request, replyHandler);
+                    RfnMetadataMultiResponse response = replyHandler.waitForCompletion();
+                    // Write data to csv file.
+                    if (networkType == RfnNetworkDataType.NETWORKSNAPSHOTDATA) {
+                        SupportBundleHelper.buildAndWriteElectricNodeDataToDir(response, dataList, destDir, fileName,
+                                rfnGatewayService, coloumCount);
+                    } else if (networkType == RfnNetworkDataType.LOCATIONDATA) {
+                        SupportBundleHelper.buildAndWriteLocationDataToDir(response, dataList, destDir, fileName, coloumCount);
+                    }
+                    startIndex = startIndex + batchsize;
+                    endIndex = endIndex + batchsize;
+                } catch (ExecutionException | IOException ex) {
+                    log.error("Error found while sending RfnMetadataMultiRequest for " + fileName + " node data.", ex);
+                }
+            } else {
+                log.info("No data found for " + fileName);
+            }
+        }
     }
 }

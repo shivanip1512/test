@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <sequencetables>
   <!--  set initsequence="true" on the table element to initialize the sequence
         with the max value from the identity column.  initsequence should be true
@@ -458,4 +459,475 @@
         <table name="PxMWEventIdIncrementor" identitycolumn="requestSeqNumber"/>
       </sequence>
   </sequencetable>
+=======
+<sequencetables>
+  <!--  set initsequence="true" on the table element to initialize the sequence
+        with the max value from the identity column.  initsequence should be true
+        for any objects whose tables may have been populated in the past.
+    -->
+  <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
+      <sequence name="general">
+        <table name="ApplianceCategory" identitycolumn="ApplianceCategoryID" initsequence="true"/>
+      	<table name="CapControlComment" identitycolumn="commentid" initsequence="true"/>
+        <table name="LMCustomerEventBase" identitycolumn="EventID" initsequence="true"/>
+        <table name="LMConfigurationBase" identitycolumn="ConfigurationID" initsequence="true"/>
+        <table name="Warehouse" identitycolumn="WarehouseID"/>
+      	<table name="Substation" identitycolumn="SubstationID" initsequence="true"/>
+        <table name="CCurtProgram" identitycolumn="CCurtProgramId"/>
+        <table name="CCurtProgramType" identitycolumn="CCurtProgramTypeId"/>
+        <table name="CCurtGroup" identitycolumn="CCurtGroupId"/>
+        <table name="CCurtProgramGroup" identitycolumn="CCurtProgramGroupId"/>
+        <table name="CCurtGroupCustomerNotif" identitycolumn="CCurtGroupCustomerNotifId"/>
+        <table name="CICustomerBase" identitycolumn="CustomerID"/>
+        <table name="CCurtCENotif" identitycolumn="CCurtCENotifId"/>
+        <table name="CCurtCEParticipant" identitycolumn="CCurtCEParticipantId"/>
+        <table name="CCurtCurtailmentEvent" identitycolumn="CCurtCurtailmentEventId"/>
+        <table name="CCurtProgramParameter" identitycolumn="CCurtProgramParameterId"/>
+        <table name="CCurtEconomicEvent" identitycolumn="CCurtEconomicEventId"/>
+        <table name="CCurtEconomicEventNotif" identitycolumn="CCurtEconomicEventNotifId"/>
+        <table name="CCurtEEParticipant" identitycolumn="CCurtEEParticipantId"/>
+        <table name="CCurtEEParticipantSelection" identitycolumn="CCurtEEParticipantSelectionId"/>
+        <table name="CCurtEEParticipantWindow" identitycolumn="CCurtEEParticipantWindowId"/>
+        <table name="CCurtEEPricing" identitycolumn="CCurtEEPricingId"/>
+        <table name="CCurtEEPricingWindow" identitycolumn="CCurtEEPricingWindowId"/>
+        <table name="CCurtAcctEvent" identitycolumn="CCurtAcctEventId"/>
+        <table name="CCurtAcctEventParticipant" identitycolumn="CCurtAcctEventParticipantId"/>
+        <table name="DeliverySchedule" identitycolumn="ScheduleID" initsequence="true"/>
+        <table name="Invoice" identitycolumn="InvoiceID" initsequence="true"/>
+        <table name="PurchasePlan" identitycolumn="PurchaseID" initsequence="true"/>
+        <table name="ScheduleTimePeriod" identitycolumn="TimePeriodID" initsequence="true"/>
+        <table name="Shipment" identitycolumn="ShipmentID" initsequence="true"/>
+        <table name="CallReportBase" identitycolumn="CallID" initsequence="true"/>
+        <table name="ServiceCompany" identitycolumn="CompanyID" initsequence="true"/>
+        <table name="ServiceCompanyDesignationCode" identitycolumn="DesignationCodeID" initsequence="true"/>
+        <table name="LMProgramWebPublishing" identitycolumn="ProgramID" initsequence="true"/>
+        <table name="ValidationMonitor" identitycolumn="ValidationMonitorId" initsequence="true"/>
+        <table name="LMGroupExpresscomAddress" identitycolumn="AddressId" initsequence="true"/>
+        <table name="EnergyCompany" identitycolumn="EnergyCompanyId" initsequence="true"/>
+        <table name="UserGroup" identitycolumn="UserGroupId" initsequence="true" />
+        <table name="CommandRequestUnsupported" identitycolumn="CommandRequestUnsupportedId" initsequence="true" />
+        <!-- Do not add new sequences here.  Add them at the bottom of the file and follow the format used there. -->
+      </sequence>
+      <sequence name="paobjectid">
+      	<table name="YukonPaObject" identitycolumn="PaObjectId" initsequence="true"/>
+      </sequence>
+      <sequence name="pointid">
+        <table name="Point" identitycolumn="POINTID" initsequence="true"/>
+      </sequence>
+      <sequence name="InventoryBase">
+        <table name="InventoryBase" identitycolumn="InventoryID" initsequence="true"/>
+      </sequence>
+      <sequence name="eventid">
+        <table name="EventBase" identitycolumn="EVENTID" initsequence="true"/>
+      </sequence>
+      <sequence name="MSP">
+        <table name="MSPVendor" identitycolumn="VENDORID" initsequence="true"/>
+        <table name="MSPLMInterfaceMapping" identitycolumn="MspLMInterfaceMappingId" initsequence="true"/>
+      </sequence>      
+      <sequence name="activityLogId">
+        <table name="ActivityLog" identitycolumn="ACTIVITYLOGID" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceReadLog">
+        <table name="DeviceReadLog" identitycolumn="DeviceReadLogId" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceReadRequestLog">
+        <table name="DeviceReadRequestLog" identitycolumn="DeviceReadRequestLogId" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceReadJobLog">
+        <table name="DeviceReadJobLog" identitycolumn="DeviceReadJobLogId" initsequence="true"/>
+      </sequence>
+      <sequence name="userpaopermissionid">
+        <table name="UserPaoPermission" identitycolumn="userpaopermissionid"/>
+      </sequence>
+	  <sequence name="ZoneId">
+      	<table name="Zone" identitycolumn="ZoneId" initsequence="true"/>
+      </sequence>
+      <sequence name="ZBEventId">
+        <table name="ZBControlEvent" identitycolumn="ZBControlEventId" initsequence="true"/>
+      </sequence>
+      <sequence name="schedAssignemnt">
+      	<table name="PAOScheduleAssignment" identitycolumn="EventID" initsequence="true"/>
+      </sequence>
+      <sequence name="grouppaopermissionid">
+        <table name="GroupPaoPermission" identitycolumn="grouppaopermissionid"/>
+      </sequence>
+      <sequence name="PasswordHistory">
+          <table name="PasswordHistory" identitycolumn="PasswordHistoryId" initsequence="true"/>
+      </sequence>
+      <sequence name="YukonUser">
+        <table name="YukonUser" identitycolumn="UserID" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceGroup">
+        <table name="DeviceGroup" identitycolumn="DeviceGroupId" initsequence="true"/>
+      </sequence>
+      <sequence name="ProfilePeakResult">
+        <table name="ProfilePeakResult" identitycolumn="resultId" initsequence="true"/>
+      </sequence>
+      <sequence name="PeakReport">
+        <table name="PeakReport" identitycolumn="resultId" initsequence="true"/>
+      </sequence>
+      <sequence name="BillingFileFormats">
+        <table name="BillingFileFormats" identitycolumn="FormatId" initsequence="false" />
+      </sequence>
+      <sequence name="DynamicBillingFormat">
+        <table name="DynamicBillingFormat" identitycolumn="FormatId" initsequence="true"/>
+      </sequence>
+      <sequence name="DynamicBillingField">
+        <table name="DynamicBillingField" identitycolumn="id" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceConfiguration">
+        <table name="DeviceConfiguration" identitycolumn="DeviceConfigurationId" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceConfigCategory">
+        <table name="DeviceConfigCategory" identitycolumn="DeviceConfigCategoryId" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceConfigDeviceTypes">
+        <table name="DeviceConfigDeviceTypes" identitycolumn="DeviceConfigDeviceTypeId" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceConfigItem">
+        <table name="DeviceConfigCategoryItem" identitycolumn="DeviceConfigCategoryItemId" initsequence="true"/>
+      </sequence>
+      <sequence name="LMControlInfo">
+        <table name="LMHardwareControlGroup" identitycolumn="ControlEntryId" initsequence="true"/>
+      </sequence>
+      <sequence name="Jobs">
+        <table name="JobProperty" identitycolumn="JobPropertyId"/>
+        <table name="JobStatus" identitycolumn="JobStatusId"/>
+        <table name="Job" identitycolumn="JobId"/>
+      </sequence>
+      <sequence name="DeviceEvent">
+        <table name="DeviceEvent" identitycolumn="DeviceEventId" initsequence="true"/>
+      </sequence>
+      <sequence name="ContactNotification">
+        <table name="ContactNotification" identitycolumn="ContactNotifID" initsequence="true"/>
+      </sequence>
+      <sequence name="Contact">
+        <table name="Contact" identitycolumn="ContactID" initsequence="true"/>
+      </sequence>
+      <sequence name="LMStatManualEvent">
+        <table name="LMCustomerEventBase" identitycolumn="EventID" initsequence="true"/>
+      </sequence>
+      <sequence name="ApplianceBase">
+        <table name="ApplianceBase" identitycolumn="ApplianceID" initsequence="true"/>
+      </sequence>
+      <sequence name="AccountSite">
+        <table name="AccountSite" identitycolumn="AccountSiteID" initsequence="true"/>
+      </sequence>
+      <sequence name="CustomerAccount">
+        <table name="CustomerAccount" identitycolumn="AccountID" initsequence="true"/>
+      </sequence>
+      <sequence name="SiteInformation">
+        <table name="SiteInformation" identitycolumn="SiteID" initsequence="true"/>
+      </sequence>
+      <sequence name="WorkOrderBase">
+        <table name="WorkOrderBase" identitycolumn="OrderID" initsequence="true"/>
+      </sequence>
+      <sequence name="Address">
+        <table name="Address" identitycolumn="AddressId" initsequence="true"/>
+      </sequence>
+      <sequence name="Customer">
+        <table name="Customer" identitycolumn="CustomerId" initsequence="true"/>
+      </sequence>
+      <sequence name="OptOutEvent">
+        <table name="OptOutEvent" identitycolumn="OptOutEventId" initsequence="true"/>
+      </sequence>
+      <sequence name="OptOutEventLog">
+        <table name="OptOutEventLog" identitycolumn="OptOutEventLogId" initsequence="true"/>
+      </sequence>
+      <sequence name="OptOutTempOverride">
+        <table name="OptOutTemporaryOverride" identitycolumn="OptOutTemporaryOverrideId" initsequence="true"/>
+      </sequence>
+      <sequence name="LMGearHistoryID">
+        <table name="LMProgramGearHistory" identitycolumn="LMProgramGearHistoryId" initsequence="true"/>
+      </sequence>
+      <sequence name="LMProgramHistoryID">
+        <table name="LMProgramHistory" identitycolumn="LMProgramHistoryId" initsequence="true"/>
+      </sequence>
+      <sequence name="MSP">
+        <table name="MSPVendor" identitycolumn="VENDORID" initsequence="true"/>
+        <table name="MSPLMInterfaceMapping" identitycolumn="MspLMInterfaceMappingId" initsequence="true"/>
+      </sequence> 
+      <sequence name="EventLog">
+        <table name="EventLog" identitycolumn="EventLogId" initsequence="false"/>
+      </sequence>
+      <sequence name="OutageMonitor">
+        <table name="OutageMonitor" identitycolumn="OutageMonitorId" initsequence="true"/>
+      </sequence>
+      <sequence name="TamperFlagMonitor">
+        <table name="TamperFlagMonitor" identitycolumn="TamperFlagMonitorId" initsequence="true"/>
+      </sequence>
+      <sequence name="StatusPointMonitor">
+        <table name="StatusPointMonitor" identitycolumn="StatusPointMonitorId" initsequence="true"/>
+		<table name="StatusPointMonitorProcessor" identitycolumn="StatusPointMonitorProcessorId" initsequence="true"/>
+      </sequence>
+      <sequence name="PorterResponseMonitor">
+        <table name="PorterResponseMonitor" identitycolumn="MonitorId" initsequence="true"/>
+        <table name="PorterResponseMonitorRule" identitycolumn="RuleId" initsequence="true"/>
+        <table name="PorterResponseMonitorErrorCode" identitycolumn="ErrorCodeId" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceDataMonitor">
+        <table name="DeviceDataMonitor" identitycolumn="MonitorId" initsequence="true"/>
+        <table name="DeviceDataMonitorProcessor" identitycolumn="ProcessorId" initsequence="true"/>
+      </sequence>
+      <sequence name="CRE">
+        <table name="CommandRequestExec" identitycolumn="CommandRequestExecId"/>
+        <table name="CommandRequestExecResult" identitycolumn="CommandRequestExecResultId"/>
+      </sequence>
+      <sequence name="CommandRequestExecRequest">
+        <table name="CommandRequestExecRequest" identitycolumn="CommandRequestExecRequestId" initsequence="true"/>
+      </sequence>
+      <sequence name="PAOSchedule">
+        <table name="PAOSchedule" identitycolumn="ScheduleId" initsequence="true"/>
+      </sequence>
+      <sequence name="CapControlStrategy">
+        <table name="CapControlStrategy" identitycolumn="StrategyId" initsequence="true"/>
+      </sequence>
+      <sequence name="DmvTest">
+        <table name="DmvTest" identitycolumn="DMVTestID" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceGroupComposed">
+        <table name="DeviceGroupComposed" identitycolumn="DeviceGroupComposedId" initsequence="true"/>
+        <table name="DeviceGroupComposedGroup" identitycolumn="DeviceGroupComposedGroupId" initsequence="true"/>
+      </sequence>
+      <sequence name="CustomerResidence">
+        <table name="CustomerResidence" identitycolumn="AccountSiteId"/>
+      </sequence>
+      <sequence name="GraphCustomerList">
+        <table name="GraphCustomerList" identitycolumn="GraphDefinitionId"/>
+      </sequence>
+      <sequence name="survey">
+        <table name="survey" identitycolumn="surveyId"/>
+      </sequence>
+      <sequence name="surveyQuestion">
+        <table name="surveyQuestion" identitycolumn="surveyQuestionId"/>
+      </sequence>
+      <sequence name="surveyQuestionAnswer">
+        <table name="surveyQuestionAnswer" identitycolumn="surveyQuestionAnswerId"/>
+      </sequence>
+      <sequence name="surveyResultId">
+        <table name="surveyResult" identitycolumn="surveyResultId"/>
+      </sequence>
+      <sequence name="surveyResultAnswerId">
+        <table name="surveyResultAnswer" identitycolumn="surveyResultAnswerId"/>
+      </sequence>
+      <sequence name="optOutSurvey">
+        <table name="optOutSurvey" identitycolumn="optOutSurveyId"/>
+      </sequence>
+      <sequence name="YukonListEntry">
+        <table name="YukonListEntry" identitycolumn="EntryId" initsequence="true"/>
+      </sequence>
+      <sequence name="AcctThermostatSchedule">
+        <table name="AcctThermostatSchedule" identitycolumn="AcctThermostatScheduleId" initsequence="true"/>
+      </sequence>
+      <sequence name="AcctThermostatScheduleEntry">
+        <table name="AcctThermostatScheduleEntry" identitycolumn="AcctThermostatScheduleEntryId" initsequence="true"/>
+      </sequence>
+      <sequence name="StaticPaoInfo">
+        <table name="StaticPaoInfo" identitycolumn="StaticPaoInfoId" initsequence="true"/>
+      </sequence>
+      <sequence name="RoleProperties">
+		<table name="YukonGroup" identitycolumn="GroupId" initsequence="true"/>
+        <table name="YukonGroupRole" identitycolumn="GroupRoleId" initsequence="true"/>
+      </sequence>
+      <sequence name="commandSchedule">
+        <table name="commandSchedule" identitycolumn="commandScheduleId"/>
+      </sequence>
+      <sequence name="inventoryConfigTask">
+        <table name="inventoryConfigTask" identitycolumn="inventoryReconfigTaskId"/>
+      </sequence>
+      <sequence name="thermostatEventHistory">
+        <table name="ThermostatEventHistory" identitycolumn="EventId"/>
+      </sequence>
+      <sequence name="archiveDataAnalysis">
+        <table name="ArchiveDataAnalysis" identitycolumn="ArchiveId"/>
+      </sequence>
+      <sequence name="archiveDataAnalysisSlot">
+        <table name="ArchiveDataAnalysisSlot" identitycolumn="SlotId"/>
+      </sequence>
+      <sequence name="archiveValuesExportFormat">
+        <table name="ArchiveValuesExportFormat" identitycolumn="FormatID" initsequence="true"/>
+      </sequence>
+      <sequence name="archiveValuesExportAttribute">
+        <table name="ArchiveValuesExportAttribute" identitycolumn="AttributeID" initsequence="true"/>
+      </sequence>
+      <sequence name="archiveValuesExportField">
+        <table name="ArchiveValuesExportField" identitycolumn="FieldID" initsequence="true"/>
+      </sequence>
+      <sequence name="YukonMessageId">
+        <table name="ExternalToYukonMessageIdMapping" identitycolumn="YukonMessageId"/>
+      </sequence>
+      <sequence name="ReportedAddressExpressCom">
+        <table name="ReportedAddressExpressCom" identitycolumn="ChangeId" initsequence="true"/>
+      </sequence>
+      <sequence name="ReportedAddressSep">
+        <table name="ReportedAddressSep" identitycolumn="ChangeId" initsequence="true"/>
+      </sequence>
+      <sequence name="EncryptionKey">
+        <table name="EncryptionKey" identitycolumn="EncryptionKeyId"/>
+      </sequence>
+      <sequence name="GlobalSetting">
+        <table name="GlobalSetting" identitycolumn="GlobalSettingId" initsequence="true" />
+      </sequence>
+      <sequence name="ProgramToSeasonalProgram">
+ 	    <table name="ProgramToSeasonalProgram" identitycolumn="AssignedProgramId" initsequence="true" />
+      </sequence>
+      <sequence name="FileExportHistory">
+      	<table name="FileExportHistory" identitycolumn="EntryId" initsequence="true" />
+      </sequence>
+      <sequence name="EnergyCompanySetting">
+        <table name="EnergyCompanySetting" identitycolumn="EnergyCompanySettingId" initsequence="true" />
+      </sequence>
+      <sequence name="UserPreference">
+        <table name="UserPreference" identitycolumn="PreferenceId" initsequence="true" />
+      </sequence>
+      <sequence name="UserPage">
+        <table name="UserPage" identitycolumn="UserPageId" initsequence="true" />
+      </sequence>
+      <sequence name="UserPageParam">
+        <table name="UserPageParam" identitycolumn="UserPageParamId" initsequence="true" />
+      </sequence>
+      <sequence name="UserSubscription">
+        <table name="UserSubscription" identitycolumn="UserSubscriptionId" initsequence="true" />
+      </sequence>
+      <sequence name="EstimatedLoadFormula">
+        <table name="EstimatedLoadFormula" identitycolumn="EstimatedLoadFormulaId" initsequence="true" />
+      </sequence>
+      <sequence name="EstimatedLoadFunction">
+        <table name="EstimatedLoadFunction" identitycolumn="EstimatedLoadFunctionId" initsequence="true" />
+      </sequence>
+      <sequence name="EstimatedLoadLookupTable">
+        <table name="EstimatedLoadLookupTable" identitycolumn="EstimatedLoadLookupTableId" initsequence="true" />
+      </sequence>
+      <sequence name="EstimatedLoadTableEntry">
+        <table name="EstimatedLoadTableEntry" identitycolumn="EstimatedLoadTableEntryId" initsequence="true" />
+      </sequence>
+      <sequence name="EstimatedLoadFormulaAssignment">
+        <table name="EstimatedLoadFormulaAssignment" identitycolumn="FormulaAssignmentId" initsequence="true" />
+      </sequence>
+      <sequence name="Theme">
+        <table name="Theme" identitycolumn="ThemeId" initsequence="true" />
+      </sequence>
+      <sequence name="YukonImage">
+        <table name="YukonImage" identitycolumn="ImageId" initsequence="true" />
+      </sequence>
+      <sequence name="DeviceCollection">
+        <table name="DeviceCollection" identitycolumn="CollectionId" initsequence="true" />
+      </sequence>
+      <sequence name="RfnBroadcastEvent">
+        <table name="RfnBroadcastEvent" identitycolumn="RfnBroadcastEventId" initsequence="true" />
+      </sequence>
+      <sequence name="EcobeeReconciliationReport">
+        <table name="EcobeeReconciliationReport" identitycolumn="EcobeeReconReportId" initsequence="true"/>
+      </sequence>
+      <sequence name="EcobeeReconReportError">
+        <table name="EcobeeReconReportError" identitycolumn="EcobeeReconReportErrorId" initsequence="true"/>
+      </sequence>
+      <sequence>
+        <table name="GatewayCertificateUpdate" identitycolumn="UpdateId" initsequence="true"/>
+      </sequence>
+      <sequence>
+        <table name="GatewayCertificateUpdateEntry" identitycolumn="EntryId" initsequence="true"/>
+      </sequence>
+      <sequence>
+        <table name="GatewayFirmwareUpdate" identitycolumn="UpdateId" initsequence="true"/>
+      </sequence>
+      <sequence>
+        <table name="GatewayFirmwareUpdateEntry" identitycolumn="EntryId" initsequence="true"/>
+      </sequence>
+      <sequence name="Behavior">
+        <table name="Behavior" identitycolumn="BehaviorId" initsequence="true"/>
+      </sequence>
+      <sequence name="BehaviorReport">
+        <table name="BehaviorReport" identitycolumn="BehaviorReportId" initsequence="true"/>
+      </sequence>
+      <sequence name="DataStreaming">
+        <table name="DataStreaming" identitycolumn="requestSeqNumber"/>
+      </sequence>
+      <sequence name="HoneywellDREvent">
+        <table name="HoneywellDREvent" identitycolumn="eventId"/>
+      </sequence>
+      <sequence name="Dashboard">
+        <table name="Dashboard" identitycolumn="DashboardId" initsequence="true"/>
+      </sequence>
+      <sequence name="Widget">
+        <table name="Widget" identitycolumn="WidgetId" initsequence="true"/>
+      </sequence>
+      <sequence name="WidgetSettings">
+        <table name="WidgetSettings" identitycolumn="SettingId" initsequence="true"/>
+      </sequence>
+      <sequence name="UsageThresholdReport">
+        <table name="UsageThresholdReport" identitycolumn="UsageThresholdReportId" initsequence="true"/>
+      </sequence>
+      <sequence name="Display">
+        <table name="Display" identitycolumn="DISPLAYNUM" initsequence="true"/>
+      </sequence>
+      <sequence name="MACSServiceRequest">
+        <table name="MACSServiceRequest" identitycolumn="requestSeqNumber"/>
+      </sequence>
+      <sequence name="SmartNotificationSub">
+        <table name="SmartNotificationSub" identitycolumn="SubscriptionId" initsequence="true"/>
+      </sequence>
+      <sequence name="SmartNotificationEvent">
+        <table name="SmartNotificationEvent" identitycolumn="EventId" initsequence="true"/>
+      </sequence>
+      <sequence name="SmartNotifEmailHistory">
+        <table name="SmartNotifEmailHistory" identitycolumn="HistoryId" initsequence="true"/>
+      </sequence>
+       <sequence name="SmartNotifEventHistory">
+        <table name="SmartNotifEventHistory" identitycolumn="EventHistoryId" initsequence="true"/>
+      </sequence>
+      <sequence name="CollectionAction">
+        <table name="CollectionAction" identitycolumn="CollectionActionId" initsequence="true"/>
+      </sequence>
+      <sequence name="CollectionActionRequest">
+        <table name="CollectionActionRequest" identitycolumn="CollectionActionRequestId" initsequence="true"/>
+      </sequence>
+      <sequence name="PqrEventLog">
+        <table name="PqrEventLog" identitycolumn="EventLogId"/>
+      </sequence>
+      <sequence name="PaoNote">
+        <table name="PaoNote" identitycolumn="NoteId" initsequence="true"/>
+      </sequence>
+      <sequence name="NestSync">
+        <table name="NestSync" identitycolumn="SyncId" initsequence="true"/>
+      </sequence>
+      <sequence name="NestSyncDetail">
+        <table name="NestSyncDetail" identitycolumn="SyncDetailId" initsequence="true"/>
+      </sequence>
+      <sequence name="NestSyncValue">
+        <table name="NestSyncValue" identitycolumn="SyncValueId" initsequence="true"/>
+      </sequence>
+      <sequence name="LMNestControlEvent">
+        <table name="LMNestControlEvent" identitycolumn="NestControlEventId" initsequence="true"/>
+      </sequence>
+     <sequence name="ScheduledDataImportHistory">
+        <table name="ScheduledDataImportHistory" identitycolumn="EntryId" initsequence="true"/>
+      </sequence>
+      <sequence name="RfnMetadataMultiRequest">
+        <table name="RfnMetadataMultiRequest" identitycolumn="requestIdentifier"/>
+      </sequence>
+      <sequence name="DrDisconnectEvent">
+        <table name="DrDisconnectEvent" identitycolumn="EventId" initsequence="true"/>
+      </sequence>
+      <sequence name="DrDisconnectDeviceStatus">
+        <table name="DrDisconnectDeviceStatus" identitycolumn="EntryId" initsequence="true"/>
+      </sequence>
+      <sequence name="CustomAttribute">
+        <table name="CustomAttribute" identitycolumn="AttributeId" initsequence="true"/>
+        <table name="AttributeAssignment" identitycolumn="AttributeAssignmentId" initsequence="true"/>
+      </sequence>
+      <sequence name="ControlEvent">
+        <table name="ControlEvent" identitycolumn="ControlEventId" initsequence="true"/>
+      </sequence>
+      <sequence name="EatonCloudSimulatorNameIncrementor">
+        <table name="EatonCloudSimulatorNameIncrementor" identitycolumn="requestSeqNumber"/>
+      </sequence>
+      <sequence name="EatonCloudEventIdIncrementor">
+        <table name="EatonCloudEventIdIncrementor" identitycolumn="requestSeqNumber"/>
+      </sequence>
+      <sequence name="YukonLoggingIncrementor">
+        <table name="YukonLogging" identitycolumn="LoggerId" initsequence="true"/>
+      </sequence>
+  </sequencetable>
+>>>>>>> refs/remotes/origin/master
 </sequencetables>

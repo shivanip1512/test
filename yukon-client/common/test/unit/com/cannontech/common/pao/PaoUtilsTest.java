@@ -1,9 +1,10 @@
 package com.cannontech.common.pao;
 
 import static com.cannontech.common.pao.PaoUtils.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PaoUtilsTest {
     @Test

@@ -172,6 +172,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     GWY801(DeviceTypes.GWY801, "GWY-801", PaoCategory.DEVICE, PaoClass.RFMESH),
     VIRTUAL_GATEWAY(DeviceTypes.VIRTUAL_GATEWAY, "Virtual Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
     
+    CRLY856(DeviceTypes.CRLY856, "CRLY-856", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN_RELAY(DeviceTypes.RFN_RELAY, "RFN Relay", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     ION_7700(DeviceTypes.ION_7700, "ION-7700", PaoCategory.DEVICE, PaoClass.RTU),
@@ -352,6 +353,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> batteryAnalysisTypes;
     private final static ImmutableSet<PaoType> virtualTypes;
     private final static ImmutableSet<PaoType> cloudLcrTypes;
+    private final static ImmutableSet<PaoType> cellularTypes;
 
     public final static int INVALID = -1;
     
@@ -589,7 +591,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LCR6200_RFN,
             LCR6600_RFN,
             LCR6700_RFN,
-            RFN_RELAY);
+            RFN_RELAY,
+            CRLY856);
         
         rfMeterTypes = Sets.intersection(rfTypes, meterTypes).immutableCopy();
         
@@ -601,6 +604,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         wifiTypes = ImmutableSet.of(
             WRL420CL,
             WRL420CD
+        );
+        
+        cellularTypes = ImmutableSet.of(
+            CRLY856
         );
         
         mctTypes = ImmutableSet.of(
@@ -714,7 +721,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             VIRTUAL_GATEWAY);
         
         rfRelayTypes = ImmutableSet.of(
-            RFN_RELAY);
+            RFN_RELAY,
+            CRLY856);
         
         rfDaTypes = ImmutableSet.of(RFN_1200);
         
@@ -1088,6 +1096,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return rfMeterTypes.contains(this);
     }
     
+    public static ImmutableSet<PaoType> getRftypes() {
+        return rfTypes;
+    }
+    
     public boolean isItron() {
         return itronTypes.contains(this);
     }
@@ -1156,6 +1168,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return itronTypes;
     }
     
+    public static ImmutableSet<PaoType> getCloudTypes() {
+        return cloudLcrTypes;
+    }
+    
     public static ImmutableSet<PaoType> getLongMacSupportedTypes() {
         return itronTypes;
     }
@@ -1194,6 +1210,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getWifiTypes() {
         return wifiTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getCellularTypes() {
+        return cellularTypes;
     }
 
     /**
@@ -1288,6 +1308,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public boolean isWifiDevice() {
         return wifiTypes.contains(this);
+    }
+    
+    public boolean isCellularDevice() {
+        return cellularTypes.contains(this);
     }
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)

@@ -1,7 +1,7 @@
 package com.cannontech.encryption;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
@@ -9,7 +9,8 @@ import java.lang.reflect.Method;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class SystemPublisherMetadataCryptoUtilsTest {
 
@@ -17,18 +18,20 @@ public class SystemPublisherMetadataCryptoUtilsTest {
     public void test_encrypt_decrypt_valid() throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         String strToEncrypt = "Test String";
         String encryptedString = SystemPublisherMetadataCryptoUtils.encrypt(strToEncrypt);
-        assertFalse("Original string and encrypted string are same : ", strToEncrypt.equals(encryptedString));
+        assertFalse(strToEncrypt.equals(encryptedString), "Original string and encrypted string are same : ");
         String decryptedString = SystemPublisherMetadataCryptoUtils.decrypt(encryptedString);
-        assertTrue("Original string and encrypted string are not same : ", strToEncrypt.equals(decryptedString));
+        assertTrue(strToEncrypt.equals(decryptedString), "Original string and encrypted string are not same : ");
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void test_encrypt_decrypt_invalid()
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         String strToEncrypt = "Test String";
         String encryptedString = SystemPublisherMetadataCryptoUtils.encrypt(strToEncrypt);
-        assertFalse("Original string and encrypted string are same : ", strToEncrypt.equals(encryptedString));
-        SystemPublisherMetadataCryptoUtils.decrypt(encryptedString + "Extra Param");
+        assertFalse(strToEncrypt.equals(encryptedString), "Original string and encrypted string are same : ");
+        Assertions.assertThrows(Exception.class, () -> {
+            SystemPublisherMetadataCryptoUtils.decrypt(encryptedString + "Extra Param");
+        });
     }
 
     @Test
@@ -39,12 +42,14 @@ public class SystemPublisherMetadataCryptoUtilsTest {
         method.invoke(SystemPublisherMetadataCryptoUtils.class, 1);
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void test_setChiper_invalid() throws Exception {
         Class<SystemPublisherMetadataCryptoUtils> encryptionClass = SystemPublisherMetadataCryptoUtils.class;
         Method method = encryptionClass.getDeclaredMethod("setChiper", Integer.class);
         method.setAccessible(true);
-        method.invoke(SystemPublisherMetadataCryptoUtils.class, -999999);
+        Assertions.assertThrows(Exception.class, () -> {
+            ;method.invoke(SystemPublisherMetadataCryptoUtils.class, -999999);
+        });
     }
 
     @Test
@@ -64,8 +69,8 @@ public class SystemPublisherMetadataCryptoUtilsTest {
                 StringBuilder.class);
         method.setAccessible(true);
         method.invoke(SystemPublisherMetadataCryptoUtils.class, stringNotToEncrypt, false, false, stringBuilder);
-        assertTrue("Original string and encrypted string are not same : ",
-                stringNotToEncrypt.equals(stringBuilder.toString().trim()));
+        assertTrue(stringNotToEncrypt.equals(stringBuilder.toString().trim()),
+                "Original string and encrypted string are not same : ");
     }
 
     @Test
@@ -77,12 +82,12 @@ public class SystemPublisherMetadataCryptoUtilsTest {
                 StringBuilder.class);
         method.setAccessible(true);
         method.invoke(SystemPublisherMetadataCryptoUtils.class, stringToEncrypt, true, false, stringBuilder);
-        assertTrue("Original string and encrypted string are same : ",
-                !stringToEncrypt.equals(stringBuilder.toString().trim()));
+        assertTrue(!stringToEncrypt.equals(stringBuilder.toString().trim()),
+                "Original string and encrypted string are same : ");
 
         String values[] = stringBuilder.toString().split(":", 2);
-        assertTrue("source text should not get encrypted ", values[0].equals("    source"));
-        assertTrue("SQL query should get encrypted", !values[1].trim().equals(" Some SQL Query"));
+        assertTrue(values[0].equals("    source"), "source text should not get encrypted ");
+        assertTrue(!values[1].trim().equals(" Some SQL Query"), "SQL query should get encrypted");
     }
 
     @Test
@@ -94,8 +99,8 @@ public class SystemPublisherMetadataCryptoUtilsTest {
                 StringBuilder.class);
         method.setAccessible(true);
         method.invoke(SystemPublisherMetadataCryptoUtils.class, stringNotToEncrypt, false, false, stringBuilder);
-        assertTrue("Original string and encrypted string are not same : ",
-                stringNotToEncrypt.contains(stringBuilder.toString().trim()));
+        assertTrue(stringNotToEncrypt.contains(stringBuilder.toString().trim()),
+                "Original string and encrypted string are not same : ");
     }
 
     @Test
@@ -107,8 +112,8 @@ public class SystemPublisherMetadataCryptoUtilsTest {
                 StringBuilder.class);
         method.setAccessible(true);
         method.invoke(SystemPublisherMetadataCryptoUtils.class, stringToEncrypt, true, true, stringBuilder);
-        assertTrue("Original string and encrypted string are same : ",
-                !stringToEncrypt.equals(stringBuilder.toString().trim()));
+        assertTrue(!stringToEncrypt.equals(stringBuilder.toString().trim()),
+                "Original string and encrypted string are same : ");
     }
 
 }

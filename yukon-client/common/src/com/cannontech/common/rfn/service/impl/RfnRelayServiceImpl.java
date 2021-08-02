@@ -3,6 +3,7 @@ package com.cannontech.common.rfn.service.impl;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +33,20 @@ public class RfnRelayServiceImpl implements RfnRelayService {
         return relays;
     }
     
-    @Override
-    public Set<RfnRelay> searchRelays(RfnDeviceSearchCriteria criteria) {
+    public Set<RfnRelay> getRelaysOfType(PaoType type) {
         
-        List<RfnDevice> devices = rfnDeviceDao.searchDevicesByPaoTypes(PaoType.getRfRelayTypes(), criteria);
+        Set<RfnRelay> relays = getAllRelays()
+                                   .stream()
+                                   .filter(relay -> relay.getType().equals(type))
+                                   .collect(Collectors.toSet());
+
+        return relays;
+    }
+    
+    @Override
+    public Set<RfnRelay> searchRelays(RfnDeviceSearchCriteria criteria, List<PaoType> relayTypes) {
+        
+        List<RfnDevice> devices = rfnDeviceDao.searchDevicesByPaoTypes(relayTypes, criteria);
         Set<RfnRelay> relays = getRelaysFromDevices(devices);
         
         return relays;

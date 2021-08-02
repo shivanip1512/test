@@ -29,6 +29,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
+import com.cannontech.common.rfn.message.node.CellularIplinkRelayData;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.node.NodeNetworkInfo;
@@ -140,8 +141,23 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "PRODUCT_NUMBER"), data.getProductNumber()));
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "SUB_MODULE_FIRMWARE_VERSION"),
                         data.getSecondaryModuleFirmwareVersion()));
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IPV6_ADDRESS"), data.getNodeIpv6Address()));
                 if (data.getWifiSuperMeterData() != null) {
                     model.addAttribute("wifiSuperMeterData", data.getWifiSuperMeterData());
+                }
+                if (data.getCellularIplinkRelayData() != null) {
+                    String cellPrefix = keyPrefix + "CellularData.";
+                    CellularIplinkRelayData cellData = data.getCellularIplinkRelayData();
+                    metadataPairs.add(Pair.of(accessor.getMessage(cellPrefix + "APN"), cellData.getApn()));
+                    metadataPairs.add(Pair.of(accessor.getMessage(cellPrefix + "FIRMWARE_VERSION"), cellData.getFirmwareVersion()));
+                    metadataPairs.add(Pair.of(accessor.getMessage(cellPrefix + "ICCID"), cellData.getIccid()));
+                    metadataPairs.add(Pair.of(accessor.getMessage(cellPrefix + "IMEI"), cellData.getImei()));
+                    metadataPairs.add(Pair.of(accessor.getMessage(cellPrefix + "IMSI"), cellData.getImsi()));
+                    String modemEnabledValue = cellData.getModemEnabled() ? accessor.getMessage("yukon.common.enabled") : accessor.getMessage("yukon.common.disabled");
+                    metadataPairs.add(Pair.of(accessor.getMessage(cellPrefix + "MODEM_ENABLED"), modemEnabledValue));
+                    String simCardPresentValue = cellData.getSimCardPresent() ? accessor.getMessage(cellPrefix + "SIM_CARD_PRESENT.PRESENT") : accessor.getMessage(cellPrefix + "SIM_CARD_PRESENT.NOT_PRESENT");
+                    metadataPairs.add(Pair.of(accessor.getMessage(cellPrefix + "SIM_CARD_PRESENT"), simCardPresentValue));
+                    metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "virtualGatewayIpv6Address"), cellData.getVirtualGwIpv6Addr()));
                 }
             } else {
                 log.info("NODE_DATA not found for {}", device);
@@ -160,6 +176,7 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                 }
                 //metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IPV6_ADDRESS"), info.getIpv6Address()));
                 //metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HOSTNAME"), info.getHostname()));
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "SENSOR_FIRMWARE_VERSION"), info.getSensorFirmwareVersion()));
             } else {
                 log.info("NODE_NETWORK_INFO not found for {}", device);
             }

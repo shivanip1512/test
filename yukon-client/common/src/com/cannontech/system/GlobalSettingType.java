@@ -114,8 +114,9 @@ public enum GlobalSettingType implements DisplayableEnum {
     RF_BROADCAST_PERFORMANCE(GlobalSettingSubCategory.DR, InputTypeFactory.enumType(OnOff.class), OnOff.OFF),
     ECOBEE_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ECOBEE_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
-    ECOBEE_ZEUS_PROGRAM_ID(GlobalSettingSubCategory.DR, stringType(), null),
+    ECOBEE_PROGRAM_ID(GlobalSettingSubCategory.DR, stringType(), null),
     ECOBEE_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://api.ecobee.com/1/", GlobalSettingTypeValidators.urlValidator),
+    ECOBEE_REPORTING_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
     ECOBEE_SEND_NOTIFICATIONS(GlobalSettingSubCategory.DR, booleanType(), false),
     HONEYWELL_WIFI_SERVICE_BUS_QUEUE(GlobalSettingSubCategory.DR, stringType(), null),
     HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING(GlobalSettingSubCategory.DR, stringType(), null),
@@ -133,11 +134,11 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_SFTP_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PRIVATE_KEY_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     RUNTIME_CALCULATION_INTERVAL_HOURS(GlobalSettingSubCategory.DR, 2, Range.inclusive(1, 24)),
-    PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL(GlobalSettingSubCategory.DR, 24, Range.inclusive(1,720)),
-    PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES(GlobalSettingSubCategory.DR, integerType(), 60),
-    PX_MIDDLEWARE_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
-    PX_MIDDLEWARE_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
-    PX_MIDDLEWARE_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
+    EATON_CLOUD_DEVICE_CREATION_INTERVAL(GlobalSettingSubCategory.DR, 24, Range.inclusive(1,720)),
+    EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES(GlobalSettingSubCategory.DR, integerType(), 60),
+    EATON_CLOUD_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
+    EATON_CLOUD_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
+    EATON_CLOUD_URL(GlobalSettingSubCategory.DR, stringType(), "https://blu-dr-api.eaton.com", GlobalSettingTypeValidators.urlValidator),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
@@ -206,10 +207,11 @@ public enum GlobalSettingType implements DisplayableEnum {
     
     // Dashboard Widgets
     DATA_AVAILABILITY_WINDOW_IN_DAYS(GlobalSettingSubCategory.DASHBOARD_WIDGET, 3, Range.inclusive(1, 7)),
-    GATEWAY_CONNECTION_WARNING_MINUTES(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 60),
+    DEVICE_CONNECTION_WARNING_MINUTES(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 60),
     GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3500),
     GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5000),
     GATEWAY_READY_NODES_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 25),
+    CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 400),
     PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3),
     PORTER_QUEUE_COUNTS_TREND_MAX_NUM_PORTS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5),
     PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 15),
@@ -257,8 +259,8 @@ public enum GlobalSettingType implements DisplayableEnum {
             ITRON_SFTP_PRIVATE_KEY_PASSWORD,
             NETWORK_MANAGER_DB_PASSWORD,
             CLOUD_IOT_HUB_CONNECTION_STRING,
-            PX_MIDDLEWARE_SERVICE_ACCOUNT_ID,
-            PX_MIDDLEWARE_SECRET);
+            EATON_CLOUD_SERVICE_ACCOUNT_ID,
+            EATON_CLOUD_SECRET);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {

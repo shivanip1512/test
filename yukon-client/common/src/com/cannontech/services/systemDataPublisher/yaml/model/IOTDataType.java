@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum to define List of IOT data type.
  */
 public enum IOTDataType {
-    TELEMETRY("Telemetry"),
-    PROPERTY("Property"),
-    BOTH("Both");
+    TELEMETRY("Telemetry");
 
     @JsonValue
     private String name;

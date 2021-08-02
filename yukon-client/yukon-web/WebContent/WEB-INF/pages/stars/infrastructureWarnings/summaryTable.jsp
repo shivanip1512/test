@@ -28,7 +28,8 @@
                     <tags:infrastructureWarningsCount deviceTotalCount="${summary.totalGateways}"
                                                       deviceWarningsCount="${summary.warningGateways}"
                                                       deviceLabel="${deviceLabel}"
-                                                      fromDetailPage="${fromDetailPage}"/>
+                                                      fromDetailPage="${fromDetailPage}"
+                                                      deviceType="GATEWAY" />
                 </c:if>
                 <c:if test="${summary.totalRelays != 0}">
                     <td width="10%">
@@ -37,9 +38,10 @@
                     <tags:infrastructureWarningsCount deviceTotalCount="${summary.totalRelays}"
                                                       deviceWarningsCount="${summary.warningRelays}"
                                                       deviceLabel="${deviceLabel}"
-                                                      fromDetailPage="${fromDetailPage}"/>
+                                                      fromDetailPage="${fromDetailPage}"
+                                                      deviceType="RELAY" />
                 </c:if>
-            </tr>            
+            </tr>
         </c:if>
         <c:if test="${summary.totalCcus != 0 || summary.totalRepeaters != 0}">
             <tr>
@@ -48,7 +50,8 @@
                     <tags:infrastructureWarningsCount deviceTotalCount="${summary.totalCcus}"
                                                       deviceWarningsCount="${summary.warningCcus}"
                                                       deviceLabel="${deviceLabel}" 
-                                                      fromDetailPage="${fromDetailPage}"/>
+                                                      fromDetailPage="${fromDetailPage}"
+                                                      deviceType="CCU" />
                 </c:if>
                 <c:if test="${summary.totalRepeaters != 0}">
                     <td width="10%">
@@ -57,7 +60,8 @@
                     <tags:infrastructureWarningsCount deviceTotalCount="${summary.totalRepeaters}"
                                                       deviceWarningsCount="${summary.warningRepeaters}"
                                                       deviceLabel="${deviceLabel}" 
-                                                      fromDetailPage="${fromDetailPage}"/>
+                                                      fromDetailPage="${fromDetailPage}"
+                                                      deviceType="REPEATER" />
                 </c:if>
             </tr>
         </c:if>

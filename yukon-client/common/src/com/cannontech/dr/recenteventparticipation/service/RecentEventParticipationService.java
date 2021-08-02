@@ -18,13 +18,13 @@ public interface RecentEventParticipationService {
      * Update device status (({@link ControlEventDeviceStatus}, deviceReceivedTime)) for which response is
      * received.
      */
-    void updateDeviceControlEvent(int eventId, int deviceId, EventPhase eventPhase, Instant deviceReceivedTime);
+    void updateDeviceControlEvent(int externalEventId, int deviceId, EventPhase eventPhase, Instant deviceReceivedTime);
 
     /**
      * Update device status (({@link ControlEventDeviceStatus}, deviceReceivedTime)) for which response is
      * received.
      */
-    void updateDeviceControlEvent(int eventId, int deviceId, ItronLoadControlEventStatus eventStatus, Instant deviceReceivedTime);
+    void updateDeviceControlEvent(int externalEventId, int deviceId, ItronLoadControlEventStatus eventStatus, Instant deviceReceivedTime);
 
     /**
      * Creates new control event associated with the specified load program & group

@@ -184,6 +184,7 @@
     <ClCompile Include="EatonCloudCycleGear.cpp" />
     <ClCompile Include="EatonCloudNoControlGear.cpp" />
     <ClCompile Include="ecobeeCycleGear.cpp" />
+    <ClCompile Include="ecobeePlusGear.cpp" />
     <ClCompile Include="ecobeeSetpointGear.cpp" />
     <ClCompile Include="executor.cpp" />
     <ClCompile Include="honeywellCycleGear.cpp" />

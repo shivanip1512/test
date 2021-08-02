@@ -1,10 +1,12 @@
 package com.cannontech.common.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -36,7 +38,7 @@ public class RawPointHistoryValidationServiceTest {
         RawPointHistoryWrapper base2 = createPoint(3, "2009-5-3T6:00:00Z", 300.0);
         
         double calculateHeight = RawPointHistoryValidationService.calculateHeight(base1, peak, base2);
-        Assert.assertEquals(200.0, calculateHeight, .01);
+        assertEquals(200.0, calculateHeight, .01);
     }
 
     @Test
@@ -51,7 +53,7 @@ public class RawPointHistoryValidationServiceTest {
         RawPointHistoryWrapper base2 = createPoint(3, "2009-6-5T6:00:00Z", 300.0);
         
         double calculateHeight = RawPointHistoryValidationService.calculateHeight(base1, peak, base2);
-        Assert.assertEquals(250.0, calculateHeight, .01);
+        assertEquals(250.0, calculateHeight, .01);
     }
     
     @Test
@@ -65,7 +67,7 @@ public class RawPointHistoryValidationServiceTest {
         RawPointHistoryWrapper base2 = createPoint(3, "2009-5-3T6:00:00Z", 500.0);
         
         double calculateHeight = RawPointHistoryValidationService.calculateHeight(base1, peak, base2);
-        Assert.assertEquals(-200.0, calculateHeight, .01);
+        assertEquals(-200.0, calculateHeight, .01);
     }
     
     @Test
@@ -75,7 +77,7 @@ public class RawPointHistoryValidationServiceTest {
         RawPointHistoryWrapper reading2 = createPoint(1, "2009-5-2T6:00:00Z", 2000);
         
         double kwhPerDay = RawPointHistoryValidationService.calculateLowerAvgKwhPerDay(reading1, reading2, 0);
-        Assert.assertEquals(1000, kwhPerDay, .01);
+        assertEquals(1000, kwhPerDay, .01);
     }
     
     @Test
@@ -85,7 +87,7 @@ public class RawPointHistoryValidationServiceTest {
         RawPointHistoryWrapper reading2 = createPoint(1, "2009-5-2T6:00:00Z", 1000);
         
         double kwhPerDay = RawPointHistoryValidationService.calculateLowerAvgKwhPerDay(reading1, reading2, 0);
-        Assert.assertEquals(-1000, kwhPerDay, .01);
+        assertEquals(-1000, kwhPerDay, .01);
     }
     
     // Because the exact nature of the slope error formula isn't all that important,
@@ -102,7 +104,7 @@ public class RawPointHistoryValidationServiceTest {
         double kwhPerDay_0 = RawPointHistoryValidationService.calculateLowerAvgKwhPerDay(reading1, reading2, 0);
         double kwhPerDay_2 = RawPointHistoryValidationService.calculateLowerAvgKwhPerDay(reading1, reading2, 2);
         
-        Assert.assertTrue(kwhPerDay_2 < kwhPerDay_0);
+        assertTrue(kwhPerDay_2 < kwhPerDay_0);
     }
     
     @Test
@@ -118,7 +120,7 @@ public class RawPointHistoryValidationServiceTest {
         double kwhPerDay_1_2 = RawPointHistoryValidationService.calculateLowerAvgKwhPerDay(reading1, reading2, 4);
         double kwhPerDay_1_3 = RawPointHistoryValidationService.calculateLowerAvgKwhPerDay(reading1, reading3, 4);
         
-        Assert.assertTrue(kwhPerDay_1_2 < kwhPerDay_1_3);
+        assertTrue(kwhPerDay_1_2 < kwhPerDay_1_3);
     }
     
     @Test
@@ -132,7 +134,7 @@ public class RawPointHistoryValidationServiceTest {
         
         double kwhPerDay = RawPointHistoryValidationService.calculateLowerAvgKwhPerDay(reading1, reading2, 4);
         
-        Assert.assertTrue(kwhPerDay >= 0);
+        assertTrue(kwhPerDay >= 0);
     }
     
     // For tracking purposes, the following will verify several values as the formula
@@ -146,7 +148,7 @@ public class RawPointHistoryValidationServiceTest {
         
         double kwhPerDay = RawPointHistoryValidationService.calculateLowerAvgKwhPerDay(reading1, reading2, 4);
         
-        Assert.assertEquals(0, kwhPerDay, 0);
+        assertEquals(0, kwhPerDay, 0);
     }
     
     @Test
@@ -157,7 +159,7 @@ public class RawPointHistoryValidationServiceTest {
         
         double kwhPerDay = RawPointHistoryValidationService.calculateLowerAvgKwhPerDay(reading1, reading2, 2);
         
-        Assert.assertEquals(96, kwhPerDay, .001);
+        assertEquals(96, kwhPerDay, .001);
     }
     
     @Test
@@ -168,7 +170,7 @@ public class RawPointHistoryValidationServiceTest {
         
         double kwhPerDay = RawPointHistoryValidationService.calculateLowerAvgKwhPerDay(reading1, reading2, 4);
         
-        Assert.assertEquals(99.7333, kwhPerDay, .001);
+        assertEquals(99.7333, kwhPerDay, .001);
     }
     
     @Test
@@ -179,7 +181,7 @@ public class RawPointHistoryValidationServiceTest {
         
         double kwhPerDay = RawPointHistoryValidationService.calculateLowerAvgKwhPerDay(reading1, reading2, 4);
         
-        Assert.assertEquals(-96, kwhPerDay, .001);
+        assertEquals(-96, kwhPerDay, .001);
     }
     
     @Test
@@ -190,7 +192,7 @@ public class RawPointHistoryValidationServiceTest {
         
         double kwhPerDay = RawPointHistoryValidationService.calculateLowerAvgKwhPerDayFromZero(reading1, reading2);
         
-        Assert.assertEquals(100, kwhPerDay, .001);
+        assertEquals(100, kwhPerDay, .001);
     }
     
     @Test
@@ -202,7 +204,7 @@ public class RawPointHistoryValidationServiceTest {
         
         double kwhPerDay = RawPointHistoryValidationService.calculateLowerAvgKwhPerDayFromZero(reading1, reading2);
         
-        Assert.assertEquals(2000, kwhPerDay, .001);
+        assertEquals(2000, kwhPerDay, .001);
     }
     
     @Test
@@ -213,7 +215,7 @@ public class RawPointHistoryValidationServiceTest {
         
         double kwhPerDay = RawPointHistoryValidationService.calculateLowerAvgKwhPerDayFromZero(reading1, reading2);
         
-        Assert.assertEquals(100, kwhPerDay, .001);
+        assertEquals(100, kwhPerDay, .001);
     }
     
     @Test
@@ -224,7 +226,7 @@ public class RawPointHistoryValidationServiceTest {
         
         double kwhPerDay = RawPointHistoryValidationService.calculateLowerAvgKwhPerDayFromZero(reading1, reading2);
         
-        Assert.assertEquals(100, kwhPerDay, .001);
+        assertEquals(100, kwhPerDay, .001);
     }
     
     @Test
@@ -240,9 +242,9 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading2, RphTag.PEAKUP), tags);
-        Assert.assertEquals(true, analysisResult.peakInTheMiddle);
-        Assert.assertEquals(false, analysisResult.considerReRead);
+        assertEquals(ImmutableListMultimap.of(reading2, RphTag.PEAKUP), tags);
+        assertEquals(true, analysisResult.peakInTheMiddle);
+        assertEquals(false, analysisResult.considerReRead);
     }
 
     @Test
@@ -258,9 +260,9 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading2, RphTag.PEAKDOWN), tags);
-        Assert.assertEquals(true, analysisResult.peakInTheMiddle);
-        Assert.assertEquals(false, analysisResult.considerReRead);
+        assertEquals(ImmutableListMultimap.of(reading2, RphTag.PEAKDOWN), tags);
+        assertEquals(true, analysisResult.peakInTheMiddle);
+        assertEquals(false, analysisResult.considerReRead);
     }
     
     @Test
@@ -276,9 +278,9 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.UNREASONABLEUP), tags);
-        Assert.assertEquals(false, analysisResult.peakInTheMiddle);
-        Assert.assertEquals(true, analysisResult.considerReRead);
+        assertEquals(ImmutableListMultimap.of(reading3, RphTag.UNREASONABLEUP), tags);
+        assertEquals(false, analysisResult.peakInTheMiddle);
+        assertEquals(true, analysisResult.considerReRead);
     }
     
     @Test
@@ -294,9 +296,9 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.UNREASONABLEDOWN), tags);
-        Assert.assertEquals(false, analysisResult.peakInTheMiddle);
-        Assert.assertEquals(true, analysisResult.considerReRead);
+        assertEquals(ImmutableListMultimap.of(reading3, RphTag.UNREASONABLEDOWN), tags);
+        assertEquals(false, analysisResult.peakInTheMiddle);
+        assertEquals(true, analysisResult.considerReRead);
     }
     
     @Test
@@ -312,9 +314,9 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.CHANGEOUT), tags);
-        Assert.assertEquals(false, analysisResult.peakInTheMiddle);
-        Assert.assertEquals(false, analysisResult.considerReRead);
+        assertEquals(ImmutableListMultimap.of(reading3, RphTag.CHANGEOUT), tags);
+        assertEquals(false, analysisResult.peakInTheMiddle);
+        assertEquals(false, analysisResult.considerReRead);
     }
     
     @Test
@@ -330,9 +332,9 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(reading3, RphTag.UNREASONABLEDOWN), tags); // UnreasonableDown, but no PeakUp!
-        Assert.assertEquals(false, analysisResult.peakInTheMiddle);
-        Assert.assertEquals(true, analysisResult.considerReRead);
+        assertEquals(ImmutableListMultimap.of(reading3, RphTag.UNREASONABLEDOWN), tags); // UnreasonableDown, but no PeakUp!
+        assertEquals(false, analysisResult.peakInTheMiddle);
+        assertEquals(true, analysisResult.considerReRead);
     }
     
     @Test
@@ -348,9 +350,9 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(), tags); 
-        Assert.assertEquals(false, analysisResult.peakInTheMiddle);
-        Assert.assertEquals(false, analysisResult.considerReRead);
+        assertEquals(ImmutableListMultimap.of(), tags); 
+        assertEquals(false, analysisResult.peakInTheMiddle);
+        assertEquals(false, analysisResult.considerReRead);
     }
     
     @Test
@@ -366,9 +368,9 @@ public class RawPointHistoryValidationServiceTest {
         Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
         AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
-        Assert.assertEquals(ImmutableListMultimap.of(), tags); 
-        Assert.assertEquals(false, analysisResult.peakInTheMiddle);
-        Assert.assertEquals(false, analysisResult.considerReRead);
+        assertEquals(ImmutableListMultimap.of(), tags); 
+        assertEquals(false, analysisResult.peakInTheMiddle);
+        assertEquals(false, analysisResult.considerReRead);
     }
     
     private ValidationMonitor createStandardSettings() {

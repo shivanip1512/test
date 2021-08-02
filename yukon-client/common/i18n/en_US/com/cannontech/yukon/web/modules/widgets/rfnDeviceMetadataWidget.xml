@@ -34,6 +34,8 @@
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NUM_ASSOCIATIONS">Battery Node Associations</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.IPV6_ADDRESS">IPv6 Address</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.HOSTNAME">Hostname</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.SENSOR_FIRMWARE_VERSION">Sensor Firmware Version</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.virtualGatewayIpv6Address">Virtual Gateway IPv6 Address</entry>
 
 <!-- Node Types -->
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_TYPE.GATEWAY">Gateway</entry>
@@ -55,5 +57,16 @@
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.securityType">Wi-Fi Security Type</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.securityType.UNSECURED">Unsecured</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.securityType.WPA2_PERSONAL">WPA2-Personal</entry>
-<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.virtualGatewayIpv6Address">Virtual Gateway IPv6 Address</entry>
+
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.CellularData.APN">Cellular APN</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.CellularData.FIRMWARE_VERSION">Cellular Firmware Version</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.CellularData.ICCID">Cellular ICCID</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.CellularData.IMEI">Cellular IMEI</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.CellularData.IMSI">Cellular IMSI</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.CellularData.MODEM_ENABLED">Cellular Modem Enabled</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.CellularData.SIM_CARD_PRESENT">Cellular SIM Card Present</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.CellularData.SIM_CARD_PRESENT.PRESENT">Present</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.CellularData.SIM_CARD_PRESENT.NOT_PRESENT">Not Present</entry>
+
+
 </properties>

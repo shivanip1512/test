@@ -623,6 +623,64 @@ PointValue VoltageRegulator::getCompleteTapPosition()
 }
 
 
+long VoltageRegulator::getMinTapPosition() const
+{
+    if ( auto deviceConfig = getDeviceConfig( this ) )
+    {
+        if ( auto position = deviceConfig->findValue<long>( Cti::Config::RegulatorStrings::minTapPosition ) )
+        {
+            return *position;
+        }
+    }
+
+    return static_cast<long>( TapPositionLimits::Minimum );
+}
+
+
+long VoltageRegulator::getMaxTapPosition() const
+{
+    if ( auto deviceConfig = getDeviceConfig( this ) )
+    {
+        if ( auto position = deviceConfig->findValue<long>( Cti::Config::RegulatorStrings::maxTapPosition ) )
+        {
+            return *position;
+        }
+    }
+
+    return static_cast<long>( TapPositionLimits::Maximum );
+}
+
+
+//  If we have indeterminate power flow then we don;t want to move the tap position, likewise if we are
+//  at the limits of the tap range, we don;t want to try to move the tap further out of its limits.
+VoltageRegulator::TapInhibit VoltageRegulator::isTapInhibited()
+{
+    if ( determinePowerFlowSituation() == PowerFlowSituations::IndeterminateFlow )
+    {
+        return TapInhibit::NoTap;
+    }
+
+    if ( const auto currentTapPosition = getTapPosition() )
+    {
+        if ( *currentTapPosition <= getMinTapPosition() )
+        {
+            return TapInhibit::NoTapDown;
+        }
+
+        if ( *currentTapPosition >= getMaxTapPosition() )
+        {
+            return TapInhibit::NoTapUp;
+        }
+    }
+    else
+    {
+        return TapInhibit::NoTap;
+    }
+
+    return TapInhibit::None;
+}
+
+
 void VoltageRegulator::canExecuteVoltageRequest( const double changeAmount ) //const
 try
 {

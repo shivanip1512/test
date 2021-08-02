@@ -34,6 +34,12 @@ yukon.widget.devicePoints = (function() {
                 });
             });
             
+            $(document).on('click', '.js-download', function () {
+                var form = $('#devicePointsForm'),
+                    data = form.serialize();
+                window.location = yukon.url('/widget/devicePointsWidget/download?' + data);
+            });
+            
             _initialized = true;
         }
         

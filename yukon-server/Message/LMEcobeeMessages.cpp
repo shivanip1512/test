@@ -3,51 +3,42 @@
 #include "LMEcobeeMessages.h"
 #include "msg_pcreturn.h"
 
-#include <cms/StreamMessage.h>
 
 
 namespace Cti            {
 namespace Messaging      {
 namespace LoadManagement {
 
-LMEcobeeCyclingControlMessage::LMEcobeeCyclingControlMessage( int  groupId,
+LMEcobeeCyclingControlMessage::LMEcobeeCyclingControlMessage( int  programId,
+                                                              int  groupId,
                                                               int  dutyCycle,
-                                                              int  startTime,
+                                                              long long  startTime,
                                                               int  controlDuration,
-                                                              bool rampIn,
-                                                              bool rampOut,
-                                                              bool mandatory )
-    :   _groupId( groupId ),
-        _rampingOption( 0x00 ),
+                                                              bool mandatory,
+                                                              bool rampInOut )
+    :   _programId( programId ),
+        _groupId( groupId ),
         _dutyCycle( dutyCycle ),
         _startTime( startTime ),
         _stopTime( startTime + controlDuration ),
-        _mandatory( mandatory )
+        _mandatory( mandatory ),
+        _rampingOption( rampInOut )
 {
-    // set specified flags 
-    _rampingOption |= rampIn  ? RampIn  : 0 ;
-    _rampingOption |= rampOut ? RampOut : 0 ;
+    // Empty
 }
 
-void LMEcobeeCyclingControlMessage::streamInto( cms::StreamMessage & message ) const
-{
-    message.writeInt ( _groupId );
-    message.writeByte( _dutyCycle );
-    message.writeByte( _rampingOption );
-    message.writeByte( _mandatory );
-    message.writeInt ( _startTime );
-    message.writeInt ( _stopTime );
-}
 
 ///
 
-LMEcobeeSetpointControlMessage::LMEcobeeSetpointControlMessage( int  groupId,
+LMEcobeeSetpointControlMessage::LMEcobeeSetpointControlMessage( int  programId,
+                                                                int  groupId,
                                                                 long long startTime,
                                                                 int  controlDuration,
-                                                                bool temperatureOption,
+                                                                TempOptionTypes temperatureOption,
                                                                 bool mandatory,
                                                                 int  temperatureOffset )
-    :   _groupId( groupId ),
+    :   _programId(programId),
+        _groupId( groupId ),
         _startTime( startTime ),
         _stopTime( startTime + controlDuration ),
         _temperatureOption( temperatureOption ),
@@ -57,30 +48,33 @@ LMEcobeeSetpointControlMessage::LMEcobeeSetpointControlMessage( int  groupId,
     // empty
 }
 
-void LMEcobeeSetpointControlMessage::streamInto( cms::StreamMessage & message ) const
-{
-    message.writeInt( _groupId );
-    message.writeByte( _temperatureOption );
-    message.writeByte( _mandatory );
-    message.writeInt( _temperatureOffset );
-    message.writeLong( _startTime );
-    message.writeLong( _stopTime );
-}
-
 ///
 
+LMEcobeePlusControlMessage::LMEcobeePlusControlMessage( int programId,
+                                                        int groupId,
+                                                        long long startTime,
+                                                        int controlDuration,    
+                                                        TempOptionTypes temperatureOption,
+                                                        int randomTimeSeconds )
+
+    :   _programId(programId),
+        _groupId( groupId ),
+        _startTime( startTime ),
+        _stopTime( startTime + controlDuration ),
+        _temperatureOption( temperatureOption ),       
+        _randomTimeSeconds( randomTimeSeconds )      
+{
+    //empty
+}
+
+/// 
+
 LMEcobeeRestoreMessage::LMEcobeeRestoreMessage( int groupId,
-                                                int restoreTime )
+                                                long long restoreTime )
     :   _groupId( groupId ),
         _restoreTime( restoreTime )
 {
     // empty
-}
-
-void LMEcobeeRestoreMessage::streamInto( cms::StreamMessage & message ) const
-{
-    message.writeInt( _groupId );
-    message.writeInt( _restoreTime );
 }
 
 }

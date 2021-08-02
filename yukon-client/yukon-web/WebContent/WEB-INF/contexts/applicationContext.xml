@@ -191,7 +191,6 @@
         
     <bean id="ecobeeReadBackingService" class="com.cannontech.web.updater.dr.EcobeeReadBackingService"/>
   
-    <bean class="com.cannontech.web.dr.ecobee.service.impl.DataDownloadServiceImpl"/>
     <bean class="com.cannontech.common.util.RecentResultsCache">
         <qualifier value="ecobeeReads"/>
     </bean>
@@ -1070,7 +1069,6 @@
     <bean id="hardwareModelHelper" class="com.cannontech.web.stars.dr.operator.HardwareModelHelper"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareReadServiceImpl"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EatonCloudHardwareReadNowStrategy"/>
-    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EcobeeHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.PlcHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.RfHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ItronHardwareReadNowStrategy"/>
@@ -1463,6 +1461,7 @@
     <bean id="honeywellSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellSetpointGearFieldsValidator"/>
     <bean id="ecobeeCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeCycleGearFieldsValidator"/>
     <bean id="ecobeeSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeSetpointGearFieldsValidator"/>
+    <bean id="ecobeePlusGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeePlusGearFieldsValidator"/>
     <bean id="smartCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SmartCycleGearFieldsValidator"/>
     <bean id="trueCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.TrueCycleGearFieldsValidator"/>
     <bean id="magnitudeCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MagnitudeCycleGearFieldsValidator"/>
@@ -1487,6 +1486,8 @@
 
     <bean id="drProgramStatusService" class="com.cannontech.stars.dr.jms.service.impl.DrJmsProgramStatusServiceImpl"/>
     
+    <bean class="com.cannontech.web.stars.gateway.model.ConnectedDevicesHelper"/>
+    <bean class="com.cannontech.web.stars.service.impl.RfnCellularCommDataServiceImpl"/>
     <bean class="com.cannontech.web.stars.service.impl.RfnWiFiCommDataServiceImpl"/>
     <bean class="com.cannontech.common.device.port.service.impl.PortServiceImpl"/>
     <bean class="com.cannontech.web.api.commChannel.PortApiValidator"/>
@@ -1494,6 +1495,7 @@
     <bean class="com.cannontech.common.validator.YukonApiValidationHelper"/>
     <bean class="com.cannontech.common.validator.YukonValidationHelperCommon"/>
     <bean class="com.cannontech.web.stars.commChannel.CommChannelValidator"/>
+    <bean class="com.cannontech.web.stars.rfn1200.Rfn1200Validator"/>
 
     <bean class="com.cannontech.web.admin.AttributeValidator"/>
     <bean class="com.cannontech.web.api.customAttribute.CustomAttributeApiValidator"/>
@@ -1538,8 +1540,10 @@
     <bean class="com.cannontech.web.stars.virtualDevice.VirtualDeviceValidator"/>
     <bean class="com.cannontech.web.api.dr.ecobee.EcobeeZeusJwtTokenAuthService"/>
     
-    <bean class="com.cannontech.web.api.route.RouteValidator"/>
+    <bean class="com.cannontech.web.api.route.RouteApiValidator"/>
+    <bean class="com.cannontech.web.api.route.RouteCCUApiValidator"/>	
     <bean class="com.cannontech.web.api.route.RouteApiValidatorHelper"/>
     <bean class="com.cannontech.web.api.route.RouteApiCreateValidator"/>
     <bean class="com.cannontech.web.api.route.service.impl.RouteServiceImpl"/>
+    <bean class="com.cannontech.web.api.route.service.impl.RouteHelperImpl"/>
 </beans>

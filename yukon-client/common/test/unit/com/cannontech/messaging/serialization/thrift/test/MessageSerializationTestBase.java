@@ -1,8 +1,8 @@
 package com.cannontech.messaging.serialization.thrift.test;
 
-import java.util.Collection;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Assert;
+import java.util.Collection;
 
 import com.cannontech.messaging.serialization.thrift.ThriftMessageFactory;
 import com.cannontech.messaging.serialization.thrift.ThriftSerializer;
@@ -45,7 +45,7 @@ public abstract class MessageSerializationTestBase extends ContextAwareTestBase{
 
     protected void checkResults(ValidationResult result) {
         if (result.hasError()) {
-            Assert.fail(ValidationHelper.formatErrorString(result));
+            fail(ValidationHelper.formatErrorString(result));
         }
     }
 }

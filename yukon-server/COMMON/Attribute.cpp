@@ -393,6 +393,10 @@ INIT_ATTRIBUTE( WiFiApConnectionFailure,                            "WIFI_AP_CON
 INIT_ATTRIBUTE( WiFiBssidChange,                                    "WIFI_BSSID_CHANGE" );
 INIT_ATTRIBUTE( WiFiPassphraseChange,                               "WIFI_PASSPHRASE_CHANGE" );
 INIT_ATTRIBUTE( WiFiSsidChange,                                     "WIFI_SSID_CHANGE" );
+INIT_ATTRIBUTE( CellularConnectionFailed,                           "CELLULAR_CONNECTION_FAILED" );
+INIT_ATTRIBUTE( CellularModemDisabled,                              "CELLULAR_MODEM_DISABLED" );
+INIT_ATTRIBUTE( CellularApnChanged,                                 "CELLULAR_APN_CHANGED" );
+INIT_ATTRIBUTE( CellularSimCardInsertedRemoved,                     "CELLULAR_SIM_CARD_INSERTED_REMOVED" );
 INIT_ATTRIBUTE( ZeroUsageFlag,                                      "ZERO_USAGE_FLAG" );
 INIT_ATTRIBUTE( ZigBeeLinkStatus,                                   "ZIGBEE_LINK_STATUS" );
 INIT_ATTRIBUTE( TerminalBlockCoverRemoval,                          "TERMINAL_BLOCK_COVER_REMOVAL_FLAG" );
@@ -730,6 +734,8 @@ INIT_ATTRIBUTE( OpenOperationCount,                                 "OPEN_OPERAT
 INIT_ATTRIBUTE( OperationFailedNeutralCurrent,                      "OPERATION_FAILED_NEUTRAL_CURRENT" );
 INIT_ATTRIBUTE( OverUnderVoltageTrackTime,                          "OVER_UNDER_VOLTAGE_TRACKING_TIME" );
 INIT_ATTRIBUTE( OverVoltageCount,                                   "OVER_VOLTAGE_COUNT" );
+INIT_ATTRIBUTE( ReferenceSignalReceivedPower,                       "REFERENCE_SIGNAL_RECEIVED_POWER" );
+INIT_ATTRIBUTE( ReferenceSignalReceivedQuality,                     "REFERENCE_SIGNAL_RECEIVED_QUALITY" );
 INIT_ATTRIBUTE( RadioSignalStrengthIndicator,                       "RADIO_SIGNAL_STRENGTH_INDICATOR" );
 INIT_ATTRIBUTE( RecloseBlocked,                                     "RECLOSE_BLOCKED" );
 INIT_ATTRIBUTE( ScadaOverrideClear,                                 "SCADA_OVERRIDE_CLEAR" );
@@ -738,6 +744,7 @@ INIT_ATTRIBUTE( ScadaOverrideCountdownTimer,                        "SCADA_OVERR
 INIT_ATTRIBUTE( ScadaOverrideEnable,                                "SCADA_OVERRIDE_ENABLE" );
 INIT_ATTRIBUTE( ScadaOverrideHeartbeat,                             "SCADA_OVERRIDE_HEARTBEAT" );
 INIT_ATTRIBUTE( ScadaOverrideMode,                                  "SCADA_OVERRIDE_MODE" );
+INIT_ATTRIBUTE( SignalToInterferencePlusNoiseRatio,                 "SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO" );
 INIT_ATTRIBUTE( SourceVoltage,                                      "SOURCE_VOLTAGE" );
 INIT_ATTRIBUTE( TapDown,                                            "TAP_DOWN" );
 INIT_ATTRIBUTE( TapPosition,                                        "TAP_POSITION" );
@@ -772,9 +779,13 @@ INIT_ATTRIBUTE( CommsLossCount,                                     "COMMS_LOSS_
 INIT_ATTRIBUTE( FirmwareUpdateStatus,                               "FIRMWARE_UPDATE_STATUS" );
 INIT_ATTRIBUTE( Frequency,                                          "FREQUENCY" );
 INIT_ATTRIBUTE( Relay1ActivationStatus,                             "RELAY_1_ACTIVATION_STATUS" );
+INIT_ATTRIBUTE( Relay1ColdLoadPickupTime,                           "RELAY_1_COLD_LOAD_PICKUP_TIME" );
 INIT_ATTRIBUTE( Relay2ActivationStatus,                             "RELAY_2_ACTIVATION_STATUS" );
+INIT_ATTRIBUTE( Relay2ColdLoadPickupTime,                           "RELAY_2_COLD_LOAD_PICKUP_TIME" );
 INIT_ATTRIBUTE( Relay3ActivationStatus,                             "RELAY_3_ACTIVATION_STATUS" );
+INIT_ATTRIBUTE( Relay3ColdLoadPickupTime,                           "RELAY_3_COLD_LOAD_PICKUP_TIME" );
 INIT_ATTRIBUTE( Relay4ActivationStatus,                             "RELAY_4_ACTIVATION_STATUS" );
+INIT_ATTRIBUTE( Relay4ColdLoadPickupTime,                           "RELAY_4_COLD_LOAD_PICKUP_TIME" );
 
 AttributeNotFound::AttributeNotFound(const std::string &name)
 {

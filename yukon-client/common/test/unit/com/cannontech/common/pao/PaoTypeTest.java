@@ -1,6 +1,7 @@
 package com.cannontech.common.pao;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
@@ -256,7 +257,8 @@ public class PaoTypeTest {
                             PaoType.GWY800,
                             PaoType.GWY801,
                             PaoType.VIRTUAL_GATEWAY,
-                            PaoType.RFN_RELAY);
+                            PaoType.RFN_RELAY,
+                            PaoType.CRLY856);
     
     private static final ImmutableSet<PaoType> nonCbcTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -484,7 +486,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY);
+                        PaoType.RFN_RELAY,
+                        PaoType.CRLY856);
 
     private static final ImmutableSet<PaoType> nonMeterTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -627,7 +630,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY);
+                        PaoType.RFN_RELAY,
+                        PaoType.CRLY856);
 
     private static final ImmutableSet<PaoType> nonMctTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -836,7 +840,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY);
+                        PaoType.RFN_RELAY,
+                        PaoType.CRLY856);
 
     private static final ImmutableSet<PaoType> nonIedTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1056,7 +1061,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY);
+                        PaoType.RFN_RELAY,
+                        PaoType.CRLY856);
 
     private static final ImmutableSet<PaoType> nonRtuTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1292,7 +1298,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY);
+                        PaoType.RFN_RELAY,
+                        PaoType.CRLY856);
 
     private static final ImmutableSet<PaoType> nonPortTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1521,7 +1528,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY);
+                        PaoType.RFN_RELAY,
+                        PaoType.CRLY856);
     
     private static final ImmutableSet<PaoType> nonItronTypes = 
             ImmutableSet.of(
@@ -1652,6 +1660,7 @@ public class PaoTypeTest {
                 PaoType.GWY801,
                 PaoType.VIRTUAL_GATEWAY,
                 PaoType.RFN_RELAY,
+                PaoType.CRLY856,
                 PaoType.ION_7700,
                 PaoType.ION_8300,
                 PaoType.ION_7330,
@@ -1922,7 +1931,7 @@ public class PaoTypeTest {
             Arrays.stream(PaoType.values())
                     .map(PaoType::getFormatKey)
                     .forEach(formatKey -> 
-                        assertNotNull("Missing i18n key for " + formatKey, paoNames.get(formatKey)));
+                        assertNotNull(paoNames.get(formatKey), "Missing i18n key for " + formatKey));
 
         } catch (JDOMException | IOException e) {
             fail("Unexpected exception: " + e);

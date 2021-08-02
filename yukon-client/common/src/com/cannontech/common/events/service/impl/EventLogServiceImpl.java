@@ -52,6 +52,7 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.device.Rfn1200;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
@@ -192,6 +193,12 @@ public class EventLogServiceImpl implements EventLogService {
             public String map(PaoLocation from) throws ObjectMappingException {
                 return String.format("latitude=%s, longitude=%s, origin=%s", from.getLatitude(), from.getLongitude(),
                     from.getOrigin());
+            }
+        }));
+        builder.add(ArgumentMapper.create(Rfn1200.class, Types.VARCHAR, new ObjectMapper<Rfn1200, String>() {
+            @Override
+            public String map(Rfn1200 from) throws ObjectMappingException {
+                return from.toString();
             }
         }));
         argumentMappers = builder.build();

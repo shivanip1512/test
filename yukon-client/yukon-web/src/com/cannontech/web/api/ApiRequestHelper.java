@@ -36,6 +36,7 @@ import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.ProgramConstraint;
+import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
@@ -51,6 +52,7 @@ import com.cannontech.web.api.dr.setup.model.GearFilteredResult;
 import com.cannontech.web.api.dr.setup.model.LoadGroupFilteredResult;
 import com.cannontech.web.api.dr.setup.model.LoadProgramFilteredResult;
 import com.cannontech.web.api.dr.setup.model.MacroLoadGroupFilteredResult;
+import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.token.TokenHelper;
 
 public class ApiRequestHelper {
@@ -112,6 +114,10 @@ public class ApiRequestHelper {
         paramTypeRefMap.put(AttributeAssignment.class, new ParameterizedTypeReference<List<AttributeAssignment>>() {
         });
         paramTypeRefMap.put(CustomAttribute.class, new ParameterizedTypeReference<List<CustomAttribute>>() {
+        });
+        paramTypeRefMap.put(RouteBaseModel.class, new ParameterizedTypeReference<List<RouteBaseModel<?>>>() {
+        });
+        paramTypeRefMap.put(YukonLogger.class, new ParameterizedTypeReference<List<YukonLogger>>() {
         });
     }
     

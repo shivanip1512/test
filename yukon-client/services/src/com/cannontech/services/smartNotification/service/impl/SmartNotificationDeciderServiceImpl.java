@@ -36,12 +36,6 @@ import com.cannontech.services.smartNotification.service.SmartNotificationDecide
 import com.cannontech.services.smartNotification.service.SmartNotificationDeciderService;
 import com.google.common.collect.Multimap;
 
-
-/**TODO
- * 7. Create confluence page describing how to use simulator, and how logging works
- * 8. Document for QA what should be tested
- */
-
 /**
  * This class is responsible for scheduling checks for unprocessed events and sending smart notification
  * message information to assemblers.

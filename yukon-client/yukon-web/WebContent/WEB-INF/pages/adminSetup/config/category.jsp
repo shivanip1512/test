@@ -71,6 +71,12 @@
                                         <form:errors path="${setting.path}" cssClass="error" element="div"/>
                                     </p>
                                 </div>
+                                <div>
+                                    <c:if test="${setting.extra.sensitiveInformation && setting.extra.decryptValueFailed}">
+                                        <span class="error"><i:inline key="yukon.common.setting.decryptValueFailed.description"/></span>
+                                    </c:if>
+                                    <form:hidden path="decryptValueFails[${setting.extra.type}]"/>
+                                </div>
                             </div>
                         </div>
                         <div class="column three nogutter comments">

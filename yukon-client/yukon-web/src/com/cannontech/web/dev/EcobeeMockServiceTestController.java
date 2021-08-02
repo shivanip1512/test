@@ -1,6 +1,5 @@
 package com.cannontech.web.dev;
 
-import java.io.IOException;
 import java.net.URI;
 import java.security.PrivateKey;
 import java.time.Instant;
@@ -33,6 +32,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.impl.GlobalSettingDaoImpl;
 import com.cannontech.web.api.dr.ecobee.EcobeeZeusJwtTokenAuthService;
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData;
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_dr_event;
@@ -40,8 +41,9 @@ import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermo
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_info;
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_program;
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_runtime;
-import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_state;
 import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_runtime.state_runtime;
+import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_state;
+import com.cannontech.web.api.dr.ecobee.message.EcobeeZeusRuntimeData.ecp_thermostat_state.ecp_thermostat_connection_state;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
@@ -54,48 +56,24 @@ import io.jsonwebtoken.Jwts;
 @RequestMapping("/ecobee/*")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class EcobeeMockServiceTestController {
-    private static final List<String> status = ImmutableList.of("SUCCESS(0)",
-            "AUTHENTICATION_FAILED(1)", "NOT_AUTHORIZED(2)",
-            "PROCESSING_ERROR(3)", "SERIALIZATION_ERROR(4)",
-            "INVALID_REQUEST_FORMAT(5)", "TOO_MANY_THERMOSTATS(6)",
-            "VALIDATION_ERROR(7)", "INVALID_FUNCTION(8)",
-            "INVALID_SELECTION(9)", "INVALID_PAGE(10)", "FUNCTION_ERROR(11)",
-            "POST_NOT_SUPPORTED(12)", "GET_NOT_SUPPORTED(13)",
-            "AUTHENTICATION_EXPIRED(14)", "DUPLICATE_DATA_VIOLATION(15)");
 
     private static final List<String> zeusStatus = ImmutableList.of("SUCCESS(0)",
             "UNAUTHORIZED(1)", "BAD_REQUEST(2)", "NOT_FOUND(3)", "PARTIAL_CONTENT(4)", "FORBIDDEN(5)");
+    
+    private static final List<String> descrepencyStatus = ImmutableList.of("NONE(0)", "ALL(1)");
 
-    @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
     @Autowired private EcobeeZeusJwtTokenAuthService ecobeeZeusJwtTokenAuthService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
+    @Autowired private GlobalSettingDaoImpl globalSettingDaoImpl;
     ScheduledFuture<?> future;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private PaoDao paoDao;
 
-    @RequestMapping("/viewBase")
-    public String viewBase(ModelMap model) {
-        model.addAttribute("status", status);
-        return "ecobee/viewBase.jsp";
-    }
-
-    @IgnoreCsrfCheck
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public String update(Integer regDevice, Integer movDevice, Integer creatSet, Integer movSet, Integer remSet, Integer drSend,
-            Integer restoreSend, Integer listHierarchy, Integer authenticateOp,
-            Integer runtimeReportOp, Integer assignThermostatOp, FlashScope flashScope, ModelMap modelMap) throws IOException {
-        ecobeeDataConfiguration.setEcobeeDataConfiguration(regDevice, movDevice, creatSet, movSet, remSet, drSend, restoreSend,
-                listHierarchy, authenticateOp, runtimeReportOp, assignThermostatOp);
-        modelMap.addAttribute("register", ecobeeDataConfiguration.getRegisterDevice());
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.ecobee.mockTest.saved"));
-        return "redirect:viewBase";
-    }
-
     @IgnoreCsrfCheck
     @RequestMapping(value = "zeus/update", method = RequestMethod.POST)
     public String updateZeus(Integer authenticateOp, Integer createDeviceOp, Integer deleteDeviceOp, Integer enrollmentOp, Integer issueDemandResponseOp,
-            Integer showUserOp, Integer createPushConfigurationOp, Integer showPushConfigurationOp, boolean enableRuntime, Integer getAllGroupOp,
+            Integer showUserOp, Integer createPushConfigurationOp, Integer showPushConfigurationOp, boolean enableRuntime, Integer getAllGroupOp, Integer generateAllDiscrepencyOp,
             Integer cancelDemandResponseOp, FlashScope flashScope, ModelMap modelMap) throws Exception {
         zeusEcobeeDataConfiguration.setZeusEcobeeDataConfiguration(authenticateOp,
                                                                    createDeviceOp,
@@ -107,6 +85,7 @@ public class EcobeeMockServiceTestController {
                                                                    showPushConfigurationOp,
                                                                    enableRuntime,
                                                                    getAllGroupOp,
+                                                                   generateAllDiscrepencyOp,
                                                                    cancelDemandResponseOp);
                                                                    
         if (enableRuntime == true) {
@@ -133,13 +112,13 @@ public class EcobeeMockServiceTestController {
     @RequestMapping("zeus/viewBase")
     public String viewZeusBase(ModelMap model) {
         model.addAttribute("status", zeusStatus);
+        model.addAttribute("decrepencyStatus", descrepencyStatus);
         return "ecobee/zeusViewBase.jsp";
     }
 
     public void sendHttpProtoMessage(String serialNumber) throws Exception {
 
-        //TODO URL Global settings
-        final String url = "http://127.0.0.1:8080/yukon/api/ecobee/runtimeData";
+        final String url =  globalSettingDaoImpl.getString(GlobalSettingType.ECOBEE_REPORTING_URL);
         EcobeeZeusRuntimeData.ecp_thermostat_message message = EcobeeZeusRuntimeData.ecp_thermostat_message.newBuilder()
                                                                                                            .setMessageTimeUtc(Timestamp.newBuilder()
                                                                                                                                        .setSeconds(Instant.now()
@@ -155,7 +134,8 @@ public class EcobeeMockServiceTestController {
                                                                                                                                                    .setTemperatureCoolSetpointDegF(1)
                                                                                                                                                    .setTemperatureHeatSetpointDegF(2)
                                                                                                                                                    .setTemperatureIndoorDegF(5)
-                                                                                                                                                   .setTemperatureOutdoorDegF(6))
+                                                                                                                                                   .setTemperatureOutdoorDegF(6)
+                                                                                                                                                   .setConnectionState(ecp_thermostat_connection_state.connected))
                                                                                                            .build();
         
         RestTemplate restTemplate = getRestTemplate();

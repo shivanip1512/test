@@ -1,35 +1,28 @@
 package com.cannontech.amr.macsscheduler.model;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collection;
 import java.util.List;
 import org.joda.time.DateTime;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.cannontech.amr.macsscheduler.model.MacsTimeField.AmPmOptionEnum;
 
-@RunWith(Enclosed.class)
 public class MacsTimeFieldTest {
 
-    @RunWith(Parameterized.class)
+    @Nested
     public static class TestGetTimeStrings {
     
-        @Parameter(0)
         public String expected;
-        @Parameter(1)
         public Integer hours;
-        @Parameter(2)
         public Integer minutes;
-        @Parameter(3)
         public AmPmOptionEnum meridiem;
     
-        @Parameters(name="{1,number,00}:{2,number,00} {3} = {0}")
         public static Collection<Object[]> existingStates() {
             final var Am = AmPmOptionEnum.AM;
             final var Pm = AmPmOptionEnum.PM;
@@ -48,8 +41,13 @@ public class MacsTimeFieldTest {
                     );
         }
     
-        @Test
-        public void testGetTimeString() {
+        @ParameterizedTest
+        @MethodSource("existingStates")
+        public void testGetTimeString(ArgumentsAccessor argumentsAccessor) {
+            expected = argumentsAccessor.getString(0);
+            hours = argumentsAccessor.getInteger(1);
+            minutes = argumentsAccessor.getInteger(2);
+            meridiem = (AmPmOptionEnum) argumentsAccessor.get(3);
             var m = new MacsTimeField();
             m.setHours(hours);
             m.setMinutes(minutes);
@@ -59,6 +57,7 @@ public class MacsTimeFieldTest {
         }
     }
 
+    @Nested
     public static class Others {
         @Test
         public void testGetTimeField() {

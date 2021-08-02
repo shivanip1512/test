@@ -90,6 +90,8 @@
     <bean class="com.cannontech.system.dao.GlobalSettingChangeHelper"/>
     <!--  This needs to be instantiated before YukonLoggingReloader so any migrated settings are available to the logger.  -->
     <bean class="com.cannontech.common.config.MasterConfigDeprecatedKeyMigrationHelper"/>
+    <bean class="com.cannontech.clientutils.logger.dao.impl.YukonLoggerDaoImpl"/>
+    <bean class="com.cannontech.clientutils.logger.service.impl.YukonLoggerServiceImpl"/>
     <bean class="com.cannontech.clientutils.YukonLoggingReloader"/>
 
     <bean id="globalTimer" class="java.util.Timer" destroy-method="cancel" lazy-init="true">
@@ -398,7 +400,6 @@
     <bean id="encryptedRouteDao" class="com.cannontech.encryption.impl.EncryptedRouteDaoImpl"/>
     <bean id="rsaKeyfileService" class="com.cannontech.encryption.impl.RSAKeyfileServiceImpl"/>
     <bean id="honeywellSecurityService" class="com.cannontech.encryption.impl.HoneywellSecurityServiceImpl"/>
-    <bean id="ecobeeSecurityService" class="com.cannontech.encryption.impl.EcobeeSecurityServiceImpl"/>
     <bean id="itronSecurityService" class="com.cannontech.encryption.impl.ItronSecurityServiceImpl"/>
     <bean id="ecobeeZeusSecurityService" class="com.cannontech.encryption.impl.EcobeeZeusSecurityServiceImpl"/>
 

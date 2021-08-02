@@ -1,5 +1,9 @@
 package com.cannontech.yukon.api.loadManagement;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -7,9 +11,8 @@ import java.util.Set;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -36,7 +39,7 @@ public class ListAllProgramsByStatusRequestEndpointTest {
     private MockLoadControlService mockService;
     private Namespace ns = YukonXml.getYukonNamespace();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         mockService = new MockLoadControlService();
@@ -107,13 +110,15 @@ public class ListAllProgramsByStatusRequestEndpointTest {
         SimpleXPathTemplate outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
 
         // outputs
-        Assert.assertNotNull("No programStatuses node present.",
-            outputTemplate.evaluateAsNode("/y:listAllProgramsByStatusResponse/y:programStatuses"));
-        Assert.assertEquals("Number of programStatuses nodes.", 1,
-            outputTemplate.evaluateAsNodeList("/y:listAllProgramsByStatusResponse/y:programStatuses").size());
-        //In the case of empty programStatus, return all the programs
-        Assert.assertEquals("ProgramStatus nodes.", 3, outputTemplate.
-            evaluateAsNodeList("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus").size());
+        assertNotNull(outputTemplate.evaluateAsNode("/y:listAllProgramsByStatusResponse/y:programStatuses"),
+                "No programStatuses node present.");
+        assertEquals(1,
+                outputTemplate.evaluateAsNodeList("/y:listAllProgramsByStatusResponse/y:programStatuses").size(),
+                "Number of programStatuses nodes.");
+        // In the case of empty programStatus, return all the programs
+        assertEquals(3,
+                outputTemplate.evaluateAsNodeList("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus").size(),
+                "ProgramStatus nodes.");
 
         // Based on program status in request, programs will return
         // ==========================================================================================
@@ -131,34 +136,56 @@ public class ListAllProgramsByStatusRequestEndpointTest {
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
 
         // outputs
-        Assert.assertNotNull("No programStatuses node present.",
-            outputTemplate.evaluateAsNode("/y:listAllProgramsByStatusResponse/y:programStatuses"));
-        Assert.assertEquals("Number of programStatuses nodes.", 1,
-            outputTemplate.evaluateAsNodeList("/y:listAllProgramsByStatusResponse/y:programStatuses").size());
-        Assert.assertEquals("Number of programStatus nodes.", 2,
-            outputTemplate.evaluateAsNodeList("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus").size());
+        assertNotNull(outputTemplate.evaluateAsNode("/y:listAllProgramsByStatusResponse/y:programStatuses"),
+                "No programStatuses node present.");
+        assertEquals(1,
+                outputTemplate.evaluateAsNodeList("/y:listAllProgramsByStatusResponse/y:programStatuses").size(),
+                "Number of programStatuses nodes.");
+        assertEquals(2,
+                outputTemplate.evaluateAsNodeList("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus").size(),
+                "Number of programStatus nodes.");
 
-        Assert.assertEquals("ProgramName.", "Program1",
-            outputTemplate.evaluateAsString("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[1]/y:programName"));
-        Assert.assertEquals("CurrentStatus.", "Active",
-            outputTemplate.evaluateAsString("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[1]/y:currentStatus"));
-        Assert.assertEquals("StartDateTime.", "2008-10-13T12:30:00Z",
-            outputTemplate.evaluateAsString("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[1]/y:startDateTime"));
-        Assert.assertEquals("StopDateTime.", "2008-10-13T21:40:01Z",
-            outputTemplate.evaluateAsString("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[1]/y:stopDateTime"));
-        Assert.assertEquals("GearName.", "Gear1",
-            outputTemplate.evaluateAsString("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[1]/y:gearName"));
+        assertEquals("Program1",
+                outputTemplate.evaluateAsString(
+                        "/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[1]/y:programName"),
+                "ProgramName.");
+        assertEquals("Active",
+                outputTemplate.evaluateAsString(
+                        "/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[1]/y:currentStatus"),
+                "CurrentStatus.");
+        assertEquals("2008-10-13T12:30:00Z",
+                outputTemplate.evaluateAsString(
+                        "/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[1]/y:startDateTime"),
+                "StartDateTime.");
+        assertEquals("2008-10-13T21:40:01Z",
+                outputTemplate.evaluateAsString(
+                        "/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[1]/y:stopDateTime"),
+                "StopDateTime.");
+        assertEquals("Gear1",
+                outputTemplate.evaluateAsString(
+                        "/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[1]/y:gearName"),
+                "GearName.");
 
-        Assert.assertEquals("ProgramName.", "Program2",
-            outputTemplate.evaluateAsString("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[2]/y:programName"));
-        Assert.assertEquals("CurrentStatus.", "Inactive",
-            outputTemplate.evaluateAsString("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[2]/y:currentStatus"));
-       Assert.assertEquals("StartDateTime.", "2008-10-14T13:45:01Z",
-            outputTemplate.evaluateAsString("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[2]/y:startDateTime"));
-        Assert.assertNull("Should not contain stopDateTime node.",
-            outputTemplate.evaluateAsNode("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[2]/y:stopDateTime"));
-        Assert.assertEquals("GearName.", "Gear2",
-            outputTemplate.evaluateAsString("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[2]/y:gearName"));
+        assertEquals("Program2",
+                outputTemplate.evaluateAsString(
+                        "/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[2]/y:programName"),
+                "ProgramName.");
+        assertEquals("Inactive",
+                outputTemplate.evaluateAsString(
+                        "/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[2]/y:currentStatus"),
+                "CurrentStatus.");
+        assertEquals("2008-10-14T13:45:01Z",
+                outputTemplate.evaluateAsString(
+                        "/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[2]/y:startDateTime"),
+                "StartDateTime.");
+        assertNull(
+                outputTemplate
+                        .evaluateAsNode("/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[2]/y:stopDateTime"),
+                "Should not contain stopDateTime node.");
+        assertEquals("Gear2",
+                outputTemplate.evaluateAsString(
+                        "/y:listAllProgramsByStatusResponse/y:programStatuses/y:programStatus[2]/y:gearName"),
+                "GearName.");
 
     }
 

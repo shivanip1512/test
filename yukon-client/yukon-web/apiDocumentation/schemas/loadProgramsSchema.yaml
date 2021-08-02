@@ -945,8 +945,7 @@ EcobeeCycle:
     fields:
       required:
         - mandatory
-        - rampIn
-        - rampOut
+        - rampInOut
         - controlPercent
         - howToStopControl
         - capacityReduction
@@ -956,12 +955,9 @@ EcobeeCycle:
         mandatory:
           type: boolean
           description: 'Mandatory field.'
-        rampIn:
+        rampInOut:
           type: boolean
-          description: 'Ramp in.'
-        rampOut:
-          type: boolean
-          description: 'Ramp out.'
+          description: 'Ramp in a percentage of the load groups over an interval of time.'
         controlPercent: 
           type: integer
           minimum: 5
@@ -1792,6 +1788,55 @@ EcobeeSetpoint:
             - COOL
           default: COOL
           description: 'Thermostat mode.'
+        howToStopControl:
+          type: string
+          enum:
+            - Restore
+          description: |- 
+                        - Restore - A restore command is sent to the device.
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
+          
+EcobeePlus:
+  title: EcobeePlus
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - EcobeePlus
+      description: 'Type of gear.'
+    fields:
+      required:
+        - rampInOut
+        - heatingEvent
+        - howToStopControl
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        rampInOut:
+          type: boolean
+          default: True
+          description: 'Ramp in a percentage of the load groups over an interval of time.'
+        heatingEvent: 
+          type: booelan
+          default: False
+          description: 'Heating Event. This is controlling parameter.'
         howToStopControl:
           type: string
           enum:

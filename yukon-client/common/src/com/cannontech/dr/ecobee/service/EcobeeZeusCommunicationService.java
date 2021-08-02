@@ -1,11 +1,14 @@
 package com.cannontech.dr.ecobee.service;
 
 import java.util.List;
+import java.util.Set;
 
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeePlusDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 
 public interface EcobeeZeusCommunicationService {
@@ -19,17 +22,27 @@ public interface EcobeeZeusCommunicationService {
      * Deletes the specified thermostat from a program's root group and deletes from all child groups.
      */
     void deleteDevice(String serialNumber);
+    
+    /**
+     * Deletes the specified group
+     */
+    void deleteGroup(String zeusGroupId);
 
     /**
-     * Enroll the specified device to the specified group.
+     * Enroll the specified device to the specified group and Program.
      */
-    void enroll(int lmGroupId, String serialNumber, int inventoryId);
+    void enroll(int lmGroupId, String serialNumber, int inventoryId, int programId, boolean updateDeviceMapping);
 
     /**
-     * Unenroll the specified device from the specified group.
+     * Unenroll the specified device from the specified groups.
      */
-    void unEnroll(int lmGroupId, String serialNumber, int inventoryId);
+    void unEnroll(Set<Integer> lmGroupIds, String serialNumber, int inventoryId, boolean updateDeviceMapping);
 
+    
+    /**
+     * Create thermostat group
+     */
+    void createThermostatGroup(String zeusGroupId, List<String> thermostatIds);
     /**
      * Create push API configuration with a publicly accessible HTTPS endpoint and encoded private key.
      */
@@ -41,9 +54,9 @@ public interface EcobeeZeusCommunicationService {
     ZeusShowPushConfig showPushApiConfiguration();
 
     /**
-     * Initiates a duty cycle demand response event in Ecobee and return the created DR event ID.
+     * Initiates a duty cycle demand response event in Ecobee.
      */
-    String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters);
+    void sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters);
     
     /**
      * Get all groups for a program from ecobee.
@@ -56,12 +69,18 @@ public interface EcobeeZeusCommunicationService {
     List<ZeusThermostat> getThermostatsInGroup(String groupId);
 
     /**
-     * Initiates a Setpoint demand response event in Ecobee and return the created DR event ID.
+     * Initiates a Setpoint demand response event in Ecobee.
      */
-    String sendSetpointDR(EcobeeSetpointDrParameters parameters);
+    void sendSetpointDR(EcobeeSetpointDrParameters parameters);
 
     /**
-     * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only.
+     * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only. Return ture if API
+     * call is successful.
      */
-    void cancelDemandResponse(int yukonGroupId, String... serialNumbers);
+    boolean cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException;
+
+    /**
+     * Initiates a eco+ demand response event in Ecobee.
+     */
+    void sendEcoPlusDR(EcobeePlusDrParameters parameters);
 }

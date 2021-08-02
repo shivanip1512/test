@@ -2901,6 +2901,47 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                 state->_tapOps[ regulator->getPaoId() ] = disableTapOverride
                     ? 0
                     : calculateVte(zonePointValues, strategy, subbus->getAllMonitorPoints(), isPeakTime, regulator);
+
+                state->_tapOpInhibit[ regulator->getPaoId() ] = regulator->isTapInhibited();
+
+                switch ( state->_tapOpInhibit[ regulator->getPaoId() ] )
+                {
+                    case VoltageRegulator::TapInhibit::NoTap:
+                    {
+                        if ( state->_tapOps[ regulator->getPaoId() ] != 0 )
+                        {
+                            state->_tapOps[ regulator->getPaoId() ] = 0;
+                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                                << " is inhibited from control, it is either missing it's TapPosition point or in IndeterminateFlow.");
+                        }
+                        break;
+                    }
+                    case VoltageRegulator::TapInhibit::NoTapDown:
+                    {
+                        if ( state->_tapOps[ regulator->getPaoId() ] < 0 )
+                        {
+                            state->_tapOps[ regulator->getPaoId() ] = 0;
+                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                                << " is inhibited from tapping down, it is already at it's minimum allowable TapPosition.");
+                        }
+                        break;
+                    }
+                    case VoltageRegulator::TapInhibit::NoTapUp:
+                    {
+                        if ( state->_tapOps[ regulator->getPaoId() ] > 0 )
+                        {
+                            state->_tapOps[ regulator->getPaoId() ] = 0;
+                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                                << " is inhibited from tapping up, it is already at it's maximum allowable TapPosition.");
+                        }
+                        break;
+                    }
+                    case VoltageRegulator::TapInhibit::None:
+                    default:
+                    {
+                        // nnothing to do here...
+                    }
+                }
             }
         }
         catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -2913,13 +2954,12 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
             {
                 CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
             }
-
         }
     }
 
     long rootZoneId = zoneManager.getRootZoneIdForSubbus(subbusId);
 
-    tapOpZoneNormalization( rootZoneId, zoneManager, state->_tapOps );
+    tapOpZoneNormalization( rootZoneId, zoneManager, state->_tapOps, state->_tapOpInhibit );
 
     // if there are tap ops remaining, set state to IVVC_OPERATE_TAP as long as all regulators are in 'remote' mode.
     if ( hasTapOpsRemaining(state->_tapOps) )
@@ -2982,7 +3022,7 @@ double IVVCAlgorithm::calculateTargetPFVars(const double targetPF, const double 
 }
 
 
-void IVVCAlgorithm::tapOpZoneNormalization(const long parentID, const ZoneManager & zoneManager, IVVCState::TapOperationZoneMap &tapOp )
+void IVVCAlgorithm::tapOpZoneNormalization(const long parentID, const ZoneManager & zoneManager, IVVCState::TapOperationZoneMap &tapOp, IVVCState::TapOperationInhibitMap & tapInhibit )
 {
     Zone::IdSet allChildren = zoneManager.getAllChildrenOfZone(parentID);
 
@@ -3008,6 +3048,13 @@ void IVVCAlgorithm::tapOpZoneNormalization(const long parentID, const ZoneManage
                     tapOp[ mapping.second ] -= tapOp[ parentMapping[ mapping.first ] ];
                 }
             }
+
+            if (      ( tapInhibit[ mapping.second ] == VoltageRegulator::TapInhibit::NoTap     && tapOp[ mapping.second ] != 0 )
+                   || ( tapInhibit[ mapping.second ] == VoltageRegulator::TapInhibit::NoTapDown && tapOp[ mapping.second ] <  0 )
+                   || ( tapInhibit[ mapping.second ] == VoltageRegulator::TapInhibit::NoTapUp   && tapOp[ mapping.second ] >  0 ) )
+            {
+                tapOp[ mapping.second ] = 0;
+            }
         }
     }
 
@@ -3015,7 +3062,7 @@ void IVVCAlgorithm::tapOpZoneNormalization(const long parentID, const ZoneManage
 
     for each ( const Zone::IdSet::value_type & ID in immediateChildren )
     {
-        tapOpZoneNormalization( ID, zoneManager, tapOp );   // recursion!!!
+        tapOpZoneNormalization( ID, zoneManager, tapOp, tapInhibit );   // recursion!!!
     }
 }
 

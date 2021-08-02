@@ -5,6 +5,7 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,9 +13,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -76,7 +76,7 @@ public class YukonPointHelperImplTest {
         }
     };
     
-    @Before
+    @BeforeEach
     public void setUp() {
         yukonPointHelperImpl = new YukonPointHelperImpl();
         
@@ -92,7 +92,7 @@ public class YukonPointHelperImplTest {
         YukonUserContextMessageSourceResolverMock resolver = new YukonUserContextMessageSourceResolverMock();
         resolver.setMessageSource(new StaticMessageSource());
         Attribute attribute = executeTest(builtInAttributes, customAttributes, resolver);
-        Assert.assertEquals("Objects not equal.", null, attribute);
+        assertEquals(null, attribute, "Objects not equal.");
     }
 
     @Test
@@ -103,7 +103,7 @@ public class YukonPointHelperImplTest {
         YukonUserContextMessageSourceResolverMock resolver = new YukonUserContextMessageSourceResolverMock();
         resolver.setMessageSource(new StaticMessageSource());
         Attribute attribute = executeTest(builtInAttributes, customAttributes, resolver);
-        Assert.assertEquals("Objects not equal.", ca3, attribute);
+        assertEquals(ca3, attribute, "Objects not equal.");
     }
 
     @Test
@@ -114,7 +114,7 @@ public class YukonPointHelperImplTest {
         YukonUserContextMessageSourceResolverMock resolver = new YukonUserContextMessageSourceResolverMock();
         resolver.setMessageSource(new StaticMessageSource());
         Attribute attribute = executeTest(builtInAttributes, customAttributes, resolver);
-        Assert.assertEquals("Objects not equal.", ca2, attribute);
+        assertEquals(ca2, attribute, "Objects not equal.");
     }
 
     @Test
@@ -125,7 +125,7 @@ public class YukonPointHelperImplTest {
         YukonUserContextMessageSourceResolverMock resolver = new YukonUserContextMessageSourceResolverMock();
         resolver.setMessageSource(new StaticMessageSource());
         Attribute attribute = executeTest(builtInAttributes, customAttributes, resolver);
-        Assert.assertEquals("Objects not equal.", BuiltInAttribute.DELIVERED_KWH, attribute);
+        assertEquals(BuiltInAttribute.DELIVERED_KWH, attribute, "Objects not equal.");
     }
 
     @Test
@@ -137,7 +137,7 @@ public class YukonPointHelperImplTest {
         resolver.setMessageSource(new StaticMessageSource());
         Attribute attribute = executeTest(builtInAttributes, customAttributes, resolver);
         // PaoType.RFN420CD = <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
-        Assert.assertEquals("Objects not equal.", BuiltInAttribute.USAGE, attribute);
+        assertEquals(BuiltInAttribute.USAGE, attribute, "Objects not equal.");
     }
 
     @Test
@@ -148,7 +148,7 @@ public class YukonPointHelperImplTest {
         YukonUserContextMessageSourceResolverMock resolver = new YukonUserContextMessageSourceResolverMock();
         resolver.setMessageSource(new StaticMessageSource());
         Attribute attribute = executeTest(builtInAttributes, customAttributes, resolver);
-        Assert.assertEquals("Objects not equal.", ca2, attribute);
+        assertEquals(ca2, attribute, "Objects not equal.");
     }
     
     @Test
@@ -159,7 +159,7 @@ public class YukonPointHelperImplTest {
         YukonUserContextMessageSourceResolverMock resolver = new YukonUserContextMessageSourceResolverMock();
         resolver.setMessageSource(messageSource);
         Attribute attribute = executeTest(builtInAttributes, customAttributes, resolver);
-        Assert.assertEquals("Objects not equal.", ca3, attribute);
+        assertEquals(ca3, attribute, "Objects not equal.");
     }
     
     private Attribute executeTest(Set<BuiltInAttribute> builtInAttributes, List<CustomAttribute> customAttributes, 

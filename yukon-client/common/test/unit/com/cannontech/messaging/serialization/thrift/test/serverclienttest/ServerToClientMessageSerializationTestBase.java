@@ -4,10 +4,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.message.util.Message;
 import com.cannontech.messaging.connection.Connection;
@@ -37,7 +37,7 @@ public abstract class ServerToClientMessageSerializationTestBase extends Message
                              "com/cannontech/messaging/serialization/thrift/test/messagevalidator/messageValidatorContext.xml" };
     }
 
-    @Before
+    @BeforeEach
     public void setupTest() {
         recievedMessages.clear();
 
@@ -47,7 +47,7 @@ public abstract class ServerToClientMessageSerializationTestBase extends Message
     }
 
     @Test
-    @Ignore("Requires server test to be run concurrently")
+    @Disabled("Requires server test to be run concurrently")
     public void messageSerializationValidationTest() {
 
         Message msg;
@@ -76,7 +76,7 @@ public abstract class ServerToClientMessageSerializationTestBase extends Message
         checkResults(globalResult);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (conn != null) {
             conn.getMessageEvent().unregisterHandler(this);

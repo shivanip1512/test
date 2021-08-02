@@ -1,20 +1,19 @@
 package com.cannontech.web.deviceConfiguration.enumeration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import org.joda.time.DateTimeZone;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MockConfigurationSource;
@@ -289,7 +288,7 @@ public class IntervalTest {
     }
 
     @SuppressWarnings("serial")
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         userContext = new YukonUserContext() {
 
@@ -300,13 +299,13 @@ public class IntervalTest {
 
             @Override
             public LiteYukonUser getYukonUser() {
-                Assert.fail();
+                fail();
                 return null;
             }
 
             @Override
             public TimeZone getTimeZone() {
-                Assert.fail();
+                fail();
                 return null;
             }
 
@@ -317,7 +316,7 @@ public class IntervalTest {
 
             @Override
             public String getThemeName() {
-                Assert.fail();
+                fail();
                 return null;
             }
         };

@@ -1,8 +1,8 @@
 package com.cannontech.web.dr.widget.service.impl;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,8 +16,8 @@ import java.util.TimeZone;
 
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -49,7 +49,7 @@ public class ProgramServiceImplTest {
         messageSourceResolver.setMessageSource(messageSource);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         programWidgetServiceImpl = new ProgramWidgetServiceImpl();
         loadControlClientConnection = EasyMock.createMock(LoadControlClientConnection.class);

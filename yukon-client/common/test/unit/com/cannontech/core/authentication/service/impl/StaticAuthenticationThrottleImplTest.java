@@ -2,12 +2,16 @@ package com.cannontech.core.authentication.service.impl;
 
 import static com.cannontech.core.roleproperties.YukonRole.*;
 import static com.cannontech.core.roleproperties.YukonRoleProperty.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.exception.AuthenticationThrottleException;
@@ -107,7 +111,7 @@ public class StaticAuthenticationThrottleImplTest {
         }
     };
 
-    @Before
+    @BeforeEach
     public void init() {
         passwordPolicyService = new PasswordPolicyServiceImpl();
         ReflectionTestUtils.setField(passwordPolicyService, "rolePropertyDao", rolePropertyDaoMock);
@@ -126,8 +130,8 @@ public class StaticAuthenticationThrottleImplTest {
 
         // The username uses the static authentication throttle defaults
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(null);
-        Assert.assertFalse(doLoginAttempsLockTheAccount("Made up username", passwordPolicy.getLockoutThreshold()));
-        Assert.assertTrue(doLoginAttempsLockTheAccount("Made up username", 1));
+        assertFalse(doLoginAttempsLockTheAccount("Made up username", passwordPolicy.getLockoutThreshold()));
+        assertTrue(doLoginAttempsLockTheAccount("Made up username", 1));
     }
 
     @Test
@@ -138,21 +142,19 @@ public class StaticAuthenticationThrottleImplTest {
 
         // The username uses the static authentication throttle defaults
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(null);
-        Assert.assertFalse(doLoginAttempsLockTheAccount("Made up username", passwordPolicy.getLockoutThreshold()));
+        assertFalse(doLoginAttempsLockTheAccount("Made up username", passwordPolicy.getLockoutThreshold()));
         try {
             tryLogin("Made up username", 1);
         } catch (AuthenticationThrottleException e) {
             Duration throttleDuration = Duration.standardSeconds(e.getThrottleSeconds());
             Duration roughLockoutDuration = passwordPolicy.getLockoutDuration();
 
-            Assert.assertTrue(
+            assertTrue(throttleDuration.isShorterThan(roughLockoutDuration.plus(TEST_DURATION_BUFFER)),
                 "The lockout duration is longer than it should be. [Expected: "
-                    + roughLockoutDuration.plus(TEST_DURATION_BUFFER) + ", Actual:" + throttleDuration + "]",
-                throttleDuration.isShorterThan(roughLockoutDuration.plus(TEST_DURATION_BUFFER)));
-            Assert.assertTrue(
+                    + roughLockoutDuration.plus(TEST_DURATION_BUFFER) + ", Actual:" + throttleDuration + "]");
+            assertTrue(throttleDuration.isLongerThan(roughLockoutDuration.minus(TEST_DURATION_BUFFER)),
                 "The lockout duration is shorter than it should be.  [Expected: "
-                    + roughLockoutDuration.minus(TEST_DURATION_BUFFER) + ", Actual:" + throttleDuration + "]",
-                throttleDuration.isLongerThan(roughLockoutDuration.minus(TEST_DURATION_BUFFER)));
+                    + roughLockoutDuration.minus(TEST_DURATION_BUFFER) + ", Actual:" + throttleDuration + "]");
         }
     }
 
@@ -167,7 +169,7 @@ public class StaticAuthenticationThrottleImplTest {
         try {
             tryLogin("Made up username", passwordPolicy.getLockoutThreshold());
         } catch (AuthenticationThrottleException e) {
-            Assert.fail();
+            fail();
         }
 
         staticAuthenticationThrottleService.loginSucceeded("Made up username");
@@ -175,7 +177,7 @@ public class StaticAuthenticationThrottleImplTest {
         try {
             tryLogin("Made up username", 1);
         } catch (AuthenticationThrottleException e) {
-            Assert.fail();
+            fail();
         }
     }
 
@@ -190,7 +192,7 @@ public class StaticAuthenticationThrottleImplTest {
         try {
             tryLogin("Made up username", passwordPolicy.getLockoutThreshold());
         } catch (AuthenticationThrottleException e) {
-            Assert.fail();
+            fail();
         }
 
         staticAuthenticationThrottleService.removeAuthenticationThrottle("Made up username");
@@ -198,7 +200,7 @@ public class StaticAuthenticationThrottleImplTest {
         try {
             tryLogin("Made up username", 1);
         } catch (AuthenticationThrottleException e) {
-            Assert.fail();
+            fail();
         }
     }
 
@@ -206,9 +208,9 @@ public class StaticAuthenticationThrottleImplTest {
     public void testGetAuthenticationThrottleData() throws Exception {
         // Check and make sure all of the logins are empty
         for (LiteYukonUser user : USERS_IN_TEST_ARRAY) {
-            Assert.assertNull(staticAuthenticationThrottleService.getAuthenticationThrottleData(user.getUsername()));
+            assertNull(staticAuthenticationThrottleService.getAuthenticationThrottleData(user.getUsername()));
         }
-        Assert.assertNull(staticAuthenticationThrottleService.getAuthenticationThrottleData("Made up username"));
+        assertNull(staticAuthenticationThrottleService.getAuthenticationThrottleData("Made up username"));
 
         // Run up to 10 login attempts on each user or get it's first lockout..
         doLoginAttempsLockTheAccount(USER_ONE, 10);
@@ -235,7 +237,7 @@ public class StaticAuthenticationThrottleImplTest {
     @Test
     public void testSelfUnlocking() throws Exception {
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(USER_SHORT_LOCKOUT);
-        Assert.assertTrue(doLoginAttempsLockTheAccount(USER_SHORT_LOCKOUT, passwordPolicy.getLockoutThreshold() + 1));
+        assertTrue(doLoginAttempsLockTheAccount(USER_SHORT_LOCKOUT, passwordPolicy.getLockoutThreshold() + 1));
     }
 
     /**
@@ -274,12 +276,12 @@ public class StaticAuthenticationThrottleImplTest {
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
         int lockoutThreshold = passwordPolicy.getLockoutThreshold();
 
-        Assert.assertFalse(doLoginAttempsLockTheAccount(user, lockoutThreshold));
+        assertFalse(doLoginAttempsLockTheAccount(user, lockoutThreshold));
         if (passwordPolicy.getLockoutDuration().isLongerThan(Duration.ZERO)) {
-            Assert.assertTrue(doLoginAttempsLockTheAccount(user, 1));
+            assertTrue(doLoginAttempsLockTheAccount(user, 1));
         } else {
             // The user does not have a lockout duration. So the user will not be locked out.
-            Assert.assertFalse(doLoginAttempsLockTheAccount(user, 1));
+            assertFalse(doLoginAttempsLockTheAccount(user, 1));
         }
     }
 
@@ -295,15 +297,15 @@ public class StaticAuthenticationThrottleImplTest {
             Duration throttleDuration = Duration.standardSeconds(e.getThrottleSeconds());
             Duration passwordPolicyLockoutDuration = passwordPolicy.getLockoutDuration();
 
-            Assert.assertTrue("The lockout duration is longer than it should be.",
-                throttleDuration.isShorterThan(passwordPolicyLockoutDuration.plus(TEST_DURATION_BUFFER)));
-            Assert.assertTrue("The lockout duration is shorter than it should be.",
-                throttleDuration.isLongerThan(passwordPolicyLockoutDuration.minus(TEST_DURATION_BUFFER)));
+            assertTrue(throttleDuration.isShorterThan(passwordPolicyLockoutDuration.plus(TEST_DURATION_BUFFER)), 
+                    "The lockout duration is longer than it should be.");
+            assertTrue(throttleDuration.isLongerThan(passwordPolicyLockoutDuration.minus(TEST_DURATION_BUFFER)), 
+                    "The lockout duration is shorter than it should be.");
             return;
         }
 
         if (passwordPolicy.getLockoutDuration().isLongerThan(Duration.ZERO)) {
-            Assert.fail();
+            fail();
         }
     }
 
@@ -322,7 +324,7 @@ public class StaticAuthenticationThrottleImplTest {
         try {
             tryLogin(user.getUsername(), 1);
         } catch (AuthenticationThrottleException e) {
-            Assert.fail();
+            fail();
         }
     }
 
@@ -341,7 +343,7 @@ public class StaticAuthenticationThrottleImplTest {
         try {
             tryLogin(user.getUsername(), 1);
         } catch (AuthenticationThrottleException e) {
-            Assert.fail();
+            fail();
         }
     }
 
@@ -353,8 +355,8 @@ public class StaticAuthenticationThrottleImplTest {
             staticAuthenticationThrottleService.getAuthenticationThrottleData(username);
 
         Duration throttleDuration = Duration.standardSeconds(authenticationThrottleData.getThrottleDurationSeconds());
-        Assert.assertEquals(expectedThrottleDuration, throttleDuration);
-        Assert.assertEquals(expectedRetryCount, authenticationThrottleData.getRetryCount());
+        assertEquals(expectedThrottleDuration, throttleDuration);
+        assertEquals(expectedRetryCount, authenticationThrottleData.getRetryCount());
 
         // The user can't be locked out since there is no duration.
         if (throttleDuration.equals(Duration.ZERO)) {
@@ -365,32 +367,34 @@ public class StaticAuthenticationThrottleImplTest {
         Instant lastFailedLoginTime = new Instant(authenticationThrottleData.getLastFailedLoginTime());
         Instant roughExpectedLastFailedLoginTime = now.minus(FIVE_SECONDS);
 
-        Assert.assertTrue("The last failed login for " + username + " is earlier than expected. [Expected: "
-            + lastFailedLoginTime + ", Actual:" + roughExpectedLastFailedLoginTime.minus(TEST_DURATION_BUFFER) + "]",
-            lastFailedLoginTime.isAfter(roughExpectedLastFailedLoginTime.minus(TEST_DURATION_BUFFER)));
-        Assert.assertTrue("The last failed login for " + username + " is later than expected. [Expected: "
-            + lastFailedLoginTime + ", Actual:" + roughExpectedLastFailedLoginTime.plus(TEST_DURATION_BUFFER) + "]",
-            lastFailedLoginTime.isBefore(roughExpectedLastFailedLoginTime.plus(TEST_DURATION_BUFFER)));
+        assertTrue(lastFailedLoginTime.isAfter(roughExpectedLastFailedLoginTime.minus(TEST_DURATION_BUFFER)),
+                "The last failed login for " + username + " is earlier than expected. [Expected: "
+            + lastFailedLoginTime + ", Actual:" + roughExpectedLastFailedLoginTime.minus(TEST_DURATION_BUFFER) + "]");
+        assertTrue(lastFailedLoginTime.isBefore(roughExpectedLastFailedLoginTime.plus(TEST_DURATION_BUFFER)),
+                "The last failed login for " + username + " is later than expected. [Expected: "
+            + lastFailedLoginTime + ", Actual:" + roughExpectedLastFailedLoginTime.plus(TEST_DURATION_BUFFER) + "]");
 
         // Testing the throttle endtime
         Instant throttleEndtime = new Instant(authenticationThrottleData.getThrottleEndtime());
         Instant roughExpectedThrottleEndtime = now.minus(FIVE_SECONDS).plus(throttleDuration);
-        Assert.assertTrue("The remaining lockout for " + username + " is shorter than expected. [Expected: "
-            + throttleEndtime + ", Actual:" + roughExpectedThrottleEndtime.minus(TEST_DURATION_BUFFER) + "]",
-            throttleEndtime.isAfter(roughExpectedThrottleEndtime.minus(TEST_DURATION_BUFFER)));
-        Assert.assertTrue("The remaining lockout for " + username + " is longer than expected. [Expected: "
-            + throttleEndtime + ", Actual:" + roughExpectedThrottleEndtime.plus(TEST_DURATION_BUFFER) + "]",
-            throttleEndtime.isBefore(roughExpectedThrottleEndtime.plus(TEST_DURATION_BUFFER)));
+        assertTrue(throttleEndtime.isAfter(roughExpectedThrottleEndtime.minus(TEST_DURATION_BUFFER)),
+                "The remaining lockout for " + username + " is shorter than expected. [Expected: "
+            + throttleEndtime + ", Actual:" + roughExpectedThrottleEndtime.minus(TEST_DURATION_BUFFER) + "]");
+        assertTrue(throttleEndtime.isBefore(roughExpectedThrottleEndtime.plus(TEST_DURATION_BUFFER)), 
+                "The remaining lockout for " + username + " is longer than expected. [Expected: "
+            + throttleEndtime + ", Actual:" + roughExpectedThrottleEndtime.plus(TEST_DURATION_BUFFER) + "]");
 
         // Testing actual throttle duration remaining
         Duration actualThrottleDuration = Duration.millis(authenticationThrottleData.getActualThrottleDuration());
         Duration roughExpectedActualThrottleDuration = throttleDuration;
-        Assert.assertTrue("The remaining lockout for " + username + " is shorter than expected. [Expected: "
+        assertTrue(actualThrottleDuration.isLongerThan(roughExpectedActualThrottleDuration.minus(TEST_DURATION_BUFFER)), 
+                "The remaining lockout for " + username + " is shorter than expected. [Expected: "
             + actualThrottleDuration + ", Actual:" + roughExpectedActualThrottleDuration.minus(TEST_DURATION_BUFFER)
-            + "]", actualThrottleDuration.isLongerThan(roughExpectedActualThrottleDuration.minus(TEST_DURATION_BUFFER)));
-        Assert.assertTrue("The remaining lockout for " + username + " is longer than expected. [Expected: "
+            + "]");
+        assertTrue(actualThrottleDuration.isShorterThan(roughExpectedActualThrottleDuration.plus(TEST_DURATION_BUFFER)),
+                "The remaining lockout for " + username + " is longer than expected. [Expected: "
             + actualThrottleDuration + ", Actual:" + roughExpectedActualThrottleDuration.plus(TEST_DURATION_BUFFER)
-            + "]", actualThrottleDuration.isShorterThan(roughExpectedActualThrottleDuration.plus(TEST_DURATION_BUFFER)));
+            + "]");
 
     }
 }

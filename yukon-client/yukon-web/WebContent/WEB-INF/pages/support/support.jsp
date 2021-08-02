@@ -125,8 +125,7 @@
                             <ul class="simple-list">
                                 <c:forEach var="bundleName" varStatus="status" items="${bundleList}">
                                     <li>
-                                        <c:if test="${status.first}"><c:set var="checked">checked="checked"</c:set></c:if>
-                                        <c:if test="${!status.first}"><c:set var="checked"></c:set></c:if>
+                                        <c:set var="checked" value="${status.first} ? 'checked=checked' : ''"></c:set>
                                         <label><input type="radio" name="fileName" value="${bundleName}" ${checked}>${fn:escapeXml(bundleName)}</label>
                                     </li>
                                 </c:forEach>
@@ -141,7 +140,7 @@
         </tags:sectionContainer2>
 
         <div id="rf-support-bundle-section">
-            <jsp:include page="rfSupportBundle.jsp"/>
+            <jsp:include page="supportBundle/rfSupportBundle.jsp"/>
         </div>
     
     </div>

@@ -1,14 +1,14 @@
 package com.cannontech.dr.rfn.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
@@ -62,9 +62,8 @@ public class RfnConditionTypeTest {
             var processorClass = entry.getValue();
             var processor = processorClass.getConstructor().newInstance();
 
-            assertEquals(processorClass.getSimpleName() + ".getConditionType()", 
-                    expectedConditionType, 
-                    processor.getRfnConditionType());
+            assertEquals(expectedConditionType,
+                    processor.getRfnConditionType(), processorClass.getSimpleName() + ".getConditionType()");
         }
     }
 
@@ -89,7 +88,7 @@ public class RfnConditionTypeTest {
             boolean found = groupedAttributeNames.contains(rfnConditionType.name());
 
             if (!found) {
-                Assert.fail("The rfnConditionType: " + rfnConditionType.name() + 
+                fail("The rfnConditionType: " + rfnConditionType.name() + 
                         " is in not in BuiltInAttribute rfnEventGroupAttributes(). "
                                 + "\nEither:"
                                 + "\n  1. add a matching BuiltInAttribute with an AttributeGroup.RFN_*_EVENT, or"

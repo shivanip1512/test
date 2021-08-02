@@ -155,7 +155,7 @@
     <entry key="yukon.common.peakReportPeakType.HOUR.description">Peak Hourly Usage</entry>
     <entry key="yukon.common.peakReportPeakType.INTERVAL">Interval</entry>
     <entry key="yukon.common.peakReportPeakType.INTERVAL.description">Peak Interval</entry>
-    
+    <entry key="yukon.common.setting.decryptValueFailed.description">Unable to decrypt value.</entry>
     <!-- YukonSettingSubCategory -->
     <entry key="yukon.common.setting.subcategory.AUTHENTICATION">Authentication</entry>
     <entry key="yukon.common.setting.subcategory.AUTHENTICATION.description">Authentication, Active Directory, LDAP server settings</entry>
@@ -173,6 +173,8 @@
     <entry key="yukon.common.setting.subcategory.DR.description">Opt outs, importing, switch command settings</entry>
     <entry key="yukon.common.setting.subcategory.AMI">Endpoint</entry>
     <entry key="yukon.common.setting.subcategory.AMI.description">Display templates, importer settings</entry>
+    <entry key="yukon.common.setting.subcategory.YUKON_LOGGERS">Yukon Loggers</entry>
+    <entry key="yukon.common.setting.subcategory.YUKON_LOGGERS.description">User loggers, system loggers</entry>
     <entry key="yukon.common.setting.subcategory.YUKON_SERVICES">Yukon Services</entry>
     <entry key="yukon.common.setting.subcategory.YUKON_SERVICES.description">Yukon services ip address, ports</entry>
     <entry key="yukon.common.setting.subcategory.WEB_SERVER">Web Server</entry>
@@ -409,8 +411,13 @@
     <entry key="yukon.common.setting.ECOBEE_PASSWORD.description">Password to authenticate with the ecobee service.</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL">ecobee API URL</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service.</entry>
+    <entry key="yukon.common.setting.ECOBEE_REPORTING_URL">ecobee Reporting URL</entry>
+    <entry key="yukon.common.setting.ECOBEE_REPORTING_URL.description">URL for incoming ecobee data.</entry>
     <entry key="yukon.common.setting.ECOBEE_SEND_NOTIFICATIONS">ecobee email notification</entry>
     <entry key="yukon.common.setting.ECOBEE_SEND_NOTIFICATIONS.description">Enables/Disables notifications being sent by ecobee when a DR request is made through Yukon.</entry>
+    <entry key="yukon.common.setting.ECOBEE_PROGRAM_ID">ecobee Program ID</entry>
+    <entry key="yukon.common.setting.ECOBEE_PROGRAM_ID.description">Program ID required for initiating ecobee API communications.</entry>
+    
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING">Honeywell Wifi Connection</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING.description">Connection string for the Honeywell wifi service bus.</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_QUEUE">Honeywell Wifi Queue</entry>
@@ -451,18 +458,16 @@
     <entry key="yukon.common.setting.ITRON_SFTP_PRIVATE_KEY_PASSWORD.description">Optional password to encrypt the generated SFTP Private Key.</entry>
     <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS">Runtime Calculation Interval</entry>
     <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS.description">The interval, in hours, at which to calculate run time and shed time for devices that do not directly report it.</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL">PX Cellular LCR auto creation interval</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL.description">The interval, in hours of how often Yukon will try to auto create Eaton Cloud Cellular LCRs</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES">PX Cellular LCR auto read interval</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES.description">The interval, in minutes of how often Yukon will try to read Eaton Cloud Cellular LCRs</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID">PX System Service Account Id</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID.description">Service Account Id used to access the PX middleware software</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET">PX System Secret</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_SECRET.description">Secret used to access the PX middleware software</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_URL">PX URL</entry>
-    <entry key="yukon.common.setting.PX_MIDDLEWARE_URL.description">URL of the PX middleware software</entry>
-    <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID">Ecobee Zeus Program ID</entry>
-    <entry key="yukon.common.setting.ECOBEE_ZEUS_PROGRAM_ID.description">Program ID required for initiating Zeus API communications.</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_CREATION_INTERVAL">Brightlayer Utilities Suite Demand Response Cellular LCR auto creation interval</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_CREATION_INTERVAL.description">The interval, in hours of how often Yukon will try to auto create Eaton Cloud Cellular LCRs</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES">Brightlayer Utilities Suite Demand Response Cellular LCR auto read interval</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES.description">The interval, in minutes of how often Yukon will try to read Eaton Cloud Cellular LCRs</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SERVICE_ACCOUNT_ID">Brightlayer Utilities Suite Demand Response System Service Account Id</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SERVICE_ACCOUNT_ID.description">Service Account Id used to access Brightlayer Utilities Suite Demand Response functionality</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET">Brightlayer Utilities Suite Demand Response System Secret</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET.description">Secret used to access Brightlayer Utilities Suite Demand Response functionality</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_URL">Brightlayer Utilities Suite Demand Response URL</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_URL.description">API URL for Brightlayer Utilities Suite Demand Response functionality</entry>
     
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>
@@ -487,14 +492,16 @@
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS">Data Collection: Data Availability Window</entry>
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS.description">Window for minimum number of days required for a device's data to be considered available.</entry>
     
-    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Gateway connection warning minutes</entry>
-    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES.description">The number of minutes a gateway must be disconnected to generate a warning.</entry>
+    <entry key="yukon.common.setting.DEVICE_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Device connection warning minutes</entry>
+    <entry key="yukon.common.setting.DEVICE_CONNECTION_WARNING_MINUTES.description">The number of minutes a device must be disconnected to generate a warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD">Infrastructure Warnings: Gateway connected nodes warning threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD.description">The number of connected nodes a gateway must have to generate a warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD">Infrastructure Warnings: Gateway connected nodes critical threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD.description">The number of connected nodes a gateway must have to generate a critical warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_READY_NODES_THRESHOLD">Infrastructure Warnings: Gateway ready nodes threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_READY_NODES_THRESHOLD.description">The maximum number of ready nodes a gateway must have to generate a warning.</entry>
+    <entry key="yukon.common.setting.CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD">Infrastructure Warnings: Cellular Relay excessive descendant count threshold</entry>
+    <entry key="yukon.common.setting.CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD.description">The number of descendants a cellular relay must exceed to generate an infrastructure warning.</entry>
     
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS">Comm Channel Queue Counts: Historical data display</entry>
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS.description">The number of months to display historical data for the Comm Channel Queue Counts Widget.</entry>
@@ -756,4 +763,5 @@
     <entry key="yukon.common.unitOfMeasure.MEGABYTES">MB</entry>
     <entry key="yukon.common.unitOfMeasure.DBM">dBm</entry>
     <entry key="yukon.common.unitOfMeasure.THERMS">Therms</entry>
+    <entry key="yukon.common.unitOfMeasure.DB">dB</entry>
 </properties>

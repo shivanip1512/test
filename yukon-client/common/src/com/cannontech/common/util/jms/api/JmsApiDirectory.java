@@ -38,6 +38,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.Duration;
+
 import com.cannontech.amr.monitors.message.DeviceDataMonitorMessage;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusRequest;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusResponse;
@@ -107,6 +109,8 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
+import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveRequest;
+import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveResponse;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
@@ -114,8 +118,8 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.dr.dao.LmReportedAddress;
-import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequestV1;
-import com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenResponseV1;
+import com.cannontech.dr.eatonCloud.message.EatonCloudAuthTokenRequestV1;
+import com.cannontech.dr.eatonCloud.message.V1.EatonCloudAuthTokenResponseV1;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -128,20 +132,19 @@ import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRequest;
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
 import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.porter.message.DynamicPaoInfoRequest;
 import com.cannontech.message.porter.message.DynamicPaoInfoResponse;
 import com.cannontech.message.porter.message.MeterProgramValidationRequest;
 import com.cannontech.message.porter.message.MeterProgramValidationResponse;
 import com.cannontech.services.configurationSettingMessage.model.ConfigurationSettings;
-import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
-import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
-import com.cannontech.simulators.message.request.PxMWDataRetrievalSimulatonRequest;
+import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.FieldSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.ModifyFieldSimulatorResponse;
@@ -1036,20 +1039,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-    
-    public static final JmsApi<EcobeeAuthTokenRequest,?,EcobeeAuthTokenResponse> ECOBEE_AUTH_TOKEN =
-            JmsApi.builder(EcobeeAuthTokenRequest.class, EcobeeAuthTokenResponse.class)
-            .name("Ecobee Auth Token")
-            .description("Sent from Service Manager and Webserver and received by Service manager to generate Ecobee Auth Token")
-            .communicationPattern(REQUEST_RESPONSE)
-            .queue(new JmsQueue("yukon.ecobee.auth.token.EcobeeAuthTokenRequest"))
-            .responseQueue(JmsQueue.TEMP_QUEUE)
-            .requestMessage(EcobeeAuthTokenRequest.class)
-            .responseMessage(EcobeeAuthTokenResponse.class)
-            .sender(YUKON_WEBSERVER)
-            .sender(YUKON_SERVICE_MANAGER)
-            .receiver(YUKON_SERVICE_MANAGER)
-            .build();
+
     public static final JmsApi<ZeusEcobeeAuthTokenRequest, ?, ZeusEcobeeAuthTokenResponse> ZEUS_ECOBEE_AUTH_TOKEN = 
             JmsApi.builder(ZeusEcobeeAuthTokenRequest.class, ZeusEcobeeAuthTokenResponse.class)
             .name("Zeus Ecobee Auth Token")
@@ -1258,15 +1248,15 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_FIELD_SIMULATOR)
                   .build();
     
-    public static final JmsApi<PxMWAuthTokenRequestV1, ?, PxMWAuthTokenResponseV1> PX_MW_AUTH_TOKEN = 
-            JmsApi.builder(PxMWAuthTokenRequestV1.class, PxMWAuthTokenResponseV1.class)
-                  .name("PX Middleware Auth Token")
-                  .description("Generates a PX Middleware Auth Token")
+    public static final JmsApi<EatonCloudAuthTokenRequestV1, ?, EatonCloudAuthTokenResponseV1> EATON_CLOUD_AUTH_TOKEN = 
+            JmsApi.builder(EatonCloudAuthTokenRequestV1.class, EatonCloudAuthTokenResponseV1.class)
+                  .name("Eaton Cloud Auth Token")
+                  .description("Generates an Eaton Cloud Auth Token")
                   .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenRequestV1"))
+                  .queue(new JmsQueue("com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenRequestV1"))
                   .responseQueue(JmsQueue.TEMP_QUEUE)
-                  .requestMessage(PxMWAuthTokenRequestV1.class)
-                  .responseMessage(PxMWAuthTokenResponseV1.class)
+                  .requestMessage(EatonCloudAuthTokenRequestV1.class)
+                  .responseMessage(EatonCloudAuthTokenResponseV1.class)
                   .sender(YUKON_WEBSERVER)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
@@ -1324,20 +1314,45 @@ public final class JmsApiDirectory {
                   .responseMessage(NetworkManagerHeartbeatResponse.class)
                   .sender(YUKON_WATCHDOG)
                   .receiver(NETWORK_MANAGER)
+                  .timeToLive(Duration.standardMinutes(5))
                   .build();
     
     
-    public static final JmsApi<PxMWDataRetrievalSimulatonRequest,?,?> PxMW_SIM_DEVICE_DATA_RETRIEVAL_REQUEST = 
-            JmsApi.builder(PxMWDataRetrievalSimulatonRequest.class)
-                  .name("PxMW Device Auto Creation Simulation Request")
+    public static final JmsApi<EatonCloudDataRetrievalSimulatonRequest,?,?> EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST = 
+            JmsApi.builder(EatonCloudDataRetrievalSimulatonRequest.class)
+                  .name("Eaton Cloud Device Auto Creation Simulation Request")
                   .description("WS sends request to SM start auto creation for simulated devices")
                   .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.simulator.PxMWDataRetrievalSimulatonRequest"))
-                  .requestMessage(PxMWDataRetrievalSimulatonRequest.class)
+                  .queue(new JmsQueue("yukon.notif.obj.simulator.EatonCloudDataRetrievalSimulatonRequest"))
+                  .requestMessage(EatonCloudDataRetrievalSimulatonRequest.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
+    public static final JmsApi<DatabaseChangeEvent,?,?> DATABASE_CHANGE_EVENT_REQUEST = 
+            JmsApi.builder(DatabaseChangeEvent.class)
+                  .name("Database change event request")
+                  .description("Webserver sends DB change events to Message broker")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.dbchange.event"))
+                  .requestMessage(DatabaseChangeEvent.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_MESSAGE_BROKER)
+                  .build();
+
+    public static JmsApi<RfnRelayCellularCommArchiveRequest,?,RfnRelayCellularCommArchiveResponse> RFN_RELAY_CELL_COMM_ARCHIVE =
+            JmsApi.builder(RfnRelayCellularCommArchiveRequest.class, RfnRelayCellularCommArchiveResponse.class)
+                  .name("RFN Relay Cellular Comm Archive")
+                  .description("A notification from Network Manager to Yukon to archive the Cellular IPLink Relay's cellular connection status.")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnRelayCellularCommArchiveRequest"))
+                  .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnRelayCellularCommArchiveResponse"))
+                  .requestMessage(RfnRelayCellularCommArchiveRequest.class)
+                  .responseMessage(RfnRelayCellularCommArchiveResponse.class)
+                  .sender(NETWORK_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .logger(YukonLogManager.getRfnLogger())
+                  .build();
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1366,18 +1381,18 @@ public final class JmsApiDirectory {
                 BROKER_SYSTEM_METRICS,
                 CLOUD_CONFIGURATION_SETTINGS,
                 CLOUD_DATA_CONFIGURATIONS,
-                ECOBEE_AUTH_TOKEN,
+                EATON_CLOUD_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LM_EATON_CLOUD_SCHEDULED_CYCLE_COMMAND,
                 LM_EATON_CLOUD_STOP_COMMAND,
                 LOCATION,
                 NM_HEARTBEAT,
                 PORTER_DYNAMIC_PAOINFO,
-                PX_MW_AUTH_TOKEN,
                 RF_SUPPORT_BUNDLE,
                 RFN_DEVICE_CREATION_ALERT,
                 SYSTEM_DATA,
-                ZEUS_ECOBEE_AUTH_TOKEN);
+                ZEUS_ECOBEE_AUTH_TOKEN,
+                DATABASE_CHANGE_EVENT_REQUEST);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 
@@ -1428,6 +1443,7 @@ public final class JmsApiDirectory {
                 RFN_DEVICE_ARCHIVE,
                 RFN_STATUS_ARCHIVE,
                 RFN_NODE_WIFI_COMM_ARCHIVE,
+                RFN_RELAY_CELL_COMM_ARCHIVE,
                 DYNAMIC_RFN_DEVICE_DATA_COLLECTION);
         
         addApis(jmsApis, SIMULATOR_MANAGEMENT,
@@ -1453,7 +1469,7 @@ public final class JmsApiDirectory {
                          PROGRAM_STATUS_NOTIFICATION);
         
         addApis(jmsApis, SIMULATOR, 
-                PxMW_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
+                EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
 
         return jmsApis;
     }

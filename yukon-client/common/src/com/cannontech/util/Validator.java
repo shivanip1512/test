@@ -255,7 +255,7 @@ public class Validator
             if (StringUtils.isBlank(guid)) {
                 return false;
             }
-            return guidPattern.matcher(guid).find();
+            return guidPattern.matcher(guid.toLowerCase()).find();
 	}
 	/**
 	 * Validate a MAC Address string - either 48 or 64 bytes

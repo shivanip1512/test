@@ -1,12 +1,12 @@
 package com.cannontech.api.error.model;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ApiErrorDetailsTest {
 
@@ -18,7 +18,7 @@ public class ApiErrorDetailsTest {
                 .collect(Collectors.toList());
         int duplicateCount = codes.stream()
                 .distinct().collect(Collectors.toList()).size();
-        assertTrue("Duplicate code in enum", codes.size() == duplicateCount);
+        assertTrue(codes.size() == duplicateCount, "Duplicate code in enum");
 
     }
 

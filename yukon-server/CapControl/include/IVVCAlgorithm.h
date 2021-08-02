@@ -96,7 +96,7 @@ class IVVCAlgorithm
                                         const bool isPeakTime ) const;
 
         void tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, const PointValueMap & pointValues);
-        void tapOpZoneNormalization(const long parentID, const Cti::CapControl::ZoneManager &zoneManager, IVVCState::TapOperationZoneMap &tapOp);
+        void tapOpZoneNormalization(const long parentID, const Cti::CapControl::ZoneManager& zoneManager, IVVCState::TapOperationZoneMap& tapOp, IVVCState::TapOperationInhibitMap & tapInhibit);
 
         virtual bool operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection, IVVCStrategy* strategy);
         virtual void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, const Cti::CapControl::EventLogEntries &ccEvents);

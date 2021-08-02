@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -86,9 +87,9 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     private DispatchClientConnection dispatchConnection;
 
     // monitors recalculating
-    private Map<Integer, DeviceDataMonitor> pending = Collections.synchronizedMap(new HashMap<>());
+    private Map<Integer, DeviceDataMonitor> pending = new ConcurrentHashMap<Integer, DeviceDataMonitor>();
     // monitorId / violation count
-    private Map<Integer, Integer> monitorIdToViolationCount = Collections.synchronizedMap(new HashMap<>());
+    private Map<Integer, Integer> monitorIdToViolationCount =  new ConcurrentHashMap<Integer, Integer>();
     
     static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorCalculationServiceImpl.class);
 

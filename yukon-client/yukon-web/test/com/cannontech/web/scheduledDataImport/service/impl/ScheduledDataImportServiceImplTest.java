@@ -1,15 +1,14 @@
 package com.cannontech.web.scheduledDataImport.service.impl;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Locale;
 
 import org.easymock.EasyMock;
 import org.joda.time.DateTimeZone;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
@@ -39,7 +38,7 @@ public class ScheduledDataImportServiceImplTest {
     private JobManager jobManager;
     private ScheduleControllerHelper scheduleControllerHelper;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         scheduledDataImportServiceImplTest = new ScheduledDataImportServiceImpl();
         cronExpressionTagService = EasyMock.createMock(CronExpressionTagService.class);
@@ -79,27 +78,27 @@ public class ScheduledDataImportServiceImplTest {
     public void test_getScheduleDescription() {
         String scheduleDescription =
             ReflectionTestUtils.invokeMethod(scheduledDataImportServiceImplTest, "getScheduleDescription", job);
-        assertThat(scheduleDescription, equalTo("Daily, at 01:00 AM"));
+        assertEquals(scheduleDescription, "Daily, at 01:00 AM");
     }
 
     @Test
     public void test_getScheduleImportData() {
         ScheduledDataImport scheduledDataImport =
             ReflectionTestUtils.invokeMethod(scheduledDataImportServiceImplTest, "getScheduleImportData", job, task);
-        assertThat(scheduledDataImport.getJobId(), equalTo(job.getId()));
-        assertThat(scheduledDataImport.getCronString(), equalTo(job.getCronString()));
-        assertThat(scheduledDataImport.getErrorFileOutputPath(), equalTo(task.getErrorFileOutputPath()));
-        assertThat(scheduledDataImport.getImportPath(), equalTo(task.getImportPath()));
-        assertThat(scheduledDataImport.getImportType(), equalTo(ScheduledImportType.fromImportTypeMap(task.getImportType())));
-        assertThat(scheduledDataImport.getScheduleDescription(), equalTo("Daily, at 01:00 AM"));
-        assertThat(scheduledDataImport.getJobState(), equalTo(JobState.RUNNING));
+        assertEquals(scheduledDataImport.getJobId(), job.getId());
+        assertEquals(scheduledDataImport.getCronString(), job.getCronString());
+        assertEquals(scheduledDataImport.getErrorFileOutputPath(), task.getErrorFileOutputPath());
+        assertEquals(scheduledDataImport.getImportPath(), task.getImportPath());
+        assertEquals(scheduledDataImport.getImportType(), ScheduledImportType.fromImportTypeMap(task.getImportType()));
+        assertEquals(scheduledDataImport.getScheduleDescription(), "Daily, at 01:00 AM");
+        assertEquals(scheduledDataImport.getJobState(), JobState.RUNNING);
     }
 
     @Test
     public void test_getJobById() {
         ScheduledDataImport scheduledDataImport = scheduledDataImportServiceImplTest.getJobById(job.getId());
         assertNotNull(scheduledDataImport);
-        assertThat(scheduledDataImport.getJobId(), equalTo(job.getId()));
+        assertEquals(scheduledDataImport.getJobId(), job.getId());
     }
 
 }

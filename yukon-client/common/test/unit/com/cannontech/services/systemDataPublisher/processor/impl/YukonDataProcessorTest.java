@@ -4,14 +4,14 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Map;
 
 import org.easymock.IAnswer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
@@ -29,7 +29,7 @@ public class YukonDataProcessorTest {
     private List<CloudDataConfiguration> cloudDataConfigurations = Lists.newArrayList();
     private SystemDataPublisherDao systemDataPublisherDao = null;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         yukonDataProcessor = new  YukonDataProcessor();
         CloudDataConfiguration cloudDataConfigurationStartUp = new CloudDataConfiguration();
@@ -38,7 +38,7 @@ public class YukonDataProcessorTest {
         cloudDataConfigurationStartUp.setDescription("Gas Meter Count");
         cloudDataConfigurationStartUp.setDetails("Contains the count of gas meter.");
         cloudDataConfigurationStartUp.setSource("SELECT TOP 1 Version FROM CtiDatabase ORDER BY BuildDate DESC");
-        cloudDataConfigurationStartUp.setIotType(IOTDataType.PROPERTY);
+        cloudDataConfigurationStartUp.setIotType(IOTDataType.TELEMETRY);
         cloudDataConfigurationStartUp.setFrequency(SystemDataPublisherFrequency.ON_STARTUP_ONLY);
         
         cloudDataConfigurations.add(cloudDataConfigurationStartUp);

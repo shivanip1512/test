@@ -29,9 +29,9 @@ import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.pxmw.model.PxMWException;
-import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.service.v1.PxMWDataReadService;
+import com.cannontech.dr.eatonCloud.model.EatonCloudException;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
+import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Iterables;
@@ -40,7 +40,7 @@ import com.google.common.collect.Multimap;
 public class DeviceAttributeReadEatonCloudServiceImpl implements DeviceAttributeReadStrategy {
     private static final Logger log = YukonLogManager.getLogger(DeviceAttributeReadEatonCloudServiceImpl.class);
 
-    @Autowired private PxMWDataReadService readService;
+    @Autowired private EatonCloudDataReadService readService;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
@@ -71,6 +71,8 @@ public class DeviceAttributeReadEatonCloudServiceImpl implements DeviceAttribute
             Set<Integer> deviceIds =
                 StreamUtils.stream(devices).map(device -> device.getPao().getPaoId()).collect(
                     Collectors.toSet());
+            
+            commandRequestExecutionResultDao.saveExecutionRequest(execution.getId(), deviceIds);
 
             DateTime start = new DateTime();
             DateTime end = start.minusDays(7);
@@ -109,7 +111,7 @@ public class DeviceAttributeReadEatonCloudServiceImpl implements DeviceAttribute
                     });
             
             callback.complete(getStrategy());
-        } catch (PxMWCommunicationExceptionV1 | PxMWException error) {
+        } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException error) {
             DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.TIMEOUT);
             MessageSourceResolvable detail = YukonMessageSourceResolvable.createSingleCodeWithArguments(
                 "yukon.common.device.attributeRead.general.readError", error.getMessage());

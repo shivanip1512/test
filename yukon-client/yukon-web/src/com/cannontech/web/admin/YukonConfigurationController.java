@@ -75,6 +75,7 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.AMI, "icon-32-meter1");
         b.put(GlobalSettingSubCategory.AUTHENTICATION, "icon-app icon-app-32-lock");
         b.put(GlobalSettingSubCategory.DR, "icon-app icon-app-32-lightbulb");
+        b.put(GlobalSettingSubCategory.YUKON_LOGGERS, "icon-app icon-app-32-loggers");
         b.put(GlobalSettingSubCategory.YUKON_SERVICES, "icon-app icon-app-32-widgets");
         b.put(GlobalSettingSubCategory.WEB_SERVER, "icon-app icon-app-32-world");
         b.put(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, "icon-app icon-app-32-list");
@@ -126,6 +127,7 @@ public class YukonConfigurationController {
         systemSetup.add(Pair.of(GlobalSettingSubCategory.AUTHENTICATION, iconMap.get(GlobalSettingSubCategory.AUTHENTICATION)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.DASHBOARD_ADMIN,  iconMap.get(GlobalSettingSubCategory.DASHBOARD_ADMIN)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.DR, iconMap.get(GlobalSettingSubCategory.DR)));
+        systemSetup.add(Pair.of(GlobalSettingSubCategory.YUKON_LOGGERS, iconMap.get(GlobalSettingSubCategory.YUKON_LOGGERS)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.YUKON_SERVICES, iconMap.get(GlobalSettingSubCategory.YUKON_SERVICES)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.WEB_SERVER, iconMap.get(GlobalSettingSubCategory.WEB_SERVER)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.THEMES, iconMap.get(GlobalSettingSubCategory.THEMES)));
@@ -174,32 +176,25 @@ public class YukonConfigurationController {
             return "redirect:/dashboards/admin";
         } else if (category == GlobalSettingSubCategory.ATTRIBUTES) {
             return "redirect:/admin/config/attributes";
+        } else if (category == GlobalSettingSubCategory.YUKON_LOGGERS) {
+            return "redirect:/admin/config/loggers/allLoggers";
         }
+        
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         
         model.addAttribute("category", category);
         model.addAttribute("categoryName", accessor.getMessage(category));
-        
-        Map<GlobalSettingType, Pair<Object, String>> settings = globalSettingEditorDao.getValuesAndCommentsForCategory(category);
-        
+        Map<GlobalSettingType, GlobalSetting> settings = globalSettingEditorDao.getSettingsForCategory(category);
+
         GlobalSettingsEditorBean command = new GlobalSettingsEditorBean();
         command.setCategory(category);
-        command.setValues(Maps.transformValues(settings, new Function<Pair<Object, String>, Object>() {
-            @Override
-            public Object apply(Pair<Object, String> input) {
-                return input.getFirst();
-            }
-        }));
-        command.setComments(Maps.transformValues(settings, new Function<Pair<Object, String>, String>() {
-            @Override
-            public String apply(Pair<Object, String> input) {
-                return input.getSecond();
-            }
-        }));
-        
+        command.setValues(Maps.transformValues(settings, setting -> setting.getValue()));
+        command.setComments(Maps.transformValues(settings, setting -> setting.getComments()));
+        command.setDecryptValueFails(Maps.transformValues(settings, setting -> setting.getDecryptValueFailed()));
+        updateDecryptFailedValues(command);
         model.addAttribute("command", command);
-        
+
         setupModelMap(context, model, category);
         
         return "config/category.jsp";
@@ -253,7 +248,19 @@ public class YukonConfigurationController {
         setupModelMap(context, map, category);
         return "redirect:/admin/config/view";
     }
-    
+
+    /**
+     * Update decryptValueFailed values in cache.
+     */
+    private void updateDecryptFailedValues(final GlobalSettingsEditorBean command) throws ExecutionException {
+        MappedPropertiesHelper<GlobalSetting> helper = helperLookup.get(command.getCategory());
+        List<MappedPropertiesHelper.MappableProperty<GlobalSetting, ?>> mappableProperties = helper.getMappableProperties();
+        for (MappableProperty<GlobalSetting, ?> mappableProperty : mappableProperties) {
+            GlobalSetting setting = mappableProperty.getExtra();
+            setting.setDecryptValueFailed(command.getDecryptValueFails().get(setting.getType()));
+        }
+    }
+
     private List<GlobalSetting> adjustSettings(final GlobalSettingsEditorBean command ) throws ExecutionException {
         MappedPropertiesHelper<GlobalSetting> helper = helperLookup.get(command.getCategory());
         List<GlobalSetting> settings = Lists.transform(helper.getMappableProperties(), new Function<MappableProperty<GlobalSetting, ?>, GlobalSetting>() {
@@ -262,6 +269,7 @@ public class YukonConfigurationController {
                 GlobalSetting setting = input.getExtra();
                 setting.setValue(command.getValues().get(setting.getType()));
                 setting.setComments(command.getComments().get(setting.getType()));
+                setting.setDecryptValueFailed(command.getDecryptValueFails().get(setting.getType()));
                 return setting;
             }
         });
@@ -275,6 +283,7 @@ public class YukonConfigurationController {
         
         private Map<GlobalSettingType, Object> values = Maps.newLinkedHashMap();
         private Map<GlobalSettingType, String> comments = Maps.newLinkedHashMap();
+        private Map<GlobalSettingType, Boolean> decryptValueFails = Maps.newLinkedHashMap();
         
         public Map<GlobalSettingType, Object> getValues() {
             return values;
@@ -298,6 +307,14 @@ public class YukonConfigurationController {
         
         public void setCategory(GlobalSettingSubCategory category) {
             this.category = category;
+        }
+
+        public Map<GlobalSettingType, Boolean> getDecryptValueFails() {
+            return decryptValueFails;
+        }
+
+        public void setDecryptValueFails(Map<GlobalSettingType, Boolean> decryptValueFails) {
+            this.decryptValueFails = decryptValueFails;
         }
     }
     

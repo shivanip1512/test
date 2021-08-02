@@ -22,34 +22,33 @@ Class-Path: ./
  jdom-2.0.2.jar 
  jradius-client.jar 
  aopalliance-1.0.jar 
- spring-aop-5.3.2.jar 
- spring-aspects-5.3.2.jar 
- spring-beans-5.3.2.jar 
- spring-context-5.3.2.jar 
- spring-context-support-5.3.2.jar 
- spring-core-5.3.2.jar 
- spring-ws-core-3.0.10.RELEASE.jar 
- spring-expression-5.3.2.jar 
- spring-instrument-5.3.2.jar 
- spring-jdbc-5.3.2.jar 
- spring-jms-5.3.2.jar 
- spring-messaging-5.3.2.jar 
- spring-orm-5.3.2.jar 
- spring-oxm-5.3.2.jar 
- spring-test-5.3.2.jar 
- spring-tx-5.3.2.jar 
- spring-web-5.3.2.jar 
- spring-webmvc-5.3.2.jar 
- spring-websocket-5.3.2.jar 
- spring-context-indexer-5.3.2.jar 
- spring-jcl-5.3.2.jar 
- spring-webflux-5.3.2.jar 
+ spring-aop-5.3.8.jar 
+ spring-aspects-5.3.8.jar 
+ spring-beans-5.3.8.jar 
+ spring-context-5.3.8.jar 
+ spring-context-support-5.3.8.jar 
+ spring-core-5.3.8.jar 
+ spring-ws-core-3.1.1.jar 
+ spring-expression-5.3.8.jar 
+ spring-instrument-5.3.8.jar 
+ spring-jdbc-5.3.8.jar 
+ spring-jms-5.3.8.jar 
+ spring-messaging-5.3.8.jar 
+ spring-orm-5.3.8.jar 
+ spring-oxm-5.3.8.jar 
+ spring-test-5.3.8.jar 
+ spring-tx-5.3.8.jar 
+ spring-web-5.3.8.jar 
+ spring-webmvc-5.3.8.jar 
+ spring-websocket-5.3.8.jar 
+ spring-context-indexer-5.3.8.jar 
+ spring-jcl-5.3.8.jar 
+ spring-webflux-5.3.8.jar 
  javax.jms-api-2.0.1.jar 
- reactor-core-3.3.8.RELEASE.jar 
  micrometer-core-1.0.7.jar 
  reactive-streams-1.0.3.jar 
- spring-xml-3.0.10.RELEASE.jar 
- stax2-api-3.1.4.jar 
+ spring-xml-3.1.1.jar 
+ stax2-api-4.2.1.jar 
  dom4j-2.1.3.jar 
  cglib-2.1.3.jar 
  asm.jar 
@@ -82,9 +81,9 @@ Class-Path: ./
  geronimo-j2ee-management_1.1_spec-1.0.1.jar 
  slf4j-api-1.7.30.jar 
  org.osgi.core-4.1.0.jar 
- spring-integration-core-5.3.2.RELEASE.jar 
- spring-integration-jms-5.3.2.RELEASE.jar 
- spring-retry-1.2.5.RELEASE.jar 
+ spring-integration-core-5.5.1.jar 
+ spring-integration-jms-5.5.1.jar 
+ spring-retry-1.3.1.jar 
  xbean-spring-4.5.jar 
  jaxb-api.jar 
  jaxb-impl.jar 
@@ -96,68 +95,60 @@ Class-Path: ./
  bcpg-fips-1.0.3.jar 
  libthrift-0.13.0.jar 
  yukon-shared.jar 
- annotation-detector-3.0.4.jar 
- applicationinsights-core-1.0.2.jar 
  applicationisights-web-1.0.2.jar 
- accessors-smart-1.2.jar 
- activation-1.1.jar 
- adal4j-1.6.4.jar 
- adapter-rxjava-2.7.2.jar 
- asm-5.0.4.jar 
- async-http-client-2.12.1.jar 
- async-http-client-netty-utils-2.12.1.jar 
- azure-annotations-1.10.0.jar 
- azure-client-authentication-1.7.3.jar 
- azure-client-runtime-1.7.3.jar 
- azure-servicebus-3.5.1.jar 
- client-runtime-1.7.3.jar 
- converter-jackson-2.7.2.jar 
+ azure-core-1.17.0.jar 
+ azure-core-amqp-2.2.0.jar 
+ azure-core-http-netty-1.10.0.jar 
+ azure-messaging-servicebus-7.2.3.jar 
+ brave-5.13.3.jar 
+ brave-instrumentation-http-5.13.3.jar 
  commons-codec-1.10.jar 
  commons-lang3-3.8.1.jar 
  gson-1.7.2.jar 
  guava-18.0.jar 
  httpclient-4.5.6.jar 
  httpcore-4.4.10.jar 
- jackson-annotations-2.12.1.jar 
- jackson-core-2.12.1.jar 
- jackson-databind-2.12.1.jar 
+ jackson-annotations-2.12.3.jar 
+ jackson-core-2.12.3.jar 
+ jackson-databind-2.12.3.jar 
  jackson-dataformat-csv-2.9.6.jar 
- jackson-datatype-joda-2.10.1.jar 
- javax.activation-1.2.0.jar 
  javax.mail-1.6.1.jar 
- jcip-annotations-1.0-1.jar 
+ jackson-datatype-joda-2.12.3.jar 
+ jackson-dataformat-xml-2.12.3.jar 
+ jackson-datatype-jsr310-2.12.3.jar 
+ jackson-module-jaxb-annotations-2.12.3.jar 
+ jakarta.activation-api-1.2.1.jar 
+ jakarta.xml.bind-api-2.3.2.jar
  json-smart-2.3.jar 
- lang-tag-1.5.jar 
- logging-interceptor-3.12.2.jar 
- netty-buffer-4.1.48.Final.jar 
- netty-codec-4.1.48.Final.jar 
- netty-codec-dns-4.1.27.Final.jar 
- netty-codec-http-4.1.48.Final.jar 
- netty-codec-socks-4.1.48.Final.jar 
- netty-common-4.1.48.Final.jar 
- netty-handler-4.1.48.Final.jar 
- netty-handler-proxy-4.1.48.Final.jar 
- netty-reactive-streams-2.0.4.jar 
- netty-resolver-4.1.48.Final.jar 
- netty-resolver-dns-4.1.27.Final.jar 
- netty-transport-4.1.48.Final.jar 
- netty-transport-native-epoll-4.1.48.Final-linux-x86_64.jar 
- netty-transport-native-unix-common-4.1.48.Final.jar 
- nimbus-jose-jwt-9.1.5.jar 
- oauth2-oidc-sdk-6.5.jar 
- okhttp-3.14.7.jar 
- okhttp-urlconnection-3.12.2.jar 
- okio-1.17.2.jar 
- proton-j-0.33.4.jar 
- qpid-proton-j-extensions-1.2.3.jar 
- retrofit-2.7.2.jar 
- rxjava-1.3.8.jar 
+ netty-buffer-4.1.65.Final.jar 
+ netty-codec-4.1.65.Final.jar 
+ netty-codec-dns-4.1.63.Final.jar 
+ netty-codec-http2-4.1.65.Final.jar
+ netty-codec-http-4.1.65.Final.jar 
+ netty-codec-socks-4.1.65.Final.jar 
+ netty-common-4.1.65.Final.jar 
+ netty-handler-4.1.65.Final.jar 
+ netty-handler-proxy-4.1.65.Final.jar 
+ netty-resolver-4.1.65.Final.jar 
+ netty-resolver-dns-4.1.63.Final.jar
+ netty-resolver-dns-native-macos-4.1.63.Final-osx-x86_64.jar 
+ netty-tcnative-boringssl-static-2.0.39.Final.jar 
+ netty-transport-4.1.65.Final.jar 
+ netty-transport-native-epoll-4.1.65.Final-linux-x86_64.jar 
+ netty-transport-native-kqueue-4.1.65.Final-osx-x86_64.jar 
+ netty-transport-native-unix-common-4.1.65.Final.jar 
+ proton-j-0.33.8.jar 
+ qpid-proton-j-extensions-1.2.4.jar 
+ reactor-core-3.4.6.jar 
+ reactor-netty-1.0.7.jar 
+ reactor-netty-core-1.0.7.jar 
+ reactor-netty-http-1.0.7.jar 
+ reactor-netty-http-brave-1.0.7.jar
  slf4j-api-1.8.0-alpha2.jar 
  snakeyaml-1.18.2.jar 
- jjwt-api-0.10.6.jar 
- jjwt-impl-0.10.6.jar 
- jjwt-jackson-0.10.6.jar 
- mail-1.4.5.jar 
+ jjwt-api-0.11.2.jar 
+ jjwt-impl-0.11.2.jar 
+ jjwt-jackson-0.11.2.jar 
  jaxws-api.jar 
  javax.annotation-api-1.3.2.jar 
  saaj-api-1.3.5.jar 
@@ -167,3 +158,7 @@ Class-Path: ./
  opencsv-4.5.jar 
  commons-vfs2-2.2.jar 
  jsch-0.1.54.jar 
+ woodstox-core-6.2.4.jar 
+ zipkin-2.23.2.jar 
+ zipkin-reporter-2.16.3.jar 
+ zipkin-reporter-brave-2.16.3.jar

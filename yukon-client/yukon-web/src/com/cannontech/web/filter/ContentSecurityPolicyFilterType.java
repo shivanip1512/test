@@ -11,13 +11,14 @@ public enum ContentSecurityPolicyFilterType {
         + "http://api.tiles.mapbox.com/ " 
         + "http://*.tiles.mapbox.com/ " 
         + "http://www.w3.org "
-        + "http://www.google-analytics.com " 
         + "https://api-secure.recaptcha.net "   // Recaptcha
         + "https://www.google.com "             // Recaptcha
         + "http://www.google.com ; "),          // Recaptcha
     SCRIPT_SRC("script-src 'self' 'unsafe-inline' 'unsafe-eval' "
         + "https://api.tiles.mapbox.com " 
-        + "http://www.google-analytics.com " 
+        + "https://www.googletagmanager.com "   //Google Analytics
+        + "http://www.googletagmanager.com "    //Google Analytics
+        + "http://www.google-analytics.com "    //Google Analytics
         + "https://api-secure.recaptcha.net "   // Recaptcha
         + "https://www.gstatic.com/recaptcha/ " // Recaptcha
         + "https://www.google.com "             // Recaptcha
@@ -26,9 +27,9 @@ public enum ContentSecurityPolicyFilterType {
     CONNECT_SRC("connect-src 'self' 'unsafe-inline' " 
         + "https://api.mapbox.com "
         + "https://*.tiles.mapbox.com " 
+        + "https://www.google-analytics.com "    //Google Analytics
         + "https://www.google.com/recaptcha/ ;"),
     IMG_SRC("img-src 'self' data: Access-Control-Allow-Origin: * " // Access-Control-Allow-Origin: * used for cross origin resource sharing for map images
-        + "http://www.google-analytics.com "
         + "https://api-secure.recaptcha.net "   // Recaptcha
         + "https://www.google.com "             // Recaptcha
         + "http://www.google.com ; "),          // Recaptcha

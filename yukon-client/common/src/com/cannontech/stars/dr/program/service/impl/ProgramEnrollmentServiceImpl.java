@@ -109,7 +109,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private YukonListDao listDao;
     @Autowired private DrJmsMessagingService drJmsMessagingService;
-
     private final Map<Integer, Object> accountIdMutex = Collections.synchronizedMap(new HashMap<Integer, Object>());
     
     @Override
@@ -198,6 +197,19 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                     var groupIds = CollectionUtils.union(addedEnrollmentGroupIds, removedEnrollmentGroupIds);
                                     command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
                                 }
+                                if (hardwareType.isEcobee()) {
+                                    boolean unenRollFlag = isUnenrollment(originalEnrollments, requests,
+                                            liteHw.getInventoryID());
+                                    if (unenRollFlag) {
+                                        var groupIds = getAddedEnrollmentGroupIds(originalEnrollments, liteHw.getInventoryID());
+                                        command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
+                                        command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
+                                    } else {
+                                        Set<Integer> removedEnrollmentGroupIds = getRemovedEnrollmentGroupIds(originalEnrollments,
+                                                requests);
+                                        command.getParams().put(LmHardwareCommandParam.GROUP_ID, removedEnrollmentGroupIds);
+                                    }
+                                }
                                 
                                 lmHardwareCommandService.sendConfigCommand(command);
                             }
@@ -260,7 +272,32 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             return result;
         }
     }
-    
+
+    /**
+     * This method takes original enrollments, new enrollment requests and inventory id to check whether it's unenrollment flow or
+     * not. Condition for unenrollment flow :<br>
+     * 1> If originalEnrollments contain enrollment but newRequests does not : Unenrollment flow.<br>
+     * 2> If originalEnrollments contain has more enrollment than newRequests : Unenrollment flow.<br>
+     * 3> If originalEnrollments contain has less enrollment than newRequests : Enrollment flow.<br>
+     * 3> If originalEnrollments contain has equal enrollment as newRequests : User changed group.
+     */
+    private boolean isUnenrollment(List<ProgramEnrollment> originalEnrollments, List<ProgramEnrollment> newRequests,
+            int inventoryId) {
+
+        List<ProgramEnrollment> originalEnrolmentsForInventory = originalEnrollments.stream()
+                .filter(enroll -> enroll.getInventoryId() == inventoryId)
+                .collect(Collectors.toList());
+        List<ProgramEnrollment> newRequestForInventory = newRequests.stream()
+                .filter(enroll -> enroll.getInventoryId() == inventoryId)
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(newRequestForInventory)
+                || (originalEnrolmentsForInventory.size() > newRequestForInventory.size())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private Set<Integer> getRemovedEnrollmentGroupIds(Collection<ProgramEnrollment> originalEnrollments, 
                                                       Collection<ProgramEnrollment> updatedEnrollments) {
         
@@ -937,4 +974,5 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
         return null;
     }
+
 }

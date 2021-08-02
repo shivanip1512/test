@@ -409,6 +409,8 @@ public class SmartNotificationsController {
     private void setupEventType(ModelMap model) {
         model.addAttribute("eventTypeDDM", SmartNotificationEventType.DEVICE_DATA_MONITOR);
         model.addAttribute("eventTypeAssetImport", SmartNotificationEventType.ASSET_IMPORT);
+        model.addAttribute("eventTypeMeterDR", SmartNotificationEventType.METER_DR);
+        model.addAttribute("eventTypeEatonCloudDR", SmartNotificationEventType.EATON_CLOUD_DR);
     }
 
     @RequestMapping(value="subscription/saveDetails", method=RequestMethod.POST)

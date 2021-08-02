@@ -32,13 +32,14 @@ bool EcobeeCycleGear::attemptControl( CtiLMGroupPtr currentLMGroup,
 
         expectedLoadReduced += ( currentLMGroup->getKWCapacity() * loadScalar );
 
-        const bool rampIn  = ciStringEqual( getFrontRampOption(), CtiLMProgramDirectGear::RandomizeRandomOptionType );
-        const bool rampOut = ciStringEqual( getBackRampOption(),  CtiLMProgramDirectGear::RandomizeRandomOptionType );
-
         // Ecobee gears are repurposing the MethodObjectType column in LMProgramDirectGear for its "Mandatory" boolean
         const bool mandatory = ciStringEqual( getMethodOptionType(), "Mandatory" );
 
-        return controllableGroup->sendCycleControl( getMethodRate(), controlSeconds, rampIn, rampOut, mandatory );
+        return controllableGroup->sendCycleControl( getProgramPAOId(),
+                                                    getMethodRate(), 
+                                                    controlSeconds, 
+                                                    mandatory, 
+                                                    isRampInOut() );
     }
 
     CTILOG_WARN(dout, "Group does not implement ecobee control interface: " << currentLMGroup->getPAOName());
@@ -70,5 +71,10 @@ bool EcobeeCycleGear::stopControl( CtiLMGroupPtr currentLMGroup )
 unsigned long EcobeeCycleGear::estimateOffTime( long controlSeconds )
 {
     return controlSeconds * ( getMethodRate() / 100.0 );
+}
+
+bool EcobeeCycleGear::isRampInOut() const
+{
+    return ciStringEqual( getFrontRampOption(), CtiLMProgramDirectGear::RandomizeRandomOptionType );
 }
 

@@ -28,6 +28,7 @@ import javax.jms.Session;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -228,7 +229,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFG301_PULSE));
         
         groupedMeterTypesBuilder.put("Relays", ImmutableList.of(
-            RfnManufacturerModel.RFN_RELAY));
+            RfnManufacturerModel.RFN_RELAY,
+            RfnManufacturerModel.CRLY_856));
         
         groupedMeterTypesBuilder.put("RFN-1200", RfnManufacturerModel.getRfn1200Models());
           
@@ -553,6 +555,10 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         }
         
         rfnEvent.setEventData(testEventMap);
+        if(testEvent.getRfnConditionType() == RfnConditionType.CELLULAR_APN_CHANGED) {
+            String generatedString = RandomStringUtils.random(5, true, false).toUpperCase();
+            rfnEvent.getEventData().put(RfnConditionDataType.APN, generatedString);
+        }
         return rfnEvent;
     }
     

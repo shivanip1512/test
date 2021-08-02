@@ -384,6 +384,10 @@ public:
     static const Attribute  WiFiBssidChange;
     static const Attribute  WiFiPassphraseChange;
     static const Attribute  WiFiSsidChange;
+    static const Attribute  CellularConnectionFailed;
+    static const Attribute  CellularModemDisabled;
+    static const Attribute  CellularApnChanged;
+    static const Attribute  CellularSimCardInsertedRemoved;
     static const Attribute  ZeroUsageFlag;
     static const Attribute  ZigBeeLinkStatus;
     static const Attribute  TerminalBlockCoverRemoval;
@@ -721,6 +725,8 @@ public:
     static const Attribute  OperationFailedNeutralCurrent;
     static const Attribute  OverUnderVoltageTrackTime;
     static const Attribute  OverVoltageCount;
+    static const Attribute  ReferenceSignalReceivedPower;
+    static const Attribute  ReferenceSignalReceivedQuality;
     static const Attribute  RadioSignalStrengthIndicator;
     static const Attribute  RecloseBlocked;
     static const Attribute  ScadaOverrideClear;
@@ -729,6 +735,7 @@ public:
     static const Attribute  ScadaOverrideEnable;
     static const Attribute  ScadaOverrideHeartbeat;
     static const Attribute  ScadaOverrideMode;
+    static const Attribute  SignalToInterferencePlusNoiseRatio;
     static const Attribute  SourceVoltage;
     static const Attribute  TapDown;
     static const Attribute  TapPosition;
@@ -763,9 +770,13 @@ public:
     static const Attribute  FirmwareUpdateStatus;
     static const Attribute  Frequency;
     static const Attribute  Relay1ActivationStatus;
+    static const Attribute  Relay1ColdLoadPickupTime;
     static const Attribute  Relay2ActivationStatus;
+    static const Attribute  Relay2ColdLoadPickupTime;
     static const Attribute  Relay3ActivationStatus;
+    static const Attribute  Relay3ColdLoadPickupTime;
     static const Attribute  Relay4ActivationStatus;
+    static const Attribute  Relay4ColdLoadPickupTime;
 };
 
 

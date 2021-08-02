@@ -42,6 +42,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.dr.model.RfPerformanceSettings;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.base.Function;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -131,7 +132,8 @@ public class HomeController {
         
         boolean recentEventParticipationAvailable = false;
         recentEventParticipationAvailable = configurationSource.getBoolean(MasterConfigBoolean.HONEYWELL_SUPPORT_ENABLED, false)
-                                            || !globalSettingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME).isEmpty();
+                                            || !globalSettingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME).isEmpty()
+                                            || !Strings.isNullOrEmpty(globalSettingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID));
         model.addAttribute("recentEventParticipationAvailable", recentEventParticipationAvailable);
         return "dr/home.jsp";
     }

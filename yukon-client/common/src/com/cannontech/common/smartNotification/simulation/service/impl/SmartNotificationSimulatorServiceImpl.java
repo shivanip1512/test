@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -20,10 +21,12 @@ import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
+import com.cannontech.common.smartNotification.model.EatonCloudDrEventAssembler;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler.MonitorState;
 import com.cannontech.common.smartNotification.model.InfrastructureWarningsEventAssembler;
 import com.cannontech.common.smartNotification.model.MeterDrEventAssembler;
@@ -34,6 +37,7 @@ import com.cannontech.common.smartNotification.simulation.service.SmartNotificat
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.meterDisconnect.DrMeterControlStatus;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
@@ -42,6 +46,8 @@ import com.cannontech.infrastructure.simulation.service.InfrastructureWarningsGe
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
+import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
+import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
@@ -56,6 +62,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
 
     private YukonJmsTemplate jmsTemplate;
     private static final Random rand = new Random();
@@ -94,7 +101,9 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
                     createInfrastructureWarningEvent(settings);
                 } else if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
                     createDeviceDataMonitorEvents(settings);
-                } else {
+                } else if (type == SmartNotificationEventType.EATON_CLOUD_DR) {
+                    createEatonCloudDrEvents(settings);
+                }else {
                     log.info("Event:{} not supported by simulator", type);
                 }
             });
@@ -140,6 +149,41 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
             if (settings.getWaitTimeSec() > 0) {
                 send(events, SmartNotificationEventType.METER_DR, settings.getEventsPerMessage(),
                         settings.getWaitTimeSec());
+            } else {
+                eventCreationService.send(SmartNotificationEventType.METER_DR, events);
+                log.info("{} Completed sending events:{}", SmartNotificationEventType.METER_DR, events.size());
+            }
+        }
+    }
+    
+    
+    private void createEatonCloudDrEvents(SmartNotificationSimulatorSettings settings) {
+        if (!settings.isAllTypes() && settings.getType() == SmartNotificationEventType.EATON_CLOUD_DR) {
+            List<SmartNotificationEvent> events = new ArrayList<>();
+            int totalMsgs = settings.getEventsPerType();
+
+            Optional<LiteYukonPAObject> group = cache.getAllLMGroups().stream()
+                    .filter(g -> g.getPaoType() == PaoType.LM_GROUP_EATON_CLOUD).findFirst();
+            if (group.isEmpty()) {
+                return;
+            }
+            List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(group.get().getLiteID());
+            if (programsByLMGroupId.isEmpty()) {
+                return;
+            }
+            int programId = programsByLMGroupId.get(0).getPaobjectId();
+            String program = cache.getAllLMPrograms().stream().filter(p -> p.getLiteID() == programId).findFirst().get()
+                    .getPaoName();
+            for (int i = 0; i < totalMsgs; i++) {
+                // when i is 0 - total 100 failed 99
+                // when i is 1 - total 200 failed 198
+                SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group.get().getPaoName(), program,
+                        (i + 1) * 100, ((i + 1) * 100) - (i + 1));
+                events.add(event);
+            }
+
+            if (settings.getWaitTimeSec() > 0) {
+                send(events, SmartNotificationEventType.EATON_CLOUD_DR, 1, settings.getWaitTimeSec());
             } else {
                 eventCreationService.send(SmartNotificationEventType.METER_DR, events);
                 log.info("{} Completed sending events:{}", SmartNotificationEventType.METER_DR, events.size());

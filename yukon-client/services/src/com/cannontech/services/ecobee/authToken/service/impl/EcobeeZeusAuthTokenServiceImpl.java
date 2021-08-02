@@ -21,6 +21,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -29,9 +30,11 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
@@ -41,6 +44,8 @@ import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRespo
 import com.cannontech.services.ecobee.authToken.service.EcobeeZeusAuthTokenService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -48,6 +53,7 @@ import com.google.common.cache.LoadingCache;
 public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenService, MessageListener {
     private static final Logger log = YukonLogManager.getLogger(EcobeeZeusAuthTokenServiceImpl.class);
 
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonJmsTemplate jmsTemplate;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
@@ -109,6 +115,14 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
                 throw new EcobeeAuthenticationException("One or more ecobee configuration settings is empty.");
             }
 
+            asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
+                if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_PASSWORD) ||
+                        globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_USERNAME) ||
+                        globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_SERVER_URL)) {
+                    cancelExistingScheduler();
+                    generateEcobeeAuthTokenResponse();
+                }
+            });
             String url = ecobeeServerURL + authUrlPart;
             log.debug("Attempting login with ecobeeUsername " + ecobeeUsername + " URL: " + url);
 
@@ -155,10 +169,24 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
 
                 String refreshToken = authTokenResponse.getRefreshToken();
                 String url = ecobeeServerURL + refreshUrlPart + refreshToken;
-
+                if(log.isDebugEnabled()) {
+                    log.debug("Request Header : " + HttpMethod.GET + " : " + url);
+                }
                 // Make API calls in every 59 minutes for refreshing authentication token.
                 ResponseEntity<ZeusAuthenticationResponse> authenticationResponse = restTemplate.getForEntity(url,
                         ZeusAuthenticationResponse.class);
+
+                if (log.isDebugEnabled()) {
+                    log.debug("Response Header : " + url + " : " + authenticationResponse.getStatusCode());
+                    if (authenticationResponse.hasBody()) {
+                        ObjectMapper mapper = new ObjectMapper();
+                        try {
+                            log.debug("Response Body: \n" + JsonUtils.beautifyJson(mapper.writeValueAsString(authenticationResponse.getBody())));
+                        } catch (JsonProcessingException e) {
+                            log.error("Error while parsing response body : ", e);
+                        }
+                    }
+                }
 
                 if (authenticationResponse.getStatusCode() == HttpStatus.OK) {
                     authTokenResponse = buildZeusEcobeeAuthTokenResponse(authenticationResponse.getBody());

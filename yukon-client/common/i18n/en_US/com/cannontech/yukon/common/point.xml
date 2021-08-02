@@ -352,6 +352,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.WIFI_BSSID_CHANGE">Wi-Fi BSSID Change</entry>
     <entry key="yukon.common.attribute.builtInAttribute.WIFI_PASSPHRASE_CHANGE">Wi-Fi Passphrase Change</entry>
     <entry key="yukon.common.attribute.builtInAttribute.WIFI_SSID_CHANGE">Wi-Fi SSID Change</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CELLULAR_CONNECTION_FAILED">Cellular Connection Failed</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CELLULAR_MODEM_DISABLED">Cellular Modem Disabled</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CELLULAR_APN_CHANGED">Cellular Network APN String Change</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CELLULAR_SIM_CARD_INSERTED_REMOVED">Cellular Modem SIM Inserted/Removed</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZERO_USAGE_FLAG">Zero Usage Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZIGBEE_LINK_STATUS">ZigBee Link Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TERMINAL_BLOCK_COVER_REMOVAL_FLAG">Terminal Block Cover Removal</entry>
@@ -829,9 +833,17 @@
     <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_UPDATE_STATUS">Firmware Update Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FREQUENCY">Frequency</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_ACTIVATION_STATUS">Relay 1 Activation Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_COLD_LOAD_PICKUP_TIME">Relay 1 Cold Load Pickup Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_ACTIVATION_STATUS">Relay 2 Activation Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_COLD_LOAD_PICKUP_TIME">Relay 2 Cold Load Pickup Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_ACTIVATION_STATUS">Relay 3 Activation Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_COLD_LOAD_PICKUP_TIME">Relay 3 Cold Load Pickup Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_ACTIVATION_STATUS">Relay 4 Activation Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_COLD_LOAD_PICKUP_TIME">Relay 4 Cold Load Pickup Time</entry>
+    
+    <entry key="yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER">RSRP</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY">RSRQ</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO">SINR</entry>
 
     <!-- BuiltInAttribute see note above about changing values -->
 

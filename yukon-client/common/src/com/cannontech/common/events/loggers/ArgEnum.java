@@ -12,6 +12,7 @@ package com.cannontech.common.events.loggers;
 public enum ArgEnum {
     accountNumber,
     action,
+    apn,
     applianceCategoryName,
     applianceType,
     attributeId,
@@ -124,5 +125,7 @@ public enum ArgEnum {
     warehouseName,
     widgetType,
     workOrderNumber,
+    yukonService,
+    serverIdentifier,
     ;
 }

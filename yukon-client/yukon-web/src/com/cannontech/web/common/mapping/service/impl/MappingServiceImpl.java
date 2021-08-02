@@ -23,7 +23,7 @@ public class MappingServiceImpl implements MappingService {
     private final static String mappingElevationDevUrl = "https://api.mapbox.com/styles/v1/easyukondev/ckmnibfyr2ayn17ql60zx1344/tiles/{z}/{x}/{y}?access_token=";
     private final static String mappingElevationProdUrl = "https://api.mapbox.com/styles/v1/easyukon/ckmp61na924tb17prrl0yj9kw/tiles/{z}/{x}/{y}?access_token=";
     private final static String mappingDevKey = "pk.eyJ1IjoiZWFzeXVrb25kZXYiLCJhIjoiY2lydzVjbnNyMGo3eHQxbmtidGVoNWt5bSJ9.ddhkDSTm2ONf47E9DVaNFw";
-    private final static String mappingProdKey = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2tqbXlkY3p1OHV3dzMycnhxOWVsNGpsMyJ9.Dy3cOKkuRPlezMn5IClEnw";
+    private final static String mappingProdKey = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2twd25rMjJtMGI5YTJvbnljYXBnbnBleSJ9.4y8GMqaneWIkL8RVISRbEw";
 
     @Override
     public String getMappingUrl(String viewType) {

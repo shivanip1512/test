@@ -1,13 +1,14 @@
 package com.cannontech.web.admin;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -25,7 +26,7 @@ public class GlobalSettingValidatorTest {
     private GlobalSettingsEditorBean command;
     private Errors errors;
 
-    @Before
+    @BeforeEach
     public void setup() {
         service = new GlobalSettingValidator();
         StaticMessageSource messageSource = new StaticMessageSource();
@@ -46,7 +47,7 @@ public class GlobalSettingValidatorTest {
             messageSource.addMessage("yukon.common.setting.ITRON_HCM_DATA_COLLECTION_MINUTES", Locale.US, "Itron HCM Data Collection Interval");
             messageSource.addMessage("yukon.common.setting.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS", Locale.US, "Itron HCM Response Timeout");
             messageSource.addMessage("yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS", Locale.US, "Runtime Calculation Interval");
-            messageSource.addMessage("yukon.common.setting.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL", Locale.US, "PX Cellular LCR auto creation interval");
+            messageSource.addMessage("yukon.common.setting.EATON_CLOUD_DEVICE_CREATION_INTERVAL", Locale.US, "Eaton Cloud Cellular LCR auto creation interval");
         }
         YukonUserContextMessageSourceResolverMock messageResolver = new YukonUserContextMessageSourceResolverMock();
         messageResolver.setMessageSource(messageSource);
@@ -98,8 +99,8 @@ public class GlobalSettingValidatorTest {
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.YUKON_SERVICES ,
-            errors.getErrorCount() == 5);
+        assertTrue(errors.getErrorCount() == 5,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.YUKON_SERVICES);
         
         command = new GlobalSettingsEditorBean();
         command.setCategory(GlobalSettingSubCategory.YUKON_SERVICES);
@@ -111,8 +112,8 @@ public class GlobalSettingValidatorTest {
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.YUKON_SERVICES ,
-            errors.getErrorCount() == 4);
+        assertTrue(errors.getErrorCount() == 4,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.YUKON_SERVICES);
 
         // Validation for DR category
         command = new GlobalSettingsEditorBean();
@@ -126,9 +127,9 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES, 15);
         globalSettings.put(GlobalSettingType.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS, 120);
         globalSettings.put(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS, 2);
-        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_DEVICE_CREATION_INTERVAL, 24);
-        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_DEVICE_READ_INTERVAL_MINUTES, 1);
-        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID, "fcbd4387-886b-4f89-98d0-7801ff7b75e3");
+        globalSettings.put(GlobalSettingType.EATON_CLOUD_DEVICE_CREATION_INTERVAL, 24);
+        globalSettings.put(GlobalSettingType.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES, 1);
+        globalSettings.put(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID, "fcbd4387-886b-4f89-98d0-7801ff7b75e3");
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
@@ -156,16 +157,15 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.HONEYWELL_SERVER_URL, "htt://127.0.0.1");
 //        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "htt://127.0.0.1");
         globalSettings.put(GlobalSettingType.ITRON_HCM_API_URL, "htt://127.0.0.1");
-        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_SERVICE_ACCOUNT_ID, "fcbd4387-886b-4f89-98d0-7801ff7b75e30");
+        globalSettings.put(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID, "fcbd4387-886b-4f89-98d0-7801ff7b75e30");
         
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
 
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.DR ,
-            errors.getErrorCount() == 4);
-        
+        assertTrue(errors.getErrorCount() == 4,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.DR);
         
         command = new GlobalSettingsEditorBean();
         command.setCategory(GlobalSettingSubCategory.DR);
@@ -178,8 +178,8 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
 
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.DR ,
-            errors.getErrorCount() == 4);
+        assertTrue(errors.getErrorCount() == 4,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.DR);
 
         // InValid Runtime Calculation Value
         command = new GlobalSettingsEditorBean();
@@ -253,8 +253,8 @@ public class GlobalSettingValidatorTest {
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.AUTHENTICATION ,
-            errors.getErrorCount() == 3);
+        assertTrue(errors.getErrorCount() == 3,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.AUTHENTICATION);
 
         command.setCategory(GlobalSettingSubCategory.AUTHENTICATION);
         globalSettings.put(GlobalSettingType.SERVER_ADDRESS, "SERVER?ADDRESS");
@@ -264,8 +264,8 @@ public class GlobalSettingValidatorTest {
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.AUTHENTICATION ,
-            errors.getErrorCount() == 3);
+        assertTrue(errors.getErrorCount() == 3,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.AUTHENTICATION);
 
         
         // Validation for MISC
@@ -290,8 +290,8 @@ public class GlobalSettingValidatorTest {
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
-        assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.MISC ,
-            errors.getErrorCount() == 3);
+        assertTrue(errors.getErrorCount() == 3,
+                "Incorrect global setting values for category "+GlobalSettingSubCategory.MISC);
         
         command = new GlobalSettingsEditorBean();
         command.setCategory(GlobalSettingSubCategory.AMI);

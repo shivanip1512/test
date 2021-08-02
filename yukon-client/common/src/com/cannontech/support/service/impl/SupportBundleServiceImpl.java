@@ -2,12 +2,9 @@ package com.cannontech.support.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +23,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileUtil;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleWriter;
 import com.cannontech.tools.zip.ZipWriter;
@@ -109,27 +107,11 @@ public class SupportBundleServiceImpl implements SupportBundleService {
 
     @Override
     public List<File> getBundles() {
-        File[] allFiles = getBundleDir().listFiles(new FilenameFilter() {
-            public boolean accept(File directory, String filename) {
-                if (filename.endsWith(".zip")) {
-                    return true;
-                }
-                return false;
-            }
-        });
+        return FileUtil.filterAndOrderZipFile(getBundleDir());
+    }
 
-        if (allFiles == null) {
-            return Collections.emptyList();
-        }
-
-        // sorting by date modified
-        Arrays.sort(allFiles, new Comparator<File>() {
-            public int compare(File f1, File f2) {
-                return new Long(f2.lastModified()).compareTo(f1.lastModified());
-            }
-        });
-
-        return Arrays.asList(allFiles);
+    public List<File> getRfBundles() {
+        return FileUtil.filterAndOrderZipFile(getRfBundleDir());
     }
 
     @Override
@@ -163,6 +145,10 @@ public class SupportBundleServiceImpl implements SupportBundleService {
 
     private File getBundleDir() {
         return new File(CtiUtilities.getYukonBase() + "/Server/SupportBundles/");
+    }
+
+    private File getRfBundleDir() {
+        return new File(CtiUtilities.getYukonBase() + "/Server/SupportBundles/RfNetworkData/");
     }
 
     private String buildMetaData(ReadableInstant start, ReadableInstant stop, String custName,

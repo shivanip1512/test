@@ -75,6 +75,20 @@ public:
         Reverse
     };
 
+    enum class TapPositionLimits
+    {
+        Minimum =  -16,
+        Maximum =   16
+    };
+
+    enum class TapInhibit
+    {
+        None,
+        NoTapUp,
+        NoTapDown,
+        NoTap
+    };
+
     static const std::string LoadTapChanger;
     static const std::string GangOperatedVoltageRegulator;
     static const std::string PhaseOperatedVoltageRegulator;
@@ -150,6 +164,11 @@ public:
     boost::optional<long> getTapPosition();
 
     PointValue getCompleteTapPosition();
+
+    long getMinTapPosition() const;
+    long getMaxTapPosition() const;
+
+    TapInhibit isTapInhibited();
 
     long getKeepAliveConfig();
     long getKeepAliveTimer();

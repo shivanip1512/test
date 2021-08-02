@@ -1,6 +1,6 @@
 package com.cannontech.yukon.api.stars.endpoint;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Date;
@@ -9,9 +9,8 @@ import java.util.List;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
@@ -64,7 +63,7 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
         enrolledDeviceRespElementStr = enrolledDevicesRespStr + enrolledDevicesListStr + enrolledDeviceStr;
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         ns = YukonXml.getYukonNamespace();
         impl = new EnrolledDevicesByAccountNumberRequestEndpoint();
@@ -153,13 +152,10 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
                                       enrolledDevicesRespStr,
                                       XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
-        Assert.assertTrue("Should have failed with not found error",
-                          template.evaluateAsNode(failErrorCodeStr) != null);
-        Assert.assertTrue("Should have failed with not found error",
-                          template.evaluateAsNode(failErrorDescStr) != null);
-        Assert.assertTrue("Should have failed with not found error",
-                          template.evaluateAsString(failErrorCodeStr)
-                                  .equals("InvalidAccountNumber"));
+        assertTrue(template.evaluateAsNode(failErrorCodeStr) != null, "Should have failed with not found error");
+        assertTrue(template.evaluateAsNode(failErrorDescStr) != null, "Should have failed with not found error");
+        assertTrue(template.evaluateAsString(failErrorCodeStr)
+                .equals("InvalidAccountNumber"), "Should have failed with not found error");
     }
 
     @Test
@@ -187,16 +183,13 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
                                       enrolledDevicesRespStr,
                                       XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
-        Assert.assertTrue("Should have passed with empty result",
-                          template.evaluateAsNode(failErrorCodeStr) == null);
-        Assert.assertTrue("Should have passed with empty result",
-                          template.evaluateAsNode(failErrorDescStr) == null);
+        assertTrue(template.evaluateAsNode(failErrorCodeStr) == null, "Should have passed with empty result");
+        assertTrue(template.evaluateAsNode(failErrorDescStr) == null, "Should have passed with empty result");
 
         List<EnrolledDevicePrograms> enrolledDevices = template.evaluate(enrolledDeviceRespElementStr,
-                                                                         enrolledDeviceMapper);
+                enrolledDeviceMapper);
         // verify data in the response
-        assertTrue("Incorrect resultSize",
-                   enrolledDevices != null && enrolledDevices.size() == 0);
+        assertTrue(enrolledDevices != null && enrolledDevices.size() == 0, "Incorrect resultSize");
 
     }
 
@@ -225,16 +218,13 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
                                       enrolledDevicesRespStr,
                                       XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
-        Assert.assertTrue("Should have passed with results",
-                          template.evaluateAsNode(failErrorCodeStr) == null);
-        Assert.assertTrue("Should have passed with results",
-                          template.evaluateAsNode(failErrorDescStr) == null);
+        assertTrue(template.evaluateAsNode(failErrorCodeStr) == null, "Should have passed with results");
+        assertTrue(template.evaluateAsNode(failErrorDescStr) == null, "Should have passed with results");
 
         List<EnrolledDevicePrograms> enrolledDevices = template.evaluate(enrolledDeviceRespElementStr,
                                                                          enrolledDeviceMapper);
         // verify data in the response
-        assertTrue("Incorrect resultSize",
-                   enrolledDevices != null && enrolledDevices.size() == 1);
+        assertTrue(enrolledDevices != null && enrolledDevices.size() == 1, "Incorrect resultSize");
 
     }
 

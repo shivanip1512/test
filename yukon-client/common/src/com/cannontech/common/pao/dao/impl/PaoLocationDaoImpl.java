@@ -16,17 +16,19 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.LocationData;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.model.PaoLocationDetails;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -52,7 +54,7 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
             return new PaoLocation(paoIdentifier, latitude, longitude, origin, lastChangedDate);
         }
     };
-    
+
     private final static YukonRowMapper<PaoLocationDetails> paoLoctionDetailMapper = new YukonRowMapper<PaoLocationDetails>() {
         @Override
         public PaoLocationDetails mapRow(YukonResultSet rs) throws SQLException {
@@ -66,7 +68,22 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
             return new PaoLocationDetails(paoName, meterNumber, latitude, longitude, origin, lastChangedDate);
         }
     };
-    
+
+    private final static YukonRowMapper<LocationData> locationDataMapper = new YukonRowMapper<LocationData>() {
+        @Override
+        public LocationData mapRow(YukonResultSet rs) throws SQLException {
+            String serialNumber = rs.getString("SerialNumber");
+            String manufacturer = rs.getString("Manufacturer");
+            String model = rs.getString("Model");
+            RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
+            double latitude = rs.getDouble("Latitude");
+            double longitude = rs.getDouble("Longitude");
+            PaoType paoType = rs.getEnum("Type", PaoType.class);
+            int paoId = rs.getInt("PAObjectID");
+            return new LocationData(rfnIdentifier, latitude, longitude, new PaoIdentifier(paoId, paoType));
+        }
+    };
+
     @Override
     public Set<PaoLocation> getLocations(Iterable<? extends YukonPao> paos) {
        return getLocations(Sets.newHashSet(PaoUtils.asPaoIdList(paos)));
@@ -257,5 +274,23 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
             }
         };
         return template.query(sqlGenerator, paoIds, paoLoctionDetailMapper);
+    }
+
+    @Override
+    public List<LocationData> getLocationDetailForPaoType(Iterable<PaoType> paoTypes, int startIndex, int endIndex) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM (");
+        sql.append("    SELECT ROW_NUMBER() OVER (");
+        sql.append("        ORDER BY cast(rfn.SerialNumber AS BIGINT)");
+        sql.append(")       AS num_row, ypo.Type, ypo.PAObjectID, rfn.SerialNumber, rfn.Manufacturer, rfn.Model, loc.Latitude, loc.Longitude");
+        sql.append("    FROM YukonPaObject ypo");
+        sql.append("    JOIN RfnAddress rfn ON ypo.PAObjectID = rfn.DeviceId");
+        sql.append("    LEFT JOIN PaoLocation loc ON loc.PAObjectId = ypo.PAObjectID");
+        sql.append("    WHERE ypo.Type").in(paoTypes);
+        sql.append("    ) AS innerTable");
+        sql.append("WHERE innerTable.num_row").gte(startIndex);
+        sql.append("AND innerTable.num_row").lte(endIndex);
+        return jdbcTemplate.query(sql, locationDataMapper);
     }
 }

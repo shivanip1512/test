@@ -39,6 +39,9 @@ public class SystemDataFieldType implements Serializable {
         ROUTE_TABLE_REQUESTS("routetablerequests"),
         ROUTE_TABLE_RESPONSE("routetableresponse"),
         RFN_VERSION("rfversion"),
+        HIGHEST_METER_DESCEDANT_COUNT_DATA("meterdescendantcount"),
+        HIGHEST_RELAY_DESCEDANT_COUNT_DATA("relaydescendantcount"),
+        HIGHEST_LCR_DESCEDANT_COUNT_DATA("lcrdescendantcount"),
         OTHER,
         ;
 
@@ -112,6 +115,6 @@ public class SystemDataFieldType implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("DetailedConfigurationStatusCode [status=%s, code=%s]", fieldType, stringValue);
+        return "SystemDataFieldType [fieldType=" + fieldType + ", stringValue=" + stringValue + "]";
     }
 }
