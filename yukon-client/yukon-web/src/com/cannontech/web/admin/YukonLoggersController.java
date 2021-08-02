@@ -19,12 +19,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
@@ -55,7 +57,8 @@ public class YukonLoggersController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private ApiControllerHelper apiControllerHelper;
-
+    @Autowired private YukonLoggersValidator yukonLoggersValidator;
+    
     private static final String baseKey = "yukon.web.modules.adminSetup.config.loggers.";
     private static final String redirectLink = "redirect:/admin/config/loggers/allLoggers";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
@@ -83,15 +86,19 @@ public class YukonLoggersController {
     }
 
     @PostMapping("/config/loggers")
-    public String saveLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime, HttpServletRequest request,
-            HttpServletResponse resp, YukonUserContext userContext) {
+    public String saveLogger(@ModelAttribute YukonLogger yukonLogger, Boolean specifiedDateTime, HttpServletRequest request,
+            HttpServletResponse resp, YukonUserContext userContext, BindingResult result, RedirectAttributes redirectAttributes) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<String, Object>();
+        yukonLoggersValidator.validate(yukonLogger, result);
+        if (result.hasErrors()) {
+            return bindAndForward(yukonLogger, result, redirectAttributes);
+        }
         try {
-            ResponseEntity<? extends Object> response = save(logger, specifiedDateTime, request, userContext);
+            ResponseEntity<? extends Object> response = save(yukonLogger, specifiedDateTime, request, userContext);
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
-                json.put("isSystemLogger", SystemLogger.isSystemLogger(logger.getLoggerName()));
-                json.put("successMessage", accessor.getMessage("yukon.common.save.success", logger.getLoggerName()));
+                json.put("isSystemLogger", SystemLogger.isSystemLogger(yukonLogger.getLoggerName()));
+                json.put("successMessage", accessor.getMessage("yukon.common.save.success", yukonLogger.getLoggerName()));
                 return JsonUtils.writeResponse(resp, json);
             }
         } catch (ApiCommunicationException e) {
@@ -99,9 +106,19 @@ public class YukonLoggersController {
             json.put("errorMessage", accessor.getMessage(communicationKey));
         } catch (RestClientException ex) {
             log.error("Error saving logger. Error: {}", ex.getMessage());
-            json.put("errorMessage", accessor.getMessage("yukon.web.api.save.error", logger.getLoggerName(), ex.getMessage()));
+            json.put("errorMessage", accessor.getMessage("yukon.web.api.save.error", yukonLogger.getLoggerName(), ex.getMessage()));
         }
         return JsonUtils.writeResponse(resp, json);
+    }
+
+    private String bindAndForward(YukonLogger yukonLogger, BindingResult result, RedirectAttributes redirectAttributes) {
+       // redirectAttributes.addFlashAttribute("yukonLogger", yukonLogger);
+       // redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.yukonLogger", result);
+        if (yukonLogger.getLoggerId() == -1) {
+            return "redirect:loggers";
+        }
+        return "redirect:loggers/" + yukonLogger.getLoggerId();
+
     }
 
     @GetMapping("/config/loggers/{loggerId}")
@@ -136,6 +153,7 @@ public class YukonLoggersController {
 
     private ResponseEntity<? extends Object> save(YukonLogger logger, Boolean specifiedDateTime,
             HttpServletRequest request, YukonUserContext userContext) {
+        
         if (BooleanUtils.isNotTrue(specifiedDateTime)) {
             logger.setExpirationDate(null);
         }

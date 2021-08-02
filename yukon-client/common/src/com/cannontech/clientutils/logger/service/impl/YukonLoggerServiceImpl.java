@@ -25,6 +25,7 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
     @Override
     public YukonLogger addLogger(YukonLogger logger) {
         int loggerId = yukonLoggerDao.addLogger(logger);
+        logger.setLoggerId(loggerId);
         dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.LOGGER, loggerId);
         return logger;
     }
