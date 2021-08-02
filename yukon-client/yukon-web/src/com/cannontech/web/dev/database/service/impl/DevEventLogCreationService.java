@@ -1378,7 +1378,7 @@ public class DevEventLogCreationService {
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
         RFN_DEVICE(RfnDeviceEventLogService.class, 7),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 41),
+        SYSTEM(SystemEventLogService.class, 44),
         TOOLS(ToolsEventLogService.class, 32),
         USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),
