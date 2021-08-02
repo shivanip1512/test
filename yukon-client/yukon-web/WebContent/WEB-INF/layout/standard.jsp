@@ -59,6 +59,8 @@
     <script src="<c:url value="/resources/js/pages/yukon.smart.notifications.js"/>"></script>
 </c:if>
 
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
 </head>
 <body>
     <audio id="alert-audio">
