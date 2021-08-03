@@ -43,8 +43,7 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
                     deviceConfigurationService.assignConfigToDevice(configuration, device, userContext.getYukonUser(),
                             deviceName);
                 } catch (InvalidDeviceTypeException e) {
-                    throw new ProcessingException(e.getMessage(), "invalidDeviceType", e, device.getDeviceType(),
-                            dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName());
+                    throw new ProcessingException("", CollectionActionDetail.UNSUPPORTED);
                 }
             }
         };
