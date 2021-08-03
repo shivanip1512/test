@@ -702,7 +702,7 @@ Itron Sentinel:
     - Volt-ampere-reactive hours Quadrant 4:                                    { Unit: *Varh,  Modifiers: [ *Q4                                        ], Models: *__234, Mapped: false, Itron name: "Four Quadrant VARh" }
     - Volt-ampere hours Delivered:                                              { Unit: *VAh,   Modifiers: [ *Q1, *Q4                                   ], Models: *__234, Itron name: "Volt-ampere Hours Delivered" }
     - Volt-ampere hours Received:                                               { Unit: *VAh,   Modifiers: [ *Q2, *Q3                                   ], Models: *__234, Itron name: "Volt-ampere Hours Received" }
-    - Volt-ampere hours Lagging:                                                { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q4                              ], Models: *__234, Itron name: "Volt-ampere Hours Lagging" }
+    - VA-hours Q1 + Q2 + Q4:                                                    { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q4                              ], Models: *__234, Itron name: "Volt-ampere Hours Lagging" }
     - Volt-amperes Delivered:                                                   { Unit: *VA,    Modifiers: [ *Q1, *Q4                                   ], Models: *__234, Mapped: false, Itron name: "Volt-amperes Delivered" }
     - Peak Volt-amperes Delivered:                                              { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max                             ], Models: *__234, Itron name: "Max Volt-amperes Delivered" }
     - Coincident Cumulative Delivered Volt-amperes:                             { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *Coin1, *Cuml              ], Models: *__234, Mapped: false, Itron name: "Cumulative Volt-amperes Delivered" }
@@ -767,7 +767,7 @@ Itron Sentinel:
     - Volt-ampere-reactive hours Quadrant 4 Rate A:                             { Unit: *Varh,  Modifiers: [ *Q4, *RateA                                ], Models: *__234, Mapped: false, Itron name: "Four Quadrant VARh" }
     - Volt-ampere hours Delivered Rate A:                                       { Unit: *VAh,   Modifiers: [ *Q1, *Q4, *RateA                           ], Models: *__234, Itron name: "Volt-ampere Hours Delivered Rate A" }
     - Volt-ampere hours Received Rate A:                                        { Unit: *VAh,   Modifiers: [ *Q2, *Q3, *RateA                           ], Models: *__234, Itron name: "Volt-ampere Hours Received Rate A" }
-    - Volt-ampere hours Lagging Rate A:                                         { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q4, *RateA                      ], Models: *__234, Itron name: "Volt-ampere Hours Lagging Rate A" }
+    - VA-hours Q1 + Q2 + Q4 Rate A:                                             { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q4, *RateA                      ], Models: *__234, Itron name: "Volt-ampere Hours Lagging Rate A" }
     - Peak Volt-amperes Delivered Rate A:                                       { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateA                     ], Models: *__234, Itron name: "Max Volt-amperes Delivered Rate A" }
     - Coincident Cumulative Delivered Volt-amperes Rate A:                      { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateA, *Coin1, *Cuml      ], Models: *__234, Mapped: false, Itron name: "Cumulative Volt-amperes Delivered Rate A" }
     - Coincident Continuous Cumulative Delivered Volt-amperes Rate A:           { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateA, *Coin2, *Cont      ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Delivered Rate A" }
@@ -818,7 +818,7 @@ Itron Sentinel:
     - Volt-ampere-reactive hours Quadrant 4 Rate B:                             { Unit: *Varh,  Modifiers: [ *Q4, *RateB                                ], Models: *__234, Mapped: false, Itron name: "Four Quadrant VARh" }
     - Volt-ampere hours Delivered Rate B:                                       { Unit: *VAh,   Modifiers: [ *Q1, *Q4, *RateB                           ], Models: *__234, Itron name: "Volt-ampere Hours Delivered Rate B" }
     - Volt-ampere hours Received Rate B:                                        { Unit: *VAh,   Modifiers: [ *Q2, *Q3, *RateB                           ], Models: *__234, Itron name: "Volt-ampere Hours Received Rate B" }
-    - Volt-ampere hours Lagging Rate B:                                         { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q4, *RateB                      ], Models: *__234, Itron name: "Volt-ampere Hours Lagging Rate B" }
+    - VA-hours Q1 + Q2 + Q4 Rate B:                                             { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q4, *RateB                      ], Models: *__234, Itron name: "Volt-ampere Hours Lagging Rate B" }
     - Peak Volt-amperes Delivered Rate B:                                       { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateB                     ], Models: *__234, Itron name: "Max Volt-amperes Delivered Rate B" }
     - Coincident Cumulative Delivered Volt-amperes Rate B:                      { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateB, *Coin1, *Cuml      ], Models: *__234, Mapped: false, Itron name: "Cumulative Volt-amperes Delivered Rate B" }
     - Coincident Continuous Cumulative Delivered Volt-amperes Rate B:           { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateB, *Coin2, *Cont      ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Delivered Rate B" }
@@ -869,7 +869,7 @@ Itron Sentinel:
     - Volt-ampere-reactive hours Quadrant 4 Rate C:                             { Unit: *Varh,  Modifiers: [ *Q4, *RateC                                ], Models: *__234, Mapped: false, Itron name: "Four Quadrant VARh" }
     - Volt-ampere hours Delivered Rate C:                                       { Unit: *VAh,   Modifiers: [ *Q1, *Q4, *RateC                           ], Models: *__234, Itron name: "Volt-ampere Hours Delivered Rate C" }
     - Volt-ampere hours Received Rate C:                                        { Unit: *VAh,   Modifiers: [ *Q2, *Q3, *RateC                           ], Models: *__234, Itron name: "Volt-ampere Hours Received Rate C" }
-    - Volt-ampere hours Lagging Rate C:                                         { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q4, *RateC                      ], Models: *__234, Itron name: "Volt-ampere Hours Lagging Rate C" }
+    - VA-hours Q1 + Q2 + Q4 Rate C:                                             { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q4, *RateC                      ], Models: *__234, Itron name: "Volt-ampere Hours Lagging Rate C" }
     - Peak Volt-amperes Delivered Rate C:                                       { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateC                     ], Models: *__234, Itron name: "Max Volt-amperes Delivered Rate C" }
     - Coincident Cumulative Delivered Volt-amperes Rate C:                      { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateC, *Coin1, *Cuml      ], Models: *__234, Mapped: false, Itron name: "Cumulative Volt-amperes Delivered Rate C" }
     - Coincident Continuous Cumulative Delivered Volt-amperes Rate C:           { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateC, *Coin2, *Cont      ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Delivered Rate C" }
@@ -920,7 +920,7 @@ Itron Sentinel:
     - Volt-ampere-reactive hours Quadrant 4 Rate D:                             { Unit: *Varh,  Modifiers: [ *Q4, *RateD                                ], Models: *__234, Mapped: false, Itron name: "Four Quadrant VARh" }
     - Volt-ampere hours Delivered Rate D:                                       { Unit: *VAh,   Modifiers: [ *Q1, *Q4, *RateD                           ], Models: *__234, Itron name: "Volt-ampere Hours Delivered Rate D" }
     - Volt-ampere hours Received Rate D:                                        { Unit: *VAh,   Modifiers: [ *Q2, *Q3, *RateD                           ], Models: *__234, Itron name: "Volt-ampere Hours Received Rate D" }
-    - Volt-ampere hours Lagging Rate D:                                         { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q4, *RateD                      ], Models: *__234, Itron name: "Volt-ampere Hours Lagging Rate D" }
+    - VA-hours Q1 + Q2 + Q4 Rate D:                                             { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q4, *RateD                      ], Models: *__234, Itron name: "Volt-ampere Hours Lagging Rate D" }
     - Peak Volt-amperes Delivered Rate D:                                       { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateD                     ], Models: *__234, Itron name: "Max Volt-amperes Delivered Rate D" }
     - Coincident Cumulative Delivered Volt-amperes Rate D:                      { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateD, *Coin1, *Cuml      ], Models: *__234, Mapped: false, Itron name: "Cumulative Volt-amperes Delivered Rate D" }
     - Coincident Continuous Cumulative Delivered Volt-amperes Rate D:           { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateD, *Coin2, *Cont      ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Delivered Rate D" }
@@ -1523,8 +1523,8 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q3, *Q4                         ], Models: *__-RX-23 }
     - Var-hours Total:                      { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *__-RX-23 }
     - Var-hours Net:                        { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *__-RX-23 }
-    - VA-hours Lagging:                     { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4                    ], Models: *__-RX-23 }
-    - VA-hours Received:                    { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4                    ], Models: *__-RX-23 }
+    - VA-hours Q1 + Q2 + Q4:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4                    ], Models: *__-RX-23 }
+    - VA-hours Q2 + Q3 + Q4:                { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4                    ], Models: *__-RX-23 }
     - VA-hours Total:                       { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *__-RX-23 }
     - VA-hours Net:                         { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *__-RX-23 }
     - Peak Delivered Demand:                { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max                   ], Models: *AX-RX-23 }
@@ -1549,8 +1549,8 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Var-hours Received Rate A:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateA                 ], Models: *__-RX-23 } 
     - Var-hours Total Rate A:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *__-RX-23 } 
     - Var-hours Net Rate A:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *__-RX-23 } 
-    - VA-hours Lagging Rate A:              { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4, *RateA            ], Models: *__-RX-23 } 
-    - VA-hours Received Rate A:             { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4, *RateA            ], Models: *__-RX-23 } 
+    - VA-hours Q1 + Q2 + Q4 Rate A:         { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4, *RateA            ], Models: *__-RX-23 } 
+    - VA-hours Q2 + Q3 + Q4 Rate A:         { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4, *RateA            ], Models: *__-RX-23 } 
     - VA-hours Total Rate A:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *__-RX-23 } 
     - VA-hours Net Rate A:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *__-RX-23 } 
     - Peak Demand Rate A:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateA           ], Models: *AX-RX-23 }
@@ -1569,8 +1569,8 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Var-hours Received Rate B:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateB                 ], Models: *__-RX-23 } 
     - Var-hours Total Rate B:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *__-RX-23 } 
     - Var-hours Net Rate B:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *__-RX-23 } 
-    - VA-hours Lagging Rate B:              { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4, *RateB            ], Models: *__-RX-23 } 
-    - VA-hours Received Rate B:             { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4, *RateB            ], Models: *__-RX-23 } 
+    - VA-hours Q1 + Q2 + Q4 Rate B:         { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4, *RateB            ], Models: *__-RX-23 } 
+    - VA-hours Q2 + Q3 + Q4 Rate B:         { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4, *RateB            ], Models: *__-RX-23 } 
     - VA-hours Total Rate B:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *__-RX-23 } 
     - VA-hours Net Rate B:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *__-RX-23 } 
     - Peak Demand Rate B:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateB           ], Models: *AX-RX-23 }
@@ -1589,8 +1589,8 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Var-hours Received Rate C:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateC                 ], Models: *__-RX-23 } 
     - Var-hours Total Rate C:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *__-RX-23 } 
     - Var-hours Net Rate C:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *__-RX-23 } 
-    - VA-hours Lagging Rate C:              { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4, *RateC            ], Models: *__-RX-23 } 
-    - VA-hours Received Rate C:             { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4, *RateC            ], Models: *__-RX-23 } 
+    - VA-hours Q1 + Q2 + Q4 Rate C:         { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4, *RateC            ], Models: *__-RX-23 } 
+    - VA-hours Q2 + Q3 + Q4 Rate C:         { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4, *RateC            ], Models: *__-RX-23 } 
     - VA-hours Total Rate C:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *__-RX-23 } 
     - VA-hours Net Rate C:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *__-RX-23 } 
     - Peak Demand Rate C:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateC           ], Models: *AX-RX-23 }
@@ -1609,8 +1609,8 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Var-hours Received Rate D:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateD                 ], Models: *__-RX-23 } 
     - Var-hours Total Rate D:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *__-RX-23 } 
     - Var-hours Net Rate D:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *__-RX-23 } 
-    - VA-hours Lagging Rate D:              { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4, *RateD            ], Models: *__-RX-23 } 
-    - VA-hours Received Rate D:             { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4, *RateD            ], Models: *__-RX-23 } 
+    - VA-hours Q1 + Q2 + Q4 Rate D:         { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4, *RateD            ], Models: *__-RX-23 } 
+    - VA-hours Q2 + Q3 + Q4 Rate D:         { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4, *RateD            ], Models: *__-RX-23 } 
     - VA-hours Total Rate D:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *__-RX-23 } 
     - VA-hours Net Rate D:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *__-RX-23 } 
     - Peak Demand Rate D:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateD           ], Models: *AX-RX-23 }
@@ -1675,7 +1675,7 @@ Metric IDs:
     14:  { name: "Watts, peak (Frozen)",                 Unit: *W,      Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev       ] }
     15:  { name: "VA hour Q1 + Q3",                      Unit: *VAh,    Modifiers: [ *Q1, *Q3                              ] }
     16:  { name: "VA hour Q2 + Q4",                      Unit: *VAh,    Modifiers: [ *Q2, *Q4                              ] }
-    17:  { name: "VA hour lagging",                      Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4                         ] }
+    17:  { name: "VA hour Q1 + Q2 + Q4",                 Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4                         ] }
     18:  { name: "Var hour Q1 + Q3",                     Unit: *Varh,   Modifiers: [ *Q1, *Q3                              ] }
     19:  { name: "Var hour Q2 + Q4",                     Unit: *Varh,   Modifiers: [ *Q2, *Q4                              ] }
     20:  { name: "Var hour Q2 - Q3",                     Unit: *Varh,   Modifiers: [ *Q2, *Q3, *Net                        ] }
