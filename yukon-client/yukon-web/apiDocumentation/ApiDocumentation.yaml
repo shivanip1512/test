@@ -107,6 +107,11 @@ paths:
   /routes/{id}:
     $ref: 'api/routesApi.yaml#/get-update-delete-operation'
 
+  /logger:
+    $ref: 'api/yukonLoggingApi.yaml#/post-operation'
+  /logger/{id}:
+    $ref: 'api/yukonLoggingApi.yaml#/get-update-delete-operation'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -129,3 +134,4 @@ tags:
   - name: Attributes
   - name: Picker
   - name: Route
+  - name: Logger
