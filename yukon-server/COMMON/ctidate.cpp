@@ -186,7 +186,7 @@ string CtiDate::asString() const
     return to_simple_string(bdate);
 }
 
-string CtiDate::asStringUSFormat() const
+string CtiDate::asStringMDY() const
 {
     std::string date_str = "00/00/0000";
     
