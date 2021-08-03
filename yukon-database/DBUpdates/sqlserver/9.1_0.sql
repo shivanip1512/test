@@ -254,17 +254,17 @@ INSERT INTO DBUpdates VALUES ('YUK-24110', '9.1.0', GETDATE());
 
 /* @start YUK-24057 */
 CREATE TABLE RfnModelChange (
-   PAObjectID           numeric              NOT NULL,
+   DeviceID             numeric              NOT NULL,
    OldModel             varchar(80)          NOT NULL,
    NewModel             varchar(80)          NOT NULL,
    DataTimestamp        datetime             NOT NULL,
-   CONSTRAINT PK_RfnModelChange PRIMARY KEY (PAObjectID)
+   CONSTRAINT PK_RfnModelChange PRIMARY KEY (DeviceID)
 );
 go
 
 ALTER TABLE RfnModelChange
-   ADD CONSTRAINT FK_RfnModelChange_YukonPAObject FOREIGN KEY (PAObjectID)
-      REFERENCES YukonPAObject (PAObjectID)
+   ADD CONSTRAINT FK_RfnModelChange_Device FOREIGN KEY (DeviceID)
+      REFERENCES DEVICE (DEVICEID)
          ON DELETE CASCADE;
 go
 

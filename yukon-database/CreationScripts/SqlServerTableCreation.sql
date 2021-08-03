@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/27/2021 2:19:52 PM                         */
+/* Created on:     8/2/2021 8:32:04 PM                          */
 /*==============================================================*/
 
 
@@ -9006,11 +9006,11 @@ go
 /* Table: RfnModelChange                                        */
 /*==============================================================*/
 create table RfnModelChange (
-   PAObjectID           numeric              not null,
+   DeviceID             numeric              not null,
    OldModel             varchar(80)          not null,
    NewModel             varchar(80)          not null,
    DataTimestamp        datetime             not null,
-   constraint PK_RfnModelChange primary key (PAObjectID)
+   constraint PK_RfnModelChange primary key (DeviceID)
 )
 go
 
@@ -15237,8 +15237,8 @@ alter table RfnBroadcastEventSummary
 go
 
 alter table RfnModelChange
-   add constraint FK_RfnModelChange_YukonPAObject foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID)
+   add constraint FK_RfnModelChange_Device foreign key (DeviceID)
+      references DEVICE (DEVICEID)
          on delete cascade
 go
 
