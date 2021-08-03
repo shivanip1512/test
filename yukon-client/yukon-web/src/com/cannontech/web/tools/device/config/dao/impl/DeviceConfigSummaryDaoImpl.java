@@ -204,7 +204,6 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         if (selectCount) {
             sql.append(") T");
         }
-        System.out.println(sql.getDebugSql());
         return sql;
     }
 
