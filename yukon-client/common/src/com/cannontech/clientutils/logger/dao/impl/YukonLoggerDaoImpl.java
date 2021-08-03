@@ -1,6 +1,7 @@
 package com.cannontech.clientutils.logger.dao.impl;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -113,6 +114,17 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
             }
         };
         return mapper;
+    }
+
+    @Override
+    public boolean deleteExpiredLoggers() {
+        SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yy");
+        String formattedDate = format.format(new java.util.Date());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM");
+        sql.append(TABLE_NAME);
+        sql.append("WHERE ExpirationDate").lt(formattedDate);
+        return jdbcTemplate.update(sql) == 1;
     }
 
 }
