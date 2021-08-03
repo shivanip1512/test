@@ -1,14 +1,14 @@
 package com.cannontech.web.api.loggers;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -66,10 +66,14 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
     public void validateLoggerName(Errors errors, String loggerName, String i18Text) {
         if (!errors.hasFieldErrors("loggerName")) {
             YukonApiValidationUtils.checkExceedsMaxLength(errors, "loggerName", loggerName, 200);
+        }
+        if (!errors.hasFieldErrors("loggerName")) {
             YukonApiValidationUtils.checkWhitelistedCharacter(errors, "loggerName", loggerName, i18Text);
+        }
+        if (!errors.hasFieldErrors("loggerName")) {
             List<YukonLogger> loggers = new ArrayList<>();
             loggers = loggerService.getLoggers(null, null, null, null);
-            
+
             List<String> loggerNames = loggers.stream()
                     .map(YukonLogger::getLoggerName)
                     .collect(Collectors.toList());
@@ -82,15 +86,12 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
     public void validateExpirationDate(Errors errors, YukonLogger logger, String string) {
         if (logger.getExpirationDate() != null) {
             if (logger.getLoggerType().equals(LoggerType.USER_LOGGER)) {
-                SimpleDateFormat sdfrmt = new SimpleDateFormat("MM/dd/yyyy");
-                Date date = null;
-                sdfrmt.setLenient(false);
-                try {
-                    date = sdfrmt.parse(logger.getExpirationDate().toString());
-                } catch (ParseException e) {
-                    errors.rejectValue("expirationDate", ApiErrorDetails.NOT_SUPPORTED.getCodeString(),
-                            new Object[] { logger.getExpirationDate().toString() }, "");
+
+                Date today = DateUtils.truncate(new Date(), Calendar.DAY_OF_MONTH);
+                if (logger.getExpirationDate().before(today)) {
+                    errors.rejectValue("expirationDate", ApiErrorDetails.INVALID_VALUE.getCodeString());
                 }
+
             } else {
                 errors.rejectValue("expirationDate", ApiErrorDetails.NOT_SUPPORTED.getCodeString(),
                         new Object[] { logger.getExpirationDate() }, "");

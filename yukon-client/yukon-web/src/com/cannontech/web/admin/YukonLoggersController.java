@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -86,19 +84,25 @@ public class YukonLoggersController {
     }
 
     @PostMapping("/config/loggers")
-    public String saveLogger(@ModelAttribute YukonLogger yukonLogger, Boolean specifiedDateTime, HttpServletRequest request,
-            HttpServletResponse resp, YukonUserContext userContext, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String saveLogger(@ModelAttribute("logger") YukonLogger logger,BindingResult result, Boolean specifiedDateTime, HttpServletRequest request,
+            HttpServletResponse resp, YukonUserContext userContext, ModelMap model) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<String, Object>();
-        yukonLoggersValidator.validate(yukonLogger, result);
+        if (BooleanUtils.isNotTrue(specifiedDateTime)) {
+            logger.setExpirationDate(null);
+        }
+        yukonLoggersValidator.validate(logger, result);
+        
         if (result.hasErrors()) {
-            return bindAndForward(yukonLogger, result, redirectAttributes);
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            addModelAttributes(model, logger);
+            return "config/addLoggerPopup.jsp";
         }
         try {
-            ResponseEntity<? extends Object> response = save(yukonLogger, specifiedDateTime, request, userContext);
+            ResponseEntity<? extends Object> response = save(logger, specifiedDateTime, request, userContext);
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
-                json.put("isSystemLogger", SystemLogger.isSystemLogger(yukonLogger.getLoggerName()));
-                json.put("successMessage", accessor.getMessage("yukon.common.save.success", yukonLogger.getLoggerName()));
+                json.put("isSystemLogger", SystemLogger.isSystemLogger(logger.getLoggerName()));
+                json.put("successMessage", accessor.getMessage("yukon.common.save.success", logger.getLoggerName()));
                 return JsonUtils.writeResponse(resp, json);
             }
         } catch (ApiCommunicationException e) {
@@ -106,19 +110,19 @@ public class YukonLoggersController {
             json.put("errorMessage", accessor.getMessage(communicationKey));
         } catch (RestClientException ex) {
             log.error("Error saving logger. Error: {}", ex.getMessage());
-            json.put("errorMessage", accessor.getMessage("yukon.web.api.save.error", yukonLogger.getLoggerName(), ex.getMessage()));
+            json.put("errorMessage", accessor.getMessage("yukon.web.api.save.error", logger.getLoggerName(), ex.getMessage()));
         }
         return JsonUtils.writeResponse(resp, json);
     }
 
-    private String bindAndForward(YukonLogger yukonLogger, BindingResult result, RedirectAttributes redirectAttributes) {
-       // redirectAttributes.addFlashAttribute("yukonLogger", yukonLogger);
-       // redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.yukonLogger", result);
-        if (yukonLogger.getLoggerId() == -1) {
-            return "redirect:loggers";
-        }
-        return "redirect:loggers/" + yukonLogger.getLoggerId();
-
+    private void addModelAttributes(ModelMap model, YukonLogger logger) {
+        model.addAttribute("loggerLevels", LoggerLevel.values());
+        model.addAttribute("now", new Date());
+        model.addAttribute("specifiedDateTime", logger.getExpirationDate() != null);
+        boolean allowDateTimeSelection = !SystemLogger.isSystemLogger(logger.getLoggerName());
+        model.addAttribute("allowDateTimeSelection", allowDateTimeSelection);
+        model.addAttribute("isEditMode", logger.getLoggerId() != -1);
+        model.addAttribute("logger", logger);
     }
 
     @GetMapping("/config/loggers/{loggerId}")
@@ -133,16 +137,9 @@ public class YukonLoggersController {
 
             if (loggerResponse.getStatusCode() == HttpStatus.OK) {
                 logger = (YukonLogger) loggerResponse.getBody();
-                model.addAttribute("logger", logger);
-                model.addAttribute("loggerLevels", LoggerLevel.values());
+                addModelAttributes(model, logger);
                 model.addAttribute("isEditMode", true);
-                Date expirationDate = new Date();
-                model.addAttribute("now", expirationDate);
-                model.addAttribute("specifiedDateTime", logger.getExpirationDate() != null);
-
-                boolean allowDateTimeSelection = !SystemLogger.isSystemLogger(logger.getLoggerName());
-                model.addAttribute("allowDateTimeSelection", allowDateTimeSelection);
-            }
+              }
         } catch (ApiCommunicationException e) {
             log.error(e);
         } catch (RestClientException ex) {
@@ -154,9 +151,6 @@ public class YukonLoggersController {
     private ResponseEntity<? extends Object> save(YukonLogger logger, Boolean specifiedDateTime,
             HttpServletRequest request, YukonUserContext userContext) {
         
-        if (BooleanUtils.isNotTrue(specifiedDateTime)) {
-            logger.setExpirationDate(null);
-        }
         if (logger.getLoggerId() == -1) {
             String url = apiControllerHelper.findWebServerUrl(request, userContext, ApiURL.loggerUrl);
             return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, YukonLogger.class,

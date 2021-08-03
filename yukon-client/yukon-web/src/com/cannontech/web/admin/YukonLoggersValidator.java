@@ -37,12 +37,20 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
     @Override
     protected void doValidation(YukonLogger logger, Errors errors) {
         validateLoggerName(errors, logger.getLoggerName(), accessor.getMessage(basekey + "loggerName"));
+        if(logger.getNotes() != null)
+        {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "notes", logger.getNotes(), 255);
+        }
     }
 
     public void validateLoggerName(Errors errors, String loggerName, String i18Text) {
         if (!errors.hasFieldErrors("loggerName")) {
             YukonValidationUtils.checkIfFieldRequired("loggerName", errors, loggerName, i18Text);
+        }
+        if (!errors.hasFieldErrors("loggerName")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "loggerName", loggerName, 200);
+        }
+        if (!errors.hasFieldErrors("loggerName")) {
             YukonValidationUtils.checkWhitelistedCharacter(errors, "loggerName", loggerName, i18Text);
             List<YukonLogger> loggers = new ArrayList<>();
             loggers = loggerService.getLoggers(null, null, null, null);
