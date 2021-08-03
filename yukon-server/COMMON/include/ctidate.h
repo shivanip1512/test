@@ -57,6 +57,7 @@ public:
 
     std::string asString() const;
     std::string asStringMDY() const;
+    std::string asStringISO() const;
     std::string weekDayName() const;
 
     friend CtiDate IM_EX_CTIBASE operator + (const CtiDate& d, const unsigned long s);
