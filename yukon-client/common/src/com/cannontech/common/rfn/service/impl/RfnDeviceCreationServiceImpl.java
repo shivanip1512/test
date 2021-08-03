@@ -188,7 +188,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
 
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
             if (dataTimestamp.isBefore(lastChangeDataTimestamp) || lastChangeDataTimestamp.isEqual(dataTimestamp)) {
-                log.debug("Data is out-of-order. The date of the point data {} is before the date of most recent device model change date {}. Using existing partially matched device without any modifications. Device found: {}",
+                log.info("Data is out-of-order. The date of the point data {} is before the date of most recent device model change date {}. Using existing partially matched device without any modifications. Device found: {}",
                         format.format(dataTimestamp.toDate()), format.format(lastChangeDataTimestamp.toDate()), partiallyMatchedDevice);
                 return partiallyMatchedDevice;
             }

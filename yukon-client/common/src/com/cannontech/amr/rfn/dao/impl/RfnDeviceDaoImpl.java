@@ -636,9 +636,9 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Override
     public void updateRfnModelChange(RfnModelChange rfnModelChange) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PaObjectId");
+        sql.append("SELECT DeviceId");
         sql.append("FROM RfnModelChange");
-        sql.append("WHERE PaObjectId").eq(rfnModelChange.getDeviceId());
+        sql.append("WHERE DeviceId").eq(rfnModelChange.getDeviceId());
 
         SqlStatementBuilder updateCreateSql = new SqlStatementBuilder();
         try {
@@ -649,7 +649,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             params.addValue("DataTimestamp", rfnModelChange.getDataTimestamp());
         } catch (EmptyResultDataAccessException e) {
             SqlParameterSink params = updateCreateSql.insertInto("RfnModelChange");
-            params.addValue("PaObjectId", rfnModelChange.getDeviceId());
+            params.addValue("DeviceId", rfnModelChange.getDeviceId());
             params.addValue("OldModel", rfnModelChange.getOldModel());
             params.addValue("NewModel", rfnModelChange.getNewModel());
             params.addValue("DataTimestamp", rfnModelChange.getDataTimestamp());
@@ -673,7 +673,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DataTimestamp");
         sql.append("FROM RfnModelChange");
-        sql.append("WHERE PaObjectId").eq(deviceId);
+        sql.append("WHERE DeviceId").eq(deviceId);
         
         try {
             return jdbcTemplate.queryForObject(sql, TypeRowMapper.INSTANT);
