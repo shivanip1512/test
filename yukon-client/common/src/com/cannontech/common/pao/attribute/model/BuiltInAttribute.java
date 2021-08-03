@@ -272,6 +272,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_B("Coincident Power Factor at Sum Peak kW Rate B", AttributeGroup.REACTIVE),
     COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_C("Coincident Power Factor at Sum Peak kW Rate C", AttributeGroup.REACTIVE),
     COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_D("Coincident Power Factor at Sum Peak kW Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_RATE_A("Coincident Power Factor Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_RATE_B("Coincident Power Factor Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_RATE_C("Coincident Power Factor Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_RATE_D("Coincident Power Factor Rate D", AttributeGroup.REACTIVE),
 
     AVERAGE_POWER_FACTOR_Q124("Average Power Factor (Quadrants 1 2 4)", AttributeGroup.REACTIVE),
     AVERAGE_POWER_FACTOR_Q234("Average Power Factor (Quadrants 2 3 4)", AttributeGroup.REACTIVE),

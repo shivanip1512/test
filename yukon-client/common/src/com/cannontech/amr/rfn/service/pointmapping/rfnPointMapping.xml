@@ -3114,6 +3114,70 @@
             </baseModifiers>
         </point>
 
+        <point name="Coincident Power Factor Rate A">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate A</modifier>
+            </baseModifiers>
+        </point>
+
+        <point name="Coincident Power Factor Rate B">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate B</modifier>
+            </baseModifiers>
+        </point>
+
+        <point name="Coincident Power Factor Rate C">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate C</modifier>
+            </baseModifiers>
+        </point>
+
+        <point name="Coincident Power Factor Rate D">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate D</modifier>
+            </baseModifiers>
+        </point>
+
         <point name="Demand at Peak kVa Coincidental" icd="false">
             <uom>W</uom>
             <multiplier value=".001"/>

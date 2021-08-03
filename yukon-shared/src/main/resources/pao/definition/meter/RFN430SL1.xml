@@ -33,6 +33,10 @@
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Coincident Cumulative Peak kVAr"/>
         <pointInfo name="Coincident Power Factor" attributes="POWER_FACTOR_COIN"/>
+        <pointInfo name="Coincident Power Factor Rate A" attributes="COIN_POWER_FACTOR_RATE_A"/>
+        <pointInfo name="Coincident Power Factor Rate B" attributes="COIN_POWER_FACTOR_RATE_B"/>
+        <pointInfo name="Coincident Power Factor Rate C" attributes="COIN_POWER_FACTOR_RATE_C"/>
+        <pointInfo name="Coincident Power Factor Rate D" attributes="COIN_POWER_FACTOR_RATE_D"/>
         <pointInfo name="Configuration Error" attributes="CONFIGURATION_ERROR"/>
         <pointInfo name="Current Neutral to Ground" attributes="NEUTRAL_CURRENT"/>
         <pointInfo name="Current Waveform Distortion" attributes="CURRENT_WAVEFORM_DISTORTION"/>
