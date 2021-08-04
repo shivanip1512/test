@@ -1,15 +1,19 @@
 package com.cannontech.web.admin;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.clientutils.logger.service.YukonLoggerService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.log.model.LoggerType;
 import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -36,27 +40,52 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
 
     @Override
     protected void doValidation(YukonLogger logger, Errors errors) {
-        validateLoggerName(errors, logger.getLoggerName(), accessor.getMessage(basekey + "loggerName"));
-        if(logger.getNotes() != null)
-        {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "notes", logger.getNotes(), 255);
+        if (logger != null) {
+            validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"));
+            YukonValidationUtils.checkIfFieldRequired("level", errors, logger.getLevel(),
+                    accessor.getMessage(basekey + "loggerLevel"));
+            // validate expiration date
+            if (logger.getExpirationDate() != null) {
+                validateExpirationDate(errors, logger, accessor.getMessage(basekey + "expirationDate"));
+            }
+            if (logger.getNotes() != null) {
+                YukonValidationUtils.checkExceedsMaxLength(errors, "notes", logger.getNotes(), 255);
+            }
         }
     }
 
-    public void validateLoggerName(Errors errors, String loggerName, String i18Text) {
+    public void validateLoggerName(Errors errors, YukonLogger logger, String i18Text) {
         if (!errors.hasFieldErrors("loggerName")) {
-            YukonValidationUtils.checkIfFieldRequired("loggerName", errors, loggerName, i18Text);
+            YukonValidationUtils.checkIfFieldRequired("loggerName", errors, logger.getLoggerName(), i18Text);
         }
         if (!errors.hasFieldErrors("loggerName")) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "loggerName", loggerName, 200);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "loggerName", logger.getLoggerName(), 200);
         }
         if (!errors.hasFieldErrors("loggerName")) {
-            YukonValidationUtils.checkWhitelistedCharacter(errors, "loggerName", loggerName, i18Text);
+            YukonValidationUtils.checkWhitelistedCharacter(errors, "loggerName", logger.getLoggerName(), i18Text);
             List<YukonLogger> loggers = new ArrayList<>();
             loggers = loggerService.getLoggers(null, null, null, null);
-            if (loggers.contains(loggerName)) {
-                errors.rejectValue("loggerName", accessor.getMessage(errorkey + "nameConflict"));
+            
+            loggers.stream()
+            .filter(tempLogger -> tempLogger.getLoggerName().equals(logger.getLoggerName()))
+            .findAny()
+            .ifPresent(presentLogger -> {
+                 if (logger.getLoggerId() == -1 || presentLogger.getLoggerId() != logger.getLoggerId()) {
+                     errors.rejectValue("loggerName", accessor.getMessage(errorkey + "nameConflict"));
+                 }
+            });
+        }
+    }
+    
+    public void validateExpirationDate(Errors errors, YukonLogger logger, String string) {
+        if (logger.getLoggerType().equals(LoggerType.USER_LOGGER)) {
+            Date today = DateUtils.truncate(new Date(), Calendar.DAY_OF_MONTH);
+            if (logger.getExpirationDate().before(today)) {
+                errors.rejectValue("expirationDate", basekey + "date.inFuture");
             }
+        } else {
+            errors.rejectValue("expirationDate", errorkey + "notSupported",
+                    new Object[] { logger.getExpirationDate() }, "");
         }
     }
 

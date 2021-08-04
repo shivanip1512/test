@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -104,6 +105,12 @@ public class YukonLoggersController {
                 json.put("isSystemLogger", SystemLogger.isSystemLogger(logger.getLoggerName()));
                 json.put("successMessage", accessor.getMessage("yukon.common.save.success", logger.getLoggerName()));
                 return JsonUtils.writeResponse(resp, json);
+            } else if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                BindException error = new BindException(logger, "logger");
+                result = apiControllerHelper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
+                addModelAttributes(model, logger);
+                return "config/addLoggerPopup.jsp";
             }
         } catch (ApiCommunicationException e) {
             log.error(e);
@@ -153,12 +160,12 @@ public class YukonLoggersController {
         
         if (logger.getLoggerId() == -1) {
             String url = apiControllerHelper.findWebServerUrl(request, userContext, ApiURL.loggerUrl);
-            return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, YukonLogger.class,
+            return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
                     logger);
         } else {
             String url = apiControllerHelper.findWebServerUrl(request, userContext,
                     ApiURL.loggerUrl + "/" + logger.getLoggerId());
-            return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, YukonLogger.class,
+            return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, Object.class,
                     logger);
         }
     }
