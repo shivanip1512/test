@@ -18,6 +18,7 @@ import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 
 public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
@@ -41,10 +42,14 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
     @Override
     protected void doValidation(YukonLogger logger, Errors errors) {
         if (logger != null) {
-            validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"));
+            if (logger.getLoggerName() != null) {
+                String id = ServletUtils.getPathVariable("loggerId");
+                Integer loggerId = id == null ? -1 : Integer.valueOf(id);
+                validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"), loggerId);
+            }
             YukonValidationUtils.checkIfFieldRequired("level", errors, logger.getLevel(),
                     accessor.getMessage(basekey + "loggerLevel"));
-            // validate expiration date
+
             if (logger.getExpirationDate() != null) {
                 validateExpirationDate(errors, logger, accessor.getMessage(basekey + "expirationDate"));
             }
@@ -54,7 +59,7 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
         }
     }
 
-    public void validateLoggerName(Errors errors, YukonLogger logger, String i18Text) {
+    public void validateLoggerName(Errors errors, YukonLogger logger, String i18Text, Integer loggerId) {
         if (!errors.hasFieldErrors("loggerName")) {
             YukonValidationUtils.checkIfFieldRequired("loggerName", errors, logger.getLoggerName(), i18Text);
         }
@@ -70,18 +75,18 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
             .filter(tempLogger -> tempLogger.getLoggerName().equals(logger.getLoggerName()))
             .findAny()
             .ifPresent(presentLogger -> {
-                 if (logger.getLoggerId() == -1 || presentLogger.getLoggerId() != logger.getLoggerId()) {
-                     errors.rejectValue("loggerName", accessor.getMessage(errorkey + "nameConflict"));
+                 if (loggerId == -1 || presentLogger.getLoggerId() != loggerId) {
+                     errors.rejectValue("loggerName", errorkey + "nameConflict");
                  }
             });
         }
     }
     
     public void validateExpirationDate(Errors errors, YukonLogger logger, String string) {
-        if (logger.getLoggerType().equals(LoggerType.USER_LOGGER)) {
+        if (logger.getLoggerType() == LoggerType.USER_LOGGER) {
             Date today = DateUtils.truncate(new Date(), Calendar.DAY_OF_MONTH);
             if (logger.getExpirationDate().before(today)) {
-                errors.rejectValue("expirationDate", basekey + "date.inFuture");
+                errors.rejectValue("expirationDate", errorkey + "date.inFuture");
             }
         } else {
             errors.rejectValue("expirationDate", errorkey + "notSupported",

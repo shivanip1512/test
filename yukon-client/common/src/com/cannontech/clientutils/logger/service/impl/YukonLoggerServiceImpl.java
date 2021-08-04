@@ -3,14 +3,12 @@ package com.cannontech.clientutils.logger.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.logger.dao.YukonLoggerDao;
 import com.cannontech.clientutils.logger.service.YukonLoggerService;
 import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.model.Direction;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -21,17 +19,12 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
 
     @Override
     public YukonLogger getLogger(int loggerId) {
-        try {
-            return yukonLoggerDao.getLogger(loggerId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Logger Id not found");
-        }
+        return yukonLoggerDao.getLogger(loggerId);
     }
 
     @Override
     public YukonLogger addLogger(YukonLogger logger) {
         int loggerId = yukonLoggerDao.addLogger(logger);
-        logger.setLoggerId(loggerId);
         dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.LOGGER, loggerId);
         return logger;
     }
@@ -45,14 +38,9 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
 
     @Override
     public int deleteLogger(int loggerId) {
-        try {
-            getLogger(loggerId);
-            yukonLoggerDao.deleteLogger(loggerId);
-            dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.LOGGER, loggerId);
-            return loggerId;
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Logger Id not found");
-        }
+        yukonLoggerDao.deleteLogger(loggerId);
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.LOGGER, loggerId);
+        return loggerId;
     }
 
     @Override
