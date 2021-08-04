@@ -286,7 +286,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     }
 
     private Set<DeviceConfigState> buildNewStatesForUnassignAction(List<SimpleDevice> devices,
-            Map<Integer, DeviceConfigState> deviceToState, Instant stopTime, Instant startTime) {
+            Map<Integer, DeviceConfigState> deviceToState, Instant startTime, Instant stopTime) {
         Set<DeviceConfigState> states = new HashSet<>();
         states.addAll(buildConfigStateByCurrentState(UNKNOWN, UNASSIGN, devices, deviceToState, startTime, stopTime, UNREAD));
         states.addAll(buildConfigStateByCurrentState(UNASSIGNED, UNASSIGN, devices, deviceToState, startTime, stopTime, IN_SYNC, OUT_OF_SYNC));
