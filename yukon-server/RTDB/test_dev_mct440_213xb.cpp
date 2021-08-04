@@ -539,7 +539,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
 
                 if (i != 0)
                 {
-                    str_cmd += " " + date.asStringUSFormat();
+                    str_cmd += " " + date.asStringMDY();
                 }
 
                 CtiCommandParser parse(str_cmd);

@@ -3120,7 +3120,7 @@ YukonError_t Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &
     //  EmetconProtocol::PutConfig_LoadProfileReportPeriod
     request << "putconfig emetcon llp peak interest";
     request << " channel " << new_channel;
-    request << " date "    << new_date.asStringUSFormat();
+    request << " date "    << new_date.asStringMDY();
     request << " range "   << new_range;
 
     if( strstr(InMessage.Return.CommandStr, " noqueue") )
@@ -3213,8 +3213,8 @@ YukonError_t Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InM
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     result_string  = getName() + " / Channel " + CtiNumStr(_llpPeakInterest.channel + 1) + string(" Load Profile Report\n");
-    result_string += "Report range: " + (_llpPeakInterest.end_date - _llpPeakInterest.range).asStringUSFormat() + " - " +
-                                         _llpPeakInterest.end_date.asStringUSFormat() + "\n";
+    result_string += "Report range: " + (_llpPeakInterest.end_date - _llpPeakInterest.range).asStringMDY() + " - " +
+                                         _llpPeakInterest.end_date.asStringMDY() + "\n";
 
     if( max_demand_timestamp > CtiTime(_llpPeakInterest.end_date + 1).seconds() ||
         max_demand_timestamp < CtiTime(_llpPeakInterest.end_date + 1 - _llpPeakInterest.range).seconds() )
@@ -3238,7 +3238,7 @@ YukonError_t Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InM
         {
             case FuncRead_LLPPeakDayPos:
             {
-                result_string += "Peak day: " + CtiDate(CtiTime(max_demand_timestamp)).asStringUSFormat() + "\n";
+                result_string += "Peak day: " + CtiDate(CtiTime(max_demand_timestamp)).asStringMDY() + "\n";
                 result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
                 result_string += "Demand: " + CtiNumStr(max_usage / 24, 2) + string(" kW\n");
                 result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
