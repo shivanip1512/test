@@ -2,18 +2,27 @@ MacroRoute:
   title: MacroRoute
   required:
     - routeName
-    - routeList
+    - routeIds
 
   type: object
   properties:
+    id:
+      type: integer
+      description: 'Individual entry for every route selected.'
+    type:
+      type: string
+      description: 'Type of the Route.'
     name:
       type: string
       maxLength: 60
       description: 'Name for the macroRoute.'
-    routeList:
-      $ref: '#/routeList'
+    enable:
+      type: boolean
+      description: 'DisableFlag.'  
+    routeIds:
+      $ref: '#/routeIds'
 
-routeList:
+routeIds:
   type: array
   items:
     required:
@@ -22,13 +31,21 @@ routeList:
     properties:
       routeId:
         type: integer
-        description: 'Route Id.'
+        description: 'ID of the selected route.'
+      routeName:
+          type: String
+          description: 'Name of the selected route.'  
       
 components:
   examples:
     MacroRoute:
       value:
+        id: 222
+        type: ROUTE_MACRO
         name: Test MacroRoute
-        routeList:
+        enable: false
+        routeIds:
           - routeId: 1
-            		
+            routeName: 'Route1'
+          - routeId: 2
+            routeName: 'Route2'

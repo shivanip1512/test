@@ -3,7 +3,7 @@ post-operation:
     tags:
      - Macro Route
     summary: 'Create Macro Route'
-    description: 'API to create MocroRoute.'
+    description: 'API to Create MocroRoute.'
     requestBody:
       content:
         application/json:
