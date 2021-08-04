@@ -2411,6 +2411,18 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="484" type="Analog">
+        <name>Delivered kVAh per Interval</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="485" type="Analog">
+        <name>Received kVAh per Interval</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="CalcAnalog">
         <name>Total Outage Count</name>

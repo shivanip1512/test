@@ -68,6 +68,8 @@
         <pointInfo name="RFN High Temperature Threshold Exceeded" attributes="RFN_TEMPERATURE_ALARM"/>
         <pointInfo name="Rom Error" attributes="ROM_ERROR"/>
         <pointInfo name="Sum kVAh" attributes="SUM_KVAH"/>
+        <pointInfo name="Sum kVAh per Interval" attributes="SUM_KVAH_PER_INTERVAL"/>
+        <pointInfo name="Sum kVA Load Profile" attributes="SUM_KVA_LOAD_PROFILE"/>
         <pointInfo name="Sum kVAh (Rate A kVAh)" attributes="SUM_KVAH_RATE_A"/>
         <pointInfo name="Sum kVAh (Rate B kVAh)" attributes="SUM_KVAH_RATE_B"/>
         <pointInfo name="Sum kVAh (Rate C kVAh)" attributes="SUM_KVAH_RATE_C"/>

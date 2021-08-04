@@ -19,7 +19,7 @@ public enum CMEPUnitEnum {
                                                       // grid per interval configured in the meter; UOMs ending in 'H' represent
                                                       // per interval type points indicating usage across the interval. It may or
                                                       // may not be an hourly value.
-   // GKVAH(BuiltInAttribute.RECEIVED_KVAH_PER_INTERVAL), // TODO in YUK-23352
+    GKVAH(BuiltInAttribute.RECEIVED_KVAH_PER_INTERVAL), 
     GKVAHREG(BuiltInAttribute.RECEIVED_KVAH),
     GKVARH(null), 
     GKVARHREG(BuiltInAttribute.RECEIVED_KVARH),
@@ -38,7 +38,7 @@ public enum CMEPUnitEnum {
                                                        // grid broken into time of day buckets for billing Rate D.
 
     KVA(BuiltInAttribute.PEAK_KVA), // Peak KVA demand value as programmed into the meter.
-   // KVAH(BuiltInAttribute.DELIVERED_KVAH_PER_INTERVAL), // TODO in YUK-23352
+    KVAH(BuiltInAttribute.DELIVERED_KVAH_PER_INTERVAL), 
     KVAHREG(BuiltInAttribute.KVAH),
     KVAR(BuiltInAttribute.PEAK_KVAR), // Peak KVAR demand value as programmed into the meter.
     KVARH(BuiltInAttribute.DELIVERED_KVARH_PER_INTERVAL),

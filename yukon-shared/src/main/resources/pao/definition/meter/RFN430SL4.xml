@@ -79,6 +79,7 @@
         <pointInfo name="kVA at Peak kW Coincidental" attributes="KVA_PEAK_DEMAND_COIN"/>
         <pointInfo name="kVA Load Profile" attributes="KVA_LOAD_PROFILE"/>
         <pointInfo name="kVAh" attributes="KVAH"/>
+        <pointInfo name="Delivered kVAh per Interval" attributes="DELIVERED_KVAH_PER_INTERVAL"/>
         <pointInfo name="kVAh Lagging" attributes="DELIVERED_KVAH_LAGGING"/>
         <pointInfo name="kVAh Lagging Rate A"/>
         <pointInfo name="kVAh Lagging Rate B"/>
@@ -154,6 +155,7 @@
         <pointInfo name="Rate D Net Received kVArh" attributes="NET_RECEIVED_KVARH_RATE_D"/>
         <pointInfo name="Rate D Peak kVAr" attributes="PEAK_KVAR_RATE_D"/>
         <pointInfo name="Received kVAh" attributes="RECEIVED_KVAH"/>
+        <pointInfo name="Received kVAh per Interval" attributes="RECEIVED_KVAH_PER_INTERVAL"/>
         <pointInfo name="Received kVAh (Rate A kVAh)" attributes="RECEIVED_KVAH_RATE_A"/>
         <pointInfo name="Received kVAh (Rate B kVAh)" attributes="RECEIVED_KVAH_RATE_B"/>
         <pointInfo name="Received kVAh (Rate C kVAh)" attributes="RECEIVED_KVAH_RATE_C"/>
