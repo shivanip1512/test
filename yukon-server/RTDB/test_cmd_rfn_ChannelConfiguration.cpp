@@ -224,8 +224,8 @@ const std::vector<std::string> allDescriptions {
         "Peak kVA (Quadrants 1 2) (206)",
         "Sum Peak kVA (210)",
         "Received kVAh (Quadrants 2 3 4) (222)",
-        "Minimum Power Factor (230)"
-        "Previous Minimum Power Factor (231)"
+        "Minimum Power Factor (230)",
+        "Previous Minimum Power Factor (231)",
         "Average Power Factor (233)",
         "Average Power Factor Frozen (234)",
         "Peak Demand Daily (240)",
