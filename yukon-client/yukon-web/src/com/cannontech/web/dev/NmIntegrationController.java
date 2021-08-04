@@ -927,8 +927,9 @@ public class NmIntegrationController {
     }
     
     @RequestMapping("sendGatewayLocationArchiveRequest")
-    public String sendGatewayLocationArchiveRequest(RfnIdentifier rfnIdentifier, String latitude, String longitude) {
+    public String sendGatewayLocationArchiveRequest(String serialNumber, String manufacturer, String model, String latitude, String longitude) {
         LocationResponse locationResponse = new LocationResponse();
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
         locationResponse.setRfnIdentifier(rfnIdentifier);
         locationResponse.setLatitude(Double.parseDouble(latitude));
         locationResponse.setLongitude(Double.parseDouble(longitude));

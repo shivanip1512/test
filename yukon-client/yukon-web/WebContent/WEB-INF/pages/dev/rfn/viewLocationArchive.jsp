@@ -81,18 +81,16 @@
         <form action="sendGatewayLocationArchiveRequest" method="post">
             <cti:csrfToken/>
             <tags:nameValueContainer>
-                <select name="rfnIdentifier" class="js-primary-gateway-select w300" multiple="multiple" 
-                    data-placeholder="${gatewayPlaceholder}" size="1">
-                    <c:forEach var="gateway" items="${gateways}">
-                        <c:set var="checked" value=""/>
-                        <c:forEach var="selectedGateway" items="${selectedGateways}">
-                            <c:if test="${gateway.id == selectedGateway}">
-                                <c:set var="checked" value="selected='selected'"/>
-                            </c:if>
-                        </c:forEach>
-                        <option value="${gateway}" ${checked}>${fn:escapeXml(gateway.sensorSerialNumber)}</option>
-                    </c:forEach>
-                </select>
+            	<tags:nameValue name="Serial Number">
+	                <select id="gatewaySerialNumber" name="serialNumber">
+	                    <c:forEach var="gateway" items="${gateways}">
+	                        <option value="${gateway.sensorSerialNumber}" data-manufacturer="${gateway.sensorManufacturer}" 
+	                        	data-model="${gateway.sensorModel}">${fn:escapeXml(gateway.sensorSerialNumber)}</option>
+	                    </c:forEach>
+	                </select>
+	                <input type="hidden" name="manufacturer" class="js-gateway-manufacturer"/>
+	                <input type="hidden" name="model" class="js-gateway-model"/>
+                </tags:nameValue>
                 <tags:nameValue name="Latitude"><input name="latitude" type="text" value="45.019524"></tags:nameValue>
                 <tags:nameValue name="Longitude"><input name="longitude" type="text" value="-93.347115"></tags:nameValue>
             </tags:nameValueContainer>
@@ -101,4 +99,18 @@
             </div>
         </form>
     </tags:sectionContainer>
+    
+    <script>
+    	_setManufacturerModel = function() {
+            var selectedGateway = $('#gatewaySerialNumber').find(':selected');
+	        $('.js-gateway-manufacturer').val(selectedGateway.data('manufacturer'));
+	        $('.js-gateway-model').val(selectedGateway.data('model'));
+    	};
+    	
+    	_setManufacturerModel();
+    	
+	    $(document).on('change', '#gatewaySerialNumber', function () {
+	        _setManufacturerModel();
+	    });
+    </script>
 </cti:standardPage>
