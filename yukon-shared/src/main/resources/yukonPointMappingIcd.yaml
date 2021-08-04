@@ -1846,6 +1846,7 @@ Metric IDs:
     222: { name: "VA hour Q2 + Q3 + Q4",                 Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4                         ] }
     # ------     
     230: { name: "Power Factor total, minimum",          Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min              ] }
+    231: { name: "Previous Minimum Power Factor",        Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Prev       ] }
     233: { name: "Average Power Factor",                 Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg              ] }
     234: { name: "Average Power Factor Frozen",          Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg, *Prev       ] }
     # ------     

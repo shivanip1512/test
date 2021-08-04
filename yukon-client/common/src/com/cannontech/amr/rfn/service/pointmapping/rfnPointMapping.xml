@@ -5912,6 +5912,31 @@
                 <modifier>Phase Neutral->Ground</modifier>
             </modifiers>
         </point>
+        <point name="Minimum Power Factor" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Min</modifier>
+            </modifiers>
+        </point>
+        <point name="Previous Minimum Power Factor" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Min</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
         <point name="Average Power Factor" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR">
             <uom>PF</uom>
             <multiplier value=".001"/>

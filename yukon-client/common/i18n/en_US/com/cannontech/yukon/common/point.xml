@@ -282,6 +282,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.AVERAGE_RECEIVED_POWER_FACTOR">Average Received Power Factor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR">Power Factor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_COIN">Power Factor Coincidental</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_POWER_FACTOR">Minimum Power Factor</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PREVIOUS_MINIMUM_POWER_FACTOR">Previous Minimum Power Factor</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA">Coincident Power Factor at Delivered Peak kVA</entry>
     <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A">Coincident Power Factor at Delivered Peak kVA Rate A</entry>

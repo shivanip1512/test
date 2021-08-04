@@ -219,6 +219,8 @@ INIT_ATTRIBUTE( PowerFactorAvgDelivered,                            "AVERAGE_DEL
 INIT_ATTRIBUTE( PowerFactorAvgReceived,                             "AVERAGE_RECEIVED_POWER_FACTOR" );
 INIT_ATTRIBUTE( PowerFactor,                                        "POWER_FACTOR" );
 INIT_ATTRIBUTE( PowerFactorCoincidental,                            "POWER_FACTOR_COIN" );
+INIT_ATTRIBUTE( MinimumPowerFactor,                                 "MINIMUM_POWER_FACTOR");
+INIT_ATTRIBUTE( PreviousMinimumPowerFactor,                         "PREVIOUS_MINIMUM_POWER_FACTOR");
 INIT_ATTRIBUTE( CoincidentPowerFactorAtDeliveredPeakKVA,            "COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA" );
 INIT_ATTRIBUTE( CoincidentPowerFactorAtDeliveredPeakkVARateA,       "COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A" );
 INIT_ATTRIBUTE( CoincidentPowerFactorAtDeliveredPeakkVARateB,       "COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_B" );

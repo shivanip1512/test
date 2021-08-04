@@ -25,6 +25,8 @@
     <pointInfos>
         <pointInfo name="Average Power Factor" attributes="AVERAGE_POWER_FACTOR"/>
         <pointInfo name="Average Power Factor Frozen" attributes="AVERAGE_POWER_FACTOR_FROZEN"/>
+        <pointInfo name="Minimum Power Factor" attributes="MINIMUM_POWER_FACTOR"></pointInfo>
+        <pointInfo name="Previous Minimum Power Factor" attributes="PREVIOUS_MINIMUM_POWER_FACTOR"></pointInfo>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>

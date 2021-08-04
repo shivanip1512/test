@@ -21,13 +21,13 @@ import org.jdom2.input.SAXBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
+import com.cannontech.amr.rfn.service.pointmapping.icd.CoincidentGroupingCollector;
 import com.cannontech.amr.rfn.service.pointmapping.icd.ManufacturerModel;
 import com.cannontech.amr.rfn.service.pointmapping.icd.MeterClass;
 import com.cannontech.amr.rfn.service.pointmapping.icd.ModelPointDefinition;
 import com.cannontech.amr.rfn.service.pointmapping.icd.NameScale;
 import com.cannontech.amr.rfn.service.pointmapping.icd.Named;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointDefinition;
-import com.cannontech.amr.rfn.service.pointmapping.icd.CoincidentGroupingCollector;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointMapping;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointMappingIcd;
 import com.cannontech.amr.rfn.service.pointmapping.icd.RfnPointMappingParser;
@@ -765,6 +765,8 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAX, "kVArh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4EAX, "Average Power Factor");
         missing.put(PaoType.RFN530S4EAX, "Average Power Factor Frozen");
+        missing.put(PaoType.RFN530S4EAX, "Minimum Power Factor");
+        missing.put(PaoType.RFN530S4EAX, "Previous Minimum Power Factor");
         
         missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase A");
         missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase B");
@@ -877,6 +879,8 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAXR, "kVArh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4EAXR, "Average Power Factor");
         missing.put(PaoType.RFN530S4EAXR, "Average Power Factor Frozen");
+        missing.put(PaoType.RFN530S4EAXR, "Minimum Power Factor");
+        missing.put(PaoType.RFN530S4EAXR, "Previous Minimum Power Factor");
         missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate A kWh)");
         missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate B kWh)");
         missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate C kWh)");
