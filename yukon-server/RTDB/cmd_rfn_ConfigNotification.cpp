@@ -236,7 +236,7 @@ std::string RfnConfigNotificationCommand::decodeTouHoliday(Bytes payload)
 
         dates[dateIndex] = CtiTime(date);
 
-        description += "\n Date " + std::to_string(dateIndex + 1) + " - " + dates[dateIndex].asString();
+        description += "\n Date " + std::to_string(dateIndex + 1) + " - " + dates[dateIndex].asStringISO();
     }
 
     touHolidays = dates;

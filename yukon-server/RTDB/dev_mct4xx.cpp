@@ -230,7 +230,7 @@ string Mct4xxDevice::printDate(const CtiDate &dt)
 
     if( dt > DawnOfTime_Date )
     {
-        retval = dt.asStringUSFormat();
+        retval = dt.asStringMDY();
     }
     else
     {
@@ -890,7 +890,7 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                             OutMessPtrDeleter d(OutMessage);
 
                             return appendMsgTo(retList, makeReturnMsg(
-                                        "Invalid date for peak request: cannot be after today (" + request_date.asStringUSFormat() + ")",
+                                        "Invalid date for peak request: cannot be after today (" + request_date.asStringMDY() + ")",
                                         ClientErrors::InvalidDate,
                                         OutMessage->Request));
                         }
@@ -2087,7 +2087,7 @@ YukonError_t Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTim
                 //  EmetconProtocol::GetValue_LoadProfilePeakReport
                 request << "getvalue lp peak " << peakString->second;
                 request << " channel " << _llpPeakInterest.channel + 1;
-                request << " " << _llpPeakInterest.end_date.asStringUSFormat();
+                request << " " << _llpPeakInterest.end_date.asStringMDY();
                 request << " " << _llpPeakInterest.range;
 
                 if( strstr(InMessage.Return.CommandStr, " noqueue") )

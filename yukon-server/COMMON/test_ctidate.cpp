@@ -79,26 +79,35 @@ BOOST_AUTO_TEST_CASE(test_ctidate_methods)
     //  will need to be re-added when special value constructors are handled as special values again
     //BOOST_CHECK_EQUAL( ct5.is_pos_infinity(), true );
     BOOST_CHECK_EQUAL( ct5.isValid(), false );
+}
 
-    string expectedResult = "11/02/2008";
-    CtiDate result(2,11,2008);
-    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
-    expectedResult = "11/01/2008";
-    result = CtiDate(1,11,2008);
-    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
-    expectedResult = "11/03/2008";
-    result = CtiDate(3,11,2008);
-    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
-    expectedResult = "03/09/2008";
-    result = CtiDate(9,3,2008);
-    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
-    expectedResult = "03/10/2008";
-    result = CtiDate(10,3,2008);
-    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
-    expectedResult = "03/08/2008";
-    result = CtiDate(8,3,2008);
-    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
 
+BOOST_AUTO_TEST_CASE(test_ctidate_asStringUsFormat)
+{
+    struct {
+        CtiDate input;
+        std::string expected;
+        std::string expected_iso;
+        std::string expected_mdy;
+    }
+    const test_cases[] = {
+        { CtiDate( 1,11,2008), "2008-Nov-01", "2008-11-01", "11/01/2008" },
+        { CtiDate( 2,11,2008), "2008-Nov-02", "2008-11-02", "11/02/2008" },
+        { CtiDate( 3,11,2008), "2008-Nov-03", "2008-11-03", "11/03/2008" },
+        { CtiDate( 8, 3,2008), "2008-Mar-08", "2008-03-08", "03/08/2008" },
+        { CtiDate( 9, 3,2008), "2008-Mar-09", "2008-03-09", "03/09/2008" },
+        { CtiDate(10, 3,2008), "2008-Mar-10", "2008-03-10", "03/10/2008" },
+        { CtiDate(CtiDate::neg_infin),  "-infinity", "-infinity", "01/01/0001" },
+        { CtiDate(CtiDate::pos_infin),  "+infinity", "+infinity", "12/31/9999" },
+        { CtiDate(CtiDate::not_a_date), "not-a-date-time", "not-a-date-time", "01/01/1970" },
+    };
+    
+    for( auto& test_case : test_cases )
+    {
+        BOOST_CHECK_EQUAL(test_case.expected, test_case.input.asString());
+        BOOST_CHECK_EQUAL(test_case.expected_iso, test_case.input.asStringISO());
+        BOOST_CHECK_EQUAL(test_case.expected_mdy, test_case.input.asStringMDY());
+    }
 }
 
 
