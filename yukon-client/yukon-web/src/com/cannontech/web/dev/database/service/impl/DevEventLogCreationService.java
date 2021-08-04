@@ -61,6 +61,7 @@ import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.BadAuthenticationException.Type;
 import com.cannontech.common.i18n.Displayable;
+import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -1040,6 +1041,13 @@ public class DevEventLogCreationService {
                 systemEventLogService.attributeAssigned(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
                 systemEventLogService.attributeAssignmentDeleted(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
                 
+                String loggerName = devEventLog.getIndicatorString() + "LoggerName";
+                String loggerLevel = devEventLog.getIndicatorString() + "LoggerLevel";
+                Date expirationDate = new Date();
+                systemEventLogService.loggerAdded(loggerName, loggerLevel, expirationDate, user);
+                systemEventLogService.loggerUpdated(loggerName, loggerLevel, expirationDate, user);
+                systemEventLogService.loggerDeleted(loggerName, user);
+                
                 String yukonService = "Web Server";
                 String typeOrValue = "Ecobee Private Key";
                 eventLogHelper.decryptionFailedEventLog(yukonService, typeOrValue);
@@ -1370,7 +1378,7 @@ public class DevEventLogCreationService {
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
         RFN_DEVICE(RfnDeviceEventLogService.class, 7),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 41),
+        SYSTEM(SystemEventLogService.class, 44),
         TOOLS(ToolsEventLogService.class, 32),
         USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),

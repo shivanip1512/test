@@ -271,10 +271,10 @@ public class EcobeeMockApiController {
     
     @IgnoreCsrfCheck
     @GetMapping("tstatgroups")
-    public ResponseEntity<Object> getAllGroups() {
+    public ResponseEntity<Object> getAllGroups(@RequestParam(name = "program_id") String programId) {
         int getGroupCode = zeusEcobeeDataConfiguration.getGetGroup();
         if (getGroupCode == 0) {
-            return new ResponseEntity<>(responseFactory.retrieveGroups(), HttpStatus.OK);
+            return new ResponseEntity<>(responseFactory.retrieveGroups(programId), HttpStatus.OK);
         } else if (getGroupCode == 1) {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else if (getGroupCode == 3) {

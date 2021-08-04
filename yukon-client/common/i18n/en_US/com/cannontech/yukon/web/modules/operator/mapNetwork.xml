@@ -53,6 +53,11 @@
     <entry key="yukon.web.modules.operator.mapNetwork.status.READY">Ready</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.status.NOT_READY">Not Ready</entry>
     
+    <entry key="yukon.web.modules.operator.mapNetwork.commStatus">Comm Status</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.commStatus.RF">Connected via RF</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.commStatus.WiFi">Connected via Wi-Fi</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.commStatus.Cellular">Connected via Cellular</entry>
+    
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.PRIMARY_FORWARD">Primary forward route</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.PRIMARY_REVERSE">Primary reverse route</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.BATTERY">Battery Route</entry>
