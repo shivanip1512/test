@@ -31,6 +31,7 @@
 
 <dt:pickerIncludes/>
 <tags:simplePopup id="manual-entry-popup" title=""/>
+<tags:simplePopup id="manual-control-popup" title=""/>
 
 <cti:includeScript link="/resources/js/pages/yukon.points.js"/>
 <cti:includeScript link="/resources/js/widgets/yukon.widget.devicePoints.js"/>
