@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
@@ -70,6 +71,30 @@
                 </tags:nameValue>
                 <tags:nameValue name="Latitude"><input name="latitude" type="text" value="44.971387"></tags:nameValue>
                 <tags:nameValue name="Longitude"><input name="longitude" type="text" value="-93.514173"></tags:nameValue>
+            </tags:nameValueContainer>
+            <div class="page-action-area">
+                <cti:button nameKey="send" type="submit" classes="js-blocker"/>
+            </div>
+        </form>
+    </tags:sectionContainer>
+    <tags:sectionContainer title="Gateway Location Archive Request Test">
+        <form action="sendGatewayLocationArchiveRequest" method="post">
+            <cti:csrfToken/>
+            <tags:nameValueContainer>
+                <select name="rfnIdentifier" class="js-primary-gateway-select w300" multiple="multiple" 
+                    data-placeholder="${gatewayPlaceholder}" size="1">
+                    <c:forEach var="gateway" items="${gateways}">
+                        <c:set var="checked" value=""/>
+                        <c:forEach var="selectedGateway" items="${selectedGateways}">
+                            <c:if test="${gateway.id == selectedGateway}">
+                                <c:set var="checked" value="selected='selected'"/>
+                            </c:if>
+                        </c:forEach>
+                        <option value="${gateway}" ${checked}>${fn:escapeXml(gateway.sensorSerialNumber)}</option>
+                    </c:forEach>
+                </select>
+                <tags:nameValue name="Latitude"><input name="latitude" type="text" value="45.019524"></tags:nameValue>
+                <tags:nameValue name="Longitude"><input name="longitude" type="text" value="-93.347115"></tags:nameValue>
             </tags:nameValueContainer>
             <div class="page-action-area">
                 <cti:button nameKey="send" type="submit" classes="js-blocker"/>

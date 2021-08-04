@@ -488,24 +488,22 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     }
         
     @Override
-    public void sendLocationResponse(int serialFrom, int serialTo, String manufacturer, String model, double latitude, double longitude) {
+    public void sendLocationResponse(int serialFrom, int serialTo, String manufacturer, String model, LocationResponse locationResponse) {
      
         for (int i = serialFrom; i <= serialTo; i++) {
-            LocationResponse locationResponse = new LocationResponse();
             RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(i), manufacturer, model);
             locationResponse.setRfnIdentifier(rfnIdentifier);
-            locationResponse.setLatitude(latitude);
-            locationResponse.setLongitude(longitude);
             locationResponse.setLocationId(99L + i);
-            locationResponse.setOrigin(Origin.RF_NODE);
-            if (new Random().nextBoolean()) {
-                locationResponse.setOrigin(Origin.RF_GATEWAY);
-            }
             locationResponse.setLastChangedDate(new Instant().getMillis());
             sendArchiveRequest(locationJmsTemplate, locationResponse);
         }
     }
     
+    @Override
+    public void sendGatewayLocationResponse(LocationResponse locationResponse) {
+        sendArchiveRequest(locationJmsTemplate, locationResponse);
+    }
+
     private void buildAndSendEvent(RfnTestEvent event, int serialNum) {
         RfnEvent rfnEvent = buildEvent(event, new RfnEvent(), serialNum);
         

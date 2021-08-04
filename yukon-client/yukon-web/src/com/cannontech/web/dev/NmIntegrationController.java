@@ -4,6 +4,7 @@ import static com.cannontech.common.stream.StreamUtils.not;
 
 import java.beans.PropertyEditor;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
@@ -65,6 +67,8 @@ import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestRes
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
+import com.cannontech.common.rfn.message.location.LocationResponse;
+import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
 import com.cannontech.common.rfn.message.neighbor.LinkPower;
@@ -72,9 +76,11 @@ import com.cannontech.common.rfn.message.neighbor.LinkRate;
 import com.cannontech.common.rfn.message.neighbor.NeighborFlag;
 import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
@@ -86,6 +92,7 @@ import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.DeviceArchiveRequestParameters;
 import com.cannontech.development.model.RfnTestEvent;
@@ -152,6 +159,7 @@ import com.google.common.collect.Lists;
 public class NmIntegrationController {
 
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RfnEventTestingService rfnEventTestingService;
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
     @Autowired private RfnGatewayDataCache gatewayCache;
@@ -548,7 +556,12 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("viewLocationArchiveRequest")
-    public String viewLocationArchiveRequest() {
+    public String viewLocationArchiveRequest(ModelMap model) {
+        List<RfnIdentifier> gatewayRfnIds = rfnGatewayService.getAllGateways()
+                .stream()
+                .map(RfnGateway::getRfnIdentifier)
+                .collect(Collectors.toList());
+        model.addAttribute("gateways", gatewayRfnIds);
         return "rfn/viewLocationArchive.jsp";
     }
 
@@ -904,7 +917,26 @@ public class NmIntegrationController {
     
     @RequestMapping("sendLocationArchiveRequest")
     public String sendLocationArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model, String latitude, String longitude) { 
-        rfnEventTestingService.sendLocationResponse(serialFrom, serialTo, manufacturer, model, Double.parseDouble(latitude), Double.parseDouble(longitude));
+        LocationResponse locationResponse = new LocationResponse();
+        locationResponse.setLatitude(Double.parseDouble(latitude));
+        locationResponse.setLongitude(Double.parseDouble(longitude));
+        locationResponse.setOrigin(Origin.RF_NODE);
+        locationResponse.setLastChangedDate(new Instant().getMillis());
+        rfnEventTestingService.sendLocationResponse(serialFrom, serialTo, manufacturer, model, locationResponse);
+        return "redirect:viewLocationArchiveRequest";
+    }
+    
+    @RequestMapping("sendGatewayLocationArchiveRequest")
+    public String sendGatewayLocationArchiveRequest(RfnIdentifier rfnIdentifier, String latitude, String longitude) {
+        LocationResponse locationResponse = new LocationResponse();
+        locationResponse.setRfnIdentifier(rfnIdentifier);
+        locationResponse.setLatitude(Double.parseDouble(latitude));
+        locationResponse.setLongitude(Double.parseDouble(longitude));
+        locationResponse.setLocationId(99L + Long.valueOf(rfnIdentifier.getSensorSerialNumber()));
+        locationResponse.setOrigin(Origin.RF_GATEWAY);
+        locationResponse.setLastChangedDate(new Instant().getMillis());
+        
+         rfnEventTestingService.sendGatewayLocationResponse(locationResponse);
         return "redirect:viewLocationArchiveRequest";
     }
 
