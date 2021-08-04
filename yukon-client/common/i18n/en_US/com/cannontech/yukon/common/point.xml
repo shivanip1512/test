@@ -327,6 +327,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_B">Coincident Power Factor at Sum Peak kW Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_C">Coincident Power Factor at Sum Peak kW Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_D">Coincident Power Factor at Sum Peak kW Rate D</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_RATE_A">Coincident Power Factor Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_RATE_B">Coincident Power Factor Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_RATE_C">Coincident Power Factor Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_RATE_D">Coincident Power Factor Rate D</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.AVERAGE_POWER_FACTOR_Q124">Average Power Factor (Quadrants 1 2 4)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.AVERAGE_POWER_FACTOR_Q234">Average Power Factor (Quadrants 2 3 4)</entry>
