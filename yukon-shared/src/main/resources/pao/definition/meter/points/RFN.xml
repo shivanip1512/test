@@ -2911,7 +2911,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>
-    <point offset="103" type="Status">
+    <point offset="2001" type="Status">
         <name>Device Type Changed</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
