@@ -138,6 +138,25 @@ bool RfnResidentialDevice::isMetrologyLibraryDisabled( Config::DeviceConfigSPtr 
     return false;
 }
 
+// Only supported when metrology library is enabled in firmware versions prior to 9.5.  In 9.5 it is
+//  available regardless of metrology library state
+bool RfnResidentialDevice::supportsDemandFreezeConfiguration( Config::DeviceConfigSPtr deviceConfig )
+{
+    return hasRfnFirmwareSupportIn( 9.5 ) || ! isMetrologyLibraryDisabled( deviceConfig );
+}
+
+// Only supported when metrology library is enabled
+bool RfnResidentialDevice::supportsTouConfiguration( Config::DeviceConfigSPtr deviceConfig )
+{
+    return ! isMetrologyLibraryDisabled( deviceConfig );
+}
+
+// Only supported when metrology library is enabled
+bool RfnResidentialDevice::supportsDemandIntervalConfiguration( Config::DeviceConfigSPtr deviceConfig )
+{
+    return ! isMetrologyLibraryDisabled( deviceConfig );
+}
+
 YukonError_t RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     rfnRequests.push_back(
@@ -170,7 +189,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
             return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
-        if ( isMetrologyLibraryDisabled( deviceConfig ) )
+        if ( ! supportsDemandFreezeConfiguration( deviceConfig ) )
         {
             return ClientErrors::ConfigCurrent;
         }
@@ -487,7 +506,7 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
             return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
-        if ( isMetrologyLibraryDisabled( deviceConfig ) )
+        if ( ! supportsTouConfiguration( deviceConfig ) )
         {
             return ClientErrors::ConfigCurrent;
         }
@@ -800,7 +819,7 @@ try
         return reportConfigErrorDetails(ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs);
     }
 
-    if ( isMetrologyLibraryDisabled( deviceConfig ) )
+    if ( ! supportsDemandIntervalConfiguration( deviceConfig ) )
     {
         return ClientErrors::ConfigCurrent;
     }

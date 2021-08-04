@@ -68,6 +68,10 @@ protected:
 
     bool isMetrologyLibraryDisabled( Config::DeviceConfigSPtr deviceConfig );
 
+    virtual bool supportsDemandFreezeConfiguration( Config::DeviceConfigSPtr deviceConfig );
+    bool supportsTouConfiguration( Config::DeviceConfigSPtr deviceConfig );
+    bool supportsDemandIntervalConfiguration( Config::DeviceConfigSPtr deviceConfig );
+
 private:
 
     std::string getDisconnectModeString( Commands::RfnRemoteDisconnectConfigurationCommand::DisconnectMode disconnectMode );
