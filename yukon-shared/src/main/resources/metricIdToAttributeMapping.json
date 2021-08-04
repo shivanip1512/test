@@ -69,7 +69,6 @@
                 { "metricId" : 111, "attribute" : "CURRENT_ANGLE_PHASE_C" },
 
                 { "metricId" : 112, "attribute" : "MINIMUM_VOLTAGE" },
-                { "metricId" : 113, "attribute" : "AVERAGE_VOLTAGE" },
                 { "metricId" : 114, "attribute" : "MAXIMUM_VOLTAGE" },
                 { "metricId" : 115, "attribute" : "VOLTAGE" },
                 { "metricId" : 116, "attribute" : "MINIMUM_VOLTAGE_PHASE_A" },
