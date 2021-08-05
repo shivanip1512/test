@@ -61,7 +61,7 @@ public class YukonLoggersApiController {
     }
 
     @PatchMapping("/{loggerId}")
-    public ResponseEntity<Object> update(@Valid @RequestBody YukonLogger yukonLogger, @PathVariable int loggerId) {
+    public ResponseEntity<Object> update(@PathVariable int loggerId, @Valid @RequestBody YukonLogger yukonLogger) {
         return new ResponseEntity<Object>(loggerService.updateLogger(loggerId, yukonLogger), HttpStatus.OK);
     }
 

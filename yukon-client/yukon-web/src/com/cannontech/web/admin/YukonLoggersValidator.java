@@ -42,11 +42,10 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
     @Override
     protected void doValidation(YukonLogger logger, Errors errors) {
         if (logger != null) {
-            if (logger.getLoggerName() != null) {
-                String id = ServletUtils.getPathVariable("loggerId");
-                Integer loggerId = id == null ? -1 : Integer.valueOf(id);
-                validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"), loggerId);
-            }
+            String id = ServletUtils.getPathVariable("loggerId");
+            Integer loggerId = id == null ? -1 : Integer.valueOf(id);
+            validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"), loggerId);
+
             YukonValidationUtils.checkIfFieldRequired("level", errors, logger.getLevel(),
                     accessor.getMessage(basekey + "loggerLevel"));
 
@@ -60,9 +59,7 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
     }
 
     public void validateLoggerName(Errors errors, YukonLogger logger, String i18Text, Integer loggerId) {
-        if (!errors.hasFieldErrors("loggerName")) {
-            YukonValidationUtils.checkIfFieldRequired("loggerName", errors, logger.getLoggerName(), i18Text);
-        }
+        YukonValidationUtils.checkIfFieldRequired("loggerName", errors, logger.getLoggerName(), i18Text);
         if (!errors.hasFieldErrors("loggerName")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "loggerName", logger.getLoggerName(), 200);
         }
