@@ -3,7 +3,6 @@
     <highestOffsets>
         <analog offset="186"/>
         <status offset="100"/>
-        <systemStatus offset="2001"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
@@ -106,10 +105,5 @@
     <point offset="100" type="Status">
         <name>Thirty Days No Usage</name>
         <stategroup value="TrueFalse"/>
-    </point>
-    <point offset="2001" type="Status">
-        <name>Device Type Changed</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <stategroup value="Event Status"/>
     </point>
 </points>
