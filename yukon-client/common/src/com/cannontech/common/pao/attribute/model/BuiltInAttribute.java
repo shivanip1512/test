@@ -1169,6 +1169,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                                USAGE_WATER,
                                                USAGE_GAS,
                                                KVAH,
+                                               RECEIVED_KVAH,
                                                DELIVERED_KWH_RATE_A,
                                                DELIVERED_KWH_RATE_B,
                                                DELIVERED_KWH_RATE_C,
