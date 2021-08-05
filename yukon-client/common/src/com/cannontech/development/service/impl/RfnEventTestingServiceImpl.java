@@ -148,7 +148,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.WRL_420CL,
             RfnManufacturerModel.WRL_420CD));
 
-        groupedMeterTypesBuilder.put("Landis & Gyr single phase", ImmutableList.of(
+        groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 1 single phase", ImmutableList.of(
             RfnManufacturerModel.RFN_410FL,
             RfnManufacturerModel.RFN_410FX_D, 
             RfnManufacturerModel.RFN_410FX_R, 
@@ -172,8 +172,22 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_520FRXD_SD,
             RfnManufacturerModel.RFN_520FRXT_SD,
             RfnManufacturerModel.RFN_520FRXR_SD));
+        
+        groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 2 single phase", ImmutableList.of(
+            RfnManufacturerModel.RFN_520FAXDE,
+            RfnManufacturerModel.RFN_520FAXTE,
+            RfnManufacturerModel.RFN_520FAXRE,
+            RfnManufacturerModel.RFN_520FRXDE,
+            RfnManufacturerModel.RFN_520FRXTE,
+            RfnManufacturerModel.RFN_520FRXRE,
+            RfnManufacturerModel.RFN_520FAXDE_SD,
+            RfnManufacturerModel.RFN_520FAXTE_SD,
+            RfnManufacturerModel.RFN_520FAXRE_SD,
+            RfnManufacturerModel.RFN_520FRXDE_SD,
+            RfnManufacturerModel.RFN_520FRXTE_SD,
+            RfnManufacturerModel.RFN_520FRXRE_SD));
 
-        groupedMeterTypesBuilder.put("Landis & Gyr polyphase", ImmutableList.of(
+        groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 1 polyphase", ImmutableList.of(
             RfnManufacturerModel.RFN_530FAXD,
             RfnManufacturerModel.RFN_530FAXT,
             RfnManufacturerModel.RFN_530FAXR,
@@ -185,7 +199,23 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_530FAXR_SD,
             RfnManufacturerModel.RFN_530FRXD_SD,
             RfnManufacturerModel.RFN_530FRXT_SD,
-            RfnManufacturerModel.RFN_530FRXR_SD,
+            RfnManufacturerModel.RFN_530FRXR_SD));
+            
+        groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 2 polyphase", ImmutableList.of(
+            RfnManufacturerModel.RFN_530FAXDE,
+            RfnManufacturerModel.RFN_530FAXTE,
+            RfnManufacturerModel.RFN_530FAXRE,
+            RfnManufacturerModel.RFN_530FRXDE,
+            RfnManufacturerModel.RFN_530FRXTE,
+            RfnManufacturerModel.RFN_530FRXRE,
+            RfnManufacturerModel.RFN_530FAXDE_SD,
+            RfnManufacturerModel.RFN_530FAXTE_SD,
+            RfnManufacturerModel.RFN_530FAXRE_SD,
+            RfnManufacturerModel.RFN_530FRXDE_SD,
+            RfnManufacturerModel.RFN_530FRXTE_SD,
+            RfnManufacturerModel.RFN_530FRXRE_SD));
+                
+        groupedMeterTypesBuilder.put("Landis & Gyr S4 polyphase", ImmutableList.of(
             RfnManufacturerModel.RFN_530S4X,
             RfnManufacturerModel.RFN_530S4AD,
             RfnManufacturerModel.RFN_530S4AT,
