@@ -6899,4 +6899,102 @@
           </baseModifiers>
         </point>
     </pointGroup>
+    <pointGroup>
+        <paoType value="RFN430A3T"/>
+        <point name="Power Factor Degrees Phase A">
+            <uom>PF degree</uom>
+            <multiplier value="0.1"/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Power Factor Degrees Phase B">
+            <uom>PF degree</uom>
+            <multiplier value="0.1"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Power Factor Degrees Phase C">
+            <uom>PF degree</uom>
+            <multiplier value="0.1"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase A Power Factor">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase B Power Factor">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase C Power Factor">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase A kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase B kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase C kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase A kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase B kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase C kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
 </pointMappings>
