@@ -33,6 +33,7 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoType;
@@ -55,12 +56,14 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ConcurrentHashMultiset;
@@ -83,6 +86,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ChangeDeviceTypeService changeDeviceTypeService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     private YukonJmsTemplate jmsTemplate;
     private String templatePrefix;
@@ -121,7 +125,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Transactional
     public synchronized RfnDevice findOrCreate(RfnIdentifier newDeviceIdentifier) {
         try {
-            return getOrCreate(newDeviceIdentifier, null);
+            return getOrCreate(newDeviceIdentifier);
         } catch (Exception e) {
             return null;
         }
@@ -286,6 +290,12 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             
             log.debug("Updated model from {}/{} to {}/{} result: {}", oldModel, oldPaoType, newModel, newPaoType, updatedDevice);
             
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+            createAndSendAlert(AlertType.RFN_DEVICE_MODEL_AND_TYPE_CHANGED, Map.of("deviceName", partiallyMatchedDevice.getName(),
+                    "oldModel", oldModel,
+                    "oldType", accessor.getMessage(oldPaoType.getFormatKey()),
+                    "newType", accessor.getMessage(newPaoType.getFormatKey()),
+                    "newModel", newModel));
             return updatedDevice;
         } catch (Exception ex) {
             throw createRuntimeException("Unable to change device type for " + partiallyMatchedDevice + " from "
