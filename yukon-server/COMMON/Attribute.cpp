@@ -468,8 +468,8 @@ INIT_ATTRIBUTE( ForwardInductivekVArhperInterval,                   "FORWARD_IND
 INIT_ATTRIBUTE( ForwardCapacitivekVArhperInterval,                  "FORWARD_CAPACITIVE_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( ReverseInductivekVArhperInterval,                   "REVERSE_INDUCTIVE_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( ReverseCapacitivekVArhperInterval,                  "REVERSE_CAPACITIVE_KVARH_PER_INTERVAL" );
-INIT_ATTRIBUTE( kVAhperInterval,                                     "DELIVERED_KVAH_PER_INTERVAL" );
-INIT_ATTRIBUTE( ReceivedkVAhperInterval,                             "RECEIVED_KVAH_PER_INTERVAL" );
+INIT_ATTRIBUTE( kVAhperInterval,                                    "DELIVERED_KVAH_PER_INTERVAL" );
+INIT_ATTRIBUTE( ReceivedkVAhperInterval,                            "RECEIVED_KVAH_PER_INTERVAL" );
 
 INIT_ATTRIBUTE( DeliveredkWLoadProfile,                             "DELIVERED_KW_LOAD_PROFILE" );
 INIT_ATTRIBUTE( DeliveredkWRateALoadProfile,                        "DELIVERED_KW_RATE_A_LOAD_PROFILE" );
