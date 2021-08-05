@@ -530,7 +530,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     DEMAND_OVERLOAD("Demand Overload", AttributeGroup.RFN_DEMAND_EVENT, false),
     DEMAND_READS_AND_RESET("Demand Reads And Reset", AttributeGroup.RFN_DEMAND_EVENT, false),
     DEMAND_THRESHOLD_EXCEEDED_WARNING("Demand Threshold Exceeded Warning", AttributeGroup.RFN_DEMAND_EVENT, false),
-    DEVICE_TYPE_CHANGED("Device Type Changed", AttributeGroup.RFN_OTHER_EVENT, false),
     DNP3_ADDRESS_CHANGED("DNP3 Address Changed", AttributeGroup.RFN_OTHER_EVENT, false),
     DISPLAY_LOCKED_BY_WARNING("Display Locked By Warning", AttributeGroup.RFN_OTHER_EVENT, false),
     EEPROM_ACCESS_ERROR("Eeprom Access Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
