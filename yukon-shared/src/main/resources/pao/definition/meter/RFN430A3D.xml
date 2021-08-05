@@ -42,7 +42,6 @@
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Demand Threshold Exceeded Warning" attributes="DEMAND_THRESHOLD_EXCEEDED_WARNING"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
-        <pointInfo name="Device Type Changed" attributes="DEVICE_TYPE_CHANGED"/>
         <pointInfo name="Display Locked By Warning" attributes="DISPLAY_LOCKED_BY_WARNING"/>
         <pointInfo name="Eeprom Access Error" attributes="EEPROM_ACCESS_ERROR"/>
         <pointInfo name="Encryption Key Table Crc Error" attributes="ENCRYPTION_KEY_TABLE_CRC_ERROR"/>

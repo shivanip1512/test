@@ -39,7 +39,6 @@
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
-        <pointInfo name="Device Type Changed" attributes="DEVICE_TYPE_CHANGED"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>

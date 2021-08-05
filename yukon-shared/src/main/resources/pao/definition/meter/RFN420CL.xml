@@ -45,7 +45,6 @@
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Demand Reads And Reset" attributes="DEMAND_READS_AND_RESET"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
-        <pointInfo name="Device Type Changed" attributes="DEVICE_TYPE_CHANGED"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Load Side Voltage Is Missing" attributes="LOAD_SIDE_VOLTAGE_IS_MISSING"/>
         <pointInfo name="Loss Of All Current" attributes="LOSS_OF_ALL_CURRENT"/>

@@ -73,7 +73,6 @@
         <pointInfo name="Delivered Peak kVAr (Rate D kVAr)" attributes="PEAK_KVAR_RATE_D"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
-        <pointInfo name="Device Type Changed" attributes="DEVICE_TYPE_CHANGED"/>
         <pointInfo name="Energy Accumulated While In Standby Mode" attributes="ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Invalid Service" attributes="INVALID_SERVICE"/>

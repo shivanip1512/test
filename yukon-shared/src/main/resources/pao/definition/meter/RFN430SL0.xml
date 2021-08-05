@@ -34,7 +34,6 @@
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Demand Reads And Reset" attributes="DEMAND_READS_AND_RESET"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
-        <pointInfo name="Device Type Changed" attributes="DEVICE_TYPE_CHANGED"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Inactive Phase Current Diagnostic Error" attributes="INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>

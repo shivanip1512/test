@@ -26,7 +26,6 @@
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="USAGE_PER_INTERVAL"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
-        <pointInfo name="Device Type Changed" attributes="DEVICE_TYPE_CHANGED"/>
         <pointInfo name="Disconnect Status" init="true" attributes="DISCONNECT_STATUS"/>
         <pointInfo name="Forward Capacitive kVArh per Interval" init="true" attributes="FORWARD_CAPACITIVE_KVARH_PER_INTERVAL"/>
         <pointInfo name="Forward Inductive kVArh" init="true" attributes="FORWARD_INDUCTIVE_KVARH"/>
