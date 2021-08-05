@@ -175,6 +175,7 @@ public:
     static const Attribute  kVAQ34;
     static const Attribute  kVAQ13;
     static const Attribute  kVAQ24;
+    static const Attribute  PeakkVAQ124Frozen;
     static const Attribute  SumkVAr;
     static const Attribute  NetkVAr;
     static const Attribute  PeakkVAr;
@@ -203,6 +204,8 @@ public:
     static const Attribute  kVArQ24;
     static const Attribute  kVArQ14;
     static const Attribute  kVArQ23;
+    static const Attribute  SumPeakkVArFrozen;
+    static const Attribute  DeliveredPeakkVArFrozen;
     static const Attribute  PeakkVArh;
     static const Attribute  PeakkVArhCoincidental;
     static const Attribute  Phase;

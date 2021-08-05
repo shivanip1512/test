@@ -1535,15 +1535,15 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time of Daily Peak Delivered Demand:  { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
     - Peak Delivered Var:                   { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max                   ], Models: *__-RX-23 }
     - Time of Peak Delivered Var:           { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Delivered Var:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *Prev            ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak Delivered Var:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *Prev            ], Models: *__-RX-23 }
     - Time of Frozen Peak Delivered Var:    { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
     - Peak Total Var:                       { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total Var:               { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Total Var:                { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak Total Var:                { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23 }
     - Time of Frozen Peak Total Var:        { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
     - Peak VA Q1 + Q2 + Q4:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max              ], Models: *__-RX-23 }
     - Time of Peak VA Q1 + Q2 + Q4:         { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak VA Q1 + Q2 + Q4:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev       ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak VA Q1 + Q2 + Q4:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev       ], Models: *__-RX-23 }
     - Time of Frozen Peak VA Q1 + Q2 + Q4:  { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
     - Peak Total VA:                        { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total VA:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
