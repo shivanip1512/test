@@ -155,7 +155,10 @@ const MetricInfo metricInfos[] = {
         { 206,  TouRates,  "Peak kVA (Quadrants 1 2)"              },
         { 210,  TouRates,  "Sum Peak kVA"                          },
 
-        { 222,  TouRates,  "VA hour Q2 + Q3 + Q4"                    },
+        { 222,  TouRates,  "VA hour Q2 + Q3 + Q4"                  },
+
+        { 230,  None,      "Minimum Power Factor"                  },
+        { 231,  None,      "Previous Minimum Power Factor"         },
 
         { 233,  None,      "Average Power Factor"                  },
         { 234,  None,      "Average Power Factor Frozen"           },
