@@ -321,18 +321,14 @@ public class MapController {
                                 //get distance to next hop
                                 RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
                                 if (nextHop != null) {
-                                    try {
-                                        RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop);
-                                        PaoLocation deviceLocation = paoLocationDao
-                                                .getLocation(rfnDevice.getPaoIdentifier().getPaoId());
-                                        PaoLocation nextHopLocation = paoLocationDao
-                                                .getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
+                                    RfnDevice nextHopDevice = rfnDeviceCreationService.findOrCreate(nextHop);
+                                    if(nextHopDevice != null) {
+                                        PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
+                                        PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
                                         if (deviceLocation != null && nextHopLocation != null) {
                                             double distanceTo = deviceLocation.distanceTo(nextHopLocation, DistanceUnit.MILES);
                                             model.addAttribute("nextHopDistance", distanceTo);
                                         }
-                                    } catch (Exception e) {
-                                        log.warn("Unable to find or create device for {}", nextHop);
                                     }
                                 }
                             }

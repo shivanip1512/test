@@ -323,7 +323,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
         try {
-            RfnDevice device = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+            RfnDevice device = rfnDeviceCreationService.getOrCreate(rfnIdentifier);
             int deviceId = device.getPaoIdentifier().getPaoId();
             PaoLocation location = locations.get(deviceId);
             if(location == null) {

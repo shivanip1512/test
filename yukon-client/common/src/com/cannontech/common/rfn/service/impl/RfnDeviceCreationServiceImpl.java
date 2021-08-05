@@ -2,13 +2,10 @@ package com.cannontech.common.rfn.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -22,10 +19,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
-import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
-import com.cannontech.amr.rfn.message.event.RfnConditionType;
-import com.cannontech.amr.rfn.message.event.RfnEvent;
-import com.cannontech.amr.rfn.message.event.RfnEventArchiveRequest;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.model.SimpleAlert;
@@ -40,7 +33,6 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoType;
@@ -63,14 +55,12 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
-import com.cannontech.user.YukonUserContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ConcurrentHashMultiset;
@@ -93,17 +83,13 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ChangeDeviceTypeService changeDeviceTypeService;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     private YukonJmsTemplate jmsTemplate;
-    private YukonJmsTemplate eventArchiveJmsTemplate;
     private String templatePrefix;
     private Cache<String, Boolean> recentlyUncreatableTemplates;
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
     private ConcurrentHashMultiset<RfnIdentifier> uncreatableDevices = ConcurrentHashMultiset.create();
     private Set<String> templatesToIgnore;
-    private ExecutorService executor = Executors.newCachedThreadPool();
-    private static Logger commsLogger = YukonLogManager.getCommsLogger();
 
     @PostConstruct
     public void init() {
@@ -129,18 +115,27 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         
         templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_DEVICE_CREATION_ALERT);
-        eventArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_EVENT_ARCHIVE);
     }
 
     @Override
     @Transactional
-    public synchronized RfnDevice createIfNotFound(RfnIdentifier newDeviceIdentifier) {
-        return createIfNotFound(newDeviceIdentifier, null);
+    public synchronized RfnDevice findOrCreate(RfnIdentifier newDeviceIdentifier) {
+        try {
+            return getOrCreate(newDeviceIdentifier, null);
+        } catch (Exception e) {
+            return null;
+        }
     }
     
     @Override
     @Transactional
-    public synchronized RfnDevice createIfNotFound(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
+    public synchronized RfnDevice getOrCreate(RfnIdentifier newDeviceIdentifier) {
+        return getOrCreate(newDeviceIdentifier, null);
+    }
+    
+    @Override
+    @Transactional
+    public synchronized RfnDevice getOrCreate(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
         
         dataTimestamp = dataTimestamp == null ? new Instant() : dataTimestamp;
         
@@ -227,22 +222,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         return updatedDevice;
     }
     
-    private void createAndSendEvent(RfnIdentifier rfnIdentifier, boolean isCleared) {
-        RfnEvent rfnEvent = new RfnEvent();
-        rfnEvent.setRfnIdentifier(rfnIdentifier);
-        rfnEvent.setType(RfnConditionType.DEVICE_TYPE_CHANGED);
-        rfnEvent.setTimeStamp(System.currentTimeMillis());
-        Map<RfnConditionDataType, Object> rfnEventMap = new HashMap<>();
-        rfnEventMap.put(RfnConditionDataType.CLEARED, isCleared);
-        rfnEvent.setEventData(rfnEventMap);
-        RfnEventArchiveRequest archiveRequest = new RfnEventArchiveRequest();
-        archiveRequest.setEvent(rfnEvent);
-        archiveRequest.setDataPointId(1);
-        commsLogger.info("<<< Sent" + archiveRequest);
-        eventArchiveJmsTemplate.convertAndSend(archiveRequest);
-        log.debug("Generating Device Type Changed event for {} isCleared: {}", rfnIdentifier, isCleared);
-    }
-
     private void createAndSendAlert(AlertType type, Map<String, String> data) {
         ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts."+type);
         data.forEach((key, value) -> resolvableTemplate.addData(key, value));
@@ -306,26 +285,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                     oldModel, oldPaoType, newModel, newPaoType);
             
             log.debug("Updated model from {}/{} to {}/{} result: {}", oldModel, oldPaoType, newModel, newPaoType, updatedDevice);
-            
-            executor.submit(() -> {
-                //alert
-                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
-                createAndSendAlert(AlertType.RFN_DEVICE_MODEL_AND_TYPE_CHANGED, Map.of("deviceName", partiallyMatchedDevice.getName(),
-                        "oldModel", oldModel,
-                        "oldType", accessor.getMessage(oldPaoType.getFormatKey()),
-                        "newType", accessor.getMessage(newPaoType.getFormatKey()),
-                        "newModel", newModel));
-                //event
-                createAndSendEvent(updatedDevice.getRfnIdentifier(), false);
-                try {
-                    //2 seconds
-                    Thread.sleep(2000);
-                    //event cleared
-                    createAndSendEvent(updatedDevice.getRfnIdentifier(), true);
-                } catch (InterruptedException e) {
-                    log.error("Error", e);
-                }    
-            });
             
             return updatedDevice;
         } catch (Exception ex) {

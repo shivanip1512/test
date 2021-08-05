@@ -47,15 +47,22 @@ public interface RfnDeviceCreationService {
      * 
      * @throws RuntimeException if unable to create device. The exception is logged as warning. Calling method should deal with this exception.
      */
-    RfnDevice createIfNotFound(RfnIdentifier identifier, Instant dataTimestamp);
+    RfnDevice getOrCreate(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp);
     
     /**
-     * Same as above but uses now (UTC) for DataTimestamp  
+     * Same as above but return null if not found or was not able to create device
      */
-    RfnDevice createIfNotFound(RfnIdentifier identifier);
+    RfnDevice findOrCreate(RfnIdentifier identifier);
+    
+    /**
+     * Same as above but throws exception
+     * 
+     * @throws RuntimeException if unable to create device. The exception is logged as warning. Calling method should deal with this exception.
+     */
+    RfnDevice getOrCreate(RfnIdentifier identifier);
     
     /**
      * This method is used to create device manually from UI
      */
-    public RfnDevice create(RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user);
+    RfnDevice create(RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user);
 }

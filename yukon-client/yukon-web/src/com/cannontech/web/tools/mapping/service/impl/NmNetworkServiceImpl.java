@@ -91,7 +91,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 return null;
             }
             try {
-                RfnDevice parent = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+                RfnDevice parent = rfnDeviceCreationService.getOrCreate(rfnIdentifier);
                 PaoLocation parentLocation = paoLocationDao.getLocation(parent.getPaoIdentifier().getPaoId());
                 if (parentLocation == null) {
                     return Pair.of(parent, null);
@@ -137,13 +137,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     // remove nulls returned from NM
                     .filter(Objects::nonNull)
                     .filter(identifier -> !identifier.is_Empty_())
-                    .map(rfnIdentifier -> {
-                        try {
-                            return rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
-                        } catch (Exception e) {
-                            return null;
-                        }
-                    })
+                    .map(rfnIdentifier -> rfnDeviceCreationService.findOrCreate(rfnIdentifier))
                     // remove devices not created or found
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
@@ -203,13 +197,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             Map<RfnIdentifier, RfnDevice> devices = neighbors.stream()
                     // remove devices that do not have identifier or identifier is not valid
                     .filter(neighbor -> neighbor.getRfnIdentifier() != null && !neighbor.getRfnIdentifier().is_Empty_())
-                    .map(neighbor -> {
-                        try {
-                            return rfnDeviceCreationService.createIfNotFound(neighbor.getRfnIdentifier());
-                        } catch (Exception e) {
-                            return null;
-                        }
-                    })
+                    .map(neighbor -> rfnDeviceCreationService.findOrCreate(neighbor.getRfnIdentifier()))
                     // remove devices not created or found
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
