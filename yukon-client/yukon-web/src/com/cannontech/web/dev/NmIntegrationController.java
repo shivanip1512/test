@@ -557,7 +557,10 @@ public class NmIntegrationController {
 
     @RequestMapping("viewLocationArchiveRequest")
     public String viewLocationArchiveRequest(ModelMap model) {
-        List<RfnIdentifier> gatewayRfnIds = rfnGatewayService.getAllGateways()
+        var gatewayRfnIds = 
+                Lists.transform(
+                        rfnGatewayService.getAllGateways(), 
+                        RfnGateway::getRfnIdentifier);
                 .stream()
                 .map(RfnGateway::getRfnIdentifier)
                 .collect(Collectors.toList());
