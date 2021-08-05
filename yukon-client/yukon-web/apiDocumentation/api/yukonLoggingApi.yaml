@@ -1,4 +1,4 @@
-post-operation:
+post-get-all-operation:
   post:
     tags:
      - Logger
@@ -23,6 +23,25 @@ post-operation:
             examples:
               Logger:
                 $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger'
+                
+  get:
+    tags:
+      - Logger
+    summary: Retrieve all the Logger 
+    description: API to retrieve all logger. 
+    
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger List'
+             
+            examples:
+              Virtual Devices List:
+                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/List of Logger'
+
 get-update-delete-operation:
   get:
     tags:
