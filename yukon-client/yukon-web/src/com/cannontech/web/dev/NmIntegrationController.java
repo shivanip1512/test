@@ -148,7 +148,6 @@ import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -555,10 +554,10 @@ public class NmIntegrationController {
 
     @RequestMapping("viewLocationArchiveRequest")
     public String viewLocationArchiveRequest(ModelMap model) {
-        var gatewayRfnIds = Iterables.transform(
-                rfnGatewayService.getAllGateways(),
-                RfnGateway::getRfnIdentifier);
-
+        List<RfnIdentifier> gatewayRfnIds = rfnGatewayService.getAllGateways()
+                .stream()
+                .map(RfnGateway::getRfnIdentifier)
+                .collect(Collectors.toList());
         model.addAttribute("gateways", gatewayRfnIds);
         return "rfn/viewLocationArchive.jsp";
     }
