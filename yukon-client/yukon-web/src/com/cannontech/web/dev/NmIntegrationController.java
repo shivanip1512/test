@@ -4,7 +4,6 @@ import static com.cannontech.common.stream.StreamUtils.not;
 
 import java.beans.PropertyEditor;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +40,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
@@ -92,7 +90,6 @@ import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.DeviceArchiveRequestParameters;
 import com.cannontech.development.model.RfnTestEvent;
@@ -151,6 +148,7 @@ import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -557,13 +555,10 @@ public class NmIntegrationController {
 
     @RequestMapping("viewLocationArchiveRequest")
     public String viewLocationArchiveRequest(ModelMap model) {
-        var gatewayRfnIds = 
-                Lists.transform(
-                        rfnGatewayService.getAllGateways(), 
-                        RfnGateway::getRfnIdentifier);
-                .stream()
-                .map(RfnGateway::getRfnIdentifier)
-                .collect(Collectors.toList());
+        var gatewayRfnIds = Iterables.transform(
+                rfnGatewayService.getAllGateways(),
+                RfnGateway::getRfnIdentifier);
+
         model.addAttribute("gateways", gatewayRfnIds);
         return "rfn/viewLocationArchive.jsp";
     }
@@ -924,7 +919,6 @@ public class NmIntegrationController {
         locationResponse.setLatitude(Double.parseDouble(latitude));
         locationResponse.setLongitude(Double.parseDouble(longitude));
         locationResponse.setOrigin(Origin.RF_NODE);
-        locationResponse.setLastChangedDate(new Instant().getMillis());
         rfnEventTestingService.sendLocationResponse(serialFrom, serialTo, manufacturer, model, locationResponse);
         return "redirect:viewLocationArchiveRequest";
     }
