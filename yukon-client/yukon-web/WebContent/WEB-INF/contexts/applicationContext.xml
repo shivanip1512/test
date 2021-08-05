@@ -1486,6 +1486,8 @@
 
     <bean id="drProgramStatusService" class="com.cannontech.stars.dr.jms.service.impl.DrJmsProgramStatusServiceImpl"/>
     
+    <bean class="com.cannontech.web.stars.gateway.model.ConnectedDevicesHelper"/>
+    <bean class="com.cannontech.web.stars.service.impl.RfnCellularCommDataServiceImpl"/>
     <bean class="com.cannontech.web.stars.service.impl.RfnWiFiCommDataServiceImpl"/>
     <bean class="com.cannontech.common.device.port.service.impl.PortServiceImpl"/>
     <bean class="com.cannontech.web.api.commChannel.PortApiValidator"/>
@@ -1539,7 +1541,9 @@
     <bean class="com.cannontech.web.api.dr.ecobee.EcobeeZeusJwtTokenAuthService"/>
     
     <bean class="com.cannontech.web.api.route.RouteApiValidator"/>
+    <bean class="com.cannontech.web.api.route.RouteCCUApiValidator"/>	
     <bean class="com.cannontech.web.api.route.RouteApiValidatorHelper"/>
     <bean class="com.cannontech.web.api.route.RouteApiCreateValidator"/>
     <bean class="com.cannontech.web.api.route.service.impl.RouteServiceImpl"/>
+    <bean class="com.cannontech.web.api.route.service.impl.RouteHelperImpl"/>
 </beans>

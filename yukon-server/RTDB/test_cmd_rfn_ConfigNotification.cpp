@@ -62,11 +62,11 @@ extern const std::vector<uint8_t> payload {
     0x00, 0x03,  //  TOU Holiday
     0x00, 0x0c,
         //  Holiday 1
-        0x5A, 0xA9, 0x3B, 0x26, //  
+        0x5A, 0xA9, 0x3B, 0x26,
         //  Holiday 2
-        0x5B, 0x34, 0x53, 0x9D, //
+        0x5B, 0x34, 0x53, 0x9D,
         //  Holiday 3
-        0x5A, 0x7B, 0x45, 0x42, 
+        0x00, 0x00, 0x00, 0x00,  //  unset
     //  TLV 4
     0x00, 0x04,  //  Demand Freeze Day
     0x00, 0x01,
@@ -731,9 +731,9 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    Schedule 4 rates        : A, D, C, B, A, D"
         "\n    Default rate            : B"
         "\nTOU holiday configuration:"
-        "\n     Date 1 - 2018-Mar-14"
-        "\n     Date 2 - 2018-Jun-27"
-        "\n     Date 3 - 2018-Feb-07"
+        "\n     Date 1 - 2018-03-14"
+        "\n     Date 2 - 2018-06-27"
+        "\n     Date 3 - not-a-date-time"
         "\nDemand freeze configuration:"
         "\n    Demand freeze day: 32"
         "\nInterval recording configuration:"
@@ -883,7 +883,7 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
     BOOST_REQUIRE(cmd.touHolidays);
     BOOST_CHECK_EQUAL(cmd.touHolidays->operator[](0), CtiDate(14, 3, 2018));
     BOOST_CHECK_EQUAL(cmd.touHolidays->operator[](1), CtiDate(27, 6, 2018));
-    BOOST_CHECK_EQUAL(cmd.touHolidays->operator[](2), CtiDate( 7, 2, 2018));
+    BOOST_CHECK_EQUAL(cmd.touHolidays->operator[](2), CtiDate(CtiDate::not_a_date));
 
     BOOST_REQUIRE(cmd.voltageProfile);
     BOOST_CHECK_EQUAL(cmd.voltageProfile->voltageDemandInterval, 105);

@@ -50,7 +50,7 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
         log.debug("Running RF Gateway ready nodes evaluator");
         
         // Retrieve the relevant global settings
-        int connectionWarningMinutes = globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTION_WARNING_MINUTES);
+        int connectionWarningMinutes = globalSettingDao.getInteger(GlobalSettingType.DEVICE_CONNECTION_WARNING_MINUTES);
         Duration connectionWarningDuration = Duration.standardMinutes(connectionWarningMinutes);
         
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();

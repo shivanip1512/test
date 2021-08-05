@@ -2470,7 +2470,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <multiplier value="1"/>
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
-    </point>    
+    </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="CalcAnalog">
         <name>Total Outage Count</name>

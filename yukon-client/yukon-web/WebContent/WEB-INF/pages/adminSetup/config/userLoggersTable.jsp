@@ -10,66 +10,65 @@
 
 <cti:msgScope paths="modules.adminSetup.config.loggers,yukon.common">
     
-    <c:set var="errorClass" value="${not empty errorMessage ? '' : 'dn'}"/>
-    <tags:alertBox classes="js-error-msg ${errorClass}" includeCloseButton="true">${fn:escapeXml(errorMessage)}</tags:alertBox>
-    <c:set var="successClass" value="${not empty successMessage ? '' : 'dn'}"/>
-    <tags:alertBox type="success" classes="js-success-msg ${successClass}" includeCloseButton="true">${fn:escapeXml(successMessage)}</tags:alertBox>
-
-    <table class="compact-results-table row-highlighting has-actions">
-        <thead>
-            <tr>
-                <th class="row-icon"/>
-                <tags:sort column="${loggerName}"/>
-                <tags:sort column="${loggerLevel}"/>
-                <tags:sort column="${expirationDate}"/>
-                <th class="action-column"><cti:icon icon="icon-cog" /></th>
-            </tr>
-        </thead>
-        <tbody>
-            <c:forEach var="logger" items="${userLoggers}">
+    <div class="scroll-md">
+        <table class="compact-results-table row-highlighting has-actions ">
+            <thead>
                 <tr>
-                    <c:set var="loggerId" value="${logger.loggerId}"/>
-                    <td>
-                        <c:if test="${not empty logger.notes}">
-                            <cti:msg2 var="viewNoteTitle" key=".viewNote"/>
-                            <cti:icon icon="icon-notes-pin" title="${viewNoteTitle}" data-logger-id="${logger.loggerId}" data-popup="#logger-note-${logger.loggerId}"/>
-                            <div id="logger-note-${logger.loggerId}" class="dn" data-title="Notes" data-width="300" data-height="200">${logger.notes}</div>
-                            <br/>
-                        </c:if>
-                    </td>
-
-                    <td>${fn:escapeXml(logger.loggerName)}</td>
-                    <td><i:inline key="${logger.level}"/></td>
-                    <td>
-                        <cti:msg2 var="neverText" key="yukon.common.never"/>
-                        <cti:formatDate type="DATE" value="${logger.expirationDate}" nullText="${neverText}"/>
-                    </td>
-                    <td>
-                        <cm:dropdown icon="icon-cog">
-                            <cm:dropdownOption key=".edit" icon="icon-pencil"/>
-                            <cm:dropdownOption key=".delete" icon="icon-cross" id="delete-logger-${loggerId}" 
-                            data-ok-event="yukon:logger:delete" classes="js-hide-dropdown" data-logger-id="${loggerId}"/>
-
-                            <d:confirm on="#delete-logger-${loggerId}" nameKey="confirmDelete" argument="${logger.loggerName}"/>
-                            <cti:url var="deleteUrl" value="/admin/config/loggers/${loggerId}"/>
-                            <form:form id="delete-logger-form-${loggerId}" action="${deleteUrl}" method="DELETE">
-                                <cti:csrfToken/>
-                            </form:form>
-                        </cm:dropdown>
-                    </td>
+                    <th class="row-icon"/>
+                    <tags:sort column="${loggerName}"/>
+                    <tags:sort column="${loggerLevel}"/>
+                    <tags:sort column="${expirationDate}"/>
+                    <th class="action-column"><cti:icon icon="icon-cog" /></th>
                 </tr>
-            </c:forEach>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <c:forEach var="logger" items="${userLoggers}">
+                    <tr>
+                        <c:set var="loggerId" value="${logger.loggerId}"/>
+                        <td>
+                            <c:if test="${not empty fn:trim(logger.notes)}">
+                                <cti:msg2 var="viewNoteTitle" key=".viewNote"/>
+                                <cti:icon icon="icon-notes-pin" title="${viewNoteTitle}" data-logger-id="${loggerId}" data-popup="#logger-note-${loggerId}"/>
+                                <div id="logger-note-${loggerId}" class="dn" data-title="Notes" data-width="300" data-height="200">${fn:escapeXml(logger.notes)}</div>
+                                <br/>
+                            </c:if>
+                        </td>
+
+                        <td>${fn:escapeXml(logger.loggerName)}</td>
+                        <td><i:inline key="${logger.level}"/></td>
+                        <td>
+                            <cti:msg2 var="neverText" key="yukon.common.never"/>
+                            <cti:formatDate type="DATE" value="${logger.expirationDate}" nullText="${neverText}"/>
+                        </td>
+                        <td>
+                            <cm:dropdown icon="icon-cog">
+                                <cti:msg2 var="editLoggerTitle" key=".editUserLoggerTitle"/>
+                                <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-logger-popup" data-logger-id="${loggerId}" data-title="${editLoggerTitle}"/>
+                                
+                                <cm:dropdownOption key=".delete" icon="icon-cross" data-ok-event="yukon:logger:delete" 
+                                     classes="js-hide-dropdown js-delete-logger-${loggerId}" data-logger-id="${loggerId}"/>
+
+                                <d:confirm on=".js-delete-logger-${loggerId}" nameKey="confirmDelete" argument="${logger.loggerName}"/>
+                                <cti:url var="deleteUrl" value="/admin/config/loggers/${loggerId}"/>
+                                <form:form id="delete-logger-form-${loggerId}" action="${deleteUrl}" method="DELETE">
+                                    <cti:csrfToken/>
+                                    <input type="hidden" name="loggerName" value="${fn:escapeXml(logger.loggerName)}"/>
+                                </form:form>
+                            </cm:dropdown>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </div>
 
     <c:if test="${empty userLoggers}">
         <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>
     </c:if>
-    <cti:msg2 var="editUserLoggerTitle" key=".editUserLoggerTitle"/>
-    <div class="dn js-edit-assignment-popup"
+    <div class="dn js-edit-logger-popup"
              data-popup
              data-dialog
-             data-title="${editUserLoggerTitle}">
+             data-title="${editLoggerTitle}">
     </div>
 
 </cti:msgScope>

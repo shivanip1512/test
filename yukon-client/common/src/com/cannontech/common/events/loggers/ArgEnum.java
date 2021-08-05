@@ -12,6 +12,7 @@ package com.cannontech.common.events.loggers;
 public enum ArgEnum {
     accountNumber,
     action,
+    apn,
     applianceCategoryName,
     applianceType,
     attributeId,
@@ -63,6 +64,7 @@ public enum ArgEnum {
     ipAddress,
     jobId,
     key,
+    level,
     loadGroupIds,
     loadGroupName,
     loadProgramNames,

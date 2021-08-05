@@ -62,6 +62,7 @@ import com.cannontech.common.rfn.message.neighbor.Neighbor;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.neighbor.NeighborFlag;
 import com.cannontech.common.rfn.message.neighbor.Neighbors;
+import com.cannontech.common.rfn.message.node.CellularIplinkRelayData;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
@@ -122,6 +123,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private YukonJmsTemplate rfnStatusArchiveJmsTemplate;
     private ScheduledFuture<?> task;
     private Set<PaoType> wiFiSuperMeters = Set.of(PaoType.WRL420CL, PaoType.WRL420CD);
+    private Set<PaoType> cellIPLinkRelays = Set.of(PaoType.CRLY856);
     private NetworkTreeUpdateTimeResponse networkTreeUpdateTimeResponse;
 
     private final Cache<RfnIdentifier, RfnVertex> vertexCache = CacheBuilder.newBuilder().expireAfterWrite(8, TimeUnit.HOURS)
@@ -315,7 +317,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private NodeNetworkInfo getNetworkInfo(RfnIdentifier rfnIdentifier) {
         NodeNetworkInfo info = new NodeNetworkInfo();
         info.setHostname("Hostname");
-        info.setIpv6Address("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
+        info.setSensorFirmwareVersion("R31.3.37");
         info.addNodeGroupName("Group 1");
         info.addNodeName("Group 1");
         if (new Random().nextBoolean()) {
@@ -393,8 +395,12 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         node.setProductNumber("123456789 (Sim)");
         node.setNodeSerialNumber("4260060913");
         node.setSecondaryModuleFirmwareVersion("R2.2.0Wp");
+        node.setNodeIpv6Address("2001:db8:3333:4444:5555:6666:7777:8888");
         if (wiFiSuperMeters.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
             node.setWifiSuperMeterData(getSuperMeterData());
+        }
+        if (cellIPLinkRelays.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
+            node.setCellularIplinkRelayData(getCellIPLinkData());
         }
         return node;
     }
@@ -433,8 +439,21 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         superMeterData.setConnectedApBssid("ab:cd:ef:01:23:45");
         superMeterData.setApSsid("ExampleUtilityISP");
         superMeterData.setSecurityType(WifiSecurityType.WPA2_PERSONAL);
-        superMeterData.setVirtualGatewayIpv6Address("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
+        superMeterData.setVirtualGwIpv6Addr("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
         return superMeterData;
+    }
+    
+    private CellularIplinkRelayData getCellIPLinkData() {
+        CellularIplinkRelayData cellIPLinkData = new CellularIplinkRelayData();
+        cellIPLinkData.setApn("internet.yukon");
+        cellIPLinkData.setFirmwareVersion("R1.3.37");
+        cellIPLinkData.setIccid("8981100022152967705");
+        cellIPLinkData.setImei("358295896516576");
+        cellIPLinkData.setImsi("310170845466094");
+        cellIPLinkData.setModemEnabled(true);
+        cellIPLinkData.setSimCardPresent(true);
+        cellIPLinkData.setVirtualGwIpv6Addr("AC07:2F23:85B0:70E5:59F6:F9A7:EC14:996F");
+        return cellIPLinkData;
     }
 
     private List<RfnIdentifier> getDevicesForGateway(RfnDevice gateway) {

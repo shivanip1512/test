@@ -50,8 +50,9 @@ trendSeries:
         - MAGENTA
         - ORANGE
         - PINK
-        - RED
+        - WINE
         - YELLOW
+        - PURPLE
       axis:
         type: string
         default: LEFT

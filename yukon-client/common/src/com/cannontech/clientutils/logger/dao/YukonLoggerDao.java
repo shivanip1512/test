@@ -2,7 +2,10 @@ package com.cannontech.clientutils.logger.dao;
 
 import java.util.List;
 
+import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
+import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.YukonLogger;
+import com.cannontech.common.model.Direction;
 
 public interface YukonLoggerDao {
 
@@ -14,12 +17,12 @@ public interface YukonLoggerDao {
     /**
      * Add a Logger
      */
-    void addLogger(YukonLogger logger);
+    int addLogger(YukonLogger logger);
 
     /**
      * Update a Logger
      */
-    void updateLogger(YukonLogger logger);
+    void updateLogger(int loggerId, YukonLogger logger);
 
     /**
      * Delete a Logger
@@ -29,6 +32,6 @@ public interface YukonLoggerDao {
     /**
      * Retrieve all Loggers
      */
-    List<YukonLogger> getLoggers();
+    List<YukonLogger> getLoggers(String loggerName, SortBy sortBy, Direction direction, List<LoggerLevel> loggerLevels);
 
 }

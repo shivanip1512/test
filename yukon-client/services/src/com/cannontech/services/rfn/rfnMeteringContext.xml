@@ -309,4 +309,14 @@
             container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="com.eaton.eas.yukon.networkmanager.RfnNodeWiFiCommArchiveRequest" ref="rfnNodeWiFiCommArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
+    
+    <bean id="rfnRelayCellularCommArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfnRelayCellularCommArchiveRequestListener"/>
+    <jms:listener-container
+            connection-factory="connectionFactory"
+            destination-type="queue"
+            concurrency="2"
+            container-type="simple"
+            container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="com.eaton.eas.yukon.networkmanager.RfnRelayCellularCommArchiveRequest" ref="rfnRelayCellularCommArchiveRequestListener" method="handleArchiveRequest"/>
+    </jms:listener-container>
 </beans>

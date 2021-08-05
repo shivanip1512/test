@@ -69,7 +69,6 @@
                 { "metricId" : 111, "attribute" : "CURRENT_ANGLE_PHASE_C" },
 
                 { "metricId" : 112, "attribute" : "MINIMUM_VOLTAGE" },
-                { "metricId" : 113, "attribute" : "AVERAGE_VOLTAGE" },
                 { "metricId" : 114, "attribute" : "MAXIMUM_VOLTAGE" },
                 { "metricId" : 115, "attribute" : "VOLTAGE" },
                 { "metricId" : 116, "attribute" : "MINIMUM_VOLTAGE_PHASE_A" },
@@ -98,6 +97,8 @@
                 { "metricId" : 181, "attributeMagnitude" : 3, "attribute" : "PEAK_KVAR_Q23" },
 
                 { "metricId" : 184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR" },
+                
+                { "metricId" : 194, "attribute" : "SUM_KW" },
 
                 { "metricId" : 200, "attributeMagnitude" : 3, "attribute" : "INSTANTANEOUS_KW" },
                 { "metricId" : 201, "attributeMagnitude" : 3, "attribute" : "KVAR" },
@@ -107,6 +108,9 @@
                 { "metricId" : 210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA" },
                 { "metricId" : 222, "attributeMagnitude" : 3, "attribute" : "KVAH_Q234" },
                 
+                { "metricId" : 230, "attributeMagnitude" : 3, "attribute" : "MINIMUM_POWER_FACTOR" },
+                { "metricId" : 231, "attributeMagnitude" : 3, "attribute" : "PREVIOUS_MINIMUM_POWER_FACTOR" },
+                
                 { "metricId" : 233, "attributeMagnitude" : 3, "attribute" : "AVERAGE_POWER_FACTOR" },
                 { "metricId" : 234, "attributeMagnitude" : 3, "attribute" : "AVERAGE_POWER_FACTOR_FROZEN" },
                 
@@ -114,7 +118,6 @@
 
                 { "metricId" : 257, "attribute" : "TEMPERATURE_DEVICE" },
                 
-                { "metricId" : 330, "attribute" : "SUM_KW" },
                 { "metricId" : 331, "attribute" : "NET_KW" },
                 
                 { "metricId" : 340, "attribute" : "KVAR_Q13" },

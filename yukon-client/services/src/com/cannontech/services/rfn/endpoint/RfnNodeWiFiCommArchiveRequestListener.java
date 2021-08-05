@@ -22,7 +22,7 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.node.NodeWiFiComm;
-import com.cannontech.common.rfn.message.node.NodeWiFiCommStatus;
+import com.cannontech.common.rfn.message.node.NodeConnectionState;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -55,9 +55,9 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
     }
     
     // map of RF WiFi Comm Status to Yukon CommStatusState state group
-    private static Map<NodeWiFiCommStatus, CommStatusState> commStatusMapping = 
-            Map.of(NodeWiFiCommStatus.NOT_ACTIVE, CommStatusState.DISCONNECTED,
-                   NodeWiFiCommStatus.ACTIVE, CommStatusState.CONNECTED);
+    private static Map<NodeConnectionState, CommStatusState> commStatusMapping = 
+            Map.of(NodeConnectionState.NOT_ACTIVE, CommStatusState.DISCONNECTED,
+                   NodeConnectionState.ACTIVE, CommStatusState.CONNECTED);
 
     @Override
     public void process(Object obj, String processor) {
@@ -159,7 +159,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
      * Returns the CommStatusState for the corresponding NodeWiFiCommStatus.
      * @throws NoSuchElementException
      */
-    private static CommStatusState getForWifiCommStatus(NodeWiFiCommStatus nodeWiFiCommStatus) throws NoSuchElementException {
+    private static CommStatusState getForWifiCommStatus(NodeConnectionState nodeWiFiCommStatus) throws NoSuchElementException {
         return Optional.ofNullable(commStatusMapping.get(nodeWiFiCommStatus)).orElseThrow();
     }
 }

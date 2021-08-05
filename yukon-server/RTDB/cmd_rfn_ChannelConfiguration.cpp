@@ -146,13 +146,17 @@ const MetricInfo metricInfos[] = {
 
         { 184,  TouRates,  "Sum Peak kVAr"                         },
 
+        { 194,  None,      "Sum Watts" },
+
         { 200,  TouRates,  "Watts"                                 },
         { 201,  TouRates,  "Var"                                   },
         { 202,  TouRates,  "VA"                                    },
 
         { 206,  TouRates,  "Peak kVA (Quadrants 1 2)"              },
         { 210,  TouRates,  "Sum Peak kVA"                          },
+
         { 222,  TouRates,  "VA hour Q2 + Q3 + Q4"                    },
+
         { 233,  None,      "Average Power Factor"                  },
         { 234,  None,      "Average Power Factor Frozen"           },
 
@@ -160,8 +164,7 @@ const MetricInfo metricInfos[] = {
 
         { 256,  TouRates,  "Time in Seconds"                       },
         { 257,  None,      "Temperature in Centigrade"             },
-
-        { 330,  None,      "Sum Watts" },
+     
         { 331,  None,      "Net Watts" },
 
         { 340,  None,      "kVAr (Quadrants 1 3)" },

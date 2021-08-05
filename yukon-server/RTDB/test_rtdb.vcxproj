@@ -367,6 +367,7 @@
     <ClCompile Include="test_cmd_mct420_LcdConfiguration.cpp">
     </ClCompile>
     <ClCompile Include="test_cmd_rfn_Aggregate.cpp" />
+    <ClCompile Include="test_cmd_rfn_CommStatus.cpp" />
     <ClCompile Include="test_cmd_rfn_ConfigNotification.cpp" />
     <ClCompile Include="test_cmd_rfn_DataStreamingConfiguration.cpp" />
     <ClCompile Include="test_cmd_rfn_DemandInterval.cpp" />
@@ -375,7 +376,6 @@
     <ClCompile Include="test_cmd_rfn_MeterProgramming.cpp" />
     <ClCompile Include="test_cmd_rfn_MeterRead.cpp" />
     <ClCompile Include="test_cmd_rfn_Metrology.cpp" />
-    <ClCompile Include="test_cmd_rfn_Wifi.cpp" />
     <ClCompile Include="test_cmd_rf_da_dnpAddress.cpp">
     </ClCompile>
     <ClCompile Include="test_cmd_rfn_CentronLcdConfiguration.cpp">
@@ -452,6 +452,7 @@
     <ClCompile Include="test_dev_rfnResidentialVoltage.cpp" />
     <ClCompile Include="test_dev_rfn_LgyrFocus_al.cpp" />
     <ClCompile Include="test_dev_rf_BatteryNode.cpp" />
+    <ClCompile Include="test_dev_rf_cellular_relay.cpp" />
     <ClCompile Include="test_dev_rf_da.cpp">
     </ClCompile>
     <ClCompile Include="test_dev_rfn410centron.cpp" />

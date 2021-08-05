@@ -1,5 +1,6 @@
 package com.cannontech.services.eatonCloud.authToken.service;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -10,6 +11,7 @@ import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -33,12 +35,14 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
     
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
     private RestTemplate restTemplate;
     
     @PostConstruct
     public void init() {
         restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
+        restTemplate.setMessageConverters(Arrays.asList(mappingJackson2HttpMessageConverter));
     }
     
     private Cache<String, EatonCloudTokenV1> tokenCache = CacheBuilder.newBuilder().expireAfterWrite(59, TimeUnit.MINUTES).build();

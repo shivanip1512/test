@@ -7,6 +7,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import org.apache.logging.log4j.Logger;
@@ -109,4 +111,15 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
     
     protected abstract <Q extends Serializable> void doJmsWork(Session session,
             Q requestPayload, T callback) throws JMSException;
+    
+    /**
+     * Send message after setting DeliveryMode, Priority and TimeToLive if explicitQosEnabled is true.
+     */
+    protected void sendMessage(MessageProducer producer, ObjectMessage message) throws JMSException {
+        if (jmsTemplate.isExplicitQosEnabled()) {
+            producer.send(message, jmsTemplate.getDeliveryMode(), jmsTemplate.getPriority(), jmsTemplate.getTimeToLive());
+        } else {
+            producer.send(message);
+        }
+    }
 }

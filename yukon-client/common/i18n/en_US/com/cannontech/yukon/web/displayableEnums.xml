@@ -492,14 +492,16 @@
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS">Data Collection: Data Availability Window</entry>
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS.description">Window for minimum number of days required for a device's data to be considered available.</entry>
     
-    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Gateway connection warning minutes</entry>
-    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES.description">The number of minutes a gateway must be disconnected to generate a warning.</entry>
+    <entry key="yukon.common.setting.DEVICE_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Device connection warning minutes</entry>
+    <entry key="yukon.common.setting.DEVICE_CONNECTION_WARNING_MINUTES.description">The number of minutes a device must be disconnected to generate a warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD">Infrastructure Warnings: Gateway connected nodes warning threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD.description">The number of connected nodes a gateway must have to generate a warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD">Infrastructure Warnings: Gateway connected nodes critical threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD.description">The number of connected nodes a gateway must have to generate a critical warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_READY_NODES_THRESHOLD">Infrastructure Warnings: Gateway ready nodes threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_READY_NODES_THRESHOLD.description">The maximum number of ready nodes a gateway must have to generate a warning.</entry>
+    <entry key="yukon.common.setting.CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD">Infrastructure Warnings: Cellular Relay excessive descendant count threshold</entry>
+    <entry key="yukon.common.setting.CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD.description">The number of descendants a cellular relay must exceed to generate an infrastructure warning.</entry>
     
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS">Comm Channel Queue Counts: Historical data display</entry>
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS.description">The number of months to display historical data for the Comm Channel Queue Counts Widget.</entry>
@@ -761,4 +763,5 @@
     <entry key="yukon.common.unitOfMeasure.MEGABYTES">MB</entry>
     <entry key="yukon.common.unitOfMeasure.DBM">dBm</entry>
     <entry key="yukon.common.unitOfMeasure.THERMS">Therms</entry>
+    <entry key="yukon.common.unitOfMeasure.DB">dB</entry>
 </properties>

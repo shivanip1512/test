@@ -233,29 +233,24 @@ ADD RetryTime DATETIME NULL;
 INSERT INTO DBUpdates VALUES ('YUK-24593', '9.1.0', GETDATE());
 /* @end YUK-24593 */
 
-/* @start YUK-24461 */
-/* @error ignore-begin */
-DROP TABLE YukonLogging;
-GO
-CREATE TABLE YukonLogging (
-   LoggerId             NUMERIC              NOT NULL,
-   LoggerName           VARCHAR(200)         NOT NULL,
-   LoggerLevel          VARCHAR(5)           NOT NULL,
-   ExpirationDate       DATETIME             NULL,
-   Notes                VARCHAR(300)         NULL,
-   CONSTRAINT PK_YUKONLOGGING PRIMARY KEY (LoggerId)
-);
-GO
-INSERT INTO DBUpdates VALUES ('YUK-24461', '9.1.0', GETDATE());
-/* @error ignore-end */
-/* @end YUK-24461 */
-
 /* @start YUK-23375 */
 ALTER DATABASE CURRENT SET auto_create_statistics ON;
 ALTER DATABASE CURRENT SET auto_update_statistics ON;
 
 INSERT INTO DBUpdates VALUES ('YUK-23375', '9.1.0', GETDATE());
 /* @end YUK-23375 */
+
+/* @start YUK-24730 */
+INSERT INTO UnitMeasure VALUES ( 59,'dB', 0, 'Decibels', '(none)');
+
+INSERT INTO DBUpdates VALUES ('YUK-24730', '9.1.0', GETDATE());
+/* @end YUK-24730 */
+
+/* @start YUK-24110 */
+UPDATE GlobalSetting SET Name = 'DEVICE_CONNECTION_WARNING_MINUTES' WHERE Name = 'GATEWAY_CONNECTION_WARNING_MINUTES';
+
+INSERT INTO DBUpdates VALUES ('YUK-24110', '9.1.0', GETDATE());
+/* @end YUK-24110 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

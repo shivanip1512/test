@@ -84,7 +84,7 @@ public class MockZeusResponseFactory {
         return response;
     }
 
-    public ZeusGroupResponse retrieveGroups() {
+    public ZeusGroupResponse retrieveGroups(String programId) {
 
         List<ZeusGroup> groups = new ArrayList<ZeusGroup>();
         List<LiteYukonPAObject> paoObjects = serverDatabaseCache.getAllLoadManagement().stream()
@@ -101,6 +101,7 @@ public class MockZeusResponseFactory {
             if (!groups.isEmpty()) {
                 group.setParentGroupId(parentGroupId);
             }
+            group.setProgramId(programId);
             groups.add(group);
         });
 

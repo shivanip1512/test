@@ -21,6 +21,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -63,6 +64,7 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
     @Autowired private ConfigurationSource configSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired GlobalSettingDao settingDao;
+    @Autowired private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
     private RestTemplate restTemplate;
 
     @PostConstruct
@@ -72,6 +74,7 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
                 configSource, jmsTemplate);
         restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
+        restTemplate.setMessageConverters(Arrays.asList(mappingJackson2HttpMessageConverter));
     }
 
     @Override

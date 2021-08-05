@@ -91,6 +91,7 @@
 #include "rte_versacom.h"
 #include "rte_expresscom.h"
 #include "dev_rf_BatteryNode.h"
+#include "dev_rf_cellular_relay.h"
 
 #include "devicetypes.h"
 #include "rtdb.h"
@@ -272,6 +273,8 @@ const DeviceLookup deviceFactory {
     //  RF gas meters
     { TYPE_RFG201,       MakeDeviceFunc(makeDevice<Rfg201Device>) },
     { TYPE_RFG301,       MakeDeviceFunc(makeDevice<Rfg301Device>) },
+    //  RF Cellular IPLink Relays
+    { TYPE_CRLY856,      MakeDeviceFunc(makeDevice<RfCellularRelayDevice>) },
     //  Electronic meters
     { TYPE_FULCRUM,      MakeDeviceFunc(makeDevice<CtiDeviceFulcrum>) },
     { TYPE_QUANTUM,      MakeDeviceFunc(makeDevice<CtiDeviceQuantum>) },

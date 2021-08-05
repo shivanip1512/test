@@ -502,7 +502,12 @@ public final class FileUtil {
      * Delete all the content in the passed directory path.
      */
     public static void deleteAllFilesInDirectory(String path) {
-        Arrays.stream(new File(path).listFiles()).forEach(File::delete);
+        Arrays.stream(new File(path).listFiles()).forEach(subfile -> {
+            if (subfile.isDirectory()) {
+                deleteAllFilesInDirectory(subfile.getPath());
+            }
+            subfile.delete();
+        });
     }
 
     /**
