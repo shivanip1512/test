@@ -108,6 +108,9 @@
                 { "metricId" : 210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA" },
                 { "metricId" : 222, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVAH_Q234" },
                 
+                { "metricId" : 230, "attributeMagnitude" : 3, "attribute" : "MINIMUM_POWER_FACTOR" },
+                { "metricId" : 231, "attributeMagnitude" : 3, "attribute" : "PREVIOUS_MINIMUM_POWER_FACTOR" },
+                
                 { "metricId" : 233, "attributeMagnitude" : 3, "attribute" : "AVERAGE_POWER_FACTOR" },
                 { "metricId" : 234, "attributeMagnitude" : 3, "attribute" : "AVERAGE_POWER_FACTOR_FROZEN" },
                 

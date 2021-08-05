@@ -10,7 +10,7 @@ Note: For attributes that reference the modifiers of "Quadrant" directly, the mo
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <highestOffsets>
-        <analog offset="483"/>
+        <analog offset="485"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
         <status offset="102"/>
@@ -2409,6 +2409,18 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <name>Delivered Peak kVA (Quadrants 1 2) (Rate D kVA)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="484" type="Analog">
+        <name>Minimum Power Factor</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="485" type="Analog">
+        <name>Previous Minimum Power Factor</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
         <decimalplaces value="3"/>
     </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

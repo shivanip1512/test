@@ -210,6 +210,8 @@ public:
     static const Attribute  PowerFactorAvgReceived;
     static const Attribute  PowerFactor;
     static const Attribute  PowerFactorCoincidental;
+    static const Attribute  MinimumPowerFactor;
+    static const Attribute  PreviousMinimumPowerFactor;
     static const Attribute  CoincidentPowerFactorAtDeliveredPeakKVA;
     static const Attribute  CoincidentPowerFactorAtDeliveredPeakkVARateA;
     static const Attribute  CoincidentPowerFactorAtDeliveredPeakkVARateB;
