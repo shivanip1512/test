@@ -822,7 +822,6 @@ public final class JmsApiDirectory {
                   .responseQueue(new JmsQueue("yukon.qr.obj.amr.rfn.EventArchiveResponse"))
                   .requestMessage(RfnEventArchiveRequest.class)
                   .responseMessage(RfnEventArchiveResponse.class)
-                  
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)
