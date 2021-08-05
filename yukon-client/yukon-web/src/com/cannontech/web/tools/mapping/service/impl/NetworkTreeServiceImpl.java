@@ -322,23 +322,23 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             log.debug("Tree node creation: adding NULL {} to tree, rfnIdentifier is empty.", rfnIdentifier);  
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
-        try {
-            RfnDevice device = rfnDeviceCreationService.getOrCreate(rfnIdentifier);
-            int deviceId = device.getPaoIdentifier().getPaoId();
-            PaoLocation location = locations.get(deviceId);
-            if(location == null) {
-                yukonNodeStatistics.NO_LOCATION.incrementAndGet();
-                log.debug("Tree node creation: adding device {} id {} without location, location is not found.", rfnIdentifier, deviceId);
-            }
-            // if no location in Yukon database featureCollection will be null
-            FeatureCollection featureCollection = location == null ? null : paoLocationService.getFeatureCollection(location);
-            return new Node<Pair<Integer, FeatureCollection>>(Pair.of(deviceId, featureCollection));
-        } catch (Exception e) {
+        RfnDevice device = rfnDeviceCreationService.findOrCreate(rfnIdentifier);
+        if (device == null) {
             yukonNodeStatistics.FAILED_TO_CREATE.incrementAndGet();
             // failed to create device
             log.debug("Tree node creation: adding NULL {} to tree, device was not created.", rfnIdentifier);
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
+        // if device is not found create device
+        int deviceId = device.getPaoIdentifier().getPaoId();
+        PaoLocation location = locations.get(deviceId);
+        if(location == null) {
+            yukonNodeStatistics.NO_LOCATION.incrementAndGet();
+            log.debug("Tree node creation: adding device {} id {} without location, location is not found.", rfnIdentifier, deviceId);
+        }
+        // if no location in Yukon database featureCollection will be null
+        FeatureCollection featureCollection = location == null ? null : paoLocationService.getFeatureCollection(location);
+        return new Node<Pair<Integer, FeatureCollection>>(Pair.of(deviceId, featureCollection));
     }
     
     /**

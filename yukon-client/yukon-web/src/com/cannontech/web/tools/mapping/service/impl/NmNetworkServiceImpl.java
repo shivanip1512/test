@@ -90,24 +90,24 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             if (rfnIdentifier.is_Empty_()) {
                 return null;
             }
-            try {
-                RfnDevice parent = rfnDeviceCreationService.getOrCreate(rfnIdentifier);
-                PaoLocation parentLocation = paoLocationDao.getLocation(parent.getPaoIdentifier().getPaoId());
-                if (parentLocation == null) {
-                    return Pair.of(parent, null);
-                }
-                FeatureCollection feature = paoLocationService
-                        .getFeatureCollection(Lists.newArrayList(parentLocation));
-                if (deviceLocation != null && parentLocation != null) {
-                    double distanceTo = deviceLocation.distanceTo(parentLocation, DistanceUnit.MILES);
-                    DecimalFormat df = new DecimalFormat("#.####");
-                    feature.setProperty("distance", df.format(distanceTo));
-                }
-                return Pair.of(parent, feature);
-            } catch (Exception e) {
+            RfnDevice parent = rfnDeviceCreationService.findOrCreate(rfnIdentifier);
+            if (parent == null) {
                 // couldn't find or create parent
                 return null;
             }
+            PaoLocation parentLocation = paoLocationDao.getLocation(parent.getPaoIdentifier().getPaoId());
+            if (parentLocation == null) {
+                return Pair.of(parent, null);
+            }
+            FeatureCollection feature = paoLocationService
+                    .getFeatureCollection(Lists.newArrayList(parentLocation));
+            if (deviceLocation != null && parentLocation != null) {
+                double distanceTo = deviceLocation.distanceTo(parentLocation, DistanceUnit.MILES);
+                DecimalFormat df = new DecimalFormat("#.####");
+                feature.setProperty("distance", df.format(distanceTo));
+            }
+            return Pair.of(parent, feature);
+
         } else {
             // no parent
             return null;
