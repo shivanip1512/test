@@ -321,7 +321,7 @@ public class MapController {
                                 //get distance to next hop
                                 RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
                                 if (nextHop != null) {
-                                    RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop);
+                                    RfnDevice nextHopDevice = rfnDeviceCreationService.findOrCreate(nextHop);
                                     if(nextHopDevice != null) {
                                         PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
                                         PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
