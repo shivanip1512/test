@@ -10,7 +10,7 @@ Note: For attributes that reference the modifiers of "Quadrant" directly, the mo
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <highestOffsets>
-        <analog offset="485"/>
+        <analog offset="495"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
         <status offset="102"/>
@@ -2412,12 +2412,72 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="484" type="Analog">
+        <name>kVAh (Quadrants 1 2 4)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="485" type="Analog">
+        <name>kVAh (Quadrants 1 2 4) (Rate A kVAh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="486" type="Analog">
+        <name>kVAh (Quadrants 1 2 4) (Rate B kVAh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="487" type="Analog">
+        <name>kVAh (Quadrants 1 2 4) (Rate C kVAh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="488" type="Analog">
+        <name>kVAh (Quadrants 1 2 4) (Rate D kVAh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="489" type="Analog">
+        <name>kVAh (Quadrants 2 3 4)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAH"/>
+        <decimalplaces value="3"/>
+    </point>    
+    <point offset="490" type="Analog">
+        <name>kVAh (Quadrants 2 3 4) (Rate A kVAh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="491" type="Analog">
+        <name>kVAh (Quadrants 2 3 4) (Rate B kVAh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="492" type="Analog">
+        <name>kVAh (Quadrants 2 3 4) (Rate C kVAh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="493" type="Analog">
+        <name>kVAh (Quadrants 2 3 4) (Rate D kVAh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="494" type="Analog">
         <name>Minimum Power Factor</name>
         <multiplier value="1"/>
         <unitofmeasure value="PF"/>
         <decimalplaces value="3"/>
     </point>
-    <point offset="485" type="Analog">
+    <point offset="495" type="Analog">
         <name>Previous Minimum Power Factor</name>
         <multiplier value="1"/>
         <unitofmeasure value="PF"/>

@@ -69,7 +69,11 @@ INIT_ATTRIBUTE( ForwardInductivekVArh,                              "FORWARD_IND
 INIT_ATTRIBUTE( GeneralAlarmFlag,                                   "GENERAL_ALARM_FLAG" );
 INIT_ATTRIBUTE( IEDDemandResetCount,                                "IED_DEMAND_RESET_COUNT" );
 INIT_ATTRIBUTE( kVAh,                                               "KVAH" );
-INIT_ATTRIBUTE( kVAhLagging,                                        "DELIVERED_KVAH_LAGGING" );
+INIT_ATTRIBUTE( kVAhQ124,                                           "KVAH_Q124" );
+INIT_ATTRIBUTE( kVAhQ124RateA,                                      "KVAH_Q124_RATE_A" );
+INIT_ATTRIBUTE( kVAhQ124RateB,                                      "KVAH_Q124_RATE_B" );
+INIT_ATTRIBUTE( kVAhQ124RateC,                                      "KVAH_Q124_RATE_C" );
+INIT_ATTRIBUTE( kVAhQ124RateD,                                      "KVAH_Q124_RATE_D" );
 INIT_ATTRIBUTE( kVAhRateA,                                          "KVAH_RATE_A" );
 INIT_ATTRIBUTE( kVAhRateB,                                          "KVAH_RATE_B" );
 INIT_ATTRIBUTE( kVAhRateC,                                          "KVAH_RATE_C" );
@@ -79,7 +83,11 @@ INIT_ATTRIBUTE( NetkVAhRateA,                                       "NET_KVAH_RA
 INIT_ATTRIBUTE( NetkVAhRateB,                                       "NET_KVAH_RATE_B" );
 INIT_ATTRIBUTE( NetkVAhRateC,                                       "NET_KVAH_RATE_C" );
 INIT_ATTRIBUTE( NetkVAhRateD,                                       "NET_KVAH_RATE_D" );
-INIT_ATTRIBUTE( ReceivedkVAhQ234,                                   "RECEIVED_KVAH_Q234" );
+INIT_ATTRIBUTE( kVAhQ234,                                           "KVAH_Q234" );
+INIT_ATTRIBUTE( kVAhQ234RateA,                                      "KVAH_Q234_RATE_A" );
+INIT_ATTRIBUTE( kVAhQ234RateB,                                      "KVAH_Q234_RATE_B" );
+INIT_ATTRIBUTE( kVAhQ234RateC,                                      "KVAH_Q234_RATE_C" );
+INIT_ATTRIBUTE( kVAhQ234RateD,                                      "KVAH_Q234_RATE_D" );
 INIT_ATTRIBUTE( ReceivedkVAhRateA,                                  "RECEIVED_KVAH_RATE_A" );
 INIT_ATTRIBUTE( ReceivedkVAhRateB,                                  "RECEIVED_KVAH_RATE_B" );
 INIT_ATTRIBUTE( ReceivedkVAhRateC,                                  "RECEIVED_KVAH_RATE_C" );
