@@ -34,4 +34,9 @@ public interface YukonLoggerDao {
      */
     List<YukonLogger> getLoggers(String loggerName, SortBy sortBy, Direction direction, List<LoggerLevel> loggerLevels);
 
+    /**
+     * Delete expired loggers if any. Return true if any loggers are deleted else return false.
+     */
+    boolean deleteExpiredLoggers();
+
 }
