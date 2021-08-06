@@ -12,14 +12,14 @@ import com.cannontech.database.data.route.MacroRoute;
 
 public class MacroRouteModel<T extends MacroRoute> extends DeviceBaseModel implements DBPersistentConverter<T> {
 
-    private List<MacroRouteList> routeIds;
+    private List<MacroRouteList> routeList;
 
-    public List<MacroRouteList> getRouteIds() {
-        return routeIds;
+    public List<MacroRouteList> getRouteList() {
+        return routeList;
     }
 
-    public void setRouteIds(List<MacroRouteList> routeIds) {
-        this.routeIds = routeIds;
+    public void setRouteList(List<MacroRouteList> routeList) {
+        this.routeList  = routeList;
     }
 
     @Override
@@ -29,15 +29,15 @@ public class MacroRouteModel<T extends MacroRoute> extends DeviceBaseModel imple
         setType(macroRoute.getPaoType());
         setEnable(macroRoute.isDisabled());
 
-        ArrayList<MacroRouteList> routeIds = new ArrayList<>();
+        ArrayList<MacroRouteList> routeList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(macroRoute.getMacroRouteVector())) {
             List<com.cannontech.database.db.route.MacroRoute> macroVector = macroRoute.getMacroRouteVector();
             for (com.cannontech.database.db.route.MacroRoute macroRoutes : macroVector) {
                 MacroRouteList macroRouteList = new MacroRouteList();
                 macroRouteList.buildModel(macroRoutes);
-                routeIds.add(macroRouteList);
+                routeList.add(macroRouteList);
             }
-            setRouteIds(routeIds);
+            setRouteList(routeList);
         }
     }
 
@@ -51,8 +51,8 @@ public class MacroRouteModel<T extends MacroRoute> extends DeviceBaseModel imple
         macroRoute.setDefaultRoute("N");
         int i = 1;
         Vector<com.cannontech.database.db.route.MacroRoute> macroRouteVector = new Vector<>();
-        if (!CollectionUtils.isEmpty(getRouteIds())) {
-            for (MacroRouteList macroRouteList : getRouteIds()) {
+        if (!CollectionUtils.isEmpty(getRouteList())) {
+            for (MacroRouteList macroRouteList : getRouteList()) {
                 com.cannontech.database.db.route.MacroRoute macroRoutes = new com.cannontech.database.db.route.MacroRoute();
                 macroRouteList.buildDBPersistent(macroRoutes);
                 macroRoutes.setRouteOrder(i++);

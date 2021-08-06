@@ -58,7 +58,7 @@ public class MacroRouteApiValidatorHelper {
                 .stream()
                 .anyMatch(route -> route.getLiteID() == macroRouteList.getRouteId() && (!route.getPaoType().equals(PaoType.ROUTE_MACRO)));
         if (!routeIdExists) {
-            errors.rejectValue("routeIds", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { macroRouteList.getRouteId() }, "");
+            errors.rejectValue("routeList", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { macroRouteList.getRouteId() }, "");
         }
     }
 

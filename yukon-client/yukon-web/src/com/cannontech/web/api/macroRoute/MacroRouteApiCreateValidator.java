@@ -18,7 +18,7 @@ public class MacroRouteApiCreateValidator extends SimpleValidator<MacroRouteMode
         YukonApiValidationUtils.checkIfFieldRequired("name", errors, macroRoute.getName(), "Name");
       
         // Check if RouteIds is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("routeIds", errors, macroRoute.getRouteIds(),
+        YukonApiValidationUtils.checkIfFieldRequired("routeList", errors, macroRoute.getRouteList(),
                 "RouteIds");
     }
 }
