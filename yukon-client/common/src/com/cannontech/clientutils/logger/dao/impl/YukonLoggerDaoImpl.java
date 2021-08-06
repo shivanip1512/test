@@ -124,7 +124,7 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
         sql.append("DELETE FROM");
         sql.append(TABLE_NAME);
         sql.append("WHERE ExpirationDate").lt(formattedDate);
-        return jdbcTemplate.update(sql) == 1;
+        return jdbcTemplate.update(sql) > 0;
     }
 
 }
