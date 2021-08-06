@@ -151,7 +151,7 @@
     </bean>
     <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
         <property name="basedOn" value="KVAH"/>
-        <property name="perInterval"><null/></property>
+        <property name="perInterval" value="DELIVERED_KVAH_PER_INTERVAL"></property>
         <property name="loadProfile" value="KVA_LOAD_PROFILE"></property>
         <qualifier value="kVAh"/>
     </bean>
@@ -202,6 +202,12 @@
         <property name="perInterval" value="RECEIVED_KWH_RATE_D_PER_INTERVAL"></property>
         <property name="loadProfile" value="RECEIVED_KW_RATE_D_LOAD_PROFILE"></property>
         <qualifier value="ReceivedkWhRateD"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="RECEIVED_KVAH"/>
+        <property name="perInterval" value="RECEIVED_KVAH_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="ReceivedkVAh"/>
     </bean>
     <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
         <property name="basedOn" value="NET_KWH_RATE_A"/>
