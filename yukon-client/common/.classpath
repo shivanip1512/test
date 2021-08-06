@@ -589,22 +589,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/log4j-api-2.14.0.jar">
-	     <attributes>
-	         <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-         </attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jjwt-impl-0.11.2.jar">
-	    <attributes>
-	         <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-         </attributes>
-    </classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jjwt-jackson-0.11.2.jar">
-	    <attributes>
-	         <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-         </attributes>
-    </classpathentry>
-    <classpathentry exported="true" kind="lib" path="/third-party/log4j-api-2.14.0.jar">
->>>>>>> master
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
