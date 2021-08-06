@@ -65,14 +65,12 @@ public class EcobeeZeusSyncService {
                     List<ZeusGroup> zeusGroups = ecobeeZeusCommunicationService.getAllGroups();
                     log.debug("Number of ZeusGroups found " + zeusGroups.size());
                     zeusGroups.forEach(zeusGroup -> {
-                        int yukonGroupId;
                         String zeusGroupName = zeusGroup.getName();
+                        if (zeusGroupName.contains("/")) {
+                            zeusGroupName = zeusGroupName.replace("/", "");
+                        }
                         if (StringUtils.isNumeric(zeusGroupName)) {
-                            if (zeusGroupName.contains("/")) {
-                                yukonGroupId = Integer.parseInt(zeusGroupName.replace("/", ""));
-                            } else {
-                                yukonGroupId = Integer.parseInt(zeusGroupName);
-                            }
+                            int yukonGroupId = Integer.parseInt(zeusGroupName);
                             String zeusGroupId = zeusGroup.getGroupId();
                             if (!groupMappingExists) {
                                 ecobeeZeusGroupService.mapGroupIdToZeusGroup(yukonGroupId, zeusGroupId, zeusGroupName,

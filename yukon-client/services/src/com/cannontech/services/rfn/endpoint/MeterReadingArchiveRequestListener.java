@@ -11,6 +11,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -65,7 +66,6 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
             archivedReadings.addAndGet(messagesToSend.size());
 
             sendAcknowledgement(request);
-            incrementProcessedArchiveRequest();
             if (log.isDebugEnabled()) {
                 log.debug(messagesToSend.size() + " PointDatas converted for RfnMeterReadingArchiveRequest, "
                         + toCalculate.size() + " calculations produced.");
@@ -107,6 +107,15 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
                             request.getDataPointId(),
                             request.getReadingType(),
                             delimited(trackingInfo)));
+            }
+        }
+
+        @Override
+        protected Instant getDataTimestamp(RfnMeterReadingArchiveRequest request) {
+            try {
+                return new Instant(request.getData().getTimeStamp());
+            } catch (Exception e) {
+                return null;
             }
         }
     }

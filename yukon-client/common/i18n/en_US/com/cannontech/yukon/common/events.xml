@@ -64,6 +64,7 @@
     <entry key="yukon.common.events.ipAddress">IP Address</entry>
     <entry key="yukon.common.events.jobId">Job Id</entry>
     <entry key="yukon.common.events.key">Key</entry>
+    <entry key="yukon.common.events.level">Level</entry>
     <entry key="yukon.common.events.loadGroupIds">Load Group Ids</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
     <entry key="yukon.common.events.loadProgramNames">Load Program Name(s)</entry>
@@ -294,6 +295,16 @@
     <entry key="yukon.common.events.system.rfn.rfn1200Updated.2">RFN-1200 Description</entry>
     
     <entry key="yukon.common.events.system.rfn.apnChanged">Device {1} {2} has new APN {3}</entry>
+    
+    <entry key="yukon.common.events.system.rfn.modelUpdated">Device {1} {2} had Model updated. Old Model: {3} New Model: {4}</entry>
+    <entry key="yukon.common.events.system.rfn.modelUpdated.3">Old Model</entry>
+    <entry key="yukon.common.events.system.rfn.modelUpdated.4">New Model</entry>
+    
+    <entry key="yukon.common.events.system.rfn.modelAndPaoTypeUpdated">Device {1} {2} had Model and PaoType updated. Old Model/Type: {3}/{4} New Model/Type: {5}/{6}</entry>
+    <entry key="yukon.common.events.system.rfn.modelAndPaoTypeUpdated.3">Old Model</entry>
+    <entry key="yukon.common.events.system.rfn.modelAndPaoTypeUpdated.5">New Model</entry>
+    <entry key="yukon.common.events.system.rfn.modelAndPaoTypeUpdated.4">Old Type</entry>
+    <entry key="yukon.common.events.system.rfn.modelAndPaoTypeUpdated.6">New Type</entry>
         
     <!-- Wanted to format date so millis displayed but was unable to get DateFormatEnum syntax to work with java MessageSource 
          Default formatting of Dates in i18n is "MM/dd/yy, hh:mm a"
@@ -713,6 +724,11 @@
     <!-- Configuration -->
     <entry key="yukon.common.events.system.configuration.globalSettingChanged">Global Setting {2} changed to {3} by {1}.</entry>
     <entry key="yukon.common.events.system.configuration.sensitiveGlobalSettingChanged">Global Setting {2} changed by {1}.</entry>
+    
+    <!-- Yukon Loggers -->
+    <entry key="yukon.common.events.system.configuration.loggerAdded">Logger {1} added by {3}. Logger level: {2}, Expiration date: {11}.</entry>
+    <entry key="yukon.common.events.system.configuration.loggerUpdated">Logger {1} updated by {3}. Logger level: {2}, Expiration date: {11}.</entry>
+    <entry key="yukon.common.events.system.configuration.loggerDeleted">Logger {1} deleted by {2}.</entry>
     
     <!-- Honeywell Key Configuration -->
     <entry key="yukon.common.events.system.configuration.importedKeyFile">{2} Key file imported by {1}.</entry>

@@ -1,0 +1,101 @@
+post-operation:
+  post:
+    tags:
+     - Logger
+    summary: 'Create Logger'
+    description: 'API to create Logger.'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/yukonLoggingSchema.yaml#/Logger'
+          examples:
+            Logger:
+              $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger'
+      required: true
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger'
+            examples:
+              Logger:
+                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger'
+get-update-delete-operation:
+  get:
+    tags:
+     - Logger
+    summary: 'Retrieve Logger'
+    description: 'API to retrieve yukon logger based on passed id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'Unique identifier for logger.'
+        required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger'
+            examples:
+              Logger:
+                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger'
+  patch:
+    tags:
+     - Logger
+    summary: 'Update Logger'
+    description: 'API to update logger based on passed id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'Unique identifier for logger.'
+        required: true
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/yukonLoggingSchema.yaml#/Logger'
+          examples:
+            Logger:
+              $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger'
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger'
+            examples:
+              Logger:
+                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger'
+  delete:
+    tags:
+     - Logger
+    summary: 'Delete Logger'
+    description: 'API to delete logger based on passed id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'Unique identifier for logger.'
+        required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/yukonLoggingSchema.yaml#/id'
+            examples:
+              LoggerId:
+                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/id'
