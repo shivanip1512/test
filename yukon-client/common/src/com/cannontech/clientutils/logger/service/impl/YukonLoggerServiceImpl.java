@@ -53,8 +53,7 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
     @Override
     public int deleteLogger(int loggerId) {
         try {
-            getLogger(loggerId);
-            String loggerName = yukonLoggerDao.getLogger(loggerId).getLoggerName();
+            String loggerName = getLogger(loggerId).getLoggerName();
             yukonLoggerDao.deleteLogger(loggerId);
             dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.LOGGER, loggerId);
             systemEventLogService.loggerDeleted(loggerName, ApiRequestContext.getContext().getLiteYukonUser());
@@ -62,7 +61,6 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Logger Id not found");
         }
-
     }
 
     @Override
