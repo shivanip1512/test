@@ -29,7 +29,7 @@
                         </c:if>
                     </td>
                     
-                    <td>${fn:escapeXml(logger.loggerName)}</td>
+                    <td class="wbba">${fn:escapeXml(logger.loggerName)}</td>
                     <td><i:inline key="${logger.level}"/></td>
                     <td>
                         <cm:dropdown icon="icon-cog">

@@ -32,6 +32,17 @@ public class YukonApiValidationUtils extends ValidationUtils {
         }
         return false;
     }
+    
+    /**
+     * Return true if the provided fieldValue contains only characters from whitelisted characters( A-Z, a-z, 0-9, $, _ and . ).
+     */
+    public static boolean checkWhitelistedCharacter(Errors errors, String field, String fieldValue, String fieldName) {
+        if (!YukonValidationUtilsCommon.checkWhitelistedCharacter(fieldValue)) {
+            errors.rejectValue(field, ApiErrorDetails.WHITELIST_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Return true if the provided fieldValue contains any characters from illegal characters( \, |, /, ", \\ and , ).
