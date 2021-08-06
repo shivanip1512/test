@@ -112,6 +112,11 @@ paths:
   /config/loggers/{id}:
     $ref: 'api/yukonLoggingApi.yaml#/get-update-delete-operation'
 
+  /macroRoutes:
+    $ref: 'api/macroRoutesApi.yaml#/post-operation'
+  /macroRoutes/{id}:
+    $ref: 'api/macroRoutesApi.yaml#/get-update-delete-operation'    
+
 components:
   securitySchemes:
     bearerAuth:
@@ -135,3 +140,4 @@ tags:
   - name: Picker
   - name: Route
   - name: Logger
+  - name: Macro Route
