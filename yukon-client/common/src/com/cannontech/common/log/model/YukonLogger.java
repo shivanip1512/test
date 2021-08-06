@@ -2,8 +2,12 @@ package com.cannontech.common.log.model;
 
 import java.util.Date;
 
+import com.cannontech.common.util.JavaDateDeserializer;
+import com.cannontech.common.util.JavaDateSerializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonInclude(Include.NON_NULL)
 public class YukonLogger {
@@ -11,6 +15,8 @@ public class YukonLogger {
     private LoggerType loggerType;
     private LoggerLevel level;
     private String loggerName;
+    @JsonSerialize(using = JavaDateSerializer.class)
+    @JsonDeserialize(using = JavaDateDeserializer.class)
     private Date expirationDate;
     private String notes;
 

@@ -115,9 +115,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                         ". Payload: 0x" + DatatypeConverter.printHexBinary(payload) + 
                         ". Payload may be corrupt or not schema compliant.");
                     throw new RuntimeException("Error parsing RF LCR payload.", e);
-                }
-                incrementProcessedArchiveRequest();
-    
+                }    
             } else {
                 // Just an LCR archive request, these happen when devices join the network
                 InventoryIdentifier inventory =
@@ -154,6 +152,11 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 log.debug("It took " + processingDuration + " to process a request");
             }
             return Optional.empty();  //  not tracking this point data yet
+        }
+
+        @Override
+        protected Instant getDataTimestamp(RfnLcrArchiveRequest request) {
+            return null;
         }
     }
     

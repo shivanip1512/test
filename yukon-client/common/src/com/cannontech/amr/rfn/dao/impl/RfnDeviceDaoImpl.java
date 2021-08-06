@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -28,6 +29,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
+import com.cannontech.common.rfn.model.RfnModelChange;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -40,6 +42,7 @@ import com.cannontech.common.util.SqlStatementBuilder.SqlBatchUpdater;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -83,7 +86,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                                                      rs.getStringSafe("Manufacturer"), 
                                                      rs.getStringSafe("Model"));
             RfnDevice rfnDevice = new RfnDevice(name, paoIdentifier, rfnIdentifier);
-            
+
             return rfnDevice;
         }
     };
@@ -625,6 +628,56 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                 });
         } catch (EmptyResultDataAccessException e) {
             log.error("No DescendantCount data found for {}", paoTypes.toString());
+            return null;
+        }
+    }
+    
+    
+    @Override
+    public void updateRfnModelChange(RfnModelChange rfnModelChange) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM RfnModelChange");
+        sql.append("WHERE DeviceId").eq(rfnModelChange.getDeviceId());
+
+        SqlStatementBuilder updateCreateSql = new SqlStatementBuilder();
+        try {
+            jdbcTemplate.queryForInt(sql);
+            SqlParameterSink params = updateCreateSql.update("RfnModelChange");
+            params.addValue("OldModel", rfnModelChange.getOldModel());
+            params.addValue("NewModel", rfnModelChange.getNewModel());
+            params.addValue("DataTimestamp", rfnModelChange.getDataTimestamp());
+        } catch (EmptyResultDataAccessException e) {
+            SqlParameterSink params = updateCreateSql.insertInto("RfnModelChange");
+            params.addValue("DeviceId", rfnModelChange.getDeviceId());
+            params.addValue("OldModel", rfnModelChange.getOldModel());
+            params.addValue("NewModel", rfnModelChange.getNewModel());
+            params.addValue("DataTimestamp", rfnModelChange.getDataTimestamp());
+        }
+        jdbcTemplate.update(updateCreateSql);
+    }
+    
+    @Override
+    public List<RfnDevice> getPartiallyMatchedDevices(String serialNumber, String manufacturer) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT pao.paoName, pao.Type, pao.PaobjectId, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("FROM YukonPaobject pao");
+        sql.append("  JOIN RfnAddress rfn ON rfn.DeviceId = pao.PaobjectId");
+        sql.append("WHERE SerialNumber").eq(serialNumber);
+        sql.append("AND Manufacturer").eq(manufacturer);
+        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
+    }
+    
+    @Override
+    public Instant findModelChangeDataTimestamp(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DataTimestamp");
+        sql.append("FROM RfnModelChange");
+        sql.append("WHERE DeviceId").eq(deviceId);
+        
+        try {
+            return jdbcTemplate.queryForObject(sql, TypeRowMapper.INSTANT);
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }

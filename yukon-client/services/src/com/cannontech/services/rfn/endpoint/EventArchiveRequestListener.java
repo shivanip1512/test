@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -58,11 +59,19 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
                 if (log.isDebugEnabled()) {
                     log.debug(messagesToSend.size() + " PointDatas generated for RfnEventArchiveRequest");
                 }
-                incrementProcessedArchiveRequest();
             }
             sendAcknowledgement(eventRequest);
             
             return trackingIds;
+        }
+
+        @Override
+        protected Instant getDataTimestamp(RfnEventArchiveRequest request) {
+            try {
+                return new Instant(request.getEvent().getTimeStamp());
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
 

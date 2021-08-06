@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -52,6 +53,11 @@ public class GatewayFirmwareUpdateResponseListener extends ArchiveRequestListene
                                                rfnDevice.getPaoIdentifier(), 
                                                response.getResult());
             return Optional.empty();  //  no point data to track
+        }
+
+        @Override
+        protected Instant getDataTimestamp(RfnIdentifyingMessage request) {
+            return null;
         }
     }
     

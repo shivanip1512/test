@@ -84,7 +84,6 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                     missingGatewayFirstDataTimes.remove(identifier);
                     try {
                         RfnDevice device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(), identifier);
-                        rfnDeviceCreationService.incrementNewDeviceCreated();
                         log.debug("Created new gateway: " + device);
                         gatewayEventLogService.createdGatewayAutomatically(device.getName(), 
                                                                            device.getRfnIdentifier().getSensorSerialNumber());
@@ -144,6 +143,11 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
             } catch (NotFoundException e) {
                 log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
             }
+        }
+
+        @Override
+        protected Instant getDataTimestamp(RfnIdentifyingMessage request) {
+            return null;
         }
     }
     

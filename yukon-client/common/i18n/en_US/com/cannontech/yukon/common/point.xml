@@ -110,7 +110,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.FAULT_STATUS">Fault Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.GENERAL_ALARM_FLAG">General Alarm Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH">kVAh</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KVAH_LAGGING">kVAh Lagging</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q124">kVAh (Quadrants 1 2 4)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q124_RATE_A">kVAh (Quadrants 1 2 4) (Rate A kVAh)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q124_RATE_B">kVAh (Quadrants 1 2 4) (Rate B kVAh)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q124_RATE_C">kVAh (Quadrants 1 2 4) (Rate C kVAh)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q124_RATE_D">kVAh (Quadrants 1 2 4) (Rate D kVAh)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_A">kVAh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_B">kVAh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_C">kVAh Rate C</entry>
@@ -282,6 +286,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.AVERAGE_RECEIVED_POWER_FACTOR">Average Received Power Factor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR">Power Factor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_COIN">Power Factor Coincidental</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_POWER_FACTOR">Minimum Power Factor</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PREVIOUS_MINIMUM_POWER_FACTOR">Previous Minimum Power Factor</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA">Coincident Power Factor at Delivered Peak kVA</entry>
     <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A">Coincident Power Factor at Delivered Peak kVA Rate A</entry>
@@ -617,7 +623,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_D">Net Delivered kVArh Rate D</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH">Received kVAh</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH_Q234">Received kVAh (Quadrants 2 3 4)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q234">kVAh (Quadrants 2 3 4)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q234_RATE_A">kVAh (Quadrants 2 3 4) Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q234_RATE_B">kVAh (Quadrants 2 3 4) Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q234_RATE_C">kVAh (Quadrants 2 3 4) Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q234_RATE_D">kVAh (Quadrants 2 3 4) Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH">Received kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_A">Received kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_B">Received kVArh Rate B</entry>

@@ -19,13 +19,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClientException;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -55,7 +56,8 @@ public class YukonLoggersController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private ApiControllerHelper apiControllerHelper;
-
+    @Autowired private YukonLoggersValidator yukonLoggersValidator;
+    
     private static final String baseKey = "yukon.web.modules.adminSetup.config.loggers.";
     private static final String redirectLink = "redirect:/admin/config/loggers/allLoggers";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
@@ -83,16 +85,32 @@ public class YukonLoggersController {
     }
 
     @PostMapping("/config/loggers")
-    public String saveLogger(@ModelAttribute YukonLogger logger, Boolean specifiedDateTime, HttpServletRequest request,
-            HttpServletResponse resp, YukonUserContext userContext) {
+    public String saveLogger(@ModelAttribute("logger") YukonLogger logger,BindingResult result, Boolean specifiedDateTime, HttpServletRequest request,
+            HttpServletResponse resp, YukonUserContext userContext, ModelMap model) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<String, Object>();
+        if (BooleanUtils.isNotTrue(specifiedDateTime)) {
+            logger.setExpirationDate(null);
+        }
+        yukonLoggersValidator.validate(logger, result);
+        
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            addModelAttributes(model, logger);
+            return "config/addLoggerPopup.jsp";
+        }
         try {
             ResponseEntity<? extends Object> response = save(logger, specifiedDateTime, request, userContext);
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 json.put("isSystemLogger", SystemLogger.isSystemLogger(logger.getLoggerName()));
                 json.put("successMessage", accessor.getMessage("yukon.common.save.success", logger.getLoggerName()));
                 return JsonUtils.writeResponse(resp, json);
+            } else if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                BindException error = new BindException(logger, "logger");
+                result = apiControllerHelper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
+                addModelAttributes(model, logger);
+                return "config/addLoggerPopup.jsp";
             }
         } catch (ApiCommunicationException e) {
             log.error(e);
@@ -102,6 +120,16 @@ public class YukonLoggersController {
             json.put("errorMessage", accessor.getMessage("yukon.web.api.save.error", logger.getLoggerName(), ex.getMessage()));
         }
         return JsonUtils.writeResponse(resp, json);
+    }
+
+    private void addModelAttributes(ModelMap model, YukonLogger logger) {
+        model.addAttribute("loggerLevels", LoggerLevel.values());
+        model.addAttribute("now", new Date());
+        model.addAttribute("specifiedDateTime", logger.getExpirationDate() != null);
+        boolean allowDateTimeSelection = !SystemLogger.isSystemLogger(logger.getLoggerName());
+        model.addAttribute("allowDateTimeSelection", allowDateTimeSelection);
+        model.addAttribute("isEditMode", logger.getLoggerId() != -1);
+        model.addAttribute("logger", logger);
     }
 
     @GetMapping("/config/loggers/{loggerId}")
@@ -116,16 +144,9 @@ public class YukonLoggersController {
 
             if (loggerResponse.getStatusCode() == HttpStatus.OK) {
                 logger = (YukonLogger) loggerResponse.getBody();
-                model.addAttribute("logger", logger);
-                model.addAttribute("loggerLevels", LoggerLevel.values());
+                addModelAttributes(model, logger);
                 model.addAttribute("isEditMode", true);
-                Date expirationDate = new Date();
-                model.addAttribute("now", expirationDate);
-                model.addAttribute("specifiedDateTime", logger.getExpirationDate() != null);
-
-                boolean allowDateTimeSelection = !SystemLogger.isSystemLogger(logger.getLoggerName());
-                model.addAttribute("allowDateTimeSelection", allowDateTimeSelection);
-            }
+              }
         } catch (ApiCommunicationException e) {
             log.error(e);
         } catch (RestClientException ex) {
@@ -136,17 +157,15 @@ public class YukonLoggersController {
 
     private ResponseEntity<? extends Object> save(YukonLogger logger, Boolean specifiedDateTime,
             HttpServletRequest request, YukonUserContext userContext) {
-        if (BooleanUtils.isNotTrue(specifiedDateTime)) {
-            logger.setExpirationDate(null);
-        }
+        
         if (logger.getLoggerId() == -1) {
             String url = apiControllerHelper.findWebServerUrl(request, userContext, ApiURL.loggerUrl);
-            return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, YukonLogger.class,
+            return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
                     logger);
         } else {
             String url = apiControllerHelper.findWebServerUrl(request, userContext,
                     ApiURL.loggerUrl + "/" + logger.getLoggerId());
-            return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, YukonLogger.class,
+            return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, Object.class,
                     logger);
         }
     }
