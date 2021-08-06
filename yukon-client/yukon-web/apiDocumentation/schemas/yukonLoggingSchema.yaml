@@ -49,7 +49,13 @@ id:
       type: integer
       description: 'Unique identifier for Logger.'
       
-
+Logger List:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for the logger.'
+        
 
 components:
   examples:
@@ -57,9 +63,30 @@ components:
       value:
         loggerName: com.cannontech.test
         loggerType: USER_LOGGER
-        loggerLevel: ERROR
-        expirationDate: 07/27/2021
+        level: ERROR
+        expirationDate: 08/27/2021
         notes: Sample logger
     id:
       value:
         id: 11
+    List of Logger:
+      value:
+        items:
+          - id: 1
+            loggerName: com.cannontech.test1
+            loggerType: USER_LOGGER
+            level: ERROR
+            expirationDate: 08/27/2021
+            notes: Sample logger
+          - id: 2
+            loggerName: com.cannontech.test2
+            loggerType: USER_LOGGER
+            level: ERROR
+            expirationDate: 09/27/2021
+            notes: Sample logger
+          - id: 3
+            loggerName: com.cannontech.test3
+            loggerType: USER_LOGGER
+            level: ERROR
+            expirationDate: 10/27/2021
+            notes: Sample logger
