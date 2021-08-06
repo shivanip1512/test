@@ -71,7 +71,6 @@ components:
         id: 11
     List of Logger:
       value:
-        items:
           - id: 1
             loggerName: com.cannontech.test1
             loggerType: USER_LOGGER
