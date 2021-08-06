@@ -43,9 +43,9 @@ public class MacroRouteServiceImpl implements MacroRouteService {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Macro Route Id not found"));
         MacroRoute macroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(pao);
-        // MacroRoute macroRoutes = (MacroRoute) dbPersistentDao.retrieveDBPersistent(macroRoute);
         MacroRouteModel macroRouteModel = new MacroRouteModel();
         macroRouteModel.buildModel(macroRoute);
+        setRouteNameFromList(macroRouteModel);
         return macroRouteModel;
     }
 
@@ -61,6 +61,7 @@ public class MacroRouteServiceImpl implements MacroRouteService {
                 MacroRoute macroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(yukonPAObject);
                 MacroRouteModel macroRouteModel = new MacroRouteModel();
                 macroRouteModel.buildModel(macroRoute);
+                setRouteNameFromList(macroRouteModel);
                 macroRouteModelList.add(macroRouteModel);
             });
         }
