@@ -1548,4 +1548,9 @@
     <bean class="com.cannontech.web.api.route.RouteApiCreateValidator"/>
     <bean class="com.cannontech.web.api.route.service.impl.RouteServiceImpl"/>
     <bean class="com.cannontech.web.api.route.service.impl.RouteHelperImpl"/>
+
+    <bean class="com.cannontech.web.api.macroRoute.MacroRouteApiValidator"/>	
+    <bean class="com.cannontech.web.api.macroRoute.MacroRouteApiValidatorHelper"/>
+    <bean class="com.cannontech.web.api.macroRoute.MacroRouteApiCreateValidator"/>
+    <bean class="com.cannontech.web.api.macroRoute.service.impl.MacroRouteServiceImpl"/>
 </beans>
