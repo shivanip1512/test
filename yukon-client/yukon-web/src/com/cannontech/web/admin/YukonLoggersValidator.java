@@ -42,9 +42,7 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
     @Override
     protected void doValidation(YukonLogger logger, Errors errors) {
         if (logger != null) {
-            String id = ServletUtils.getPathVariable("loggerId");
-            Integer loggerId = id == null ? -1 : Integer.valueOf(id);
-            validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"), loggerId);
+            validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"));
 
             YukonValidationUtils.checkIfFieldRequired("level", errors, logger.getLevel(),
                     accessor.getMessage(basekey + "loggerLevel"));
@@ -58,7 +56,7 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
         }
     }
 
-    public void validateLoggerName(Errors errors, YukonLogger logger, String i18Text, Integer loggerId) {
+    public void validateLoggerName(Errors errors, YukonLogger logger, String i18Text) {
         YukonValidationUtils.checkIfFieldRequired("loggerName", errors, logger.getLoggerName(), i18Text);
         if (!errors.hasFieldErrors("loggerName")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "loggerName", logger.getLoggerName(), 200);
@@ -72,7 +70,7 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
             .filter(tempLogger -> tempLogger.getLoggerName().equals(logger.getLoggerName()))
             .findAny()
             .ifPresent(presentLogger -> {
-                 if (loggerId == -1 || presentLogger.getLoggerId() != loggerId) {
+                 if (logger.getLoggerId() == -1 || presentLogger.getLoggerId() != logger.getLoggerId()) {
                      errors.rejectValue("loggerName", errorkey + "nameConflict");
                  }
             });
