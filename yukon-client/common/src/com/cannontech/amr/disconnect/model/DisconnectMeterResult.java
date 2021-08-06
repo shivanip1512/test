@@ -2,6 +2,7 @@ package com.cannontech.amr.disconnect.model;
 
 import org.joda.time.Instant;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.model.YukonMeter;
 
@@ -53,6 +54,10 @@ public class DisconnectMeterResult {
 
     public void setProcessingException(String processingException) {
         this.processingException = processingException;
+    }
+    
+    public boolean hasTimeoutError() {
+        return error != null && error.getDeviceError() == DeviceError.TIMEOUT;
     }
 
     public boolean isSuccess(){

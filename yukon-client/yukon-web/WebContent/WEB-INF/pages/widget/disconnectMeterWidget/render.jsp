@@ -70,22 +70,29 @@
             <div class="scroll-md monospace">${configString}</div>
         </tags:hideReveal2>
     </c:if>
-    <c:if test="${fn:length(errors) > 0}">
-        <div class="scroll-md">
-            <c:forEach items="${errors}" var="error">
-                <tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
-                    <c:if test="${not empty error.detail}">
-                        <i:inline key="${error.detail}" />
-                    </c:if>
-                    <div>${error.porter}</div>
-                    <div>${error.troubleshooting}</div>
-                </tags:hideReveal>
-            </c:forEach>
-            <c:if test="${exceptionReason != null}">
-                <span class="error">${exceptionReason}</span>
-            </c:if>
-        </div>
-    </c:if>
+    <c:choose>
+    	<c:when test="${hasTimeoutError}">
+    		<div class="warning"><i:inline key="yukon.common.device.attributeRead.timeoutWarning"/></div>
+    	</c:when>
+    	<c:otherwise>
+    	    <c:if test="${fn:length(errors) > 0}">
+		        <div class="scroll-md">
+		            <c:forEach items="${errors}" var="error">
+		                <tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
+		                    <c:if test="${not empty error.detail}">
+		                        <i:inline key="${error.detail}" />
+		                    </c:if>
+		                    <div>${error.porter}</div>
+		                    <div>${error.troubleshooting}</div>
+		                </tags:hideReveal>
+		            </c:forEach>
+		            <c:if test="${exceptionReason != null}">
+		                <span class="error">${exceptionReason}</span>
+		            </c:if>
+		        </div>
+		    </c:if>
+    	</c:otherwise>
+    </c:choose>
     
     <cti:url var="editUrl" value="/widget/disconnectMeterWidget/edit">
         <cti:param name="deviceId" value="${device.deviceId}"/>
