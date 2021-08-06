@@ -2,8 +2,8 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <script>
     yukon.ui.initDateTimePickers();
@@ -37,7 +37,7 @@
         </tags:nameValueContainer2>
         <div class="action-area">
             <cti:button nameKey="ok" classes="primary js-manual-entry-send" />
-            <cti:button nameKey="close" onclick="$('#manual-entry-popup').dialog('close');" />
+            <cti:button nameKey="close" classes="js-manual-entry-close" />
         </div>
     </form:form>
 </cti:msgScope>

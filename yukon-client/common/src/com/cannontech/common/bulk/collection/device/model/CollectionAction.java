@@ -59,7 +59,7 @@ public enum CollectionAction implements DisplayableEnum {
     ADD_POINTS(DB, null, SUCCESS, FAILURE),
     UPDATE_POINTS(DB, null, SUCCESS, FAILURE),
     REMOVE_POINTS(DB, null, SUCCESS, FAILURE),
-    ASSIGN_CONFIG(DB, null, SUCCESS, INVALID_STATE, FAILURE),
+    ASSIGN_CONFIG(DB, null, SUCCESS, INVALID_STATE, UNSUPPORTED, FAILURE),
     UNASSIGN_CONFIG(DB, null, SUCCESS, INVALID_STATE, FAILURE);
 	
     private static List<CollectionAction> actionsWithCre = Arrays.asList(CollectionAction.values()).stream()

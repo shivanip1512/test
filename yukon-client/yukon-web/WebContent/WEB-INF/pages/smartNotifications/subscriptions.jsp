@@ -47,9 +47,14 @@
                     <td>
                         <cm:dropdown icon="icon-cog">
                             <cti:url var="editUrl" value="/notifications/subscription/${subId}/edit"/>
-                            <div id="edit-popup-${subId}" data-dialog class="dn js-smart-notifications-popup"
-                                data-event="yukon:notifications:save" data-title="<cti:msg2 key=".editPopup.title"/>"
-                                data-url="${editUrl}" data-load-event="yukon:notifications:load" data-width="600"></div>
+                            <cti:msg var="helpText" key="yukon.web.modules.smartNotifications.popup.helpText"/>
+                            <div id="edit-popup-${subId}" 
+                                 data-dialog class="dn js-smart-notifications-popup"
+                                 data-event="yukon:notifications:save" 
+                                 data-title="<cti:msg2 key=".editPopup.title"/>"
+                                 data-url="${editUrl}" data-load-event="yukon:notifications:load" 
+                                 data-width="600"
+                                 data-help-text="${helpText}"></div>
                             <cm:dropdownOption key="yukon.web.components.button.edit.label" icon="icon-pencil" data-popup="#edit-popup-${subId}"/>
                             <cti:url var="detailsUrl" value="/notifications/events/${subscription.type.urlPath}"/>
                             <c:if test="${subscription.type == 'DEVICE_DATA_MONITOR'}">

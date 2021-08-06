@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -56,7 +57,6 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
                 asyncDynamicDataSource.putValues(messagesToSend);
                 processedAlarmArchiveRequest.addAndGet(messagesToSend.size());
     
-                incrementProcessedArchiveRequest();
                 if (log.isDebugEnabled()) {
                     log.debug(messagesToSend.size() + " PointDatas generated for RfnAlarmArchiveRequest");
                 }
@@ -64,6 +64,15 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
             sendAcknowledgement(archiveRequest);
             
             return trackingIds;
+        }
+
+        @Override
+        protected Instant getDataTimestamp(RfnAlarmArchiveRequest request) {
+            try {
+                return new Instant(request.getAlarm().getTimeStamp());
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
 

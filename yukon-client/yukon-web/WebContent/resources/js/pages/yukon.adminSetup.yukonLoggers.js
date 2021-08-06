@@ -89,7 +89,7 @@ yukon.adminSetup.yukonLoggers = (function () {
                     success: function (data) {
                         popup.dialog('close');
                         if (data.successMessage) {
-                            yukon.ui.alertSuccess(data.successMessage);
+                            yukon.ui.alertSuccess(yukon.escapeXml(data.successMessage));
                             //refresh logger table
                             if(data.isSystemLogger) {
                                 _refreshSystemLoggersTable();
@@ -97,7 +97,7 @@ yukon.adminSetup.yukonLoggers = (function () {
                                 _refreshLoggersTable();
                             }
                         } else if (data.errorMessage) {
-                            yukon.ui.alertError(data.errorMessage);
+                            yukon.ui.alertError(yukon.escapeXml(data.errorMessage));
                         }
                     },
                     error: function (xhr) {

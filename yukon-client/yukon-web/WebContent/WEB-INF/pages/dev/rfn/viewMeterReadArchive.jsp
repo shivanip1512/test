@@ -41,11 +41,11 @@
                 </tags:nameValue>
 
                 <tags:nameValue name="Manufacturer override">
-                    <form:input path="manufacturerOverride" size="7" cssClass="optional"/>
+                    <form:input path="manufacturerOverride" size="20" cssClass="optional"/>
                 </tags:nameValue>
 
                 <tags:nameValue name="Model override">
-                    <form:input path="modelOverride" size="7" cssClass="optional"/>
+                    <form:input path="modelOverride" size="20" cssClass="optional"/>
                 </tags:nameValue>
 
                 <tags:nameValue name="UoM">

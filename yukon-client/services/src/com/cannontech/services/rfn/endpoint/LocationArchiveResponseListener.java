@@ -61,6 +61,11 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
             sendAcknowledgement(location);
             return Optional.empty();  //  no point data to track
         }
+
+        @Override
+        protected Instant getDataTimestamp(LocationResponse request) {
+            return null;
+        }
     }
 
     @Override

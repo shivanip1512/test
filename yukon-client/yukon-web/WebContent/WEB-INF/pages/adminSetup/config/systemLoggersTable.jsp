@@ -24,12 +24,12 @@
                         <c:if test="${not empty fn:trim(logger.notes)}">
                             <cti:msg2 var="viewNoteTitle" key=".viewNote"/>
                             <cti:icon icon="icon-notes-pin" title="${viewNoteTitle}" data-logger-id="${loggerId}" data-popup="#logger-note-${loggerId}"/>
-                            <div id="logger-note-${loggerId}" class="dn" data-title="Notes" data-width="300" data-height="200">${logger.notes}</div>
+                            <div id="logger-note-${loggerId}" class="dn" data-title="Notes" data-width="300" data-height="200">${fn:escapeXml(logger.notes)}</div>
                             <br/>
                         </c:if>
                     </td>
                     
-                    <td>${fn:escapeXml(logger.loggerName)}</td>
+                    <td class="wbba">${fn:escapeXml(logger.loggerName)}</td>
                     <td><i:inline key="${logger.level}"/></td>
                     <td>
                         <cm:dropdown icon="icon-cog">
