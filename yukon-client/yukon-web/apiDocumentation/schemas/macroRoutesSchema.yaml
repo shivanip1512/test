@@ -2,7 +2,7 @@ MacroRoute:
   title: MacroRoute
   required:
     - routeName
-    - routeIds
+    - routeList
 
   type: object
   properties:
@@ -19,10 +19,10 @@ MacroRoute:
     enable:
       type: boolean
       description: 'DisableFlag.'  
-    routeIds:
-      $ref: '#/routeIds'
+    routeList:
+      $ref: '#/routeList'
 
-routeIds:
+routeList:
   type: array
   items:
     required:
@@ -35,6 +35,27 @@ routeIds:
       routeName:
           type: String
           description: 'Name of the selected route.'  
+
+id:
+  title: id
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for Macro Route.'
+      
+routeId :
+  title: routeId
+  required:
+    - routeId
+  type: object
+  properties:
+    routeId:
+      type: integer
+      description: 'Unique identifier for Macro Route.'      
+      
       
 components:
   examples:
@@ -44,8 +65,33 @@ components:
         type: ROUTE_MACRO
         name: Test MacroRoute
         enable: false
-        routeIds:
+        routeList:
           - routeId: 1
             routeName: 'Route1'
           - routeId: 2
             routeName: 'Route2'
+    List MacroRoutes:
+      value:
+        - id: 222
+          type: ROUTE_MACRO
+          name: Test MacroRoute
+          enable: false
+          routeList:
+            - routeId: 1
+              routeName: 'Route1'
+            - routeId: 2
+              routeName: 'Route2'
+        - id: 223
+          type: ROUTE_MACRO
+          name: Test MacroRoute1
+          enable: false
+          routeList:
+            - routeId: 3
+              routeName: 'Route3'
+            - routeId: 4
+              routeName: 'Route4'       
+             
+     
+    routeId:
+      value:
+        routeId: 10     

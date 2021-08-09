@@ -8,6 +8,9 @@
 
 <tags:standardPopup pageName="ivvc" module="capcontrol" popupName="zoneWizard">
 
+<cti:msg2 var="confirmDeleteMsg" key=".confirmDelete" argument="${zoneDto.name}"/>
+<input type="hidden" class="js-confirm-delete" value="${confirmDeleteMsg}"/>
+
 <tags:setFormEditMode mode="${mode}"/>
 
 <cti:displayForPageEditModes modes="EDIT">
@@ -273,5 +276,4 @@
     </div>
     
 </form:form>
-
 </tags:standardPopup>

@@ -87,10 +87,22 @@
         <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>
         <pointInfo name="Peak kW (Rate C kW)" attributes="PEAK_DEMAND_RATE_C"/>
         <pointInfo name="Peak kW (Rate D kW)" attributes="PEAK_DEMAND_RATE_D"/>
+        <pointInfo name="Phase A kVA"/>
+        <pointInfo name="Phase A kVAr"/>
         <pointInfo name="Phase A kW"/>
+        <pointInfo name="Phase A Power Factor" attributes="POWER_FACTOR_PHASE_A"/>
+        <pointInfo name="Phase B kVA"/>
+        <pointInfo name="Phase B kVAr"/>
         <pointInfo name="Phase B kW"/>
+        <pointInfo name="Phase B Power Factor" attributes="POWER_FACTOR_PHASE_B"/>
+        <pointInfo name="Phase C kVA"/>
+        <pointInfo name="Phase C kVAr"/>
         <pointInfo name="Phase C kW"/>
+        <pointInfo name="Phase C Power Factor" attributes="POWER_FACTOR_PHASE_C"/>
         <pointInfo name="Potential Indicator Warning" attributes="POTENTIAL_INDICATOR_WARNING"/>
+        <pointInfo name="Power Factor Degrees Phase A" init="true" attributes="POWER_FACTOR_ANGLE_PHASE_A"/>
+        <pointInfo name="Power Factor Degrees Phase B" init="true" attributes="POWER_FACTOR_ANGLE_PHASE_B"/>
+        <pointInfo name="Power Factor Degrees Phase C" init="true" attributes="POWER_FACTOR_ANGLE_PHASE_C"/>
         <pointInfo name="Power Fail Data Save Error" attributes="POWER_FAIL_DATA_SAVE_ERROR"/>
         <pointInfo name="Pqm Test Failure Warning" attributes="PQM_TEST_FAILURE_WARNING"/>
         <pointInfo name="Ram Error" attributes="RAM_ERROR"/>

@@ -87,10 +87,10 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         if (metadataMulti.isValidResultForMulti(RfnMetadataMulti.BATTERY_NODE_PARENT)) {
             RfnIdentifier rfnIdentifier = (RfnIdentifier) metadataMulti.getMetadatas()
                     .get(RfnMetadataMulti.BATTERY_NODE_PARENT);
-            if(rfnIdentifier.is_Empty_()) {
+            if (rfnIdentifier.is_Empty_()) {
                 return null;
             }
-            RfnDevice parent = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+            RfnDevice parent = rfnDeviceCreationService.findOrCreate(rfnIdentifier);
             if (parent == null) {
                 // couldn't find or create parent
                 return null;
@@ -137,7 +137,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     // remove nulls returned from NM
                     .filter(Objects::nonNull)
                     .filter(identifier -> !identifier.is_Empty_())
-                    .map(identifier -> rfnDeviceCreationService.createIfNotFound(identifier))
+                    .map(rfnIdentifier -> rfnDeviceCreationService.findOrCreate(rfnIdentifier))
                     // remove devices not created or found
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
@@ -197,7 +197,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             Map<RfnIdentifier, RfnDevice> devices = neighbors.stream()
                     // remove devices that do not have identifier or identifier is not valid
                     .filter(neighbor -> neighbor.getRfnIdentifier() != null && !neighbor.getRfnIdentifier().is_Empty_())
-                    .map(neighbor -> rfnDeviceCreationService.createIfNotFound(neighbor.getRfnIdentifier()))
+                    .map(neighbor -> rfnDeviceCreationService.findOrCreate(neighbor.getRfnIdentifier()))
                     // remove devices not created or found
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));

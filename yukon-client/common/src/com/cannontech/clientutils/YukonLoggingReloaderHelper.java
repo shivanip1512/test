@@ -71,6 +71,7 @@ public abstract class YukonLoggingReloaderHelper {
         // Do not load the Configuration on startup as YukonLogManager loads it for every application. When there user
         // add/edit/delete a logger, reload the Configuration.
         if (dbChangeType != DbChangeType.NONE) {
+            log.info("Yukon loggers are reloaded");
             // Get the current context and configuration
             LoggerContext ctx = YukonLogManager.getMyLogger().getContext();
             Configuration config = ctx.getConfiguration();

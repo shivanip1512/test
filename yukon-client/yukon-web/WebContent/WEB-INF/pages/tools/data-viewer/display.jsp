@@ -70,6 +70,8 @@
         <div class="js-tdc-trend-container" style="position: absolute;"></div>
     </div>
     <tags:simplePopup id="manual-entry-popup" title=""/>
+    <tags:simplePopup id="manual-control-popup" title=""/>
+    
     <cti:includeScript link="/resources/js/pages/yukon.tools.tdc.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.points.js"/>
 </cti:standardPage>

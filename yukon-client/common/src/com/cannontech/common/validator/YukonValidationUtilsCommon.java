@@ -31,6 +31,18 @@ public class YukonValidationUtilsCommon extends ValidationUtils {
         }
         return false;
     }
+    
+    /**
+     * Return true if the provided String contains only characters from whitelisted characters(charcters must be A-Z, a-z, 0-9, ., $ and _ ).
+     */
+    public static boolean checkWhitelistedCharacter(String fieldValue) {
+        if (fieldValue != null) {
+            String whitelist = "^[a-zA-Z0-9_$.]+$";
+            Matcher isWhitelistedChars = Pattern.compile(whitelist).matcher(fieldValue);
+            return isWhitelistedChars.matches() ? true : false;
+        }
+        return false;
+    }
 
     /**
      * Return true if the provided String contains any characters from illegal characters( \, |, /, ", \\ and , ).

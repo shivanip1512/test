@@ -175,4 +175,4 @@ Network Manager :
     description: RF Network Version
     details: Contains the latest RF network version
     iotType: Telemetry
-    frequency : OnStartupOnly
+    frequency : Daily

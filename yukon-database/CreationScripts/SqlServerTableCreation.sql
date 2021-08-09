@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/19/2021 8:48:14 PM                         */
+/* Created on:     8/2/2021 8:32:04 PM                          */
 /*==============================================================*/
 
 
@@ -9003,6 +9003,18 @@ create table RfnBroadcastEventSummary (
 go
 
 /*==============================================================*/
+/* Table: RfnModelChange                                        */
+/*==============================================================*/
+create table RfnModelChange (
+   DeviceID             numeric              not null,
+   OldModel             varchar(80)          not null,
+   NewModel             varchar(80)          not null,
+   DataTimestamp        datetime             not null,
+   constraint PK_RfnModelChange primary key (DeviceID)
+)
+go
+
+/*==============================================================*/
 /* Table: Route                                                 */
 /*==============================================================*/
 create table Route (
@@ -15221,6 +15233,12 @@ go
 alter table RfnBroadcastEventSummary
    add constraint FK_RFNBROAD_REFERENCE_RFNBROAD foreign key (RfnBroadcastEventId)
       references RfnBroadcastEvent (RfnBroadcastEventId)
+         on delete cascade
+go
+
+alter table RfnModelChange
+   add constraint FK_RfnModelChange_Device foreign key (DeviceID)
+      references DEVICE (DEVICEID)
          on delete cascade
 go
 

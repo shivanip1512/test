@@ -42,4 +42,5 @@
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayHighDiskUsageEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayRTCBatteryFailureEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.CellularRelayConnectionStatusEvaluator"/>
+    <bean class="com.cannontech.services.infrastructure.service.impl.CellularRelayDescendantCountEvaluator"/>
 </beans>

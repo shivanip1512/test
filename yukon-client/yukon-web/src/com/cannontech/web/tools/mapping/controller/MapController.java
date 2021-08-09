@@ -91,6 +91,7 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.db.point.stategroup.CommStatusState;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.user.YukonUserContext;
@@ -112,6 +113,8 @@ public class MapController {
     private static final Logger log = YukonLogManager.getLogger(MapController.class);
     
     private final static String baseKey = "yukon.web.modules.tools.map.";
+    private final static String mapNetworkKey = "yukon.web.modules.operator.mapNetwork.";
+            
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private IDatabaseCache databaseCache;
@@ -249,7 +252,21 @@ public class MapController {
                     model.addAttribute("errorMsg", e.getMessage());
                 }
             } else {
-                String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
+                //get Comm Status for Wi-Fi or Cellular
+                if (type.isWifiDevice() || type.isCellularDevice()) {
+                    String commStatus = accessor.getMessage(mapNetworkKey + "commStatus.RF");
+                    LitePoint commStatusPoint = attributeService.findPointForAttribute(pao, BuiltInAttribute.COMM_STATUS);
+                    PointValueQualityHolder commStatusValue = asyncDynamicDataSource.getPointValue(commStatusPoint.getPointID());
+                    if ((int)commStatusValue.getValue() == CommStatusState.CONNECTED.getRawState()) {
+                        if (type.isWifiDevice()) {
+                            commStatus = accessor.getMessage(mapNetworkKey + "commStatus.WiFi");
+                        } else {
+                            commStatus = accessor.getMessage(mapNetworkKey + "commStatus.Cellular");
+                        }
+                    }
+                    model.addAttribute("commStatus", commStatus);
+                }
+                String nmError = accessor.getMessage(mapNetworkKey + "exception.metadataError");
                 Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA);
                 if (includePrimaryRoute) {
                     requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
@@ -264,10 +281,10 @@ public class MapController {
                         model.addAttribute("errorMsg", nmError);
                     } else {
                         
-                        String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
+                        String statusString = accessor.getMessage(mapNetworkKey + "status.UNKNOWN");
                         NodeComm comm = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
                         if (comm != null && comm.getNodeCommStatus() != null) {
-                            statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
+                            statusString = accessor.getMessage(mapNetworkKey + "status." + comm.getNodeCommStatus());
                         }
                         model.addAttribute("deviceStatus", statusString);
                         DynamicRfnDeviceData deviceData = rfnDeviceDao.findDynamicRfnDeviceData(rfnDevice.getPaoIdentifier().getPaoId());
@@ -298,13 +315,13 @@ public class MapController {
                             List<String> flags = new ArrayList<>();
                             if (routeData.getRouteFlags() != null && !routeData.getRouteFlags().isEmpty()) {
                                 routeData.getRouteFlags().forEach(flag -> {
-                                    flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.routeFlag." + flag.name()));
+                                    flags.add(accessor.getMessage(mapNetworkKey + "routeFlag." + flag.name()));
                                 });
                                 model.addAttribute("routeFlags", String.join(", ", flags));
                                 //get distance to next hop
                                 RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
                                 if (nextHop != null) {
-                                    RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop);
+                                    RfnDevice nextHopDevice = rfnDeviceCreationService.findOrCreate(nextHop);
                                     if(nextHopDevice != null) {
                                         PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
                                         PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
