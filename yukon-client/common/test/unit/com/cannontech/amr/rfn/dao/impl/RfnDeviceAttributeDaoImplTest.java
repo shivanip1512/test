@@ -98,20 +98,10 @@ public class RfnDeviceAttributeDaoImplTest {
                 "peak",
                 "frozen");
 
-        var excludedAttributes = Set.of(
-                BuiltInAttribute.DELIVERED_PEAK_KVA_LAGGING,
+        var allowedIntervalAttributes = Set.of(
                 BuiltInAttribute.DELIVERED_PEAK_KVAR_FROZEN,
                 BuiltInAttribute.MINIMUM_POWER_FACTOR,
-                BuiltInAttribute.PEAK_KVA_LAGGING_RATE_A,
-                BuiltInAttribute.PEAK_KVA_LAGGING_RATE_B,
-                BuiltInAttribute.PEAK_KVA_LAGGING_RATE_C,
-                BuiltInAttribute.PEAK_KVA_LAGGING_RATE_D,
-                BuiltInAttribute.PEAK_KVA_Q12,
                 BuiltInAttribute.PEAK_KVA_Q124_FROZEN,
-                BuiltInAttribute.PEAK_KVA_Q12_RATE_A,
-                BuiltInAttribute.PEAK_KVA_Q12_RATE_B,
-                BuiltInAttribute.PEAK_KVA_Q12_RATE_C,
-                BuiltInAttribute.PEAK_KVA_Q12_RATE_D,
                 BuiltInAttribute.PREVIOUS_MINIMUM_POWER_FACTOR,
                 BuiltInAttribute.RECEIVED_KWH_FROZEN,
                 BuiltInAttribute.SUM_PEAK_KVAR_FROZEN,
@@ -122,15 +112,14 @@ public class RfnDeviceAttributeDaoImplTest {
                                 Pattern.CASE_INSENSITIVE)
                        .asPredicate();
         
-        var miscreants =
+        var unexpectedIntervalApplicable =
                 rfnDeviceAttributeDao.getAttributesForAllTypes().stream()
-                    .filter(not(BuiltInAttribute::isStatusType))
                     .filter(BuiltInAttribute::isIntervalApplicable)
-                    .filter(not(excludedAttributes::contains))
+                    .filter(not(allowedIntervalAttributes::contains))
                     .filter(attr -> qualifierPattern.test(attr.name()))
                     .collect(Collectors.toList());
         
-        assertTrue(miscreants.isEmpty(), "Found non-interval attributes claiming isIntervalApplicable: " + miscreants);        
+        assertTrue(unexpectedIntervalApplicable.isEmpty(), "Found non-interval attributes claiming isIntervalApplicable: " + unexpectedIntervalApplicable);
     }
     
     @Test
