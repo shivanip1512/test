@@ -48,6 +48,23 @@ public class MacroRouteServiceImpl implements MacroRouteService {
         setRouteNameFromList(macroRouteModel);
         return macroRouteModel;
     }
+    
+    public MacroRouteModel<?> update(int id, MacroRouteModel<?> macroRouteModel, LiteYukonUser yukonUser) {
+        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes()
+                .stream()
+                .filter(group -> group.getLiteID() == id)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Macro Route Id not found"));
+        if (pao == null) {
+            throw new NotFoundException("Route Id not found");
+        }
+        MacroRoute macroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(pao);
+        macroRouteModel.buildDBPersistent(macroRoute);
+        dbPersistentDao.performDBChange(macroRoute, TransactionType.UPDATE);
+        macroRouteModel.buildModel(macroRoute);
+        setRouteNameFromList(macroRouteModel);
+        return macroRouteModel;
+    }
 
     @Override
     public List<MacroRouteModel> retrieveAllMacroRoutes() {

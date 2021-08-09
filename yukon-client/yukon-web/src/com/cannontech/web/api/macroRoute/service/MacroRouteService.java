@@ -15,5 +15,10 @@ public interface MacroRouteService {
     List<MacroRouteModel> retrieveAllMacroRoutes();
 
     MacroRouteModel<?> retrieve(int id);
+    
+    /*
+     * Update a MacroRoute.
+     */
+    MacroRouteModel<?> update(int id, MacroRouteModel<?> macroRouteModel, LiteYukonUser yukonUser);
 
 }
