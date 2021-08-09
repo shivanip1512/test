@@ -68,6 +68,7 @@ Meter combinations:
     - &DTKR [ *a3d, *a3t, *a3k, *a3r ]
     - &_TKR [ *a3t, *a3k, *a3r ]
     - &__KR [ *a3k, *a3r ]
+    - &_T_R [ *a3t, *a3r ]
     - &__K_ [ *a3k ]
     - &___R [ *a3r ]
     - &01234 [ *sl4, *sl3, *sl2, *sl1, *sl0 ]
@@ -638,27 +639,27 @@ Elster A3:
     - Peak VA Received Rate D:                                         { Unit: *VA,     Modifiers: [ *Q2, *Q3, *Max, *RateD                ], Models: *__KR, Mapped: false }
     - Coincident Time of Peak VA Rate D:                               { Unit: *s,      Modifiers: [ *Coin1, *RateD                        ], Models: *__KR }
     - Average Power Factor Rate D:                                     { Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q4, *RateD                 ], Models: *__KR, Other names: [ "Rate D average power factor" ] }
-    - Power Factor Angle Phase A:                                      { Unit: *PF_deg, Modifiers: [ *PhA                                  ], Models: *___R }
-    - Power Factor Angle Phase B:                                      { Unit: *PF_deg, Modifiers: [ *PhB                                  ], Models: *___R }
-    - Power Factor Angle Phase C:                                      { Unit: *PF_deg, Modifiers: [ *PhC                                  ], Models: *___R }
+    - Power Factor Angle Phase A:                                      { Unit: *PF_deg, Modifiers: [ *PhA                                  ], Models: *_T_R }
+    - Power Factor Angle Phase B:                                      { Unit: *PF_deg, Modifiers: [ *PhB                                  ], Models: *_T_R }
+    - Power Factor Angle Phase C:                                      { Unit: *PF_deg, Modifiers: [ *PhC                                  ], Models: *_T_R }
     - Voltage Phase A:                                                 { Unit: *V,      Modifiers: [ *PhA, *milli                          ], Models: *DTKR, Other names: [ "Phase A voltage" ] }
     - Voltage Phase B:                                                 { Unit: *V,      Modifiers: [ *PhB, *milli                          ], Models: *DTKR, Other names: [ "Phase B voltage" ] }
     - Voltage Phase C:                                                 { Unit: *V,      Modifiers: [ *PhC, *milli                          ], Models: *DTKR, Other names: [ "Phase C voltage" ] }
     - Current Phase A:                                                 { Unit: *A,      Modifiers: [ *PhA, *milli                          ], Models: *DTKR, Other names: [ "Phase A current" ] }
     - Current Phase B:                                                 { Unit: *A,      Modifiers: [ *PhB, *milli                          ], Models: *DTKR, Other names: [ "Phase B current" ] }
     - Current Phase C:                                                 { Unit: *A,      Modifiers: [ *PhC, *milli                          ], Models: *DTKR, Other names: [ "Phase C current" ] }
-    - Power Factor Phase A:                                            { Unit: *PF,     Modifiers: [ *PhA                                  ], Models: *__KR, Other names: [ "Phase A power factor" ] }
-    - Power Factor Phase B:                                            { Unit: *PF,     Modifiers: [ *PhB                                  ], Models: *__KR, Other names: [ "Phase B power factor" ] }
-    - Power Factor Phase C:                                            { Unit: *PF,     Modifiers: [ *PhC                                  ], Models: *__KR, Other names: [ "Phase C power factor" ] }
+    - Power Factor Phase A:                                            { Unit: *PF,     Modifiers: [ *PhA                                  ], Models: *_TKR, Other names: [ "Phase A power factor" ] }
+    - Power Factor Phase B:                                            { Unit: *PF,     Modifiers: [ *PhB                                  ], Models: *_TKR, Other names: [ "Phase B power factor" ] }
+    - Power Factor Phase C:                                            { Unit: *PF,     Modifiers: [ *PhC                                  ], Models: *_TKR, Other names: [ "Phase C power factor" ] }
     - Interval Demand Phase A:                                         { Unit: *W,      Modifiers: [ *PhA                                  ], Models: *DTKR, Other names: [ "Phase A kW" ] }
     - Interval Demand Phase B:                                         { Unit: *W,      Modifiers: [ *PhB                                  ], Models: *DTKR, Other names: [ "Phase B kW" ] }
     - Interval Demand Phase C:                                         { Unit: *W,      Modifiers: [ *PhC                                  ], Models: *DTKR, Other names: [ "Phase C kW" ] }
-    - Volt-amperes Reactive Phase A:                                   { Unit: *Var,    Modifiers: [ *PhA                                  ], Models: *__KR, Other names: [ "Phase A kVAR" ] }
-    - Volt-amperes Reactive Phase B:                                   { Unit: *Var,    Modifiers: [ *PhB                                  ], Models: *__KR, Other names: [ "Phase B kVAR" ] }
-    - Volt-amperes Reactive Phase C:                                   { Unit: *Var,    Modifiers: [ *PhC                                  ], Models: *__KR, Other names: [ "Phase C kVAR" ] }
-    - Volt-amperes Phase A:                                            { Unit: *VA,     Modifiers: [ *PhA                                  ], Models: *__KR, Other names: [ "Phase A kVA" ] }
-    - Volt-amperes Phase B:                                            { Unit: *VA,     Modifiers: [ *PhB                                  ], Models: *__KR, Other names: [ "Phase B kVA" ] }
-    - Volt-amperes Phase C:                                            { Unit: *VA,     Modifiers: [ *PhC                                  ], Models: *__KR, Other names: [ "Phase C kVA" ] }
+    - Volt-amperes Reactive Phase A:                                   { Unit: *Var,    Modifiers: [ *PhA                                  ], Models: *_TKR, Other names: [ "Phase A kVAR" ] }
+    - Volt-amperes Reactive Phase B:                                   { Unit: *Var,    Modifiers: [ *PhB                                  ], Models: *_TKR, Other names: [ "Phase B kVAR" ] }
+    - Volt-amperes Reactive Phase C:                                   { Unit: *Var,    Modifiers: [ *PhC                                  ], Models: *_TKR, Other names: [ "Phase C kVAR" ] }
+    - Volt-amperes Phase A:                                            { Unit: *VA,     Modifiers: [ *PhA                                  ], Models: *_TKR, Other names: [ "Phase A kVA" ] }
+    - Volt-amperes Phase B:                                            { Unit: *VA,     Modifiers: [ *PhB                                  ], Models: *_TKR, Other names: [ "Phase B kVA" ] }
+    - Volt-amperes Phase C:                                            { Unit: *VA,     Modifiers: [ *PhC                                  ], Models: *_TKR, Other names: [ "Phase C kVA" ] }
     - RFN Temperature:                                                 { Unit: *C,      Modifiers: [                                       ], Models: *DTKR }
 
 # Table 8 - ELO
@@ -1535,12 +1536,20 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time of Daily Peak Delivered Demand:  { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
     - Peak Delivered Var:                   { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max                   ], Models: *__-RX-23 }
     - Time of Peak Delivered Var:           { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
+    - Frozen Peak Delivered Var:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *Prev            ], Models: *__-RX-23 }
+    - Time of Frozen Peak Delivered Var:    { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
     - Peak Total Var:                       { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total Var:               { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Peak Volt-amperes Lagging:            { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max              ], Models: *__-RX-23 }
-    - Time of Peak Volt-amperes Lagging:    { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
+    - Frozen Peak Total Var:                { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23 }
+    - Time of Frozen Peak Total Var:        { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Peak VA Q1 + Q2 + Q4:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max              ], Models: *__-RX-23 }
+    - Time of Peak VA Q1 + Q2 + Q4:         { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
+    - Frozen Peak VA Q1 + Q2 + Q4:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev       ], Models: *__-RX-23 }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4:  { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
     - Peak Total VA:                        { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total VA:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
+    - Frozen Peak Total VA:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak Total VA:         { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
     - Watt-hours Delivered Rate A:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateA                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate A:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateA                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate A:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *AX-RX-23 }
@@ -1559,8 +1568,12 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate A:    { Unit: *s,      Modifiers: [ *RateA, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate A:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA           ], Models: *__-RX-23 } 
     - Time of Peak Var Rate A:              { Unit: *s,      Modifiers: [ *RateA                           ], Models: *__-RX-23 } 
-    - Peak Volt-amperes Lagging Rate A:     { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA      ], Models: *__-RX-23 }
-    - Time of Peak Volt-amperes Lagging Rate A: { Unit: *s,  Modifiers: [ *RateA                           ], Models: *__-RX-23 }
+    - Frozen Peak Delivered Var Rate A:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA, *Prev    ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak Delivered Var Rate A: { Unit: *s,  Modifiers: [ *RateA, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Peak VA Q1 + Q2 + Q4 Rate A:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA      ], Models: *__-RX-23 }
+    - Time of Peak VA Q1 + Q2 + Q4 Rate A:  { Unit: *s,      Modifiers: [ *RateA                           ], Models: *__-RX-23 }
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate A:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA, *Prev ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate A: { Unit: *s, Modifiers: [ *RateA, *Prev                   ], Models: *__-RX-23, Mapped: false }
     - Watt-hours Delivered Rate B:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateB                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate B:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateB                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate B:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *AX-RX-23 }
@@ -1579,8 +1592,12 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate B:    { Unit: *s,      Modifiers: [ *RateB, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate B:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB           ], Models: *__-RX-23 } 
     - Time of Peak Var Rate B:              { Unit: *s,      Modifiers: [ *RateB                           ], Models: *__-RX-23 } 
-    - Peak Volt-amperes Lagging Rate B:     { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB      ], Models: *__-RX-23 }
-    - Time of Peak Volt-amperes Lagging Rate B: { Unit: *s,  Modifiers: [ *RateB                           ], Models: *__-RX-23 } 
+    - Frozen Peak Delivered Var Rate B:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB, *Prev    ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak Delivered Var Rate B: { Unit: *s,  Modifiers: [ *RateB, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Peak VA Q1 + Q2 + Q4 Rate B:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB      ], Models: *__-RX-23 }
+    - Time of Peak VA Q1 + Q2 + Q4 Rate B:  { Unit: *s,      Modifiers: [ *RateB                           ], Models: *__-RX-23 } 
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate B:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB, *Prev ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate B: { Unit: *s, Modifiers: [ *RateB, *Prev                   ], Models: *__-RX-23, Mapped: false }
     - Watt-hours Delivered Rate C:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateC                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate C:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateC                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate C:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *AX-RX-23 }
@@ -1599,8 +1616,12 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate C:    { Unit: *s,      Modifiers: [ *RateC, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate C:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC           ], Models: *__-RX-23 } 
     - Time of Peak Var Rate C:              { Unit: *s,      Modifiers: [ *RateC                           ], Models: *__-RX-23 } 
-    - Peak Volt-amperes Lagging Rate C:     { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC      ], Models: *__-RX-23 }
-    - Time of Peak Volt-amperes Lagging Rate C: { Unit: *s,  Modifiers: [ *RateC                           ], Models: *__-RX-23 }
+    - Frozen Peak Delivered Var Rate C:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC, *Prev    ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak Delivered Var Rate C: { Unit: *s,  Modifiers: [ *RateC, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Peak VA Q1 + Q2 + Q4 Rate C:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC      ], Models: *__-RX-23 }
+    - Time of Peak VA Q1 + Q2 + Q4 Rate C:  { Unit: *s,      Modifiers: [ *RateC                           ], Models: *__-RX-23 }
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate C:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC, *Prev ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate C: { Unit: *s, Modifiers: [ *RateC, *Prev                   ], Models: *__-RX-23, Mapped: false }
     - Watt-hours Delivered Rate D:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateD                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate D:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateD                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate D:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *AX-RX-23 }
@@ -1619,8 +1640,12 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate D:    { Unit: *s,      Modifiers: [ *RateD, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate D:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD           ], Models: *__-RX-23 } 
     - Time of Peak Var Rate D:              { Unit: *s,      Modifiers: [ *RateD                           ], Models: *__-RX-23 } 
-    - Peak Volt-amperes Lagging Rate D:     { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD      ], Models: *__-RX-23 }
-    - Time of Peak Volt-amperes Lagging Rate D: { Unit: *s,  Modifiers: [ *RateD                           ], Models: *__-RX-23 }
+    - Frozen Peak Delivered Var Rate D:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD, *Prev    ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak Delivered Var Rate D: { Unit: *s,  Modifiers: [ *RateD, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Peak VA Q1 + Q2 + Q4 Rate D:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD      ], Models: *__-RX-23 }
+    - Time of Peak VA Q1 + Q2 + Q4 Rate D:  { Unit: *s,      Modifiers: [ *RateD                           ], Models: *__-RX-23 }
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate D:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD, *Prev ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate D: { Unit: *s, Modifiers: [ *RateD, *Prev                   ], Models: *__-RX-23, Mapped: false }
     - Peak Daily Voltage:                   { Unit: *V,      Modifiers: [ *DayMax, *milli                  ], Models: *AX-RX-23 }
     - Coincident Time of Peak Daily Voltage: { Unit: *s,     Modifiers: [                                  ], Models: *AX-RX-23 }
     - Minimum Daily Voltage:                { Unit: *V,      Modifiers: [ *DayMin, *milli                  ], Models: *AX-RX-23 }

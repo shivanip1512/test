@@ -81,12 +81,16 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
             sql.append("WHERE LoggerLevel").in(loggerLevels);
         }
         if (StringUtils.isNotEmpty(loggerName)) {
+            if (loggerName.contains("_")) {
+                loggerName = loggerName.replaceAll("_", "/_");
+            }
+
             if (CollectionUtils.isEmpty(loggerLevels)) {
                 sql.append("WHERE UPPER(LoggerName) LIKE");
-                sql.append("'%" + loggerName.toUpperCase() + "%'");
+                sql.append("'%" + loggerName.toUpperCase() + "%' ESCAPE '/' ");
             } else {
                 sql.append("AND UPPER(LoggerName) LIKE");
-                sql.append("'%" + loggerName.toUpperCase() + "%'");
+                sql.append("'%" + loggerName.toUpperCase() + "%' ESCAPE '/' ");
             }
         }
         if (sortBy != null) {
