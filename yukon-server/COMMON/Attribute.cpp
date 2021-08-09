@@ -69,7 +69,11 @@ INIT_ATTRIBUTE( ForwardInductivekVArh,                              "FORWARD_IND
 INIT_ATTRIBUTE( GeneralAlarmFlag,                                   "GENERAL_ALARM_FLAG" );
 INIT_ATTRIBUTE( IEDDemandResetCount,                                "IED_DEMAND_RESET_COUNT" );
 INIT_ATTRIBUTE( kVAh,                                               "KVAH" );
-INIT_ATTRIBUTE( kVAhLagging,                                        "DELIVERED_KVAH_LAGGING" );
+INIT_ATTRIBUTE( kVAhQ124,                                           "KVAH_Q124" );
+INIT_ATTRIBUTE( kVAhQ124RateA,                                      "KVAH_Q124_RATE_A" );
+INIT_ATTRIBUTE( kVAhQ124RateB,                                      "KVAH_Q124_RATE_B" );
+INIT_ATTRIBUTE( kVAhQ124RateC,                                      "KVAH_Q124_RATE_C" );
+INIT_ATTRIBUTE( kVAhQ124RateD,                                      "KVAH_Q124_RATE_D" );
 INIT_ATTRIBUTE( kVAhRateA,                                          "KVAH_RATE_A" );
 INIT_ATTRIBUTE( kVAhRateB,                                          "KVAH_RATE_B" );
 INIT_ATTRIBUTE( kVAhRateC,                                          "KVAH_RATE_C" );
@@ -79,7 +83,11 @@ INIT_ATTRIBUTE( NetkVAhRateA,                                       "NET_KVAH_RA
 INIT_ATTRIBUTE( NetkVAhRateB,                                       "NET_KVAH_RATE_B" );
 INIT_ATTRIBUTE( NetkVAhRateC,                                       "NET_KVAH_RATE_C" );
 INIT_ATTRIBUTE( NetkVAhRateD,                                       "NET_KVAH_RATE_D" );
-INIT_ATTRIBUTE( ReceivedkVAhQ234,                                   "RECEIVED_KVAH_Q234" );
+INIT_ATTRIBUTE( kVAhQ234,                                           "KVAH_Q234" );
+INIT_ATTRIBUTE( kVAhQ234RateA,                                      "KVAH_Q234_RATE_A" );
+INIT_ATTRIBUTE( kVAhQ234RateB,                                      "KVAH_Q234_RATE_B" );
+INIT_ATTRIBUTE( kVAhQ234RateC,                                      "KVAH_Q234_RATE_C" );
+INIT_ATTRIBUTE( kVAhQ234RateD,                                      "KVAH_Q234_RATE_D" );
 INIT_ATTRIBUTE( ReceivedkVAhRateA,                                  "RECEIVED_KVAH_RATE_A" );
 INIT_ATTRIBUTE( ReceivedkVAhRateB,                                  "RECEIVED_KVAH_RATE_B" );
 INIT_ATTRIBUTE( ReceivedkVAhRateC,                                  "RECEIVED_KVAH_RATE_C" );
@@ -184,6 +192,7 @@ INIT_ATTRIBUTE( kVAQ12,                                             "KVA_Q12" );
 INIT_ATTRIBUTE( kVAQ34,                                             "KVA_Q34" );
 INIT_ATTRIBUTE( kVAQ13,                                             "KVA_Q13" );
 INIT_ATTRIBUTE( kVAQ24,                                             "KVA_Q24" );
+INIT_ATTRIBUTE( PeakkVAQ124Frozen,                                  "PEAK_KVA_Q124_FROZEN" );
 INIT_ATTRIBUTE( SumkVAr,                                            "SUM_KVAR" );
 INIT_ATTRIBUTE( NetkVAr,                                            "NET_KVAR" );
 INIT_ATTRIBUTE( PeakkVAr,                                           "PEAK_KVAR" );
@@ -212,6 +221,8 @@ INIT_ATTRIBUTE( kVArQ13,                                            "KVAR_Q13" )
 INIT_ATTRIBUTE( kVArQ24,                                            "KVAR_Q24" );
 INIT_ATTRIBUTE( kVArQ14,                                            "KVAR_Q14" );
 INIT_ATTRIBUTE( kVArQ23,                                            "KVAR_Q23" );
+INIT_ATTRIBUTE( SumPeakkVArFrozen,                                  "SUM_PEAK_KVAR_FROZEN" );
+INIT_ATTRIBUTE( DeliveredPeakkVArFrozen,                            "DELIVERED_PEAK_KVAR_FROZEN" );
 INIT_ATTRIBUTE( PeakkVArh,                                          "PEAK_KVARH" );
 INIT_ATTRIBUTE( PeakkVArhCoincidental,                              "PEAK_KVARH_COIN" );
 INIT_ATTRIBUTE( Phase,                                              "PHASE" );
@@ -219,6 +230,8 @@ INIT_ATTRIBUTE( PowerFactorAvgDelivered,                            "AVERAGE_DEL
 INIT_ATTRIBUTE( PowerFactorAvgReceived,                             "AVERAGE_RECEIVED_POWER_FACTOR" );
 INIT_ATTRIBUTE( PowerFactor,                                        "POWER_FACTOR" );
 INIT_ATTRIBUTE( PowerFactorCoincidental,                            "POWER_FACTOR_COIN" );
+INIT_ATTRIBUTE( MinimumPowerFactor,                                 "MINIMUM_POWER_FACTOR");
+INIT_ATTRIBUTE( PreviousMinimumPowerFactor,                         "PREVIOUS_MINIMUM_POWER_FACTOR");
 INIT_ATTRIBUTE( CoincidentPowerFactorAtDeliveredPeakKVA,            "COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA" );
 INIT_ATTRIBUTE( CoincidentPowerFactorAtDeliveredPeakkVARateA,       "COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A" );
 INIT_ATTRIBUTE( CoincidentPowerFactorAtDeliveredPeakkVARateB,       "COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_B" );
@@ -468,6 +481,8 @@ INIT_ATTRIBUTE( ForwardInductivekVArhperInterval,                   "FORWARD_IND
 INIT_ATTRIBUTE( ForwardCapacitivekVArhperInterval,                  "FORWARD_CAPACITIVE_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( ReverseInductivekVArhperInterval,                   "REVERSE_INDUCTIVE_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( ReverseCapacitivekVArhperInterval,                  "REVERSE_CAPACITIVE_KVARH_PER_INTERVAL" );
+INIT_ATTRIBUTE( DeliveredkVAhperInterval,                           "DELIVERED_KVAH_PER_INTERVAL" );
+INIT_ATTRIBUTE( ReceivedkVAhperInterval,                            "RECEIVED_KVAH_PER_INTERVAL" );
 
 INIT_ATTRIBUTE( DeliveredkWLoadProfile,                             "DELIVERED_KW_LOAD_PROFILE" );
 INIT_ATTRIBUTE( DeliveredkWRateALoadProfile,                        "DELIVERED_KW_RATE_A_LOAD_PROFILE" );

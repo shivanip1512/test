@@ -21,7 +21,7 @@
         <c:choose>
              <c:when test="${isEditMode}">
                 ${fn:escapeXml(logger.loggerName)}
-                 <input type="hidden" name="loggerName" value="${fn:escapeXml(logger.loggerName)}"/>
+                 <input type="hidden" name="loggerName" value="${fn:escapeXml(logger.loggerName)}" maxlength="200"/>
             </c:when>
             <c:otherwise>
                 <tags:input path="loggerName" size="60"/>

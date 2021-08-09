@@ -14,4 +14,10 @@ public interface MacroRouteService {
      * Delete a MacroRoute.
      */
     int delete(int id, LiteYukonUser yukonUser);
+
+    /*
+     * Update a MacroRoute.
+     */
+    MacroRouteModel<?> update(int id, MacroRouteModel<?> macroRouteModel, LiteYukonUser yukonUser);
+
 }

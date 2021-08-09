@@ -4,6 +4,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.device.Rfn1200;
@@ -42,4 +43,11 @@ public interface RfnDeviceEventLogService {
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn")
     void apnChanged(@Arg(ArgEnum.paoName) String paoName, @Arg(ArgEnum.rfnId) RfnIdentifier rfnIdentifier,  @Arg(ArgEnum.apn) String apn);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn")
+    void modelUpdated(@Arg(ArgEnum.paoName) String paoName, @Arg(ArgEnum.rfnId) RfnIdentifier rfnIdentifier, String oldModel, String newModel);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn")
+    void modelAndPaoTypeUpdated(@Arg(ArgEnum.paoName) String paoName, @Arg(ArgEnum.rfnId) RfnIdentifier rfnIdentifier,
+            String oldModel, PaoType oldType, String newModel, PaoType newType);
 }

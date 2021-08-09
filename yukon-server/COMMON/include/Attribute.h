@@ -60,7 +60,11 @@ public:
     static const Attribute  GeneralAlarmFlag;
     static const Attribute  IEDDemandResetCount;
     static const Attribute  kVAh;
-    static const Attribute  kVAhLagging;
+    static const Attribute  kVAhQ124;
+    static const Attribute  kVAhQ124RateA;
+    static const Attribute  kVAhQ124RateB;
+    static const Attribute  kVAhQ124RateC;
+    static const Attribute  kVAhQ124RateD;
     static const Attribute  kVAhRateA;
     static const Attribute  kVAhRateB;
     static const Attribute  kVAhRateC;
@@ -70,7 +74,11 @@ public:
     static const Attribute  NetkVAhRateB;
     static const Attribute  NetkVAhRateC;
     static const Attribute  NetkVAhRateD;
-    static const Attribute  ReceivedkVAhQ234;
+    static const Attribute  kVAhQ234;
+    static const Attribute  kVAhQ234RateA;
+    static const Attribute  kVAhQ234RateB;
+    static const Attribute  kVAhQ234RateC;
+    static const Attribute  kVAhQ234RateD;
     static const Attribute  ReceivedkVAhRateA;
     static const Attribute  ReceivedkVAhRateB;
     static const Attribute  ReceivedkVAhRateC;
@@ -175,6 +183,7 @@ public:
     static const Attribute  kVAQ34;
     static const Attribute  kVAQ13;
     static const Attribute  kVAQ24;
+    static const Attribute  PeakkVAQ124Frozen;
     static const Attribute  SumkVAr;
     static const Attribute  NetkVAr;
     static const Attribute  PeakkVAr;
@@ -203,6 +212,8 @@ public:
     static const Attribute  kVArQ24;
     static const Attribute  kVArQ14;
     static const Attribute  kVArQ23;
+    static const Attribute  SumPeakkVArFrozen;
+    static const Attribute  DeliveredPeakkVArFrozen;
     static const Attribute  PeakkVArh;
     static const Attribute  PeakkVArhCoincidental;
     static const Attribute  Phase;
@@ -210,6 +221,8 @@ public:
     static const Attribute  PowerFactorAvgReceived;
     static const Attribute  PowerFactor;
     static const Attribute  PowerFactorCoincidental;
+    static const Attribute  MinimumPowerFactor;
+    static const Attribute  PreviousMinimumPowerFactor;
     static const Attribute  CoincidentPowerFactorAtDeliveredPeakKVA;
     static const Attribute  CoincidentPowerFactorAtDeliveredPeakkVARateA;
     static const Attribute  CoincidentPowerFactorAtDeliveredPeakkVARateB;
@@ -459,6 +472,8 @@ public:
     static const Attribute  ForwardCapacitivekVArhperInterval;
     static const Attribute  ReverseInductivekVArhperInterval;
     static const Attribute  ReverseCapacitivekVArhperInterval;
+    static const Attribute  DeliveredkVAhperInterval;
+    static const Attribute  ReceivedkVAhperInterval;
 
     static const Attribute  DeliveredkWLoadProfile;
     static const Attribute  DeliveredkWRateALoadProfile;

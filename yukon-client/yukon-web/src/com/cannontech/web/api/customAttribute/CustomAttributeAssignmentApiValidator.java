@@ -39,6 +39,7 @@ public class CustomAttributeAssignmentApiValidator extends SimpleValidator<Assig
                                                                             .values()
                                                                             .stream()
                                                                             .filter(attr -> attr.getAttributeId() == assignment.getAttributeId()
+                                                                                    && attr.getAttributeAssignmentId() != assignment.getAttributeAssignmentId()
                                                                                     && attr.getPaoType() == assignment.getPaoType())
                                                                             .findFirst();
         if (attributeAssignment.isPresent()) {

@@ -1525,7 +1525,9 @@
     <bean class="com.cannontech.web.api.trend.ResetPeakValidatorHelper"/>
     <bean class="com.cannontech.web.api.trend.ResetPeakApiValidator"/>
     <bean class="com.cannontech.web.tools.trends.validator.ResetPeakPopupValidator"/>
-    
+    <bean class="com.cannontech.web.api.loggers.YukonLoggersApiValidator"/>
+    <bean class="com.cannontech.web.admin.YukonLoggersValidator"/>
+
     <bean class="com.cannontech.web.api.picker.PickerSearchApiValidator"/>
     <bean class="com.cannontech.web.api.picker.PickerIdSearchApiValidator"/>
 
@@ -1547,5 +1549,9 @@
     <bean class="com.cannontech.web.api.route.service.impl.RouteServiceImpl"/>
     <bean class="com.cannontech.web.api.route.service.impl.RouteHelperImpl"/>
     
+
+    <bean class="com.cannontech.web.api.macroRoute.MacroRouteApiValidator"/>	
+    <bean class="com.cannontech.web.api.macroRoute.MacroRouteApiValidatorHelper"/>
+    <bean class="com.cannontech.web.api.macroRoute.MacroRouteApiCreateValidator"/>
     <bean class="com.cannontech.web.api.macroRoute.service.impl.MacroRouteServiceImpl"/>
 </beans>

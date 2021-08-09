@@ -1,7 +1,6 @@
 package com.cannontech.web.api.macroRoute.model;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
