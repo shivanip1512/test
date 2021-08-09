@@ -201,6 +201,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     KVA_Q34("kVA (Quadrants 3 4)", AttributeGroup.REACTIVE),
     KVA_Q13("kVA (Quadrants 1 3)", AttributeGroup.REACTIVE),
     KVA_Q24("kVA (Quadrants 2 4)", AttributeGroup.REACTIVE),
+    PEAK_KVA_Q124_FROZEN("Peak kVA (Quadrants 1 2 4) Frozen ", AttributeGroup.REACTIVE),
     SUM_KVAR("Sum kVAr", AttributeGroup.REACTIVE),
     NET_KVAR("Net kVAr", AttributeGroup.REACTIVE),
     PEAK_KVAR("Peak kVAr", AttributeGroup.REACTIVE),
@@ -229,6 +230,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     KVAR_Q24("kVAr (Quadrants 2 4)", AttributeGroup.REACTIVE),
     KVAR_Q14("kVAr (Quadrants 1 4)", AttributeGroup.REACTIVE),
     KVAR_Q23("kVAr (Quadrants 2 3)", AttributeGroup.REACTIVE),
+    SUM_PEAK_KVAR_FROZEN("Sum Peak kVAr Frozen", AttributeGroup.REACTIVE),
+    DELIVERED_PEAK_KVAR_FROZEN("Delivered Peak kVAr Frozen", AttributeGroup.REACTIVE),
     PEAK_KVARH("Peak kVArh", AttributeGroup.REACTIVE),
     PEAK_KVARH_COIN("Peak kVArh Coincidental", AttributeGroup.REACTIVE),
     PHASE("Phase", AttributeGroup.OTHER),
@@ -501,6 +504,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     KVA_LOAD_PROFILE("kVA Load Profile", AttributeGroup.PROFILE, false), //calculated, not readable
+    DELIVERED_KVAH_PER_INTERVAL("Delivered kVAh per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KVAH_PER_INTERVAL("Received kVAh per Interval", AttributeGroup.USAGE, false), //calculated, not readable
 
     NET_KVARH("Net kVArh", AttributeGroup.REACTIVE),
     NET_KVARH_RATE_A("Net kVArh Rate A", AttributeGroup.REACTIVE),
@@ -1177,6 +1182,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                                USAGE_WATER,
                                                USAGE_GAS,
                                                KVAH,
+                                               RECEIVED_KVAH,
                                                DELIVERED_KWH_RATE_A,
                                                DELIVERED_KWH_RATE_B,
                                                DELIVERED_KWH_RATE_C,

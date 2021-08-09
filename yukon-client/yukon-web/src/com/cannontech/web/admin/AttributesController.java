@@ -312,8 +312,7 @@ public class AttributesController {
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, 
                                                                                           method, Object.class, assignment);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                BindException error = new BindException(assignment, "assignment");
-                helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
+                failedDeviceTypes.add(assignment.getPaoType().getDbString());
             }
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 successDeviceTypes.add(assignment.getPaoType().getDbString());

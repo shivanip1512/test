@@ -1,12 +1,17 @@
 package com.cannontech.web.api.macroRoute;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +40,27 @@ public class MacroRouteApiController {
         MacroRouteModel createMacroRoute = macroRouteService.create(macroRouteModel, userContext.getYukonUser());
         return new ResponseEntity<>(createMacroRoute, HttpStatus.CREATED);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> retrieve(@PathVariable int id) {
+        MacroRouteModel<?> macroRouteModel = macroRouteService.retrieve(id);
+        return new ResponseEntity<>(macroRouteModel, HttpStatus.OK);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<Object> retrieveAllMacroRoutes() {
+        List<MacroRouteModel> macroRouteModel = macroRouteService.retrieveAllMacroRoutes();
+        return new ResponseEntity<>(macroRouteModel, HttpStatus.OK);
+    }
     
+    @PatchMapping("/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.UPDATE)
+    public ResponseEntity<Object> update(@PathVariable("id") int id, @Valid @RequestBody MacroRouteModel<?> macroRouteModel,
+            YukonUserContext userContext) {
+        MacroRouteModel<?> updateMacroRoute = macroRouteService.update(id, macroRouteModel, userContext.getYukonUser());
+        return new ResponseEntity<>(updateMacroRoute, HttpStatus.OK);
+    }
+
     @InitBinder("macroRouteModel")
     public void setupBinder(WebDataBinder binder) {
         binder.addValidators(macroApiRouteValidator);

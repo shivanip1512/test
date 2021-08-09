@@ -192,6 +192,7 @@ INIT_ATTRIBUTE( kVAQ12,                                             "KVA_Q12" );
 INIT_ATTRIBUTE( kVAQ34,                                             "KVA_Q34" );
 INIT_ATTRIBUTE( kVAQ13,                                             "KVA_Q13" );
 INIT_ATTRIBUTE( kVAQ24,                                             "KVA_Q24" );
+INIT_ATTRIBUTE( PeakkVAQ124Frozen,                                  "PEAK_KVA_Q124_FROZEN" );
 INIT_ATTRIBUTE( SumkVAr,                                            "SUM_KVAR" );
 INIT_ATTRIBUTE( NetkVAr,                                            "NET_KVAR" );
 INIT_ATTRIBUTE( PeakkVAr,                                           "PEAK_KVAR" );
@@ -220,6 +221,8 @@ INIT_ATTRIBUTE( kVArQ13,                                            "KVAR_Q13" )
 INIT_ATTRIBUTE( kVArQ24,                                            "KVAR_Q24" );
 INIT_ATTRIBUTE( kVArQ14,                                            "KVAR_Q14" );
 INIT_ATTRIBUTE( kVArQ23,                                            "KVAR_Q23" );
+INIT_ATTRIBUTE( SumPeakkVArFrozen,                                  "SUM_PEAK_KVAR_FROZEN" );
+INIT_ATTRIBUTE( DeliveredPeakkVArFrozen,                            "DELIVERED_PEAK_KVAR_FROZEN" );
 INIT_ATTRIBUTE( PeakkVArh,                                          "PEAK_KVARH" );
 INIT_ATTRIBUTE( PeakkVArhCoincidental,                              "PEAK_KVARH_COIN" );
 INIT_ATTRIBUTE( Phase,                                              "PHASE" );
@@ -478,6 +481,8 @@ INIT_ATTRIBUTE( ForwardInductivekVArhperInterval,                   "FORWARD_IND
 INIT_ATTRIBUTE( ForwardCapacitivekVArhperInterval,                  "FORWARD_CAPACITIVE_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( ReverseInductivekVArhperInterval,                   "REVERSE_INDUCTIVE_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( ReverseCapacitivekVArhperInterval,                  "REVERSE_CAPACITIVE_KVARH_PER_INTERVAL" );
+INIT_ATTRIBUTE( DeliveredkVAhperInterval,                           "DELIVERED_KVAH_PER_INTERVAL" );
+INIT_ATTRIBUTE( ReceivedkVAhperInterval,                            "RECEIVED_KVAH_PER_INTERVAL" );
 
 INIT_ATTRIBUTE( DeliveredkWLoadProfile,                             "DELIVERED_KW_LOAD_PROFILE" );
 INIT_ATTRIBUTE( DeliveredkWRateALoadProfile,                        "DELIVERED_KW_RATE_A_LOAD_PROFILE" );
