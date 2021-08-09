@@ -1,5 +1,6 @@
 package com.cannontech.amr.rfn.dao.impl;
 
+import static java.util.function.Predicate.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -86,6 +88,49 @@ public class RfnDeviceAttributeDaoImplTest {
         assertEquals((Integer)  5, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.DELIVERED_DEMAND, PaoType.RFN420CL));
         
         assertEquals((Integer)200, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.INSTANTANEOUS_KW, PaoType.RFN430SL1));
+    }
+    
+    @Test
+    public void test_nonIntervalAttributes() {
+        var nonIntervalQualifiers = Set.of(
+                "minimum", 
+                "maximum", 
+                "peak",
+                "frozen");
+
+        var excludedAttributes = Set.of(
+                BuiltInAttribute.DELIVERED_PEAK_KVA_LAGGING,
+                BuiltInAttribute.DELIVERED_PEAK_KVAR_FROZEN,
+                BuiltInAttribute.MINIMUM_POWER_FACTOR,
+                BuiltInAttribute.PEAK_KVA_LAGGING_RATE_A,
+                BuiltInAttribute.PEAK_KVA_LAGGING_RATE_B,
+                BuiltInAttribute.PEAK_KVA_LAGGING_RATE_C,
+                BuiltInAttribute.PEAK_KVA_LAGGING_RATE_D,
+                BuiltInAttribute.PEAK_KVA_Q12,
+                BuiltInAttribute.PEAK_KVA_Q124_FROZEN,
+                BuiltInAttribute.PEAK_KVA_Q12_RATE_A,
+                BuiltInAttribute.PEAK_KVA_Q12_RATE_B,
+                BuiltInAttribute.PEAK_KVA_Q12_RATE_C,
+                BuiltInAttribute.PEAK_KVA_Q12_RATE_D,
+                BuiltInAttribute.PREVIOUS_MINIMUM_POWER_FACTOR,
+                BuiltInAttribute.RECEIVED_KWH_FROZEN,
+                BuiltInAttribute.SUM_PEAK_KVAR_FROZEN,
+                BuiltInAttribute.USAGE_FROZEN);
+
+        var qualifierPattern = 
+                Pattern.compile(String.join("|", nonIntervalQualifiers), 
+                                Pattern.CASE_INSENSITIVE)
+                       .asPredicate();
+        
+        var miscreants =
+                rfnDeviceAttributeDao.getAttributesForAllTypes().stream()
+                    .filter(not(BuiltInAttribute::isStatusType))
+                    .filter(BuiltInAttribute::isIntervalApplicable)
+                    .filter(not(excludedAttributes::contains))
+                    .filter(attr -> qualifierPattern.test(attr.name()))
+                    .collect(Collectors.toList());
+        
+        assertTrue(miscreants.isEmpty(), "Found non-interval attributes claiming isIntervalApplicable: " + miscreants);        
     }
     
     @Test
