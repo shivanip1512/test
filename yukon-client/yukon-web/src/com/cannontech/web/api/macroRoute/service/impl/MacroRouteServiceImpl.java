@@ -1,8 +1,11 @@
 package com.cannontech.web.api.macroRoute.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -46,6 +49,19 @@ public class MacroRouteServiceImpl implements MacroRouteService {
     
 
     @Override
+    public MacroRouteModel<?> retrieve(int id) {
+        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes()
+                .stream()
+                .filter(macroRoute -> macroRoute.getLiteID() == id && macroRoute.getPaoType().equals(PaoType.ROUTE_MACRO))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Macro Route Id not found"));
+        MacroRouteModel macroRouteModel = new MacroRouteModel();
+        MacroRoute macroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(pao);
+        macroRouteModel.buildModel(macroRoute);
+        setRouteNameFromList(macroRouteModel);
+        return macroRouteModel;
+    }
+    
     public MacroRouteModel<?> update(int id, MacroRouteModel<?> macroRouteModel, LiteYukonUser yukonUser) {
         LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes()
                 .stream()
@@ -61,6 +77,25 @@ public class MacroRouteServiceImpl implements MacroRouteService {
         macroRouteModel.buildModel(macroRoute);
         setRouteNameFromList(macroRouteModel);
         return macroRouteModel;
+    }
+
+    @Override
+    public List<MacroRouteModel> retrieveAllMacroRoutes() {
+        List<LiteYukonPAObject> listOfMacroRoutes = serverDatabaseCache.getAllRoutes()
+                .stream()
+                .filter(macroRoute -> macroRoute.getPaoType().equals(PaoType.ROUTE_MACRO))
+                .collect(Collectors.toList());
+        List<MacroRouteModel> macroRouteModelList = new ArrayList();
+        if (!CollectionUtils.isEmpty(listOfMacroRoutes)) {
+            listOfMacroRoutes.forEach(yukonPAObject -> {
+                MacroRoute macroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(yukonPAObject);
+                MacroRouteModel macroRouteModel = new MacroRouteModel();
+                macroRouteModel.buildModel(macroRoute);
+                setRouteNameFromList(macroRouteModel);
+                macroRouteModelList.add(macroRouteModel);
+            });
+        }
+        return macroRouteModelList;
     }
 
     private void setRouteNameFromList(MacroRouteModel macroRouteModel) {
