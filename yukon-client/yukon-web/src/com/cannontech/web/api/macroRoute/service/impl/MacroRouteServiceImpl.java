@@ -4,7 +4,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.web.api.macroRoute.model.MacroRouteList;
@@ -23,6 +25,24 @@ public class MacroRouteServiceImpl implements MacroRouteService {
         macroRouteModel.buildDBPersistent(macroRoute);
         dbPersistentDao.performDBChange(macroRoute, TransactionType.INSERT);
         macroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(macroRoute);
+        macroRouteModel.buildModel(macroRoute);
+        setRouteNameFromList(macroRouteModel);
+        return macroRouteModel;
+    }
+
+    @Override
+    public MacroRouteModel<?> update(int id, MacroRouteModel<?> macroRouteModel, LiteYukonUser yukonUser) {
+        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes()
+                .stream()
+                .filter(group -> group.getLiteID() == id)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Macro Route Id not found"));
+        if (pao == null) {
+            throw new NotFoundException("Route Id not found");
+        }
+        MacroRoute macroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(pao);
+        macroRouteModel.buildDBPersistent(macroRoute);
+        dbPersistentDao.performDBChange(macroRoute, TransactionType.UPDATE);
         macroRouteModel.buildModel(macroRoute);
         setRouteNameFromList(macroRouteModel);
         return macroRouteModel;
