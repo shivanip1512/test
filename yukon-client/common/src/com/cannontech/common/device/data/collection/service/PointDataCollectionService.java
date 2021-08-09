@@ -142,6 +142,9 @@ public class PointDataCollectionService implements MessageListener {
                     jmsTemplate.convertAndSend(new RecalculationRequest());
                 }
             }
+        } catch (Exception e) {
+            log.error("Error received during Data Collection", e);
+            collectingData = false;
         } finally {
             collectingData = false;
         }
