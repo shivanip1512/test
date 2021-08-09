@@ -12,7 +12,7 @@
         <div class="box clear dashboard">
             <div class="clearfix box">
                 <div class="category fl">
-                    <cti:button renderMode="appButton" icon="icon-app icon-app-32-loggers" href="loggers"/>
+                    <cti:button renderMode="appButton" icon="icon-app icon-app-32-loggers" href="allLoggers"/>
                     <div class="box fl meta">
                         <div><a class="title" href="<cti:url value="/admin/config/loggers/allLoggers"/>">
                             <i:inline key="yukon.common.setting.subcategory.YUKON_LOGGERS"/>

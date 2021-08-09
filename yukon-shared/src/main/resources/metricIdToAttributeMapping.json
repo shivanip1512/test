@@ -33,8 +33,7 @@
                 { "metricId" : 33, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVAR" },
                 { "metricId" : 34, "attributeMagnitude" : 3, "attribute" : "PEAK_KVAR" },
 
-                { "metricId" : 36, "attributeMagnitude" : 3, "attribute" : "PEAK_KVAR_COIN" },
-
+                { "metricId" : 36, "attributeMagnitude" : 3, "attribute" : "DELIVERED_PEAK_KVAR_FROZEN" },
 
                 { "metricId" : 41, "attributeMagnitude" : 3, "attribute" : "KVAH" },
                 { "metricId" : 42, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVAH" },
@@ -48,6 +47,7 @@
                 { "metricId" : 53, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_FROZEN" },
                 { "metricId" : 54, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_FROZEN" },
                 { "metricId" : 55, "attributeMagnitude" : 3, "attribute" : "DELIVERED_PEAK_KVA_LAGGING" },
+                { "metricId" : 56, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_Q124_FROZEN" },
 
                 { "metricId" : 78, "attributeMagnitude" : 3, "attribute" : "AVERAGE_DELIVERED_POWER_FACTOR" },
                 { "metricId" : 79, "attributeMagnitude" : 3, "attribute" : "AVERAGE_RECEIVED_POWER_FACTOR" },
@@ -97,6 +97,7 @@
                 { "metricId" : 181, "attributeMagnitude" : 3, "attribute" : "PEAK_KVAR_Q23" },
 
                 { "metricId" : 184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR" },
+                { "metricId" : 185, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR_FROZEN" },
                 
                 { "metricId" : 194, "attribute" : "SUM_KW" },
 
