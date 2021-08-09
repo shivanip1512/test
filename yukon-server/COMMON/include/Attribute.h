@@ -472,6 +472,8 @@ public:
     static const Attribute  ForwardCapacitivekVArhperInterval;
     static const Attribute  ReverseInductivekVArhperInterval;
     static const Attribute  ReverseCapacitivekVArhperInterval;
+    static const Attribute  DeliveredkVAhperInterval;
+    static const Attribute  ReceivedkVAhperInterval;
 
     static const Attribute  DeliveredkWLoadProfile;
     static const Attribute  DeliveredkWRateALoadProfile;

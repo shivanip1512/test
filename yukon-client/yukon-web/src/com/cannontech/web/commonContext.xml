@@ -441,4 +441,5 @@
     
     <bean class="com.cannontech.web.tools.device.programming.dao.impl.MeterProgrammingSummaryDaoImpl"/>
     <bean class="com.cannontech.web.database.event.publisher.DatabaseChangePublisher"/>
+    <bean class="com.cannontech.web.admin.logger.YukonLoggerExpirationHandler"/>
 </beans>

@@ -107,9 +107,9 @@ paths:
   /routes/{id}:
     $ref: 'api/routesApi.yaml#/get-update-delete-operation'
 
-  /logger:
-    $ref: 'api/yukonLoggingApi.yaml#/post-operation'
-  /logger/{id}:
+  /config/loggers:
+    $ref: 'api/yukonLoggingApi.yaml#/post-get-all-operation'
+  /config/loggers/{id}:
     $ref: 'api/yukonLoggingApi.yaml#/get-update-delete-operation'
 
 components:

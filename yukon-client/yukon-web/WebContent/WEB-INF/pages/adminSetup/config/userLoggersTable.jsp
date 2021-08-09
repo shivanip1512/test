@@ -34,7 +34,7 @@
                             </c:if>
                         </td>
 
-                        <td>${fn:escapeXml(logger.loggerName)}</td>
+                        <td class="wbba">${fn:escapeXml(logger.loggerName)}</td>
                         <td><i:inline key="${logger.level}"/></td>
                         <td>
                             <cti:msg2 var="neverText" key="yukon.common.never"/>

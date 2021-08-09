@@ -3,6 +3,7 @@ package com.cannontech.clientutils.logger.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.logger.dao.YukonLoggerDao;
 import com.cannontech.clientutils.logger.service.YukonLoggerService;
@@ -11,6 +12,7 @@ import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.model.Direction;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -22,12 +24,17 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
 
     @Override
     public YukonLogger getLogger(int loggerId) {
-        return yukonLoggerDao.getLogger(loggerId);
+        try {
+            return yukonLoggerDao.getLogger(loggerId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Logger Id not found");
+        }
     }
 
     @Override
     public YukonLogger addLogger(YukonLogger logger) {
         int loggerId = yukonLoggerDao.addLogger(logger);
+        logger.setLoggerId(loggerId);
         dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.LOGGER, loggerId);
         systemEventLogService.loggerAdded(logger.getLoggerName(), logger.getLevel().toString(), logger.getExpirationDate(),
                 ApiRequestContext.getContext().getLiteYukonUser());
@@ -45,11 +52,15 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
 
     @Override
     public int deleteLogger(int loggerId) {
-        String loggerName = yukonLoggerDao.getLogger(loggerId).getLoggerName();
-        yukonLoggerDao.deleteLogger(loggerId);
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.LOGGER, loggerId);
-        systemEventLogService.loggerDeleted(loggerName, ApiRequestContext.getContext().getLiteYukonUser());
-        return loggerId;
+        try {
+            String loggerName = getLogger(loggerId).getLoggerName();
+            yukonLoggerDao.deleteLogger(loggerId);
+            dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.LOGGER, loggerId);
+            systemEventLogService.loggerDeleted(loggerName, ApiRequestContext.getContext().getLiteYukonUser());
+            return loggerId;
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Logger Id not found");
+        }
     }
 
     @Override

@@ -504,6 +504,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     KVA_LOAD_PROFILE("kVA Load Profile", AttributeGroup.PROFILE, false), //calculated, not readable
+    DELIVERED_KVAH_PER_INTERVAL("Delivered kVAh per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KVAH_PER_INTERVAL("Received kVAh per Interval", AttributeGroup.USAGE, false), //calculated, not readable
 
     NET_KVARH("Net kVArh", AttributeGroup.REACTIVE),
     NET_KVARH_RATE_A("Net kVArh Rate A", AttributeGroup.REACTIVE),
@@ -1180,6 +1182,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                                USAGE_WATER,
                                                USAGE_GAS,
                                                KVAH,
+                                               RECEIVED_KVAH,
                                                DELIVERED_KWH_RATE_A,
                                                DELIVERED_KWH_RATE_B,
                                                DELIVERED_KWH_RATE_C,

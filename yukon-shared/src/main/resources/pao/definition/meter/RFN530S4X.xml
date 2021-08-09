@@ -120,6 +120,8 @@
         <pointInfo name="Delivered Peak kVAr (Rate B kVAr)" attributes="PEAK_KVAR_RATE_B"/>
         <pointInfo name="Delivered Peak kVAr (Rate C kVAr)" attributes="PEAK_KVAR_RATE_C"/>
         <pointInfo name="Delivered Peak kVAr (Rate D kVAr)" attributes="PEAK_KVAR_RATE_D"/>
+        <pointInfo name="kVA Load Profile" attributes="KVA_LOAD_PROFILE"/>
+        <pointInfo name="Delivered kVAh per Interval" attributes="DELIVERED_KVAH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
@@ -176,6 +178,7 @@
         <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D,DELIVERED_KWH_RATE_D"/>
         <pointInfo name="Received kVA" attributes="RECEIVED_KVA"/>
         <pointInfo name="Received kVAh" attributes="RECEIVED_KVAH"/>
+        <pointInfo name="Received kVAh per Interval" attributes="RECEIVED_KVAH_PER_INTERVAL"/>
         <pointInfo name="Received kVAh (Rate A kVAh)" attributes="RECEIVED_KVAH_RATE_A"/>
         <pointInfo name="Received kVAh (Rate B kVAh)" attributes="RECEIVED_KVAH_RATE_B"/>
         <pointInfo name="Received kVAh (Rate C kVAh)" attributes="RECEIVED_KVAH_RATE_C"/>
@@ -223,6 +226,8 @@
         <pointInfo name="Rom Error" attributes="ROM_ERROR"/>
         <pointInfo name="Sum kVA" attributes="SUM_KVA"/>
         <pointInfo name="Sum kVAh" attributes="SUM_KVAH"/>
+        <pointInfo name="Sum kVAh per Interval" attributes="SUM_KVAH_PER_INTERVAL"/>
+        <pointInfo name="Sum kVA Load Profile" attributes="SUM_KVA_LOAD_PROFILE"/>
         <pointInfo name="Sum kVAh (Rate A kVAh)" attributes="SUM_KVAH_RATE_A"/>
         <pointInfo name="Sum kVAh (Rate B kVAh)" attributes="SUM_KVAH_RATE_B"/>
         <pointInfo name="Sum kVAh (Rate C kVAh)" attributes="SUM_KVAH_RATE_C"/>
