@@ -19,6 +19,7 @@ struct LMEatonCloudScheduledCycleCommand {
     7: required     i32                             _dutyCyclePercentage;
     8: required     i32                             _dutyCyclePeriod;
     9: required     i32                             _criticality;
+   10: required     i32                             _vRelayId;
 }
 
 enum LMEatonCloudStopType {
@@ -30,4 +31,5 @@ struct LMEatonCloudStopCommand {
     1: required     i32                             _groupId;
     2: required     Types.Timestamp                 _restoreTime;
     3: required     LMEatonCloudStopType            _stopType;
+    4: required     i32                             _vRelayId;
 }
