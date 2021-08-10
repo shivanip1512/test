@@ -56,11 +56,11 @@ carrierRoute:
         description: 'Carrier Route CCU Variable Bits'
       userLocked: 
         type: boolean
-        default: N
+        default: false
         description: 'Carrier Route User Lock'
       resetRptSettings: 
         type: boolean
-        default: T
+        default: true
         description: 'Carrier Route ResetRtrSettings'
 
 repeaters:
@@ -91,8 +91,8 @@ components:
           busNumber: 1
           ccuFixBits: 5
           ccuVariableBits: 1
-          userLocked: N
-          resetRptSettings: T
+          userLocked: false
+          resetRptSettings: true
         repeaters:
           repeaterId: 787
           variableBits: 10
@@ -106,8 +106,8 @@ components:
             busNumber: 1
             ccuFixBits: 5
             ccuVariableBits: 1
-            userLocked: N
-            resetRptSettings: T
+            userLocked: false
+            resetRptSettings: true
           repeaters:
             repeaterId: 787
             variableBits: 10
@@ -119,8 +119,8 @@ components:
             busNumber: 1
             ccuFixBits: 5
             ccuVariableBits: 1
-            userLocked: N
-            resetRptSettings: T
+            userLocked: false
+            resetRptSettings: true
           repeaters:
             repeaterId: 787
             variableBits: 10
