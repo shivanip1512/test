@@ -72,8 +72,8 @@
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
                 
-                    <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
-                        <%@ include file="itron.jsp" %>
+                    <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON' || isEatonCloudGroupSelected}">
+                        <%@ include file="itronOrEatonCloud.jsp" %>
                     </c:if>
                     <c:if test="${isLoadGroupSupportRoute}">
                         <tags:nameValue2 nameKey=".route" rowClass="noswitchtype">
@@ -111,9 +111,6 @@
             </c:if>
             <c:if test="${isPointGroupSelected}">
                 <%@ include file="pointGroup.jsp" %>
-            </c:if>
-            <c:if test="${isEatonCloudGroupSelected}">
-                <%@ include file="eatonCloud.jsp" %>
             </c:if>
             <c:if test="${not empty selectedSwitchType}">
                 <%@ include file="loadGroupOptional.jsp" %>
