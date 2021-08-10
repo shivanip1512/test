@@ -115,7 +115,9 @@ paths:
   /macroRoutes:
     $ref: 'api/macroRoutesApi.yaml#/post-operation'
   /macroRoutes/{id}:
-    $ref: 'api/macroRoutesApi.yaml#/get-update-delete-operation'    
+    $ref: 'api/macroRoutesApi.yaml#/get-update-delete-operation'
+
+
 
 components:
   securitySchemes:

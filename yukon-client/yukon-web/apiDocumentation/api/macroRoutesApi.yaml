@@ -23,12 +23,13 @@ post-operation:
             examples:
               MacroRoute:
                 $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
-                
+
   get:
     tags:
       - Macro Route
     summary: 'Retrieve all Macro Routes'
     description: 'API to retrieve all the Macro Routes.'
+
     responses:
       '200':
         description: OK
@@ -38,7 +39,8 @@ post-operation:
               $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
             examples:
               RouteIds:
-                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/List MacroRoutes'                
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/List MacroRoutes'
+
 get-update-delete-operation:
   get:
     tags:
@@ -61,7 +63,7 @@ get-update-delete-operation:
               $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
             examples:
               MacroRoute:
-                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'  
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
 
   patch:
     tags:
@@ -116,4 +118,4 @@ get-update-delete-operation:
               $ref: '../schemas/macroRoutesSchema.yaml#/id'
             examples:
               RouteId:
-                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/routeId'                
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/routeId'
