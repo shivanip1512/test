@@ -310,10 +310,18 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private void verifyRelay(LoadGroup loadGroup, ProgramEnrollment enrollment) {
         if (loadGroup != null) {
             int enrollmentRelay = enrollment.getRelay();
-            //For Itron, the relay should match the relay specified in the Group
-            if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_ITRON) {
-                int relayFromGroup = itronDao.getVirtualRelayId(loadGroup.getLoadGroupId());
-                //if no relay was provided, set it to the relay specified in the Itron group
+            PaoType loadGroupPaoType = loadGroup.getPaoIdentifier().getPaoType();
+            // For Itron, the relay should match the relay specified in the Group
+            if (loadGroupPaoType == PaoType.LM_GROUP_ITRON || loadGroupPaoType == PaoType.LM_GROUP_EATON_CLOUD) {
+                int relayFromGroup = 0;
+                if (loadGroupPaoType == PaoType.LM_GROUP_ITRON) {
+                    relayFromGroup = itronDao.getVirtualRelayId(loadGroup.getLoadGroupId());
+                }
+                if (loadGroupPaoType == PaoType.LM_GROUP_EATON_CLOUD) {
+                    // TODO get the saved relay for eatonCloud to replace this hard coded one
+                    relayFromGroup = 2;
+                }
+                // if no relay was provided, set it to the relay specified in the Itron or Eaton Cloud group
                 if (enrollmentRelay == 0) {
                     enrollment.setRelay(relayFromGroup);
                     return;
