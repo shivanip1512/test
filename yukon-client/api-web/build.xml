@@ -135,7 +135,7 @@
         <include name="itronProgramManagerTypes_v1_1.jar"/>
         <include name="itronReportManagerTypes_v1_2.jar"/>
         <include name="itronServicePointManagerTypes_v1_3.jar"/>
-        <include name="commons-compress-1.19.jar"/>
+        <include name="commons-compress-1.21.jar"/>
         <include name="opencsv-4.5.jar"/>
         <include name="jackson-datatype-joda-2.12.3.jar"/>
     </fileset>
