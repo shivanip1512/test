@@ -48,8 +48,7 @@ public class MacroRouteApiController {
 
     @DeleteMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<Object> delete(@PathVariable int id,  YukonUserContext userContext)
-    {
+    public ResponseEntity<Object> delete(@PathVariable int id,  YukonUserContext userContext){
         int macroRouteId = macroRouteService.delete(id, userContext.getYukonUser());
         Map<String, Integer> macroRouteIdMap = new HashMap<>();
         macroRouteIdMap.put("id", macroRouteId);
@@ -67,7 +66,7 @@ public class MacroRouteApiController {
         List<MacroRouteModel> macroRouteModel = macroRouteService.retrieveAllMacroRoutes();
         return new ResponseEntity<>(macroRouteModel, HttpStatus.OK);
     }
-    
+
     @PatchMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<Object> update(@PathVariable("id") int id, @Valid @RequestBody MacroRouteModel<?> macroRouteModel,
@@ -85,6 +84,4 @@ public class MacroRouteApiController {
             binder.addValidators(macroRouteApiCreateValidator);
         }
     }
-
-
 }
