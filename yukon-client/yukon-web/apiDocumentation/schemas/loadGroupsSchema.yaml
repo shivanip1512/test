@@ -1128,8 +1128,7 @@ components:
           kWCapacity: 23
           disableGroup: false
           disableControl: false
-          relayUsage:
-            - Load_1
+          virtualRelayId: 5
     
     Point Group :
       value:
