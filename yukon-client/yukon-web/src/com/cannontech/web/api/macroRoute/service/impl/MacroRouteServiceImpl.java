@@ -22,6 +22,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class MacroRouteServiceImpl implements MacroRouteService {
 
     @Autowired private DBPersistentDao dbPersistentDao;
+    
     @Autowired private IDatabaseCache serverDatabaseCache;
 
     @Override
@@ -29,11 +30,23 @@ public class MacroRouteServiceImpl implements MacroRouteService {
         MacroRoute macroRoute = new MacroRoute();
         macroRouteModel.buildDBPersistent(macroRoute);
         dbPersistentDao.performDBChange(macroRoute, TransactionType.INSERT);
-        macroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(macroRoute);
-        macroRouteModel.buildModel(macroRoute);
-        setRouteNameFromList(macroRouteModel);
+        MacroRoute getMacroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(macroRoute);
+        macroRouteModel.buildModel(getMacroRoute);
         return macroRouteModel;
     }
+
+    @Override
+    public int delete(int id, LiteYukonUser yukonUser) {
+        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes()
+                .stream()
+                .filter(macroRoute -> macroRoute.getLiteID() == id && macroRoute.getPaoType().equals(PaoType.ROUTE_MACRO))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Macro Route Id not found"));
+        MacroRoute macroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(pao);
+        dbPersistentDao.performDBChange(macroRoute, TransactionType.DELETE);
+        return macroRoute.getPAObjectID();
+    }
+    
 
     @Override
     public MacroRouteModel<?> retrieve(int id) {
@@ -42,8 +55,8 @@ public class MacroRouteServiceImpl implements MacroRouteService {
                 .filter(macroRoute -> macroRoute.getLiteID() == id && macroRoute.getPaoType().equals(PaoType.ROUTE_MACRO))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Macro Route Id not found"));
-        MacroRoute macroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(pao);
         MacroRouteModel macroRouteModel = new MacroRouteModel();
+        MacroRoute macroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(pao);
         macroRouteModel.buildModel(macroRoute);
         setRouteNameFromList(macroRouteModel);
         return macroRouteModel;
