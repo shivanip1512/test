@@ -25,6 +25,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.eatonCloud.dao.EatonCloudDao;
 import com.cannontech.dr.itron.dao.ItronDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
@@ -93,6 +94,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     @Autowired private ItronDao itronDao;
     @Autowired private DisconnectService disconnectService;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private EatonCloudDao eatonCloudDao;
 
     @Override
     public void updateProgramEnrollments(List<ProgramEnrollment> programEnrollments, 
@@ -318,10 +320,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                     relayFromGroup = itronDao.getVirtualRelayId(loadGroup.getLoadGroupId());
                 }
                 if (loadGroupPaoType == PaoType.LM_GROUP_EATON_CLOUD) {
-                    // TODO get the saved relay for eatonCloud to replace this hard coded one
-                    relayFromGroup = 2;
+                    relayFromGroup = eatonCloudDao.getVirtualRelayId(loadGroup.getLoadGroupId());
                 }
-                // if no relay was provided, set it to the relay specified in the Itron or Eaton Cloud group
+                // if no relay was provided, set it to the relay specified in the Itron or Eaton Cloud group aaa
                 if (enrollmentRelay == 0) {
                     enrollment.setRelay(relayFromGroup);
                     return;
