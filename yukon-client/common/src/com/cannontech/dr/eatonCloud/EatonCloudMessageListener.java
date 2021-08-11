@@ -304,6 +304,7 @@ public class EatonCloudMessageListener {
         params.put(CommandParam.CYCLE_COUNT.getParamName(), cycleCount);
         params.put(CommandParam.CRITICALITY.getParamName(), command.getCriticality());
         params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
+        params.put(CommandParam.VRELAY.getParamName(), command.getVirtualRelayId());
         return params;
     }
 

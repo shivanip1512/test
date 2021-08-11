@@ -20,6 +20,7 @@ public class LMEatonCloudStopCommandSerializer extends SimpleThriftSerializer im
         eatonCloudStopCommand.setGroupId(entity.get_groupId());
         eatonCloudStopCommand.setRestoreTime(new Instant(entity.get_restoreTime() * 1000));
         eatonCloudStopCommand.setStopType(EatonCloudStopType.of(entity.get_stopType().getValue()));
+        eatonCloudStopCommand.setVirtualRelayId(entity.get_vRelayId());
         
         return eatonCloudStopCommand;
     }
