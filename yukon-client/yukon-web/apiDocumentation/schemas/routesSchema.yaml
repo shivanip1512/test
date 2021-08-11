@@ -45,15 +45,18 @@ carrierRoute:
       busNumber:
         type: integer
         default: 1
-        description: 'Carrier Route Bus number'
+        range : 1-8
+        description: 'Carrier Route Bus number.'
       ccuFixBits: 
         type: integer
         default: 5
-        description: 'Carrier Route CCUFixBits'
+        range : 1-31
+        description: 'Carrier Route CCUFixBits.'
       ccuVariableBits: 
         type: integer
         default: 1
-        description: 'Carrier Route CCU Variable Bits'
+        range : 0-6
+        description: 'Carrier Route CCU Variable Bits.'
       userLocked: 
         type: boolean
         default: false
@@ -75,10 +78,12 @@ repeaters:
         description: 'Repeater Route Id.'
       variableBits:
         type: integer
+        range : 0-7
         description: 'VariableBits for Repeater Route.'
       repeaterOrder:
         type: integer
-        description: 'Order of the Repeater Route.'
+        range : 0-7
+        description: 'Order of the Repeater Route'
 
 components:
   examples:
@@ -95,7 +100,7 @@ components:
           resetRptSettings: true
         repeaters:
           repeaterId: 787
-          variableBits: 10
+          variableBits: 5
           repeaterOrder: 1
     List Routes:
       value:
@@ -110,7 +115,7 @@ components:
             resetRptSettings: true
           repeaters:
             repeaterId: 787
-            variableBits: 10
+            variableBits: 5
             repeaterOrder: 1
         - name: Test Route 1
           signalTransmitterId: 5
@@ -123,7 +128,7 @@ components:
             resetRptSettings: true
           repeaters:
             repeaterId: 787
-            variableBits: 10
+            variableBits: 5
             repeaterOrder: 1
     routeId:
       value:
