@@ -190,6 +190,10 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         if (filter.isDisplayAssigned() || filter.isDisplayAll()) {
             sql.append(buildStateSelect(filter, selectCount));
             if (filter.isDisplayUnassigned() || filter.isDisplayAll()) {
+                if (!CollectionUtils.isEmpty(filter.getGroups())) {
+                    sql.append("AND").appendFragment(
+                            deviceGroupService.getDeviceGroupSqlWhereClause(filter.getGroups(), "ypo.PAObjectID"));
+                }
                 sql.append("UNION");
             }
         }

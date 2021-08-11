@@ -1,11 +1,14 @@
 package com.cannontech.common.events.loggers;
 
+import java.util.Date;
+
 import org.joda.time.Instant;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -183,5 +186,16 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
     public void decryptionFailed(@Arg(ArgEnum.yukonService) String yukonService,
             @Arg(ArgEnum.serverIdentifier) String serverIdentifier, @Arg(ArgEnum.type) String typeOrValue, @Arg(ArgEnum.startTime) Instant timeStamp);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void loggerAdded(@Arg(ArgEnum.name) String loggerName, @Arg(ArgEnum.level) String loggerLevel,
+            @Arg(ArgEnum.endDate) Date expirationDate, @Arg(ArgEnum.username) LiteYukonUser user);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void loggerUpdated(@Arg(ArgEnum.name) String loggerName, @Arg(ArgEnum.level) String loggerLevel,
+            @Arg(ArgEnum.endDate) Date date, @Arg(ArgEnum.username) LiteYukonUser user);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void loggerDeleted(@Arg(ArgEnum.name) String loggerName, @Arg(ArgEnum.username) LiteYukonUser user);
 
 }

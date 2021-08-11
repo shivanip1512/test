@@ -64,6 +64,7 @@ public enum ArgEnum {
     ipAddress,
     jobId,
     key,
+    level,
     loadGroupIds,
     loadGroupName,
     loadProgramNames,

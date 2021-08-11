@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +65,9 @@ public class YukonLogManager {
         if (shouldPopulateSystemLoggers()) {
             populateSystemLoggers();
         }
+        //Prevent loading of expired loggers on start up.
+        deleteExpiredLoggers();
+
         // Create a ConfigurationBuilder Object.
         ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
         builder.setStatusLevel(Level.INFO);
@@ -139,6 +143,35 @@ public class YukonLogManager {
 
         // Set the configuration in current LoggerContext
         getMyLogger().getContext().setConfiguration(configuration);
+    }
+
+    /**
+     * Method to delete the old loggers on startup of services. This will prevent loading of expired loggers.
+     */
+    private static void deleteExpiredLoggers() {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yy");
+            String sql = "DELETE FROM YukonLogging WHERE ExpirationDate < '" + format.format(new java.util.Date()) + "'";
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            ps = conn.prepareStatement(sql);
+            ps.execute();
+        } catch (SQLException e) {
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
     }
 
     /**

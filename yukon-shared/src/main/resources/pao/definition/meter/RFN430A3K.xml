@@ -59,6 +59,8 @@
         <pointInfo name="Delivered kWh Rate B per Interval" attributes="DELIVERED_KWH_RATE_B_PER_INTERVAL"/>
         <pointInfo name="Delivered kWh Rate C per Interval" attributes="DELIVERED_KWH_RATE_C_PER_INTERVAL"/>
         <pointInfo name="Delivered kWh Rate D per Interval" attributes="DELIVERED_KWH_RATE_D_PER_INTERVAL"/>
+        <pointInfo name="kVA Load Profile" attributes="KVA_LOAD_PROFILE"/>
+        <pointInfo name="Delivered kVAh per Interval" attributes="DELIVERED_KVAH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Demand Threshold Exceeded Warning" attributes="DEMAND_THRESHOLD_EXCEEDED_WARNING"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
@@ -148,6 +150,7 @@
         <pointInfo name="Received Coincident Peak kVAr" attributes="RECEIVED_COIN_PEAK_KVAR"/>
         <pointInfo name="Received kVA" attributes="RECEIVED_KVA"/>
         <pointInfo name="Received kVAh" attributes="RECEIVED_KVAH"/>
+        <pointInfo name="Received kVAh per Interval" attributes="RECEIVED_KVAH_PER_INTERVAL"/>
         <pointInfo name="Received kW" attributes="RECEIVED_DEMAND"/>
         <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
         <pointInfo name="Received kWh" attributes="RECEIVED_KWH"/>

@@ -108,4 +108,7 @@ Demand Reset failed. Reason: {exceptionReason}</p>
 
 <entry key="yukon.common.alerts.RFN_DEVICE_CREATION_FAILED">Data collection for device {rfnIdentifier} failed due to: {errMessage}.
 Device may not be created and data for this device will not be archived until this configuration is resolved and a re-sync of RF data is completed.</entry>
+
+<entry key="yukon.common.alerts.RFN_DEVICE_MODEL_CHANGED">Model changed for {deviceName}. Old Model: {oldModel} New Model: {newModel}</entry>
+<entry key="yukon.common.alerts.RFN_DEVICE_MODEL_AND_TYPE_CHANGED">Model and Device Type changed for {deviceName}. Old Model/Type: {oldModel}/{oldType} New Model/Type: {newModel}/{newType}</entry>
 </properties>

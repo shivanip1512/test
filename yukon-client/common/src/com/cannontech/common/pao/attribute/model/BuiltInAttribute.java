@@ -67,7 +67,16 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     IED_DEMAND_RESET_COUNT("IED Demand Reset Count", AttributeGroup.DEMAND),
     // Treating "kVAh" as "Delivered kVAh". May need to created separate attributes in the future.
     KVAH("kVAh", AttributeGroup.USAGE),
-    DELIVERED_KVAH_LAGGING("kVAh Lagging", AttributeGroup.REACTIVE),
+    KVAH_Q124("kVAh (Quadrants 1 2 4)", AttributeGroup.REACTIVE),
+    KVAH_Q124_RATE_A("kVAh (Quadrants 1 2 4) Rate A", AttributeGroup.REACTIVE),
+    KVAH_Q124_RATE_B("kVAh (Quadrants 1 2 4) Rate B", AttributeGroup.REACTIVE),
+    KVAH_Q124_RATE_C("kVAh (Quadrants 1 2 4) Rate C", AttributeGroup.REACTIVE),
+    KVAH_Q124_RATE_D("kVAh (Quadrants 1 2 4) Rate D", AttributeGroup.REACTIVE),
+    KVAH_Q234("kVAh (Quadrants 2 3 4)", AttributeGroup.REACTIVE),
+    KVAH_Q234_RATE_A("kVAh (Quadrants 2 3 4) Rate A", AttributeGroup.REACTIVE),
+    KVAH_Q234_RATE_B("kVAh (Quadrants 2 3 4) Rate B", AttributeGroup.REACTIVE),
+    KVAH_Q234_RATE_C("kVAh (Quadrants 2 3 4) Rate C", AttributeGroup.REACTIVE),
+    KVAH_Q234_RATE_D("kVAh (Quadrants 2 3 4) Rate D", AttributeGroup.REACTIVE),
     KVAH_RATE_A("kVAh Rate A", AttributeGroup.USAGE),
     KVAH_RATE_B("kVAh Rate B", AttributeGroup.USAGE),
     KVAH_RATE_C("kVAh Rate C", AttributeGroup.USAGE),
@@ -192,6 +201,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     KVA_Q34("kVA (Quadrants 3 4)", AttributeGroup.REACTIVE),
     KVA_Q13("kVA (Quadrants 1 3)", AttributeGroup.REACTIVE),
     KVA_Q24("kVA (Quadrants 2 4)", AttributeGroup.REACTIVE),
+    PEAK_KVA_Q124_FROZEN("Peak kVA (Quadrants 1 2 4) Frozen ", AttributeGroup.REACTIVE),
     SUM_KVAR("Sum kVAr", AttributeGroup.REACTIVE),
     NET_KVAR("Net kVAr", AttributeGroup.REACTIVE),
     PEAK_KVAR("Peak kVAr", AttributeGroup.REACTIVE),
@@ -220,6 +230,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     KVAR_Q24("kVAr (Quadrants 2 4)", AttributeGroup.REACTIVE),
     KVAR_Q14("kVAr (Quadrants 1 4)", AttributeGroup.REACTIVE),
     KVAR_Q23("kVAr (Quadrants 2 3)", AttributeGroup.REACTIVE),
+    SUM_PEAK_KVAR_FROZEN("Sum Peak kVAr Frozen", AttributeGroup.REACTIVE),
+    DELIVERED_PEAK_KVAR_FROZEN("Delivered Peak kVAr Frozen", AttributeGroup.REACTIVE),
     PEAK_KVARH("Peak kVArh", AttributeGroup.REACTIVE),
     PEAK_KVARH_COIN("Peak kVArh Coincidental", AttributeGroup.REACTIVE),
     PHASE("Phase", AttributeGroup.OTHER),
@@ -227,6 +239,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     AVERAGE_RECEIVED_POWER_FACTOR("Average Received Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR("Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR_COIN("Power Factor Coincidental", AttributeGroup.REACTIVE),
+    MINIMUM_POWER_FACTOR("Minimum Power Factor", AttributeGroup.REACTIVE),
+    PREVIOUS_MINIMUM_POWER_FACTOR("Previous Minimum Power Factor", AttributeGroup.REACTIVE),
 
     COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA("Coincident Power Factor at Delivered Peak kVA", AttributeGroup.REACTIVE),
     COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A("Coincident Power Factor at Delivered Peak kVA Rate A", AttributeGroup.REACTIVE),
@@ -415,7 +429,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RECEIVED_KWH_RATE_D("Received kWh Rate D", AttributeGroup.USAGE),
     RECEIVED_KWH_RATE_E("Received kWh Rate E", AttributeGroup.USAGE),
     RECEIVED_KVAH("Received kVAh", AttributeGroup.USAGE),
-    RECEIVED_KVAH_Q234("Received kVAh (Quadrants 2 3 4)", AttributeGroup.USAGE),
 
     NET_KWH("Net kWh", AttributeGroup.USAGE),
     NET_KWH_RATE_A("Net kWh Rate A", AttributeGroup.USAGE),
@@ -491,6 +504,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     KVA_LOAD_PROFILE("kVA Load Profile", AttributeGroup.PROFILE, false), //calculated, not readable
+    DELIVERED_KVAH_PER_INTERVAL("Delivered kVAh per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KVAH_PER_INTERVAL("Received kVAh per Interval", AttributeGroup.USAGE, false), //calculated, not readable
 
     NET_KVARH("Net kVArh", AttributeGroup.REACTIVE),
     NET_KVARH_RATE_A("Net kVArh Rate A", AttributeGroup.REACTIVE),
@@ -1167,6 +1182,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                                USAGE_WATER,
                                                USAGE_GAS,
                                                KVAH,
+                                               RECEIVED_KVAH,
                                                DELIVERED_KWH_RATE_A,
                                                DELIVERED_KWH_RATE_B,
                                                DELIVERED_KWH_RATE_C,

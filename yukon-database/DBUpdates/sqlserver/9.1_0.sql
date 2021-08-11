@@ -252,6 +252,25 @@ UPDATE GlobalSetting SET Name = 'DEVICE_CONNECTION_WARNING_MINUTES' WHERE Name =
 INSERT INTO DBUpdates VALUES ('YUK-24110', '9.1.0', GETDATE());
 /* @end YUK-24110 */
 
+/* @start YUK-24057 */
+CREATE TABLE RfnModelChange (
+   DeviceID             numeric              NOT NULL,
+   OldModel             varchar(80)          NOT NULL,
+   NewModel             varchar(80)          NOT NULL,
+   DataTimestamp        datetime             NOT NULL,
+   CONSTRAINT PK_RfnModelChange PRIMARY KEY (DeviceID)
+);
+go
+
+ALTER TABLE RfnModelChange
+   ADD CONSTRAINT FK_RfnModelChange_Device FOREIGN KEY (DeviceID)
+      REFERENCES DEVICE (DEVICEID)
+         ON DELETE CASCADE;
+go
+
+INSERT INTO DBUpdates VALUES ('YUK-24057', '9.1.0', GETDATE());
+/* @end YUK-24057 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

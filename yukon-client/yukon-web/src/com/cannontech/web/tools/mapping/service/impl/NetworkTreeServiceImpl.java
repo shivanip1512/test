@@ -322,7 +322,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             log.debug("Tree node creation: adding NULL {} to tree, rfnIdentifier is empty.", rfnIdentifier);  
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
-        RfnDevice device = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+        RfnDevice device = rfnDeviceCreationService.findOrCreate(rfnIdentifier);
         if (device == null) {
             yukonNodeStatistics.FAILED_TO_CREATE.incrementAndGet();
             // failed to create device

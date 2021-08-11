@@ -39,8 +39,7 @@ const MetricInfo metricInfos[] = {
         {  11,  TouRates,  "Watt hour delivered (Frozen)"          },
         {  12,  TouRates,  "Watt hour received (Frozen)"           },
         {  13,  TouRates,  "Watts, peak"                           },
-        {  17,  None,      "kVAh Lagging"                          },
-
+        {  17,  TouRates,  "VA hour Q1 + Q2 + Q4"                  },
         {  21,  TouRates,  "Var hour delivered"                    },
         {  22,  TouRates,  "Var hour received"                     },
         {  23,  TouRates,  "Var hour total/sum"                    },
@@ -77,6 +76,7 @@ const MetricInfo metricInfos[] = {
         {  53,  TouRates,  "VA delivered, peak demand (Frozen)"    },
         {  54,  TouRates,  "VA received, peak demand (Frozen)"     },
         {  55,  TouRates,  "VA lagging, peak demand"               },
+        {  56,  None,      "Peak kVA (Quadrants 1 2 4) Frozen"     },
 
         {  61,  TouRates,  "Q hour delivered"                      },
         {  62,  TouRates,  "Q hour received"                       },
@@ -146,6 +146,7 @@ const MetricInfo metricInfos[] = {
         { 181,  TouRates,  "Peak kVAr (Quadrants 2 3)"             },
 
         { 184,  TouRates,  "Sum Peak kVAr"                         },
+        { 185,  None,      "Sum Peak kVAr Frozen"                  },
 
         { 194,  None,      "Sum Watts" },
 
@@ -155,7 +156,12 @@ const MetricInfo metricInfos[] = {
 
         { 206,  TouRates,  "Peak kVA (Quadrants 1 2)"              },
         { 210,  TouRates,  "Sum Peak kVA"                          },
-        { 222,  None,      "Received kVAh (Quadrants 2 3 4)"       },
+
+        { 222,  TouRates,  "VA hour Q2 + Q3 + Q4"                  },
+
+        { 230,  None,      "Minimum Power Factor"                  },
+        { 231,  None,      "Previous Minimum Power Factor"         },
+
         { 233,  None,      "Average Power Factor"                  },
         { 234,  None,      "Average Power Factor Frozen"           },
 

@@ -2,14 +2,12 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:includeScript link="/resources/js/pages/yukon.dialog.ajax.js"/>
 <cti:msgScope paths="modules.tools.tdc">
     <cti:flashScopeMessages/>
-    <cti:url var="saveUrl" value="/tools/data-viewer/manualControlSend"/>
-    <form:form id="tdc-manual-control-form" cssClass="js-no-submit-on-enter" modelAttribute="backingBean" action="${saveUrl}">
+    <cti:url var="saveUrl" value="/tools/points/manualControlSend"/>
+    <form:form id="manual-control-form" cssClass="js-no-submit-on-enter" modelAttribute="backingBean" action="${saveUrl}">
         <cti:csrfToken/>
         <form:hidden path="deviceId" />
         <form:hidden path="pointId" />
@@ -27,9 +25,8 @@
             </c:if>            
         </tags:nameValueContainer2>
         <div class="action-area">
-            <cti:button nameKey="ok" classes="primary js-tdc-manual-control-send"/>
-            <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');" />
+            <cti:button nameKey="ok" classes="primary js-manual-control-send"/>
+            <cti:button nameKey="close" classes="js-manual-control-close"/>
         </div>
     </form:form>
 </cti:msgScope>
-

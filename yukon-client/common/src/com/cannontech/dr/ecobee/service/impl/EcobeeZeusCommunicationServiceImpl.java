@@ -497,11 +497,11 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
     @Override
     public List<ZeusGroup> getAllGroups() {
-        String getAllGroups = getUrlBase() + "tstatgroups";
+        String getAllGroupsForProgram = getUrlBase() + "tstatgroups?program_id=" + getZeusProgramId();
         List<ZeusGroup> zeusGroups = new ArrayList<>();
         try {
             ResponseEntity<ZeusGroupResponse> responseEntity = (ResponseEntity<ZeusGroupResponse>) requestHelper
-                    .callEcobeeAPIForObject(getAllGroups, HttpMethod.GET, ZeusGroupResponse.class);
+                    .callEcobeeAPIForObject(getAllGroupsForProgram, HttpMethod.GET, ZeusGroupResponse.class);
 
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
                 ZeusGroupResponse zeusGroupResponse = responseEntity.getBody();

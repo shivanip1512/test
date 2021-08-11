@@ -13,5 +13,6 @@
 <entry key="yukon.web.widgets.rfnOutagesWidget.outageLog.title">RFN Outages Log</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget.noLogs">No Outage Logs</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget.unknown">Unknown</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.durationLessThan1Second">&lt; 1 second</entry>
 
 </properties>
