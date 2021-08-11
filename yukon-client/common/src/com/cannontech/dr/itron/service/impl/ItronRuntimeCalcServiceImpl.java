@@ -17,11 +17,14 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -70,15 +73,17 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
     private static final Logger log = YukonLogManager.getLogger(ItronRuntimeCalcServiceImpl.class);
     
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private AttributeService attributeService;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PointDao pointDao;
-    @Autowired private AttributeService attributeService;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private RuntimeCalcService runtimeCalcService;
-    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-    @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
+    
     private ScheduledFuture<?> scheduledFuture;
 
     @PostConstruct
@@ -127,6 +132,12 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
             log.info("Calculating runtime/shedtime for Itron devices");
             log.debug("Found {} Itron devices", itronDevices.size());
             
+            // Limit the range of data calculated, if there is a large gap. Default limit = 30 days.
+            int historyLimitDays = configurationSource.getInteger(MasterConfigInteger.RUNTIME_CALC_RANGE_LIMIT_DAYS, 30);
+            if (historyLimitDays > 0) {
+                log.info("Calculation limited to past {} days.", historyLimitDays);
+            }
+            
             Map<PaoIdentifier, PaoMultiPointIdentifier> deviceDataLogPoints =
                     attributeService.findPaoMultiPointIdentifiersForAttributes(itronDevices, ItronRelayDataLogs.getDataLogAttributes()).stream()
                         .collect(StreamUtils.mapToSelf(PaoMultiPointIdentifier::getPao));
@@ -145,9 +156,9 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
                             .map(PaoMultiPointIdentifier::getPaoPointIdentifiers)
                             .orElseThrow(() -> new IllegalArgumentException("no relay state points"));
 
-                    calculateDeviceDataLogs(device, relayStatusPoints, dataLogPoints);
+                    calculateDeviceDataLogs(device, relayStatusPoints, dataLogPoints, historyLimitDays);
                     
-                } catch (IllegalArgumentException ex) {
+                } catch (Exception ex) {
                     log.warn("Skipping runtime/shedtime calculations for " + device, ex);
                 }
             });
@@ -164,7 +175,8 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
      * @param relayStatusPoints The PaoPointIdentifiers of the runtime/shedtime status points
      * @param dataLogPoints The PaoPointIdentifiers of the runtime/shedtime data logs
      */
-    private void calculateDeviceDataLogs(YukonPao device, Set<PaoPointIdentifier> relayStatusPoints, Set<PaoPointIdentifier> dataLogPoints) {
+    private void calculateDeviceDataLogs(YukonPao device, Set<PaoPointIdentifier> relayStatusPoints, 
+            Set<PaoPointIdentifier> dataLogPoints, int historyLimitDays) {
         Map<PaoPointIdentifier, PointValueQualityHolder> recentData = getRecentData(device);
         
         //  Get the most recent timestamp from all initialized point data on the device.
@@ -175,7 +187,7 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
                     .orElse(null);
         
         if (endOfRange == null) {
-            log.debug("No recent point data found for " + device);
+            log.debug("No recent point data found for {}", device);
             return;
         }
 
@@ -193,12 +205,26 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
         
         Set<Integer> relayStatusPointIds = Sets.newHashSet(relayStatusIdLookup.values());
         
-        //  Latest data log point timestamp
+        // Latest data log point timestamp
         Instant startOfRange = 
                 getLatestInitializedTimestamp(dataLogValues.values())
                     .map(DateTime::toInstant)
                     .orElse(null);
-
+        
+        // Limit the range of data calculated. Default: 30 days back.
+        // If the latest initialized timestamp is older, ignore it, and limit the range to e.g. 30 days.
+        if (historyLimitDays > 0) {
+            Instant limitStartOfRange = 
+                    DateTime.now()
+                            .minus(Duration.standardDays(historyLimitDays))
+                            .withTimeAtStartOfDay()
+                            .toInstant();
+            
+            if (limitStartOfRange.isAfter(startOfRange)) {
+                startOfRange = limitStartOfRange;
+            }
+        }
+        
         var logRange = Range.inclusive(startOfRange, endOfRange); 
 
         //  Get all relay state information in RPH since the last data log update, and split it by point ID
