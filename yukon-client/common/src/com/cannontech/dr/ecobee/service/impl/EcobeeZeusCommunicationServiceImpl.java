@@ -200,15 +200,19 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         return zeusGroupId;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
-    private void addThermostatToGroup(String zeusGroupId, String serialNumber, int inventoryId, boolean updateDeviceMapping) {
+    public void addThermostatToGroup(String zeusGroupId, String serialNumber, int inventoryId, boolean updateDeviceMapping) {
         List<Integer> inventoryIds = ecobeeZeusGroupService.getInventoryIdsForZeusGrouID(zeusGroupId);
         List<String> thermostatIds = new ArrayList<String>();
         for (int id : inventoryIds) {
             thermostatIds.add(lmHardwareBaseDao.getSerialNumberForInventoryId(id));
         }
         // Before Update, add the thermostat which we want to enroll.
-        thermostatIds.add(serialNumber);
+        // In case of sync issues thermostat will be already available in zeus mapping table, So don't add it again.
+        if (!thermostatIds.contains(serialNumber)) {
+            thermostatIds.add(serialNumber);
+        }
         ResponseEntity<? extends Object> responseEntity = updateThermostatGroup(zeusGroupId, thermostatIds);
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             log.info("Thermostat serial number {} mapped successfully to the zeus group ID {}", serialNumber, zeusGroupId);
@@ -226,33 +230,37 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void unEnroll(Set<Integer> lmGroupIds, String serialNumber, int inventoryId, boolean updateDeviceMapping) {
-        try {
-            for (int lmGroupId : lmGroupIds) {
-                int programId = ecobeeZeusGroupService.getProgramIdToUnenroll(inventoryId, lmGroupId);
-                if (programId != EcobeeZeusGroupService.DEFAULT_PROGRAM_ID) {
-                    String zeusGroupId = ecobeeZeusGroupService.getZeusGroupId(lmGroupId, inventoryId, programId);
+        for (int lmGroupId : lmGroupIds) {
+            int programId = ecobeeZeusGroupService.getProgramIdToUnenroll(inventoryId, lmGroupId);
+            if (programId != EcobeeZeusGroupService.DEFAULT_PROGRAM_ID) {
+                String zeusGroupId = ecobeeZeusGroupService.getZeusGroupId(lmGroupId, inventoryId, programId);
+                removeThermostatFromGroup(zeusGroupId, serialNumber, inventoryId, updateDeviceMapping);
+            }
+        }
+    }
 
-                    String deleteThermostatsURL = getUrlBase() + "tstatgroups/" + zeusGroupId + "/thermostats?thermostat_ids="
-                            + serialNumber;
-                    ResponseEntity<? extends Object> responseEntiry = requestHelper.callEcobeeAPIForObject(deleteThermostatsURL,
-                            HttpMethod.DELETE, Object.class);
-                    if (responseEntiry.getStatusCode() == HttpStatus.OK) {
-                        Map<String, Integer> response = (Map<String, Integer>) responseEntiry.getBody();
-                        if (response.get("deleted") == 1) {
-                            log.info("Thermostat serial number {} removed successfully from the zeus group ID {}", serialNumber,
-                                    zeusGroupId);
-                            // Delete device to Zeus mapping only in case of Unenrollment. For OupOut, do not remove the mapping.
-                            if (updateDeviceMapping) {
-                                ecobeeZeusGroupService.deleteZeusGroupMappingForInventory(inventoryId, zeusGroupId);
-                            }
-                        } else {
-                            throw new EnrollmentException("Error occurred while unenrolling thermostat " + serialNumber
-                                    + " from the zeus group ID " + zeusGroupId);
-                        }
+    @SuppressWarnings("unchecked")
+    @Override
+    public void removeThermostatFromGroup(String zeusGroupId, String serialNumber, int inventoryId, boolean updateDeviceMapping) {
+        try {
+            String deleteThermostatsURL = getUrlBase() + "tstatgroups/" + zeusGroupId + "/thermostats?thermostat_ids="
+                    + serialNumber;
+            ResponseEntity<? extends Object> responseEntiry = requestHelper.callEcobeeAPIForObject(deleteThermostatsURL,
+                    HttpMethod.DELETE, Object.class);
+            if (responseEntiry.getStatusCode() == HttpStatus.OK) {
+                Map<String, Integer> response = (Map<String, Integer>) responseEntiry.getBody();
+                if (response.get("deleted") == 1) {
+                    log.info("Thermostat serial number {} removed successfully from the zeus group ID {}", serialNumber,
+                            zeusGroupId);
+                    // Delete device to Zeus mapping only in case of Unenrollment. For OupOut, do not remove the mapping.
+                    if (updateDeviceMapping) {
+                        ecobeeZeusGroupService.deleteZeusGroupMappingForInventory(inventoryId, zeusGroupId);
                     }
+                } else {
+                    throw new EnrollmentException("Error occurred while unenrolling thermostat " + serialNumber
+                            + " from the zeus group ID " + zeusGroupId);
                 }
             }
         } catch (RestClientException | EcobeeAuthenticationException e) {

@@ -39,8 +39,20 @@
                                 <tfoot></tfoot>
                                 <tbody>
                                     <c:forEach items="${report.errors}" var="issue">
-                                        <cti:msg2 var="explanation" key="${issue.errorType.detailKey}" 
-                                            arguments="${issue.arguments}"/>
+                                        <c:choose>
+                                            <c:when test="${issue.errorType == 'MISLOCATED_DEVICE' && empty fn:trim(issue.correctPath)}">
+                                                <cti:msg2 var="explanation" key="${issue.errorType.detailKey}.unenroll" 
+                                                    arguments="${issue.arguments}"/>
+                                            </c:when>
+                                            <c:when test="${issue.errorType == 'MISLOCATED_DEVICE' && empty fn:trim(issue.currentPath)}">
+                                                <cti:msg2 var="explanation" key="${issue.errorType.detailKey}.enroll" 
+                                                    arguments="${issue.arguments}"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <cti:msg2 var="explanation" key="${issue.errorType.detailKey}" 
+                                                    arguments="${issue.arguments}"/>
+                                            </c:otherwise>
+                                        </c:choose>
                                         <tr data-error-id="${issue.errorId}" data-explanation="${fn:escapeXml(explanation)}">
                                             <td><i:inline key="${issue.errorType.formatKey}" arguments="${issue.arguments}"/></td>
                                             <td>
