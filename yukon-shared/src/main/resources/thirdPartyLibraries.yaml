@@ -531,7 +531,7 @@ Java :
     project URL : "https://commons.apache.org/proper/commons-compress/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-compress/1.19"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-compress/1.21"
     md5 : 2a713d10331bc4e13459a3dc0463f16f
     sha1 : 4ec95b60d4e86b5c95a0e919cb172a0af98011ef
     updated : 2021-08-10
