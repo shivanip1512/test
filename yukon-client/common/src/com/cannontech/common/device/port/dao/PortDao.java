@@ -1,8 +1,10 @@
 package com.cannontech.common.device.port.dao;
 
-import java.util.List;
-
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.port.service.impl.PortServiceImpl.CommChannelSortBy;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.search.result.SearchResults;
 
 public interface PortDao {
 
@@ -14,5 +16,5 @@ public interface PortDao {
     /**
      * Retrieves list of all devices using portId. Returns empty list when no devices found.
      */
-    public List<DeviceBaseModel> getDevicesAssignedPort(Integer portId);
+    public SearchResults<DeviceBaseModel> getDevicesAssignedPort(Integer portId, CommChannelSortBy sortby, PagingParameters paging, Direction direction);
 }

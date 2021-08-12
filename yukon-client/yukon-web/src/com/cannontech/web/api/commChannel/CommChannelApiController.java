@@ -23,11 +23,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.service.PortService;
+import com.cannontech.common.device.port.service.impl.PortServiceImpl.CommChannelSortBy;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.spring.parameters.exceptions.InvalidSortingParametersException;
 
 @RestController
 @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
@@ -78,9 +86,15 @@ public class CommChannelApiController {
 
     //Get devices assigned to port
     @GetMapping("/{portId}/devicesAssigned")
-    public ResponseEntity<Object> retrieveAllDevicesForPort(@PathVariable int portId) {
-        List<DeviceBaseModel> listOfDevices = portService.getDevicesAssignedPort(portId);
-        return new ResponseEntity<>(listOfDevices, HttpStatus.OK);
+    public ResponseEntity<Object> retrieveAllDevicesForPort(@PathVariable int portId,
+                                                            @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,
+                                                            @DefaultItemsPerPage(value = 25) PagingParameters paging) {
+        
+        // Fetch valid sort by
+        CommChannelSortBy sortBy = getValidSortBy(sorting.getSort());
+        Direction direction = sorting.getDirection();
+        SearchResults<DeviceBaseModel> searchResults = portService.getDevicesAssignedPort(portId, sortBy, paging, direction);
+        return new ResponseEntity<>(searchResults, HttpStatus.OK);
     }
 
     @InitBinder("portBase")
@@ -90,6 +104,19 @@ public class CommChannelApiController {
         String portId = ServletUtils.getPathVariable("id");
         if (portId == null) {
             binder.addValidators(portApiCreationValidator);
+        }
+    }
+    
+    /**
+     * Get valid Sort By from request parameters
+     * 
+     * @throws InvalidSortingParametersException when sorting parameters is in valid
+     */
+    private CommChannelSortBy getValidSortBy(String sortByString) {
+        try {
+            return CommChannelSortBy.valueOf(sortByString);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidSortingParametersException(sortByString + " could not be interpreted as sorting by parameter");
         }
     }
    

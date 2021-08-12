@@ -64,51 +64,51 @@ public class CommChannelLinkedDeviceWidget extends AdvancedWidgetControllerBase 
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
 
         String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + deviceId + "/devicesAssigned");
-        List<DeviceBaseModel> devicesList = new ArrayList<>();
+        SearchResults<DeviceBaseModel> searchResults = new SearchResults<DeviceBaseModel>();
 
         ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext, request, assignedDevicesUrl,
                 DeviceBaseModel.class, HttpMethod.GET, DeviceBaseModel.class);
         if (response.getStatusCode() == HttpStatus.OK) {
-            devicesList = (List<DeviceBaseModel>) response.getBody();
+        	searchResults = (SearchResults<DeviceBaseModel>) response.getBody();
         }
         
-        Direction dir = sorting.getDirection();
-        Comparator<DeviceBaseModel> comparator = (o1, o2) -> {
-            return o1.getName().compareToIgnoreCase(o2.getName());
-        };
-        if (sortBy == CommChannelSortBy.type) {
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            comparator = (o1, o2) -> accessor.getMessage(o1.getPaoIdentifier().getPaoType().getFormatKey())
-                                             .compareToIgnoreCase(accessor.getMessage(o2.getPaoIdentifier().getPaoType().getFormatKey()));
-        }
-        if (sortBy == CommChannelSortBy.status) {
-            comparator = (o1, o2) -> o1.getEnable().compareTo(o2.getEnable());
-        }
-        if (sorting.getDirection() == Direction.desc) {
-            comparator = Collections.reverseOrder(comparator);
-        }
-        Collections.sort(devicesList, comparator);
-        
-        model.addAttribute("devicesList", devicesList);
-        model.addAttribute("deviceId", deviceId);
-        
-        SearchResults<DeviceBaseModel> searchResult = new SearchResults<>();
-        int startIndex = paging.getStartIndex();
-        int itemsPerPage = paging.getItemsPerPage();
-        int endIndex = Math.min(startIndex + itemsPerPage, devicesList.size());
-        
-        devicesList = devicesList.subList(startIndex, endIndex);
-        searchResult.setBounds(startIndex, itemsPerPage, devicesList.size());
-        searchResult.setResultList(devicesList);
-        
-        model.addAttribute("searchResult", searchResult);
-        
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        for (CommChannelSortBy column : CommChannelSortBy.values()) {
-            String text = accessor.getMessage(column);
-            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
-            model.addAttribute(column.name(), col);
-        }
+		/*
+		 * Direction dir = sorting.getDirection(); Comparator<DeviceBaseModel>
+		 * comparator = (o1, o2) -> { return
+		 * o1.getName().compareToIgnoreCase(o2.getName()); }; if (sortBy ==
+		 * CommChannelSortBy.type) { MessageSourceAccessor accessor =
+		 * messageResolver.getMessageSourceAccessor(userContext); comparator =
+		 * (o1, o2) ->
+		 * accessor.getMessage(o1.getPaoIdentifier().getPaoType().getFormatKey()
+		 * ) .compareToIgnoreCase(accessor.getMessage(o2.getPaoIdentifier().
+		 * getPaoType().getFormatKey())); } if (sortBy ==
+		 * CommChannelSortBy.status) { comparator = (o1, o2) ->
+		 * o1.getEnable().compareTo(o2.getEnable()); } if
+		 * (sorting.getDirection() == Direction.desc) { comparator =
+		 * Collections.reverseOrder(comparator); } Collections.sort(devicesList,
+		 * comparator);
+		 * 
+		 * model.addAttribute("devicesList", devicesList);
+		 * model.addAttribute("deviceId", deviceId);
+		 * 
+		 * SearchResults<DeviceBaseModel> searchResult = new SearchResults<>();
+		 * int startIndex = paging.getStartIndex(); int itemsPerPage =
+		 * paging.getItemsPerPage(); int endIndex = Math.min(startIndex +
+		 * itemsPerPage, devicesList.size());
+		 * 
+		 * devicesList = devicesList.subList(startIndex, endIndex);
+		 * searchResult.setBounds(startIndex, itemsPerPage, devicesList.size());
+		 * searchResult.setResultList(devicesList);
+		 * 
+		 * model.addAttribute("searchResult", searchResult);
+		 * 
+		 * MessageSourceAccessor accessor =
+		 * messageResolver.getMessageSourceAccessor(userContext); for
+		 * (CommChannelSortBy column : CommChannelSortBy.values()) { String text
+		 * = accessor.getMessage(column); SortableColumn col =
+		 * SortableColumn.of(dir, column == sortBy, text, column.name());
+		 * model.addAttribute(column.name(), col); }
+		 */
         
         return "commChannelLinkedDeviceWidget/render.jsp";
     }

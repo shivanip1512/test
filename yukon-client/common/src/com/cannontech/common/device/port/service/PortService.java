@@ -4,6 +4,10 @@ import java.util.List;
 
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.port.PortBase;
+import com.cannontech.common.device.port.service.impl.PortServiceImpl.CommChannelSortBy;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.port.DirectPort;
 
@@ -37,6 +41,6 @@ public interface PortService {
     /**
      * Retrieves list of all devices using portId. Returns empty list when no devices found.
      */
-    List<DeviceBaseModel> getDevicesAssignedPort(int portId);
+    SearchResults<DeviceBaseModel> getDevicesAssignedPort(int portId, CommChannelSortBy sortBy, PagingParameters paging, Direction direction);
 
 }
