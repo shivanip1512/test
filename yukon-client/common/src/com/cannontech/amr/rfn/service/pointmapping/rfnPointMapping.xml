@@ -4809,7 +4809,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Sum Peak kVAr Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum Peak kVAr Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4822,7 +4822,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVAr Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered Peak kVAr Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4833,7 +4833,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA (Quadrants 1 2 4) Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Peak kVA (Quadrants 1 2 4) Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
