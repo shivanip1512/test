@@ -39,7 +39,8 @@ post-operation:
               $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
             examples:
               RouteIds:
-                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/List MacroRoutes'                
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/List MacroRoutes'
+
 get-update-delete-operation:
   get:
     tags:
@@ -95,3 +96,26 @@ get-update-delete-operation:
             examples:
               Macro Route:
                 $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
+
+  delete:
+    tags:
+     - Macro Route
+    summary: 'Delete Macro Route'
+    description: 'API to delete Macro Route based on passed id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'Unique identifier for MacroRoute.'
+        required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/macroRoutesSchema.yaml#/id'
+            examples:
+              RouteId:
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/routeId'
