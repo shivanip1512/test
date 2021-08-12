@@ -21,7 +21,7 @@
         #- &focus_axd-sd LGYR FocusAXD-SD
         #- &focus_axt-sd LGYR FocusAXT-SD
         - &focus_axr-sd LGYR FocusAXR-SD
-    Landis and Gyr Focus AX-RX-500:
+    Landis and Gyr Focus AX-500:
         - &axd-500 LGYR FocusAXD-500
         - &axt-500 LGYR FocusAXT-500
         - &axr-500 LGYR FocusAXR-500
@@ -40,6 +40,25 @@
         - &rxd-530 LGYR FocusRXD-530
         - &rxt-530 LGYR FocusRXT-530
         - &rxr-530 LGYR FocusRXR-530
+    Landis and Gyr Focus AXe-500:
+        - &axde-500 LGYR FocusAXDe-500
+        - &axte-500 LGYR FocusAXTe-500
+        - &axre-500 LGYR FocusAXRe-500
+        - &axde-sd-500 LGYR FocusAXDe-SD-500
+        - &axte-sd-500 LGYR FocusAXTe-SD-500
+        - &axre-sd-500 LGYR FocusAXRe-SD-500
+        - &rxde-500 LGYR FocusRXDe-500
+        - &rxte-500 LGYR FocusRXTe-500
+        - &rxre-500 LGYR FocusRXRe-500
+        - &rxde-sd-500 LGYR FocusRXDe-SD-500
+        - &rxte-sd-500 LGYR FocusRXTe-SD-500
+        - &rxre-sd-500 LGYR FocusRXRe-SD-500
+        - &axde-530 LGYR FocusAXDe-530
+        - &axte-530 LGYR FocusAXTe-530
+        - &axre-530 LGYR FocusAXRe-530
+        - &rxde-530 LGYR FocusRXDe-530
+        - &rxte-530 LGYR FocusRXTe-530
+        - &rxre-530 LGYR FocusRXRe-530
     Landis and Gyr S4:
         - &s4e_ad LGYR S4-AD
         - &s4e_at LGYR S4-AT
@@ -84,9 +103,15 @@ Meter combinations:
     - &____-R_TR-___ [                                     *s4e_rt, *s4e_rr       ]
     - &____-R_TR-650 [                                     *s4e_rt, *s4e_rr, *s4x ]
     - &____-____-650 [                                                       *s4x ]
+    # Focus AX (Gen 1)
     - &__-RX-23 [ *rxd-500, *rxt-500, *rxr-500, *rxd-sd-500, *rxt-sd-500, *rxr-sd-500, *rxd-530, *rxd-530, *rxd-530 ]
     - &AX-RX-23 [ *rxd-500, *rxt-500, *rxr-500, *rxd-sd-500, *rxt-sd-500, *rxr-sd-500, *rxd-530, *rxd-530, *rxd-530, *axd-500, *axt-500, *axr-500, *axd-sd-500, *axt-sd-500, *axr-sd-500, *axd-530, *axd-530, *axd-530 ]
     - &AX-RX-_3 [ *rxd-530, *rxd-530, *rxd-530, *axd-530, *axd-530, *axd-530 ]
+    # Focus AXe (Gen 2)
+    - &___-RXe-23 [ *rxde-500, *rxte-500, *rxre-500, *rxde-sd-500, *rxte-sd-500, *rxre-sd-500, *rxde-530, *rxde-530, *rxde-530 ]
+    - &AXe-RXe-23 [ *rxde-500, *rxte-500, *rxre-500, *rxde-sd-500, *rxte-sd-500, *rxre-sd-500, *rxde-530, *rxde-530, *rxde-530, *axde-500, *axte-500, *axre-500, *axde-sd-500, *axte-sd-500, *axre-sd-500, *axde-530, *axde-530, *axde-530 ]
+    - &AXe-RXe-_3 [ *rxde-530, *rxde-530, *rxde-530, *axde-530, *axde-530, *axde-530 ]
+
     - &ELO-123 [ *elo2131TD, *elo2132TD, *elo2133TD ]
     - &ELO-_23 [ *elo2132TD, *elo2133TD ]
     - &ELO-__3 [ *elo2133TD ]
@@ -1513,7 +1538,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - RFN Temperature:                            { Unit: *C,     Modifiers: [                                                       ], Models: *ADTR-RDTR-650 }
 
 # Table 11 – RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology)
-RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
+RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Watt-hours Delivered:                 { Unit: *Wh,     Modifiers: [ *Q1, *Q4                         ], Models: *AX-RX-23 }
     - Watt-hours Received:                  { Unit: *Wh,     Modifiers: [ *Q2, *Q3                         ], Models: *AX-RX-23 }
     - Watt-hours Total:                     { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *AX-RX-23 }
@@ -1647,7 +1672,142 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Current Phase C:                      { Unit: *A,      Modifiers: [ *PhC, *milli                     ], Models: *AX-RX-_3 }
     - RFN Temperature:                      { Unit: *C,      Modifiers: [                                  ], Models: *AX-RX-23 }
 
-# Table 12 - Next Gen Water Node
+# Table 12 – RFN-500 Node in L & G Focus AXe and RXe (with Advanced Metrology)
+RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
+    - Watt-hours Delivered:                 { Unit: *Wh,     Modifiers: [ *Q1, *Q4                         ], Models: *AXe-RXe-23 }
+    - Watt-hours Received:                  { Unit: *Wh,     Modifiers: [ *Q2, *Q3                         ], Models: *AXe-RXe-23 }
+    - Watt-hours Total:                     { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *AXe-RXe-23 }
+    - Watt-hours Net:                       { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *AXe-RXe-23 }
+    - Var-hours Delivered:                  { Unit: *Varh,   Modifiers: [ *Q1                              ], Models: *___-RXe-23 } # Alternative Delivered kVArh definition for 2-quadrant metering
+    - Var-hours Delivered:                  { Unit: *Varh,   Modifiers: [ *Q1, *Q2                         ], Models: *___-RXe-23 }
+    - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q3, *Q4                         ], Models: *___-RXe-23 }
+    - Var-hours Total:                      { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *___-RXe-23 }
+    - Var-hours Net:                        { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *___-RXe-23 }
+    - VA-hours Lagging:                     { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4                    ], Models: *___-RXe-23 }
+    - VA-hours Received:                    { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4                    ], Models: *___-RXe-23 }
+    - VA-hours Total:                       { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *___-RXe-23 }
+    - VA-hours Net:                         { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *___-RXe-23 }
+    - Peak Delivered Demand:                { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max                   ], Models: *AXe-RXe-23 }
+    - Time of Peak Delivered Demand:        { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AXe-RXe-23 }
+    - Frozen Peak Delivered Demand:         { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *Prev            ], Models: *AXe-RXe-23 }
+    - Time of Frozen Peak Delivered Demand: { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *AXe-RXe-23 }
+    - Daily Peak Delivered Demand:          { Unit: *W,      Modifiers: [ *Q1, *Q4, *DayMax                ], Models: *AXe-RXe-23 }
+    - Time of Daily Peak Delivered Demand:  { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AXe-RXe-23 }
+    - Peak Delivered Var:                   { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max                   ], Models: *___-RXe-23 }
+    - Time of Peak Delivered Var:           { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *___-RXe-23 }
+    - Peak Total Var:                       { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *___-RXe-23 }
+    - Time of Peak Total Var:               { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *___-RXe-23 }
+    - Peak Volt-amperes Lagging:            { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max              ], Models: *___-RXe-23 }
+    - Time of Peak Volt-amperes Lagging:    { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *___-RXe-23 }
+    - Peak Total VA:                        { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *___-RXe-23 }
+    - Time of Peak Total VA:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *___-RXe-23 }
+    - Watt-hours Delivered Rate A:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateA                 ], Models: *AXe-RXe-23 }
+    - Watt-hours Received Rate A:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateA                 ], Models: *AXe-RXe-23 }
+    - Watt-hours Total Rate A:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *AXe-RXe-23 }
+    - Watt-hours Net Rate A:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *AXe-RXe-23 }
+    - Var-hours Delivered Rate A:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateA                 ], Models: *___-RXe-23 } 
+    - Var-hours Received Rate A:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateA                 ], Models: *___-RXe-23 } 
+    - Var-hours Total Rate A:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *___-RXe-23 } 
+    - Var-hours Net Rate A:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *___-RXe-23 } 
+    - VA-hours Delivered Rate A:            { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *RateA                 ], Models: *___-RXe-23 } 
+    - VA-hours Received Rate A:             { Unit: *VAh,    Modifiers: [ *Q3, *Q4, *RateA                 ], Models: *___-RXe-23 } 
+    - VA-hours Total Rate A:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *___-RXe-23 } 
+    - VA-hours Net Rate A:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *___-RXe-23 } 
+    - Peak Demand Rate A:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateA           ], Models: *AXe-RXe-23 }
+    - Time of Peak Demand Rate A:           { Unit: *s,      Modifiers: [ *RateA                           ], Models: *AXe-RXe-23 }
+    - Frozen Peak Demand Rate A:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateA, *Prev    ], Models: *AXe-RXe-23 }
+    - Time of Frozen Peak Demand Rate A:    { Unit: *s,      Modifiers: [ *RateA, *Prev                    ], Models: *AXe-RXe-23 }
+    - Peak Delivered Var Rate A:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA           ], Models: *___-RXe-23 } 
+    - Time of Peak Var Rate A:              { Unit: *s,      Modifiers: [ *RateA                           ], Models: *___-RXe-23 } 
+    - Peak Volt-amperes Lagging Rate A:     { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA      ], Models: *___-RXe-23 }
+    - Time of Peak Volt-amperes Lagging Rate A: { Unit: *s,  Modifiers: [ *RateA                           ], Models: *___-RXe-23 }
+    - Watt-hours Delivered Rate B:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateB                 ], Models: *AXe-RXe-23 }
+    - Watt-hours Received Rate B:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateB                 ], Models: *AXe-RXe-23 }
+    - Watt-hours Total Rate B:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *AXe-RXe-23 }
+    - Watt-hours Net Rate B:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *AXe-RXe-23 }
+    - Var-hours Delivered Rate B:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateB                 ], Models: *___-RXe-23 } 
+    - Var-hours Received Rate B:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateB                 ], Models: *___-RXe-23 } 
+    - Var-hours Total Rate B:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *___-RXe-23 } 
+    - Var-hours Net Rate B:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *___-RXe-23 } 
+    - VA-hours Delivered Rate B:            { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *RateB                 ], Models: *___-RXe-23 } 
+    - VA-hours Received Rate B:             { Unit: *VAh,    Modifiers: [ *Q3, *Q4, *RateB                 ], Models: *___-RXe-23 } 
+    - VA-hours Total Rate B:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *___-RXe-23 } 
+    - VA-hours Net Rate B:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *___-RXe-23 } 
+    - Peak Demand Rate B:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateB           ], Models: *AXe-RXe-23 }
+    - Time of Peak Demand Rate B:           { Unit: *s,      Modifiers: [ *RateB                           ], Models: *AXe-RXe-23 }
+    - Frozen Peak Demand Rate B:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateB, *Prev    ], Models: *AXe-RXe-23 }
+    - Time of Frozen Peak Demand Rate B:    { Unit: *s,      Modifiers: [ *RateB, *Prev                    ], Models: *AXe-RXe-23 }
+    - Peak Delivered Var Rate B:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB           ], Models: *___-RXe-23 } 
+    - Time of Peak Var Rate B:              { Unit: *s,      Modifiers: [ *RateB                           ], Models: *___-RXe-23 } 
+    - Peak Volt-amperes Lagging Rate B:     { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB      ], Models: *___-RXe-23 }
+    - Time of Peak Volt-amperes Lagging Rate B: { Unit: *s,  Modifiers: [ *RateB                           ], Models: *___-RXe-23 } 
+    - Watt-hours Delivered Rate C:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateC                 ], Models: *AXe-RXe-23 }
+    - Watt-hours Received Rate C:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateC                 ], Models: *AXe-RXe-23 }
+    - Watt-hours Total Rate C:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *AXe-RXe-23 }
+    - Watt-hours Net Rate C:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *AXe-RXe-23 }
+    - Var-hours Delivered Rate C:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateC                 ], Models: *___-RXe-23 } 
+    - Var-hours Received Rate C:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateC                 ], Models: *___-RXe-23 } 
+    - Var-hours Total Rate C:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *___-RXe-23 } 
+    - Var-hours Net Rate C:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *___-RXe-23 } 
+    - VA-hours Delivered Rate C:            { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *RateC                 ], Models: *___-RXe-23 } 
+    - VA-hours Received Rate C:             { Unit: *VAh,    Modifiers: [ *Q3, *Q4, *RateC                 ], Models: *___-RXe-23 } 
+    - VA-hours Total Rate C:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *___-RXe-23 } 
+    - VA-hours Net Rate C:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *___-RXe-23 } 
+    - Peak Demand Rate C:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateC           ], Models: *AXe-RXe-23 }
+    - Time of Peak Demand Rate C:           { Unit: *s,      Modifiers: [ *RateC                           ], Models: *AXe-RXe-23 }
+    - Frozen Peak Demand Rate C:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateC, *Prev    ], Models: *AXe-RXe-23 }
+    - Time of Frozen Peak Demand Rate C:    { Unit: *s,      Modifiers: [ *RateC, *Prev                    ], Models: *AXe-RXe-23 }
+    - Peak Delivered Var Rate C:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC           ], Models: *___-RXe-23 } 
+    - Time of Peak Var Rate C:              { Unit: *s,      Modifiers: [ *RateC                           ], Models: *___-RXe-23 } 
+    - Peak Volt-amperes Lagging Rate C:     { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC      ], Models: *___-RXe-23 }
+    - Time of Peak Volt-amperes Lagging Rate C: { Unit: *s,  Modifiers: [ *RateC                           ], Models: *___-RXe-23 }
+    - Watt-hours Delivered Rate D:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateD                 ], Models: *AXe-RXe-23 }
+    - Watt-hours Received Rate D:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateD                 ], Models: *AXe-RXe-23 }
+    - Watt-hours Total Rate D:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *AXe-RXe-23 }
+    - Watt-hours Net Rate D:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *AXe-RXe-23 }
+    - Var-hours Delivered Rate D:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateD                 ], Models: *___-RXe-23 } 
+    - Var-hours Received Rate D:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateD                 ], Models: *___-RXe-23 } 
+    - Var-hours Total Rate D:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *___-RXe-23 } 
+    - Var-hours Net Rate D:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *___-RXe-23 } 
+    - VA-hours Delivered Rate D:            { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *RateD                 ], Models: *___-RXe-23 } 
+    - VA-hours Received Rate D:             { Unit: *VAh,    Modifiers: [ *Q3, *Q4, *RateD                 ], Models: *___-RXe-23 } 
+    - VA-hours Total Rate D:                { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *___-RXe-23 } 
+    - VA-hours Net Rate D:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *___-RXe-23 } 
+    - Peak Demand Rate D:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateD           ], Models: *AXe-RXe-23 }
+    - Time of Peak Demand Rate D:           { Unit: *s,      Modifiers: [ *RateD                           ], Models: *AXe-RXe-23 }
+    - Frozen Peak Demand Rate D:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev    ], Models: *AXe-RXe-23 }
+    - Time of Frozen Peak Demand Rate D:    { Unit: *s,      Modifiers: [ *RateD, *Prev                    ], Models: *AXe-RXe-23 }
+    - Peak Delivered Var Rate D:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD           ], Models: *___-RXe-23 } 
+    - Time of Peak Var Rate D:              { Unit: *s,      Modifiers: [ *RateD                           ], Models: *___-RXe-23 } 
+    - Peak Volt-amperes Lagging Rate D:     { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD      ], Models: *___-RXe-23 }
+    - Time of Peak Volt-amperes Lagging Rate D: { Unit: *s,  Modifiers: [ *RateD                           ], Models: *___-RXe-23 }
+    - Peak Daily Voltage:                   { Unit: *V,      Modifiers: [ *DayMax, *milli                  ], Models: *AXe-RXe-23 }
+    - Coincident Time of Peak Daily Voltage: { Unit: *s,     Modifiers: [                                  ], Models: *AXe-RXe-23 }
+    - Minimum Daily Voltage:                { Unit: *V,      Modifiers: [ *DayMin, *milli                  ], Models: *AXe-RXe-23 }
+    - Coincident Time of Minimum Daily Voltage: { Unit: *s,  Modifiers: [                                  ], Models: *AXe-RXe-23 }
+    - Interval Demand:                      { Unit: *W,      Modifiers: [ *Q1, *Q4                         ], Models: *AXe-RXe-23 }
+    - Interval Voltage:                     { Unit: *V,      Modifiers: [ *milli                           ], Models: *AXe-RXe-23 }
+    - Voltage Phase A:                      { Unit: *V,      Modifiers: [ *PhA, *milli                     ], Models: *AXe-RXe-23 }
+    - Voltage Phase B:                      { Unit: *V,      Modifiers: [ *PhB, *milli                     ], Models: *AXe-RXe-_3 }
+    - Voltage Phase C:                      { Unit: *V,      Modifiers: [ *PhC, *milli                     ], Models: *AXe-RXe-_3 }
+    - Average Voltage Phase A:              { Unit: *V,      Modifiers: [ *PhA, *Avg, *milli               ], Models: *AXe-RXe-23 }
+    - Average Voltage Phase B:              { Unit: *V,      Modifiers: [ *PhB, *Avg, *milli               ], Models: *AXe-RXe-_3 }
+    - Average Voltage Phase C:              { Unit: *V,      Modifiers: [ *PhC, *Avg, *milli               ], Models: *AXe-RXe-_3 }
+    - Minimum Voltage Phase A:              { Unit: *V,      Modifiers: [ *PhA, *Min, *milli               ], Models: *AXe-RXe-23 }
+    - Minimum Voltage Phase B:              { Unit: *V,      Modifiers: [ *PhB, *Min, *milli               ], Models: *AXe-RXe-_3 }
+    - Minimum Voltage Phase C:              { Unit: *V,      Modifiers: [ *PhC, *Min, *milli               ], Models: *AXe-RXe-_3 }
+    - Maximum Voltage Phase A:              { Unit: *V,      Modifiers: [ *PhA, *Max, *milli               ], Models: *AXe-RXe-23 }
+    - Maximum Voltage Phase B:              { Unit: *V,      Modifiers: [ *PhB, *Max, *milli               ], Models: *AXe-RXe-_3 }
+    - Maximum Voltage Phase C:              { Unit: *V,      Modifiers: [ *PhC, *Max, *milli               ], Models: *AXe-RXe-_3 }
+    - Voltage Angle Phase A:                { Unit: *V_deg,  Modifiers: [ *PhA                             ], Models: *AXe-RXe-23, Mapped: false }
+    - Voltage Angle Phase B:                { Unit: *V_deg,  Modifiers: [ *PhB                             ], Models: *AXe-RXe-_3, Mapped: false }
+    - Voltage Angle Phase C:                { Unit: *V_deg,  Modifiers: [ *PhC                             ], Models: *AXe-RXe-_3, Mapped: false }
+    - Current Phase A:                      { Unit: *A,      Modifiers: [ *PhA, *milli                     ], Models: *AXe-RXe-23 }
+    - Current Phase B:                      { Unit: *A,      Modifiers: [ *PhB, *milli                     ], Models: *AXe-RXe-_3 }
+    - Current Phase C:                      { Unit: *A,      Modifiers: [ *PhC, *milli                     ], Models: *AXe-RXe-_3 }
+    - RFN Temperature:                      { Unit: *C,      Modifiers: [                                  ], Models: *AXe-RXe-23 }
+
+# Table 13 - Next Gen Water Node
 Next Gen Water Node:
     - Faceplate Reading: { Unit: *Unk,  Modifiers: [        ], Metric ID: 255 }
     # Note: For the Faceplate Reading, the units string (passed to Yukon) is a dash, "-", which corresponds to Unknown units reported by the node.  
