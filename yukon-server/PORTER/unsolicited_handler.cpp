@@ -415,9 +415,14 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
         break;
 
     case WaitingForData:
-        CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _waiting_devices and _timeouts");
-        _waiting_devices.erase(&dr);
-        deactivateTimeout(dr);
+        {
+            CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _waiting_for_data");
+            _waiting_for_data.remove(&dr);
+            _waiting_devices.erase(&dr);
+
+            deactivateTimeout(dr);
+
+        }
         break;
 
     case ToDecode:
@@ -796,7 +801,11 @@ void UnsolicitedHandler::trySendOutbounds(device_record *dr)
     {
         const CtiTime timeout = CtiTime::now() + getDeviceTimeout(*dr);
 
-        queueWaitingForData(dr, timeout);
+        queueWaitingForData(dr);
+
+        //  insert because it's a multimap - we might have multiple entries for this timeout value
+        _timeouts.emplace(timeout, dr);
+        dr->timeout = timeout;
     }
 }
 
@@ -1031,15 +1040,15 @@ bool UnsolicitedHandler::expireTimeouts(const MillisecondTimer &timer, const uns
     // we may have been waiting for a device that has already been removed from the timeout queue.
     while( ! _timeouts.empty() && _timeouts.begin()->first < now )
     {
-        const auto [timeout, dr] = *_timeouts.begin();
+        const CtiTime timeout = _timeouts.begin()->first;
+        device_record *dr = _timeouts.begin()->second;
 
         _timeouts.erase(_timeouts.begin());
 
         if (timeout == dr->timeout)
         {
-            _waiting_devices.erase(dr);
-
             queueToDecode(dr);
+            _waiting_for_data.remove(dr);
         }
 
         if( timer.elapsed() > until )
@@ -1367,15 +1376,13 @@ void UnsolicitedHandler::queueToGenerate(device_record *dr)
     setDeviceState(_to_generate, dr, ToGenerate);
 }
 
-void UnsolicitedHandler::queueWaitingForData(device_record *dr, const CtiTime timeout)
+void UnsolicitedHandler::queueWaitingForData(device_record *dr)
 {
-    CTILOG_TRACE(dout, "Queueing device " << dr->device->getID() << " to _timeouts and _waiting_devices");
+    CTILOG_TRACE(dout, "Queueing device " << dr->device->getID() << " to _waiting_for_data");
 
-    //  insert because it's a multimap - we might have multiple entries for this timeout value
-    _timeouts.emplace(timeout, dr);
-    dr->timeout = timeout;
-
+    _waiting_for_data.insert(_waiting_for_data.end(), dr);
     _active_devices[dr] = WaitingForData;
+
     _waiting_devices[dr] = WaitingForData;
 }
 
