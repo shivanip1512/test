@@ -4654,7 +4654,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="kVAh (Quadrants 1 2 4) (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX&focusAxGen2Base;">
+        <point name="kVAh (Quadrants 1 2 4) (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
