@@ -184,6 +184,10 @@ public:
     static const Attribute  kVAQ13;
     static const Attribute  kVAQ24;
     static const Attribute  PeakkVAQ124Frozen;
+    static const Attribute  PeakkVAQ124FrozenRateA;
+    static const Attribute  PeakkVAQ124FrozenRateB;
+    static const Attribute  PeakkVAQ124FrozenRateC;
+    static const Attribute  PeakkVAQ124FrozenRateD;
     static const Attribute  SumkVAr;
     static const Attribute  NetkVAr;
     static const Attribute  PeakkVAr;
@@ -214,6 +218,10 @@ public:
     static const Attribute  kVArQ23;
     static const Attribute  SumPeakkVArFrozen;
     static const Attribute  DeliveredPeakkVArFrozen;
+    static const Attribute  DeliveredPeakkVArFrozenRateA;
+    static const Attribute  DeliveredPeakkVArFrozenRateB;
+    static const Attribute  DeliveredPeakkVArFrozenRateC;
+    static const Attribute  DeliveredPeakkVArFrozenRateD;
     static const Attribute  PeakkVArh;
     static const Attribute  PeakkVArhCoincidental;
     static const Attribute  Phase;
