@@ -20,7 +20,7 @@ public class RouteModelFactory {
         case ROUTE_SERIES_5_LMI:
         case ROUTE_RTC:
         case ROUTE_RDS_TERMINAL:
-            routeBaseModel = new RouteBaseModel();
+            routeBaseModel = new NonCCURouteModel();
             break;
         case ROUTE_CCU:
             routeBaseModel = new CCURouteModel();

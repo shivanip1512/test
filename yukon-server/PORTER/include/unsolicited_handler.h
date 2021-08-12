@@ -229,6 +229,15 @@ protected:
     void setDeviceInactive(device_record *dr);
     virtual void clearActiveDevice(const device_record& dr) = 0;
 
+    // Put device in the work queue and set state
+    void queueRequestPending(device_record* dr);
+    void queueToGenerate(device_record* dr);
+    void queueWaitingForData(device_record* dr, const CtiTime timeout);
+    void queueToDecode(device_record* dr);
+    void queueRequestComplete(device_record* dr);
+    void queueWaitingToSend(device_record* dr);
+    void setDeviceState(device_list& map, device_record* dr, DeviceState state);
+
 public:
 
     UnsolicitedHandler(CtiPortSPtr &port, CtiDeviceManager &deviceManager);
@@ -237,15 +246,6 @@ public:
     void run();
 
     void receiveMessage(CtiMessage *msg);
-
-    // Put device in the work queue and set state
-    void queueRequestPending(device_record *dr);
-    void queueToGenerate(device_record *dr);
-    void queueWaitingForData(device_record *dr);
-    void queueToDecode(device_record *dr);
-    void queueRequestComplete(device_record *dr);
-    void queueWaitingToSend(device_record *dr);
-    void setDeviceState(device_list &map, device_record *dr, DeviceState state);
 };
 
 
@@ -259,8 +259,6 @@ private:
     client_collection _clients;
 
 public:
-
-    UnsolicitedMessenger() {};
 
     void addClient(UnsolicitedHandler *client);
     void removeClient(UnsolicitedHandler *client);

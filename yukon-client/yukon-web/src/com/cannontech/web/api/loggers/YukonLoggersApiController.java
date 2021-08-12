@@ -6,11 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,10 +35,11 @@ import com.cannontech.common.model.SortingParameters;
 public class YukonLoggersApiController {
 
     @Autowired private YukonLoggerService loggerService;
-
+    @Autowired private YukonLoggersApiValidator yukonLoggersApiValidator;
+    
     @GetMapping
     public ResponseEntity<Object> getAll(String loggerName, LoggerLevel[] loggerLevels,
-            @DefaultSort(dir = Direction.asc, sort = "loggerName") SortingParameters sorting) {
+            @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting) {
         SortBy sortBy = SortBy.valueOf(sorting.getSort());
         Direction direction = sorting.getDirection();
         List<LoggerLevel> LoggerLevelList = new ArrayList<>();
@@ -51,13 +56,13 @@ public class YukonLoggersApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> create(@RequestBody YukonLogger logger) {
-        return new ResponseEntity<Object>(loggerService.addLogger(logger), HttpStatus.CREATED);
+    public ResponseEntity<Object> create(@Valid @RequestBody YukonLogger yukonLogger) {
+        return new ResponseEntity<Object>(loggerService.addLogger(yukonLogger), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{loggerId}")
-    public ResponseEntity<Object> update(@RequestBody YukonLogger logger, @PathVariable int loggerId) {
-        return new ResponseEntity<Object>(loggerService.updateLogger(loggerId, logger), HttpStatus.OK);
+    public ResponseEntity<Object> update(@PathVariable int loggerId, @Valid @RequestBody YukonLogger yukonLogger) {
+        return new ResponseEntity<Object>(loggerService.updateLogger(loggerId, yukonLogger), HttpStatus.OK);
     }
 
     @DeleteMapping("/{loggerId}")
@@ -66,5 +71,10 @@ public class YukonLoggersApiController {
         int id = loggerService.deleteLogger(loggerId);
         loggerMap.put("loggerId", id);
         return new ResponseEntity<Object>(loggerMap, HttpStatus.OK);
+    }
+    
+    @InitBinder("yukonLogger")
+    public void setupBinder(WebDataBinder binder) {
+        binder.addValidators(yukonLoggersApiValidator);
     }
 }

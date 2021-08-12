@@ -1,0 +1,91 @@
+Logger:
+  title: Logger
+  required:
+    - type
+    - level
+    - name
+  type: object
+  properties:
+    id:
+      type: integer
+      default: -1
+    type:
+        type: string
+        default: 
+        description: 'Logger Type of Yukon Logger.'
+        enum:
+          - SYSTEM_LOGGER
+          - USER_LOGGER
+    level:
+        type: string
+        default: OFF
+        description: 'Logger level of Yukon Logger.'
+        enum:
+           - OFF
+           - FATAL
+           - ERROR
+           - WARN
+           - INFO
+           - DEBUG
+           - TRACE
+    name:
+        type: string
+        description: 'Yukon Logger Name.'
+        maxLength: 200
+    expirationDate:
+        type: Date
+        description: 'Expiration Date of Yukon Logger.'
+    notes:
+        type: string
+        maxLength: 255
+        description: 'Notes'
+id:
+  title: id
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for Logger.'
+      
+Logger List:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for the logger.'
+        
+
+components:
+  examples:
+    Logger:
+      value:
+        loggerName: com.cannontech.test
+        loggerType: USER_LOGGER
+        level: ERROR
+        expirationDate: 08/27/2021
+        notes: Sample logger
+    id:
+      value:
+        id: 11
+    List of Logger:
+      value:
+          - id: 1
+            loggerName: com.cannontech.test1
+            loggerType: USER_LOGGER
+            level: ERROR
+            expirationDate: 08/27/2021
+            notes: Sample logger
+          - id: 2
+            loggerName: com.cannontech.test2
+            loggerType: USER_LOGGER
+            level: ERROR
+            expirationDate: 09/27/2021
+            notes: Sample logger
+          - id: 3
+            loggerName: com.cannontech.test3
+            loggerType: USER_LOGGER
+            level: ERROR
+            expirationDate: 10/27/2021
+            notes: Sample logger

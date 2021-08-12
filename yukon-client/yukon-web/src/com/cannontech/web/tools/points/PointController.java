@@ -23,17 +23,21 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.bulk.model.AnalogPointUpdateType;
 import com.cannontech.common.bulk.model.StatusPointUpdateType;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -46,6 +50,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.YukonListDao;
@@ -53,7 +58,9 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -83,6 +90,7 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.dispatch.command.service.CommandService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -94,6 +102,7 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.stars.rtu.service.RtuService;
+import com.cannontech.web.tools.dataViewer.DisplayBackingBean;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
@@ -117,6 +126,7 @@ public class PointController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private YukonListDao listDao;
     @Autowired private PointDao pointDao;
+    @Autowired private PaoDao paoDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PointService pointService;
     @Autowired private RtuService rtuService;
@@ -124,6 +134,8 @@ public class PointController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private YukonPointHelper pointHelper;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private CommandService commandService;
+    @Autowired private RolePropertyDao rolePropertyDao;
     
     private static final String baseKey = "yukon.web.modules.tools.point";
 
@@ -135,6 +147,15 @@ public class PointController {
             }
             if (!errors.hasFieldErrors("timestamp")) {
                 YukonValidationUtils.checkIfFieldRequired("timestamp", errors, bean.getTimestamp(), "Date/Time");
+            }
+        }
+    };
+    
+    private final Validator manualControlValidator = new SimpleValidator<DisplayBackingBean>(DisplayBackingBean.class) {
+        @Override
+        protected void doValidation(DisplayBackingBean bean, Errors errors) {
+            if (bean.getValue() != null) {
+                YukonValidationUtils.checkIsValidDouble(errors, "value", bean.getValue());
             }
         }
     };
@@ -541,7 +562,7 @@ public class PointController {
         }
     }
 
-    @RequestMapping(value = "/points/manual-entry", method = RequestMethod.POST)
+    @PostMapping("/points/manual-entry")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.UPDATE)
     public String manualEntry(YukonUserContext userContext, ModelMap model, int pointId) {
 
@@ -568,7 +589,7 @@ public class PointController {
         return "../common/pao/manualEntryPopup.jsp";
     }
 
-    @RequestMapping(value = "/points/manualEntrySend", method = RequestMethod.POST)
+    @PostMapping("/points/manualEntrySend")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.UPDATE)
     public String manualEntrySend(HttpServletResponse response, YukonUserContext userContext,
             @ModelAttribute("backingBean") PointBackingBean backingBean, BindingResult bindingResult, ModelMap model,
@@ -598,6 +619,81 @@ public class PointController {
             setupErrorModel(model, litePoint, backingBean, specifiedDateTime);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".error.timestampExists"));
             return "../common/pao/manualEntryPopup.jsp";
+        }
+
+        response.setContentType("application/json");
+        response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
+        return null;
+    }
+    
+    private void canPerformManualControl(YukonUserContext userContext) {
+        boolean isTDCUser = rolePropertyDao.checkRole(YukonRole.TABULAR_DISPLAY_CONSOLE, userContext.getYukonUser());
+        boolean isPointEditor = rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_POINT_DATA, HierarchyPermissionLevel.UPDATE, userContext.getYukonUser());
+        if (!isTDCUser && !isPointEditor) {
+            throw new NotAuthorizedException("User not allowed to perform manual control");
+        }
+    }
+
+    @PostMapping("/points/manual-control")
+    public String manualControl(ModelMap model, int pointId, int deviceId, YukonUserContext userContext) {
+        
+        canPerformManualControl(userContext);
+        
+        DisplayBackingBean backingBean = new DisplayBackingBean();
+        backingBean.setPointId(pointId);
+        backingBean.setDeviceId(deviceId);
+        LitePoint litePoint = pointDao.getLitePoint(pointId);
+        if (litePoint.getPointTypeEnum() == PointType.Analog) {
+            PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
+            backingBean.setValue(pointValue.getValue());
+        } else if (litePoint.getPointTypeEnum() == PointType.Status) {
+            LiteStateGroup group = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
+            List<LiteState> stateList = new ArrayList<>(group.getStatesList());
+            
+            if (litePoint.getPointTypeEnum() == PointType.Status) {
+                long tags = asyncDynamicDataSource.getTags(litePoint.getLiteID());
+                boolean controllable = TagUtils.isControllablePoint(tags) && TagUtils.isControlEnabled(tags);
+                if (controllable) {
+                    stateList.removeIf(state -> state.getLiteID() < 0 || state.getLiteID() > 1);
+                }
+            }
+            model.put("stateList", stateList);
+        }
+        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
+        model.put("deviceName", liteYukonPAO.getPaoName());
+        model.put("pointName", litePoint.getPointName());
+        model.addAttribute("backingBean", backingBean);
+        return "../common/pao/manualControlPopup.jsp";
+    }
+    
+    @PostMapping("/points/manualControlSend")
+    public String manualControlSend(HttpServletResponse response, YukonUserContext userContext, @ModelAttribute("backingBean") DisplayBackingBean backingBean,
+                                    BindingResult bindingResult, ModelMap model, FlashScope flashScope) throws IOException {
+        
+        canPerformManualControl(userContext);
+        
+        LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
+        if (litePoint.getPointTypeEnum() == PointType.Analog) {
+            manualControlValidator.validate(backingBean, bindingResult);
+            if (bindingResult.hasErrors()) {
+                LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
+                model.put("deviceName", liteYukonPAO.getPaoName());
+                model.put("pointName", litePoint.getPointName());
+                model.addAttribute("backingBean", backingBean);
+                List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+                flashScope.setError(messages);
+                return "../common/pao/manualControlPopup.jsp";
+            }
+            commandService.sendAnalogOutputRequest(backingBean.getPointId(), backingBean.getValue(), userContext.getYukonUser());
+
+        } else if (litePoint.getPointTypeEnum() == PointType.Status) {
+            if (backingBean.getStateId() == 0) {
+                commandService.toggleControlRequest(backingBean.getDeviceId(), backingBean.getPointId(),
+                                                false, userContext.getYukonUser());
+            } else if (backingBean.getStateId() == 1) {
+                commandService.toggleControlRequest(backingBean.getDeviceId(), backingBean.getPointId(),
+                                                true, userContext.getYukonUser());
+            }
         }
 
         response.setContentType("application/json");

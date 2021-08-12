@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.api.route.model.CCURouteModel;
 import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.route.service.RouteService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
@@ -78,7 +78,13 @@ public class RouteApiController {
     public void setupBinder(WebDataBinder binder) {
         routeApiValidator.stream().forEach(e -> {
             if (e.supports(binder.getTarget().getClass())) {
-                binder.addValidators(e);
+                if (binder.getTarget().getClass().equals(CCURouteModel.class)) {
+                    if ((e.getClass().equals(RouteCCUApiValidator.class))) {
+                        binder.addValidators(e);
+                    }
+                } else if ((e.getClass().equals(RouteApiValidator.class))) {
+                    binder.addValidators(e);
+                }
             }
         });
         String routeId = ServletUtils.getPathVariable("id");

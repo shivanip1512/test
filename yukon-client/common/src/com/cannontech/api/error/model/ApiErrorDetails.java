@@ -36,7 +36,9 @@ public enum ApiErrorDetails {
     PAST_DATE(ApiErrorCategory.VALIDATION_FAILED, 112, "Date must be in the past", "Date must be in the past."), // code : 101112
     
     TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 113, "Type mismatch", "Type mismatch."), // code : 101113
-    INVALID_FIELD_LENGTH(ApiErrorCategory.VALIDATION_FAILED, 114, "Field length must be valid", "Field length must be valid."); // code : 101114
+    INVALID_FIELD_LENGTH(ApiErrorCategory.VALIDATION_FAILED, 114, "Field length must be valid", "Field length must be valid."), // code : 101114
+    WHITELIST_CHARACTERS(ApiErrorCategory.VALIDATION_FAILED, 115, "Not a whitelisted characters", "Invalid whitelisted characters."), // code : 101115
+    FUTURE_DATE(ApiErrorCategory.VALIDATION_FAILED, 116, "Date must be in the future", "Date must be in the future."); // code : 101116
 
     private ApiErrorCategory category;
     private int code;

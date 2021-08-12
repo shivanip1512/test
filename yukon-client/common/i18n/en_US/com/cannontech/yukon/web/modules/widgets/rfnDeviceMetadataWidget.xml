@@ -34,6 +34,7 @@
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NUM_ASSOCIATIONS">Battery Node Associations</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.IPV6_ADDRESS">IPv6 Address</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.HOSTNAME">Hostname</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.SENSOR_FIRMWARE_VERSION">Sensor Firmware Version</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.virtualGatewayIpv6Address">Virtual Gateway IPv6 Address</entry>
 
 <!-- Node Types -->
