@@ -8,6 +8,7 @@ import java.util.Date;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.TypeNotSupportedException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -22,11 +23,15 @@ public class JavaDateDeserializer extends JsonDeserializer<Date> {
     public Date deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
             throws IOException, JsonProcessingException {
         Date date = null;
+
         try {
+            dateFormatter.setLenient(false);
             date = dateFormatter.parse(paramJsonParser.getValueAsString());
         } catch (ParseException e) {
+
             log.error("Error while parsing date");
-        } 
+            throw new TypeNotSupportedException("Date format not supported");
+        }
         return date;
     }
 

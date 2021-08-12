@@ -73,18 +73,29 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
             YukonApiValidationUtils.checkWhitelistedCharacter(errors, "loggerName", logger.getLoggerName(), i18Text);
         }
         if (!errors.hasFieldErrors("loggerName")) {
+            if (logger.getLoggerName().startsWith(".") || logger.getLoggerName().endsWith(".")) {
+                errors.rejectValue("loggerName", ApiErrorDetails.WHITELIST_CHARACTERS.getCodeString());
+            }
+        }
+        if (!errors.hasFieldErrors("loggerName")) {
             List<YukonLogger> loggers = new ArrayList<>();
             loggers = loggerService.getLoggers(null, null, null, null);
-
-            loggers.stream()
-                   .filter(tempLogger -> tempLogger.getLoggerName().equals(logger.getLoggerName()))
-                   .findAny()
-                   .ifPresent(presentLogger -> {
-                        if (loggerId == -1 || presentLogger.getLoggerId() != loggerId) {
-                            errors.rejectValue("loggerName", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
-                                    new Object[] { logger.getLoggerName() }, "");
-                        }
-                   });
+            if (loggerId != -1) {
+                loggers.stream().filter(tempLogger -> tempLogger.getLoggerId() == loggerId).findAny().ifPresent(presentLogger -> {
+                    if (!presentLogger.getLoggerName().equals(logger.getLoggerName())) {
+                        errors.rejectValue("loggerName", ApiErrorDetails.NOT_SUPPORTED.getCodeString());
+                    }
+                });
+            } else {
+                
+                if (loggers.stream()
+                        .filter(tempLogger -> tempLogger.getLoggerName().equals(logger.getLoggerName()))
+                        .findAny()
+                        .isPresent()) {
+                    errors.rejectValue("loggerName", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                            new Object[] { logger.getLoggerName() }, "");
+                }
+            }
         }
     }
 
