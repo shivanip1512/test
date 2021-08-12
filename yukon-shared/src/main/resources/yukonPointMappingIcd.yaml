@@ -1786,6 +1786,10 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Minimum Daily Voltage:                { Unit: *V,      Modifiers: [ *DayMin, *milli                  ], Models: *AXe-RXe-23 }
     - Coincident Time of Minimum Daily Voltage: { Unit: *s,  Modifiers: [                                  ], Models: *AXe-RXe-23 }
     - Interval Demand:                      { Unit: *W,      Modifiers: [ *Q1, *Q4                         ], Models: *AXe-RXe-23 }
+    - Delivered Var:                        { Unit: *Var,    Modifiers: [ *Q1, *Q2                         ], Models: *___-RXe-23, Mapped: false }
+    - Total Var:                            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *___-RXe-23, Mapped: false }
+    - VA Q1 + Q2 + Q4:                      { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4                    ], Models: *___-RXe-23, Mapped: false }
+    - Total VA:                             { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *___-RXe-23, Mapped: false }
     - Interval Voltage:                     { Unit: *V,      Modifiers: [ *milli                           ], Models: *AXe-RXe-23 }
     - Voltage Phase A:                      { Unit: *V,      Modifiers: [ *PhA, *milli                     ], Models: *AXe-RXe-23 }
     - Voltage Phase B:                      { Unit: *V,      Modifiers: [ *PhB, *milli                     ], Models: *AXe-RXe-_3 }
