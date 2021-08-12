@@ -55,7 +55,7 @@ const MetricInfo metricInfos[] = {
         {  33,  TouRates,  "Var received, current demand"          },
         {  34,  TouRates,  "Var delivered, peak demand"            },
         {  35,  TouRates,  "Var received, peak demand"             },
-        {  36,  TouRates,  "Var delivered, peak demand coincident" },
+        {  36,  TouRates,  "Delivered Peak kVAr Frozen"            },
         {  37,  TouRates,  "Var received, peak demand coincident"  },
         {  38,  TouRates,  "Var Q1"                                },
         {  39,  TouRates,  "Var Q2"                                },
