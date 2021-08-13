@@ -53,17 +53,18 @@ public class EcobeeZeusSyncService {
         String ecobeePassword = globalSettingDao.getString(GlobalSettingType.ECOBEE_PASSWORD);
         String ecobeeUsername = globalSettingDao.getString(GlobalSettingType.ECOBEE_USERNAME);
         String ecobeeServerURL = globalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
+        String pgogramId = globalSettingDao.getString(GlobalSettingType.ECOBEE_PROGRAM_ID);
 
         if (StringUtils.isNotEmpty(ecobeeServerURL) && StringUtils.isNotEmpty(ecobeeUsername)
-                && StringUtils.isNotEmpty(ecobeePassword)) {
+                && StringUtils.isNotEmpty(ecobeePassword) && StringUtils.isNotEmpty(pgogramId)) {
             log.info("Populating table to Zeus mapping");
             boolean groupMappingExists = ecobeeZeusGroupService.getGroupCount() == 0 ? false : true;
             boolean thermostatMappingExists = ecobeeZeusGroupService.getAllThermostatCount() == 0 ? false : true;
             if (!groupMappingExists && !thermostatMappingExists) {
-                log.debug("Tables are empty starting process to populate data");
+                log.info("Yukon tables are empty, Initiating sync for Yukon and ecobee Zeus data");
                 try {
                     List<ZeusGroup> zeusGroups = ecobeeZeusCommunicationService.getAllGroups();
-                    log.debug("Number of ZeusGroups found " + zeusGroups.size());
+                    log.info("Number of Zeus Groups found " + zeusGroups.size());
                     zeusGroups.forEach(zeusGroup -> {
                         String zeusGroupName = zeusGroup.getName();
                         if (zeusGroupName.contains("/")) {
@@ -72,26 +73,27 @@ public class EcobeeZeusSyncService {
                         if (StringUtils.isNumeric(zeusGroupName)) {
                             int yukonGroupId = Integer.parseInt(zeusGroupName);
                             String zeusGroupId = zeusGroup.getGroupId();
-                            if (!groupMappingExists) {
-                                ecobeeZeusGroupService.mapGroupIdToZeusGroup(yukonGroupId, zeusGroupId, zeusGroupName,
-                                        EcobeeZeusGroupService.DEFAULT_PROGRAM_ID);
+                            if (ecobeeZeusGroupService.mapGroupIdToZeusGroup(yukonGroupId, zeusGroupId, zeusGroupName,
+                                    EcobeeZeusGroupService.DEFAULT_PROGRAM_ID)) {
+                                log.info("Mapped Yukon group {} to Zeus group {}.", yukonGroupId, zeusGroupId);
                             }
-                            if (!thermostatMappingExists) {
-                                log.debug("Getting thermostats for group " + zeusGroupId);
-                                List<ZeusThermostat> zeusThermostats = ecobeeZeusCommunicationService
-                                        .getThermostatsInGroup(zeusGroupId);
-                                mapInventoryToZeusGroup(zeusThermostats, zeusGroupId);
-                                // If thermostats are enrolled i.e Zeus group has thermostats, then only update the ProgramId.
-                                if (CollectionUtils.isNotEmpty(zeusThermostats)) {
-                                    // A thermostat can be mapped to an account only. So use a thermostat id to retrieve the
-                                    // programId
-                                    updateProgramId(yukonGroupId, zeusThermostats.get(0).getSerialNumber(), zeusGroupId);
-                                }
+                            log.info("Getting thermostats for group " + zeusGroupId);
+                            List<ZeusThermostat> zeusThermostats = ecobeeZeusCommunicationService
+                                    .getThermostatsInGroup(zeusGroupId);
+                            mapInventoryToZeusGroup(zeusThermostats, zeusGroupId);
+                            // If thermostats are enrolled i.e Zeus group has thermostats, then only update the ProgramId.
+                            if (CollectionUtils.isNotEmpty(zeusThermostats)) {
+                                // A thermostat can be mapped to an account only. So use a thermostat id to retrieve the
+                                // programId
+                                updateProgramId(yukonGroupId, zeusThermostats.get(0).getSerialNumber(), zeusGroupId);
                             }
                         } else {
                             log.info("Skipping Zeus group " + zeusGroupName);
                         }
                     });
+                    // Cancel the scheduler once communication with ecobee is success and Yukon at least tried inserting the data.
+                    scheduledFuture.cancel(true);
+                    scheduledExecutorService.shutdown();
                 } catch (Exception e) {
                     log.error("Error communicating with Ecobee" + e);
                 }
@@ -99,7 +101,7 @@ public class EcobeeZeusSyncService {
                 ecobeeZeusReconciliationReportDao.cleanUpReconciliationTables();
             } else {
                 // stop the scheduler, table have values.
-                log.debug("Stopping Zeus mapping schedular as tables are not empty");
+                log.info("Stopping Zeus mapping schedular as tables are not empty");
                 scheduledFuture.cancel(true);
                 scheduledExecutorService.shutdown();
             }
