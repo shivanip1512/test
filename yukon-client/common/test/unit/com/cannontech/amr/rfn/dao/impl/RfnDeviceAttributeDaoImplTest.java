@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -22,6 +23,7 @@ import com.cannontech.amr.rfn.service.pointmapping.icd.PointMappingIcd;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.YamlParserUtils;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 public class RfnDeviceAttributeDaoImplTest {
@@ -92,6 +94,7 @@ public class RfnDeviceAttributeDaoImplTest {
     
     @Test
     public void test_nonIntervalAttributes() {
+        //  Any attribute that contains minimum/maximum/peak/frozen is not an RFN interval attribute
         var nonIntervalQualifiers = Set.of(
                 "minimum", 
                 "maximum", 
@@ -99,14 +102,20 @@ public class RfnDeviceAttributeDaoImplTest {
                 "frozen");
 
         var allowedIntervalAttributes = Set.of(
-                BuiltInAttribute.DELIVERED_PEAK_KVAR_FROZEN,
                 BuiltInAttribute.MINIMUM_POWER_FACTOR,
-                BuiltInAttribute.PEAK_KVA_Q124_FROZEN,
                 BuiltInAttribute.PREVIOUS_MINIMUM_POWER_FACTOR,
                 BuiltInAttribute.RECEIVED_KWH_FROZEN,
-                BuiltInAttribute.SUM_PEAK_KVAR_FROZEN,
                 BuiltInAttribute.USAGE_FROZEN);
 
+        //  Make sure that all allowedIntervalAttributes are actually isIntervalApplicable
+        var unexpectedNonInterval = 
+                allowedIntervalAttributes.stream()
+                    .filter(not(BuiltInAttribute::isIntervalApplicable))
+                    .collect(Collectors.toList());
+        
+        assertTrue(unexpectedNonInterval.isEmpty(),
+                "Found allowedIntervalAttributes that are not isIntervalApplicable:" + unexpectedNonInterval);
+        
         var qualifierPattern = 
                 Pattern.compile(String.join("|", nonIntervalQualifiers), 
                                 Pattern.CASE_INSENSITIVE)
@@ -119,7 +128,8 @@ public class RfnDeviceAttributeDaoImplTest {
                     .filter(attr -> qualifierPattern.test(attr.name()))
                     .collect(Collectors.toList());
         
-        assertTrue(unexpectedIntervalApplicable.isEmpty(), "Found non-interval attributes claiming isIntervalApplicable: " + unexpectedIntervalApplicable);
+        assertTrue(unexpectedIntervalApplicable.isEmpty(), 
+                "Found non-interval attributes claiming isIntervalApplicable: " + unexpectedIntervalApplicable);
     }
     
     @Test

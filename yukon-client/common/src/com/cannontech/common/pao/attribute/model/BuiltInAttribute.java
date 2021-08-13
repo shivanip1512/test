@@ -926,6 +926,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         nonIntervalAttributes = ImmutableSet.of(
                 AVERAGE_POWER_FACTOR_FROZEN,
                 DELIVERED_PEAK_KVA_LAGGING,
+                DELIVERED_PEAK_KVAR_FROZEN,
                 MAXIMUM_VOLTAGE,
                 MAXIMUM_VOLTAGE_DAILY,
                 MAXIMUM_VOLTAGE_PHASE_A,
@@ -962,6 +963,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 PEAK_KVA_Q12_RATE_B,
                 PEAK_KVA_Q12_RATE_C,
                 PEAK_KVA_Q12_RATE_D,
+                PEAK_KVA_Q124_FROZEN,
                 PEAK_KVA_RATE_A,
                 PEAK_KVA_RATE_B,
                 PEAK_KVA_RATE_C,
@@ -1000,6 +1002,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 SUM_PEAK_KVA_RATE_C,
                 SUM_PEAK_KVA_RATE_D,
                 SUM_PEAK_KVAR,
+                SUM_PEAK_KVAR_FROZEN,
                 SUM_PEAK_KVAR_RATE_A,
                 SUM_PEAK_KVAR_RATE_B,
                 SUM_PEAK_KVAR_RATE_C,
