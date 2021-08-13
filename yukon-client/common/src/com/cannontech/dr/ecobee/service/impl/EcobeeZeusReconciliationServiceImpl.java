@@ -210,10 +210,6 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
                 } else if (StringUtils.isBlank(error.getCurrentPath())) {
                     // Enroll device when there is no current path
                     enroll(error, inventoryId);
-                } else {
-                    // Unenroll the device from incorrect group and enroll it to correct group
-                    unEnroll(error, inventoryId);
-                    enroll(error, inventoryId);
                 }
                 return EcobeeZeusReconciliationResult.newSuccess(error);
 
@@ -394,12 +390,9 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
                     int inventoryId = serialNumToInventoryIdMap.get(thermostatId);
                     int yukonGroupId = ecobeeZeusGroupDao.getLmGroupForInventory(inventoryId, programIdInYukon);
                     String correctPath = ecobeeZeusGroupDao.getZeusGroupId(yukonGroupId, inventoryId, programIdInYukon);
-                    if (CollectionUtils.isEmpty(thermostatsInEcobeeGroup)) {
+                    if (CollectionUtils.isEmpty(thermostatsInEcobeeGroup) || !thermostatsInEcobeeGroup.contains(thermostatId)) {
                         errorsList.add(new EcobeeZeusMislocatedDeviceDiscrepancy(thermostatId.toString(),
                                 StringUtils.EMPTY, correctPath));
-                    } else if (!thermostatsInEcobeeGroup.contains(thermostatId)) {
-                        errorsList.add(new EcobeeZeusMislocatedDeviceDiscrepancy(thermostatId.toString(),
-                                groupIdInEcobee, correctPath));
                     }
                 }
             }
