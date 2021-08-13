@@ -34,7 +34,6 @@ const NavigationContainer = (props) => {
 }
 
 import(/* webpackChunkName: "react-dom" */'react-dom').then((ReactDom) => {
-    console.log("Is this the starting point?");
     const navigationElement = document.getElementById('navigation');
     const path = navigationElement.getAttribute('data-path');
     const reactPath = navigationElement.getAttribute('data-react-path');
