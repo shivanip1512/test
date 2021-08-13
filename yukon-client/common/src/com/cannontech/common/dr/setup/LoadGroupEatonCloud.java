@@ -1,24 +1,16 @@
 package com.cannontech.common.dr.setup;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.device.lm.LMGroupEatonCloud;
 
 public class LoadGroupEatonCloud extends LoadGroupBase<LMGroupEatonCloud> {
-    private List<Loads> relayUsage;
+    private Integer virtualRelayId;
 
-    public List<Loads> getRelayUsage() {
-        if (relayUsage == null) {
-            relayUsage = new ArrayList<Loads>();
-        }
-        return relayUsage;
+    public Integer getVirtualRelayId() {
+        return virtualRelayId;
     }
 
-    public void setRelayUsage(List<Loads> relayUsage) {
-        this.relayUsage = relayUsage;
+    public void setVirtualRelayId(Integer virtualRelayId) {
+        this.virtualRelayId = virtualRelayId;
     }
 
     @Override
@@ -27,19 +19,13 @@ public class LoadGroupEatonCloud extends LoadGroupBase<LMGroupEatonCloud> {
         String loadsString = lmGroup.getRelayUsage();
         if (loadsString != null) {
             loadsString = loadsString.trim();
-            List<Loads> loads = new ArrayList<>();
-            for (int i = 0; i < loadsString.length(); i++) {
-                loads.add(Loads.getForLoads(Character.getNumericValue(loadsString.charAt(i))));
-            }
-            setRelayUsage(loads);
+            setVirtualRelayId(Character.getNumericValue(loadsString.charAt(0)));
         }
     }
 
     @Override
     public void buildDBPersistent(LMGroupEatonCloud lmGroup) {
         super.buildDBPersistent(lmGroup);
-        String loads =
-                getRelayUsage().stream().map(e -> e.getLoadNumber()).map(String::valueOf).collect(Collectors.joining());
-        lmGroup.setRelayUsage(loads);
+        lmGroup.setRelayUsage(String.valueOf(virtualRelayId));
     }
 }

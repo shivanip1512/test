@@ -743,7 +743,7 @@ LM_GROUP_EATON_CLOUD:
         - type
         - name
         - kWCapacity
-        - relayUsage
+        - virtualRelayId
       type: object
       properties:
         name:
@@ -768,18 +768,11 @@ LM_GROUP_EATON_CLOUD:
           type: boolean
           default: false
           description: 'Flag to disable control of the load group.'
-        relayUsage:
-          type: string
-          description: 'RelayUsage.'
-          enum:
-            - Load_1
-            - Load_2
-            - Load_3
-            - Load_4
-            - Load_5
-            - Load_6
-            - Load_7
-            - Load_8
+        virtualRelayId:
+          type: integer
+          minimum: 1
+          maximum: 8
+          description: 'Unique identifier of virtual relay.'
 
 LM_GROUP_POINT:
   title: LM_GROUP_POINT
@@ -1135,8 +1128,7 @@ components:
           kWCapacity: 23
           disableGroup: false
           disableControl: false
-          relayUsage:
-            - Load_1
+          virtualRelayId: 5
     
     Point Group :
       value:
