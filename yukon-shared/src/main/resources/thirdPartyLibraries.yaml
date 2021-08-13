@@ -3427,18 +3427,74 @@ Java :
     notes :
   
 Network Manager :
-  - filename : activemq-all-5.15.10.jar
+  - filename : activemq-broker-5.16.1.jar
     yukon group : ActiveMQ
-    project :  Apache ActiveMQ
-    version :  5.15.10
+    project : Apache ActiveMQ
+    version : 5.16.1
+    project URL : "http://activemq.apache.org/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker/5.16.1"
+    md5 : ce155ca5539e1836078f1e3f2efa2c30
+    sha1 : 7b06c5a8cf13845e18f1f0ba7bdbe8a0c60320e5
+    updated : 2021-08-13
+    jira : NM-1733
+    notes : 
+  
+  - filename : activemq-client-5.16.1.jar
+    yukon group : ActiveMQ
+    project : Apache ActiveMQ
+    version : 5.16.1
+    project URL : "http://activemq.apache.org/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-client/5.16.1"
+    md5 : 45d1cbf0adc1ee8cbbaef1da9a601ffd
+    sha1 : 0debe850061c0d6966292905d71c768a97ac0034
+    updated : 2021-08-13
+    jira : NM-1733
+    notes : 
+  
+  - filename : activemq-kahadb-store-5.16.1.jar
+    yukon group : ActiveMQ
+    project : Apache ActiveMQ
+    version : 5.16.1
+    project URL : "http://activemq.apache.org/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-kahadb-store/5.16.1"
+    md5 : 581755d73ed92cac178f4c09881bd3e1
+    sha1 : 114ea6d9e194cd1c731ffd9346821d700cd8df57
+    updated : 2021-08-13
+    jira : NM-1733
+    notes : 
+  
+  - filename : activemq-openwire-legacy-5.16.1.jar
+    yukon group : ActiveMQ
+    project : Apache ActiveMQ
+    version : 5.16.1
+    project URL : "http://activemq.apache.org/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-openwire-legacy/5.16.1"
+    md5 : 5b8f58436a1a1c947fe338d37187055c
+    sha1 : 4434ecc0cc041dbe32014aa28f3c6033d87c0800
+    updated : 2021-08-13
+    jira : NM-1733
+    notes : 
+  
+  - filename : activemq-protobuf-1.1.jar
+    yukon group : ActiveMQ
+    project : Apache ActiveMQ
+    version : 5.16.1
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-all/5.15.10"
-    md5 : ee36adeb3b011ec468f388605abf819c
-    sha1 : 1224d7a19bc4c875dd8ebfc4378968acf993cee7
-    updated : 2019-11-04
-    jira : NM-1372
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq.protobuf/activemq-protobuf/1.1"
+    md5 : 38add15a7775073053fe3aa81979336c
+    sha1 : 26682eb801f70563511f7c424dc10e8b3e66340e
+    updated : 2021-08-13
+    jira : NM-1733
     notes : 
 
   - filename : ahessian.jar
@@ -4379,6 +4435,20 @@ Network Manager :
     jira : NM-2125
     notes : 
 
+  - filename : FastInfoset-1.2.13.jar
+    yukon group : ActiveMQ
+    project : FastInfoset
+    version : 1.2.13
+    project URL : " http://fi.java.net"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.sun.xml.fastinfoset/FastInfoset"
+    md5 : 4f941b36a4c9e827e68e8f3249253240
+    sha1 : 098f56b9354e27bd2941cc5d461344e240ae51ae
+    updated : 2021-08-13
+    jira : NM-1733
+    notes :
+
   - filename : formsrt.jar
     yukon group : Launch4j
     project : Launch4j
@@ -4406,7 +4476,21 @@ Network Manager :
     updated : 2019-01-30
     jira : NM-1023
     notes :
-
+    
+  - filename : geronimo-j2ee-management_1.1_spec-1.0.1.jar
+    yukon group : ActiveMQ
+    project : Geronimo
+    version : 1.0.1
+    project URL : "http://geronimo.apache.org/"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.geronimo.specs/geronimo-j2ee-management_1.1_spec/1.0.1"
+    md5 : 7e1708a3b808e9749b5789668fd9ca8b
+    sha1 : 5372615b0c04c1913c95c34a0414cef720ca2855
+    updated : 2021-08-13
+    jira : NM-1733
+    notes : Geronimo J2EE Management 1.1
+    
   - filename : gwt-dev.jar
     yukon group : Google Web Toolkit
     project : Google Web Toolkit
@@ -4532,6 +4616,20 @@ Network Manager :
     updated : 2015-12-11
     jira : none
     notes : 
+    
+  - filename : hawtbuf-1.11.jar
+    yukon group : ActiveMQ
+    project : HawtBuf
+    version : 1.11
+    project URL : "https://www.openhub.net/p/hawtbuf"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.fusesource.hawtbuf/hawtbuf/1.11"
+    md5 : a80061bd945ca0f13072861777ff27b1
+    sha1 : 8f0e50ad8bea37b84b698ec40cce09e47714a63e
+    updated : 2021-08-13
+    jira : NM-1733
+    notes :
 
   - filename : installer.jar
     yukon group : IzPack
@@ -4560,6 +4658,20 @@ Network Manager :
     updated : 2021-01-28
     jira : NM-1669
     notes : 
+
+  - filename : istack-commons-runtime-3.0.5.jar
+    yukon group : ActiveMQ
+    project : istack-commons-runtime
+    version : 1.11
+    project URL : "https://mvnrepository.com/artifact/com.sun.istack/istack-commons-runtime"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.sun.istack/istack-commons-runtime"
+    md5 : e78d6807e3f0fbc3514293a74418501b
+    sha1 : 8052dc9920dfab5d50b8ca95c95a6ce4296a8f8b
+    updated : 2021-08-13
+    jira : NM-1733
+    notes :
 
   - filename : izevent.jar
     yukon group : IzPack
@@ -4743,7 +4855,7 @@ Network Manager :
     jira : NM-885
     notes : 
 
-  - filename : jaxb-api.jar
+  - filename : jaxb-api-2.3.0.jar
     yukon group : JAXB
     project : JAXB
     version : 2.3.0
@@ -4753,11 +4865,11 @@ Network Manager :
     maven URL : "https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api/2.3.0"
     md5 : ffa4ea6fada02493779bcd7f04f11ea3
     sha1 : 99f802e0cb3e953ba3d6e698795c4aeb98d37c48
-    updated : 2019-01-30
-    jira : NM-1023
+    updated : 2021-08-13
+    jira : NM-1733
     notes : 
 
-  - filename : jaxb-core.jar
+  - filename : jaxb-core-2.3.0.jar
     yukon group : JAXB
     project : JAXB
     version : 2.3.0
@@ -4767,11 +4879,11 @@ Network Manager :
     maven URL : "https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-core/2.3.0"
     md5 : c97c33a3fa1ba9c96b7fd640337a2361
     sha1 : d044c784e41d026778693fb44a8026c1fd9a7506
-    updated : 2019-01-30
-    jira : NM-1023
+    updated : 2021-08-13
+    jira : NM-1733
     notes : 
 
-  - filename : jaxb-impl.jar
+  - filename : jaxb-impl-2.3.0.jar
     yukon group : JAXB
     project : JAXB
     version : 2.3.0
@@ -4781,8 +4893,8 @@ Network Manager :
     maven URL : "https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl/2.3.0"
     md5 : 5d6b1dc4f9ba545681a10b11090dde3e
     sha1 : 3a3c6a62719d967175b76b63925f1fb495f11437
-    updated : 2019-01-30
-    jira : NM-1023
+    updated : 2021-08-13
+    jira : NM-1733
     notes : 
 
   - filename : jaxb-jxc.jar
@@ -4812,6 +4924,20 @@ Network Manager :
     updated : 2019-01-30
     jira : NM-1023
     notes :  
+
+  - filename : javax.jms-api-2.0.1.jar
+    yukon group : Spring
+    project : JMS API
+    version : 2.0.1
+    project URL : "https://javaee.github.io/jms-spec/"
+    license : CDDL, GPLv2 with classpath exception
+    license URLs : "https://glassfish.java.net/nonav/public/CDDL+GPL_1_1.html"
+    maven URL : "https://mvnrepository.com/artifact/javax.jms/javax.jms-api/2.0.1"
+    md5 : d69d2e02910e97b2478c0105e9b2caab
+    sha1 : 5faaa3864ff6025ce69809b60d65bda3e358610c
+    updated : 2021-08-13
+    jira : NM-1733
+    notes :
 
   - filename : jgoodies-common.jar
     yukon group : Launch4j
@@ -4980,6 +5106,20 @@ Network Manager :
     updated : 2009-04-30
     jira : none
     notes : 
+
+  - filename : log4j-1.2-api-2.13.1.jar
+    yukon group : Log4j
+    project : Apache Log4j
+    version : 2.13.1
+    project URL : "https://logging.apache.org/log4j/2.x/"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-1.2-api"
+    md5 : 5311668256f5989bd65b533e9c533f94
+    sha1 : 6bfcc76fa1a1a41295aff0042200aaa82d9ac286
+    updated : 2021-08-13
+    jira : NM-1733
+    notes : Apache Log4j API
 
   - filename : log4j-api-2.13.1.jar
     yukon group : Log4j
@@ -5218,6 +5358,76 @@ Network Manager :
     updated : 2021-07-20
     jira : NM-2125
     notes : 
+
+  - filename : slf4j-api-1.7.30.jar
+    yukon group : Log4j
+    project : Simple Logging Facade for Java API
+    version : 1.7.30
+    project URL : "https://www.slf4j.org/"
+    license : MIT
+    license URLs : "https://opensource.org/licenses/MIT"
+    maven URL : "https://mvnrepository.com/artifact/org.slf4j/slf4j-api/1.7.30"
+    md5 : f8be00da99bc4ab64c79ab1e2be7cb7c
+    sha1 : b5a4b6d16ab13e34a88fae84c35cd5d68cac922c
+    updated : 2021-08-13
+    jira : NM-1733
+    notes :
+    
+  - filename : spring-core-5.3.8.jar
+    yukon group : Spring
+    project : Spring
+    version : 5.3.8
+    project URL : "https://github.com/spring-projects/spring-framework"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-core/5.3.8"
+    md5 : 3637a26e9ab3fe0f6a746792a292e242
+    sha1 : da9b87dacaa5bbf80fad0f7b483988372a00a152
+    updated : 2021-08-13
+    jira : NM-1733
+    notes : Spring Core
+
+  - filename : spring-jms-5.3.8.jar
+    yukon group : Spring
+    project : Spring
+    version : 5.3.8
+    project URL : "https://github.com/spring-projects/spring-framework"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-jms/5.3.8"
+    md5 : cf19fd5b6b90e073394fa1965b7cb4d7
+    sha1 : 3576e2ac66923f5ae6a97c2d549af7a694b610d8
+    updated : 2021-08-13
+    jira : NM-1733
+    notes : Spring JMS
+    
+  - filename : spring-beans-5.3.8.jar
+    yukon group : Spring
+    project : Spring
+    version : 5.3.8
+    project URL : "https://github.com/spring-projects/spring-framework"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-beans/5.3.8"
+    md5 : b75a9c6a97251fa5d90201b0405f2954
+    sha1 : 03d66fed1eebfcd119efcabc6218c813700a21ed
+    updated : 2021-08-13
+    jira : NM-1733
+    notes : Spring Beans
+   
+  - filename : stax-ex-1.7.8.jar
+    yukon group : ActiveMQ
+    project : stax-ex
+    version : 1.11
+    project URL : "http://stax-ex.java.net/"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.jvnet.staxex/stax-ex"
+    md5 : bf9963c5574fdd6f69a927710ec1faf6
+    sha1 : 377077e4441cc46be5efde9de63efdf790a59cd7
+    updated : 2021-08-13
+    jira : NM-1733
+    notes :
 
   - filename : standalone-compiler.jar
     yukon group : IzPack
@@ -5526,6 +5736,20 @@ Network Manager :
     updated : 2021-07-20
     jira : NM-2125
     notes : 
+    
+  - filename : txw2-2.3.0.jar
+    yukon group : ActiveMQ
+    project : txw2
+    version : 2.3.0
+    project URL : "https://mvnrepository.com/artifact/org.glassfish.jaxb/txw2"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.glassfish.jaxb/txw2"
+    md5 : c392a065a240562b9ba4a5b819382385
+    sha1 : eee383097bb1aeeda6227694bcb88f3082e634bf
+    updated : 2021-08-13
+    jira : NM-1733
+    notes :
 
   - filename : uninstaller-ext.jar
     yukon group : IzPack
