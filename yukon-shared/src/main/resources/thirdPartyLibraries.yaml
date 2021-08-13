@@ -5107,7 +5107,7 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : log4j-1.2-api-2.13.1.jar
+  - filename : log4j-1.2-api-2.14.1.jar
     yukon group : Log4j
     project : Apache Log4j
     version : 2.14.1
