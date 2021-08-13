@@ -716,8 +716,8 @@ Itron Sentinel:
     - Coincident Continuous Cumulative Received Volt-amperes:                   { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cont              ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Received" }
     - Frozen Peak Received Volt-amperes:                                        { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *Prev                      ], Models: *__234, Itron name: "Previous Received Volt-amperes" }
     - Time of Frozen Peak Received Volt-amperes:                                { Unit: *s,     Modifiers: [ *Coin1, *Prev                              ], Models: *__234}
-    - Volt-amperes Lagging:                                                     { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4                              ], Models: *__234, Mapped: false, Itron name: "Volt-amperes Lagging" }
-    - Peak Volt-amperes Lagging:                                                { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max                        ], Models: *__234, Itron name: "Max Volt-amperes Lagging" }
+    - Volt-amperes Q1 + Q2 + Q4:                                                { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4                              ], Models: *__234, Mapped: false, Itron name: "Volt-amperes Lagging" }
+    - Peak Volt-amperes Q1 + Q2 + Q4:                                           { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max                        ], Models: *__234, Itron name: "Max Volt-amperes Lagging" }
     - Coincident Cumulative Volt-ampers Lagging:                                { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *Coin1, *Cuml         ], Models: *__234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered" }
     - Coincident Continuous Cumulative Volt-amperes Lagging:                    { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *Coin2, *Cont         ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered" }
     - Q-hours Delivered:                                                        { Unit: *Qh,    Modifiers: [ *Q1, *Q4                                   ], Models: *___34, Mapped: false, Itron name: "Q-hours" }
@@ -1548,7 +1548,7 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time of Frozen Peak VA Q1 + Q2 + Q4:  { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
     - Peak Total VA:                        { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total VA:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Total VA:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak Total VA:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23 }
     - Time of Frozen Peak Total VA:         { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
     - Watt-hours Delivered Rate A:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateA                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate A:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateA                 ], Models: *AX-RX-23 }
@@ -1738,9 +1738,9 @@ Metric IDs:
     52:  { name: "VA received, peak demand",             Unit: *VA,     Modifiers: [ *Q2, *Q3, *Max                        ] }
     53:  { name: "VA delivered, peak demand (Frozen)",   Unit: *VA,     Modifiers: [ *Q1, *Q4, *Max, *Prev                 ] }
     54:  { name: "VA received, peak demand (Frozen)",    Unit: *VA,     Modifiers: [ *Q2, *Q3, *Max, *Prev                 ] }
-    55:  { name: "VA lagging peak",                      Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max                   ] }
-    56:  { name: "VA lagging peak (Frozen)",             Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev            ] }
-    57:  { name: "VA lagging",                           Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4                         ] }
+    55:  { name: "VA Q1 + Q2 + Q4, peak",                Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max                   ] }
+    56:  { name: "VA Q1 + Q2 + Q4, peak (Frozen)",       Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev            ] }
+    57:  { name: "VA Q1 + Q2 + Q4",                      Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4                         ] }
     # ------     
     59:  { name: "Q hour Q1 + Q4",                       Unit: *Qh,     Modifiers: [ *Q1, *Q4                              ] }
     60:  { name: "Q hour Q2 + Q3",                       Unit: *Qh,     Modifiers: [ *Q2, *Q3                              ] }

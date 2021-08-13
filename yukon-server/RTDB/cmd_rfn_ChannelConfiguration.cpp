@@ -156,6 +156,7 @@ const MetricInfo metricInfos[] = {
 
         { 206,  TouRates,  "Peak kVA (Quadrants 1 2)"              },
         { 210,  TouRates,  "Sum Peak kVA"                          },
+        { 211,  None,      "Sum Peak kVA Frozen"                   },
 
         { 222,  TouRates,  "VA hour Q2 + Q3 + Q4"                  },
 

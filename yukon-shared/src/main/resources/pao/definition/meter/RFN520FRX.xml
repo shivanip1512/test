@@ -178,5 +178,6 @@
         <pointInfo name="Sum Peak kVAr Frozen" attributes="SUM_PEAK_KVAR_FROZEN"/>
         <pointInfo name="Delivered Peak kVAr Frozen" attributes="DELIVERED_PEAK_KVAR_FROZEN"/>
         <pointInfo name="Peak kVA (Quadrants 1 2 4) Frozen" attributes="PEAK_KVA_Q124_FROZEN"/>
+        <pointInfo name="Sum Peak kVA Frozen" attributes="SUM_PEAK_KVA_FROZEN"/>
     </pointInfos>
 </pao>

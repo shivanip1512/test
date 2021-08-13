@@ -4782,6 +4782,19 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
+        <point name="Sum Peak kVA Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
     </pointGroup>
         
     <pointGroup>

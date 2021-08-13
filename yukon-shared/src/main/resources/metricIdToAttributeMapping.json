@@ -107,6 +107,8 @@
                 { "metricId" : 206, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_Q12" },
                 
                 { "metricId" : 210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA" },
+                { "metricId" : 211, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_FROZEN" },
+                
                 { "metricId" : 222, "attributeMagnitude" : 3, "attribute" : "KVAH_Q234" },
                 
                 { "metricId" : 230, "attributeMagnitude" : 3, "attribute" : "MINIMUM_POWER_FACTOR" },

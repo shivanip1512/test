@@ -10,7 +10,7 @@ Note: For attributes that reference the modifiers of "Quadrant" directly, the mo
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <highestOffsets>
-        <analog offset="500"/>
+        <analog offset="501"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
         <status offset="102"/>
@@ -2513,6 +2513,13 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="501" type="Analog">
+        <name>Sum Peak kVA Frozen</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="CalcAnalog">
         <name>Total Outage Count</name>

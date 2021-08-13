@@ -202,6 +202,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     KVA_Q13("kVA (Quadrants 1 3)", AttributeGroup.REACTIVE),
     KVA_Q24("kVA (Quadrants 2 4)", AttributeGroup.REACTIVE),
     PEAK_KVA_Q124_FROZEN("Peak kVA (Quadrants 1 2 4) Frozen ", AttributeGroup.REACTIVE),
+    SUM_PEAK_KVA_FROZEN("Sum Peak kVA Frozen", AttributeGroup.REACTIVE),
     SUM_KVAR("Sum kVAr", AttributeGroup.REACTIVE),
     NET_KVAR("Net kVAr", AttributeGroup.REACTIVE),
     PEAK_KVAR("Peak kVAr", AttributeGroup.REACTIVE),
