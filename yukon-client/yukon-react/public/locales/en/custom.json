@@ -1,0 +1,7 @@
+{
+    "title": "My very custom title",
+    "button": {
+        "save": "custom save"
+    },
+    "dashboard": "My Dashboard"
+}

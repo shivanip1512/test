@@ -1,0 +1,6 @@
+{
+    "validation": {
+        "required": "Required",
+        "min": "Min"
+    }
+}

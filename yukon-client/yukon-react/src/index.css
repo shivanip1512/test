@@ -1,0 +1,11 @@
+html,
+body,
+#root {
+    height: 100%;
+    width: 100%;
+    background-color: white;
+}
+ 
+.makeStyles-root-1 {
+    height: 100%
+}
