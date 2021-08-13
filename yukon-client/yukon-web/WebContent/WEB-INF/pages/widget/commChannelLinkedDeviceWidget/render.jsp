@@ -6,7 +6,7 @@
 
 <cti:msgScope paths="yukon.common,yukon.web.modules.operator.commChannelLinkedDeviceWidget">
     <c:choose>
-        <c:when test="${not empty devicesList}">
+        <c:when test="${not empty searchResult.resultList}">
           <cti:url var="linkedDeviceUrl" value="/widget/commChannelLinkedDeviceWidget/render">
               <cti:param name="deviceId" value="${deviceId}"/>
           </cti:url>
@@ -20,7 +20,7 @@
                       </tr>
                   </thead>
                   <tbody>
-                     <c:forEach var="device" items="${devicesList}">
+                     <c:forEach var="device" items="${searchResult.resultList}">
                          <c:set var="cssClass" value="error" />
                          <cti:msg2 var="deviceStatus" key="yukon.common.disabled"/>
                          <c:if test="${device.enable}">

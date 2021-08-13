@@ -1,5 +1,6 @@
 package com.cannontech.web.widget;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,6 +8,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
@@ -40,41 +43,48 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 /**
  * Widget used to display devices which are linked to comm channel
  */
-@Controller
-@RequestMapping("/commChannelLinkedDeviceWidget/*")
+@Controller @RequestMapping("/commChannelLinkedDeviceWidget/*")
 public class CommChannelLinkedDeviceWidget extends AdvancedWidgetControllerBase {
-    
-    @Autowired private ApiControllerHelper helper;
-    @Autowired private ApiRequestHelper apiRequestHelper;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-    @Autowired
-    public CommChannelLinkedDeviceWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
-        addInput(simpleWidgetInput);
-        setIdentityPath("common/deviceIdentity.jsp");
-    }
+	@Autowired
+	private ApiControllerHelper helper;
+	@Autowired
+	private ApiRequestHelper apiRequestHelper;
+	@Autowired
+	private YukonUserContextMessageSourceResolver messageResolver;
 
-    @SuppressWarnings("unchecked")
-    @GetMapping("render")
-    public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
-                         @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,
-                         @DefaultItemsPerPage(value=25) PagingParameters paging)
-            throws ServletRequestBindingException {
-        CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+	@Autowired
+	public CommChannelLinkedDeviceWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
+		addInput(simpleWidgetInput);
+		setIdentityPath("common/deviceIdentity.jsp");
+	}
 
-        String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + deviceId + "/devicesAssigned");
-        SearchResults<DeviceBaseModel> searchResults = new SearchResults<DeviceBaseModel>();
+	@SuppressWarnings("unchecked") @GetMapping("render")
+	public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+			@DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,
+			@DefaultItemsPerPage(value = 25) PagingParameters paging) throws ServletRequestBindingException, URISyntaxException {
+		CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
+		int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
 
-        ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext, request, assignedDevicesUrl,
-                DeviceBaseModel.class, HttpMethod.GET, DeviceBaseModel.class);
-        if (response.getStatusCode() == HttpStatus.OK) {
-        	searchResults = (SearchResults<DeviceBaseModel>) response.getBody();
-        }
-        
+		String assignedDevicesUrl = helper.findWebServerUrl(request, userContext,
+				ApiURL.commChannelUrl + "/" + deviceId + "/devicesAssigned");
+		SearchResults<DeviceBaseModel> searchResults = new SearchResults<DeviceBaseModel>();
+		
+		Direction dir = sorting.getDirection();
+		
+        URIBuilder ub = new URIBuilder(assignedDevicesUrl);
+        ub.addParameter("sort", sortBy.name());
+        ub.addParameter("direction", dir.name());
+        ub.addParameter("itemsPerPage", Integer.toString(paging.getItemsPerPage()));
+        ub.addParameter("page", Integer.toString(paging.getPage()));
+
+		ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext,
+				request, ub.toString(), HttpMethod.GET, DeviceBaseModel.class, Object.class);
+		if (response.getStatusCode() == HttpStatus.OK) {
+			searchResults = (SearchResults<DeviceBaseModel>) response.getBody();
+		}
 		/*
-		 * Direction dir = sorting.getDirection(); Comparator<DeviceBaseModel>
-		 * comparator = (o1, o2) -> { return
+		 * Comparator<DeviceBaseModel> comparator = (o1, o2) -> { return
 		 * o1.getName().compareToIgnoreCase(o2.getName()); }; if (sortBy ==
 		 * CommChannelSortBy.type) { MessageSourceAccessor accessor =
 		 * messageResolver.getMessageSourceAccessor(userContext); comparator =
@@ -101,15 +111,15 @@ public class CommChannelLinkedDeviceWidget extends AdvancedWidgetControllerBase 
 		 * searchResult.setResultList(devicesList);
 		 * 
 		 * model.addAttribute("searchResult", searchResult);
-		 * 
-		 * MessageSourceAccessor accessor =
-		 * messageResolver.getMessageSourceAccessor(userContext); for
-		 * (CommChannelSortBy column : CommChannelSortBy.values()) { String text
-		 * = accessor.getMessage(column); SortableColumn col =
-		 * SortableColumn.of(dir, column == sortBy, text, column.name());
-		 * model.addAttribute(column.name(), col); }
 		 */
-        
-        return "commChannelLinkedDeviceWidget/render.jsp";
-    }
+		MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+		for (CommChannelSortBy column : CommChannelSortBy.values()) {
+			String text = accessor.getMessage(column);
+			SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+			model.addAttribute(column.name(), col);
+		}
+		model.addAttribute("deviceId", deviceId);
+		model.addAttribute("searchResult", searchResults);
+		return "commChannelLinkedDeviceWidget/render.jsp";
+	}
 }
