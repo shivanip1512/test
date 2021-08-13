@@ -133,7 +133,7 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
             log.debug("Found {} Itron devices", itronDevices.size());
             
             // Limit the range of data calculated, if there is a large gap. Default limit = 30 days.
-            int historyLimitDays = configurationSource.getInteger(MasterConfigInteger.RUNTIME_CALC_RANGE_LIMIT_DAYS, 30);
+            int historyLimitDays = configurationSource.getInteger(MasterConfigInteger.RUNTIME_CALC_RANGE_LIMIT_DAYS, 90);
             if (historyLimitDays > 0) {
                 log.info("Calculation limited to past {} days.", historyLimitDays);
             }
