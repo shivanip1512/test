@@ -156,7 +156,7 @@ public abstract class RuntimeCalcSchedulerService {
             log.info("{} Calculating runtime/shedtime for {} devices", this.getClass().getSimpleName(), devices.size());
             
             // Limit the range of data calculated, if there is a large gap. Default limit = 30 days.
-            int historyLimitDays = configurationSource.getInteger(MasterConfigInteger.RUNTIME_CALC_RANGE_LIMIT_DAYS, 30);
+            int historyLimitDays = configurationSource.getInteger(MasterConfigInteger.RUNTIME_CALC_RANGE_LIMIT_DAYS, 90);
             if (historyLimitDays > 0) {
                 log.info("Calculation limited to past {} days.", historyLimitDays);
             }
