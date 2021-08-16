@@ -192,6 +192,7 @@ INIT_ATTRIBUTE( kVAQ12,                                             "KVA_Q12" );
 INIT_ATTRIBUTE( kVAQ34,                                             "KVA_Q34" );
 INIT_ATTRIBUTE( kVAQ13,                                             "KVA_Q13" );
 INIT_ATTRIBUTE( kVAQ24,                                             "KVA_Q24" );
+INIT_ATTRIBUTE( kVAQ124,                                            "KVA_Q124" );
 INIT_ATTRIBUTE( SumkVAr,                                            "SUM_KVAR" );
 INIT_ATTRIBUTE( NetkVAr,                                            "NET_KVAR" );
 INIT_ATTRIBUTE( PeakkVAr,                                           "PEAK_KVAR" );

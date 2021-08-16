@@ -77,6 +77,8 @@ const MetricInfo metricInfos[] = {
         {  54,  TouRates,  "VA received, peak demand (Frozen)"     },
         {  55,  TouRates,  "VA lagging, peak demand"               },
 
+        {  57,  None,      "kVA (Quadrants 1 2 4)"                 },
+
         {  61,  TouRates,  "Q hour delivered"                      },
         {  62,  TouRates,  "Q hour received"                       },
         {  63,  TouRates,  "Q hour total/sum"                      },
@@ -148,6 +150,8 @@ const MetricInfo metricInfos[] = {
 
         { 194,  None,      "Sum Watts" },
 
+        { 199,  None,      "Sum kVAr"                              },
+
         { 200,  TouRates,  "Watts"                                 },
         { 201,  TouRates,  "Var"                                   },
         { 202,  TouRates,  "VA"                                    },
@@ -164,6 +168,7 @@ const MetricInfo metricInfos[] = {
         { 234,  None,      "Average Power Factor Frozen"           },
 
         { 240,  TouRates,  "Peak Demand Daily"                     },
+        { 241,  None,      "Sum kVA"                               },
 
         { 256,  TouRates,  "Time in Seconds"                       },
         { 257,  None,      "Temperature in Centigrade"             },

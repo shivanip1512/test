@@ -183,6 +183,7 @@ public:
     static const Attribute  kVAQ34;
     static const Attribute  kVAQ13;
     static const Attribute  kVAQ24;
+    static const Attribute  kVAQ124;
     static const Attribute  SumkVAr;
     static const Attribute  NetkVAr;
     static const Attribute  PeakkVAr;
