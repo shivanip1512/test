@@ -5,11 +5,13 @@ import static com.cannontech.dr.ecobee.model.EcobeeZeusReconciliationResult.Erro
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +38,6 @@ import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMislocatedDeviceDisc
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMissingDeviceDiscrepancy;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMissingGroupDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
-import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.google.common.base.Functions;
@@ -55,7 +56,6 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private EcobeeZeusGroupDao ecobeeZeusGroupDao;
-    @Autowired private EcobeeZeusGroupService ecobeeZeusGroupService;
 
     // Fix issues in this order to avoid e.g. deleting an extraneous group containing a mislocated group.
     // (This should not be rearranged without some thought)
@@ -204,14 +204,12 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
             case MISLOCATED_DEVICE:
                 // Unenroll device from incorrect group and Enroll device in correct group
                 int inventoryId = lmHardwareBaseDao.getBySerialNumber(error.getSerialNumber()).getInventoryId();
-                Set<Integer> groups = new HashSet<>();
-                groups.add(Integer.parseInt(error.getCurrentPath()));
-                communicationService.unEnroll(groups, error.getSerialNumber(), inventoryId, true);
-                //If correct path available enroll it to correct group else just unenroll from current group.
-                if (StringUtils.isNotEmpty(error.getCorrectPath())) {
-                    int lmGroupId = Integer.parseInt(error.getCorrectPath());
-                    int programId = ecobeeZeusGroupService.getProgramIdToEnroll(inventoryId, lmGroupId);
-                    communicationService.enroll(lmGroupId, error.getSerialNumber(), inventoryId, programId, true);
+                // Unenroll the device only when there are no correct path.
+                if (StringUtils.isBlank(error.getCorrectPath())) {
+                    unEnroll(error, inventoryId);
+                } else if (StringUtils.isBlank(error.getCurrentPath())) {
+                    // Enroll device when there is no current path
+                    enroll(error, inventoryId);
                 }
                 return EcobeeZeusReconciliationResult.newSuccess(error);
 
@@ -239,6 +237,24 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
         } catch (EcobeeCommunicationException e) {
             return EcobeeZeusReconciliationResult.newFailure(error, COMMUNICATION);
         }
+    }
+
+    /**
+     * Enroll the device to the correct path
+     */
+    private void enroll(EcobeeZeusDiscrepancy error, int inventoryId) {
+        String serialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(inventoryId);
+        // Yukon should not update the mapping once again because it already has. So pass updateMapping as false.
+        communicationService.addThermostatToGroup(error.getCorrectPath(), serialNumber, inventoryId, false);
+    }
+
+    /**
+     * Unenroll the device from the current path
+     */
+    private void unEnroll(EcobeeZeusDiscrepancy error, int inventoryId) {
+        String serialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(inventoryId);
+        // Yukon should not update the mapping once again because it already has. So pass updateMapping as false.
+        communicationService.removeThermostatFromGroup(error.getCurrentPath(), serialNumber, inventoryId, false);
     }
 
     /**
@@ -358,19 +374,25 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
             if (StringUtils.isNotEmpty(mapping.getParentGroupId()) && !extraneousGroupIds.contains(mapping.getGroupId())) {
                 String groupIdInEcobee = mapping.getGroupId();
                 List<String> thermostatsInEcobeeGroup = mapping.getThermostatsSerialNumber();
-                List<Integer> thermostatsInYukonGroup = ecobeeZeusGroupDao.getInventoryIdsForZeusGroupID(groupIdInEcobee);
+                List<Integer> inventoryIds = ecobeeZeusGroupDao.getInventoryIdsForZeusGroupID(groupIdInEcobee);
+                Map<String, Integer> serialNumToInventoryIdMap = new HashMap<String, Integer>();
+                inventoryIds.stream().forEach(inventoryId -> {
+                    serialNumToInventoryIdMap.put(lmHardwareBaseDao.getSerialNumberForInventoryId(inventoryId), inventoryId);
+                });
                 for (String thermostatId : thermostatsInEcobeeGroup) {
-                    if (!thermostatsInYukonGroup.contains(Integer.valueOf(thermostatId))) {
-                        errorsList.add(new EcobeeZeusMislocatedDeviceDiscrepancy(thermostatId, groupIdInEcobee, StringUtils.EMPTY));
+                    if (!serialNumToInventoryIdMap.containsKey(thermostatId)) {
+                        errorsList.add(new EcobeeZeusMislocatedDeviceDiscrepancy(thermostatId,
+                                groupIdInEcobee, StringUtils.EMPTY));
                     }
                 }
-                for (Integer thermostatId : thermostatsInYukonGroup) {
-                    if (!thermostatsInEcobeeGroup.contains(thermostatId.toString())) {
-                        int programIdInYukon = ecobeeZeusGroupDao.getProgramIdForZeusGroup(groupIdInEcobee);
-                        int inventoryId = lmHardwareBaseDao.getBySerialNumber(thermostatId.toString()).getInventoryId();
-                        int yukonGroupId = ecobeeZeusGroupDao.getLmGroupForInventory(inventoryId, programIdInYukon);
-                        String correctPath = ecobeeZeusGroupDao.getZeusGroupId(yukonGroupId, inventoryId, programIdInYukon);
-                        errorsList.add(new EcobeeZeusMislocatedDeviceDiscrepancy(thermostatId.toString(), groupIdInEcobee, correctPath));
+                for (String thermostatId : serialNumToInventoryIdMap.keySet()) {
+                    int programIdInYukon = ecobeeZeusGroupDao.getProgramIdForZeusGroup(groupIdInEcobee);
+                    int inventoryId = serialNumToInventoryIdMap.get(thermostatId);
+                    int yukonGroupId = ecobeeZeusGroupDao.getLmGroupForInventory(inventoryId, programIdInYukon);
+                    String correctPath = ecobeeZeusGroupDao.getZeusGroupId(yukonGroupId, inventoryId, programIdInYukon);
+                    if (CollectionUtils.isEmpty(thermostatsInEcobeeGroup) || !thermostatsInEcobeeGroup.contains(thermostatId)) {
+                        errorsList.add(new EcobeeZeusMislocatedDeviceDiscrepancy(thermostatId.toString(),
+                                StringUtils.EMPTY, correctPath));
                     }
                 }
             }

@@ -52,13 +52,13 @@ public class MacroRouteApiValidatorHelper {
         }
     }
 
-    public void validateRouteIds(Errors errors, MacroRouteList macroRouteList) {
+    public void validateRouteIds(Errors errors, MacroRouteList macroRouteList, int routeListIndex) {
 
         boolean routeIdExists = serverDatabaseCache.getAllRoutes()
                 .stream()
                 .anyMatch(route -> route.getLiteID() == macroRouteList.getRouteId() && (!route.getPaoType().equals(PaoType.ROUTE_MACRO)));
         if (!routeIdExists) {
-            errors.rejectValue("routeList", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { macroRouteList.getRouteId() }, "");
+            errors.rejectValue("routeList["+routeListIndex+"].routeId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { macroRouteList.getRouteId() }, "");
         }
     }
 

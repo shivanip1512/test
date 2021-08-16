@@ -46,7 +46,6 @@ public class EatonCloudDrEmailBuilder extends SmartNotificationEmailBuilder {
         argumentList.add(total);
         argumentList.add(Math.round((success * 100) / total));
         argumentList.add(Math.round((failed * 100) / total));
-        argumentList.add(webserverUrlResolver.getUrl("/dr/recenteventparticipation/details"));
         return argumentList.toArray();
     }
 

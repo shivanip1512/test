@@ -76,6 +76,7 @@ const MetricInfo metricInfos[] = {
         {  53,  TouRates,  "VA delivered, peak demand (Frozen)"    },
         {  54,  TouRates,  "VA received, peak demand (Frozen)"     },
         {  55,  TouRates,  "VA lagging, peak demand"               },
+        {  56,  None,      "Peak kVA (Quadrants 1 2 4) Frozen"     },
 
         {  57,  None,      "kVA (Quadrants 1 2 4)"                 },
 
@@ -147,6 +148,7 @@ const MetricInfo metricInfos[] = {
         { 181,  TouRates,  "Peak kVAr (Quadrants 2 3)"             },
 
         { 184,  TouRates,  "Sum Peak kVAr"                         },
+        { 185,  None,      "Sum Peak kVAr Frozen"                  },
 
         { 194,  None,      "Sum Watts" },
 

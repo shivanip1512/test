@@ -193,6 +193,7 @@ INIT_ATTRIBUTE( kVAQ34,                                             "KVA_Q34" );
 INIT_ATTRIBUTE( kVAQ13,                                             "KVA_Q13" );
 INIT_ATTRIBUTE( kVAQ24,                                             "KVA_Q24" );
 INIT_ATTRIBUTE( kVAQ124,                                            "KVA_Q124" );
+INIT_ATTRIBUTE( PeakkVAQ124Frozen,                                  "PEAK_KVA_Q124_FROZEN" );
 INIT_ATTRIBUTE( SumkVAr,                                            "SUM_KVAR" );
 INIT_ATTRIBUTE( NetkVAr,                                            "NET_KVAR" );
 INIT_ATTRIBUTE( PeakkVAr,                                           "PEAK_KVAR" );
@@ -221,6 +222,8 @@ INIT_ATTRIBUTE( kVArQ13,                                            "KVAR_Q13" )
 INIT_ATTRIBUTE( kVArQ24,                                            "KVAR_Q24" );
 INIT_ATTRIBUTE( kVArQ14,                                            "KVAR_Q14" );
 INIT_ATTRIBUTE( kVArQ23,                                            "KVAR_Q23" );
+INIT_ATTRIBUTE( SumPeakkVArFrozen,                                  "SUM_PEAK_KVAR_FROZEN" );
+INIT_ATTRIBUTE( DeliveredPeakkVArFrozen,                            "DELIVERED_PEAK_KVAR_FROZEN" );
 INIT_ATTRIBUTE( PeakkVArh,                                          "PEAK_KVARH" );
 INIT_ATTRIBUTE( PeakkVArhCoincidental,                              "PEAK_KVARH_COIN" );
 INIT_ATTRIBUTE( Phase,                                              "PHASE" );

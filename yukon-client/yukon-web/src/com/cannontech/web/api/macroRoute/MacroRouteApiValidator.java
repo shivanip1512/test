@@ -32,8 +32,9 @@ public class MacroRouteApiValidator<T extends MacroRouteModel<?>> extends Simple
         }
 
         if (macroRoute.getRouteList() != null) {
+            int i=0;
             for (MacroRouteList macroRouteList : macroRoute.getRouteList()) {
-                macroRouteApiValidatorHelper.validateRouteIds(errors, macroRouteList);
+                macroRouteApiValidatorHelper.validateRouteIds(errors, macroRouteList, i++);
             }
         }
     }

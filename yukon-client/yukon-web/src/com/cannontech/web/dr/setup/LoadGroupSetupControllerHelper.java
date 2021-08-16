@@ -197,9 +197,7 @@ public class LoadGroupSetupControllerHelper {
             break;
         case LM_GROUP_EATON_CLOUD:
             model.addAttribute("isEatonCloudGroupSelected", true);
-            if (!isViewMode) {
-                model.addAttribute("loadsList", Lists.newArrayList(Loads.values()));
-            }
+            model.addAttribute("relayIds", ImmutableList.of(1, 2, 3, 4, 5, 6, 7, 8));
             break;
         }
     }
