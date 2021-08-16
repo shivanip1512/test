@@ -34,7 +34,6 @@ public class MacroRouteList<T extends com.cannontech.database.db.route.MacroRout
     @Override
     public void buildModel(com.cannontech.database.db.route.MacroRoute macroRoutes) {
         setRouteId(macroRoutes.getSingleRouteID());
-        setRouteName(serverDatabaseCache.getAllRoutes().get(macroRoutes.getSingleRouteID()).getPaoName());
     }
 
     @Override
