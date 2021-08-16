@@ -575,6 +575,10 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             rfnEventMap.put(RfnConditionDataType.METER_CONFIGURATION_ID, testEvent.getMeterConfigurationId());
             rfnEventMap.put(RfnConditionDataType.METER_CONFIGURATION_STATUS, testEvent.getMeterConfigurationStatus());
         }
+        if (RfnConditionType.DNP3_ADDRESS_CHANGED.equals(testEvent.getRfnConditionType())) {
+            rfnEventMap.put(RfnConditionDataType.OLD_DNP3_ADDRESS, testEvent.getOldDnp3Address());
+            rfnEventMap.put(RfnConditionDataType.NEW_DNP3_ADDRESS, testEvent.getNewDnp3Address());
+        }
         if (testEvent.getUomModifiers() != null) {
             Set<String> stringSet = Sets.newHashSet(StringUtils.split(testEvent.getUomModifiers(), ","));
             RfnUomModifierSet rfnUomModifierSet = new RfnUomModifierSet();
