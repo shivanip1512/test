@@ -66,6 +66,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
             archivedReadings.addAndGet(messagesToSend.size());
 
             sendAcknowledgement(request);
+            incrementProcessedArchiveRequest();
             if (log.isDebugEnabled()) {
                 log.debug(messagesToSend.size() + " PointDatas converted for RfnMeterReadingArchiveRequest, "
                         + toCalculate.size() + " calculations produced.");

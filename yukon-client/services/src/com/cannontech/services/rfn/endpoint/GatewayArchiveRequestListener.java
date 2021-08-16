@@ -64,6 +64,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
         @Override
         public Optional<String> processData(RfnDevice rfnDevice, GatewayArchiveRequest archiveRequest) {
             //no data to archive on this queue, just device creation requests that have no other payload
+            incrementProcessedArchiveRequest();
             return Optional.empty();  //  no point data to track
         }
 

@@ -107,6 +107,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 Schema schema = ParsingService.getSchema(payload);
                 try {
                     strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings);
+                    incrementProcessedArchiveRequest();
                 } catch (ParseException e) {
                     // Acknowledge the request to prevent NM from sending back that data which can't be parsed.
                     sendAcknowledgement(request);
