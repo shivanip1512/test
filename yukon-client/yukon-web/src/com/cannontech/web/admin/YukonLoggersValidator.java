@@ -18,7 +18,6 @@ import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 
 public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
@@ -60,6 +59,11 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
         YukonValidationUtils.checkIfFieldRequired("loggerName", errors, logger.getLoggerName(), i18Text);
         if (!errors.hasFieldErrors("loggerName")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "loggerName", logger.getLoggerName(), 200);
+        }
+        if (!errors.hasFieldErrors("loggerName")) {
+            if (logger.getLoggerName().startsWith(".") || logger.getLoggerName().endsWith(".")) {
+                errors.rejectValue("loggerName", errorkey + "isWhitelistedCharacter");
+            }
         }
         if (!errors.hasFieldErrors("loggerName")) {
             YukonValidationUtils.checkWhitelistedCharacter(errors, "loggerName", logger.getLoggerName(), i18Text);
