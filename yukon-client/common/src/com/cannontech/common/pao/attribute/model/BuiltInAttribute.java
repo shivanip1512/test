@@ -45,9 +45,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     CURRENT_PHASE_B("Current (Phase B)", AttributeGroup.CURRENT),
     CURRENT_PHASE_C("Current (Phase C)", AttributeGroup.CURRENT),
     CURRENT_ANGLE("Current Angle", AttributeGroup.CURRENT, false),   
-    CURRENT_ANGLE_PHASE_A("Current Angle (Phase A)", AttributeGroup.CURRENT, false),   //440 types only
-    CURRENT_ANGLE_PHASE_B("Current Angle (Phase B)", AttributeGroup.CURRENT, false),   //440 types only
-    CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)", AttributeGroup.CURRENT, false),   //440 types only
+    CURRENT_ANGLE_PHASE_A("Current Angle (Phase A)", AttributeGroup.CURRENT, false),
+    CURRENT_ANGLE_PHASE_B("Current Angle (Phase B)", AttributeGroup.CURRENT, false),
+    CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)", AttributeGroup.CURRENT, false),
     CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage", AttributeGroup.STATUS, false),   //440 types only
     DEMAND("Demand", AttributeGroup.DEMAND), // instantaneous
     DELIVERED_DEMAND("Delivered Demand", AttributeGroup.DEMAND),
@@ -925,12 +925,18 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
         nonIntervalAttributes = ImmutableSet.of(
                 AVERAGE_POWER_FACTOR_FROZEN,
+                DELIVERED_PEAK_KVA_LAGGING,
+                DELIVERED_PEAK_KVAR_FROZEN,
                 MAXIMUM_VOLTAGE,
                 MAXIMUM_VOLTAGE_DAILY,
                 MAXIMUM_VOLTAGE_PHASE_A,
+                MAXIMUM_VOLTAGE_PHASE_B,
+                MAXIMUM_VOLTAGE_PHASE_C,
                 MINIMUM_VOLTAGE,
                 MINIMUM_VOLTAGE_DAILY,
                 MINIMUM_VOLTAGE_PHASE_A,
+                MINIMUM_VOLTAGE_PHASE_B,
+                MINIMUM_VOLTAGE_PHASE_C,
                 PEAK_DEMAND,
                 PEAK_DEMAND_DAILY,
                 PEAK_DEMAND_FROZEN,
@@ -948,6 +954,16 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 PEAK_KVA_FROZEN_RATE_B,
                 PEAK_KVA_FROZEN_RATE_C,
                 PEAK_KVA_FROZEN_RATE_D,
+                PEAK_KVA_LAGGING_RATE_A,
+                PEAK_KVA_LAGGING_RATE_B,
+                PEAK_KVA_LAGGING_RATE_C,
+                PEAK_KVA_LAGGING_RATE_D,
+                PEAK_KVA_Q12,
+                PEAK_KVA_Q12_RATE_A,
+                PEAK_KVA_Q12_RATE_B,
+                PEAK_KVA_Q12_RATE_C,
+                PEAK_KVA_Q12_RATE_D,
+                PEAK_KVA_Q124_FROZEN,
                 PEAK_KVA_RATE_A,
                 PEAK_KVA_RATE_B,
                 PEAK_KVA_RATE_C,
@@ -986,6 +1002,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 SUM_PEAK_KVA_RATE_C,
                 SUM_PEAK_KVA_RATE_D,
                 SUM_PEAK_KVAR,
+                SUM_PEAK_KVAR_FROZEN,
                 SUM_PEAK_KVAR_RATE_A,
                 SUM_PEAK_KVAR_RATE_B,
                 SUM_PEAK_KVAR_RATE_C,

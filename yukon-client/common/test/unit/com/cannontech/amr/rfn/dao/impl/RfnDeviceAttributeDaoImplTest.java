@@ -1,5 +1,6 @@
 package com.cannontech.amr.rfn.dao.impl;
 
+import static java.util.function.Predicate.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -8,9 +9,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -20,6 +23,7 @@ import com.cannontech.amr.rfn.service.pointmapping.icd.PointMappingIcd;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.YamlParserUtils;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 public class RfnDeviceAttributeDaoImplTest {
@@ -86,6 +90,46 @@ public class RfnDeviceAttributeDaoImplTest {
         assertEquals((Integer)  5, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.DELIVERED_DEMAND, PaoType.RFN420CL));
         
         assertEquals((Integer)200, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.INSTANTANEOUS_KW, PaoType.RFN430SL1));
+    }
+    
+    @Test
+    public void test_nonIntervalAttributes() {
+        //  Any attribute that contains minimum/maximum/peak/frozen is not an RFN interval attribute
+        var nonIntervalQualifiers = Set.of(
+                "minimum", 
+                "maximum", 
+                "peak",
+                "frozen");
+
+        var allowedIntervalAttributes = Set.of(
+                BuiltInAttribute.MINIMUM_POWER_FACTOR,
+                BuiltInAttribute.PREVIOUS_MINIMUM_POWER_FACTOR,
+                BuiltInAttribute.RECEIVED_KWH_FROZEN,
+                BuiltInAttribute.USAGE_FROZEN);
+
+        //  Make sure that all allowedIntervalAttributes are actually isIntervalApplicable
+        var unexpectedNonInterval = 
+                allowedIntervalAttributes.stream()
+                    .filter(not(BuiltInAttribute::isIntervalApplicable))
+                    .collect(Collectors.toList());
+        
+        assertTrue(unexpectedNonInterval.isEmpty(),
+                "Found allowedIntervalAttributes that are not isIntervalApplicable:" + unexpectedNonInterval);
+        
+        var qualifierPattern = 
+                Pattern.compile(String.join("|", nonIntervalQualifiers), 
+                                Pattern.CASE_INSENSITIVE)
+                       .asPredicate();
+        
+        var unexpectedIntervalApplicable =
+                rfnDeviceAttributeDao.getAttributesForAllTypes().stream()
+                    .filter(BuiltInAttribute::isIntervalApplicable)
+                    .filter(not(allowedIntervalAttributes::contains))
+                    .filter(attr -> qualifierPattern.test(attr.name()))
+                    .collect(Collectors.toList());
+        
+        assertTrue(unexpectedIntervalApplicable.isEmpty(), 
+                "Found non-interval attributes claiming isIntervalApplicable: " + unexpectedIntervalApplicable);
     }
     
     @Test
