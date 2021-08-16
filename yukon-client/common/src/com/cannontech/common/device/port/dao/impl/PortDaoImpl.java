@@ -64,7 +64,7 @@ public class PortDaoImpl implements PortDao {
         sql.append("ON ddcs.DeviceId = ypo.PaObjectId");
         sql.append("WHERE PortId").eq(portId);
         if (sortBy != null) {
-            sql.append("ORDER BY").append("ypo."+sortBy.getDbString()).append(direction);
+            sql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
         }
         return sql;
     }
