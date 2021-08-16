@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE point [
+    <!ENTITY focusAxGen2 "RFN520FAXE,RFN520FRXE,RFN520FAXED,RFN520FRXED,RFN530FAXE,RFN530FRXE">
+    <!ENTITY focusAxGen2Base "RFN520FAXE,RFN520FAXED,RFN530FAXE">
+    <!ENTITY focusAxGen2Poly "RFN530FAXE,RFN530FRXE">
+]>
 <pointMappings
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="rfnPointMapping.xsd">
@@ -283,6 +288,7 @@
         <paoType value="RFN430A3K"/>
         <paoType value="RFN430A3R"/>
         <paoType value="RFN430KV"/>
+        <!-- Focus AX Gen 1 -->
         <paoType value="RFN510FL"/>
         <paoType value="RFN520FAX"/>
         <paoType value="RFN520FRX"/>
@@ -290,6 +296,13 @@
         <paoType value="RFN520FRXD"/>
         <paoType value="RFN530FAX"/>
         <paoType value="RFN530FRX"/>
+        <!-- Focus AX Gen 2 -->
+        <paoType value="RFN520FAXE"/>
+        <paoType value="RFN520FRXE"/>
+        <paoType value="RFN520FAXED"/>
+        <paoType value="RFN520FRXED"/>
+        <paoType value="RFN530FAXE"/>
+        <paoType value="RFN530FRXE"/>
         
         <paoType value="RFN530S4X" />
         <paoType value="RFN530S4EAX" />
@@ -411,6 +424,7 @@
         <paoType value="RFN430A3K"/>
         <paoType value="RFN430A3R"/>
         <paoType value="RFN430KV"/>
+        <!-- Focus AX Gen 1 -->
         <paoType value="RFN510FL"/>
         <paoType value="RFN520FAX"/>
         <paoType value="RFN520FRX"/>
@@ -418,6 +432,14 @@
         <paoType value="RFN520FRXD"/>
         <paoType value="RFN530FAX"/>
         <paoType value="RFN530FRX"/>
+        <!-- Focus AX Gen 2 -->
+        <paoType value="RFN520FAXE"/>
+        <paoType value="RFN520FRXE"/>
+        <paoType value="RFN520FAXED"/>
+        <paoType value="RFN520FRXED"/>
+        <paoType value="RFN530FAXE"/>
+        <paoType value="RFN530FRXE"/>
+
         <paoType value="RFN530S4X" />
         <paoType value="RFN530S4EAX" />
         <paoType value="RFN530S4EAXR" />
@@ -576,6 +598,7 @@
         <paoType value="RFN420CD"/>
         <paoType value="WRL420CL"/>
         <paoType value="WRL420CD"/>
+        <!-- Focus AX Gen 1 -->
         <paoType value="RFN510FL"/>
         <paoType value="RFN520FAX"/>
         <paoType value="RFN520FRX"/>
@@ -583,6 +606,13 @@
         <paoType value="RFN520FRXD"/>
         <paoType value="RFN530FAX"/>
         <paoType value="RFN530FRX"/>
+        <!-- Focus AX Gen 2 -->
+        <paoType value="RFN520FAXE"/>
+        <paoType value="RFN520FRXE"/>
+        <paoType value="RFN520FAXED"/>
+        <paoType value="RFN520FRXED"/>
+        <paoType value="RFN530FAXE"/>
+        <paoType value="RFN530FRXE"/>
 
         <paoType value="RFN530S4X" />
         <paoType value="RFN530S4EAX" />
@@ -2412,6 +2442,7 @@
         <paoType value="RFN420FD"/>
         <paoType value="RFN420FRX"/>
         <paoType value="RFN420FRD"/>
+        <!-- Focus AX Gen 1 -->
         <paoType value="RFN510FL"/>
         <paoType value="RFN520FAX"/>
         <paoType value="RFN520FRX"/>
@@ -2419,15 +2450,22 @@
         <paoType value="RFN520FRXD"/>
         <paoType value="RFN530FAX"/>
         <paoType value="RFN530FRX"/>
+        <!-- Focus AX Gen 2 -->
+        <paoType value="RFN520FAXE"/>
+        <paoType value="RFN520FRXE"/>
+        <paoType value="RFN520FAXED"/>
+        <paoType value="RFN520FRXED"/>
+        <paoType value="RFN530FAXE"/>
+        <paoType value="RFN530FRXE"/>
 
-        <point name="Daily Min Volts" icdExcludedTypes="RFN520FAX,RFN520FRX,RFN520FAXD,RFN520FRXD,RFN530FAX,RFN530FRX">
+        <point name="Daily Min Volts" icdExcludedTypes="RFN520FAX,RFN520FRX,RFN520FAXD,RFN520FRXD,RFN530FAX,RFN530FRX,&focusAxGen2;">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Min</modifier>
             </modifiers>
         </point>
-        <point name="Daily Max Volts" icdExcludedTypes="RFN520FAX,RFN520FRX,RFN520FAXD,RFN520FRXD,RFN530FAX,RFN530FRX">
+        <point name="Daily Max Volts" icdExcludedTypes="RFN520FAX,RFN520FRX,RFN520FAXD,RFN520FRXD,RFN530FAX,RFN530FRX,&focusAxGen2;">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
@@ -2461,6 +2499,7 @@
         <paoType value="RFN420FD"/>
         <paoType value="RFN420FRX"/>
         <paoType value="RFN420FRD"/>
+        <!-- Focus AX Gen 1 -->
         <paoType value="RFN510FL"/>
         <paoType value="RFN520FAX"/>
         <paoType value="RFN520FRX"/>
@@ -2468,6 +2507,14 @@
         <paoType value="RFN520FRXD"/>
         <paoType value="RFN530FAX"/>
         <paoType value="RFN530FRX"/>
+        <!-- Focus AX Gen 2 -->
+        <paoType value="RFN520FAXE"/>
+        <paoType value="RFN520FRXE"/>
+        <paoType value="RFN520FAXED"/>
+        <paoType value="RFN520FRXED"/>
+        <paoType value="RFN530FAXE"/>
+        <paoType value="RFN530FRXE"/>
+
         <point name="Voltage">
             <uom>V</uom>
             <parseSiPrefix/>
@@ -4012,12 +4059,20 @@
         <paoType value="RFN410FD"/>
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
+        <!-- Focus AX Gen 1 -->
         <paoType value="RFN520FAX"/>
         <paoType value="RFN520FRX"/>
         <paoType value="RFN520FAXD"/>
         <paoType value="RFN520FRXD"/>
         <paoType value="RFN530FAX"/>
         <paoType value="RFN530FRX"/>
+        <!-- Focus AX Gen 2 -->
+        <paoType value="RFN520FAXE"/>
+        <paoType value="RFN520FRXE"/>
+        <paoType value="RFN520FAXED"/>
+        <paoType value="RFN520FRXED"/>
+        <paoType value="RFN530FAXE"/>
+        <paoType value="RFN530FRXE"/>
         <!-- FOCUS KWH -->
         <paoType value="RFN410FL"/>
         <paoType value="RFN420FL"/>
@@ -4138,14 +4193,22 @@
     </pointGroup>
     
     <pointGroup>
+        <!-- Focus AX Gen 1 -->
         <paoType value="RFN520FAX"/>
         <paoType value="RFN520FRX"/>
         <paoType value="RFN520FAXD"/>
         <paoType value="RFN520FRXD"/>
         <paoType value="RFN530FAX"/>
         <paoType value="RFN530FRX"/>
+        <!-- Focus AX Gen 2 -->
+        <paoType value="RFN520FAXE"/>
+        <paoType value="RFN520FRXE"/>
+        <paoType value="RFN520FAXED"/>
+        <paoType value="RFN520FRXED"/>
+        <paoType value="RFN530FAXE"/>
+        <paoType value="RFN530FRXE"/>
 
-        <point name="Delivered kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4155,7 +4218,7 @@
             </modifiers>
         </point>
         <!-- alternate definition in case of 2 quadrant metering -->
-        <point name="Delivered kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4164,7 +4227,7 @@
             </modifiers>
         </point>
         
-        <point name="Received kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Received kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4173,7 +4236,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Net kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Net kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4185,7 +4248,7 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-        <point name="kVAh (Quadrants 1 2 4)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="kVAh (Quadrants 1 2 4)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4195,7 +4258,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="kVAh (Quadrants 2 3 4)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="kVAh (Quadrants 2 3 4)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4205,7 +4268,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Net kVAh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Net kVAh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4217,7 +4280,7 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVAr" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered Peak kVAr" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4227,7 +4290,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVAr (Rate A kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered Peak kVAr (Rate A kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4238,7 +4301,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVAr (Rate B kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered Peak kVAr (Rate B kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4249,7 +4312,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVAr (Rate C kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered Peak kVAr (Rate C kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4260,7 +4323,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVAr (Rate D kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered Peak kVAr (Rate D kVAr)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4271,7 +4334,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Sum Peak kVAr" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum Peak kVAr" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4283,7 +4346,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA Lagging" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Peak kVA Lagging" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4294,7 +4357,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA Lagging Rate A" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Peak kVA Lagging Rate A" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4306,7 +4369,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA Lagging Rate B" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Peak kVA Lagging Rate B" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4318,7 +4381,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA Lagging Rate C" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Peak kVA Lagging Rate C" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4330,7 +4393,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA Lagging Rate D" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Peak kVA Lagging Rate D" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4342,7 +4405,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Sum Peak kVA" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum Peak kVA" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4356,7 +4419,7 @@
         </point>
         
         <!-- The following do not apply to RFN520FAX or RFN520FAXD -->
-        <point name="Sum kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4367,7 +4430,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Sum kVAh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum kVAh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4378,7 +4441,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Delivered kVArh (Rate A kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered kVArh (Rate A kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4388,7 +4451,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Delivered kVArh (Rate B kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered kVArh (Rate B kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4398,7 +4461,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Delivered kVArh (Rate C kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered kVArh (Rate C kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4408,7 +4471,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Delivered kVArh (Rate D kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered kVArh (Rate D kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4418,7 +4481,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Received kVArh (Rate A kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Received kVArh (Rate A kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4428,7 +4491,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Received kVArh (Rate B kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Received kVArh (Rate B kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4438,7 +4501,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Received kVArh (Rate C kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Received kVArh (Rate C kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4448,7 +4511,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Received kVArh (Rate D kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Received kVArh (Rate D kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4458,7 +4521,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Net kVArh (Rate A kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Net kVArh (Rate A kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4471,7 +4534,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Net kVArh (Rate B kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Net kVArh (Rate B kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4484,7 +4547,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Net kVArh (Rate C kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Net kVArh (Rate C kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4497,7 +4560,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Net kVArh (Rate D kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Net kVArh (Rate D kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4510,7 +4573,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Sum kVArh (Rate A kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum kVArh (Rate A kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4522,7 +4585,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Sum kVArh (Rate B kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum kVArh (Rate B kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4534,7 +4597,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Sum kVArh (Rate C kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum kVArh (Rate C kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4546,7 +4609,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Sum kVArh (Rate D kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum kVArh (Rate D kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4558,7 +4621,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="kVAh (Quadrants 1 2 4) (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="kVAh (Quadrants 1 2 4) (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4569,7 +4632,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="kVAh (Quadrants 1 2 4) (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="kVAh (Quadrants 1 2 4) (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4580,7 +4643,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="kVAh (Quadrants 1 2 4) (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="kVAh (Quadrants 1 2 4) (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4591,7 +4654,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="kVAh (Quadrants 1 2 4) (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="kVAh (Quadrants 1 2 4) (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4602,7 +4665,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="kVAh (Quadrants 2 3 4) (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="kVAh (Quadrants 2 3 4) (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4613,7 +4676,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="kVAh (Quadrants 2 3 4) (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="kVAh (Quadrants 2 3 4) (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4624,7 +4687,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="kVAh (Quadrants 2 3 4) (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="kVAh (Quadrants 2 3 4) (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4635,7 +4698,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="kVAh (Quadrants 2 3 4) (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="kVAh (Quadrants 2 3 4) (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4646,7 +4709,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Sum kVAh (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum kVAh (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4658,7 +4721,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Sum kVAh (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum kVAh (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4670,7 +4733,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Sum kVAh (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum kVAh (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4682,7 +4745,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Sum kVAh (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum kVAh (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4694,7 +4757,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Net kVAh (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Net kVAh (Rate A kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4707,7 +4770,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Net kVAh (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Net kVAh (Rate B kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4720,7 +4783,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Net kVAh (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Net kVAh (Rate C kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4733,7 +4796,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Net kVAh (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Net kVAh (Rate D kVAh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4746,7 +4809,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Sum Peak kVAr Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Sum Peak kVAr Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4759,7 +4822,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVAr Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Delivered Peak kVAr Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4770,7 +4833,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA (Quadrants 1 2 4) Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Peak kVA (Quadrants 1 2 4) Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4786,10 +4849,16 @@
         
     <pointGroup>
         <!-- RFN-520 single phase mappings -->
+        <!-- Focus AX Gen 1 -->
         <paoType value="RFN520FAX"/>
         <paoType value="RFN520FRX"/>
         <paoType value="RFN520FAXD"/>
         <paoType value="RFN520FRXD"/>
+        <!-- Focus AX Gen 2 -->
+        <paoType value="RFN520FAXE"/>
+        <paoType value="RFN520FRXE"/>
+        <paoType value="RFN520FAXED"/>
+        <paoType value="RFN520FRXED"/>
         <point name="Voltage (Single Phase)">
             <uom>V</uom>
             <parseSiPrefix/>
@@ -4832,8 +4901,13 @@
     
     <pointGroup>
         <!-- RFN-530 poloyphase mappings -->
+        <!-- Focus AX Gen 1 -->
         <paoType value="RFN530FAX"/>
         <paoType value="RFN530FRX"/>
+        <!-- Focus AX Gen 2 -->
+        <paoType value="RFN530FAXE"/>
+        <paoType value="RFN530FRXE"/>
+
         <paoType value="RFN530S4X" />
         <paoType value="RFN530S4EAX" />
         <paoType value="RFN530S4EAXR" />
@@ -4954,7 +5028,7 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-        <point name="Current Angle Phase A" icdExcludedTypes="RFN530FAX,RFN530FRX">
+        <point name="Current Angle Phase A" icdExcludedTypes="RFN530FAX,RFN530FRX,&focusAxGen2Poly;">
             <uom>A degree</uom>
             <multiplier value="0.1"/>
             <parseSiPrefix/>
@@ -4962,7 +5036,7 @@
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
-        <point name="Current Angle Phase B" icdExcludedTypes="RFN530FAX,RFN530FRX">
+        <point name="Current Angle Phase B" icdExcludedTypes="RFN530FAX,RFN530FRX,&focusAxGen2Poly;">
             <uom>A degree</uom>
             <multiplier value="0.1"/>
             <parseSiPrefix/>
@@ -4970,7 +5044,7 @@
                 <modifier>Phase B</modifier>
             </modifiers>
         </point>
-        <point name="Current Angle Phase C" icdExcludedTypes="RFN530FAX,RFN530FRX">
+        <point name="Current Angle Phase C" icdExcludedTypes="RFN530FAX,RFN530FRX,&focusAxGen2Poly;">
             <uom>A degree</uom>
             <multiplier value="0.1"/>
             <parseSiPrefix/>
