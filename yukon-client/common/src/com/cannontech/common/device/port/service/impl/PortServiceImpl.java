@@ -8,7 +8,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.device.model.SimpleDevice;

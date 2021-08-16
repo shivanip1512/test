@@ -35,7 +35,7 @@ import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.device.port.PortBase;
-import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.device.port.service.impl.PortServiceImpl.CommChannelSortBy;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
@@ -43,6 +43,8 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.model.Rfn1200Detail;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -55,8 +57,6 @@ import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
@@ -245,17 +245,6 @@ public class CommChannelController {
             return null;
         }
         return null;
-    }
-
-    public enum CommChannelSortBy implements DisplayableEnum {
-        name,
-        type,
-        status;
-
-        @Override
-        public String getFormatKey() {
-            return baseKey + name();
-        }
     }
 
     /**

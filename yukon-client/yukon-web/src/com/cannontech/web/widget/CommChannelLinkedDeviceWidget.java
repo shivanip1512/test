@@ -1,11 +1,6 @@
 package com.cannontech.web.widget;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -21,7 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.device.model.DeviceBaseModel;
-import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
+import com.cannontech.common.device.port.service.impl.PortServiceImpl.CommChannelSortBy;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
@@ -35,7 +30,6 @@ import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.stars.commChannel.CommChannelController.CommChannelSortBy;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -63,7 +57,7 @@ public class CommChannelLinkedDeviceWidget extends AdvancedWidgetControllerBase 
     public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
             @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,
             @DefaultItemsPerPage(value = 25) PagingParameters paging) throws ServletRequestBindingException, URISyntaxException {
-        CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
+    	CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
 
         String assignedDevicesUrl = helper.findWebServerUrl(request, userContext,
