@@ -1,23 +1,20 @@
 package com.cannontech.dr.itron.service.impl;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.createStrictMock;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.junit.Assert.assertThat;
+import static org.easymock.EasyMock.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -80,6 +77,7 @@ public class ItronRuntimeCalcServiceImplTest {
     
     private static final DateTime date1 = DateTime.parse("2019-03-20T11:13:27");
     private static final DateTime date2 = date1.plus(Duration.standardHours(8));
+    private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
     
     @Before
     public void initEach() {
@@ -579,6 +577,63 @@ public class ItronRuntimeCalcServiceImplTest {
         ReflectionTestUtils.setField(itronRuntimeCalcService, "dynamicLcrCommunicationsDao", mockDynamicLcrCommunicationsDao);
         
         itronRuntimeCalcService.calculateDataLogs();
+    }
+    
+    @Test
+    public void test_getLimitedStartOfRange_withNullStartOfRange() {
+        DateTime currentTime = formatter.parseDateTime("17/08/2021 13:00:00");
+        int historyLimitDays = 30;
+        Instant startOfRange = null;
+        
+        Instant result = ItronRuntimeCalcServiceImpl.getLimitedStartOfRange(startOfRange, historyLimitDays, currentTime);
+        
+        Instant historyLimitInstant = formatter.parseDateTime("18/07/2021 00:00:00").toInstant();
+        assertEquals("Limited value incorrect with null start of range.", result, historyLimitInstant);
+    }
+    
+    @Test
+    public void test_getLimitedStartOfRange_withHistoryLimitZero() {
+        DateTime currentTime = formatter.parseDateTime("17/08/2021 13:00:00");
+        int historyLimitDays = 0;
+        Instant startOfRange = formatter.parseDateTime("17/01/2021 1:00:00").toInstant();
+        
+        Instant result = ItronRuntimeCalcServiceImpl.getLimitedStartOfRange(startOfRange, historyLimitDays, currentTime);
+        
+        assertEquals("Start of range not used when history limit is 0.", result, startOfRange);
+    }
+    
+    @Test
+    public void test_getLimitedStartOfRange_withHistoryLimitNegative() {
+        DateTime currentTime = formatter.parseDateTime("17/08/2021 13:00:00");
+        int historyLimitDays = -1;
+        Instant startOfRange = formatter.parseDateTime("17/01/2021 1:00:00").toInstant();
+        
+        Instant result = ItronRuntimeCalcServiceImpl.getLimitedStartOfRange(startOfRange, historyLimitDays, currentTime);
+        
+        assertEquals("Start of range not used when history limit is negative.", result, startOfRange);
+    }
+    
+    @Test
+    public void test_getLimitedStartOfRange_withStartOfRangeBeforeHistoryLimit() {
+        DateTime currentTime = formatter.parseDateTime("17/08/2021 13:00:00");
+        int historyLimitDays = 30;
+        Instant startOfRange = formatter.parseDateTime("17/01/2021 1:00:00").toInstant();
+        
+        Instant result = ItronRuntimeCalcServiceImpl.getLimitedStartOfRange(startOfRange, historyLimitDays, currentTime);
+        
+        Instant historyLimitInstant = formatter.parseDateTime("18/07/2021 00:00:00").toInstant();
+        assertEquals("History limit not used when it's after start of range.", result, historyLimitInstant);
+    }
+    
+    @Test
+    public void test_getLimitedStartOfRange_withStartOfRangeAfterHistoryLimit() {
+        DateTime currentTime = formatter.parseDateTime("17/08/2021 13:00:00");
+        int historyLimitDays = 30;
+        Instant startOfRange = formatter.parseDateTime("15/08/2021 1:00:00").toInstant();
+        
+        Instant result = ItronRuntimeCalcServiceImpl.getLimitedStartOfRange(startOfRange, historyLimitDays, currentTime);
+        
+        assertEquals("History limit not used when it's after start of range.", result, startOfRange);
     }
     
     private PointData buildPointData(LitePoint point, DateTime timestamp, Double value) {
