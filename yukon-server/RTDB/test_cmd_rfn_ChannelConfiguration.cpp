@@ -82,9 +82,6 @@ const std::vector<int> allMetrics = [] {
 
         //  200                  210                  220                  230                  240                  250                  260                    270                280                  290
             _,_,_,_,_,_,X,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,X,_,_,_,_,_,_,_, o,o,_,o,o,_,_,_,_,_, o,o,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
-
-        //  300                  310                  320                  330                  340                  350
-            _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,o,_,_,_,_,_,_,_,_, o,o,o,o,o,o,_,_,_,_, o,o,o,o,o,o
     };
 
     std::vector<int> accumulator;
@@ -236,19 +233,6 @@ const std::vector<std::string> allDescriptions {
         "Sum kVA (241)",
         "Time in Seconds (256)",
         "Temperature in Centigrade (257)",
-        "Net Watts (331)",
-        "kVAr (Quadrants 1 3) (340)",
-        "kVAr (Quadrants 2 4) (341)",
-        "kVAr (Quadrants 1 4) (342)",
-        "kVAr (Quadrants 2 3) (343)",
-        "Sum Vars (344)",
-        "Net Vars (345)",
-        "kVA (Quadrants 1 2) (350)",
-        "kVA (Quadrants 3 4) (351)",
-        "kVA (Quadrants 1 3) (352)",
-        "kVA (Quadrants 2 4) (353)",
-        "Sum VA (354)",
-        "Net VA (355)",
         "Watt hour delivered, Rate A (1001)",
         "Watt hour received, Rate A (1002)",
         "Watt hour total/sum, Rate A (1003)",
