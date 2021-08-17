@@ -3,6 +3,8 @@ package com.cannontech.amr.rfn.service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -32,9 +34,15 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
@@ -54,10 +62,11 @@ public class RfnChannelDataConverter {
     @Autowired private PointDao pointDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RfnDataValidator rfnDataValidator;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     
     private ImmutableSet<PaoTypePointIdentifier> calculationContributors;
     private static final Logger log = YukonLogManager.getLogger(RfnChannelDataConverter.class);
-    
+    private LoadingCache <PaoPointIdentifier, LitePoint> cache;
     public List<CalculationData> convert(RfnMeterPlusReadingData reading, List<? super PointData> toArchive, Long dataPointId) {
         
         List<ChannelData> nonDatedChannelData = reading.getRfnMeterReadingData().getChannelDataList();
@@ -151,8 +160,8 @@ public class RfnChannelDataConverter {
         PaoPointIdentifier ppi = pointValueHandler.getPaoPointIdentifier();
         LitePoint point;
         try {
-            point = pointDao.getLitePoint(ppi);
-        } catch (NotFoundException e) {
+            point = cache.get(ppi);
+        } catch (NotFoundException | ExecutionException e) {
             if (log.isDebugEnabled()) {
                 log.debug("Unable to find point for channelData: " + channelData);
             }
@@ -214,6 +223,26 @@ public class RfnChannelDataConverter {
             }
         }
         calculationContributors = b.build();
+        cache = CacheBuilder.newBuilder()
+                            .expireAfterWrite(1, TimeUnit.DAYS)
+                            .build(new CacheLoader<PaoPointIdentifier, LitePoint>() {
+                                   @Override
+                                   public LitePoint load(PaoPointIdentifier ppi) {
+                                       return pointDao.getLitePoint(ppi);
+                                   }
+                            });
+        asyncDynamicDataSource.addDBChangeListener(
+            (DBChangeMsg dbChange) -> {
+                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_POINT_DB && (dbChange.getDbChangeType() == DbChangeType.UPDATE || 
+                        dbChange.getDbChangeType() == DbChangeType.DELETE)) {
+                    // Get PaoPointIdentifier and Remove from cache.
+                    PaoPointIdentifier ppi = pointDao.getPaoPointIdentifier(dbChange.getId());
+                    LitePoint point = cache.getIfPresent(ppi);
+                    if (point != null) {
+                        cache.invalidate(point);
+                    }
+                }
+        });
     }
     
 }
