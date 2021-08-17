@@ -123,22 +123,6 @@
 
                 { "metricId" : 257, "attribute" : "TEMPERATURE_DEVICE" },
                 
-                { "metricId" : 331, "attribute" : "NET_KW" },
-                
-                { "metricId" : 340, "attribute" : "KVAR_Q13" },
-                { "metricId" : 341, "attribute" : "KVAR_Q24" },
-                { "metricId" : 342, "attribute" : "KVAR_Q14" },
-                { "metricId" : 343, "attribute" : "KVAR_Q23" },
-                { "metricId" : 344, "attribute" : "SUM_KVAR" },
-                { "metricId" : 345, "attribute" : "NET_KVAR" },
-                
-                { "metricId" : 350, "attribute" : "KVA_Q12" },
-                { "metricId" : 351, "attribute" : "KVA_Q34" },
-                { "metricId" : 352, "attribute" : "KVA_Q13" },
-                { "metricId" : 353, "attribute" : "KVA_Q24" },
-                { "metricId" : 354, "attribute" : "SUM_KVA" },
-                { "metricId" : 355, "attribute" : "NET_KVA" },
-
                 { "metricId" : 1001, "attributeMagnitude" : 3, "attribute" : "USAGE_RATE_A" },
                 { "metricId" : 1002, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH_RATE_A" },
                 { "metricId" : 1003, "attributeMagnitude" : 3, "attribute" : "SUM_KWH_RATE_A" },
