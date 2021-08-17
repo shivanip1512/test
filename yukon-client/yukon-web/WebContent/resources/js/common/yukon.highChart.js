@@ -41,7 +41,7 @@ yukon.highChart = (function () {
         buildChart : function (chartContainer, jsonResponse, title, chartHeight, chartWidth) {
             var gridLineWidth = 0;
             $.each(jsonResponse.seriesDetails, function(index, item) {
-                if (item.data.length > 0) {
+                if (item && item.data && item.data.length > 0) {
                     gridLineWidth = 1;
                 }
             });
@@ -190,20 +190,22 @@ yukon.highChart = (function () {
                 newLargestTime = data.largestTime;
                 var chartContainer = $('#js-chart-container-' + chartId),
                     chart = chartContainer.highcharts();
-                if (typeof chart.mostRecentPointTime === 'undefined') {
-                    chart.mostRecentPointTime = newLargestTime;
-                }
-                if (chart.mostRecentPointTime > 0 &&
-                    newLargestTime > chart.mostRecentPointTime) {
-                    chart.mostRecentPointTime = newLargestTime;
-                    var parameters = {
-                        containerIdentifier: '#js-chart-container-' + chartId,
-                        title: chart.title.textStr,
-                        height: chart.chartHeight,
-                        width: chart.chartWidth,
-                        chartUrl: dataUrl
-                    };
-                    _buildChart(parameters);
+                if (typeof chart !== 'undefined') {
+                    if (typeof chart.mostRecentPointTime === 'undefined') {
+                        chart.mostRecentPointTime = newLargestTime;
+                    }
+                    if (chart.mostRecentPointTime > 0 &&
+                        newLargestTime > chart.mostRecentPointTime) {
+                        chart.mostRecentPointTime = newLargestTime;
+                        var parameters = {
+                            containerIdentifier: '#js-chart-container-' + chartId,
+                            title: chart.title.textStr,
+                            height: chart.chartHeight,
+                            width: chart.chartWidth,
+                            chartUrl: dataUrl
+                        };
+                        _buildChart(parameters);
+                    }
                 }
             };
         }
