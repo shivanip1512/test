@@ -5320,7 +5320,7 @@
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
@@ -5329,8 +5329,8 @@
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
@@ -5505,7 +5505,7 @@
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
@@ -5514,8 +5514,8 @@
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
@@ -5690,7 +5690,7 @@
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
@@ -5699,8 +5699,8 @@
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
@@ -5875,7 +5875,7 @@
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
@@ -5884,8 +5884,8 @@
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
