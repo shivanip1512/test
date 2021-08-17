@@ -245,4 +245,14 @@ public interface DeviceDao {
      * Returns a list of all the devices ids that have guids
      */
     List<Integer> getDeviceIdsWithGuids();
+
+    /**
+     * Returns a list of a port associated with a Device Address Device Id
+     */
+    List<Integer> getPortForDeviceAddressDeviceId(int DeviceId);
+
+    /**
+     * Returns a list of ports associated with a list of Device Address Device Ids
+     */
+    List<Integer> getPortForDeviceAddressDeviceIds(List<Integer> deviceIDs);
 }

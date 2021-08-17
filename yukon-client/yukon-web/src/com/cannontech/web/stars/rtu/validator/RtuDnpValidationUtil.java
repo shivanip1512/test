@@ -68,21 +68,13 @@ public class RtuDnpValidationUtil extends ValidationUtils {
         }
 
         if (!errors.hasFieldErrors("deviceAddress.masterAddress") && !errors.hasFieldErrors("deviceAddress.slaveAddress")) {
-            List<Integer> devicesWithSameAddress =
-                deviceDao.getDevicesByDeviceAddress(deviceAddress.getMasterAddress(), deviceAddress.getSlaveAddress());
+            List<Integer> devicesWithSameAddress = deviceDao.getDevicesByDeviceAddress(deviceAddress.getMasterAddress(), deviceAddress.getSlaveAddress());
+            Integer portForDevice = deviceDao.getPortForDeviceAddressDeviceId(rtuDnp.getId()).get(0);
+            List<Integer> portsForDevicesWithSameAddress = deviceDao.getPortForDeviceAddressDeviceIds(devicesWithSameAddress);
 
-            if (!devicesWithSameAddress.isEmpty()) {
-            				String deviceName =
-                    		devicesWithSameAddress.stream().findFirst().map(new Function<Integer, String>() {
-                            @Override
-                            public String apply(Integer id) {
-                                return dbCache.getAllPaosMap().get(id).getPaoName();
-                            }
-                        }).get();
-
-                    errors.rejectValue("deviceAddress.masterAddress", basekey + ".masterSlave",
-                        new Object[] { deviceName }, "Master/Slave combination in use");
-                    errors.rejectValue("deviceAddress.slaveAddress", "yukon.common.blank");
+            if (portsForDevicesWithSameAddress.contains(portForDevice)) {
+                errors.rejectValue("deviceAddress.masterAddress", basekey + ".masterSlave");
+                errors.rejectValue("deviceAddress.slaveAddress", "yukon.common.blank");
             }
         }
     }

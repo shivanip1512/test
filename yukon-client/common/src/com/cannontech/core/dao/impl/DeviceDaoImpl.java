@@ -39,6 +39,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.impl.PaoLoader;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.TypeRowMapper;
@@ -467,6 +468,22 @@ public final class DeviceDaoImpl implements DeviceDao {
     public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
         List<Integer> devicesByAddress = cache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
         return devicesByAddress;
+    }
+
+    @Override
+    public List<Integer> getPortForDeviceAddressDeviceId(int DeviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PORTID FROM DeviceDirectCommSettings");
+        sql.append("WHERE DEVICEID").eq(DeviceId);
+        return jdbcTemplate.query(sql, new IntegerRowMapper());
+    }
+
+    @Override
+    public List<Integer> getPortForDeviceAddressDeviceIds(List<Integer> deviceIDs) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PORTID FROM DeviceDirectCommSettings");
+        sql.append("WHERE DEVICEID").in(deviceIDs);
+        return jdbcTemplate.query(sql, new IntegerRowMapper());
     }
 
     @Override
