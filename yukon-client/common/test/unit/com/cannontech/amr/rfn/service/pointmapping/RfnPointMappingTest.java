@@ -772,6 +772,10 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAXE, "kVAh (Quadrants 1 2 4) (Rate B kVAh)");
         missing.put(PaoType.RFN520FAXE, "kVAh (Quadrants 1 2 4) (Rate C kVAh)");
         missing.put(PaoType.RFN520FAXE, "kVAh (Quadrants 1 2 4) (Rate D kVAh)");
+        missing.put(PaoType.RFN520FAXE, "Delivered kVAr");
+        missing.put(PaoType.RFN520FAXE, "Sum kVAr");
+        missing.put(PaoType.RFN520FAXE, "kVA (Quadrants 1 2 4)");
+        missing.put(PaoType.RFN520FAXE, "Sum kVA");
         
         missing.put(PaoType.RFN520FAXED, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN520FAXED, "Peak kVA Lagging");
@@ -838,6 +842,10 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAXED, "kVAh (Quadrants 1 2 4) (Rate B kVAh)");
         missing.put(PaoType.RFN520FAXED, "kVAh (Quadrants 1 2 4) (Rate C kVAh)");
         missing.put(PaoType.RFN520FAXED, "kVAh (Quadrants 1 2 4) (Rate D kVAh)");
+        missing.put(PaoType.RFN520FAXED, "Delivered kVAr");
+        missing.put(PaoType.RFN520FAXED, "Sum kVAr");
+        missing.put(PaoType.RFN520FAXED, "kVA (Quadrants 1 2 4)");
+        missing.put(PaoType.RFN520FAXED, "Sum kVA");
         
         missing.put(PaoType.RFN520FRXE, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN520FRXE, "Power Factor Degrees");
@@ -916,6 +924,10 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530FAXE, "kVAh (Quadrants 1 2 4) (Rate B kVAh)");
         missing.put(PaoType.RFN530FAXE, "kVAh (Quadrants 1 2 4) (Rate C kVAh)");
         missing.put(PaoType.RFN530FAXE, "kVAh (Quadrants 1 2 4) (Rate D kVAh)");
+        missing.put(PaoType.RFN530FAXE, "Delivered kVAr");
+        missing.put(PaoType.RFN530FAXE, "Sum kVAr");
+        missing.put(PaoType.RFN530FAXE, "kVA (Quadrants 1 2 4)");
+        missing.put(PaoType.RFN530FAXE, "Sum kVA");
 
         missing.put(PaoType.RFN530FRXE, "Peak kVA Lagging Frozen");
         missing.put(PaoType.RFN530FRXE, "Power Factor Degrees Phase A");
