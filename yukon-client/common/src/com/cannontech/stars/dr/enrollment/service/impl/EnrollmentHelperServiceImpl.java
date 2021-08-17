@@ -322,7 +322,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                 if (loadGroupPaoType == PaoType.LM_GROUP_EATON_CLOUD) {
                     relayFromGroup = eatonCloudDao.getVirtualRelayId(loadGroup.getLoadGroupId());
                 }
-                // if no relay was provided, set it to the relay specified in the Itron or Eaton Cloud group aaa
+                // if no relay was provided, set it to the relay specified in the Itron or Eaton Cloud group
                 if (enrollmentRelay == 0) {
                     enrollment.setRelay(relayFromGroup);
                     return;
