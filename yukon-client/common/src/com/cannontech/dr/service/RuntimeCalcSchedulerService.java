@@ -156,7 +156,7 @@ public abstract class RuntimeCalcSchedulerService {
             log.info("{} Calculating runtime/shedtime for {} devices", this.getClass().getSimpleName(), devices.size());
             
             // Limit the range of data calculated, if there is a large gap. Default limit = 30 days.
-            int historyLimitDays = configurationSource.getInteger(MasterConfigInteger.RUNTIME_CALC_RANGE_LIMIT_DAYS, 90);
+            int historyLimitDays = configurationSource.getInteger(MasterConfigInteger.RUNTIME_CALC_RANGE_LIMIT_DAYS, 30);
             if (historyLimitDays > 0) {
                 log.info("Calculation limited to past {} days.", historyLimitDays);
             }
@@ -240,18 +240,8 @@ public abstract class RuntimeCalcSchedulerService {
                 .orElse(null);
 
         // Limit the range of data calculated. Default: 30 days back.
-        // If the latest initialized timestamp is older, ignore it, and limit the range to e.g. 30 days.
-        if (historyLimitDays > 0) {
-            Instant limitStartOfRange = 
-                    DateTime.now()
-                            .minus(Duration.standardDays(historyLimitDays))
-                            .withTimeAtStartOfDay()
-                            .toInstant();
-            
-            if (limitStartOfRange.isAfter(startOfRange)) {
-                startOfRange = limitStartOfRange;
-            }
-        }
+        // So if the latest initialized timestamp is older, ignore it, and limit the range to e.g. 30 days.
+        startOfRange = getLimitedStartOfRange(startOfRange, historyLimitDays, DateTime.now());
         
         var logRange = Range.inclusive(startOfRange, endOfRange);
 
@@ -267,6 +257,28 @@ public abstract class RuntimeCalcSchedulerService {
         calculateRelayDataLogs(device, dataLogIdLookup, relayStatusIdLookup, logRange, relayStatusData);
     }
 
+    /**
+     * Given a "default" start of range for runtime calculation and a limit of days to look back, determine the correct
+     * start of the calculation range for the specified current time.
+     * @param startOfRange The default start Instant for runtime calcualtion
+     * @param historyLimitDays The maximum number of days to go back and calculate
+     * @param currentTime The time of calculation.
+     * @return A start of range Instant value that falls within the history limit days, if specified.
+     */
+    public static Instant getLimitedStartOfRange(Instant startOfRange, int historyLimitDays, DateTime currentTime) {
+        if (historyLimitDays > 0) {
+            Instant limitStartOfRange = 
+                    currentTime.minus(Duration.standardDays(historyLimitDays))
+                               .withTimeAtStartOfDay()
+                               .toInstant();
+            
+            if (startOfRange == null || limitStartOfRange.isAfter(startOfRange)) {
+                return limitStartOfRange;
+            }
+        }
+        return startOfRange;
+    }
+    
     /**
      * Calculates runtime and shedtime for an individual relay.
      * 
