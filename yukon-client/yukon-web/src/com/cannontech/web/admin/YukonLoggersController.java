@@ -32,6 +32,7 @@ import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.log.model.LoggerLevel;
+import com.cannontech.common.log.model.LoggerType;
 import com.cannontech.common.log.model.SystemLogger;
 import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.model.DefaultSort;
@@ -157,7 +158,7 @@ public class YukonLoggersController {
 
     private ResponseEntity<? extends Object> save(YukonLogger logger, Boolean specifiedDateTime,
             HttpServletRequest request, YukonUserContext userContext) {
-        
+        logger.setLoggerType(SystemLogger.isSystemLogger(logger.getLoggerName()) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER);
         if (logger.getLoggerId() == -1) {
             String url = apiControllerHelper.findWebServerUrl(request, userContext, ApiURL.loggerUrl);
             return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
