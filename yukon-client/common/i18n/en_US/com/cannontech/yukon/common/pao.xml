@@ -122,8 +122,14 @@
     <entry key="yukon.common.pao.RFN520FRX">RFN-520fRX</entry>
     <entry key="yukon.common.pao.RFN520FAXD">RFN-520fAXD</entry>
     <entry key="yukon.common.pao.RFN520FRXD">RFN-520fRXD</entry>
+    <entry key="yukon.common.pao.RFN520FAXE">RFN-520fAXe</entry>
+    <entry key="yukon.common.pao.RFN520FRXE">RFN-520fRXe</entry>
+    <entry key="yukon.common.pao.RFN520FAXED">RFN-520fAXeD</entry>
+    <entry key="yukon.common.pao.RFN520FRXED">RFN-520fRXeD</entry>
     <entry key="yukon.common.pao.RFN530FAX">RFN-530fAX</entry>
     <entry key="yukon.common.pao.RFN530FRX">RFN-530fRX</entry>
+    <entry key="yukon.common.pao.RFN530FAXE">RFN-530fAXe</entry>
+    <entry key="yukon.common.pao.RFN530FRXE">RFN-530fRXe</entry>
     
     <entry key="yukon.common.pao.RFN530S4X">RFN-530S4x</entry>
     <entry key="yukon.common.pao.RFN530S4EAX">RFN-530S4eAX</entry>

@@ -108,32 +108,29 @@
         </tags:boxContainer>
     </c:if>
     <c:if test="${container eq 'section'}">
-        <c:set var="widgetRenderContent">
-            <%  try { %>
-                <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
-            <%  } catch (Exception e) { %>
-                <cti:msg2 key="widgets.errorWithinWidget"/>
-            <%  } %>
-        </c:set>
+    	<div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
+             <c:choose>
+                 <c:when test="${!authorized}">
+                     <cti:msg2 key="widgets.notAuthorized"/>
+                 </c:when>
+                 <c:when test="${beanInst.lazyLoad}">
+                     <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
+                 </c:when>
+                 <c:otherwise>
+		            <%  try { %>
+		                <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+		            <%  } catch (Exception e) { %>
+		                <cti:msg2 key="widgets.errorWithinWidget"/>
+		            <%  } %>
+            	</c:otherwise>  
+             </c:choose>
+         </div>
         <tags:sectionContainer title="${containerTitle}" 
                 id="widget-titled-container-${widgetParameters.widgetId}" 
                 styleClass="widget-container ${classes}" 
                 helpText="${pageScope.helpText}"
                 helpUrl="${pageScope.helpUrl}"
                 showHelpIcon="${pageScope.showHelpIcon}">
-            <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
-                <c:choose>
-                    <c:when test="${!authorized}">
-                        <cti:msg2 key="widgets.notAuthorized"/>
-                    </c:when>
-                    <c:when test="${beanInst.lazyLoad}">
-                        <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
-                    </c:when>
-                    <c:otherwise>
-                       ${widgetRenderContent}
-                    </c:otherwise>  
-                </c:choose>
-            </div>
         </tags:sectionContainer>
     </c:if>
 </div>

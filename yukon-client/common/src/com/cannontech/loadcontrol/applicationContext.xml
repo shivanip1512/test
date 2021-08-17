@@ -153,6 +153,7 @@
     <bean class="com.cannontech.dr.nest.dao.impl.NestDaoImpl"/>
 
     <bean class="com.cannontech.dr.eatonCloud.service.impl.v1.EatonCloudCommunicationServiceImplV1"/>
+    <bean class="com.cannontech.dr.eatonCloud.dao.impl.EatonCloudDaoImpl"/>
     
     <bean class="com.cannontech.dr.itron.dao.impl.ItronDaoImpl"/>
 

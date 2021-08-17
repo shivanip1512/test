@@ -15,9 +15,13 @@ extern ULONG _LM_DEBUG;
 DEFINE_COLLECTABLE( LMGroupEatonCloud, LMGROUPEATONCLOUD_ID )
 
 LMGroupEatonCloud::LMGroupEatonCloud( Cti::RowReader &rdr )
-    :   SmartGroupBase( "EatonCloud", rdr )
+    :   SmartGroupBase( "EatonCloud", rdr ),
+        _vRelayID{ 0 }
 {
-    // empty
+    if ( rdr[ "RelayUsage" ].isNotNull() )
+    {
+        _vRelayID = std::clamp( rdr[ "RelayUsage" ].as<unsigned>(), 0u, 255u );
+    }
 }
 
 CtiLMGroupBase* LMGroupEatonCloud::replicate() const
@@ -50,7 +54,8 @@ bool LMGroupEatonCloud::sendStopControl( bool stopImmediately )
                     stopTime,
                     stopImmediately
                         ? LMEatonCloudStopRequest::StopType::Restore
-                        : LMEatonCloudStopRequest::StopType::StopCycle
+                        : LMEatonCloudStopRequest::StopType::StopCycle,
+                    _vRelayID
                 } );
 
         if ( serializedMessage.empty() )
@@ -103,7 +108,8 @@ bool LMGroupEatonCloud::sendShedControl( long controlMinutes )
                 LMEatonCloudCycleRequest::RampingState::Off,
                 100,
                 controlSeconds,
-                100
+                100,
+                _vRelayID
             } );
 
     if ( serializedMessage.empty() )
@@ -170,7 +176,8 @@ bool LMGroupEatonCloud::sendCycleControl( CycleControlParameters parameters )
                     : LMEatonCloudCycleRequest::RampingState::Off,
                 parameters.dutyCyclePercent,
                 parameters.dutyCyclePeriod,
-                parameters.criticality
+                parameters.criticality,
+                _vRelayID
             } );
 
     if ( serializedMessage.empty() )

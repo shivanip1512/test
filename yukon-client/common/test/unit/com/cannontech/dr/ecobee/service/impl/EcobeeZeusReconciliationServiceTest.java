@@ -22,7 +22,6 @@ import com.cannontech.dr.ecobee.model.EcobeeZeusGroupDeviceMapping;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
-import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 
 public class EcobeeZeusReconciliationServiceTest {
     List<EcobeeZeusDiscrepancy> errorsList = new ArrayList<EcobeeZeusDiscrepancy>();
@@ -178,15 +177,33 @@ public class EcobeeZeusReconciliationServiceTest {
         ecobeeGroupDeviceMapping.add(mapping1);
 
         EcobeeZeusGroupDao ecobeeZeusGroupDao = createNiceMock(EcobeeZeusGroupDao.class);
+        LmHardwareBaseDao lmHardwareBaseDao = createNiceMock(LmHardwareBaseDao.class);
 
         ecobeeZeusGroupDao.getInventoryIdsForZeusGroupID("G1");
         expectLastCall().andAnswer(() -> {
             List<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3));
             return numbers;
         }).anyTimes();
+        
+        lmHardwareBaseDao.getSerialNumberForInventoryId(1);
+        expectLastCall().andAnswer(() -> {
+            return "1";
+        }).anyTimes();
+
+        lmHardwareBaseDao.getSerialNumberForInventoryId(2);
+        expectLastCall().andAnswer(() -> {
+            return "2";
+        }).anyTimes();
+
+        lmHardwareBaseDao.getSerialNumberForInventoryId(3);
+        expectLastCall().andAnswer(() -> {
+            return "3";
+        }).anyTimes();
 
         replay(ecobeeZeusGroupDao);
+        replay(lmHardwareBaseDao);
         ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "ecobeeZeusGroupDao", ecobeeZeusGroupDao);
+        ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "lmHardwareBaseDao", lmHardwareBaseDao);
 
         ReflectionTestUtils.invokeMethod(ecobeeZeusReconciliationService, "checkForMisLocatedDevices", ecobeeGroupDeviceMapping,
                 errorsList);
@@ -208,6 +225,7 @@ public class EcobeeZeusReconciliationServiceTest {
         ecobeeGroupDeviceMapping.add(mapping1);
 
         EcobeeZeusGroupDao ecobeeZeusGroupDao = createNiceMock(EcobeeZeusGroupDao.class);
+        LmHardwareBaseDao lmHardwareBaseDao = createNiceMock(LmHardwareBaseDao.class);
 
         ecobeeZeusGroupDao.getInventoryIdsForZeusGroupID("G1");
         expectLastCall().andAnswer(() -> {
@@ -215,8 +233,26 @@ public class EcobeeZeusReconciliationServiceTest {
             return numbers;
         }).anyTimes();
 
+        lmHardwareBaseDao.getSerialNumberForInventoryId(1);
+        expectLastCall().andAnswer(() -> {
+            return "1";
+        }).anyTimes();
+
+        lmHardwareBaseDao.getSerialNumberForInventoryId(2);
+        expectLastCall().andAnswer(() -> {
+            return "2";
+        }).anyTimes();
+
+        lmHardwareBaseDao.getSerialNumberForInventoryId(3);
+        expectLastCall().andAnswer(() -> {
+            return "3";
+        }).anyTimes();
+        
         replay(ecobeeZeusGroupDao);
+        replay(lmHardwareBaseDao);
+
         ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "ecobeeZeusGroupDao", ecobeeZeusGroupDao);
+        ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "lmHardwareBaseDao", lmHardwareBaseDao);
 
         ReflectionTestUtils.invokeMethod(ecobeeZeusReconciliationService, "checkForMisLocatedDevices", ecobeeGroupDeviceMapping,
                 errorsList);
@@ -252,8 +288,8 @@ public class EcobeeZeusReconciliationServiceTest {
 
         ecobeeZeusGroupDao.getInventoryIdsForZeusGroupID("G1");
         expectLastCall().andAnswer(() -> {
-            List<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
-            return numbers;
+            List<Integer> inventoryIds = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+            return inventoryIds;
         }).anyTimes();
 
         ecobeeZeusGroupDao.getProgramIdForZeusGroup("G1");
@@ -261,18 +297,29 @@ public class EcobeeZeusReconciliationServiceTest {
             return 111;
         }).anyTimes();
 
-        lmHardwareBaseDao.getBySerialNumber("4");
+        lmHardwareBaseDao.getSerialNumberForInventoryId(1);
         expectLastCall().andAnswer(() -> {
-            LMHardwareBase base = new LMHardwareBase();
-            base.setInventoryId(4);
-            return base;
+            return "1";
         }).anyTimes();
 
-        lmHardwareBaseDao.getBySerialNumber("5");
+        lmHardwareBaseDao.getSerialNumberForInventoryId(2);
         expectLastCall().andAnswer(() -> {
-            LMHardwareBase base = new LMHardwareBase();
-            base.setInventoryId(5);
-            return base;
+            return "2";
+        }).anyTimes();
+
+        lmHardwareBaseDao.getSerialNumberForInventoryId(3);
+        expectLastCall().andAnswer(() -> {
+            return "3";
+        }).anyTimes();
+
+        lmHardwareBaseDao.getSerialNumberForInventoryId(4);
+        expectLastCall().andAnswer(() -> {
+            return "4";
+        }).anyTimes();
+
+        lmHardwareBaseDao.getSerialNumberForInventoryId(5);
+        expectLastCall().andAnswer(() -> {
+            return "5";
         }).anyTimes();
 
         ecobeeZeusGroupDao.getLmGroupForInventory(4, 111);
@@ -307,7 +354,9 @@ public class EcobeeZeusReconciliationServiceTest {
             assertTrue(error.getErrorType() == EcobeeZeusDiscrepancyType.MISLOCATED_DEVICE, "Type should be MISLOCATED_DEVICE");
             assertTrue(error.getSerialNumber().equals("4") || error.getSerialNumber().equals("5"),
                     "Mislocated devices should be 4 or 5");
-            assertTrue(error.getCurrentPath().equals("G1"), "Current Group should be G1");
+            // As Yukon has 2 extra devices, Yukon must enroll the devices to correct path.Current path is required in case of
+            // unenrollment.
+            assertTrue(StringUtils.isEmpty(error.getCurrentPath()), "Current Group should be empty");
             assertTrue(error.getCorrectPath().equals("YG4") || error.getCorrectPath().equals("YG5"),
                     "Current Group should be YG4 or YG5");
         });
