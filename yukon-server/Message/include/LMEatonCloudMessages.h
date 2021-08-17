@@ -17,11 +17,13 @@ struct IM_EX_MSG LMEatonCloudStopRequest
 
     LMEatonCloudStopRequest( int      groupId,
                              CtiTime  stopTime,
-                             StopType stopType );
+                             StopType stopType,
+                             unsigned relayId );
 
     int      _groupId;
     CtiTime  _stopTime;
     StopType _stopType;
+    unsigned _relayId;
 };
 
 struct IM_EX_MSG LMEatonCloudCycleRequest
@@ -47,7 +49,8 @@ struct IM_EX_MSG LMEatonCloudCycleRequest
                               RampingState rampOut,
                               long         dutyCyclePercent,
                               long         dutyCyclePeriod,
-                              long         criticality );
+                              long         criticality,
+                              unsigned     relayId );
 
     int          _groupId;
     CtiTime      _startTime,
@@ -58,6 +61,7 @@ struct IM_EX_MSG LMEatonCloudCycleRequest
     long         _dutyCyclePercent,
                  _dutyCyclePeriod,
                  _criticality;
+    unsigned     _relayId;
 };
 
 }

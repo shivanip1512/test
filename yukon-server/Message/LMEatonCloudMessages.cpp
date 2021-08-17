@@ -8,10 +8,12 @@ namespace Cti::Messaging::LoadManagement
 
 LMEatonCloudStopRequest::LMEatonCloudStopRequest( int      groupId,
                                                   CtiTime  stopTime,
-                                                  StopType stopType )
+                                                  StopType stopType,
+                                                  unsigned relayId )
     :   _groupId( groupId ),
         _stopTime( stopTime ),
-        _stopType( stopType )
+        _stopType( stopType ),
+        _relayId( relayId )
 {
     // empty
 }
@@ -24,7 +26,8 @@ LMEatonCloudCycleRequest::LMEatonCloudCycleRequest( int          groupId,
                                                     RampingState rampOut,
                                                     long         dutyCyclePercent,
                                                     long         dutyCyclePeriod,
-                                                    long         criticality )
+                                                    long         criticality,
+                                                    unsigned     relayId )
     :   _groupId( groupId ),
         _startTime( startTime ),
         _stopTime( stopTime ),
@@ -33,7 +36,8 @@ LMEatonCloudCycleRequest::LMEatonCloudCycleRequest( int          groupId,
         _rampOut( rampOut ),
         _dutyCyclePercent( dutyCyclePercent ),
         _dutyCyclePeriod( dutyCyclePeriod ),
-        _criticality( criticality )
+        _criticality( criticality ),
+        _relayId( relayId )
 {
     // empty
 }

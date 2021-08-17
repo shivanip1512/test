@@ -59,7 +59,7 @@ class LMEatonCloudScheduledCycleCommand : public virtual ::apache::thrift::TBase
 
   LMEatonCloudScheduledCycleCommand(const LMEatonCloudScheduledCycleCommand&);
   LMEatonCloudScheduledCycleCommand& operator=(const LMEatonCloudScheduledCycleCommand&);
-  LMEatonCloudScheduledCycleCommand() : _groupId(0), _controlStartDateTime(0), _controlEndDateTime(0), _isRampIn(0), _isRampOut(0), _cyclingOption((LMEatonCloudCycleType::type)0), _dutyCyclePercentage(0), _dutyCyclePeriod(0), _criticality(0) {
+  LMEatonCloudScheduledCycleCommand() : _groupId(0), _controlStartDateTime(0), _controlEndDateTime(0), _isRampIn(0), _isRampOut(0), _cyclingOption((LMEatonCloudCycleType::type)0), _dutyCyclePercentage(0), _dutyCyclePeriod(0), _criticality(0), _vRelayId(0) {
   }
 
   virtual ~LMEatonCloudScheduledCycleCommand() noexcept;
@@ -72,6 +72,7 @@ class LMEatonCloudScheduledCycleCommand : public virtual ::apache::thrift::TBase
   int32_t _dutyCyclePercentage;
   int32_t _dutyCyclePeriod;
   int32_t _criticality;
+  int32_t _vRelayId;
 
   void __set__groupId(const int32_t val);
 
@@ -90,6 +91,8 @@ class LMEatonCloudScheduledCycleCommand : public virtual ::apache::thrift::TBase
   void __set__dutyCyclePeriod(const int32_t val);
 
   void __set__criticality(const int32_t val);
+
+  void __set__vRelayId(const int32_t val);
 
   bool operator == (const LMEatonCloudScheduledCycleCommand & rhs) const
   {
@@ -110,6 +113,8 @@ class LMEatonCloudScheduledCycleCommand : public virtual ::apache::thrift::TBase
     if (!(_dutyCyclePeriod == rhs._dutyCyclePeriod))
       return false;
     if (!(_criticality == rhs._criticality))
+      return false;
+    if (!(_vRelayId == rhs._vRelayId))
       return false;
     return true;
   }
@@ -135,19 +140,22 @@ class LMEatonCloudStopCommand : public virtual ::apache::thrift::TBase {
 
   LMEatonCloudStopCommand(const LMEatonCloudStopCommand&);
   LMEatonCloudStopCommand& operator=(const LMEatonCloudStopCommand&);
-  LMEatonCloudStopCommand() : _groupId(0), _restoreTime(0), _stopType((LMEatonCloudStopType::type)0) {
+  LMEatonCloudStopCommand() : _groupId(0), _restoreTime(0), _stopType((LMEatonCloudStopType::type)0), _vRelayId(0) {
   }
 
   virtual ~LMEatonCloudStopCommand() noexcept;
   int32_t _groupId;
    ::Cti::Messaging::Serialization::Thrift::Timestamp _restoreTime;
   LMEatonCloudStopType::type _stopType;
+  int32_t _vRelayId;
 
   void __set__groupId(const int32_t val);
 
   void __set__restoreTime(const  ::Cti::Messaging::Serialization::Thrift::Timestamp val);
 
   void __set__stopType(const LMEatonCloudStopType::type val);
+
+  void __set__vRelayId(const int32_t val);
 
   bool operator == (const LMEatonCloudStopCommand & rhs) const
   {
@@ -156,6 +164,8 @@ class LMEatonCloudStopCommand : public virtual ::apache::thrift::TBase {
     if (!(_restoreTime == rhs._restoreTime))
       return false;
     if (!(_stopType == rhs._stopType))
+      return false;
+    if (!(_vRelayId == rhs._vRelayId))
       return false;
     return true;
   }

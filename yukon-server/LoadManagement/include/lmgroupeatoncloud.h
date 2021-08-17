@@ -26,6 +26,10 @@ public:
     bool doesStopRequireCommandAt( const CtiTime & currentTime ) const override;
 
     std::size_t getFixedSize() const override   { return sizeof( *this ); }
+
+private:
+
+    unsigned _vRelayID;
 };
 
 typedef boost::shared_ptr<LMGroupEatonCloud> LMGroupEatonCloudPtr;
