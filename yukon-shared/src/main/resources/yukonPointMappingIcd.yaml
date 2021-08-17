@@ -1020,8 +1020,8 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q3 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q3                                                   ], Models: *____-____-650, Mapped: false }
     - Q4 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q4                                                   ], Models: *____-____-650, Mapped: false }
     - VARhours Leading (Q1 + Q3):                 { Unit: *Varh,  Modifiers: [ *Q1, *Q3                                              ], Models: *____-RDTR-___ }
-    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q2                                              ], Models: *____-____-650, Mapped: false }
-    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q3, *Q4                                              ], Models: *____-____-650, Mapped: false }
+    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q4                                              ], Models: *____-____-650, Mapped: false }
+    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q2, *Q3                                              ], Models: *____-____-650, Mapped: false }
     - Total VAhours:                              { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4                                    ], Models: *____-RDTR-650 }
     - Q1 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q1                                                   ], Models: *____-____-650, Mapped: false }
     - Q2 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q2                                                   ], Models: *____-____-650, Mapped: false }
@@ -1121,8 +1121,8 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q2, *RateA                                           ], Models: *____-____-650, Mapped: false }
     - Q3 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q3, *RateA                                           ], Models: *____-____-650, Mapped: false }
     - Q4 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q4, *RateA                                           ], Models: *____-____-650, Mapped: false }
-    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *RateA                                      ], Models: *____-____-650 }
-    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q3, *Q4, *RateA                                      ], Models: *____-____-650 }
+    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q4, *RateA                                      ], Models: *____-____-650 }
+    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q2, *Q3, *RateA                                      ], Models: *____-____-650 }
     - Total VAhours:                              { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA                            ], Models: *____-R_TR-650 }
     - Q1 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q1, *RateA                                           ], Models: *____-____-650, Mapped: false }
     - Q2 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q2, *RateA                                           ], Models: *____-____-650, Mapped: false }
@@ -1218,8 +1218,8 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q2, *RateB                                           ], Models: *____-____-650, Mapped: false }
     - Q3 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q3, *RateB                                           ], Models: *____-____-650, Mapped: false }
     - Q4 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q4, *RateB                                           ], Models: *____-____-650, Mapped: false }
-    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *RateB                                      ], Models: *____-____-650 }
-    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q3, *Q4, *RateB                                      ], Models: *____-____-650 }
+    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q4, *RateB                                      ], Models: *____-____-650 }
+    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q2, *Q3, *RateB                                      ], Models: *____-____-650 }
     - Total VAhours:                              { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB                            ], Models: *____-R_TR-650 }
     - Q1 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q1, *RateB                                           ], Models: *____-____-650, Mapped: false }
     - Q2 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q2, *RateB                                           ], Models: *____-____-650, Mapped: false }
@@ -1315,8 +1315,8 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q2, *RateC                                           ], Models: *____-____-650, Mapped: false }
     - Q3 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q3, *RateC                                           ], Models: *____-____-650, Mapped: false }
     - Q4 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q4, *RateC                                           ], Models: *____-____-650, Mapped: false }
-    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *RateC                                      ], Models: *____-____-650 }
-    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q3, *Q4, *RateC                                      ], Models: *____-____-650 }
+    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q4, *RateC                                      ], Models: *____-____-650 }
+    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q2, *Q3, *RateC                                      ], Models: *____-____-650 }
     - Total VAhours:                              { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC                            ], Models: *____-R_TR-650 }
     - Q1 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q1, *RateC                                           ], Models: *____-____-650, Mapped: false }
     - Q2 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q2, *RateC                                           ], Models: *____-____-650, Mapped: false }
@@ -1412,8 +1412,8 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q2, *RateD                                           ], Models: *____-____-650, Mapped: false }
     - Q3 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q3, *RateD                                           ], Models: *____-____-650, Mapped: false }
     - Q4 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q4, *RateD                                           ], Models: *____-____-650, Mapped: false }
-    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *RateD                                      ], Models: *____-____-650 }
-    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q3, *Q4, *RateD                                      ], Models: *____-____-650 }
+    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q4, *RateD                                      ], Models: *____-____-650 }
+    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q2, *Q3, *RateD                                      ], Models: *____-____-650 }
     - Total VAhours:                              { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD                            ], Models: *____-R_TR-650 }
     - Q1 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q1, *RateD                                           ], Models: *____-____-650, Mapped: false }
     - Q2 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q2, *RateD                                           ], Models: *____-____-650, Mapped: false }
