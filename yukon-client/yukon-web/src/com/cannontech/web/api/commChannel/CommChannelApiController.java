@@ -84,7 +84,7 @@ public class CommChannelApiController {
         return new ResponseEntity<>(listOfPorts, HttpStatus.OK);
     }
 
-    //Get devices assigned to port
+    //Get devices assigned to port along with sorting and paging parameters
     @GetMapping("/{portId}/devicesAssigned")
     public ResponseEntity<Object> retrieveAllDevicesForPort(@PathVariable int portId,
                                                             @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,

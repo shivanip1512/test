@@ -14,7 +14,7 @@ public interface PortDao {
     public Integer findUniquePortTerminalServer(String ipAddress, Integer port);
 
     /**
-     * Retrieves list of all devices using portId. Returns empty list when no devices found.
+     * Retrieves object with sorting, paging, direction of sorting and list of all devices using portId. Returns empty list when no devices found.
      */
     public SearchResults<DeviceBaseModel> getDevicesAssignedPort(Integer portId, CommChannelSortBy sortby, PagingParameters paging, Direction direction);
 }

@@ -145,6 +145,7 @@ public class PortServiceImpl implements PortService {
         return portDao.getDevicesAssignedPort(portId, sortBy, paging, direction);
     }
     
+    // enum for sorting commchannels and linked devices
     public enum CommChannelSortBy implements DisplayableEnum {
         name("PAOName"),
         type("type"),

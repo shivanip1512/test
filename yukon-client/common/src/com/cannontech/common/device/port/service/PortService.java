@@ -39,7 +39,7 @@ public interface PortService {
     List<PortBase> getAllPorts();
 
     /**
-     * Retrieves list of all devices using portId. Returns empty list when no devices found.
+     * Retrieves object with sorting, paging, direction of sorting and list of all devices using portId. Returns empty list when no devices found.
      */
     SearchResults<DeviceBaseModel> getDevicesAssignedPort(int portId, CommChannelSortBy sortBy, PagingParameters paging, Direction direction);
 
