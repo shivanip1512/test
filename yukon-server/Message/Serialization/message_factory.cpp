@@ -411,6 +411,7 @@ try
 
     request.__set__groupId      (  m._groupId                       );
     request.__set__restoreTime  (  m._stopTime.seconds()            );
+    request.__set__vRelayId     (  m._relayId                       );
 
     if ( auto result = mapFind( stopTranslator, m._stopType ) )
     {
@@ -452,6 +453,7 @@ try
     request.__set__dutyCyclePercentage  (  m._dutyCyclePercent      );
     request.__set__dutyCyclePeriod      (  m._dutyCyclePeriod       );
     request.__set__criticality          (  m._criticality           );
+    request.__set__vRelayId             (  m._relayId               );
 
     if ( auto result = mapFind( cycleTranslator, m._cycleType ) )
     {

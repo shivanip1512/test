@@ -113,6 +113,10 @@ void LMEatonCloudScheduledCycleCommand::__set__dutyCyclePeriod(const int32_t val
 void LMEatonCloudScheduledCycleCommand::__set__criticality(const int32_t val) {
   this->_criticality = val;
 }
+
+void LMEatonCloudScheduledCycleCommand::__set__vRelayId(const int32_t val) {
+  this->_vRelayId = val;
+}
 std::ostream& operator<<(std::ostream& out, const LMEatonCloudScheduledCycleCommand& obj)
 {
   obj.printTo(out);
@@ -141,6 +145,7 @@ uint32_t LMEatonCloudScheduledCycleCommand::read(::apache::thrift::protocol::TPr
   bool isset__dutyCyclePercentage = false;
   bool isset__dutyCyclePeriod = false;
   bool isset__criticality = false;
+  bool isset__vRelayId = false;
 
   while (true)
   {
@@ -224,6 +229,14 @@ uint32_t LMEatonCloudScheduledCycleCommand::read(::apache::thrift::protocol::TPr
           xfer += iprot->skip(ftype);
         }
         break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->_vRelayId);
+          isset__vRelayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -250,6 +263,8 @@ uint32_t LMEatonCloudScheduledCycleCommand::read(::apache::thrift::protocol::TPr
   if (!isset__dutyCyclePeriod)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__criticality)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset__vRelayId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -295,6 +310,10 @@ uint32_t LMEatonCloudScheduledCycleCommand::write(::apache::thrift::protocol::TP
   xfer += oprot->writeI32(this->_criticality);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("_vRelayId", ::apache::thrift::protocol::T_I32, 10);
+  xfer += oprot->writeI32(this->_vRelayId);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -311,6 +330,7 @@ void swap(LMEatonCloudScheduledCycleCommand &a, LMEatonCloudScheduledCycleComman
   swap(a._dutyCyclePercentage, b._dutyCyclePercentage);
   swap(a._dutyCyclePeriod, b._dutyCyclePeriod);
   swap(a._criticality, b._criticality);
+  swap(a._vRelayId, b._vRelayId);
 }
 
 LMEatonCloudScheduledCycleCommand::LMEatonCloudScheduledCycleCommand(const LMEatonCloudScheduledCycleCommand& other1) {
@@ -323,6 +343,7 @@ LMEatonCloudScheduledCycleCommand::LMEatonCloudScheduledCycleCommand(const LMEat
   _dutyCyclePercentage = other1._dutyCyclePercentage;
   _dutyCyclePeriod = other1._dutyCyclePeriod;
   _criticality = other1._criticality;
+  _vRelayId = other1._vRelayId;
 }
 LMEatonCloudScheduledCycleCommand& LMEatonCloudScheduledCycleCommand::operator=(const LMEatonCloudScheduledCycleCommand& other2) {
   _groupId = other2._groupId;
@@ -334,6 +355,7 @@ LMEatonCloudScheduledCycleCommand& LMEatonCloudScheduledCycleCommand::operator=(
   _dutyCyclePercentage = other2._dutyCyclePercentage;
   _dutyCyclePeriod = other2._dutyCyclePeriod;
   _criticality = other2._criticality;
+  _vRelayId = other2._vRelayId;
   return *this;
 }
 void LMEatonCloudScheduledCycleCommand::printTo(std::ostream& out) const {
@@ -348,6 +370,7 @@ void LMEatonCloudScheduledCycleCommand::printTo(std::ostream& out) const {
   out << ", " << "_dutyCyclePercentage=" << to_string(_dutyCyclePercentage);
   out << ", " << "_dutyCyclePeriod=" << to_string(_dutyCyclePeriod);
   out << ", " << "_criticality=" << to_string(_criticality);
+  out << ", " << "_vRelayId=" << to_string(_vRelayId);
   out << ")";
 }
 
@@ -366,6 +389,10 @@ void LMEatonCloudStopCommand::__set__restoreTime(const  ::Cti::Messaging::Serial
 
 void LMEatonCloudStopCommand::__set__stopType(const LMEatonCloudStopType::type val) {
   this->_stopType = val;
+}
+
+void LMEatonCloudStopCommand::__set__vRelayId(const int32_t val) {
+  this->_vRelayId = val;
 }
 std::ostream& operator<<(std::ostream& out, const LMEatonCloudStopCommand& obj)
 {
@@ -389,6 +416,7 @@ uint32_t LMEatonCloudStopCommand::read(::apache::thrift::protocol::TProtocol* ip
   bool isset__groupId = false;
   bool isset__restoreTime = false;
   bool isset__stopType = false;
+  bool isset__vRelayId = false;
 
   while (true)
   {
@@ -424,6 +452,14 @@ uint32_t LMEatonCloudStopCommand::read(::apache::thrift::protocol::TProtocol* ip
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->_vRelayId);
+          isset__vRelayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -438,6 +474,8 @@ uint32_t LMEatonCloudStopCommand::read(::apache::thrift::protocol::TProtocol* ip
   if (!isset__restoreTime)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__stopType)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset__vRelayId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -459,6 +497,10 @@ uint32_t LMEatonCloudStopCommand::write(::apache::thrift::protocol::TProtocol* o
   xfer += oprot->writeI32((int32_t)this->_stopType);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("_vRelayId", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32(this->_vRelayId);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -469,17 +511,20 @@ void swap(LMEatonCloudStopCommand &a, LMEatonCloudStopCommand &b) {
   swap(a._groupId, b._groupId);
   swap(a._restoreTime, b._restoreTime);
   swap(a._stopType, b._stopType);
+  swap(a._vRelayId, b._vRelayId);
 }
 
 LMEatonCloudStopCommand::LMEatonCloudStopCommand(const LMEatonCloudStopCommand& other4) {
   _groupId = other4._groupId;
   _restoreTime = other4._restoreTime;
   _stopType = other4._stopType;
+  _vRelayId = other4._vRelayId;
 }
 LMEatonCloudStopCommand& LMEatonCloudStopCommand::operator=(const LMEatonCloudStopCommand& other5) {
   _groupId = other5._groupId;
   _restoreTime = other5._restoreTime;
   _stopType = other5._stopType;
+  _vRelayId = other5._vRelayId;
   return *this;
 }
 void LMEatonCloudStopCommand::printTo(std::ostream& out) const {
@@ -488,6 +533,7 @@ void LMEatonCloudStopCommand::printTo(std::ostream& out) const {
   out << "_groupId=" << to_string(_groupId);
   out << ", " << "_restoreTime=" << to_string(_restoreTime);
   out << ", " << "_stopType=" << to_string(_stopType);
+  out << ", " << "_vRelayId=" << to_string(_vRelayId);
   out << ")";
 }
 

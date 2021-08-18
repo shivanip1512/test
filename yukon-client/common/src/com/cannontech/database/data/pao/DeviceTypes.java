@@ -287,4 +287,12 @@ public interface DeviceTypes extends TypeBase
     public final static int LM_GROUP_EATON_CLOUD = DEVICE_OFFSET + 219;
     public final static int LM_EATON_CLOUD_PROGRAM = DEVICE_OFFSET + 220;
     public final static int CRLY856 = DEVICE_OFFSET + 221;
+
+    public final static int RFN520FAXE = DEVICE_OFFSET + 222;
+    public final static int RFN520FRXE = DEVICE_OFFSET + 223;
+    public final static int RFN520FAXED = DEVICE_OFFSET + 224;
+    public final static int RFN520FRXED = DEVICE_OFFSET + 225;
+    
+    public final static int RFN530FAXE = DEVICE_OFFSET + 226;
+    public final static int RFN530FRXE = DEVICE_OFFSET + 227;
 }

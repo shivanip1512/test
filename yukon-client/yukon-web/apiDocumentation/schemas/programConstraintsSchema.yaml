@@ -11,6 +11,7 @@ ProgramConstraint:
     - maxHoursMonthly
     - maxHoursAnnually
     - maxHoursSeasonal
+    - holidayUsage
   type: object
   properties:
     name:

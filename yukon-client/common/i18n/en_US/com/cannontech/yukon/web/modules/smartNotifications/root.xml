@@ -225,11 +225,7 @@ Acknowledgements of receipt for the control message from program {0} targeting d
 
 {6}% - Acknowledgements
 
-{7}% - Unknown
-
- 
-
-Please note the system has begun the resend process for those devices that did not acknowledge the receipt of the initial control attempt. To view updated acknowledgement statistics, please click the following link: {8} to be redirected to the Yukon Event Participation Page. If the acknowledgement percentages do not improve, please take appropriate actions including contacting the Eaton Technical Support team</entry>
+{7}% - Unknown</entry>
       
 </properties>
 

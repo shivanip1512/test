@@ -251,7 +251,8 @@ public class PointMappingIcdController {
             PointSection.of("ELO",                       parsedIcd.elo,                                    modelPointDescriber),
             PointSection.of("Itron Sentinel",            parsedIcd.itronSentinel,                          sentinelPointDescriber),
             PointSection.of("RFN-500 Landis and Gyr S4", parsedIcd.lgyrS4_rfn500,                          modelPointDescriber),
-            PointSection.of("RFN-500 Focus AX+RX",       parsedIcd.lgyrFocusAxRx_rfn500,                   modelPointDescriber),
+            PointSection.of("RFN-500 Focus AX",          parsedIcd.lgyrFocusAx_rfn500,                     modelPointDescriber),
+            PointSection.of("RFN-500 Focus AXe",         parsedIcd.lgyrFocusAxe_rfn500,                    modelPointDescriber),
             PointSection.of("Next Gen Water Node",       parsedIcd.nextGenWaterNode,                       waterNodePointDescriber));
         
         model.addAttribute("points", points);

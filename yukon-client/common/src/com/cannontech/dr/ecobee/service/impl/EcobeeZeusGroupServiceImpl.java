@@ -38,7 +38,8 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
             ecobeeZeusGroupDao.mapGroupIdToZeusGroup(yukonGroupId, zeusGroupId, zeusGroupName, programId);
             mappingSuccess = true;
         } catch (DataAccessException e) {
-            log.error("Error occurred while Inserting a mapping for Yukon group to Zeus group ID", e);
+            log.error("Error occurred while Inserting a mapping for Yukon group: {} to Zeus group ID: {}", yukonGroupId,
+                    zeusGroupId);
         }
         return mappingSuccess;
     }

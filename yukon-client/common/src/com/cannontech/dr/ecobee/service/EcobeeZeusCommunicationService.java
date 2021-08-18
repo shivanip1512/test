@@ -83,4 +83,14 @@ public interface EcobeeZeusCommunicationService {
      * Initiates a eco+ demand response event in Ecobee.
      */
     void sendEcoPlusDR(EcobeePlusDrParameters parameters);
+
+    /**
+     * Enroll the thermostat to a specific Ecobee zeus group.
+     */
+    void addThermostatToGroup(String zeusGroupId, String serialNumber, int inventoryId, boolean updateDeviceMapping);
+
+    /**
+     * Remove the thermostat from a specific Ecobee zeus group.
+     */
+    void removeThermostatFromGroup(String zeusGroupId, String serialNumber, int inventoryId, boolean updateDeviceMapping);
 }
