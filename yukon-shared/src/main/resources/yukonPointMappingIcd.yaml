@@ -1020,8 +1020,8 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q3 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q3                                                   ], Models: *____-____-650, Mapped: false }
     - Q4 VARhours:                                { Unit: *Varh,  Modifiers: [ *Q4                                                   ], Models: *____-____-650, Mapped: false }
     - VARhours Leading (Q1 + Q3):                 { Unit: *Varh,  Modifiers: [ *Q1, *Q3                                              ], Models: *____-RDTR-___ }
-    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q4                                              ], Models: *____-____-650, Mapped: false }
-    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q2, *Q3                                              ], Models: *____-____-650, Mapped: false }
+    - Delivered VAhours:                          { Unit: *VAh,   Modifiers: [ *Q1, *Q4                                              ], Models: *____-____-650 }
+    - Received VAhours:                           { Unit: *VAh,   Modifiers: [ *Q2, *Q3                                              ], Models: *____-____-650 }
     - Total VAhours:                              { Unit: *VAh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4                                    ], Models: *____-RDTR-650 }
     - Q1 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q1                                                   ], Models: *____-____-650, Mapped: false }
     - Q2 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q2                                                   ], Models: *____-____-650, Mapped: false }

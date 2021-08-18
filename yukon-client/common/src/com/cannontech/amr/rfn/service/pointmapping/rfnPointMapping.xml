@@ -5112,7 +5112,7 @@
                 <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-        <point name="Delivered kVAh" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X">
+        <point name="Delivered kVAh" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5121,7 +5121,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Received kVAh" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X">
+        <point name="Received kVAh" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
