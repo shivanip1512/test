@@ -34,11 +34,8 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -62,11 +59,11 @@ public class RfnChannelDataConverter {
     @Autowired private PointDao pointDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RfnDataValidator rfnDataValidator;
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     
     private ImmutableSet<PaoTypePointIdentifier> calculationContributors;
     private static final Logger log = YukonLogManager.getLogger(RfnChannelDataConverter.class);
     private LoadingCache <PaoPointIdentifier, LitePoint> cache;
+
     public List<CalculationData> convert(RfnMeterPlusReadingData reading, List<? super PointData> toArchive, Long dataPointId) {
         
         List<ChannelData> nonDatedChannelData = reading.getRfnMeterReadingData().getChannelDataList();
@@ -224,25 +221,12 @@ public class RfnChannelDataConverter {
         }
         calculationContributors = b.build();
         cache = CacheBuilder.newBuilder()
-                            .expireAfterWrite(1, TimeUnit.DAYS)
+                            .expireAfterWrite(5, TimeUnit.MINUTES)
                             .build(new CacheLoader<PaoPointIdentifier, LitePoint>() {
                                    @Override
                                    public LitePoint load(PaoPointIdentifier ppi) {
                                        return pointDao.getLitePoint(ppi);
                                    }
                             });
-        asyncDynamicDataSource.addDBChangeListener(
-            (DBChangeMsg dbChange) -> {
-                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_POINT_DB && (dbChange.getDbChangeType() == DbChangeType.UPDATE || 
-                        dbChange.getDbChangeType() == DbChangeType.DELETE)) {
-                    // Get PaoPointIdentifier and Remove from cache.
-                    PaoPointIdentifier ppi = pointDao.getPaoPointIdentifier(dbChange.getId());
-                    LitePoint point = cache.getIfPresent(ppi);
-                    if (point != null) {
-                        cache.invalidate(point);
-                    }
-                }
-        });
     }
-    
 }
