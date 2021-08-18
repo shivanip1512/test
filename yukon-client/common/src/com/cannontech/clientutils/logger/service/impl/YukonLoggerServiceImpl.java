@@ -2,6 +2,7 @@ package com.cannontech.clientutils.logger.service.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -36,8 +37,8 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
         int loggerId = yukonLoggerDao.addLogger(logger);
         logger.setLoggerId(loggerId);
         dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.LOGGER, loggerId);
-        systemEventLogService.loggerAdded(logger.getLoggerName(), logger.getLevel().toString(), logger.getExpirationDate(),
-                ApiRequestContext.getContext().getLiteYukonUser());
+        systemEventLogService.loggerAdded(logger.getLoggerName(), logger.getLevel().toString(),
+                DateUtils.addMinutes(logger.getExpirationDate(), 1439), ApiRequestContext.getContext().getLiteYukonUser());
         return logger;
     }
 
@@ -45,8 +46,8 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
     public YukonLogger updateLogger(int loggerId, YukonLogger logger) {
         yukonLoggerDao.updateLogger(loggerId, logger);
         dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.LOGGER, loggerId);
-        systemEventLogService.loggerUpdated(logger.getLoggerName(), logger.getLevel().toString(), logger.getExpirationDate(),
-                ApiRequestContext.getContext().getLiteYukonUser());
+        systemEventLogService.loggerUpdated(logger.getLoggerName(), logger.getLevel().toString(),
+                DateUtils.addMinutes(logger.getExpirationDate(), 1439), ApiRequestContext.getContext().getLiteYukonUser());
         return logger;
     }
 
