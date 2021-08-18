@@ -78,7 +78,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         
         @Override
         public Optional<String> processData(RfnDevice rfnDevice, RfnLcrArchiveRequest request) {
-            
+            incrementProcessedArchiveRequest();
             Instant startTime = new Instant();
             
             // Make sure dispatch message handling isn't blocked up.
@@ -107,7 +107,6 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 Schema schema = ParsingService.getSchema(payload);
                 try {
                     strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings);
-                    incrementProcessedArchiveRequest();
                 } catch (ParseException e) {
                     // Acknowledge the request to prevent NM from sending back that data which can't be parsed.
                     sendAcknowledgement(request);

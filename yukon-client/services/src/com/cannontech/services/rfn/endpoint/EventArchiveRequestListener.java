@@ -42,6 +42,7 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
 
         @Override
         protected Optional<String> processData(RfnDevice device, RfnEventArchiveRequest eventRequest) {
+            incrementProcessedArchiveRequest();
             Optional<String> trackingIds = Optional.empty();
            
             if (device.getPaoIdentifier().getPaoType().isMeter() ||
@@ -55,8 +56,7 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
                 // Save analog value(s) to db
                 asyncDynamicDataSource.putValues(messagesToSend);
                 processedEventRequest.addAndGet(messagesToSend.size());
-    
-                incrementProcessedArchiveRequest();
+ 
                 if (log.isDebugEnabled()) {
                     log.debug(messagesToSend.size() + " PointDatas generated for RfnEventArchiveRequest");
                 }

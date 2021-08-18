@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
@@ -94,7 +95,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
     private ConcurrentHashMultiset<RfnIdentifier> uncreatableDevices = ConcurrentHashMultiset.create();
     private Set<String> templatesToIgnore;
-
+    
     @PostConstruct
     public void init() {
         ImmutableSet.Builder<String> ignoredTemplateBuilder = ImmutableSet.builder();
@@ -456,5 +457,11 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         
         hardware.setDeviceId(device.getPaoIdentifier().getPaoId());
         hardwareSevice.createHardware(hardware, user);
+    }
+   
+    @Override
+    @ManagedAttribute
+    public String getUnknownTemplates() {
+        return unknownTemplatesEncountered.entrySet().toString();
     }
 }

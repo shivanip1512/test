@@ -43,6 +43,7 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
 
         @Override
         protected Optional<String> processData(RfnDevice device, RfnAlarmArchiveRequest archiveRequest) {
+            incrementProcessedArchiveRequest();
             Optional<String> trackingIds = Optional.empty();
             
             // Only process events for meters at this time
@@ -57,7 +58,6 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
                 asyncDynamicDataSource.putValues(messagesToSend);
                 processedAlarmArchiveRequest.addAndGet(messagesToSend.size());
     
-                incrementProcessedArchiveRequest();
                 if (log.isDebugEnabled()) {
                     log.debug(messagesToSend.size() + " PointDatas generated for RfnAlarmArchiveRequest");
                 }

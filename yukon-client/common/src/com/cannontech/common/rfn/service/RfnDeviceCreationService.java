@@ -3,6 +3,7 @@ package com.cannontech.common.rfn.service;
 import java.util.Set;
 
 import org.joda.time.Instant;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -65,4 +66,7 @@ public interface RfnDeviceCreationService {
      * This method is used to create device manually from UI
      */
     RfnDevice create(RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user);
+    
+    @ManagedAttribute
+    public String getUnknownTemplates();
 }
