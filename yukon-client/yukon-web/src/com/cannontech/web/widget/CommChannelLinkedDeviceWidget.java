@@ -40,12 +40,9 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 @Controller @RequestMapping("/commChannelLinkedDeviceWidget/*")
 public class CommChannelLinkedDeviceWidget extends AdvancedWidgetControllerBase {
 
-    @Autowired
-    private ApiControllerHelper helper;
-    @Autowired
-    private ApiRequestHelper apiRequestHelper;
-    @Autowired
-    private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private ApiControllerHelper helper;
+    @Autowired private ApiRequestHelper apiRequestHelper;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @Autowired
     public CommChannelLinkedDeviceWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
