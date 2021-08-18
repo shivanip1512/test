@@ -471,15 +471,19 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
 
     @Override
-    public List<Integer> getPortForDeviceAddressDeviceId(int DeviceId) {
+    public Integer getPortForDeviceId(int DeviceId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PORTID FROM DeviceDirectCommSettings");
         sql.append("WHERE DEVICEID").eq(DeviceId);
-        return jdbcTemplate.query(sql, new IntegerRowMapper());
+        try {
+            return jdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No Port ID was found for device id " + DeviceId, e);
+        }
     }
 
     @Override
-    public List<Integer> getPortForDeviceAddressDeviceIds(List<Integer> deviceIDs) {
+    public List<Integer> getPortsForDeviceIds(List<Integer> deviceIDs) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PORTID FROM DeviceDirectCommSettings");
         sql.append("WHERE DEVICEID").in(deviceIDs);

@@ -69,8 +69,8 @@ public class RtuDnpValidationUtil extends ValidationUtils {
 
         if (!errors.hasFieldErrors("deviceAddress.masterAddress") && !errors.hasFieldErrors("deviceAddress.slaveAddress")) {
             List<Integer> devicesWithSameAddress = deviceDao.getDevicesByDeviceAddress(deviceAddress.getMasterAddress(), deviceAddress.getSlaveAddress());
-            Integer portForDevice = deviceDao.getPortForDeviceAddressDeviceId(rtuDnp.getId()).get(0);
-            List<Integer> portsForDevicesWithSameAddress = deviceDao.getPortForDeviceAddressDeviceIds(devicesWithSameAddress);
+            Integer portForDevice = deviceDao.getPortForDeviceId(rtuDnp.getId());
+            List<Integer> portsForDevicesWithSameAddress = deviceDao.getPortsForDeviceIds(devicesWithSameAddress);
 
             if (portsForDevicesWithSameAddress.contains(portForDevice)) {
                 errors.rejectValue("deviceAddress.masterAddress", basekey + ".masterSlave");

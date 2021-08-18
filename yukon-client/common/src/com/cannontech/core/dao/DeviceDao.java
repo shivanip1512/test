@@ -247,12 +247,12 @@ public interface DeviceDao {
     List<Integer> getDeviceIdsWithGuids();
 
     /**
-     * Returns a list of a port associated with a Device Address Device Id
+     * Returns the port associated with a Device Address Device Id or throws not found exception
      */
-    List<Integer> getPortForDeviceAddressDeviceId(int DeviceId);
+    Integer getPortForDeviceId(int DeviceId) throws NotFoundException;
 
     /**
      * Returns a list of ports associated with a list of Device Address Device Ids
      */
-    List<Integer> getPortForDeviceAddressDeviceIds(List<Integer> deviceIDs);
+    List<Integer> getPortsForDeviceIds(List<Integer> deviceIDs);
 }
