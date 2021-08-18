@@ -52,11 +52,12 @@ const NavigationDrawer = (props) => {
             axios.get('/api/theme')
             .then(themeJson => {
                 if (themeJson) {
-                    //get them image
+                    //get theme image
                     axios.get('/api/theme/image/' + themeJson.data.properties.LOGO)
                     .then(themeImage => {
                         themeJson.data.properties.LOGO_IMAGE = themeImage.data;
                         dispatch(actions.setTheme(themeJson.data));
+                        theme.palette.primary.main = themeJson.data.properties.PRIMARY_COLOR;
                     });
                 }
             });
