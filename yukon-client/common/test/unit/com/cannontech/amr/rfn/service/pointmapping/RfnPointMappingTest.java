@@ -1545,9 +1545,7 @@ public class RfnPointMappingTest {
                 .putAll(PaoType.RFN510FL,
                         "Peak Demand Daily")
                 .putAll(PaoType.RFN530S4X,
-                        "Received kVAh",
-                        "Net kWh",
-                        "Delivered kVAh")
+                        "Net kWh")
                 .build();
     }
 }
