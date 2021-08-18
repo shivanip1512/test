@@ -67,6 +67,7 @@ public class RfnChannelDataConverter {
     private ImmutableSet<PaoTypePointIdentifier> calculationContributors;
     private static final Logger log = YukonLogManager.getLogger(RfnChannelDataConverter.class);
     private LoadingCache <PaoPointIdentifier, LitePoint> cache;
+
     public List<CalculationData> convert(RfnMeterPlusReadingData reading, List<? super PointData> toArchive, Long dataPointId) {
         
         List<ChannelData> nonDatedChannelData = reading.getRfnMeterReadingData().getChannelDataList();
