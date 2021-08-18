@@ -190,7 +190,6 @@ yukon.highChart = (function () {
                 newLargestTime = data.largestTime;
                 var chartContainer = $('#js-chart-container-' + chartId),
                     chart = chartContainer.highcharts();
-                if (typeof chart !== 'undefined') {
                     if (typeof chart.mostRecentPointTime === 'undefined') {
                         chart.mostRecentPointTime = newLargestTime;
                     }
@@ -206,7 +205,6 @@ yukon.highChart = (function () {
                         };
                         _buildChart(parameters);
                     }
-                }
             };
         }
         
