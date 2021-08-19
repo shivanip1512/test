@@ -93,6 +93,7 @@ public class YukonLoggersController {
         if (BooleanUtils.isNotTrue(specifiedDateTime)) {
             logger.setExpirationDate(null);
         }
+        logger.setLoggerType(SystemLogger.isSystemLogger(logger.getLoggerName()) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER );
         yukonLoggersValidator.validate(logger, result);
         
         if (result.hasErrors()) {

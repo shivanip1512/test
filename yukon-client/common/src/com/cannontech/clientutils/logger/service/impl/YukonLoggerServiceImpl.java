@@ -9,6 +9,7 @@ import com.cannontech.clientutils.logger.dao.YukonLoggerDao;
 import com.cannontech.clientutils.logger.service.YukonLoggerService;
 import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.LoggerType;
 import com.cannontech.common.log.model.SystemLogger;
@@ -58,6 +59,9 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
     public int deleteLogger(int loggerId) {
         try {
             String loggerName = getLogger(loggerId).getLoggerName();
+            if(SystemLogger.isSystemLogger(loggerName)) {
+                throw new DeletionFailureException("System logger deletion not supported.");
+            }
             yukonLoggerDao.deleteLogger(loggerId);
             dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.LOGGER, loggerId);
             systemEventLogService.loggerDeleted(loggerName, ApiRequestContext.getContext().getLiteYukonUser());
