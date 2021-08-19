@@ -130,24 +130,24 @@ void ZoneDBLoader::loadBankParameters(const long Id, ZoneManager::ZoneMap &zones
 void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zones)
 {
     static const std::string sql =
-        "SELECT"
-            "P.PointId,"
-            "P.pointname,"
-            "P.POINTTYPE,"
-            "Y.PAObjectID,"
-            "Y.PAOName,"
-            "Y.Type,"
-            "PTZ.ZoneId,"
-            "PTZ.Ignore,"
-            "M.Phase"
+        "SELECT "
+            "P.PointId, "
+            "P.pointname, "
+            "P.POINTTYPE, "
+            "Y.PAObjectID, "
+            "Y.PAOName, "
+            "Y.Type, "
+            "PTZ.ZoneId, "
+            "PTZ.Ignore, "
+            "M.Phase "
 
-        "FROM"
-            "PointToZoneMapping PTZ"
+        "FROM "
+            "PointToZoneMapping PTZ "
                 "JOIN POINT P "
-                    "ON P.PointId = PTZ.PointId"
-                "JOIN YukonPAObject Y"
-                    "ON P.PAObjectID = Y.PAObjectID"
-                "LEFT OUTER JOIN CCMonitorBankList M"
+                    "ON P.PointId = PTZ.PointId "
+                "JOIN YukonPAObject Y "
+                    "ON P.PAObjectID = Y.PAObjectID "
+                "LEFT OUTER JOIN CCMonitorBankList M "
                     "ON PTZ.PointId = M.PointId";
 
     static const std::string sqlID = sql +
