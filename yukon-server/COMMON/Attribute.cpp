@@ -168,11 +168,11 @@ INIT_ATTRIBUTE( PeakkVAFrozenRateB,                                 "PEAK_KVA_FR
 INIT_ATTRIBUTE( PeakkVAFrozenRateC,                                 "PEAK_KVA_FROZEN_RATE_C");
 INIT_ATTRIBUTE( PeakkVAFrozenRateD,                                 "PEAK_KVA_FROZEN_RATE_D");
 INIT_ATTRIBUTE( PeakkVACoincidental,                                "PEAK_KVA_COIN" );
-INIT_ATTRIBUTE( DeliveredPeakkVALagging,                            "DELIVERED_PEAK_KVA_LAGGING" );
-INIT_ATTRIBUTE( PeakkVALaggingRateA,                                "PEAK_KVA_LAGGING_RATE_A" );
-INIT_ATTRIBUTE( PeakkVALaggingRateB,                                "PEAK_KVA_LAGGING_RATE_B" );
-INIT_ATTRIBUTE( PeakkVALaggingRateC,                                "PEAK_KVA_LAGGING_RATE_C" );
-INIT_ATTRIBUTE( PeakkVALaggingRateD,                                "PEAK_KVA_LAGGING_RATE_D" );
+INIT_ATTRIBUTE( PeakkVAQ124,                                        "PEAK_KVA_Q124" );
+INIT_ATTRIBUTE( PeakkVAQ124RateA,                                   "PEAK_KVA_Q124_RATE_A" );
+INIT_ATTRIBUTE( PeakkVAQ124RateB,                                   "PEAK_KVA_Q124_RATE_B" );
+INIT_ATTRIBUTE( PeakkVAQ124RateC,                                   "PEAK_KVA_Q124_RATE_C" );
+INIT_ATTRIBUTE( PeakkVAQ124RateD,                                   "PEAK_KVA_Q124_RATE_D" );
 INIT_ATTRIBUTE( ReceivedPeakkVA,                                    "RECEIVED_PEAK_KVA" );
 INIT_ATTRIBUTE( ReceivedPeakkVARateA,                               "RECEIVED_PEAK_KVA_RATE_A" );
 INIT_ATTRIBUTE( ReceivedPeakkVARateB,                               "RECEIVED_PEAK_KVA_RATE_B" );
