@@ -279,7 +279,7 @@ public class EatonCloudMessageListener {
      * Returns shed parameters
      */
     private Map<String, Object> getShedParams(LMEatonCloudScheduledCycleCommand command, int eventId) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new LinkedHashMap<>();
         long startTimeSeconds = System.currentTimeMillis() / 1000;
         long stopTimeSeconds = 0;
 
@@ -292,24 +292,32 @@ public class EatonCloudMessageListener {
         }
 
         double durationSeconds = stopTimeSeconds - startTimeSeconds;
-        double cycleCount = 1;
+        int cycleCount = 1;
         if (stopTimeSeconds != 0) {
-            cycleCount = Math.ceil(durationSeconds / command.getDutyCyclePeriod());
+            cycleCount = (int) Math.ceil(durationSeconds / command.getDutyCyclePeriod());
         }
-        
-        int intCycle = 6;
-        
-        params.put(CommandParam.START_TIME.getParamName(), startTimeSeconds);
-        params.put(CommandParam.STOP_TIME.getParamName(), stopTimeSeconds);
-        params.put(CommandParam.EVENT_ID.getParamName(), eventId);
+
+        /*
+         * https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=137056391
+         * 
+         *                RampIN - TRUE | RampIN - FALSE
+         * randomization|        1      |        0
+         * 
+         *               RampOUT - TRUE | RampOUT - FALSE
+         * stop flag    |        1      |         0
+         */
+
+        params.put(CommandParam.VRELAY.getParamName(), command.getVirtualRelayId());
         params.put(CommandParam.CYCLE_PERCENT.getParamName(), command.getDutyCyclePercentage());
         params.put(CommandParam.CYCLE_PERIOD.getParamName(), command.getDutyCyclePeriod() / 60);
-        params.put(CommandParam.CYCLE_COUNT.getParamName(), intCycle);
+        params.put(CommandParam.CYCLE_COUNT.getParamName(), cycleCount);
+        params.put(CommandParam.START_TIME.getParamName(), startTimeSeconds);
+        params.put(CommandParam.EVENT_ID.getParamName(), eventId);
         params.put(CommandParam.CRITICALITY.getParamName(), command.getCriticality());
+        params.put(CommandParam.RANDOMIZATION.getParamName(), command.getIsRampIn() ? 1 : 0);
         params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
-        params.put(CommandParam.VRELAY.getParamName(), command.getVirtualRelayId());
-        params.put(CommandParam.RANDOMIZATION.getParamName(), 0);
-        params.put(CommandParam.STOP_FLAGS.getParamName(), 1);
+        params.put(CommandParam.STOP_TIME.getParamName(), stopTimeSeconds);
+        params.put(CommandParam.STOP_FLAGS.getParamName(), command.getIsRampOut() ? 1 : 0);
         return params;
     }
 
@@ -338,11 +346,6 @@ public class EatonCloudMessageListener {
     private Map<String, Object> getRestoreParams(LMEatonCloudStopCommand command, int eventId) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
-//        if (command.getRestoreTime() != null) {
-//            params.put(CommandParam.STOP_TIME.getParamName(), command.getRestoreTime().getMillis() / 1000);
-//        } else {
-//            params.put(CommandParam.STOP_TIME.getParamName(), 0);
-//        }
         params.put(CommandParam.FLAGS.getParamName(), 0);
         return params;
     }
