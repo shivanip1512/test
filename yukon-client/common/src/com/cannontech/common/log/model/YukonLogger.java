@@ -23,13 +23,13 @@ public class YukonLogger {
     public YukonLogger() {
     }
 
-    public YukonLogger(int loggerId, LoggerLevel level, String loggerName, Date expirationDate, String notes) {
+    public YukonLogger(int loggerId, LoggerLevel level, String loggerName, Date expirationDate, String notes, LoggerType loggerType) {
         this.setLoggerId(loggerId);
         this.level = level;
         this.loggerName = loggerName;
         this.expirationDate = expirationDate;
         this.notes = notes;
-        this.loggerType = SystemLogger.isSystemLogger(loggerName) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER;
+        this.loggerType = loggerType;
     }
 
     public int getLoggerId() {
@@ -62,7 +62,6 @@ public class YukonLogger {
 
     public void setLoggerName(String loggerName) {
         this.loggerName = loggerName;
-        setLoggerType(SystemLogger.isSystemLogger(loggerName) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER);
     }
 
     public Date getExpirationDate() {

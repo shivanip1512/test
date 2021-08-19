@@ -10,7 +10,10 @@ import com.cannontech.clientutils.logger.dao.YukonLoggerDao;
 import com.cannontech.clientutils.logger.service.YukonLoggerService;
 import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.log.model.LoggerLevel;
+import com.cannontech.common.log.model.LoggerType;
+import com.cannontech.common.log.model.SystemLogger;
 import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.model.Direction;
 import com.cannontech.core.dao.NotFoundException;
@@ -26,7 +29,9 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
     @Override
     public YukonLogger getLogger(int loggerId) {
         try {
-            return yukonLoggerDao.getLogger(loggerId);
+            YukonLogger logger = yukonLoggerDao.getLogger(loggerId);
+            logger.setLoggerType(SystemLogger.isSystemLogger(logger.getLoggerName()) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER );
+            return logger;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Logger Id not found");
         }
@@ -55,6 +60,9 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
     public int deleteLogger(int loggerId) {
         try {
             String loggerName = getLogger(loggerId).getLoggerName();
+            if(SystemLogger.isSystemLogger(loggerName)) {
+                throw new DeletionFailureException("System logger deletion not supported.");
+            }
             yukonLoggerDao.deleteLogger(loggerId);
             dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.LOGGER, loggerId);
             systemEventLogService.loggerDeleted(loggerName, ApiRequestContext.getContext().getLiteYukonUser());
