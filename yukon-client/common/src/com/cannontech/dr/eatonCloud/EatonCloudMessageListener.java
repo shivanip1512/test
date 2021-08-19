@@ -136,7 +136,8 @@ public class EatonCloudMessageListener {
         STOP_TIME("stop time"),
         STOP_FLAGS("stop flags"), 
         CRITICALITY("criticality"),
-        EVENT_ID("event id");
+        EVENT_ID("event id"),
+        RANDOMIZATION("randomization");
         
         private String paramName;
 
@@ -295,16 +296,20 @@ public class EatonCloudMessageListener {
         if (stopTimeSeconds != 0) {
             cycleCount = Math.ceil(durationSeconds / command.getDutyCyclePeriod());
         }
-
+        
+        int intCycle = 6;
+        
         params.put(CommandParam.START_TIME.getParamName(), startTimeSeconds);
         params.put(CommandParam.STOP_TIME.getParamName(), stopTimeSeconds);
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
         params.put(CommandParam.CYCLE_PERCENT.getParamName(), command.getDutyCyclePercentage());
         params.put(CommandParam.CYCLE_PERIOD.getParamName(), command.getDutyCyclePeriod() / 60);
-        params.put(CommandParam.CYCLE_COUNT.getParamName(), cycleCount);
+        params.put(CommandParam.CYCLE_COUNT.getParamName(), intCycle);
         params.put(CommandParam.CRITICALITY.getParamName(), command.getCriticality());
         params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
         params.put(CommandParam.VRELAY.getParamName(), command.getVirtualRelayId());
+        params.put(CommandParam.RANDOMIZATION.getParamName(), 0);
+        params.put(CommandParam.STOP_FLAGS.getParamName(), 1);
         return params;
     }
 
@@ -333,12 +338,12 @@ public class EatonCloudMessageListener {
     private Map<String, Object> getRestoreParams(LMEatonCloudStopCommand command, int eventId) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
-        if (command.getRestoreTime() != null) {
-            params.put(CommandParam.STOP_TIME.getParamName(), command.getRestoreTime().getMillis() / 1000);
-        } else {
-            params.put(CommandParam.STOP_TIME.getParamName(), 0);
-        }
-        params.put(CommandParam.STOP_FLAGS.getParamName(), 0);
+//        if (command.getRestoreTime() != null) {
+//            params.put(CommandParam.STOP_TIME.getParamName(), command.getRestoreTime().getMillis() / 1000);
+//        } else {
+//            params.put(CommandParam.STOP_TIME.getParamName(), 0);
+//        }
+        params.put(CommandParam.FLAGS.getParamName(), 0);
         return params;
     }
 

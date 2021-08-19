@@ -112,8 +112,11 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
         params.put(CommandParam.START_TIME.getParamName(), System.currentTimeMillis() / 1000);
         params.put(CommandParam.STOP_TIME.getParamName(), (System.currentTimeMillis() + duration.getMillis()) / 1000);
         params.put(CommandParam.CRITICALITY.getParamName(), 255);
+        params.put(CommandParam.RANDOMIZATION.getParamName(), 0);
         params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
+        params.put(CommandParam.STOP_FLAGS.getParamName(), 0);
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
+
         return params;
     }
     
@@ -121,9 +124,9 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
         Map<String, Object> params = new LinkedHashMap<>();
         Integer relay = (Integer) command.getParams().get(LmHardwareCommandParam.RELAY);
         params.put(CommandParam.VRELAY.getParamName(), relay);
-        params.put(CommandParam.STOP_TIME.getParamName(), 0);
+//        params.put(CommandParam.STOP_TIME.getParamName(), 0);
         params.put(CommandParam.FLAGS.getParamName(), 0);
-        params.put(CommandParam.STOP_FLAGS.getParamName(), 0);
+//        params.put(CommandParam.STOP_FLAGS.getParamName(), 0);
         return params;
     }
 
