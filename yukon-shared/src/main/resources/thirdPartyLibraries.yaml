@@ -1856,21 +1856,6 @@ Java :
     jira : YUK-24357
     notes : Apache Lucene Query Parser
   
-  
-  - filename : mailapi-1.5.1.jar
-    yukon group : JavaMail
-    project : JavaMail API
-    version : 1.5.1
-    project URL : "https://projects.eclipse.org/projects/ee4j.javamail"
-    license : CDDL, GPLv2 with classpath exception
-    license URLs : "http://www.sun.com/cddl, https://glassfish.dev.java.net/public/CDDL+GPL.html"
-    maven URL : "https://mvnrepository.com/artifact/javax.mail/javax.mail-api/1.5.1"
-    md5 : 130e74366d6afa8d03932246b87faee6
-    sha1 : 8ed96a5fe6fcb627b9192fc25b5cb77a221bcd5c
-    updated : 2014-04-07
-    jira : YUK-11706
-    notes : 
-  
   - filename : micrometer-core-1.0.7.jar
     yukon group : Spring
     project : Micrometer application monitoring
