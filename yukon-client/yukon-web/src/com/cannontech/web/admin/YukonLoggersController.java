@@ -159,7 +159,6 @@ public class YukonLoggersController {
 
     private ResponseEntity<? extends Object> save(YukonLogger logger, Boolean specifiedDateTime,
             HttpServletRequest request, YukonUserContext userContext) {
-        logger.setLoggerType(SystemLogger.isSystemLogger(logger.getLoggerName()) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER);
         if (logger.getLoggerId() == -1) {
             String url = apiControllerHelper.findWebServerUrl(request, userContext, ApiURL.loggerUrl);
             return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
