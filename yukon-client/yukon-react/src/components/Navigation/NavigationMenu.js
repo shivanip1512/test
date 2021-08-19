@@ -86,10 +86,10 @@ const NavigationMenu = (props) => {
 
     return (
         <AppBar position={'sticky'} color={'primary'} 
-            style={{backgroundColor: yukonTheme ? yukonTheme.properties.PAGE_BACKGROUND : 'inherit'}}>
+            style={{backgroundColor: yukonTheme ? yukonTheme.properties.PAGE_BACKGROUND : ''}}>
             <Toolbar> 
                 { yukonTheme ? 
-                    <img src={'data:image/png;base64,' + yukonTheme.properties.LOGO_IMAGE} style={{paddingRight: theme.spacing(1)}}/>
+                    <img src={'data:image/png;base64,' + yukonTheme.properties.LOGO_IMAGE} alt="customerLogo" style={{paddingRight: theme.spacing(1)}}/>
                     : <div></div>
                 }
                 <Typography variant="h6" color="inherit">Yukon</Typography>

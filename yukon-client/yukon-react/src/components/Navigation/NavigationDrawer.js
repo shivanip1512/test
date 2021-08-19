@@ -52,13 +52,17 @@ const NavigationDrawer = (props) => {
             axios.get('/api/theme')
             .then(themeJson => {
                 if (themeJson) {
-                    //get theme image
-                    axios.get('/api/theme/image/' + themeJson.data.properties.LOGO)
-                    .then(themeImage => {
-                        themeJson.data.properties.LOGO_IMAGE = themeImage.data;
-                        dispatch(actions.setTheme(themeJson.data));
-                        theme.palette.primary.main = themeJson.data.properties.PRIMARY_COLOR;
-                    });
+                    //don't change theme if default theme is used
+                    if (themeJson.data.themeId > 0) {
+                        //get theme image
+                        axios.get('/api/theme/image/' + themeJson.data.properties.LOGO)
+                        .then(themeImage => {
+                            themeJson.data.properties.LOGO_IMAGE = themeImage.data;
+                            dispatch(actions.setTheme(themeJson.data));
+                            //Example if we want to change an entire piece of the pxblue theme
+                            //theme.palette.primary.main = themeJson.data.properties.PRIMARY_COLOR;
+                        });
+                    }
                 }
             });
         }
@@ -84,7 +88,7 @@ const NavigationDrawer = (props) => {
         <Drawer open={open}>
             <DrawerHeader icon={<MenuIcon classes={{root: classes.root}}></MenuIcon>} 
                 onIconClick={onToggleMenu} title="Yukon" subtitle="Powered by Brightlayer"
-                style={{backgroundColor: yukonTheme ? yukonTheme.properties.PAGE_BACKGROUND : 'inherit'}}>
+                style={{backgroundColor: yukonTheme ? yukonTheme.properties.PAGE_BACKGROUND : ""}}>
             </DrawerHeader>
             <DrawerBody>
                 <DrawerNavGroup>
