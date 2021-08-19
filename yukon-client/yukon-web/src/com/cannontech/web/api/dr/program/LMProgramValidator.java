@@ -275,6 +275,12 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
 
         if (loadProgram.getNotification() != null) {
             List<NotificationGroup> notificationGroups = loadProgram.getNotification().getAssignedNotificationGroups();
+            if ((loadProgram.getNotification().getProgramStartInMinutes() != null
+                    || loadProgram.getNotification().getProgramStopInMinutes() != null
+                    || loadProgram.getNotification().getNotifyOnAdjust() || loadProgram.getNotification().getEnableOnSchedule())
+                    && CollectionUtils.isEmpty(notificationGroups)) {
+                errors.reject(key + "notificationGrp.notAssigned");
+            }
             if (CollectionUtils.isNotEmpty(notificationGroups)) {
                 for (int i = 0; i < notificationGroups.size(); i++) {
                     errors.pushNestedPath("notification.assignedNotificationGroups[" + i + "]");
