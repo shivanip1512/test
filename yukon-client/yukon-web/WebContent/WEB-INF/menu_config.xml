@@ -319,7 +319,10 @@
       </option>
       <option name="dataStreaming">
         <permissions>
+         <and>
             <license name="RF_DATA_STREAMING_ENABLED" />
+            <roleProperty name="RF_DATA_STREAMING" />
+         </and>
         </permissions>
         <link>/tools/dataStreaming/configurations</link>
       </option>
