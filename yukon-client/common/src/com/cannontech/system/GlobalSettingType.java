@@ -230,7 +230,8 @@ public enum GlobalSettingType implements DisplayableEnum {
     private final Object validationValue;
     private final TypeValidator<?> validator; 
     private final static ImmutableList<GlobalSettingType> sensitiveSettings;
-
+    private final static ImmutableList<GlobalSettingType> nonViewableSensitiveSettings;
+    
     static {
         final Builder<GlobalSettingSubCategory, GlobalSettingType> b = ImmutableSetMultimap.builder();
         for (GlobalSettingType globalSettingType : values()) {
@@ -239,28 +240,30 @@ public enum GlobalSettingType implements DisplayableEnum {
         categoryMapping = b.build();
 
         sensitiveSettings = ImmutableList.of(
-            ECOBEE_PASSWORD,
-            ECOBEE_USERNAME,
-            RFN_FIRMWARE_UPDATE_SERVER_USER,
-            RFN_FIRMWARE_UPDATE_SERVER_PASSWORD,
-            HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING,
-            HONEYWELL_WIFI_SERVICE_BUS_QUEUE,
-            HONEYWELL_APPLICATIONID,
-            HONEYWELL_CLIENTID,
-            HONEYWELL_SECRET,
-            OADR_KEYSTORE_PASSWORD,
-            OADR_TRUSTSTORE_PASSWORD,
-            SMTP_USERNAME,
-            SMTP_PASSWORD,
-            ITRON_HCM_USERNAME,
-            ITRON_HCM_PASSWORD,
-            ITRON_SFTP_USERNAME,
-            ITRON_SFTP_PASSWORD,
-            ITRON_SFTP_PRIVATE_KEY_PASSWORD,
-            NETWORK_MANAGER_DB_PASSWORD,
-            CLOUD_IOT_HUB_CONNECTION_STRING,
-            EATON_CLOUD_SERVICE_ACCOUNT_ID,
-            EATON_CLOUD_SECRET);
+                ECOBEE_USERNAME,
+                RFN_FIRMWARE_UPDATE_SERVER_USER,
+                SMTP_USERNAME,
+                ITRON_HCM_USERNAME,
+                ITRON_SFTP_USERNAME,
+                HONEYWELL_WIFI_SERVICE_BUS_QUEUE,
+                HONEYWELL_APPLICATIONID,
+                HONEYWELL_CLIENTID);
+
+        nonViewableSensitiveSettings = ImmutableList.of(
+                ECOBEE_PASSWORD,
+                RFN_FIRMWARE_UPDATE_SERVER_PASSWORD,
+                HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING,
+                HONEYWELL_SECRET,
+                OADR_KEYSTORE_PASSWORD,
+                OADR_TRUSTSTORE_PASSWORD,
+                SMTP_PASSWORD,
+                ITRON_HCM_PASSWORD,
+                ITRON_SFTP_PASSWORD,
+                ITRON_SFTP_PRIVATE_KEY_PASSWORD,
+                NETWORK_MANAGER_DB_PASSWORD,
+                CLOUD_IOT_HUB_CONNECTION_STRING,
+                EATON_CLOUD_SERVICE_ACCOUNT_ID,
+                EATON_CLOUD_SECRET);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {
@@ -307,6 +310,10 @@ public enum GlobalSettingType implements DisplayableEnum {
         return sensitiveSettings.contains(this);
     }
 
+    public boolean isNonViewableSensitiveInformation() {
+        return nonViewableSensitiveSettings.contains(this);
+    }
+
     public Object getDefaultValue() {
         return defaultValue;
     }
@@ -338,6 +345,10 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     public static ImmutableList<GlobalSettingType> getSensitiveSettings() {
         return sensitiveSettings;
+    }
+
+    public static ImmutableList<GlobalSettingType> getNonviewablesensitivesettings() {
+        return nonViewableSensitiveSettings;
     }
 
 }
