@@ -79,7 +79,12 @@ public class CommChannelController {
             @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting) {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/");
-            SearchResults<DeviceBaseModel> commChannelSearchResult = getDeviceBaseModelResponse(userContext, request, url);
+            ResponseEntity<? extends Object> response = getResponseEntity(userContext, request, url);
+            
+            List<DeviceBaseModel> commChannelList = new ArrayList<>();
+            if (response.getStatusCode() == HttpStatus.OK) {
+                commChannelList = (List<DeviceBaseModel>)response.getBody();
+            }
 
             CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
             Direction dir = sorting.getDirection();
@@ -97,9 +102,9 @@ public class CommChannelController {
             if (sorting.getDirection() == Direction.desc) {
                 comparator = Collections.reverseOrder(comparator);
             }
-            Collections.sort(commChannelSearchResult.getResultList(), comparator);
+            Collections.sort(commChannelList, comparator);
 
-            model.addAttribute("commChannelList", commChannelSearchResult);
+            model.addAttribute("commChannelList", commChannelList);
 
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             for (CommChannelSortBy column : CommChannelSortBy.values()) {
@@ -267,10 +272,14 @@ public class CommChannelController {
     private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId, String commChannelName) {
         try {
             String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + portId + "/devicesAssigned");
-            SearchResults<DeviceBaseModel> devicesList = getDeviceBaseModelResponse(userContext, request, assignedDevicesUrl);
-
-            if (!devicesList.getResultList().isEmpty()) {
-                return devicesList.getResultList().stream()
+            ResponseEntity<? extends Object> response = getResponseEntity(userContext, request, assignedDevicesUrl);
+            
+            List<DeviceBaseModel> devicesList = new ArrayList<>();
+            if (response.getStatusCode() == HttpStatus.OK) {
+            	devicesList = ((SearchResults<DeviceBaseModel>)response.getBody()).getResultList();
+            }
+            if (!devicesList.isEmpty()) {
+                return devicesList.stream()
                                   .map(device -> device.getName())
                                   .collect(Collectors.joining(", "));
             }
@@ -285,19 +294,15 @@ public class CommChannelController {
     /**
      * Get the response in form of DevicesBaseModel
      */
-    private SearchResults<DeviceBaseModel> getDeviceBaseModelResponse(YukonUserContext userContext, HttpServletRequest request, String url) {
-        SearchResults<DeviceBaseModel> deviceBaseModelSearchResult = new SearchResults<DeviceBaseModel>();
+    private ResponseEntity<? extends Object> getResponseEntity(YukonUserContext userContext, HttpServletRequest request, String url) {
 
         ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext,
                                                                                     request,
                                                                                     url,
-                                                                                    SearchResults.class,
+                                                                                    DeviceBaseModel.class,
                                                                                     HttpMethod.GET,
                                                                                     DeviceBaseModel.class);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            deviceBaseModelSearchResult = (SearchResults<DeviceBaseModel>) response.getBody();
-        }
-        return deviceBaseModelSearchResult;
+        return response;
     }
 
     private void setupErrorFields(HttpServletResponse resp, PortBase commChannel, ModelMap model, YukonUserContext userContext,

@@ -37,7 +37,8 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 /**
  * Widget used to display devices which are linked to comm channel
  */
-@Controller @RequestMapping("/commChannelLinkedDeviceWidget/*")
+@Controller 
+@RequestMapping("/commChannelLinkedDeviceWidget/*")
 public class CommChannelLinkedDeviceWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private ApiControllerHelper helper;
@@ -50,11 +51,12 @@ public class CommChannelLinkedDeviceWidget extends AdvancedWidgetControllerBase 
         setIdentityPath("common/deviceIdentity.jsp");
     }
 
-    @SuppressWarnings("unchecked") @GetMapping("render")
+    @SuppressWarnings("unchecked") 
+    @GetMapping("render")
     public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
             @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,
             @DefaultItemsPerPage(value = 25) PagingParameters paging) throws ServletRequestBindingException, URISyntaxException {
-    	CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
+        CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
 
         String assignedDevicesUrl = helper.findWebServerUrl(request, userContext,
