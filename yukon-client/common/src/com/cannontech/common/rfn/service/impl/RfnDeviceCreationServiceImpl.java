@@ -212,7 +212,12 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             Instant dataTimestamp) {
         String templateName = templatePrefix + newDeviceIdentifier.getSensorManufacturer() + "_"
                 + newDeviceIdentifier.getSensorModel();
-        SimpleDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
+        SimpleDevice templateYukonDevice;
+        try {
+            templateYukonDevice = deviceCreationService.getOrCreateTemplateDevice(templateName);
+        } catch (Exception e) {
+            throw createRuntimeException("Unable to find or create template device for template name:" + templateName, e);
+        }
 
         RfnModelChange rfnModelChange = new RfnModelChange();
         rfnModelChange.setDataTimestamp(dataTimestamp);
@@ -220,7 +225,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         rfnModelChange.setNewModel(newDeviceIdentifier.getSensorModel());
         rfnModelChange.setOldModel(partiallyMatchedDevice.getRfnIdentifier().getSensorModel());
         rfnDeviceDao.updateRfnModelChange(rfnModelChange);
-        
+
         RfnDevice updatedDevice = templateYukonDevice.getPaoIdentifier().getPaoType() != partiallyMatchedDevice.getPaoIdentifier()
                 .getPaoType() ? changeDeviceType(newDeviceIdentifier, partiallyMatchedDevice,
                         templateYukonDevice) : updateRfnIdentifier(newDeviceIdentifier, partiallyMatchedDevice);
