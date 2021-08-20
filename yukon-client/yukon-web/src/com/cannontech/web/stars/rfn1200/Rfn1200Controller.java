@@ -22,6 +22,7 @@ import org.springframework.web.client.RestClientException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -64,9 +65,6 @@ public class Rfn1200Controller {
         try {
             deviceDao.removeDevice(id);
             
-            //clean up event log add to RfnDeviceEventLogService example below 
-           // meteringEventLogService.meterDeleted(meter.getPaoName(), meterName, user.getUsername());
-            
             rfnDeviceEventLogService.rfn1200Deleted(device.getPaoName(), userContext.getYukonUser().getUsername());
             
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", device.getPaoName()));
@@ -85,7 +83,12 @@ public class Rfn1200Controller {
     private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId, String commChannelName) {
         try {
             String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + portId + "/devicesAssigned");
-            List<DeviceBaseModel> devicesList = getDeviceBaseModelResponse(userContext, request, assignedDevicesUrl);
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext,
+                    request, assignedDevicesUrl, HttpMethod.GET, DeviceBaseModel.class, Object.class);
+            List<DeviceBaseModel> devicesList = new ArrayList<>();
+            if (response.getStatusCode() == HttpStatus.OK) {
+                devicesList = ((SearchResults<DeviceBaseModel>)response.getBody()).getResultList();
+            }
 
             if (!devicesList.isEmpty()) {
                 return devicesList.stream().map(device -> device.getName()).collect(Collectors.joining(", "));
@@ -97,23 +100,4 @@ public class Rfn1200Controller {
         }
         return null;
     }
-    
-    /**
-     * Get the response in form of DevicesBaseModel
-     */
-    private List<DeviceBaseModel> getDeviceBaseModelResponse(YukonUserContext userContext, HttpServletRequest request, String url) {
-        List<DeviceBaseModel> deviceBaseModelList = new ArrayList<>();
-
-        ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext,
-                                                                                    request,
-                                                                                    url,
-                                                                                    DeviceBaseModel.class,
-                                                                                    HttpMethod.GET,
-                                                                                    DeviceBaseModel.class);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            deviceBaseModelList = (List<DeviceBaseModel>) response.getBody();
-        }
-        return deviceBaseModelList;
-    }
-
 }

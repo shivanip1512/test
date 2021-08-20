@@ -20,11 +20,7 @@
             <c:set var="disableFlag" value="false"/>
             <c:if test="${not empty deviceNames}">
                 <c:set var="disableFlag" value="true"/>
-                <cti:list var="arguments">
-                    <cti:item value="${fn:escapeXml(name)}"/>
-                    <cti:item value="${deviceNames}"/>
-                </cti:list>
-                <cti:msg2 var="toolTipMessage" key="yukon.web.modules.operator.commChannel.delete.devicesAssigned.error" arguments="${arguments}"/>
+                <cti:msg2 var="toolTipMessage" key="yukon.web.modules.operator.commChannel.delete.devicesAssigned.error" argument="${fn:escapeXml(name)}"/>
             </c:if>
             <li class="divider"></li>
             <cm:dropdownOption icon="icon-cross" title="${toolTipMessage}"  key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
@@ -45,7 +41,7 @@
             </div>
         </div>
         <div>
-                <tags:widget bean="commChannelLinkedDeviceWidget"/>
+            <tags:widget bean="commChannelLinkedDeviceWidget"/>
         </div>
     </tags:widgetContainer>
 
