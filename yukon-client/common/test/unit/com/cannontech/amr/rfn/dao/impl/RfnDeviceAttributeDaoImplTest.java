@@ -1,25 +1,34 @@
 package com.cannontech.amr.rfn.dao.impl;
 
+import static java.util.function.Predicate.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 
+import com.cannontech.amr.rfn.dao.impl.RfnDeviceAttributeDaoImpl.MetricIdAttributeMapping;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointMappingIcd;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.YamlParserUtils;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 public class RfnDeviceAttributeDaoImplTest {
@@ -64,7 +73,7 @@ public class RfnDeviceAttributeDaoImplTest {
     }
     
     @Test
-    public void test_allMetricsUnique() throws IOException {
+    public void test_allMetricDefinitionsUnique() throws IOException {
         ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
 
         PointMappingIcd icd = YamlParserUtils.parseToObject(yukonPointMappingIcdYaml.getInputStream(), PointMappingIcd.class);
@@ -81,11 +90,70 @@ public class RfnDeviceAttributeDaoImplTest {
     }
     
     @Test
+    public void test_allAttributesUnique() throws IOException {
+        var mapping = this.getClass().getClassLoader().getResourceAsStream("metricIdToAttributeMapping.json");
+        var inputStream = new InputStreamResource(mapping);
+        var jsonString = IOUtils.toString(inputStream.getInputStream(), StandardCharsets.UTF_8);
+        var metricList = JsonUtils.fromJson(jsonString, MetricIdAttributeMapping.class);
+        
+        var duplicateAttributes =
+            metricList.metricMapping.stream().collect(
+                    Collectors.groupingBy(mia -> mia.attribute,
+                    Collectors.mapping(mia -> mia.metricId,
+                    Collectors.toSet())))
+                .entrySet().stream()
+                .filter(e -> e.getValue().size() > 1)
+                .collect(Collectors.toList());
+        
+        assertEquals(Collections.emptyList(), duplicateAttributes, "Attribute mapped to multiple metrics");
+    }
+    
+    @Test
     public void test_getMetricIdForAttribute() {
 
         assertEquals((Integer)  5, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.DELIVERED_DEMAND, PaoType.RFN420CL));
         
         assertEquals((Integer)200, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.INSTANTANEOUS_KW, PaoType.RFN430SL1));
+    }
+    
+    @Test
+    public void test_nonIntervalAttributes() {
+        //  Any attribute that contains minimum/maximum/peak/frozen is not an RFN interval attribute
+        var nonIntervalQualifiers = Set.of(
+                "minimum", 
+                "maximum", 
+                "peak",
+                "frozen");
+
+        var allowedIntervalAttributes = Set.of(
+                BuiltInAttribute.MINIMUM_POWER_FACTOR,
+                BuiltInAttribute.PREVIOUS_MINIMUM_POWER_FACTOR,
+                BuiltInAttribute.RECEIVED_KWH_FROZEN,
+                BuiltInAttribute.USAGE_FROZEN);
+
+        //  Make sure that all allowedIntervalAttributes are actually isIntervalApplicable
+        var unexpectedNonInterval = 
+                allowedIntervalAttributes.stream()
+                    .filter(not(BuiltInAttribute::isIntervalApplicable))
+                    .collect(Collectors.toList());
+        
+        assertTrue(unexpectedNonInterval.isEmpty(),
+                "Found allowedIntervalAttributes that are not isIntervalApplicable:" + unexpectedNonInterval);
+        
+        var qualifierPattern = 
+                Pattern.compile(String.join("|", nonIntervalQualifiers), 
+                                Pattern.CASE_INSENSITIVE)
+                       .asPredicate();
+        
+        var unexpectedIntervalApplicable =
+                rfnDeviceAttributeDao.getAttributesForAllTypes().stream()
+                    .filter(BuiltInAttribute::isIntervalApplicable)
+                    .filter(not(allowedIntervalAttributes::contains))
+                    .filter(attr -> qualifierPattern.test(attr.name()))
+                    .collect(Collectors.toList());
+        
+        assertTrue(unexpectedIntervalApplicable.isEmpty(), 
+                "Found non-interval attributes claiming isIntervalApplicable: " + unexpectedIntervalApplicable);
     }
     
     @Test

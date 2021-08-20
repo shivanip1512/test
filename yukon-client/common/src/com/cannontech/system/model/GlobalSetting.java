@@ -78,6 +78,10 @@ public class GlobalSetting {
         return type.isSensitiveInformation();
     }
 
+    public boolean isNonViewableSensitiveInformation() {
+        return type.isNonViewableSensitiveInformation();
+    }
+
     public Boolean getDecryptValueFailed() {
         return decryptValueFailed;
     }

@@ -82,6 +82,8 @@ public enum RfnManufacturerModel {
      * map to the same pao type, like the 'S4-AT' and 'S4-AR' model strings that both map to the PaoType 'RFN530S4EAXR'.
      * This is intentional- multiple meter models are functionally the same in Yukon, this should not be changed. */
     RFN_510FL(PaoType.RFN510FL, "LGYR", "FocuskWh-500"),
+
+    //  RFN-520 Focus AX/RX - Gen 1 hardware 
     RFN_520FAXD(PaoType.RFN520FAX, "LGYR", "FocusAXD-500"),
     RFN_520FAXT(PaoType.RFN520FAX, "LGYR", "FocusAXT-500"),
     RFN_520FAXR(PaoType.RFN520FAX, "LGYR", "FocusAXR-500"),
@@ -94,7 +96,7 @@ public enum RfnManufacturerModel {
     RFN_520FRXD_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXD-SD-500"),
     RFN_520FRXT_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXT-SD-500"),
     RFN_520FRXR_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXR-SD-500"),
-    
+    //  RFN-530 Focus AX/RX Polyphase
     RFN_530FAXD(PaoType.RFN530FAX, "LGYR", "FocusAXD-530"),
     RFN_530FAXT(PaoType.RFN530FAX, "LGYR", "FocusAXT-530"),
     RFN_530FAXR(PaoType.RFN530FAX, "LGYR", "FocusAXR-530"),
@@ -102,12 +104,42 @@ public enum RfnManufacturerModel {
     RFN_530FRXT(PaoType.RFN530FRX, "LGYR", "FocusRXT-530"),
     RFN_530FRXR(PaoType.RFN530FRX, "LGYR", "FocusRXR-530"),
     // These are purposely 520 paoTypes for 530 model values - See YUK-22166
+    //  Form 12s/25s disconnects - polyphase but still RFN-520
     RFN_530FAXD_SD(PaoType.RFN520FAXD, "LGYR", "FocusAXD-SD-530"),
     RFN_530FAXT_SD(PaoType.RFN520FAXD, "LGYR", "FocusAXT-SD-530"),
     RFN_530FAXR_SD(PaoType.RFN520FAXD, "LGYR", "FocusAXR-SD-530"),
     RFN_530FRXD_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXD-SD-530"),
     RFN_530FRXT_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXT-SD-530"),
     RFN_530FRXR_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXR-SD-530"),
+
+    //  RFN-520 Focus AXe/RXe - Gen 2 hardware
+    RFN_520FAXDE(PaoType.RFN520FAXE, "LGYR", "FocusAXDe-500"),
+    RFN_520FAXTE(PaoType.RFN520FAXE, "LGYR", "FocusAXTe-500"),
+    RFN_520FAXRE(PaoType.RFN520FAXE, "LGYR", "FocusAXRe-500"),
+    RFN_520FRXDE(PaoType.RFN520FRXE, "LGYR", "FocusRXDe-500"),
+    RFN_520FRXTE(PaoType.RFN520FRXE, "LGYR", "FocusRXTe-500"),
+    RFN_520FRXRE(PaoType.RFN520FRXE, "LGYR", "FocusRXRe-500"),
+    RFN_520FAXDE_SD(PaoType.RFN520FAXED, "LGYR", "FocusAXDe-SD-500"),
+    RFN_520FAXTE_SD(PaoType.RFN520FAXED, "LGYR", "FocusAXTe-SD-500"),
+    RFN_520FAXRE_SD(PaoType.RFN520FAXED, "LGYR", "FocusAXRe-SD-500"),
+    RFN_520FRXDE_SD(PaoType.RFN520FRXED, "LGYR", "FocusRXDe-SD-500"),
+    RFN_520FRXTE_SD(PaoType.RFN520FRXED, "LGYR", "FocusRXTe-SD-500"),
+    RFN_520FRXRE_SD(PaoType.RFN520FRXED, "LGYR", "FocusRXRe-SD-500"),
+    //  RFN-530 Focus AXe/RXe Polyphase
+    RFN_530FAXDE(PaoType.RFN530FAXE, "LGYR", "FocusAXDe-530"),
+    RFN_530FAXTE(PaoType.RFN530FAXE, "LGYR", "FocusAXTe-530"),
+    RFN_530FAXRE(PaoType.RFN530FAXE, "LGYR", "FocusAXRe-530"),
+    RFN_530FRXDE(PaoType.RFN530FRXE, "LGYR", "FocusRXDe-530"),
+    RFN_530FRXTE(PaoType.RFN530FRXE, "LGYR", "FocusRXTe-530"),
+    RFN_530FRXRE(PaoType.RFN530FRXE, "LGYR", "FocusRXRe-530"),
+    // These are purposely 520 paoTypes for 530 model values - See YUK-22166
+    //  Form 12s/25s disconnects - polyphase but still RFN-520
+    RFN_530FAXDE_SD(PaoType.RFN520FAXED, "LGYR", "FocusAXDe-SD-530"),
+    RFN_530FAXTE_SD(PaoType.RFN520FAXED, "LGYR", "FocusAXTe-SD-530"),
+    RFN_530FAXRE_SD(PaoType.RFN520FAXED, "LGYR", "FocusAXRe-SD-530"),
+    RFN_530FRXDE_SD(PaoType.RFN520FRXED, "LGYR", "FocusRXDe-SD-530"),
+    RFN_530FRXTE_SD(PaoType.RFN520FRXED, "LGYR", "FocusRXTe-SD-530"),
+    RFN_530FRXRE_SD(PaoType.RFN520FRXED, "LGYR", "FocusRXRe-SD-530"), 
     
     RFN_530S4X(PaoType.RFN530S4X, "LGYR", "E650"),
     RFN_530S4AD(PaoType.RFN530S4EAX, "LGYR", "S4-AD"),

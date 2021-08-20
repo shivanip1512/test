@@ -18,7 +18,7 @@ import com.cannontech.common.dr.setup.ControlAreaProgramAssignment;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.exception.LMObjectDeletionFailureException;
+import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -236,7 +236,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
 
     /**
      * Checks that in control area is there any assigned load program(s) is associated with any control scenario(s).
-     * @throws LMObjectDeletionFailureException if any assigned program is associated to any scenario.
+     * @throws DeletionFailureException if any assigned program is associated to any scenario.
      */
     private void checkProgramAssignment(Set<Integer> programIds) {
         for (Integer programId : programIds) {
@@ -244,7 +244,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                                                                                               .anyMatch(scenarioProg -> scenarioProg.getProgramID() == programId);
 
             if (isAssignedProgramsAssociatedWithScenario) {
-                throw new LMObjectDeletionFailureException(
+                throw new DeletionFailureException(
                         "A program on this control area is assigned to a scenario. Program must be removed from scenario before it can be removed from a control area.");
             }
         }

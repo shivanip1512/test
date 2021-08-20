@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PostConstruct;
 import javax.jms.Message;
@@ -52,7 +53,7 @@ public class PointDataCollectionService implements MessageListener {
     private YukonJmsTemplate jmsTemplate;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private static final Logger log = YukonLogManager.getLogger(PointDataCollectionService.class);
-    private boolean collectingData = false;
+    private AtomicBoolean collectingData = new AtomicBoolean(false);
     private Logger commsLogger;
 
     @PostConstruct
@@ -89,17 +90,19 @@ public class PointDataCollectionService implements MessageListener {
      * @param forceRecalculation - if true sends message to WS to start calculation without waiting 60 minutes in between calculations
      */
     private void collect(boolean forceRecalculation) {
-        if (collectingData) {
+        if (collectingData.get()) {
             log.debug("Data collection already running.");
             return;
         }
+        
+        collectingData.set(true);
+        
         try {
             Instant lastCollectionTime =
                 persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DATA_COLLECTION_TIME);
             if (lastCollectionTime == null
                 || now().isAfter(lastCollectionTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION))) {
                 persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_TIME, new Instant());
-                collectingData = true;
                 List<LiteYukonPAObject> devices = databaseCache.getAllYukonPAObjects();
                 log.debug("Starting data collection for " + devices.size() + " devices.");
 
@@ -142,9 +145,11 @@ public class PointDataCollectionService implements MessageListener {
                     jmsTemplate.convertAndSend(new RecalculationRequest());
                 }
             }
-        } finally {
-            collectingData = false;
+        } catch (Exception e) {
+            log.error("Error received during Data Collection", e);
         }
+        
+        collectingData.set(false);
     }
 
     /**

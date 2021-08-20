@@ -12,6 +12,7 @@ public class LMEatonCloudStopCommand implements Serializable {
     private Integer groupId;
     private Instant restoreTime;
     private EatonCloudStopType stopType;
+    private Integer virtualRelayId;
 
     public Integer getGroupId() {
         return groupId;
@@ -35,6 +36,14 @@ public class LMEatonCloudStopCommand implements Serializable {
 
     public void setStopType(EatonCloudStopType stopType) {
         this.stopType = stopType;
+    }
+    
+    public Integer getVirtualRelayId() {
+        return virtualRelayId;
+    }
+    
+    public void setVirtualRelayId(Integer virtualRelayId) {
+        this.virtualRelayId = virtualRelayId;
     }
 
     @Override

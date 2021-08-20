@@ -18,6 +18,7 @@ public class LMEatonCloudScheduledCycleCommand implements Serializable {
     private Integer dutyCyclePercentage;
     private Integer dutyCyclePeriod;
     private Integer criticality;
+    private Integer virtualRelayId;
 
     public Integer getGroupId() {
         return groupId;
@@ -89,6 +90,14 @@ public class LMEatonCloudScheduledCycleCommand implements Serializable {
 
     public void setCriticality(Integer criticality) {
         this.criticality = criticality;
+    }
+
+    public Integer getVirtualRelayId() {
+        return virtualRelayId;
+    }
+
+    public void setVirtualRelayId(Integer virtualRelayId) {
+        this.virtualRelayId = virtualRelayId;
     }
 
     @Override

@@ -61,7 +61,7 @@ public class MacroRouteApiController {
         return new ResponseEntity<>(macroRouteModel, HttpStatus.OK);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<Object> retrieveAllMacroRoutes() {
         List<MacroRouteModel> macroRouteModel = macroRouteService.retrieveAllMacroRoutes();
         return new ResponseEntity<>(macroRouteModel, HttpStatus.OK);

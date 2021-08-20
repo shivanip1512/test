@@ -8,8 +8,8 @@ public class CarrierRouteModel implements DBPersistentConverter<CarrierRoute> {
     private Integer busNumber;
     private Integer ccuFixBits;
     private Integer ccuVariableBits;
-    private String userLocked;
-    private String resetRptSettings;
+    private boolean userLocked;
+    private boolean resetRptSettings;
 
     public Integer getBusNumber() {
         return busNumber;
@@ -35,19 +35,19 @@ public class CarrierRouteModel implements DBPersistentConverter<CarrierRoute> {
         this.ccuVariableBits = ccuVariableBits;
     }
 
-    public String getUserLocked() {
+    public boolean getUserLocked() {
         return userLocked;
     }
 
-    public void setUserLocked(String userLocked) {
+    public void setUserLocked(boolean userLocked) {
         this.userLocked = userLocked;
     }
 
-    public String getResetRptSettings() {
+    public boolean getResetRptSettings() {
         return resetRptSettings;
     }
 
-    public void setResetRptSettings(String resetRptSettings) {
+    public void setResetRptSettings(boolean resetRptSettings) {
         this.resetRptSettings = resetRptSettings;
     }
 
@@ -56,8 +56,8 @@ public class CarrierRouteModel implements DBPersistentConverter<CarrierRoute> {
         setBusNumber(carrierRoute.getBusNumber());
         setCcuFixBits(carrierRoute.getCcuFixBits());
         setCcuVariableBits(carrierRoute.getCcuVariableBits());
-        setResetRptSettings(carrierRoute.getResetRptSettings());
-        setUserLocked(carrierRoute.getUserLocked());
+        setResetRptSettings((carrierRoute.getResetRptSettings() == "N") ? false : true);
+        setUserLocked((carrierRoute.getUserLocked() == "N") ? false : true);
     }
 
     @Override
@@ -75,12 +75,12 @@ public class CarrierRouteModel implements DBPersistentConverter<CarrierRoute> {
             carrierRoute.setCcuVariableBits(getCcuVariableBits());
         }
 
-        if (getResetRptSettings() != null) {
-            carrierRoute.setResetRptSettings(getResetRptSettings());
+        if (getResetRptSettings()) {
+            carrierRoute.setResetRptSettings((getResetRptSettings() == false) ? "N" : "T");
         }
 
-        if (getUserLocked() != null) {
-            carrierRoute.setUserLocked(getUserLocked());
+        if (getUserLocked()) {
+            carrierRoute.setUserLocked((getUserLocked() == false) ? "N" : "T");
         }
     }
 }

@@ -25,6 +25,7 @@ public class LMEatonCloudScheduledCycleCommandSerializer extends SimpleThriftSer
         eatonCloudScheduledCycleCommand.setDutyCyclePercentage(entity.get_dutyCyclePercentage());
         eatonCloudScheduledCycleCommand.setDutyCyclePeriod(entity.get_dutyCyclePeriod());
         eatonCloudScheduledCycleCommand.setCriticality(entity.get_criticality());
+        eatonCloudScheduledCycleCommand.setVirtualRelayId(entity.get_vRelayId());
 
         return eatonCloudScheduledCycleCommand;
     }

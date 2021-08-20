@@ -256,11 +256,11 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.ripple.invalidValue">Invalid {0} value, must be binary value.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidDeviceType">Invalid device type, valid types include MCT, RTU, CBC, or ION.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidPoint">Invalid Point type, must be status point with control enabled.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.eatonCloudLoadRequired">At least 1 load must be specified.</entry>
 
 <!-- Load Program Validation -->
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.notificationGrpID.doesNotExist">Notification Group Id does not exist.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.notificationGrp.notAssigned">Notification Group not assigned.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.subordinateProgId.doesNotExist">Subordinate Program Id does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.groupId.doesNotExist">Load Group Id does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.noGroup">At least 1 load group must be present in this current program.</entry>

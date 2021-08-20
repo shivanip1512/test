@@ -321,13 +321,6 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             callback.waitForCompletion();
         } catch (InterruptedException e) {
         }
-        if (result.isTimeout()) {
-            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.TIMEOUT);
-            MessageSourceResolvable detail = YukonMessageSourceResolvable
-                    .createSingleCode("yukon.common.device.attributeRead.general.timeout");
-            SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, detail);
-            result.addError(error);
-        }
         return result;
     }
 

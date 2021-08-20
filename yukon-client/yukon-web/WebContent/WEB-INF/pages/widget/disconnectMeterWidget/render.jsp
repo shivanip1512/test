@@ -70,7 +70,8 @@
             <div class="scroll-md monospace">${configString}</div>
         </tags:hideReveal2>
     </c:if>
-    <c:if test="${fn:length(errors) > 0}">
+
+  	<c:if test="${fn:length(errors) > 0}">
         <div class="scroll-md">
             <c:forEach items="${errors}" var="error">
                 <tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">

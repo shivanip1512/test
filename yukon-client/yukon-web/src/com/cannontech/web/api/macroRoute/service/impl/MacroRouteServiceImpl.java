@@ -32,6 +32,7 @@ public class MacroRouteServiceImpl implements MacroRouteService {
         dbPersistentDao.performDBChange(macroRoute, TransactionType.INSERT);
         MacroRoute getMacroRoute = (MacroRoute) dbPersistentDao.retrieveDBPersistent(macroRoute);
         macroRouteModel.buildModel(getMacroRoute);
+        setRouteNameFromList(macroRouteModel);
         return macroRouteModel;
     }
 

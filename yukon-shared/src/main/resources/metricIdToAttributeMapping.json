@@ -48,6 +48,7 @@
                 { "metricId" : 54, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_FROZEN" },
                 { "metricId" : 55, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_Q124" },
                 { "metricId" : 56, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_Q124_FROZEN" },
+                { "metricId" : 57, "attributeMagnitude" : 3, "attribute" : "KVA_Q124" },
 
                 { "metricId" : 78, "attributeMagnitude" : 3, "attribute" : "AVERAGE_DELIVERED_POWER_FACTOR" },
                 { "metricId" : 79, "attributeMagnitude" : 3, "attribute" : "AVERAGE_RECEIVED_POWER_FACTOR" },
@@ -100,6 +101,8 @@
                 { "metricId" : 185, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR_FROZEN" },
                 
                 { "metricId" : 194, "attribute" : "SUM_KW" },
+                
+                { "metricId" : 199, "attribute" : "SUM_KVAR" },
 
                 { "metricId" : 200, "attributeMagnitude" : 3, "attribute" : "INSTANTANEOUS_KW" },
                 { "metricId" : 201, "attributeMagnitude" : 3, "attribute" : "KVAR" },
@@ -118,25 +121,10 @@
                 { "metricId" : 234, "attributeMagnitude" : 3, "attribute" : "AVERAGE_POWER_FACTOR_FROZEN" },
                 
                 { "metricId" : 240, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_DAILY" },
+                { "metricId" : 241, "attributeMagnitude" : 3, "attribute" : "SUM_KVA" },
 
                 { "metricId" : 257, "attribute" : "TEMPERATURE_DEVICE" },
                 
-                { "metricId" : 331, "attribute" : "NET_KW" },
-                
-                { "metricId" : 340, "attribute" : "KVAR_Q13" },
-                { "metricId" : 341, "attribute" : "KVAR_Q24" },
-                { "metricId" : 342, "attribute" : "KVAR_Q14" },
-                { "metricId" : 343, "attribute" : "KVAR_Q23" },
-                { "metricId" : 344, "attribute" : "SUM_KVAR" },
-                { "metricId" : 345, "attribute" : "NET_KVAR" },
-                
-                { "metricId" : 350, "attribute" : "KVA_Q12" },
-                { "metricId" : 351, "attribute" : "KVA_Q34" },
-                { "metricId" : 352, "attribute" : "KVA_Q13" },
-                { "metricId" : 353, "attribute" : "KVA_Q24" },
-                { "metricId" : 354, "attribute" : "SUM_KVA" },
-                { "metricId" : 355, "attribute" : "NET_KVA" },
-
                 { "metricId" : 1001, "attributeMagnitude" : 3, "attribute" : "USAGE_RATE_A" },
                 { "metricId" : 1002, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH_RATE_A" },
                 { "metricId" : 1003, "attributeMagnitude" : 3, "attribute" : "SUM_KWH_RATE_A" },

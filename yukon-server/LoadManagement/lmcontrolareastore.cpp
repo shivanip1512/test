@@ -336,17 +336,32 @@ void CtiLMControlAreaStore::reset()
             std::map< long, vector<CtiLMGroupPtr> > all_program_group_map;
 
             {
-                static const string sql =  "SELECT YP.paobjectid as groupid, YP.category, YP.paoclass, YP.paoname, "
-                                             "YP.type, YP.description, YP.disableflag, DV.alarminhibit, "
-                                             "DV.controlinhibit, LG.kwcapacity "
-                                           "FROM yukonpaobject YP, device DV, lmgroup LG "
-                                           "WHERE YP.paobjectid = LG.deviceid AND YP.paobjectid = DV.deviceid AND "
-                                             "YP.paobjectid > 0";
+                static const std::string sql =
+                    "SELECT "
+                        "Y.PAObjectID AS GroupID, "
+                        "Y.Category, "
+                        "Y.PAOClass, "
+                        "Y.PAOName, "
+                        "Y.Type, "
+                        "Y.Description, "
+                        "Y.DisableFlag, "
+                        "D.ALARMINHIBIT, "
+                        "D.CONTROLINHIBIT, "
+                        "G.KWCapacity, "
+                        "C.RelayUsage "
+                    "FROM "
+                        "YukonPAObject Y "
+                            "JOIN DEVICE D "
+                                "ON Y.PAObjectID = D.DEVICEID "
+                            "JOIN LMGroup G "
+                                "ON Y.PAObjectID = G.DeviceID "
+                            "LEFT OUTER JOIN LMGroupEatonCloud C "
+                                "ON Y.PAObjectID = C.YukonGroupId "
+                    "WHERE "
+                        "Y.PAObjectID > 0";
 
                 CtiLMGroupFactory lm_group_factory;
-                Cti::Database::DatabaseReader rdr(connection);
-
-                rdr.setCommandText(sql);
+                Cti::Database::DatabaseReader rdr( connection, sql );
 
                 rdr.execute();
 

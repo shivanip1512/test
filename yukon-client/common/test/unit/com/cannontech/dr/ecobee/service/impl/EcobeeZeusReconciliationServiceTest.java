@@ -354,7 +354,9 @@ public class EcobeeZeusReconciliationServiceTest {
             assertTrue(error.getErrorType() == EcobeeZeusDiscrepancyType.MISLOCATED_DEVICE, "Type should be MISLOCATED_DEVICE");
             assertTrue(error.getSerialNumber().equals("4") || error.getSerialNumber().equals("5"),
                     "Mislocated devices should be 4 or 5");
-            assertTrue(error.getCurrentPath().equals("G1"), "Current Group should be G1");
+            // As Yukon has 2 extra devices, Yukon must enroll the devices to correct path.Current path is required in case of
+            // unenrollment.
+            assertTrue(StringUtils.isEmpty(error.getCurrentPath()), "Current Group should be empty");
             assertTrue(error.getCorrectPath().equals("YG4") || error.getCorrectPath().equals("YG5"),
                     "Current Group should be YG4 or YG5");
         });
