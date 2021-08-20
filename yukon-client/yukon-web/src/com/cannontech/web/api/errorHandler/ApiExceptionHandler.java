@@ -42,7 +42,7 @@ import com.cannontech.api.error.model.ApiErrorCategory;
 import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.DataDependencyException;
-import com.cannontech.common.exception.LMObjectDeletionFailureException;
+import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.exception.TypeNotSupportedException;
@@ -217,7 +217,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                         LoadProgramProcessingException.class,
                         MacroLoadGroupProcessingException.class,
                         HoneywellProcessingException.class,
-                        LMObjectDeletionFailureException.class,
+                        DeletionFailureException.class,
                         TypeNotSupportedException.class,
                         DynamicDataAccessException.class,
                         IllegalUseOfAttribute.class,

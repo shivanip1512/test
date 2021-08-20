@@ -262,6 +262,13 @@ ALTER TABLE RfnModelChange
 INSERT INTO DBUpdates VALUES ('YUK-24057', '9.1.0', SYSDATE);
 /* @end YUK-24057 */
 
+/* @start YUK-20202 */
+DELETE FROM YukonGroupRole WHERE RolePropertyID = -70002;
+DELETE FROM YukonRoleProperty WHERE RolePropertyId = -70002;
+
+INSERT INTO DBUpdates VALUES ('YUK-20202', '9.1.0', SYSDATE);
+/* @end YUK-20202 */
+
 /* @start YUK-24842 */
 UPDATE Point 
 SET PointName = 'kVAh (Quadrants 1 2 4)'
@@ -375,7 +382,6 @@ AND PaobjectId IN (
 
 INSERT INTO DBUpdates VALUES ('YUK-24842', '9.1.0', SYSDATE);
 /* @end YUK-24842 */
-
 
 /**************************************************************/
 /* VERSION INFO                                               */

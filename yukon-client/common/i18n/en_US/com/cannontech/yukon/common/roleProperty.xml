@@ -163,8 +163,6 @@
 <!-- CBC  RoleProperties -->
 <entry key="yukon.common.roleProperty.CAP_CONTROL_ACCESS">Access</entry>
 <entry key="yukon.common.roleProperty.CAP_CONTROL_ACCESS.description">Controls access to Cap Control modules.</entry>
-<entry key="yukon.common.roleProperty.HIDE_REPORTS">DELETE Hide Reports</entry>
-<entry key="yukon.common.roleProperty.HIDE_REPORTS.description">DELETE Controls access to Cap Control reports.</entry>
 <entry key="yukon.common.roleProperty.HIDE_GRAPHS">Hide Trends</entry>
 <entry key="yukon.common.roleProperty.HIDE_GRAPHS.description">Controls access to Cap Control Trends Action.</entry>
 <entry key="yukon.common.roleProperty.PFACTOR_DECIMAL_PLACES">Power Factor Decimal Places</entry>

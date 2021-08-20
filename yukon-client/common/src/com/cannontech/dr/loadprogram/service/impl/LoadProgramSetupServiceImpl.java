@@ -24,7 +24,7 @@ import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.exception.LMObjectDeletionFailureException;
+import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.CtiUtilities;
@@ -138,7 +138,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         if (programDao.getByProgramIds(Collections.singletonList(paoId)).size() > 0) {
             String message = "You cannot delete the load management program '" + loadProgram.getPaoName()
                 + "' because it is currently in use as a STARS assigned program, Unassign it from all appliance categories and try again.";
-            throw new LMObjectDeletionFailureException(message);
+            throw new DeletionFailureException(message);
         }
         YukonPAObject lmProgram = (YukonPAObject) LiteFactory.createDBPersistent(loadProgram);
         List<LiteGear> gears = getGearsForProgram(lmProgram.getPAObjectID());

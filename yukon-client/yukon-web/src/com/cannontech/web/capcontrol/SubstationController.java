@@ -122,9 +122,8 @@ public class SubstationController {
 
         Instant startPage = Instant.now();
         
-        boolean hideReports = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_REPORTS, user);
         boolean hideGraphs = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_GRAPHS, user);
-        model.addAttribute("showAnalysis", !hideReports && !hideGraphs);
+        model.addAttribute("showAnalysis", !hideGraphs);
         
         Object modelSubstation = model.get("substation");
         if (modelSubstation instanceof CapControlSubstation) {

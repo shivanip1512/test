@@ -56,6 +56,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
         
         @Override
         public Optional<String> processData(RfnDevice device, RfnMeterReadingArchiveRequest request) {
+            incrementProcessedArchiveRequest();
             RfnMeterPlusReadingData meterPlusReadingData = new RfnMeterPlusReadingData(device, request.getData());
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
             List<CalculationData> toCalculate = pointDataProducer.convert(meterPlusReadingData, messagesToSend, request.getDataPointId());

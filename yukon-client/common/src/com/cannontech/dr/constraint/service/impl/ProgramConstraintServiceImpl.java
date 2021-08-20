@@ -11,7 +11,7 @@ import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.dr.setup.ProgramConstraint;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.exception.LMObjectDeletionFailureException;
+import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
@@ -176,7 +176,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
             if (dbDeleteResult.isDeletable()) {
                 String message = "You cannot delete the Program Constraint '" + constraint.getConstraintName()
                     + "' because it is used by a program.";
-                throw new LMObjectDeletionFailureException(message);
+                throw new DeletionFailureException(message);
             }
         }
     }
