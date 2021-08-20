@@ -18,6 +18,12 @@ export const openDrawer = () => {
     };
   };
 
+  export const renderDrawer = () => {
+    return {
+      type: actionTypes.RENDER_DRAWER
+    };
+  };
+
   export const setToken = (token) => {
     return {
       type: actionTypes.SET_TOKEN,
@@ -90,13 +96,5 @@ export const setFlashErrors = (flashErrors) => {
     return {
       type: actionTypes.SET_THEME,
       theme: theme
-    }
-  }
-
-  export const setPaths = (reactPath, yukonPath) => {
-    return {
-      type: actionTypes.SET_PATHS,
-      reactPath: reactPath,
-      yukonPath: yukonPath
     }
   }

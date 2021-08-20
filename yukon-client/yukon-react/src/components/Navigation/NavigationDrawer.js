@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -35,6 +35,7 @@ const NavigationDrawer = (props) => {
 
     const open = useSelector(store => store.app.drawerOpen);
     const yukonTheme = useSelector(store => store.app.theme);
+    const renderDrawer = useSelector(store => store.app.renderDrawer);
     const theme = useTheme();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -45,10 +46,9 @@ const NavigationDrawer = (props) => {
     if (process.env.NODE_ENV !== 'development') {
         axios.defaults.baseURL = props.yukonPath;
     }
-    dispatch(actions.setPaths(props.reactPath, props.yukonPath));
 
     useEffect(() => {
-        if (yukonTheme == null) {
+        if (!renderDrawer) {
             axios.get('/api/theme')
             .then(themeJson => {
                 if (themeJson) {
@@ -59,14 +59,17 @@ const NavigationDrawer = (props) => {
                         .then(themeImage => {
                             themeJson.data.properties.LOGO_IMAGE = themeImage.data;
                             dispatch(actions.setTheme(themeJson.data));
+                            dispatch(actions.renderDrawer());
                             //Example if we want to change an entire piece of the pxblue theme
                             //theme.palette.primary.main = themeJson.data.properties.PRIMARY_COLOR;
                         });
+                    } else {
+                        dispatch(actions.renderDrawer());
                     }
                 }
             });
         }
-    });
+    }, [renderDrawer]);
     
     const onNavItemClick = useCallback(
         (url) => {
@@ -85,116 +88,118 @@ const NavigationDrawer = (props) => {
     );
 
     return (
-        <Drawer open={open}>
-            <DrawerHeader icon={<MenuIcon classes={{root: classes.root}}></MenuIcon>} 
-                onIconClick={onToggleMenu} title="Yukon" subtitle="Powered by Brightlayer"
-                style={{backgroundColor: yukonTheme ? yukonTheme.properties.PAGE_BACKGROUND : ""}}>
-            </DrawerHeader>
-            <DrawerBody>
-                <DrawerNavGroup>
-                    <DrawerNavItem
-                        itemID="1"
-                        title="Dashboard"
-                        onClick={() => {onNavItemClick("/dashboard")}}
-                        icon={<HomeIcon/>} />
-                    <DrawerNavItem
-                        itemID="2"
-                        title="AMI" 
-                        onClick={() => {onNavItemClick("/meter/start")}}
-                        icon={<PowerIcon/>}>
-                        <DrawerNavItem itemID="3" title="Dashboard"/>
-                        <DrawerNavItem itemID="4" title="Billing"/>
-                        <DrawerNavItem itemID="5" title="Meter Programming"/>
-                        <DrawerNavItem itemID="5-1" title="AMI Tools">
-                            <DrawerNavItem itemID="6" title="Bulk Import"/>
-                            <DrawerNavItem itemID="7" title="Bulk Update"/>
-                            <DrawerNavItem itemID="8" title="Legacy Importer"/>
-                            <DrawerNavItem itemID="9" title="Point Import"/>
-                            <DrawerNavItem itemID="10" title="Reports"/>
-                        </DrawerNavItem>
-                    </DrawerNavItem>
-                    <DrawerNavItem 
-                        itemID="11" 
-                        title="Demand Response" 
-                        onClick={() => {onNavItemClick("/dr/home")}}
-                        icon={<RepeatIcon/>}>
-                        <DrawerNavItem itemID="12" title="Dashboard"/>
-                        <DrawerNavItem itemID="13" title="Scenarios"/>
-                        <DrawerNavItem itemID="14" title="Control Areas"/>
-                        <DrawerNavItem itemID="15" title="Programs"/>
-                        <DrawerNavItem itemID="15-1-1" title="Setup" onClick={() => {onNavItemClick("/dr/setup/list")}}/>
-                        <DrawerNavItem itemID="15-1" title="Setup - React" onClick={() => {onNavItemClick("/yukon-ui/dr/setup/list")}}/>
-                        <DrawerNavItem itemID="15-22" title="Test Page - React" onClick={() => {onNavItemClick("/yukon-ui/dr/setup/test")}}/>
-                    </DrawerNavItem>
-                    <DrawerNavItem 
-                        itemID="16" 
-                        title="Volt/Var" 
-                        onClick={() => {onNavItemClick("/capcontrol/tier/areas")}}
-                        icon={<UtilityIcon/>}/>
-                    <DrawerNavItem 
-                        itemID="17" 
-                        title="Assets" 
-                        onClick={() => {onNavItemClick("/stars/operator/inventory/home")}}
-                        icon={<ViewModuleIcon/>}>
+        renderDrawer ? 
+            <Drawer open={open}>
+                <DrawerHeader icon={<MenuIcon classes={{root: classes.root}}></MenuIcon>} 
+                    onIconClick={onToggleMenu} title="Yukon" subtitle="Powered by Brightlayer"
+                    style={{backgroundColor: yukonTheme ? yukonTheme.properties.PAGE_BACKGROUND : ""}}>
+                </DrawerHeader>
+                <DrawerBody>
+                    <DrawerNavGroup>
                         <DrawerNavItem
-                            itemID="17-33"
+                            itemID="1"
                             title="Dashboard"
-                            onClick={() => {onNavItemClick("/stars/operator/inventory/home")}}/>
+                            onClick={() => {onNavItemClick("/dashboard")}}
+                            icon={<HomeIcon/>} />
                         <DrawerNavItem
-                            itemID="17-34"
-                            title="Gateways"
-                            onClick={() => {onNavItemClick("/stars/gateways")}}/>
-                        <DrawerNavItem
-                            itemID="17-35"
-                            title="Comm Channel - React"
-                            onClick={() => {onNavItemClick("/yukon-ui/stars/device/commChannel/create")}}/>
-                    </DrawerNavItem>
-                    <DrawerNavItem 
-                        itemID="17-1" 
-                        title="Tools" 
-                        onClick={() => {onNavItemClick("/collectionActions/home")}}
-                        icon={<BuildIcon/>}/>    
-                    <DrawerNavItem 
-                        itemID="17-2" 
-                        title="Admin" 
-                        onClick={() => {onNavItemClick("/admin/config/view")}}
-                        icon={<VerifiedUserIcon/>}/>                 
-                </DrawerNavGroup>
-                <Divider/>
-                <DrawerNavGroup titleContent={
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}>
-                        <div>Yukon</div>
-                        <div>v9.2.0</div>
+                            itemID="2"
+                            title="AMI" 
+                            onClick={() => {onNavItemClick("/meter/start")}}
+                            icon={<PowerIcon/>}>
+                            <DrawerNavItem itemID="3" title="Dashboard"/>
+                            <DrawerNavItem itemID="4" title="Billing"/>
+                            <DrawerNavItem itemID="5" title="Meter Programming"/>
+                            <DrawerNavItem itemID="5-1" title="AMI Tools">
+                                <DrawerNavItem itemID="6" title="Bulk Import"/>
+                                <DrawerNavItem itemID="7" title="Bulk Update"/>
+                                <DrawerNavItem itemID="8" title="Legacy Importer"/>
+                                <DrawerNavItem itemID="9" title="Point Import"/>
+                                <DrawerNavItem itemID="10" title="Reports"/>
+                            </DrawerNavItem>
+                        </DrawerNavItem>
+                        <DrawerNavItem 
+                            itemID="11" 
+                            title="Demand Response" 
+                            onClick={() => {onNavItemClick("/dr/home")}}
+                            icon={<RepeatIcon/>}>
+                            <DrawerNavItem itemID="12" title="Dashboard"/>
+                            <DrawerNavItem itemID="13" title="Scenarios"/>
+                            <DrawerNavItem itemID="14" title="Control Areas"/>
+                            <DrawerNavItem itemID="15" title="Programs"/>
+                            <DrawerNavItem itemID="15-1-1" title="Setup" onClick={() => {onNavItemClick("/dr/setup/list")}}/>
+                            <DrawerNavItem itemID="15-1" title="Setup - React" onClick={() => {onNavItemClick("/yukon-ui/dr/setup/list")}}/>
+                            <DrawerNavItem itemID="15-22" title="Test Page - React" onClick={() => {onNavItemClick("/yukon-ui/dr/setup/test")}}/>
+                        </DrawerNavItem>
+                        <DrawerNavItem 
+                            itemID="16" 
+                            title="Volt/Var" 
+                            onClick={() => {onNavItemClick("/capcontrol/tier/areas")}}
+                            icon={<UtilityIcon/>}/>
+                        <DrawerNavItem 
+                            itemID="17" 
+                            title="Assets" 
+                            onClick={() => {onNavItemClick("/stars/operator/inventory/home")}}
+                            icon={<ViewModuleIcon/>}>
+                            <DrawerNavItem
+                                itemID="17-33"
+                                title="Dashboard"
+                                onClick={() => {onNavItemClick("/stars/operator/inventory/home")}}/>
+                            <DrawerNavItem
+                                itemID="17-34"
+                                title="Gateways"
+                                onClick={() => {onNavItemClick("/stars/gateways")}}/>
+                            <DrawerNavItem
+                                itemID="17-35"
+                                title="Comm Channel - React"
+                                onClick={() => {onNavItemClick("/yukon-ui/stars/device/commChannel/create")}}/>
+                        </DrawerNavItem>
+                        <DrawerNavItem 
+                            itemID="17-1" 
+                            title="Tools" 
+                            onClick={() => {onNavItemClick("/collectionActions/home")}}
+                            icon={<BuildIcon/>}/>    
+                        <DrawerNavItem 
+                            itemID="17-2" 
+                            title="Admin" 
+                            onClick={() => {onNavItemClick("/admin/config/view")}}
+                            icon={<VerifiedUserIcon/>}/>                 
+                    </DrawerNavGroup>
+                    <Divider/>
+                    <DrawerNavGroup titleContent={
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}>
+                            <div>Yukon</div>
+                            <div>v9.2.0</div>
+                        </div>
+                    }>                
+                        <DrawerNavItem 
+                            itemID="19" 
+                            title="Support"
+                            onClick={() => {onNavItemClick("/support")}} 
+                            icon={<HelpIcon/>}/>                    
+                        <DrawerNavItem 
+                            itemID="20" 
+                            title="Site Map"
+                            onClick={() => {onNavItemClick("/sitemap")}}
+                            icon={<AccountTreeIcon/>}/>                    
+                        <DrawerNavItem 
+                            itemID="21" 
+                            title="Logout"
+                            onClick={() => {onNavItemClick("/servlet/LoginController/logout")}} 
+                            icon={<ExitIcon/>}/>
+                        <DrawerNavItem 
+                            itemID="22" 
+                            title="Dev Pages"
+                            onClick={() => {onNavItemClick("/dev")}} 
+                            icon={<DevModeIcon/>}/>                   
+                    </DrawerNavGroup>
+                </DrawerBody>
+                <DrawerFooter>
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: theme.spacing(1) }}>
+                        <EatonLogo width={'auto'} height={50} style={{ margin: theme.spacing(1) }}/>
                     </div>
-                }>                
-                    <DrawerNavItem 
-                        itemID="19" 
-                        title="Support"
-                        onClick={() => {onNavItemClick("/support")}} 
-                        icon={<HelpIcon/>}/>                    
-                    <DrawerNavItem 
-                        itemID="20" 
-                        title="Site Map"
-                        onClick={() => {onNavItemClick("/sitemap")}}
-                        icon={<AccountTreeIcon/>}/>                    
-                    <DrawerNavItem 
-                        itemID="21" 
-                        title="Logout"
-                        onClick={() => {onNavItemClick("/servlet/LoginController/logout")}} 
-                        icon={<ExitIcon/>}/>
-                    <DrawerNavItem 
-                        itemID="22" 
-                        title="Dev Pages"
-                        onClick={() => {onNavItemClick("/dev")}} 
-                        icon={<DevModeIcon/>}/>                   
-                </DrawerNavGroup>
-            </DrawerBody>
-            <DrawerFooter>
-                <div style={{ display: 'flex', justifyContent: 'center', padding: theme.spacing(1) }}>
-                    <EatonLogo width={'auto'} height={50} style={{ margin: theme.spacing(1) }}/>
-                </div>
-            </DrawerFooter>
-        </Drawer>
+                </DrawerFooter>
+            </Drawer>
+        : <div></div>
     );
 }
 

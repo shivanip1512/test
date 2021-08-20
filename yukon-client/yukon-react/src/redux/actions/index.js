@@ -2,6 +2,7 @@ export {
     openDrawer,
     closeDrawer,
     toggleDrawer,
+    renderDrawer,
     setToken,
     setFlashErrors,
     clearFlashErrors,
@@ -12,6 +13,5 @@ export {
     clearAllAlerts,
     addI18nKeyValue,
     getI18nKeyValue,
-    setTheme,
-    setPaths
+    setTheme
 } from './app'

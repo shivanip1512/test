@@ -67,6 +67,7 @@ const NavigationMenu = (props) => {
     const classes = useStyles();
     const history = useHistory();
     const yukonTheme = useSelector(store => store.app.theme);
+    const renderDrawer = useSelector(store => store.app.renderDrawer);
 
     const onNavItemClick = useCallback(
         (url) => {
@@ -85,75 +86,77 @@ const NavigationMenu = (props) => {
     );
 
     return (
-        <AppBar position={'sticky'} color={'primary'} 
-            style={{backgroundColor: yukonTheme ? yukonTheme.properties.PAGE_BACKGROUND : ''}}>
-            <Toolbar> 
-                { yukonTheme ? 
-                    <img src={'data:image/png;base64,' + yukonTheme.properties.LOGO_IMAGE} alt="customerLogo" style={{paddingRight: theme.spacing(1)}}/>
-                    : <div></div>
-                }
-                <Typography variant="h6" color="inherit">Yukon</Typography>
-                <Spacer flex={1} />
-                <form acceptCharset="ISO-8859-1" encType="application/x-www-form-urlencoded" method="get"
-                    action={props.yukonPath + '/search'} className="yukon-search-form">
-                    <div className={classes.search}>
-                        <div className={classes.searchIcon}>
-                            <SearchIcon />
+        renderDrawer ? 
+            <AppBar position={'sticky'} color={'primary'} 
+                style={{backgroundColor: yukonTheme ? yukonTheme.properties.PAGE_BACKGROUND : ''}}>
+                <Toolbar> 
+                    { yukonTheme ? 
+                        <img src={'data:image/png;base64,' + yukonTheme.properties.LOGO_IMAGE} alt="customerLogo" style={{paddingRight: theme.spacing(1)}}/>
+                        : <div></div>
+                    }
+                    <Typography variant="h6" color="inherit">Yukon</Typography>
+                    <Spacer flex={1} />
+                    <form acceptCharset="ISO-8859-1" encType="application/x-www-form-urlencoded" method="get"
+                        action={props.yukonPath + '/search'} className="yukon-search-form">
+                        <div className={classes.search}>
+                            <div className={classes.searchIcon}>
+                                <SearchIcon />
+                            </div>
+                            <InputBase
+                                name="q"
+                                type="search"
+                                placeholder="Search…"
+                                classes = {{
+                                    root: classes.inputRoot,
+                                    input: classes.inputInput
+                                }}
+                                inputProps={{ 'aria-label': 'search', className: 'search-field' }}
+                            />
                         </div>
-                        <InputBase
-                            name="q"
-                            type="search"
-                            placeholder="Search…"
-                            classes = {{
-                                root: classes.inputRoot,
-                                input: classes.inputInput
-                            }}
-                            inputProps={{ 'aria-label': 'search', className: 'search-field' }}
-                        />
-                    </div>
-                </form>
-                <Spacer width={theme.spacing(1)} flex={0} />
-                <Badge badgeContent={5} color="error">
-                    <NotificationsIcon />
-                </Badge>
-                <Spacer width={theme.spacing(2)} flex={0} />
-                <UserMenu
-                    avatar={<Avatar>YU</Avatar>}
-                    menuTitle={'Yukon User'}
-                    menuSubtitle={'yukon@yukon.com'}
-                    menuGroups={[
-                        {
-                            items: [
-                                {
-                                    title: 'User Profile',
-                                    icon: <PersonIcon />,
-                                    onClick: () => {onNavItemClick("/user/profile")},
-                                    divider: true,
-                                },
-                                {
-                                    title: 'Log Out',
-                                    icon: <ExitIcon />,
-                                    onClick: () => {onNavItemClick("/servlet/LoginController/logout")},
-                                },
-                            ],
-                        },
-                        {
-                            title: 'Contact Us',
-                            items: [
-                                {
-                                    title: 'eatonhelp@eaton.com',
-                                    icon: <EmailIcon />,
-                                },
-                                {
-                                    title: '1-866-905-9988',
-                                    icon: <PhoneIcon />,
-                                },
-                            ],
-                        },
-                    ]}
-                />
-            </Toolbar>
-    </AppBar>
+                    </form>
+                    <Spacer width={theme.spacing(1)} flex={0} />
+                    <Badge badgeContent={5} color="error">
+                        <NotificationsIcon />
+                    </Badge>
+                    <Spacer width={theme.spacing(2)} flex={0} />
+                    <UserMenu
+                        avatar={<Avatar>YU</Avatar>}
+                        menuTitle={'Yukon User'}
+                        menuSubtitle={'yukon@yukon.com'}
+                        menuGroups={[
+                            {
+                                items: [
+                                    {
+                                        title: 'User Profile',
+                                        icon: <PersonIcon />,
+                                        onClick: () => {onNavItemClick("/user/profile")},
+                                        divider: true,
+                                    },
+                                    {
+                                        title: 'Log Out',
+                                        icon: <ExitIcon />,
+                                        onClick: () => {onNavItemClick("/servlet/LoginController/logout")},
+                                    },
+                                ],
+                            },
+                            {
+                                title: 'Contact Us',
+                                items: [
+                                    {
+                                        title: 'eatonhelp@eaton.com',
+                                        icon: <EmailIcon />,
+                                    },
+                                    {
+                                        title: '1-866-905-9988',
+                                        icon: <PhoneIcon />,
+                                    },
+                                ],
+                            },
+                        ]}
+                    />
+                </Toolbar>
+        </AppBar>
+    : <div></div>
     );
 };
 

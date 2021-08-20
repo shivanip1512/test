@@ -3,6 +3,7 @@
 export const OPEN_DRAWER = 'OPEN_DRAWER';
 export const CLOSE_DRAWER = 'CLOSE_DRAWER';
 export const TOGGLE_DRAWER = 'TOGGLE_DRAWER';
+export const RENDER_DRAWER = 'RENDER_DRAWER';
 
 //Token
 export const SET_TOKEN = 'SET_TOKEN';
@@ -22,6 +23,3 @@ export const GET_I18N_KEY_VALUE = 'GET_I18N_KEY_VALUE';
 
 //themes
 export const SET_THEME = 'SET_THEME';
-
-//paths
-export const SET_PATHS = 'SET_PATHS';

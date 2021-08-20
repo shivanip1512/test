@@ -2,6 +2,7 @@ import {
     OPEN_DRAWER,
     CLOSE_DRAWER,
     TOGGLE_DRAWER,
+    RENDER_DRAWER,
     SET_TOKEN,
     SET_FLASH_ERRORS,
     CLEAR_FLASH_ERRORS,
@@ -11,12 +12,12 @@ import {
     CLEAR_VALIDATION_ERRORS,
     CLEAR_ALL_ALERTS,
     ADD_I18N_KEY_VALUE,
-    SET_THEME,
-    SET_PATHS
+    SET_THEME
 } from '../actions/actionTypes';
 
 const initialAppState = {
     drawerOpen: false,
+    renderDrawer: false,
     token: null,
     username: 'yukon',
     password: 'yukon',
@@ -24,9 +25,7 @@ const initialAppState = {
     flashSuccess: null,
     validationErrors: null,
     i18nKeyValues: [],
-    theme: null,
-    reactPath: null,
-    yukonPath: null
+    theme: null
 };
 
 export const AppReducer = (state = initialAppState, action) => {
@@ -37,6 +36,8 @@ export const AppReducer = (state = initialAppState, action) => {
             return {...state, drawerOpen: false};
         case TOGGLE_DRAWER:
             return {...state, drawerOpen: !state.drawerOpen};
+        case RENDER_DRAWER:
+            return {...state, renderDrawer: true};
         case SET_TOKEN:
             return {...state, token: action.token};
         case SET_FLASH_ERRORS:
@@ -63,8 +64,6 @@ export const AppReducer = (state = initialAppState, action) => {
             return {...state, i18nKeyValues: updatedI18nKeyValues};
         case SET_THEME:
             return {...state, theme: action.theme};
-        case SET_PATHS:
-            return {...state, reactPath: action.reactPath, yukonPath: action.yukonPath};
         default:
             return state;
     }
