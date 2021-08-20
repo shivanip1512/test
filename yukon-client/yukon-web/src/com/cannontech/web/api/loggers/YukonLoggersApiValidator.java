@@ -106,7 +106,7 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
         }
         if (!errors.hasFieldErrors("loggerName")) {
             if (logger.getLoggerName().startsWith(".") || logger.getLoggerName().endsWith(".")) {
-                errors.rejectValue("loggerName", ApiErrorDetails.WHITELIST_CHARACTERS.getCodeString());
+                errors.rejectValue("loggerName", ApiErrorDetails.WHITELIST_CHARACTERS.getCodeString(), new Object[] { i18Text }, "");
             }
         }
         if (!errors.hasFieldErrors("loggerName")) {
