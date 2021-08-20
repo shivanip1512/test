@@ -162,9 +162,9 @@ public class RfnStatusArchiveRequestListenerTest {
               ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_CONFIGURATION, RfnMeterDisconnectStateType.TERMINATED, null),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_CONFIGURATION, RfnMeterDisconnectStateType.UNKNOWN, null),
               
-              ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.ARMED, 1),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.ARMED, 3),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.RESUMED, 1),
-              ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED, 1),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED, 2),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.UNKNOWN, 1),
               
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.ARMED, 4),
@@ -177,9 +177,9 @@ public class RfnStatusArchiveRequestListenerTest {
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_CONFIGURATION, RfnMeterDisconnectStateType.TERMINATED, null),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_CONFIGURATION, RfnMeterDisconnectStateType.UNKNOWN, null),
               
-              ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.ARMED, 1),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.ARMED, 3),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.RESUMED, 1),
-              ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED, 1),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED, 2),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.UNKNOWN, 1),
               
               ModeStateValue.of(RfnMeterDisconnectMeterMode.ON_DEMAND_CONFIGURATION, RfnMeterDisconnectStateType.ARMED, 3),
