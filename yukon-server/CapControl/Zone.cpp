@@ -139,16 +139,9 @@ void Zone::addCacheEntry(const long Id, const LoggingHelperCacheEntry entry)
     loggingHelperCache.emplace(Id, entry);
 }
 
-LoggingHelperCacheEntry Zone::getCacheEntry(const long Id) const
-{    
-    if (auto lookupResult = Cti::mapFind(loggingHelperCache, Id))
-    {
-        return *lookupResult;
-    }
-
-    //This should never fail, but if it does-
-    return { Id ,-1, "No Point Name", "No Point Type", "No Device Name", "No Device Type" }; 
-
+boost::optional<LoggingHelperCacheEntry> Zone::getCacheEntry(const long Id)
+{     
+    return Cti::mapFind(loggingHelperCache, Id);
 }
 
 }

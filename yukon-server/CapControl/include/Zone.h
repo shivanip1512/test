@@ -71,7 +71,7 @@ public:
     PhaseIdMap getRegulatorIds() const;
 
     void addCacheEntry(const long Id, const LoggingHelperCacheEntry entry);
-    LoggingHelperCacheEntry getCacheEntry(const long Id) const;
+    boost::optional<LoggingHelperCacheEntry> getCacheEntry(const long Id);
 
 private:
 
