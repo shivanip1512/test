@@ -73,6 +73,12 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
 
     @Override
     public List<YukonLogger> getLoggers(String loggerName, SortBy sortBy, Direction direction, List<LoggerLevel> loggerLevels) {
-        return yukonLoggerDao.getLoggers(loggerName, sortBy, direction, loggerLevels);
+        List<YukonLogger> loggers = yukonLoggerDao.getLoggers(loggerName, sortBy, direction, loggerLevels);
+        loggers.forEach(logger -> {
+            logger.setLoggerType(
+                    SystemLogger.isSystemLogger(logger.getLoggerName()) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER);
+        });
+        return loggers;
     }
+
 }
