@@ -106,6 +106,7 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
         Integer relay = (Integer) command.getParams().get(LmHardwareCommandParam.RELAY);
         Duration duration = (Duration) command.getParams().get(LmHardwareCommandParam.DURATION);
 
+        // See LCR Control Command Payloads reference:
         // https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=137056391
 
         params.put(CommandParam.VRELAY.getParamName(), relay);
