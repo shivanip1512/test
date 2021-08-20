@@ -180,7 +180,15 @@
         <pointInfo name="Voltage Phase Error" attributes="VOLTAGE_PHASE_ERROR"/>
         <pointInfo name="Sum Peak kVAr Frozen" attributes="SUM_PEAK_KVAR_FROZEN"/>
         <pointInfo name="Delivered Peak kVAr Frozen" attributes="DELIVERED_PEAK_KVAR_FROZEN"/>
+        <pointInfo name="Delivered Peak kVAr Frozen (Rate A kVAr)" attributes="DELIVERED_PEAK_KVAR_FROZEN_RATE_A"/>
+        <pointInfo name="Delivered Peak kVAr Frozen (Rate B kVAr)" attributes="DELIVERED_PEAK_KVAR_FROZEN_RATE_B"/>
+        <pointInfo name="Delivered Peak kVAr Frozen (Rate C kVAr)" attributes="DELIVERED_PEAK_KVAR_FROZEN_RATE_C"/>
+        <pointInfo name="Delivered Peak kVAr Frozen (Rate D kVAr)" attributes="DELIVERED_PEAK_KVAR_FROZEN_RATE_D"/>
         <pointInfo name="Peak kVA (Quadrants 1 2 4) Frozen" attributes="PEAK_KVA_Q124_FROZEN"/>
+        <pointInfo name="Peak kVA (Quadrants 1 2 4) Frozen (Rate A kVA)" attributes="PEAK_KVA_Q124_FROZEN_RATE_A"/>
+        <pointInfo name="Peak kVA (Quadrants 1 2 4) Frozen (Rate B kVA)" attributes="PEAK_KVA_Q124_FROZEN_RATE_B"/>
+        <pointInfo name="Peak kVA (Quadrants 1 2 4) Frozen (Rate C kVA)" attributes="PEAK_KVA_Q124_FROZEN_RATE_C"/>
+        <pointInfo name="Peak kVA (Quadrants 1 2 4) Frozen (Rate D kVA)" attributes="PEAK_KVA_Q124_FROZEN_RATE_D"/>
         <pointInfo name="Sum Peak kVA Frozen" attributes="SUM_PEAK_KVA_FROZEN"/>
         <pointInfo name="Delivered kVAr" attributes="DELIVERED_KVAR"/>
         <pointInfo name="Sum kVAr" attributes="SUM_KVAR"/>

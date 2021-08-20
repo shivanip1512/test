@@ -143,6 +143,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.KVAR_Q23">kVAr (Quadrants 2 3)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_PEAK_KVAR_FROZEN">Sum Peak kVAr Frozen</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_KVAR_FROZEN">Delivered Peak kVAr Frozen</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_KVAR_FROZEN_RATE_A">Delivered Peak kVAr Frozen Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_KVAR_FROZEN_RATE_B">Delivered Peak kVAr Frozen Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_KVAR_FROZEN_RATE_C">Delivered Peak kVAr Frozen Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_KVAR_FROZEN_RATE_D">Delivered Peak kVAr Frozen Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH">kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_A">kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_B">kVArh Rate B</entry>
@@ -207,6 +211,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.KVA_Q24">kVA (Quadrants 2 4)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVA_Q124">kVA (Quadrants 1 2 4)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_Q124_FROZEN">Peak kVA (Quadrants 1 2 4) Frozen</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_Q124_FROZEN_RATE_A">Peak kVA (Quadrants 1 2 4) Frozen Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_Q124_FROZEN_RATE_B">Peak kVA (Quadrants 1 2 4) Frozen Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_Q124_FROZEN_RATE_C">Peak kVA (Quadrants 1 2 4) Frozen Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_Q124_FROZEN_RATE_D">Peak kVA (Quadrants 1 2 4) Frozen Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_PEAK_KVA_FROZEN">Sum Peak kVA Frozen</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVA_PEAK_DEMAND_COIN">kVA at Peak Demand Coincidental</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PHASE">Phase</entry>
