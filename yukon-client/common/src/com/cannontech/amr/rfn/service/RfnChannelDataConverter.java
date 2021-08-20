@@ -2,6 +2,7 @@ package com.cannontech.amr.rfn.service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -34,8 +35,11 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -59,6 +63,7 @@ public class RfnChannelDataConverter {
     @Autowired private PointDao pointDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RfnDataValidator rfnDataValidator;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     
     private ImmutableSet<PaoTypePointIdentifier> calculationContributors;
     private static final Logger log = YukonLogManager.getLogger(RfnChannelDataConverter.class);
@@ -228,5 +233,14 @@ public class RfnChannelDataConverter {
                                        return pointDao.getLitePoint(ppi);
                                    }
                             });
+        asyncDynamicDataSource.addDBChangeListener(dbChange -> 
+        Optional.of(dbChange)
+                .filter(dbc -> dbc.getDatabase() == DBChangeMsg.CHANGE_POINT_DB)
+                .filter(dbc -> dbc.getDbChangeType() == DbChangeType.UPDATE || 
+                               dbc.getDbChangeType() == DbChangeType.DELETE)
+                .map(DBChangeMsg::getId)
+                .map(pointDao::getPaoPointIdentifier)
+                .map(cache::getIfPresent)
+                .ifPresent(cache::invalidate));
     }
 }
