@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/19/2021 12:36:35 AM                        */
+/* Created on:     8/20/2021 9:05:45 AM                         */
 /*==============================================================*/
 
 
@@ -7162,7 +7162,7 @@ create table LMGroupZeusMapping (
    EcobeeEventId        varchar(50)          null,
    EcobeeGroupName      varchar(255)         null,
    ProgramId            numeric              not null,
-   constraint PK_LMGROUPZEUSMAPPING primary key (YukonGroupId, EcobeeGroupId)
+   constraint PK_LMGROUPZEUSMAPPING primary key nonclustered (YukonGroupId, EcobeeGroupId)
 )
 go
 
@@ -10963,7 +10963,6 @@ INSERT INTO YukonListEntry VALUES (2037, 1005, 0, 'LCR-6600S', 1340);
 
 INSERT INTO YukonListEntry VALUES (2038, 1005, 0, 'LCR-6200C', 1342);
 INSERT INTO YukonListEntry VALUES (2039, 1005, 0, 'LCR-6600C', 1343);
-INSERT INTO YukonListEntry VALUES (2040, 1005, 0, 'LCR-DisconnectC', 1344);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
@@ -11699,7 +11698,7 @@ go
 create table ZeusGroupInventoryMapping (
    InventoryID          numeric              not null,
    EcobeeGroupId        varchar(32)          not null,
-   constraint PK_ZEUSGROUPINVENTORYMAPPING primary key (InventoryID, EcobeeGroupId)
+   constraint PK_ZEUSGROUPINVENTORYMAPPING primary key nonclustered (InventoryID, EcobeeGroupId)
 )
 go
 
