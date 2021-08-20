@@ -399,12 +399,7 @@ public class ObjectMapperFactoryImplTest {
         }
 
         @Override
-        public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public List<Integer> getDevicesByPort(int portId) {
+        public List<LiteYukonPAObject> getLiteYukonPAObjectListByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
@@ -619,16 +614,6 @@ public class ObjectMapperFactoryImplTest {
 
         @Override
         public List<Integer> getDeviceIdsWithGuids() {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public Integer getPortForDeviceId(int DeviceId) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public List<Integer> getPortsForDeviceIds(List<Integer> deviceIDs) {
             throw new UnsupportedOperationException("Method not implemented");
         }
     }

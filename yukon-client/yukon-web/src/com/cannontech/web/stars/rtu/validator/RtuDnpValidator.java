@@ -1,9 +1,5 @@
 package com.cannontech.web.stars.rtu.validator;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Function;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -13,17 +9,11 @@ import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationHelper;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
 
 @Service
 public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
 
-    @Autowired private DeviceDao deviceDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private RtuDnpValidationUtil rtuDnpValidationUtil; 
     @Autowired private YukonValidationHelper yukonValidationHelper;
@@ -37,7 +27,10 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
     @Override
     protected void doValidation(RtuDnp rtuDnp, Errors errors) {
         rtuDnpValidationUtil.validateName(rtuDnp, errors, false);
-        validateCommPort(rtuDnp, errors);
+        rtuDnpValidationUtil.validateAddressing(
+                rtuDnp.getDeviceDirectCommSettings(), 
+                rtuDnp.getDeviceAddress(), 
+                errors, basekey + ".masterSlave");
         validateScanIntervals(rtuDnp, errors);
         YukonValidationUtils.checkIsBlank(errors, "port", rtuDnp.getPort(), yukonValidationHelper.getMessage("yukon.web.modules.operator.rtuDetail.port"), false);
         if (!errors.hasFieldErrors("deviceDirectCommSettings.portID") && !errors.hasFieldErrors("port")) {
@@ -45,54 +38,6 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
                 YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", rtuDnp.getIpAddress());
                 YukonValidationUtils.validatePort(errors, "port",
                         yukonValidationHelper.getMessage("yukon.web.modules.operator.rtuDetail.port"), rtuDnp.getPort());
-            }
-        }
-    }
-
-    private void validateCommPort(RtuDnp rtuDnp, Errors errors) {
-
-        DeviceAddress deviceAddress = rtuDnp.getDeviceAddress();
-        YukonValidationUtils.checkRange(errors, "deviceAddress.postCommWait", deviceAddress.getPostCommWait(), 0, 99999,
-                true);
-        if (!errors.hasFieldErrors("deviceAddress.masterAddress")) {
-            YukonValidationUtils.checkRange(errors, "deviceAddress.masterAddress", deviceAddress.getMasterAddress(), 0,
-                    65535, true);
-        }
-        if (!errors.hasFieldErrors("deviceAddress.slaveAddress")) {
-            YukonValidationUtils.checkRange(errors, "deviceAddress.slaveAddress", deviceAddress.getSlaveAddress(), 0, 65535,
-                    true);
-        }
-        if (rtuDnp.getDeviceDirectCommSettings() == null) {
-            errors.rejectValue("deviceDirectCommSettings.portID", "yukon.web.error.required");
-        }
-        if (!errors.hasFieldErrors("deviceDirectCommSettings.portID")) {
-            Integer portId = rtuDnp.getDeviceDirectCommSettings().getPortID();
-            YukonValidationUtils.checkRange(errors, "deviceDirectCommSettings.portID", portId, 0, Integer.MAX_VALUE, true);
-
-            if (!errors.hasFieldErrors("deviceAddress.masterAddress") && !errors.hasFieldErrors("deviceAddress.slaveAddress")) {
-                List<Integer> devicesWithSameAddress = deviceDao.getDevicesByDeviceAddress(deviceAddress.getMasterAddress(),
-                        deviceAddress.getSlaveAddress());
-
-                devicesWithSameAddress.removeAll(Collections.singleton(rtuDnp.getId()));
-                if (!devicesWithSameAddress.isEmpty()) {
-
-                    List<Integer> devicesOnPort = deviceDao.getDevicesByPort(portId);
-                    SetView<Integer> masterSlavePortConflicts = Sets.intersection(ImmutableSet.copyOf(devicesOnPort),
-                            ImmutableSet.copyOf(devicesWithSameAddress));
-
-                    if (!masterSlavePortConflicts.isEmpty()) {
-                        String deviceName = masterSlavePortConflicts.stream().findFirst().map(new Function<Integer, String>() {
-                            @Override
-                            public String apply(Integer id) {
-                                return dbCache.getAllPaosMap().get(id).getPaoName();
-                            }
-                        }).get();
-
-                        errors.rejectValue("deviceAddress.masterAddress", basekey + ".masterSlave",
-                                new Object[] { deviceName }, "Master/Slave combination in use");
-                        errors.rejectValue("deviceAddress.slaveAddress", "yukon.common.blank");
-                    }
-                }
             }
         }
     }

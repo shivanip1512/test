@@ -73,12 +73,7 @@ public class MockDeviceDao implements DeviceDao {
     }
 
     @Override
-    public List<Integer> getDevicesByPort(int portId) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
+    public List<LiteYukonPAObject> getLiteYukonPAObjectListByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
         throw new MethodNotImplementedException();
     }
 
@@ -245,16 +240,6 @@ public class MockDeviceDao implements DeviceDao {
 
     @Override
     public List<Integer> getDeviceIdsWithGuids() {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public Integer getPortForDeviceId(int DeviceId) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public List<Integer> getPortsForDeviceIds(List<Integer> deviceIDs) {
         throw new MethodNotImplementedException();
     }
 }

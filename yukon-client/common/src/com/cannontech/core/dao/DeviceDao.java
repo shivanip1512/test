@@ -75,9 +75,7 @@ public interface DeviceDao {
      */
     LiteYukonPAObject getLiteYukonPAObject(String deviceName, PaoType paoType);
 
-    List<Integer> getDevicesByPort(int portId);
-
-    List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);
+    List<LiteYukonPAObject> getLiteYukonPAObjectListByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress);
 
     void enableDevice(YukonDevice device);
 
@@ -245,14 +243,4 @@ public interface DeviceDao {
      * Returns a list of all the devices ids that have guids
      */
     List<Integer> getDeviceIdsWithGuids();
-
-    /**
-     * Returns the port associated with a Device Address Device Id or throws not found exception
-     */
-    Integer getPortForDeviceId(int DeviceId) throws NotFoundException;
-
-    /**
-     * Returns a list of ports associated with a list of Device Address Device Ids
-     */
-    List<Integer> getPortsForDeviceIds(List<Integer> deviceIDs);
 }

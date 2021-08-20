@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +37,6 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.impl.PaoLoader;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.TypeRowMapper;
@@ -459,35 +456,19 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
     
     @Override
-    public List<Integer> getDevicesByPort(int portId) {
-        List<Integer> devices = cache.getDevicesByCommPort(portId);
-        return devices;
-    }
-
-    @Override
-    public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
-        List<Integer> devicesByAddress = cache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
-        return devicesByAddress;
-    }
-
-    @Override
-    public Integer getPortForDeviceId(int DeviceId) throws NotFoundException {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PORTID FROM DeviceDirectCommSettings");
-        sql.append("WHERE DEVICEID").eq(DeviceId);
-        try {
-            return jdbcTemplate.queryForInt(sql);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("No Port ID was found for device id " + DeviceId, e);
-        }
-    }
-
-    @Override
-    public List<Integer> getPortsForDeviceIds(List<Integer> deviceIDs) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PORTID FROM DeviceDirectCommSettings");
-        sql.append("WHERE DEVICEID").in(deviceIDs);
-        return jdbcTemplate.query(sql, new IntegerRowMapper());
+    public List<LiteYukonPAObject> getLiteYukonPAObjectListByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
+        var sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT");
+        sql.append(    "yp.PAObjectID, yp.Category, yp.PAOName, yp.Type, yp.PAOClass, yp.Description, yp.DisableFlag");
+        sql.append("FROM YukonPAObject yp");
+        sql.append(    "JOIN DeviceDirectCommSettings ddcs ON yp.PAObjectId = ddcs.DeviceId");
+        sql.append(    "JOIN DeviceAddress da ON yp.PAObjectId = da.DeviceId");
+        sql.append("WHERE ddcs.PortId").eq(portId);
+        sql.append(    "AND da.MasterAddress").eq(masterAddress);
+        sql.append(    "AND da.SlaveAddress").eq(slaveAddress);
+        
+        return jdbcTemplate.query(sql, new LitePaoRowMapper());
     }
 
     @Override
