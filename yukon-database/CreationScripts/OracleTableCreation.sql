@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/2/2021 8:33:51 PM                          */
+/* Created on:     8/19/2021 12:35:03 AM                        */
 /*==============================================================*/
 
 
@@ -10750,7 +10750,6 @@ INSERT INTO YukonRoleProperty VALUES(-40300,-400,'Auto Thermostat Mode Enabled',
 
 /* Capacitor Control role properties */
 insert into YukonRoleProperty values(-70000,-700,'Access','false','Sets accessibility to the CapControl module.');
-insert into YukonRoleProperty values(-70002,-700,'Hide Reports','false','Sets the visibility of reports.');
 insert into YukonRoleProperty values(-70003,-700,'Hide Graphs','false','Sets the visibility of graphs.');
 insert into YukonRoleProperty values(-70007,-700,'pfactor_decimal_places','1','How many decimal places to show for real values for PowerFactor');
 insert into YukonRoleProperty values(-70008,-700,'Allow OV/UV','false','Allows users to toggle OV/UV usage for capbanks, substations, subs, and feeders.'); 
