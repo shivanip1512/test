@@ -201,6 +201,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     KVA_Q34("kVA (Quadrants 3 4)", AttributeGroup.REACTIVE),
     KVA_Q13("kVA (Quadrants 1 3)", AttributeGroup.REACTIVE),
     KVA_Q24("kVA (Quadrants 2 4)", AttributeGroup.REACTIVE),
+    KVA_Q124("kVA (Quadrants 1 2 4)", AttributeGroup.REACTIVE),
     PEAK_KVA_Q124_FROZEN("Peak kVA (Quadrants 1 2 4) Frozen ", AttributeGroup.REACTIVE),
     PEAK_KVA_Q124_FROZEN_RATE_A("Peak kVA (Quadrants 1 2 4) Frozen Rate A", AttributeGroup.REACTIVE),
     PEAK_KVA_Q124_FROZEN_RATE_B("Peak kVA (Quadrants 1 2 4) Frozen Rate B", AttributeGroup.REACTIVE),

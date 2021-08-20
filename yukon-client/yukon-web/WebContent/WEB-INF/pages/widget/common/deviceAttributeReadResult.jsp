@@ -4,7 +4,7 @@
 
 <c:if test="${result != null}">
 	<c:choose>
-		<c:when test="${result.hasTimeoutError()}">
+		<c:when test="${result.timeout}">
 			<div class="warning"><i:inline key="yukon.common.device.attributeRead.timeoutWarning"/></div>
 		</c:when>
 		<c:when test="${result.success}">

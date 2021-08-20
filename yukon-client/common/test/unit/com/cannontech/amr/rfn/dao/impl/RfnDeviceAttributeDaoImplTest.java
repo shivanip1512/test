@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
@@ -14,14 +16,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 
+import com.cannontech.amr.rfn.dao.impl.RfnDeviceAttributeDaoImpl.MetricIdAttributeMapping;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointMappingIcd;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.YamlParserUtils;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -68,7 +73,7 @@ public class RfnDeviceAttributeDaoImplTest {
     }
     
     @Test
-    public void test_allMetricsUnique() throws IOException {
+    public void test_allMetricDefinitionsUnique() throws IOException {
         ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
 
         PointMappingIcd icd = YamlParserUtils.parseToObject(yukonPointMappingIcdYaml.getInputStream(), PointMappingIcd.class);
@@ -82,6 +87,25 @@ public class RfnDeviceAttributeDaoImplTest {
                             + "\n" + t2);
                     return t1;
                 }))));
+    }
+    
+    @Test
+    public void test_allAttributesUnique() throws IOException {
+        var mapping = this.getClass().getClassLoader().getResourceAsStream("metricIdToAttributeMapping.json");
+        var inputStream = new InputStreamResource(mapping);
+        var jsonString = IOUtils.toString(inputStream.getInputStream(), StandardCharsets.UTF_8);
+        var metricList = JsonUtils.fromJson(jsonString, MetricIdAttributeMapping.class);
+        
+        var duplicateAttributes =
+            metricList.metricMapping.stream().collect(
+                    Collectors.groupingBy(mia -> mia.attribute,
+                    Collectors.mapping(mia -> mia.metricId,
+                    Collectors.toSet())))
+                .entrySet().stream()
+                .filter(e -> e.getValue().size() > 1)
+                .collect(Collectors.toList());
+        
+        assertEquals(Collections.emptyList(), duplicateAttributes, "Attribute mapped to multiple metrics");
     }
     
     @Test

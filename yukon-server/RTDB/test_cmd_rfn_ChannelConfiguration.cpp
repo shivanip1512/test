@@ -75,16 +75,13 @@ const std::vector<int> allMetrics = [] {
 
     const std::vector<int> metrics {
         //  0                    10                   20                   30                   40                   50                   60                     70                 80                   90
-            _,X,X,X,X,X,X,X,X,X, X,X,X,a,_,_,_,X,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,_,_,_, _,X,X,X,X,X,X,X,X,X,X, _,_,_,_,_,_,_,o,o, _,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
+            _,X,X,X,X,X,X,X,X,X, X,X,X,a,_,_,_,X,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,o,_,_, _,X,X,X,X,X,X,X,X,X,X, _,_,_,_,_,_,_,o,o, _,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
         
         //  100                  110                  120                  130                  140                  150                  160                    170                180                  190
-            X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, o,o,_,_,A,o,_,_,_,_, _,_,_,_,o,_,_,_,_,_,
+            X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, o,o,_,_,A,o,_,_,_,_, _,_,_,_,o,_,_,_,_,o,
 
         //  200                  210                  220                  230                  240                  250                  260                    270                280                  290
-            _,_,_,_,_,_,X,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,X,_,_,_,_,_,_,_, o,o,_,o,o,_,_,_,_,_, o,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
-
-        //  300                  310                  320                  330                  340                  350
-            _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,o,_,_,_,_,_,_,_,_, o,o,o,o,o,o,_,_,_,_, o,o,o,o,o,o
+            _,_,_,_,_,_,X,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,X,_,_,_,_,_,_,_, o,o,_,o,o,_,_,_,_,_, o,o,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
     };
 
     std::vector<int> accumulator;
@@ -145,7 +142,7 @@ const std::vector<std::string> allDescriptions {
         "Var received, current demand (33)",
         "Var delivered, peak demand (34)",
         "Var received, peak demand (35)",
-        "Delivered Peak kVAr Frozen (36)",
+        "Var delivered, peak demand (Frozen) (36)",
         "Var received, peak demand coincident (37)",
         "VA hour delivered (41)",
         "VA hour received (42)",
@@ -163,6 +160,7 @@ const std::vector<std::string> allDescriptions {
         "VA received, peak demand (Frozen) (54)",
         "VA lagging, peak demand (55)",
         "Peak kVA (Quadrants 1 2 4) Frozen (56)",
+        "kVA (Quadrants 1 2 4) (57)",
         "Q hour delivered (61)",
         "Q hour received (62)",
         "Q hour total/sum (63)",
@@ -223,6 +221,7 @@ const std::vector<std::string> allDescriptions {
         "Sum Peak kVAr (184)",
         "Sum Peak kVAr Frozen (185)",
         "Sum Watts (194)",
+        "Sum kVAr (199)",
         "Peak kVA (Quadrants 1 2) (206)",
         "Sum Peak kVA (210)",
         "VA hour Q2 + Q3 + Q4 (222)",
@@ -231,21 +230,9 @@ const std::vector<std::string> allDescriptions {
         "Average Power Factor (233)",
         "Average Power Factor Frozen (234)",
         "Peak Demand Daily (240)",
+        "Sum kVA (241)",
         "Time in Seconds (256)",
         "Temperature in Centigrade (257)",
-        "Net Watts (331)",
-        "kVAr (Quadrants 1 3) (340)",
-        "kVAr (Quadrants 2 4) (341)",
-        "kVAr (Quadrants 1 4) (342)",
-        "kVAr (Quadrants 2 3) (343)",
-        "Sum Vars (344)",
-        "Net Vars (345)",
-        "kVA (Quadrants 1 2) (350)",
-        "kVA (Quadrants 3 4) (351)",
-        "kVA (Quadrants 1 3) (352)",
-        "kVA (Quadrants 2 4) (353)",
-        "Sum VA (354)",
-        "Net VA (355)",
         "Watt hour delivered, Rate A (1001)",
         "Watt hour received, Rate A (1002)",
         "Watt hour total/sum, Rate A (1003)",
@@ -275,7 +262,7 @@ const std::vector<std::string> allDescriptions {
         "Var received, current demand, Rate A (1033)",
         "Var delivered, peak demand, Rate A (1034)",
         "Var received, peak demand, Rate A (1035)",
-        "Delivered Peak kVAr Frozen, Rate A (1036)",
+        "Var delivered, peak demand (Frozen), Rate A (1036)",
         "Var received, peak demand coincident, Rate A (1037)",
         "VA hour delivered, Rate A (1041)",
         "VA hour received, Rate A (1042)",
@@ -379,7 +366,7 @@ const std::vector<std::string> allDescriptions {
         "Var received, current demand, Rate B (2033)",
         "Var delivered, peak demand, Rate B (2034)",
         "Var received, peak demand, Rate B (2035)",
-        "Delivered Peak kVAr Frozen, Rate B (2036)",
+        "Var delivered, peak demand (Frozen), Rate B (2036)",
         "Var received, peak demand coincident, Rate B (2037)",
         "VA hour delivered, Rate B (2041)",
         "VA hour received, Rate B (2042)",
@@ -481,7 +468,7 @@ const std::vector<std::string> allDescriptions {
         "Var received, current demand, Rate C (3033)",
         "Var delivered, peak demand, Rate C (3034)",
         "Var received, peak demand, Rate C (3035)",
-        "Delivered Peak kVAr Frozen, Rate C (3036)",
+        "Var delivered, peak demand (Frozen), Rate C (3036)",
         "Var received, peak demand coincident, Rate C (3037)",
         "VA hour delivered, Rate C (3041)",
         "VA hour received, Rate C (3042)",
@@ -583,7 +570,7 @@ const std::vector<std::string> allDescriptions {
         "Var received, current demand, Rate D (4033)",
         "Var delivered, peak demand, Rate D (4034)",
         "Var received, peak demand, Rate D (4035)",
-        "Delivered Peak kVAr Frozen, Rate D (4036)",
+        "Var delivered, peak demand (Frozen), Rate D (4036)",
         "Var received, peak demand coincident, Rate D (4037)",
         "VA hour delivered, Rate D (4041)",
         "VA hour received, Rate D (4042)",

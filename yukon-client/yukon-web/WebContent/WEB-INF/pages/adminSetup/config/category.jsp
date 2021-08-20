@@ -56,6 +56,9 @@
                                             <c:when test="${setting.extra.sensitiveInformation}">
                                                 <tags:password path="${setting.path}" showPassword="true" includeShowHideButton="true"/>
                                             </c:when>
+                                            <c:when test="${setting.extra.nonViewableSensitiveInformation}">
+                                                <tags:password path="${setting.path}" showPassword="true" includeShowHideButton="false"/>
+                                            </c:when>
                                             <c:otherwise>
                                                 <tags:simpleInputType id="${setting.extra.type}" input="${setting.valueType}" path="${setting.path}" />
                                             </c:otherwise>

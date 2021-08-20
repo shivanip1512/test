@@ -65,4 +65,6 @@ public interface RfnDeviceCreationService {
      * This method is used to create device manually from UI
      */
     RfnDevice create(RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user);
+    
+    public String getUnknownTemplates();
 }

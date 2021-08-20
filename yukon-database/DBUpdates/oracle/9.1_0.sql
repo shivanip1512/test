@@ -262,6 +262,13 @@ ALTER TABLE RfnModelChange
 INSERT INTO DBUpdates VALUES ('YUK-24057', '9.1.0', SYSDATE);
 /* @end YUK-24057 */
 
+/* @start YUK-20202 */
+DELETE FROM YukonGroupRole WHERE RolePropertyID = -70002;
+DELETE FROM YukonRoleProperty WHERE RolePropertyId = -70002;
+
+INSERT INTO DBUpdates VALUES ('YUK-20202', '9.1.0', SYSDATE);
+/* @end YUK-20202 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
