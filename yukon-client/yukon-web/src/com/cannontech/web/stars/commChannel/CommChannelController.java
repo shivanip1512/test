@@ -65,7 +65,6 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 public class CommChannelController {
 
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String baseKey = "yukon.common.";
     private static final Logger log = YukonLogManager.getLogger(CommChannelController.class);
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
@@ -79,7 +78,8 @@ public class CommChannelController {
             @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting) {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/");
-            ResponseEntity<? extends Object> response = getResponseEntity(userContext, request, url);
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext, request, url,
+                    DeviceBaseModel.class, HttpMethod.GET, DeviceBaseModel.class);
             
             List<DeviceBaseModel> commChannelList = new ArrayList<>();
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -272,11 +272,12 @@ public class CommChannelController {
     private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId, String commChannelName) {
         try {
             String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + portId + "/devicesAssigned");
-            ResponseEntity<? extends Object> response = getResponseEntity(userContext, request, assignedDevicesUrl);
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext,
+                    request, assignedDevicesUrl, HttpMethod.GET, DeviceBaseModel.class, Object.class);
             
             List<DeviceBaseModel> devicesList = new ArrayList<>();
             if (response.getStatusCode() == HttpStatus.OK) {
-            	devicesList = ((SearchResults<DeviceBaseModel>)response.getBody()).getResultList();
+                devicesList = ((SearchResults<DeviceBaseModel>)response.getBody()).getResultList();
             }
             if (!devicesList.isEmpty()) {
                 return devicesList.stream()
@@ -289,20 +290,6 @@ public class CommChannelController {
             log.error("Error while retrieving assigned devices for comm Channel: {}. Error: {}", commChannelName, ex.getMessage());
         }
         return null;
-    }
-
-    /**
-     * Get the response in form of DevicesBaseModel
-     */
-    private ResponseEntity<? extends Object> getResponseEntity(YukonUserContext userContext, HttpServletRequest request, String url) {
-
-        ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext,
-                                                                                    request,
-                                                                                    url,
-                                                                                    DeviceBaseModel.class,
-                                                                                    HttpMethod.GET,
-                                                                                    DeviceBaseModel.class);
-        return response;
     }
 
     private void setupErrorFields(HttpServletResponse resp, PortBase commChannel, ModelMap model, YukonUserContext userContext,
