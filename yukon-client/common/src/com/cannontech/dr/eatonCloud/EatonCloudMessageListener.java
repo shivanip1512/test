@@ -298,6 +298,7 @@ public class EatonCloudMessageListener {
         }
 
         /*
+         * See LCR Control Command Payloads reference:
          * https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=137056391
          * 
          *                RampIN - TRUE | RampIN - FALSE
