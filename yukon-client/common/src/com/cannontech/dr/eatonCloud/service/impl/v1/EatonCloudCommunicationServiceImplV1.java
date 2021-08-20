@@ -9,10 +9,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.logging.log4j.core.Logger;
-import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -38,7 +35,6 @@ import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.eatonCloud.message.EatonCloudAuthTokenRequestV1;
 import com.cannontech.dr.eatonCloud.message.V1.EatonCloudAuthTokenResponseV1;
-import com.cannontech.dr.eatonCloud.model.EatonCloudChannel;
 import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
@@ -70,6 +66,7 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
     @PostConstruct
     public void init() {
         YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.EATON_CLOUD_AUTH_TOKEN);
+        jmsTemplate.disableCommLogging();
         eatonCloudAuthTokenRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.EATON_CLOUD_AUTH_TOKEN.getName(),
                 configSource, jmsTemplate);
         restTemplate = new RestTemplate();
