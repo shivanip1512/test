@@ -1,5 +1,6 @@
 package com.cannontech.clientutils.logger.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
@@ -43,7 +44,7 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
         logger.setLoggerId(loggerId);
         dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.LOGGER, loggerId);
         systemEventLogService.loggerAdded(logger.getLoggerName(), logger.getLevel().toString(),
-                DateUtils.addMinutes(logger.getExpirationDate(), 1439), ApiRequestContext.getContext().getLiteYukonUser());
+                getExpirationDate(logger.getExpirationDate()), ApiRequestContext.getContext().getLiteYukonUser());
         return logger;
     }
 
@@ -52,8 +53,15 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
         yukonLoggerDao.updateLogger(loggerId, logger);
         dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.LOGGER, loggerId);
         systemEventLogService.loggerUpdated(logger.getLoggerName(), logger.getLevel().toString(),
-                DateUtils.addMinutes(logger.getExpirationDate(), 1439), ApiRequestContext.getContext().getLiteYukonUser());
+                getExpirationDate(logger.getExpirationDate()), ApiRequestContext.getContext().getLiteYukonUser());
         return logger;
+    }
+
+    /**
+     * Return Expiration Date after adding 1439 minutes
+     */
+    private Date getExpirationDate(Date expirationDate) {
+        return expirationDate == null ? null : DateUtils.addMinutes(expirationDate, 1439);
     }
 
     @Override
