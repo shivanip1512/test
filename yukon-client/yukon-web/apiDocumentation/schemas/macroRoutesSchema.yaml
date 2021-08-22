@@ -31,10 +31,7 @@ routeList:
     properties:
       routeId:
         type: integer
-        description: 'ID of the selected route.'
-      routeName:
-          type: String
-          description: 'Name of the selected route.'  
+        description: 'Id of the selected route.'
 
 id:
   title: id
@@ -70,6 +67,15 @@ components:
             routeName: 'Route1'
           - routeId: 2
             routeName: 'Route2'
+    MacroRouteRequest:
+      value:
+        id: 222
+        type: ROUTE_MACRO
+        name: Test MacroRoute
+        enable: false
+        routeList:
+          - routeId: 1
+          - routeId: 2
     List MacroRoutes:
       value:
         - id: 222
