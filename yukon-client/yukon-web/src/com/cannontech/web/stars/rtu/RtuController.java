@@ -224,6 +224,8 @@ public class RtuController {
         rtuDnpValidationUtil.validateAddressing(
                 newRtu.getDeviceDirectCommSettings(), 
                 newRtu.getDeviceAddress(), 
+                newRtu.getIpAddress(),
+                newRtu.getPort(),
                 result, baseKey + "error.masterSlave");
         if (result.hasErrors()) {
             List<DevicePointDetail> drvicPointDetails = rtuDnpService.getRtuPointDetail(newRtu.getId());

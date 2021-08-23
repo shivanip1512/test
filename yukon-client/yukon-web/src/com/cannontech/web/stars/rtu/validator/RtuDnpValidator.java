@@ -30,6 +30,8 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
         rtuDnpValidationUtil.validateAddressing(
                 rtuDnp.getDeviceDirectCommSettings(), 
                 rtuDnp.getDeviceAddress(), 
+                rtuDnp.getIpAddress(),
+                rtuDnp.getPort(),
                 errors, basekey + ".masterSlave");
         validateScanIntervals(rtuDnp, errors);
         YukonValidationUtils.checkIsBlank(errors, "port", rtuDnp.getPort(), yukonValidationHelper.getMessage("yukon.web.modules.operator.rtuDetail.port"), false);

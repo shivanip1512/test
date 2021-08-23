@@ -38,6 +38,8 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
             rtuDnpValidationUtil.validateAddressing(
                     cbc.getDeviceDirectCommSettings(), 
                     cbc.getDeviceAddress(),
+                    cbc.getIpAddress(),
+                    cbc.getPort(),
                     errors, basekey + ".masterSlave");
             if (!cbc.getDeviceScanRateMap().isEmpty()) {
                 validateScanIntervals(cbc, errors);

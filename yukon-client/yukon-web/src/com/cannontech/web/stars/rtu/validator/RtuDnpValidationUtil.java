@@ -6,15 +6,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
+import com.cannontech.common.model.PaoPropertyName;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoPropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.yukon.IDatabaseCache;
-
 import com.cannontech.core.dao.DeviceDao;
 
 @Service
@@ -27,6 +29,7 @@ public class RtuDnpValidationUtil extends ValidationUtils {
     @Autowired private DeviceDao deviceDao;
 	@Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private PaoPropertyDao paoPropertyDao;
     
     public void validateName(RtuDnp rtuDnp, Errors errors, boolean isCopyOperation) {
         YukonValidationUtils.checkIsBlank(errors, "name", rtuDnp.getName(), "Name", false);
@@ -58,8 +61,8 @@ public class RtuDnpValidationUtil extends ValidationUtils {
         }
     }
 
-    public void validateAddressing(DeviceDirectCommSettings directCommSettings, DeviceAddress address, Errors errors, 
-            String masterSlaveErrorKey) {
+    public void validateAddressing(DeviceDirectCommSettings directCommSettings, DeviceAddress address, String tcpIpAddress, String tcpPort, 
+            Errors errors, String masterSlaveErrorKey) {
         
         YukonValidationUtils.checkRange(errors, POST_COMM_WAIT, address.getPostCommWait(), 
                 0, 99999, true);
@@ -82,11 +85,21 @@ public class RtuDnpValidationUtil extends ValidationUtils {
             || errors.hasFieldErrors(ADDRESS_SLAVE)) {
             return;
         }
+        
+        var conflictingDevices =
+                deviceDao.getLiteYukonPAObjectListByPortAndDeviceAddress(
+                        directCommSettings.getPortID(),
+                        address.getMasterAddress(),
+                        address.getSlaveAddress()).stream();
 
-        deviceDao.getLiteYukonPAObjectListByPortAndDeviceAddress(
-                directCommSettings.getPortID(),
-                address.getMasterAddress(),
-                address.getSlaveAddress()).stream()
+        var port = dbCache.getAllPaosMap().get(directCommSettings.getPortID());
+        if (port.getPaoType() == PaoType.TCPPORT) {
+            conflictingDevices = conflictingDevices.filter(conflict ->
+                    tcpIpAddress.equals(paoPropertyDao.getByIdAndName(conflict.getLiteID(), PaoPropertyName.TcpIpAddress).getPropertyValue())
+                    && tcpPort.equals(paoPropertyDao.getByIdAndName(conflict.getLiteID(), PaoPropertyName.TcpPort).getPropertyValue()));
+        }
+        
+        conflictingDevices
             .findFirst()
             .ifPresent(conflict -> {
                 errors.rejectValue(ADDRESS_MASTER, masterSlaveErrorKey, ArrayUtils.toArray(conflict.getPaoName()), "Master/Slave combination in use");
