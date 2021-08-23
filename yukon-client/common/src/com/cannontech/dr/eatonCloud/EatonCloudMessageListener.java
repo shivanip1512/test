@@ -27,6 +27,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StopWatch;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -189,11 +190,16 @@ public class EatonCloudMessageListener {
         Set<Integer> successDeviceIds = new HashSet<>();
         Instant sendTime = new Instant();
         
-        guids.forEach((deviceId, guid) -> {
+        StopWatch stopwatch = new StopWatch();
+        stopwatch.start();
+        guids.entrySet().parallelStream().forEach(entry -> {
+            int deviceId = entry.getKey();
+            String guid = entry.getValue();
+            
             String deviceName = dbCache.getAllDevices().stream()
                     .filter(d -> d.getLiteID() == deviceId)
                     .findAny()
-                    .map(d -> d.getPaoName())
+                    .map(LiteYukonPAObject::getPaoName)
                     .orElse(null);
             try {
                 EatonCloudCommandResponseV1 response = eatonCloudCommunicationService.sendCommand(guid,
@@ -206,13 +212,14 @@ public class EatonCloudMessageListener {
                 } else {
                     throw new EatonCloudException(response.getMessage());
                 }
+                log.info("Command sent to {}", deviceName);
             } catch (EatonCloudCommunicationExceptionV1 e) {
                 totalFailed.getAndIncrement();
-                log.error("Error sending command device id:{} params:{}", deviceId, params, e);
+                log.error("Error sending command device id:{}, name:{} params:{}", deviceId, params, e);
                 processError(eventId, params, deviceId, e.getErrorMessage().getMessage());
             } catch (EatonCloudException e) {
                 totalFailed.getAndIncrement();
-                log.error("Error sending command device id:{} params:{}", deviceId, params, e);
+                log.error("Error sending command device id:{}, name:{} params:{}", deviceId, params, e);
                 processError(eventId, params, deviceId, e.getMessage());
             }
             
@@ -222,6 +229,9 @@ public class EatonCloudMessageListener {
                     command.getDutyCyclePeriod(),
                     command.getCriticality());
         });
+        
+        stopwatch.stop();
+        log.info("Commands timer - devices: {}, total seconds: {} ({} minutes)", guids.size(), stopwatch.getTotalTimeSeconds(), stopwatch.getTotalTimeSeconds()/60);
         
         DateTime dateTime = new DateTime();
         if (!successDeviceIds.isEmpty()) {
