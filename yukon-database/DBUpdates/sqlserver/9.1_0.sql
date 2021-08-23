@@ -278,6 +278,13 @@ DELETE FROM YukonRoleProperty WHERE RolePropertyId = -70002;
 INSERT INTO DBUpdates VALUES ('YUK-20202', '9.1.0', GETDATE());
 /* @end YUK-20202 */
 
+/* @start YUK-24669 */
+DELETE FROM YukonListEntry
+WHERE YukonDefinitionID = 1344;
+
+INSERT INTO DBUpdates VALUES ('YUK-24669', '9.1.0', GETDATE());
+/* @end YUK-24669 */
+
 /* @start YUK-24842 */
 UPDATE p
 SET p.PointName = 'kVAh (Quadrants 1 2 4)'
