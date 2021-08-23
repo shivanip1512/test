@@ -392,6 +392,65 @@ AND PaobjectId IN (
 INSERT INTO DBUpdates VALUES ('YUK-24842', '9.1.0', GETDATE());
 /* @end YUK-24842 */
 
+/* @start YUK-24845 */
+UPDATE Point 
+SET PointName = 'Peak kVA (Quadrants 1 2 4)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 255
+AND PointName = 'Peak kVA Lagging'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2')
+);
+
+UPDATE Point 
+SET PointName = 'Peak kVA (Quadrants 1 2 4) (Rate A kVA)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 256
+AND PointName = 'Peak kVA Lagging Rate A'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2')
+);
+
+UPDATE Point 
+SET PointName = 'Peak kVA (Quadrants 1 2 4) (Rate B kVA)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 257
+AND PointName = 'Peak kVA Lagging Rate B'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2')
+);
+
+UPDATE Point 
+SET PointName = 'Peak kVA (Quadrants 1 2 4) (Rate C kVA)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 258
+AND PointName = 'Peak kVA Lagging Rate C'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2')
+);
+
+UPDATE Point 
+SET PointName = 'Peak kVA (Quadrants 1 2 4) (Rate D kVA)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 259
+AND PointName = 'Peak kVA Lagging Rate D'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2')
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-24845', '9.1.0', GETDATE());
+/* @end YUK-24845 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
