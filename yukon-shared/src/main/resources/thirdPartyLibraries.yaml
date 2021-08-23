@@ -1576,20 +1576,6 @@ Java :
     jira : YUK-16690
     notes : 
   
-  - filename : json-smart-2.3.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 2.3.0
-    project URL : " http://www.minidev.net/"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/net.minidev/json-smart/2.3"
-    md5 : f2a921d4baaa7308de04eed4d8d72715
-    sha1 : 007396407491352ce4fa30de92efb158adb76b5b
-    updated : 2019-12-04
-    jira : YUK-20500
-    notes :       
-  
   - filename : jsoup-1.10.3.jar
     yukon group : UI
     project : JSoup Java HTML Parser

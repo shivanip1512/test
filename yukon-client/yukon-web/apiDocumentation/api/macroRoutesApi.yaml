@@ -11,7 +11,7 @@ post-operation:
             $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
           examples:
             MacroRoute:
-              $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
+              $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRouteRequest'
       required: true
     responses:
       '201':
@@ -84,7 +84,7 @@ get-update-delete-operation:
             $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
           examples:
             Macro Route:
-              $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
+              $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRouteRequest'
       required: true
     responses:
       '200':
