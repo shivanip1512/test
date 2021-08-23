@@ -363,6 +363,66 @@ WHERE p.PointType = 'Analog'
 INSERT INTO DBUpdates VALUES ('YUK-24842', '9.1.0', SYSDATE);
 /* @end YUK-24842 */
 
+/* @start YUK-24960 */
+
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 1 2 4)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 245
+AND PointName = 'kVAh Lagging'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN430SL2', 'RFN430SL3', 'RFN430SL4')
+);
+
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 1 2 4) (Rate A kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 246
+AND PointName = 'kVAh Lagging Rate A'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN430SL2', 'RFN430SL3', 'RFN430SL4')
+);
+
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 1 2 4) (Rate B kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 247
+AND PointName = 'kVAh Lagging Rate B'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN430SL2', 'RFN430SL3', 'RFN430SL4')
+);
+
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 1 2 4) (Rate C kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 248
+AND PointName = 'kVAh Lagging Rate C'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN430SL2', 'RFN430SL3', 'RFN430SL4')
+);
+
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 1 2 4) (Rate D kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 249
+AND PointName = 'kVAh Lagging Rate D'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN430SL2', 'RFN430SL3', 'RFN430SL4')
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-24960', '9.1.0', SYSDATE);
+/* @end YUK-24960 */
+
 /* @start YUK-24845 */
 UPDATE p
 SET p.PointName = 'Peak kVA (Quadrants 1 2 4)'

@@ -16,6 +16,55 @@ WHERE ProgramId IN
 INSERT INTO DBUpdates VALUES ('YUK-23591', '9.1.0', GETDATE());
 /* @end YUK-23591 */
 
+/* @start YUK-24960 */
+UPDATE p
+SET p.PointName = 'kVAh (Quadrants 1 2 4)'
+FROM POINT p 
+    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
+WHERE p.PointType = 'Analog' 
+    AND p.PointOffset = 245
+    AND p.PointName = 'kVAh Lagging'
+    AND y.Type IN ('RFN430SL2', 'RFN430SL3', 'RFN430SL4');
+
+UPDATE p
+SET p.PointName = 'kVAh (Quadrants 1 2 4) (Rate A kVAh)'
+FROM POINT p 
+    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
+WHERE p.PointType = 'Analog' 
+    AND p.PointOffset = 246
+    AND p.PointName = 'kVAh Lagging Rate A'
+    AND y.Type IN ('RFN430SL2', 'RFN430SL3', 'RFN430SL4');
+
+UPDATE p
+SET p.PointName = 'kVAh (Quadrants 1 2 4) (Rate B kVAh)'
+FROM POINT p 
+    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
+WHERE p.PointType = 'Analog' 
+    AND p.PointOffset = 247
+    AND p.PointName = 'kVAh Lagging Rate B'
+    AND y.Type IN ('RFN430SL2', 'RFN430SL3', 'RFN430SL4');
+
+UPDATE p
+SET p.PointName = 'kVAh (Quadrants 1 2 4) (Rate C kVAh)'
+FROM POINT p 
+    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
+WHERE p.PointType = 'Analog' 
+    AND p.PointOffset = 248
+    AND p.PointName = 'kVAh Lagging Rate C'
+    AND y.Type IN ('RFN430SL2', 'RFN430SL3', 'RFN430SL4');
+
+UPDATE p
+SET p.PointName = 'kVAh (Quadrants 1 2 4) (Rate D kVAh)'
+FROM POINT p 
+    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
+WHERE p.PointType = 'Analog' 
+    AND p.PointOffset = 249
+    AND p.PointName = 'kVAh Lagging Rate D'
+    AND y.Type IN ('RFN430SL2', 'RFN430SL3', 'RFN430SL4');
+
+INSERT INTO DBUpdates VALUES ('YUK-24960', '9.1.0', GETDATE());
+/* @end YUK-24960 */
+
 /* @start YUK-23949 */
 INSERT INTO DeviceConfigCategoryItem
 SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryID) 
