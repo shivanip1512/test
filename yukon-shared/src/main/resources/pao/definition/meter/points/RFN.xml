@@ -1033,36 +1033,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
     </point>
-    <point offset="245" type="Analog">
-        <name>kVAh Lagging</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="246" type="Analog">
-        <name>kVAh Lagging Rate A</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="247" type="Analog">
-        <name>kVAh Lagging Rate B</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="248" type="Analog">
-        <name>kVAh Lagging Rate C</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="249" type="Analog">
-        <name>kVAh Lagging Rate D</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
     <point offset="250" type="Analog">
         <name>Peak kVA</name>
         <multiplier value="1"/>
