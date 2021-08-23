@@ -81,7 +81,7 @@ const std::vector<int> allMetrics = [] {
             X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, o,o,_,_,A,o,_,_,_,_, _,_,_,_,o,_,_,_,_,o,
 
         //  200                  210                  220                  230                  240                  250                  260                    270                280                  290
-            _,_,_,_,_,_,X,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,X,_,_,_,_,_,_,_, o,o,_,o,o,_,_,_,_,_, o,o,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
+            _,_,_,_,_,_,X,_,_,_, A,o,_,_,_,_,_,_,_,_, _,_,X,_,_,_,_,_,_,_, o,o,_,o,o,_,_,_,_,_, o,o,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_
     };
 
     std::vector<int> accumulator;
@@ -158,7 +158,7 @@ const std::vector<std::string> allDescriptions {
         "VA received, peak demand (52)",
         "VA delivered, peak demand (Frozen) (53)",
         "VA received, peak demand (Frozen) (54)",
-        "VA lagging, peak demand (55)",
+        "VA Q1 + Q2 + Q4, peak (55)",
         "VA Q1 + Q2 + Q4, peak (Frozen) (56)",
         "kVA (Quadrants 1 2 4) (57)",
         "Q hour delivered (61)",
@@ -224,6 +224,7 @@ const std::vector<std::string> allDescriptions {
         "Sum kVAr (199)",
         "Peak kVA (Quadrants 1 2) (206)",
         "Sum Peak kVA (210)",
+        "Sum Peak kVA Frozen (211)",
         "VA hour Q2 + Q3 + Q4 (222)",
         "Minimum Power Factor (230)",
         "Previous Minimum Power Factor (231)",
@@ -278,7 +279,7 @@ const std::vector<std::string> allDescriptions {
         "VA received, peak demand, Rate A (1052)",
         "VA delivered, peak demand (Frozen), Rate A (1053)",
         "VA received, peak demand (Frozen), Rate A (1054)",
-        "VA lagging, peak demand, Rate A (1055)",
+        "VA Q1 + Q2 + Q4, peak, Rate A (1055)",
         "VA Q1 + Q2 + Q4, peak (Frozen), Rate A (1056)",
         "Q hour delivered, Rate A (1061)",
         "Q hour received, Rate A (1062)",
@@ -382,7 +383,7 @@ const std::vector<std::string> allDescriptions {
         "VA received, peak demand, Rate B (2052)",
         "VA delivered, peak demand (Frozen), Rate B (2053)",
         "VA received, peak demand (Frozen), Rate B (2054)",
-        "VA lagging, peak demand, Rate B (2055)",
+        "VA Q1 + Q2 + Q4, peak, Rate B (2055)",
         "VA Q1 + Q2 + Q4, peak (Frozen), Rate B (2056)",
         "Q hour delivered, Rate B (2061)",
         "Q hour received, Rate B (2062)",
@@ -484,7 +485,7 @@ const std::vector<std::string> allDescriptions {
         "VA received, peak demand, Rate C (3052)",
         "VA delivered, peak demand (Frozen), Rate C (3053)",
         "VA received, peak demand (Frozen), Rate C (3054)",
-        "VA lagging, peak demand, Rate C (3055)",
+        "VA Q1 + Q2 + Q4, peak, Rate C (3055)",
         "VA Q1 + Q2 + Q4, peak (Frozen), Rate C (3056)",
         "Q hour delivered, Rate C (3061)",
         "Q hour received, Rate C (3062)",
@@ -586,7 +587,7 @@ const std::vector<std::string> allDescriptions {
         "VA received, peak demand, Rate D (4052)",
         "VA delivered, peak demand (Frozen), Rate D (4053)",
         "VA received, peak demand (Frozen), Rate D (4054)",
-        "VA lagging, peak demand, Rate D (4055)",
+        "VA Q1 + Q2 + Q4, peak, Rate D (4055)",
         "VA Q1 + Q2 + Q4, peak (Frozen), Rate D (4056)",
         "Q hour delivered, Rate D (4061)",
         "Q hour received, Rate D (4062)",

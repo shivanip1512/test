@@ -159,11 +159,11 @@ public:
     static const Attribute  PeakkVAFrozenRateC;
     static const Attribute  PeakkVAFrozenRateD;
     static const Attribute  PeakkVACoincidental;
-    static const Attribute  DeliveredPeakkVALagging;
-    static const Attribute  PeakkVALaggingRateA;
-    static const Attribute  PeakkVALaggingRateB;
-    static const Attribute  PeakkVALaggingRateC;
-    static const Attribute  PeakkVALaggingRateD;
+    static const Attribute  PeakkVAQ124;
+    static const Attribute  PeakkVAQ124RateA;
+    static const Attribute  PeakkVAQ124RateB;
+    static const Attribute  PeakkVAQ124RateC;
+    static const Attribute  PeakkVAQ124RateD;
     static const Attribute  ReceivedPeakkVA;
     static const Attribute  ReceivedPeakkVARateA;
     static const Attribute  ReceivedPeakkVARateB;
@@ -189,6 +189,7 @@ public:
     static const Attribute  PeakkVAQ124FrozenRateB;
     static const Attribute  PeakkVAQ124FrozenRateC;
     static const Attribute  PeakkVAQ124FrozenRateD;
+    static const Attribute  SumPeakkVAFrozen;
     static const Attribute  SumkVAr;
     static const Attribute  NetkVAr;
     static const Attribute  PeakkVAr;

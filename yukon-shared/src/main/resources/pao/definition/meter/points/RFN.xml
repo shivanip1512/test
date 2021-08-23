@@ -9,9 +9,8 @@ Note: [Delivered] - can be omitted/assumed where it make sense; Peak kW or kVar 
 Note: For attributes that reference the modifiers of "Quadrant" directly, the modifiers will follow the UOM in format "(Quadrants # #)". Example: kVA (Quadrants 1 2)
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
-
     <highestOffsets>
-        <analog offset="509"/>
+        <analog offset="510"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
         <status offset="102"/>
@@ -1095,31 +1094,31 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="255" type="Analog">
-        <name>Peak kVA Lagging</name>
+        <name>Peak kVA (Quadrants 1 2 4)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="256" type="Analog">
-        <name>Peak kVA Lagging Rate A</name>
+        <name>Peak kVA (Quadrants 1 2 4) (Rate A kVA)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="257" type="Analog">
-        <name>Peak kVA Lagging Rate B</name>
+        <name>Peak kVA (Quadrants 1 2 4) (Rate B kVA)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="258" type="Analog">
-        <name>Peak kVA Lagging Rate C</name>
+        <name>Peak kVA (Quadrants 1 2 4) (Rate C kVA)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="259" type="Analog">
-        <name>Peak kVA Lagging Rate D</name>
+        <name>Peak kVA (Quadrants 1 2 4) (Rate D kVA)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
@@ -2485,18 +2484,18 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="496" type="Analog">
-	    <name>Sum Peak kVAr Frozen</name>
-	    <multiplier value="1"/>
-	    <unitofmeasure value="KVAR"/>
-	    <decimalplaces value="3"/>
-	</point>
-	<point offset="497" type="Analog">
-	    <name>Delivered Peak kVAr Frozen</name>
-	    <multiplier value="1"/>
-	    <unitofmeasure value="KVAR"/>
-	    <decimalplaces value="3"/>
-	</point>
-	<point offset="498" type="Analog">
+        <name>Sum Peak kVAr Frozen</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="497" type="Analog">
+        <name>Delivered Peak kVAr Frozen</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="498" type="Analog">
         <name>Delivered Peak kVAr Frozen (Rate A kVAr)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAR"/>
@@ -2520,13 +2519,13 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVAR"/>
         <decimalplaces value="3"/>
     </point>
-	<point offset="502" type="Analog">
-	    <name>Peak kVA (Quadrants 1 2 4) Frozen</name>
-	    <multiplier value="1"/>
-	    <unitofmeasure value="KVA"/>
-	    <decimalplaces value="3"/>
-	</point>
-	<point offset="503" type="Analog">
+    <point offset="502" type="Analog">
+        <name>Peak kVA (Quadrants 1 2 4) Frozen</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="503" type="Analog">
         <name>Peak kVA (Quadrants 1 2 4) Frozen (Rate A kVA)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
@@ -2564,6 +2563,12 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="509" type="Analog">
         <name>kVA (Quadrants 1 2 4)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="510" type="Analog">
+        <name>Sum Peak kVA Frozen</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
