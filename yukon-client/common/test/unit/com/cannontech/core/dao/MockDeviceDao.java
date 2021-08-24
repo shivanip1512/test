@@ -73,7 +73,7 @@ public class MockDeviceDao implements DeviceDao {
     }
 
     @Override
-    public List<LiteYukonPAObject> getLiteYukonPAObjectListByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
+    public List<DisplayableDevice> getDevicesByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
         throw new MethodNotImplementedException();
     }
 

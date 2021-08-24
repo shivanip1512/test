@@ -87,7 +87,7 @@ public class RtuDnpValidationUtil extends ValidationUtils {
         }
         
         var conflictingDevices =
-                deviceDao.getLiteYukonPAObjectListByPortAndDeviceAddress(
+                deviceDao.getDevicesByPortAndDeviceAddress(
                         directCommSettings.getPortID(),
                         address.getMasterAddress(),
                         address.getSlaveAddress()).stream();
@@ -95,14 +95,14 @@ public class RtuDnpValidationUtil extends ValidationUtils {
         var port = dbCache.getAllPaosMap().get(directCommSettings.getPortID());
         if (port.getPaoType() == PaoType.TCPPORT) {
             conflictingDevices = conflictingDevices.filter(conflict ->
-                    tcpIpAddress.equals(paoPropertyDao.getByIdAndName(conflict.getLiteID(), PaoPropertyName.TcpIpAddress).getPropertyValue())
-                    && tcpPort.equals(paoPropertyDao.getByIdAndName(conflict.getLiteID(), PaoPropertyName.TcpPort).getPropertyValue()));
+                    tcpIpAddress.equals(paoPropertyDao.getByIdAndName(conflict.getId(), PaoPropertyName.TcpIpAddress).getPropertyValue())
+                    && tcpPort.equals(paoPropertyDao.getByIdAndName(conflict.getId(), PaoPropertyName.TcpPort).getPropertyValue()));
         }
         
         conflictingDevices
             .findFirst()
             .ifPresent(conflict -> {
-                errors.rejectValue(ADDRESS_MASTER, masterSlaveErrorKey, ArrayUtils.toArray(conflict.getPaoName()), "Master/Slave combination in use");
+                errors.rejectValue(ADDRESS_MASTER, masterSlaveErrorKey, ArrayUtils.toArray(conflict.getName()), "Master/Slave combination in use");
                 errors.rejectValue(ADDRESS_SLAVE, "yukon.common.blank");
             });
     }

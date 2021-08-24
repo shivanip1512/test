@@ -399,7 +399,7 @@ public class ObjectMapperFactoryImplTest {
         }
 
         @Override
-        public List<LiteYukonPAObject> getLiteYukonPAObjectListByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
+        public List<DisplayableDevice> getDevicesByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
