@@ -270,95 +270,115 @@ INSERT INTO DBUpdates VALUES ('YUK-20202', '9.1.0', SYSDATE);
 /* @end YUK-20202 */
 
 /* @start YUK-24842 */
-UPDATE p
-SET p.PointName = 'kVAh (Quadrants 1 2 4)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 245
-    AND p.PointName = 'kVAh Lagging'
-    AND y.Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX');
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 1 2 4)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 245
+AND PointName = 'kVAh Lagging'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
 
-UPDATE p
-SET p.PointName = 'kVAh (Quadrants 1 2 4) (Rate A kVAh)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 241
-    AND p.PointName = 'Delivered kVAh (Rate A kVAh)'
-    AND y.Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX');
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 1 2 4) (Rate A kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 241
+AND PointName = 'Delivered kVAh (Rate A kVAh)'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
 
-UPDATE p
-SET p.PointName = 'kVAh (Quadrants 1 2 4) (Rate B kVAh)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 242
-    AND p.PointName = 'Delivered kVAh (Rate B kVAh)'
-    AND y.Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX');
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 1 2 4) (Rate B kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 242
+AND PointName = 'Delivered kVAh (Rate B kVAh)'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
 
-UPDATE p
-SET p.PointName = 'kVAh (Quadrants 1 2 4) (Rate C kVAh)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 243
-    AND p.PointName = 'Delivered kVAh (Rate C kVAh)'
-    AND y.Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX');
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 1 2 4) (Rate C kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 243
+AND PointName = 'Delivered kVAh (Rate C kVAh)'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
 
-UPDATE p
-SET p.PointName = 'kVAh (Quadrants 1 2 4) (Rate D kVAh)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 244
-    AND p.PointName = 'Delivered kVAh (Rate D kVAh)'
-    AND y.Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX');
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 1 2 4) (Rate D kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 244
+AND PointName = 'Delivered kVAh (Rate D kVAh)'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
 
-UPDATE p
-SET p.PointName = 'kVAh (Quadrants 2 3 4)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 151
-    AND p.PointName = 'Received kVAh'
-    AND y.Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX');
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 2 3 4)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 151
+AND PointName = 'Received kVAh'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
 
-UPDATE p
-SET p.PointName = 'kVAh (Quadrants 2 3 4) (Rate A kVAh)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 274
-    AND p.PointName = 'Received kVAh (Rate A kVAh)'
-    AND y.Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX');
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 2 3 4) (Rate A kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 274
+AND PointName = 'Received kVAh (Rate A kVAh)'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
 
-UPDATE p
-SET p.PointName = 'kVAh (Quadrants 2 3 4) (Rate B kVAh)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 286
-    AND p.PointName = 'Received kVAh (Rate B kVAh)'
-    AND y.Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX');
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 2 3 4) (Rate B kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 286
+AND PointName = 'Received kVAh (Rate B kVAh)'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
 
-UPDATE p
-SET p.PointName = 'kVAh (Quadrants 2 3 4) (Rate C kVAh)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 298
-    AND p.PointName = 'Received kVAh (Rate C kVAh)'
-    AND y.Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX');
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 2 3 4) (Rate C kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 298
+AND PointName = 'Received kVAh (Rate C kVAh)'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
 
-UPDATE p
-SET p.PointName = 'kVAh (Quadrants 2 3 4) (Rate D kVAh)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 309
-    AND p.PointName = 'Received kVAh (Rate D kVAh)'
-    AND y.Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX');
+UPDATE Point 
+SET PointName = 'kVAh (Quadrants 2 3 4) (Rate D kVAh)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 309
+AND PointName = 'Received kVAh (Rate D kVAh)'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
 
 INSERT INTO DBUpdates VALUES ('YUK-24842', '9.1.0', SYSDATE);
 /* @end YUK-24842 */
@@ -424,50 +444,60 @@ INSERT INTO DBUpdates VALUES ('YUK-24960', '9.1.0', SYSDATE);
 /* @end YUK-24960 */
 
 /* @start YUK-24845 */
-UPDATE p
-SET p.PointName = 'Peak kVA (Quadrants 1 2 4)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 255
-    AND p.PointName = 'Peak kVA Lagging'
-    AND y.Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2');
+UPDATE Point 
+SET PointName = 'Peak kVA (Quadrants 1 2 4)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 255
+AND PointName = 'Peak kVA Lagging'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2')
+);
 
-UPDATE p
-SET p.PointName = 'Peak kVA (Quadrants 1 2 4) (Rate A kVA)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 256
-    AND p.PointName = 'Peak kVA Lagging Rate A'
-    AND y.Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2');
+UPDATE Point 
+SET PointName = 'Peak kVA (Quadrants 1 2 4) (Rate A kVA)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 256
+AND PointName = 'Peak kVA Lagging Rate A'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2')
+);
 
-UPDATE p
-SET p.PointName = 'Peak kVA (Quadrants 1 2 4) (Rate B kVA)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 257
-    AND p.PointName = 'Peak kVA Lagging Rate B'
-    AND y.Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2');
+UPDATE Point 
+SET PointName = 'Peak kVA (Quadrants 1 2 4) (Rate B kVA)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 257
+AND PointName = 'Peak kVA Lagging Rate B'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2')
+);
 
-UPDATE p
-SET p.PointName = 'Peak kVA (Quadrants 1 2 4) (Rate C kVA)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 258
-    AND p.PointName = 'Peak kVA Lagging Rate C'
-    AND y.Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2');
+UPDATE Point 
+SET PointName = 'Peak kVA (Quadrants 1 2 4) (Rate C kVA)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 258
+AND PointName = 'Peak kVA Lagging Rate C'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2')
+);
 
-UPDATE p
-SET p.PointName = 'Peak kVA (Quadrants 1 2 4) (Rate D kVA)'
-FROM POINT p 
-    JOIN YukonPAObject y ON p.PAObjectID=y.PAObjectID
-WHERE p.PointType = 'Analog' 
-    AND p.PointOffset = 259
-    AND p.PointName = 'Peak kVA Lagging Rate D'
-    AND y.Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2');
+UPDATE Point 
+SET PointName = 'Peak kVA (Quadrants 1 2 4) (Rate D kVA)'
+WHERE PointType = 'Analog' 
+AND PointOffset = 259
+AND PointName = 'Peak kVA Lagging Rate D'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN530FRXE', 'RFN530FRX', 'RFN520FRXED', 'RFN520FRXE', 'RFN520FRXD', 'RFN520FRX', 'RFN430SL4', 'RFN430SL3', 'RFN430SL2')
+);
 
 INSERT INTO DBUpdates VALUES ('YUK-24845', '9.1.0', SYSDATE);
 /* @end YUK-24845 */
