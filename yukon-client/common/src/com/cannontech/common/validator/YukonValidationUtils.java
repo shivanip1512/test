@@ -304,23 +304,21 @@ public class YukonValidationUtils extends ValidationUtils {
     }
 
     public static void ipHostNameValidator(Errors errors, String field, String fieldValue) {
-        rejectIfEmptyOrWhitespace(errors, "ipAddress", "yukon.web.error.ipAddressRequired");
+        rejectIfEmptyOrWhitespace(errors, field, "yukon.web.error.invalidIPHostName");
         if (YukonValidationUtilsCommon.ipHostNameValidator(errors, field, fieldValue)) {
             errors.rejectValue(field, "yukon.web.error.invalidIPHostName");
         }
     }
 
     public static void validatePort(Errors errors, String field, String fieldName, String fieldValue) {
-        if (!StringUtils.isBlank(fieldValue)) {
-            if (!errors.hasFieldErrors(field)) {
-                Range<Integer> range = Range.inclusive(1, 65535);
-                try {
-                    Integer portID = Integer.valueOf(fieldValue);
-                    checkRange(errors, field, fieldName, Integer.valueOf(portID), range, true);
-                } catch (Exception e) {
-                    errors.rejectValue(field, "yukon.web.error.outOfRangeObject", new Object[] { fieldName, range.getMin(),
-                            range.getMax() }, "");
-                }
+        if (!errors.hasFieldErrors(field)) {
+            var range = Range.inclusive(1, 65535);
+            try {
+                Integer portID = Integer.valueOf(fieldValue);
+                checkRange(errors, field, fieldName, portID, range, true);
+            } catch (Exception e) {
+                errors.rejectValue(field, "yukon.web.error.outOfRangeObject", 
+                        new Object[] { fieldName, range.getMin(), range.getMax() }, "");
             }
         }
     }

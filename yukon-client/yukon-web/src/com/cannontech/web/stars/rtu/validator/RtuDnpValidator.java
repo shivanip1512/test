@@ -27,21 +27,23 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
     @Override
     protected void doValidation(RtuDnp rtuDnp, Errors errors) {
         rtuDnpValidationUtil.validateName(rtuDnp, errors, false);
+        validateScanIntervals(rtuDnp, errors);
+        if (!errors.hasFieldErrors("deviceDirectCommSettings.portID")) {
+            var commPort = dbCache.getAllPaosMap().get(rtuDnp.getDeviceDirectCommSettings().getPortID());
+            //  Validate the IP and port before validating the addressing.
+            //    IP Address and Port are required for devices on a TCP Port  
+            if (commPort.getPaoType() == PaoType.TCPPORT) {
+                YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", rtuDnp.getIpAddress());
+                YukonValidationUtils.validatePort(errors, "port",
+                        yukonValidationHelper.getMessage("yukon.web.modules.operator.rtuDetail.port"), rtuDnp.getPort());
+            }
+        }
         rtuDnpValidationUtil.validateAddressing(
                 rtuDnp.getDeviceDirectCommSettings(), 
                 rtuDnp.getDeviceAddress(), 
                 rtuDnp.getIpAddress(),
                 rtuDnp.getPort(),
                 errors, basekey + ".masterSlave");
-        validateScanIntervals(rtuDnp, errors);
-        YukonValidationUtils.checkIsBlank(errors, "port", rtuDnp.getPort(), yukonValidationHelper.getMessage("yukon.web.modules.operator.rtuDetail.port"), false);
-        if (!errors.hasFieldErrors("deviceDirectCommSettings.portID") && !errors.hasFieldErrors("port")) {
-            if (dbCache.getAllPaosMap().get(rtuDnp.getDeviceDirectCommSettings().getPortID()).getPaoType() == PaoType.TCPPORT) {
-                YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", rtuDnp.getIpAddress());
-                YukonValidationUtils.validatePort(errors, "port",
-                        yukonValidationHelper.getMessage("yukon.web.modules.operator.rtuDetail.port"), rtuDnp.getPort());
-            }
-        }
     }
 
     private void validateScanIntervals(RtuDnp rtuDnp, Errors errors) {

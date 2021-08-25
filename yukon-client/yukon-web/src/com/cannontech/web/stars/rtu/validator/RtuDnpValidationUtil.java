@@ -25,6 +25,8 @@ public class RtuDnpValidationUtil extends ValidationUtils {
     private static final String POST_COMM_WAIT = "deviceAddress.postCommWait";
     private static final String ADDRESS_MASTER = "deviceAddress.masterAddress";
     private static final String ADDRESS_SLAVE = "deviceAddress.slaveAddress";
+    private static final String TCP_IP_ADDRESS = "ipAddress";
+    private static final String TCP_PORT = "port";
     
     @Autowired private DeviceDao deviceDao;
 	@Autowired private PaoDao paoDao;
@@ -94,6 +96,10 @@ public class RtuDnpValidationUtil extends ValidationUtils {
 
         var port = dbCache.getAllPaosMap().get(directCommSettings.getPortID());
         if (port.getPaoType() == PaoType.TCPPORT) {
+            if (errors.hasFieldErrors(TCP_IP_ADDRESS) || errors.hasFieldErrors(TCP_PORT)) {
+                //  Cannot validate address conflicts on erroneous IP/port entries (such as "(none)") 
+                return;
+            }
             conflictingDevices = conflictingDevices.filter(conflict ->
                     tcpIpAddress.equals(paoPropertyDao.getByIdAndName(conflict.getId(), PaoPropertyName.TcpIpAddress).getPropertyValue())
                     && tcpPort.equals(paoPropertyDao.getByIdAndName(conflict.getId(), PaoPropertyName.TcpPort).getPropertyValue()));

@@ -35,6 +35,13 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
         validateName(cbc, errors);
         validateSerialNumber(cbc, errors);
         if (cbc.isTwoWay()) {
+            //  Validate the IP and port before validating the addressing
+            if (cbc.getPaoType().isTcpPortEligible() &&
+                    dbCache.getAllPaosMap().get(cbc.getDeviceDirectCommSettings().getPortID()).getPaoType() == PaoType.TCPPORT) {
+                YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", cbc.getIpAddress());
+                YukonValidationUtils.validatePort(errors, "port",
+                        yukonValidationHelper.getMessage("yukon.web.modules.capcontrol.cbc.port"), cbc.getPort());
+            }
             rtuDnpValidationUtil.validateAddressing(
                     cbc.getDeviceDirectCommSettings(), 
                     cbc.getDeviceAddress(),
@@ -47,12 +54,6 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
         }
         if (cbc.isLogical()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "parentRtuId", basekey + ".parentRTURequired");
-        }
-        if (cbc.getPaoType().isTcpPortEligible() &&
-                dbCache.getAllPaosMap().get(cbc.getDeviceDirectCommSettings().getPortID()).getPaoType() == PaoType.TCPPORT) {
-            YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", cbc.getIpAddress());
-            YukonValidationUtils.validatePort(errors, "port",
-                    yukonValidationHelper.getMessage("yukon.web.modules.capcontrol.cbc.port"), cbc.getPort());
         }
    }
 

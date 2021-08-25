@@ -10,6 +10,8 @@
         <cti:csrfToken />
         <form:hidden path="id" />
         <form:hidden path="deviceDirectCommSettings.portID" />
+        <form:hidden path="ipAddress" />
+        <form:hidden path="port" />
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".deviceName">
                 <tags:input path="name" />
