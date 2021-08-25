@@ -1,13 +1,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <c:if test="${!empty errorMessage}">
-        <tags:alertBox type="error" includeCloseButton="true">${errorMessage}</tags:alertBox>
-    </c:if>
+	<tags:alertBox type="error" includeCloseButton="true">${errorMessage}</tags:alertBox>
+</c:if>
 
 <cti:msgScope paths="modules.adminSetup.config.loggers,yukon.common">
 
@@ -40,14 +41,14 @@
                 <c:set var="specifiedClass" value="${specifiedDateTime ? '' : 'dn'}"/>
                 <span data-toggle-group="js-date-time" class="${specifiedClass}">
                     <c:set var="expiration" value="${not empty logger.expirationDate ? logger.expirationDate : now}"/>
-                    <dt:date value="${expiration}" minDate="${now}" path="expirationDate" cssClass="${specifiedDateTimeError ? 'error' : ''}"/>
-                    <c:if test="${not empty specifiedDateTimeError}">
-                    <br/></br>
-                        <div class="error">
-                            <cti:msg2 var="expirationDate" key=".inValidDate"/>
-                            <i:inline key="yukon.web.modules.dr.setup.error.required" arguments="${expirationDate}"/>
-                        </div>
-                    </c:if>
+                    <dt:date value="${expiration}" path="expirationDate" minDate="${now}"
+                    	hideErrors="${invalidDateError}" cssClass="${status.error ? 'error' : ''}"/>
+                	<c:if test="${invalidDateError}">
+                		<br/><br/>
+	                	<div class="error">
+	                    	<i:inline key=".inValidDate"/>
+	                	</div>
+               		</c:if>
                 </span>
                 </tags:nameValue2>
             </c:if>

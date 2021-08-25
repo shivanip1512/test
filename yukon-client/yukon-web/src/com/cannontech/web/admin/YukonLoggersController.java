@@ -95,6 +95,9 @@ public class YukonLoggersController {
             HttpServletResponse resp, YukonUserContext userContext, ModelMap model, FlashScope flashScope) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<String, Object>();
+        if (specifiedDateTime && logger.getExpirationDate() == null) {
+            model.addAttribute("invalidDateError", true);
+        }
         if (BooleanUtils.isNotTrue(specifiedDateTime) || logger.getExpirationDate() == null) {
             logger.setExpirationDate(null);
         }
@@ -103,9 +106,6 @@ public class YukonLoggersController {
         
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            if (result.hasFieldErrors("expirationDate")) {
-                model.addAttribute("specifiedDateTimeError", true);
-            }
             addModelAttributes(model, logger, specifiedDateTime);
             return "config/addLoggerPopup.jsp";
         }
