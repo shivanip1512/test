@@ -116,7 +116,7 @@ public enum HardwareConfigType implements DisplayableEnum {
     
     public int getNumRelays() {
         return this == ECOBEE || this == NEST || this == HONEYWELL ? 1 :
-               this == ITRON || this == EXPRESSCOM || this == EATON_CLOUD ? 8 : 4;
+               this == ITRON || this == EXPRESSCOM ? 8 : 4;
     }
     
 }
