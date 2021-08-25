@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -74,7 +76,10 @@ public class YukonLoggersController {
 
     @GetMapping("/config/loggers")
     public String addLogger(@ModelAttribute YukonLogger logger, ModelMap model) {
-
+        if (model.containsAttribute("logger")) {
+            logger = (YukonLogger) model.get("logger");
+        }
+        
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("isEditMode", false);
         model.addAttribute("logger", logger);
@@ -86,11 +91,11 @@ public class YukonLoggersController {
     }
 
     @PostMapping("/config/loggers")
-    public String saveLogger(@ModelAttribute("logger") YukonLogger logger,BindingResult result, Boolean specifiedDateTime, HttpServletRequest request,
-            HttpServletResponse resp, YukonUserContext userContext, ModelMap model) {
+    public String saveLogger(@ModelAttribute("logger") YukonLogger logger,BindingResult result, RedirectAttributes attrs, Boolean specifiedDateTime, HttpServletRequest request,
+            HttpServletResponse resp, YukonUserContext userContext, ModelMap model, FlashScope flashScope) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<String, Object>();
-        if (BooleanUtils.isNotTrue(specifiedDateTime)) {
+        if (BooleanUtils.isNotTrue(specifiedDateTime) || logger.getExpirationDate() == null) {
             logger.setExpirationDate(null);
         }
         logger.setLoggerType(SystemLogger.isSystemLogger(logger.getLoggerName()) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER );
@@ -98,7 +103,10 @@ public class YukonLoggersController {
         
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            addModelAttributes(model, logger);
+            if (result.hasFieldErrors("expirationDate")) {
+                model.addAttribute("specifiedDateTimeError", true);
+            }
+            addModelAttributes(model, logger, specifiedDateTime);
             return "config/addLoggerPopup.jsp";
         }
         try {
@@ -111,7 +119,7 @@ public class YukonLoggersController {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 BindException error = new BindException(logger, "logger");
                 result = apiControllerHelper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
-                addModelAttributes(model, logger);
+                addModelAttributes(model, logger, specifiedDateTime);
                 return "config/addLoggerPopup.jsp";
             }
         } catch (ApiCommunicationException e) {
@@ -124,10 +132,10 @@ public class YukonLoggersController {
         return JsonUtils.writeResponse(resp, json);
     }
 
-    private void addModelAttributes(ModelMap model, YukonLogger logger) {
+    private void addModelAttributes(ModelMap model, YukonLogger logger, Boolean specifiedDateTime) {
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("now", new Date());
-        model.addAttribute("specifiedDateTime", logger.getExpirationDate() != null);
+        model.addAttribute("specifiedDateTime", specifiedDateTime);
         boolean allowDateTimeSelection = !SystemLogger.isSystemLogger(logger.getLoggerName());
         model.addAttribute("allowDateTimeSelection", allowDateTimeSelection);
         model.addAttribute("isEditMode", logger.getLoggerId() != -1);
@@ -146,7 +154,7 @@ public class YukonLoggersController {
 
             if (loggerResponse.getStatusCode() == HttpStatus.OK) {
                 logger = (YukonLogger) loggerResponse.getBody();
-                addModelAttributes(model, logger);
+                addModelAttributes(model, logger, logger.getExpirationDate() != null);
                 model.addAttribute("isEditMode", true);
               }
         } catch (ApiCommunicationException e) {

@@ -40,7 +40,14 @@
                 <c:set var="specifiedClass" value="${specifiedDateTime ? '' : 'dn'}"/>
                 <span data-toggle-group="js-date-time" class="${specifiedClass}">
                     <c:set var="expiration" value="${not empty logger.expirationDate ? logger.expirationDate : now}"/>
-                    <dt:date value="${expiration}" minDate="${now}" path="expirationDate"/>
+                    <dt:date value="${expiration}" minDate="${now}" path="expirationDate" cssClass="${specifiedDateTimeError ? 'error' : ''}"/>
+                    <c:if test="${not empty specifiedDateTimeError}">
+                    <br/></br>
+                        <div class="error">
+                            <cti:msg2 var="expirationDate" key=".inValidDate"/>
+                            <i:inline key="yukon.web.modules.dr.setup.error.required" arguments="${expirationDate}"/>
+                        </div>
+                    </c:if>
                 </span>
                 </tags:nameValue2>
             </c:if>
