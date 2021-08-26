@@ -91,8 +91,8 @@ public class YukonLoggersController {
     }
 
     @PostMapping("/config/loggers")
-    public String saveLogger(@ModelAttribute("logger") YukonLogger logger,BindingResult result, RedirectAttributes attrs, Boolean specifiedDateTime, HttpServletRequest request,
-            HttpServletResponse resp, YukonUserContext userContext, ModelMap model, FlashScope flashScope) {
+    public String saveLogger(@ModelAttribute("logger") YukonLogger logger, BindingResult result, Boolean specifiedDateTime, HttpServletRequest request,
+            HttpServletResponse resp, YukonUserContext userContext, ModelMap model) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<String, Object>();
         if (specifiedDateTime && logger.getExpirationDate() == null) {
