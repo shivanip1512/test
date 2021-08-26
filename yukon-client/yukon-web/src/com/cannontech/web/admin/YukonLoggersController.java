@@ -192,8 +192,8 @@ public class YukonLoggersController {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", loggerName));
         } else {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String inValidId = accessor.getMessage(baseKey + "inValidId");
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", loggerName, inValidId));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", loggerName,
+                    accessor.getMessage(baseKey + "invalidId")));
         }
         return redirectLink;
     }

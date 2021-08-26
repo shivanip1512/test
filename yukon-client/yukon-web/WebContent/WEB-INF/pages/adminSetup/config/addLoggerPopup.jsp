@@ -42,13 +42,12 @@
                 <span data-toggle-group="js-date-time" class="${specifiedClass}">
                     <c:set var="expiration" value="${not empty logger.expirationDate ? logger.expirationDate : now}"/>
                     <dt:date value="${expiration}" path="expirationDate" minDate="${now}"
-                    	hideErrors="${invalidDateError}" cssClass="${status.error ? 'error' : ''}"/>
-                	<c:if test="${invalidDateError}">
-                		<br/><br/>
-	                	<div class="error">
-	                    	<i:inline key=".inValidDate"/>
-	                	</div>
-               		</c:if>
+                        hideErrors="${invalidDateError}" cssClass="${status.error ? 'error' : ''}" displayValidationToRight="${!isEditMode}"/>
+                    <c:if test="${invalidDateError}">
+                        <div class="error">
+                            <i:inline key=".inValidDate"/>
+                        </div>
+                    </c:if>
                 </span>
                 </tags:nameValue2>
             </c:if>
