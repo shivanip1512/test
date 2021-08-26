@@ -415,6 +415,7 @@
     <entry key="yukon.web.modules.dev.ecobee.mockTest.getGroup">Get Group</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.generateDiscrepency">Generate Discrepency</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.cancelDemandResponse">Cancel Demand Response / Opt Out</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.paginatedResponse">Paginated Response for Groups and Thermostats </entry>
     
     <!-- Itron Key Pair -->
     <entry key="yukon.web.modules.dev.itronKeyPair">Itron Key Pair</entry>
