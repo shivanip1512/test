@@ -77,8 +77,7 @@ public class YukonLoggersController {
 
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("isEditMode", false);
-        if(logger.getLevel() == null)
-        {
+        if (logger.getLevel() == null) {
             logger.setLevel(LoggerLevel.DEBUG);
         }
         model.addAttribute("logger", logger);
