@@ -72,8 +72,8 @@ public class EatonCloudDataReadServiceImplTest {
         LiteYukonPAObject pao = new LiteYukonPAObject(123456789);
         pao.setPaoName("PAO NAME");
 
-        Double pointData = (Double) parseMethod.invoke(dataReadService, EatonCloudChannel.VOLTAGE, new EatonCloudTimeSeriesValueV1(timestampDate.getTime(), "119112.3"), pao, testGuid);
-        assertTrue(pointData.equals(119.1123));
+        Double pointData = (Double) parseMethod.invoke(dataReadService, EatonCloudChannel.VOLTAGE, new EatonCloudTimeSeriesValueV1(timestampDate.getTime(), "2658"), pao, testGuid);
+        assertTrue(pointData.equals(265.8));
 
         pointData = (Double) parseMethod.invoke(dataReadService, EatonCloudChannel.FREQUENCY, new EatonCloudTimeSeriesValueV1(timestampDate.getTime(), "60000"), pao, testGuid);
         assertTrue(pointData.equals(60.0));

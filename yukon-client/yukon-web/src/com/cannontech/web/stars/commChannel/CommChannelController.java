@@ -35,14 +35,17 @@ import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.device.port.PortBase;
-import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.device.port.service.impl.PortServiceImpl.CommChannelSortBy;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.model.Rfn1200Detail;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -55,8 +58,6 @@ import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
@@ -64,7 +65,6 @@ import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 public class CommChannelController {
 
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String baseKey = "yukon.common.";
     private static final Logger log = YukonLogManager.getLogger(CommChannelController.class);
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
@@ -78,7 +78,13 @@ public class CommChannelController {
             @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting) {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/");
-            List<DeviceBaseModel> commChannelList = getDeviceBaseModelResponse(userContext, request, url);
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext, request, url,
+                    DeviceBaseModel.class, HttpMethod.GET, DeviceBaseModel.class);
+            
+            List<DeviceBaseModel> commChannelList = new ArrayList<>();
+            if (response.getStatusCode() == HttpStatus.OK) {
+                commChannelList = (List<DeviceBaseModel>)response.getBody();
+            }
 
             CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
             Direction dir = sorting.getDirection();
@@ -247,17 +253,6 @@ public class CommChannelController {
         return null;
     }
 
-    public enum CommChannelSortBy implements DisplayableEnum {
-        name,
-        type,
-        status;
-
-        @Override
-        public String getFormatKey() {
-            return baseKey + name();
-        }
-    }
-
     /**
      * Get the response for comm channel delete
      */
@@ -277,8 +272,13 @@ public class CommChannelController {
     private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId, String commChannelName) {
         try {
             String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + portId + "/devicesAssigned");
-            List<DeviceBaseModel> devicesList = getDeviceBaseModelResponse(userContext, request, assignedDevicesUrl);
-
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext,
+                    request, assignedDevicesUrl, HttpMethod.GET, DeviceBaseModel.class, Object.class);
+            
+            List<DeviceBaseModel> devicesList = new ArrayList<>();
+            if (response.getStatusCode() == HttpStatus.OK) {
+                devicesList = ((SearchResults<DeviceBaseModel>)response.getBody()).getResultList();
+            }
             if (!devicesList.isEmpty()) {
                 return devicesList.stream()
                                   .map(device -> device.getName())
@@ -290,24 +290,6 @@ public class CommChannelController {
             log.error("Error while retrieving assigned devices for comm Channel: {}. Error: {}", commChannelName, ex.getMessage());
         }
         return null;
-    }
-
-    /**
-     * Get the response in form of DevicesBaseModel
-     */
-    private List<DeviceBaseModel> getDeviceBaseModelResponse(YukonUserContext userContext, HttpServletRequest request, String url) {
-        List<DeviceBaseModel> deviceBaseModelList = new ArrayList<>();
-
-        ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext,
-                                                                                    request,
-                                                                                    url,
-                                                                                    DeviceBaseModel.class,
-                                                                                    HttpMethod.GET,
-                                                                                    DeviceBaseModel.class);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            deviceBaseModelList = (List<DeviceBaseModel>) response.getBody();
-        }
-        return deviceBaseModelList;
     }
 
     private void setupErrorFields(HttpServletResponse resp, PortBase commChannel, ModelMap model, YukonUserContext userContext,

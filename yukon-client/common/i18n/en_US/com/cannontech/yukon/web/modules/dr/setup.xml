@@ -260,6 +260,7 @@ Are you sure you want do this?</entry>
 <!-- Load Program Validation -->
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.notificationGrpID.doesNotExist">Notification Group Id does not exist.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.notificationGrp.notAssigned">Notification Group not assigned.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.subordinateProgId.doesNotExist">Subordinate Program Id does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.groupId.doesNotExist">Load Group Id does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.noGroup">At least 1 load group must be present in this current program.</entry>

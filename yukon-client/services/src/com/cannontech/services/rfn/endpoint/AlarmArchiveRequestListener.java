@@ -43,6 +43,7 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
 
         @Override
         protected Optional<String> processData(RfnDevice device, RfnAlarmArchiveRequest archiveRequest) {
+            incrementProcessedArchiveRequest();
             Optional<String> trackingIds = Optional.empty();
             
             // Only process events for meters at this time

@@ -63,7 +63,7 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
         public void extractValues(MapSqlParameterSource parameterHolder, GlobalSetting setting) {
             parameterHolder.addValue("Name", setting.getType());
             Object value = setting.getValue();
-            if (value != null && setting.getType().isSensitiveInformation()) {
+            if (value != null && (setting.getType().isSensitiveInformation() || setting.getType().isNonViewableSensitiveInformation())) {
                 try {
                     if (!GlobalSettingCryptoUtils.isEncrypted((String) value)) {
                         value = GlobalSettingCryptoUtils.encryptValue((String) value);
@@ -95,7 +95,7 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
             public GlobalSetting mapRow(YukonResultSet rs) throws SQLException {
                 GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
                 Object value = rs.getObjectOfInputType("Value", type.getType());
-                if (value != null && type.isSensitiveInformation()) {
+                if (value != null && (type.isSensitiveInformation() || type.isNonViewableSensitiveInformation())) {
                     try {
                         if (!GlobalSettingCryptoUtils.isEncrypted((String) value)) { // only load unencrypted values
                             value = GlobalSettingCryptoUtils.encryptValue((String) value);

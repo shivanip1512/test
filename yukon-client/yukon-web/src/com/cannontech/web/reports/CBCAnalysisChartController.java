@@ -39,7 +39,7 @@ import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 
 @Controller
 @RequestMapping("/cbcAnalysisChart/*")
-@CheckFalseRoleProperty(YukonRoleProperty.HIDE_REPORTS)
+@CheckFalseRoleProperty(YukonRoleProperty.HIDE_GRAPHS)
 public class CBCAnalysisChartController {
     
     @Autowired private PointDao pointDao;

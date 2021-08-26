@@ -307,7 +307,6 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         }
         
         model.addAttribute("success", result.isSuccess());
-        model.addAttribute("hasTimeoutError", result.hasTimeoutError());
         model.addAttribute("command", result.getCommand());
         model.addAttribute("isRead", false);
     }

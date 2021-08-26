@@ -33,4 +33,12 @@ public class YukonJmsTemplate extends JmsTemplate {
     public void setCommsLogger(Logger commsLogger) {
         this.commsLogger = commsLogger;
     }
+    
+    public void disableCommLogging() {
+        this.commsLogger = null;
+    }
+    
+    public boolean isCommsLoggingDisabled() {
+        return commsLogger == null;
+    }
 }
