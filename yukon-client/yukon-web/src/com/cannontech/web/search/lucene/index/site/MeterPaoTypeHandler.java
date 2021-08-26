@@ -69,15 +69,17 @@ public class MeterPaoTypeHandler implements PaoTypeHandler {
         builder.pageArgs(deviceName);
         
         String meterNumber = rs.getString("meterNumber");
+        String paoName = rs.getString("paoName");
+        
         if (paoIdentifier.getPaoType().isVirtual()) {
-            builder.summaryArgs(meterNumber);
+            builder.summaryArgs(paoName, meterNumber);
         } else {
             if (paoIdentifier.getPaoType().isRfn()) {
                 addressOrSerialNumber = rs.getString("serialNumber");
             } else if (paoIdentifier.getPaoType().isPlc()) {
                 addressOrSerialNumber = rs.getString("address");
             }
-            builder.summaryArgs(meterNumber, addressOrSerialNumber);
+            builder.summaryArgs(paoName, meterNumber, addressOrSerialNumber);
         }
     }
     
