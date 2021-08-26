@@ -2,6 +2,8 @@ package com.cannontech.web.api.route;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.web.api.route.model.RouteBaseModel;
@@ -13,8 +15,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 @SuppressWarnings("serial")
-public class JsonDeserializeRouteTypeLookup extends StdDeserializer<RouteBaseModel> {
-
+public class JsonDeserializeRouteTypeLookup extends StdDeserializer<RouteBaseModel<?>> {
     protected JsonDeserializeRouteTypeLookup() {
         this(null);
     }
@@ -26,16 +27,23 @@ public class JsonDeserializeRouteTypeLookup extends StdDeserializer<RouteBaseMod
     private RouteHelperImpl routeHelper = new RouteHelperImpl();
 
     @Override
-    public RouteBaseModel deserialize(JsonParser parser, DeserializationContext ctxt)
+    public RouteBaseModel<?> deserialize(JsonParser parser, DeserializationContext ctxt)
             throws IOException, JsonProcessingException, TypeNotSupportedException {
         TreeNode node = parser.readValueAsTree();
         if (node == null) {
             throw new NotFoundException("request is not found in correct format");
         }
 
-        String signalTransmitterId = node.get("signalTransmitterId").toString();
-        Integer id = null;
-        RouteBaseModel routeBaseModel = (RouteBaseModel) parser.getCodec().treeToValue(node,
+        String signalTransmitterId = null;
+        if (node.get("signalTransmitterId") != null) {
+            signalTransmitterId = node.get("signalTransmitterId").toString().replace("\"", "");
+        }
+
+        if (StringUtils.isBlank(signalTransmitterId)) {
+            throw new NotFoundException("signalTransmitterId is not present in request.");
+        }
+
+        RouteBaseModel<?> routeBaseModel = (RouteBaseModel<?>) parser.getCodec().treeToValue(node,
                 routeHelper.getRouteFromModelFactory(routeHelper.getRouteType(signalTransmitterId)).getClass());
         routeBaseModel.setType(routeHelper.getPaoTypeFromCache(signalTransmitterId));
         return routeBaseModel;

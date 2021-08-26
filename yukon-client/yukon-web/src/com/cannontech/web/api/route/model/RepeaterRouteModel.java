@@ -2,7 +2,12 @@ package com.cannontech.web.api.route.model;
 
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.db.route.RepeaterRoute;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(value = Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RepeaterRouteModel implements DBPersistentConverter<RepeaterRoute> {
 
     private Integer repeaterId;

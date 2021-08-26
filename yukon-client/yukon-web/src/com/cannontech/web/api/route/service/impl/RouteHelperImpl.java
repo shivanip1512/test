@@ -6,7 +6,6 @@ import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.route.model.RouteModelFactory;
 import com.cannontech.web.api.route.service.RouteHelper;
@@ -14,7 +13,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class RouteHelperImpl implements RouteHelper{
     
-    @Autowired private IDatabaseCache serverDatabaseCache = YukonSpringHook.getBean(IDatabaseCache.class);
+    @Autowired private IDatabaseCache serverDatabaseCache;
     /**
      * Retrieve route type using Signal Transmitter Id
      */

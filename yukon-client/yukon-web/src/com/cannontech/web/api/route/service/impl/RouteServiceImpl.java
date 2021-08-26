@@ -43,14 +43,15 @@ public class RouteServiceImpl implements RouteService {
         dbPersistentDao.performDBChange(routeBase, TransactionType.INSERT);
         SimpleDevice device = SimpleDevice.of(routeBase.getPAObjectID(), routeBase.getPaoType());
         paoCreationHelper.addDefaultPointsToPao(device);
+        routeBase = (RouteBase) dbPersistentDao.retrieveDBPersistent(routeBase);
         routeBaseModel.buildModel(routeBase);
         return routeBaseModel;
 
     }
 
     @Override
-    public RouteBaseModel<? extends RouteBase> update(int id, RouteBaseModel<?> routeBaseModel, LiteYukonUser liteYukonUser) {
-        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes().get(id);
+    public RouteBaseModel<? extends RouteBase> update(int id, RouteBaseModel routeBaseModel, LiteYukonUser liteYukonUser) {
+        LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(id);
         if (pao == null) {
             throw new NotFoundException("Route Id not found");
         }
@@ -64,7 +65,7 @@ public class RouteServiceImpl implements RouteService {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public RouteBaseModel<? extends RouteBase> retrieve(int routeId) {
-        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes().get(routeId);
+        LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(routeId);
         if (pao == null) {
             throw new NotFoundException("Route Id not found");
         }
