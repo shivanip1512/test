@@ -30,7 +30,7 @@ public class LoadGroupEatonCloudValidator extends LoadGroupSetupValidator<LoadGr
             "Virtual RelayId ");
 
         if (!errors.hasFieldErrors("virtualRelayId")) {
-            YukonValidationUtils.checkRange(errors, "virtualRelayId", loadGroup.getVirtualRelayId(), 1, 8, true);
+            YukonValidationUtils.checkRange(errors, "virtualRelayId", loadGroup.getVirtualRelayId(), 1, 4, true);
         }
     }
 }
