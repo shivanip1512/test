@@ -239,7 +239,7 @@ public class RfnChannelDataConverter {
                 .filter(dbc -> dbc.getDbChangeType() == DbChangeType.UPDATE || 
                                dbc.getDbChangeType() == DbChangeType.DELETE)
                 .map(DBChangeMsg::getId)
-                .map(pointDao::getPaoPointIdentifier)
+                .map(pointDao::findPaoPointIdentifier)
                 .map(cache::getIfPresent)
                 .ifPresent(cache::invalidate));
     }
