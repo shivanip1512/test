@@ -55,7 +55,7 @@ const MetricInfo metricInfos[] = {
         {  33,  TouRates,  "Var received, current demand"          },
         {  34,  TouRates,  "Var delivered, peak demand"            },
         {  35,  TouRates,  "Var received, peak demand"             },
-        {  36,  TouRates,  "Var delivered, peak demand coincident" },
+        {  36,  TouRates,  "Var delivered, peak demand (Frozen)"   },
         {  37,  TouRates,  "Var received, peak demand coincident"  },
         {  38,  TouRates,  "Var Q1"                                },
         {  39,  TouRates,  "Var Q2"                                },
@@ -75,9 +75,8 @@ const MetricInfo metricInfos[] = {
         {  52,  TouRates,  "VA received, peak demand"              },
         {  53,  TouRates,  "VA delivered, peak demand (Frozen)"    },
         {  54,  TouRates,  "VA received, peak demand (Frozen)"     },
-        {  55,  TouRates,  "VA lagging, peak demand"               },
-        {  56,  None,      "Peak kVA (Quadrants 1 2 4) Frozen"     },
-
+        {  55,  TouRates,  "VA Q1 + Q2 + Q4, peak"                 },
+        {  56,  TouRates,  "VA Q1 + Q2 + Q4, peak (Frozen)"        },
         {  57,  None,      "kVA (Quadrants 1 2 4)"                 },
 
         {  61,  TouRates,  "Q hour delivered"                      },
@@ -160,6 +159,7 @@ const MetricInfo metricInfos[] = {
 
         { 206,  TouRates,  "Peak kVA (Quadrants 1 2)"              },
         { 210,  TouRates,  "Sum Peak kVA"                          },
+        { 211,  None,      "Sum Peak kVA Frozen"                   },
 
         { 222,  TouRates,  "VA hour Q2 + Q3 + Q4"                  },
 

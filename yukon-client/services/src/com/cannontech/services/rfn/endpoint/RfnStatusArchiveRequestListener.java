@@ -91,15 +91,15 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED_DEMAND_THRESHOLD_ACTIVE);
-        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.CONNECTED);
-        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.CONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.UNKNOWN), RfnMeterDisconnectState.CONNECTED);
         //skipping CYCLING_CONFIGURATION           *   
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_ACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED_CYCLING_ACTIVE);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_ACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED_CYCLING_ACTIVE);
-        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.CONNECTED);
-        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.CONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.UNKNOWN), RfnMeterDisconnectState.CONNECTED);
     }

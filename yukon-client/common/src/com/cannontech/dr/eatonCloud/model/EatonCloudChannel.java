@@ -55,7 +55,7 @@ public enum EatonCloudChannel {
     SHEDTIME_R3(112074, "Shedtime R3", BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG),
     SHEDTIME_R4(112075, "Shedtime R4", BuiltInAttribute.RELAY_4_SHED_TIME_DATA_LOG),
     VERSION(110600, "Version", null),
-    VOLTAGE(110742, "Voltage", BuiltInAttribute.VOLTAGE, 0.001),
+    VOLTAGE(110742, "Voltage", BuiltInAttribute.VOLTAGE, 0.1),
     IMEI(110598, "IMEI", null),
     ICCID(112077, "ICCID", null);
     

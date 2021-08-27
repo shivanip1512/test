@@ -18,6 +18,8 @@ public enum MasterConfigInteger {
     
     ITRON_RECORD_IDS_PER_READ,
     
-    EATON_CLOUD_NOTIFICATION_COMMAND_FAILURE_PERCENT
+    EATON_CLOUD_NOTIFICATION_COMMAND_FAILURE_PERCENT,
+    
+    RUNTIME_CALC_RANGE_LIMIT_DAYS, // Number of days back to perform runtime calculation from relay data
     ;
 }

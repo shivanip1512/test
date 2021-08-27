@@ -741,8 +741,8 @@ Itron Sentinel:
     - Coincident Continuous Cumulative Received Volt-amperes:                   { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cont              ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Received" }
     - Frozen Peak Received Volt-amperes:                                        { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *Prev                      ], Models: *__234, Itron name: "Previous Received Volt-amperes" }
     - Time of Frozen Peak Received Volt-amperes:                                { Unit: *s,     Modifiers: [ *Coin1, *Prev                              ], Models: *__234}
-    - Volt-amperes Lagging:                                                     { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4                              ], Models: *__234, Mapped: false, Itron name: "Volt-amperes Lagging" }
-    - Peak Volt-amperes Lagging:                                                { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max                        ], Models: *__234, Itron name: "Max Volt-amperes Lagging" }
+    - Volt-amperes Q1 + Q2 + Q4:                                                { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4                              ], Models: *__234, Mapped: false, Itron name: "Volt-amperes Lagging" }
+    - Peak VA Q1 + Q2 + Q4:                                                     { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max                        ], Models: *__234, Itron name: "Max Volt-amperes Lagging" }
     - Coincident Cumulative Volt-ampers Lagging:                                { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *Coin1, *Cuml         ], Models: *__234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered" }
     - Coincident Continuous Cumulative Volt-amperes Lagging:                    { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *Coin2, *Cont         ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered" }
     - Q-hours Delivered:                                                        { Unit: *Qh,    Modifiers: [ *Q1, *Q4                                   ], Models: *___34, Mapped: false, Itron name: "Q-hours" }
@@ -804,7 +804,7 @@ Itron Sentinel:
     - Coincident Continuous Cumulative Received Volt-amperes Rate A:            { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateA, *Coin2, *Cont      ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Received Rate A" }
     - Frozen Peak Received Volt-amperes Rate A:                                 { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateA, *Prev              ], Models: *__234, Itron name: "Previous Received Volt-amperes" }
     - Time of Frozen Peak Received Volt-amperes Rate A:                         { Unit: *s,     Modifiers: [ *Coin1, *RateA, *Prev                      ], Models: *__234}
-    - Peak Volt-amperes Lagging Rate A:                                         { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA                ], Models: *__234, Itron name: "Max Volt-amperes Lagging Rate A" }
+    - Peak VA Q1 + Q2 + Q4 Rate A:                                              { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA                ], Models: *__234, Itron name: "Max Volt-amperes Lagging Rate A" }
     - Coincident Cumulative Volt-ampers Lagging Rate A:                         { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA, *Coin1, *Cuml ], Models: *__234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered Rate A" }
     - Coincident Continuous Cumulative Volt-amperes Lagging Rate A:             { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA, *Coin2, *Cont ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered Rate A" }
     - Q-hours Delivered Rate A:                                                 { Unit: *Qh,    Modifiers: [ *Q1, *Q4, *RateA,                          ], Models: *___34, Mapped: false, Itron name: "Q-hours Rate A" }
@@ -855,7 +855,7 @@ Itron Sentinel:
     - Coincident Continuous Cumulative Received Volt-amperes Rate B:            { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateB, *Coin2, *Cont      ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Received Rate B" }
     - Frozen Peak Received Volt-amperes Rate B:                                 { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateB, *Prev              ], Models: *__234, Itron name: "Previous Received Volt-amperes" }
     - Time of Frozen Peak Received Volt-amperes Rate B:                         { Unit: *s,     Modifiers: [ *Coin1, *RateB, *Prev                      ], Models: *__234}
-    - Peak Volt-amperes Lagging Rate B:                                         { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB                ], Models: *__234, Itron name: "Max Volt-amperes Lagging Rate B" }
+    - Peak VA Q1 + Q2 + Q4 Rate B:                                              { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB                ], Models: *__234, Itron name: "Max Volt-amperes Lagging Rate B" }
     - Coincident Cumulative Volt-ampers Lagging Rate B:                         { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB, *Coin1, *Cuml ], Models: *__234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered Rate B" }
     - Coincident Continuous Cumulative Volt-amperes Lagging Rate B:             { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB, *Coin2, *Cont ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered Rate B" }
     - Q-hours Delivered Rate B:                                                 { Unit: *Qh,    Modifiers: [ *Q1, *Q4, *RateB                           ], Models: *___34, Mapped: false, Itron name: "Q-hours Rate B" }
@@ -906,7 +906,7 @@ Itron Sentinel:
     - Coincident Continuous Cumulative Received Volt-amperes Rate C:            { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateC, *Coin2, *Cont      ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Received Rate C" }
     - Frozen Peak Received Volt-amperes Rate C:                                 { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateC, *Prev              ], Models: *__234, Itron name: "Previous Received Volt-amperes" }
     - Time of Frozen Peak Received Volt-amperes Rate C:                         { Unit: *s,     Modifiers: [ *Coin1, *RateC, *Prev                      ], Models: *__234}
-    - Peak Volt-amperes Lagging Rate C:                                         { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC                ], Models: *__234, Itron name: "Max Volt-amperes Lagging Rate C" }
+    - Peak VA Q1 + Q2 + Q4 Rate C:                                              { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC                ], Models: *__234, Itron name: "Max Volt-amperes Lagging Rate C" }
     - Coincident Cumulative Volt-ampers Lagging Rate C:                         { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC, *Coin1, *Cuml ], Models: *__234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered Rate C" }
     - Coincident Continuous Cumulative Volt-amperes Lagging Rate C:             { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC, *Coin2, *Cont ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered Rate C" }
     - Q-hours Delivered Rate C:                                                 { Unit: *Qh,    Modifiers: [ *Q1, *Q4, *RateC                           ], Models: *___34, Mapped: false, Itron name: "Q-hours Rate C" }
@@ -957,7 +957,7 @@ Itron Sentinel:
     - Coincident Continuous Cumulative Received Volt-amperes Rate D:            { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateD, *Coin2, *Cont      ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Received Rate D" }
     - Frozen Peak Received Volt-amperes Rate D:                                 { Unit: *VA,    Modifiers: [ *Q2, *Q3, *Max, *RateD, *Prev              ], Models: *__234, Itron name: "Previous Received Volt-amperes" }
     - Time of Frozen Peak Received Volt-amperes Rate D:                         { Unit: *s,     Modifiers: [ *Coin1, *RateD, *Prev                      ], Models: *__234}
-    - Peak Volt-amperes Lagging Rate D:                                         { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD                ], Models: *__234, Itron name: "Max Volt-amperes Lagging Rate D" }
+    - Peak VA Q1 + Q2 + Q4 Rate D:                                              { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD                ], Models: *__234, Itron name: "Max Volt-amperes Lagging Rate D" }
     - Coincident Cumulative Volt-ampers Lagging Rate D:                         { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD, *Coin1, *Cuml ], Models: *__234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered Rate D" }
     - Coincident Continuous Cumulative Volt-amperes Lagging Rate D:             { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD, *Coin2, *Cont ], Models: *__234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered Rate D" }
     - Q-hours Delivered Rate D:                                                 { Unit: *Qh,    Modifiers: [ *Q1, *Q4, *RateD                           ], Models: *___34, Mapped: false, Itron name: "Q-hours Rate D" }
@@ -1562,19 +1562,19 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Peak Delivered Var:                   { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max                   ], Models: *__-RX-23 }
     - Time of Peak Delivered Var:           { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
     - Frozen Peak Delivered Var:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *Prev            ], Models: *__-RX-23 }
-    - Time of Frozen Peak Delivered Var:    { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak Delivered Var:    { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
     - Peak Total Var:                       { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total Var:               { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
     - Frozen Peak Total Var:                { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23 }
-    - Time of Frozen Peak Total Var:        { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak Total Var:        { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
     - Peak VA Q1 + Q2 + Q4:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max              ], Models: *__-RX-23 }
     - Time of Peak VA Q1 + Q2 + Q4:         { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
     - Frozen Peak VA Q1 + Q2 + Q4:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev       ], Models: *__-RX-23 }
-    - Time of Frozen Peak VA Q1 + Q2 + Q4:  { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4:  { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
     - Peak Total VA:                        { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total VA:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Total VA:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23, Mapped: false }
-    - Time of Frozen Peak Total VA:         { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak Total VA:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23 }
+    - Time of Frozen Peak Total VA:         { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
     - Watt-hours Delivered Rate A:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateA                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate A:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateA                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate A:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *AX-RX-23 }
@@ -1593,12 +1593,12 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate A:    { Unit: *s,      Modifiers: [ *RateA, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate A:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA           ], Models: *__-RX-23 } 
     - Time of Peak Var Rate A:              { Unit: *s,      Modifiers: [ *RateA                           ], Models: *__-RX-23 } 
-    - Frozen Peak Delivered Var Rate A:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA, *Prev    ], Models: *__-RX-23, Mapped: false }
-    - Time of Frozen Peak Delivered Var Rate A: { Unit: *s,  Modifiers: [ *RateA, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak Delivered Var Rate A:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA, *Prev    ], Models: *__-RX-23 }
+    - Time of Frozen Peak Delivered Var Rate A: { Unit: *s,  Modifiers: [ *RateA, *Prev                    ], Models: *__-RX-23 }
     - Peak VA Q1 + Q2 + Q4 Rate A:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA      ], Models: *__-RX-23 }
     - Time of Peak VA Q1 + Q2 + Q4 Rate A:  { Unit: *s,      Modifiers: [ *RateA                           ], Models: *__-RX-23 }
-    - Frozen Peak VA Q1 + Q2 + Q4 Rate A:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA, *Prev ], Models: *__-RX-23, Mapped: false }
-    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate A: { Unit: *s, Modifiers: [ *RateA, *Prev                   ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate A:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA, *Prev ], Models: *__-RX-23 }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate A: { Unit: *s, Modifiers: [ *RateA, *Prev                   ], Models: *__-RX-23 }
     - Watt-hours Delivered Rate B:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateB                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate B:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateB                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate B:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *AX-RX-23 }
@@ -1617,12 +1617,12 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate B:    { Unit: *s,      Modifiers: [ *RateB, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate B:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB           ], Models: *__-RX-23 } 
     - Time of Peak Var Rate B:              { Unit: *s,      Modifiers: [ *RateB                           ], Models: *__-RX-23 } 
-    - Frozen Peak Delivered Var Rate B:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB, *Prev    ], Models: *__-RX-23, Mapped: false }
-    - Time of Frozen Peak Delivered Var Rate B: { Unit: *s,  Modifiers: [ *RateB, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak Delivered Var Rate B:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB, *Prev    ], Models: *__-RX-23 }
+    - Time of Frozen Peak Delivered Var Rate B: { Unit: *s,  Modifiers: [ *RateB, *Prev                    ], Models: *__-RX-23 }
     - Peak VA Q1 + Q2 + Q4 Rate B:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB      ], Models: *__-RX-23 }
     - Time of Peak VA Q1 + Q2 + Q4 Rate B:  { Unit: *s,      Modifiers: [ *RateB                           ], Models: *__-RX-23 } 
-    - Frozen Peak VA Q1 + Q2 + Q4 Rate B:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB, *Prev ], Models: *__-RX-23, Mapped: false }
-    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate B: { Unit: *s, Modifiers: [ *RateB, *Prev                   ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate B:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB, *Prev ], Models: *__-RX-23 }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate B: { Unit: *s, Modifiers: [ *RateB, *Prev                   ], Models: *__-RX-23 }
     - Watt-hours Delivered Rate C:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateC                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate C:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateC                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate C:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *AX-RX-23 }
@@ -1641,12 +1641,12 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate C:    { Unit: *s,      Modifiers: [ *RateC, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate C:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC           ], Models: *__-RX-23 } 
     - Time of Peak Var Rate C:              { Unit: *s,      Modifiers: [ *RateC                           ], Models: *__-RX-23 } 
-    - Frozen Peak Delivered Var Rate C:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC, *Prev    ], Models: *__-RX-23, Mapped: false }
-    - Time of Frozen Peak Delivered Var Rate C: { Unit: *s,  Modifiers: [ *RateC, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak Delivered Var Rate C:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC, *Prev    ], Models: *__-RX-23 }
+    - Time of Frozen Peak Delivered Var Rate C: { Unit: *s,  Modifiers: [ *RateC, *Prev                    ], Models: *__-RX-23 }
     - Peak VA Q1 + Q2 + Q4 Rate C:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC      ], Models: *__-RX-23 }
     - Time of Peak VA Q1 + Q2 + Q4 Rate C:  { Unit: *s,      Modifiers: [ *RateC                           ], Models: *__-RX-23 }
-    - Frozen Peak VA Q1 + Q2 + Q4 Rate C:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC, *Prev ], Models: *__-RX-23, Mapped: false }
-    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate C: { Unit: *s, Modifiers: [ *RateC, *Prev                   ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate C:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC, *Prev ], Models: *__-RX-23 }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate C: { Unit: *s, Modifiers: [ *RateC, *Prev                   ], Models: *__-RX-23 }
     - Watt-hours Delivered Rate D:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateD                 ], Models: *AX-RX-23 }
     - Watt-hours Received Rate D:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateD                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate D:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *AX-RX-23 }
@@ -1665,12 +1665,12 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate D:    { Unit: *s,      Modifiers: [ *RateD, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate D:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD           ], Models: *__-RX-23 } 
     - Time of Peak Var Rate D:              { Unit: *s,      Modifiers: [ *RateD                           ], Models: *__-RX-23 } 
-    - Frozen Peak Delivered Var Rate D:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD, *Prev    ], Models: *__-RX-23, Mapped: false }
-    - Time of Frozen Peak Delivered Var Rate D: { Unit: *s,  Modifiers: [ *RateD, *Prev                    ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak Delivered Var Rate D:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD, *Prev    ], Models: *__-RX-23 }
+    - Time of Frozen Peak Delivered Var Rate D: { Unit: *s,  Modifiers: [ *RateD, *Prev                    ], Models: *__-RX-23 }
     - Peak VA Q1 + Q2 + Q4 Rate D:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD      ], Models: *__-RX-23 }
     - Time of Peak VA Q1 + Q2 + Q4 Rate D:  { Unit: *s,      Modifiers: [ *RateD                           ], Models: *__-RX-23 }
-    - Frozen Peak VA Q1 + Q2 + Q4 Rate D:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD, *Prev ], Models: *__-RX-23, Mapped: false }
-    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate D: { Unit: *s, Modifiers: [ *RateD, *Prev                   ], Models: *__-RX-23, Mapped: false }
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate D:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD, *Prev ], Models: *__-RX-23 }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate D: { Unit: *s, Modifiers: [ *RateD, *Prev                   ], Models: *__-RX-23 }
     - Peak Daily Voltage:                   { Unit: *V,      Modifiers: [ *DayMax, *milli                  ], Models: *AX-RX-23 }
     - Coincident Time of Peak Daily Voltage: { Unit: *s,     Modifiers: [                                  ], Models: *AX-RX-23 }
     - Minimum Daily Voltage:                { Unit: *V,      Modifiers: [ *DayMin, *milli                  ], Models: *AX-RX-23 }
@@ -1725,19 +1725,19 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Peak Delivered Var:                   { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max                   ], Models: *___-RXe-23 }
     - Time of Peak Delivered Var:           { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *___-RXe-23 }
     - Frozen Peak Delivered Var:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *Prev            ], Models: *___-RXe-23 }
-    - Time of Frozen Peak Delivered Var:    { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *___-RXe-23, Mapped: false }
+    - Time of Frozen Peak Delivered Var:    { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *___-RXe-23 }
     - Peak Total Var:                       { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *___-RXe-23 }
     - Time of Peak Total Var:               { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *___-RXe-23 }
     - Frozen Peak Total Var:                { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *___-RXe-23 }
-    - Time of Frozen Peak Total Var:        { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *___-RXe-23, Mapped: false }
+    - Time of Frozen Peak Total Var:        { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *___-RXe-23 }
     - Peak VA Q1 + Q2 + Q4:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max              ], Models: *___-RXe-23 }
     - Time of Peak VA Q1 + Q2 + Q4:         { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *___-RXe-23 }
     - Frozen Peak VA Q1 + Q2 + Q4:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev       ], Models: *___-RXe-23 }
-    - Time of Frozen Peak VA Q1 + Q2 + Q4:  { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *___-RXe-23, Mapped: false }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4:  { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *___-RXe-23 }
     - Peak Total VA:                        { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *___-RXe-23 }
     - Time of Peak Total VA:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *___-RXe-23 }
-    - Frozen Peak Total VA:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *___-RXe-23, Mapped: false }
-    - Time of Frozen Peak Total VA:         { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *___-RXe-23, Mapped: false }
+    - Frozen Peak Total VA:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *___-RXe-23 }
+    - Time of Frozen Peak Total VA:         { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *___-RXe-23 }
     - Watt-hours Delivered Rate A:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateA                 ], Models: *AXe-RXe-23 }
     - Watt-hours Received Rate A:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateA                 ], Models: *AXe-RXe-23 }
     - Watt-hours Total Rate A:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *AXe-RXe-23 }
@@ -1756,12 +1756,12 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate A:    { Unit: *s,      Modifiers: [ *RateA, *Prev                    ], Models: *AXe-RXe-23 }
     - Peak Delivered Var Rate A:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA           ], Models: *___-RXe-23 } 
     - Time of Peak Var Rate A:              { Unit: *s,      Modifiers: [ *RateA                           ], Models: *___-RXe-23 } 
-    - Frozen Peak Delivered Var Rate A:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA, *Prev    ], Models: *___-RXe-23, Mapped: false }
-    - Time of Frozen Peak Delivered Var Rate A: { Unit: *s,  Modifiers: [ *RateA, *Prev                    ], Models: *___-RXe-23, Mapped: false }
+    - Frozen Peak Delivered Var Rate A:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA, *Prev    ], Models: *___-RXe-23 }
+    - Time of Frozen Peak Delivered Var Rate A: { Unit: *s,  Modifiers: [ *RateA, *Prev                    ], Models: *___-RXe-23 }
     - Peak VA Q1 + Q2 + Q4 Rate A:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA      ], Models: *___-RXe-23 }
     - Time of Peak VA Q1 + Q2 + Q4 Rate A:  { Unit: *s,      Modifiers: [ *RateA                           ], Models: *___-RXe-23 }
-    - Frozen Peak VA Q1 + Q2 + Q4 Rate A:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA, *Prev ], Models: *___-RXe-23, Mapped: false }
-    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate A: { Unit: *s, Modifiers: [ *RateA, *Prev                   ], Models: *___-RXe-23, Mapped: false }
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate A:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA, *Prev ], Models: *___-RXe-23 }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate A: { Unit: *s, Modifiers: [ *RateA, *Prev                   ], Models: *___-RXe-23 }
     - Watt-hours Delivered Rate B:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateB                 ], Models: *AXe-RXe-23 }
     - Watt-hours Received Rate B:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateB                 ], Models: *AXe-RXe-23 }
     - Watt-hours Total Rate B:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *AXe-RXe-23 }
@@ -1780,12 +1780,12 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate B:    { Unit: *s,      Modifiers: [ *RateB, *Prev                    ], Models: *AXe-RXe-23 }
     - Peak Delivered Var Rate B:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB           ], Models: *___-RXe-23 } 
     - Time of Peak Var Rate B:              { Unit: *s,      Modifiers: [ *RateB                           ], Models: *___-RXe-23 } 
-    - Frozen Peak Delivered Var Rate B:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB, *Prev    ], Models: *___-RXe-23, Mapped: false }
-    - Time of Frozen Peak Delivered Var Rate B: { Unit: *s,  Modifiers: [ *RateB, *Prev                    ], Models: *___-RXe-23, Mapped: false }
+    - Frozen Peak Delivered Var Rate B:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB, *Prev    ], Models: *___-RXe-23 }
+    - Time of Frozen Peak Delivered Var Rate B: { Unit: *s,  Modifiers: [ *RateB, *Prev                    ], Models: *___-RXe-23 }
     - Peak VA Q1 + Q2 + Q4 Rate B:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB      ], Models: *___-RXe-23 }
     - Time of Peak VA Q1 + Q2 + Q4 Rate B:  { Unit: *s,      Modifiers: [ *RateB                           ], Models: *___-RXe-23 } 
-    - Frozen Peak VA Q1 + Q2 + Q4 Rate B:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB, *Prev ], Models: *___-RXe-23, Mapped: false }
-    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate B: { Unit: *s, Modifiers: [ *RateB, *Prev                   ], Models: *___-RXe-23, Mapped: false }
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate B:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB, *Prev ], Models: *___-RXe-23 }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate B: { Unit: *s, Modifiers: [ *RateB, *Prev                   ], Models: *___-RXe-23 }
     - Watt-hours Delivered Rate C:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateC                 ], Models: *AXe-RXe-23 }
     - Watt-hours Received Rate C:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateC                 ], Models: *AXe-RXe-23 }
     - Watt-hours Total Rate C:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *AXe-RXe-23 }
@@ -1804,12 +1804,12 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate C:    { Unit: *s,      Modifiers: [ *RateC, *Prev                    ], Models: *AXe-RXe-23 }
     - Peak Delivered Var Rate C:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC           ], Models: *___-RXe-23 } 
     - Time of Peak Var Rate C:              { Unit: *s,      Modifiers: [ *RateC                           ], Models: *___-RXe-23 } 
-    - Frozen Peak Delivered Var Rate C:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC, *Prev    ], Models: *___-RXe-23, Mapped: false }
-    - Time of Frozen Peak Delivered Var Rate C: { Unit: *s,  Modifiers: [ *RateC, *Prev                    ], Models: *___-RXe-23, Mapped: false }
+    - Frozen Peak Delivered Var Rate C:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC, *Prev    ], Models: *___-RXe-23 }
+    - Time of Frozen Peak Delivered Var Rate C: { Unit: *s,  Modifiers: [ *RateC, *Prev                    ], Models: *___-RXe-23 }
     - Peak VA Q1 + Q2 + Q4 Rate C:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC      ], Models: *___-RXe-23 }
     - Time of Peak VA Q1 + Q2 + Q4 Rate C:  { Unit: *s,      Modifiers: [ *RateC                           ], Models: *___-RXe-23 }
-    - Frozen Peak VA Q1 + Q2 + Q4 Rate C:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC, *Prev ], Models: *___-RXe-23, Mapped: false }
-    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate C: { Unit: *s, Modifiers: [ *RateC, *Prev                   ], Models: *___-RXe-23, Mapped: false }
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate C:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC, *Prev ], Models: *___-RXe-23 }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate C: { Unit: *s, Modifiers: [ *RateC, *Prev                   ], Models: *___-RXe-23 }
     - Watt-hours Delivered Rate D:          { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateD                 ], Models: *AXe-RXe-23 }
     - Watt-hours Received Rate D:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateD                 ], Models: *AXe-RXe-23 }
     - Watt-hours Total Rate D:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *AXe-RXe-23 }
@@ -1828,12 +1828,12 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Time of Frozen Peak Demand Rate D:    { Unit: *s,      Modifiers: [ *RateD, *Prev                    ], Models: *AXe-RXe-23 }
     - Peak Delivered Var Rate D:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD           ], Models: *___-RXe-23 } 
     - Time of Peak Var Rate D:              { Unit: *s,      Modifiers: [ *RateD                           ], Models: *___-RXe-23 } 
-    - Frozen Peak Delivered Var Rate D:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD, *Prev    ], Models: *___-RXe-23, Mapped: false }
-    - Time of Frozen Peak Delivered Var Rate D: { Unit: *s,  Modifiers: [ *RateD, *Prev                    ], Models: *___-RXe-23, Mapped: false }
+    - Frozen Peak Delivered Var Rate D:     { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD, *Prev    ], Models: *___-RXe-23 }
+    - Time of Frozen Peak Delivered Var Rate D: { Unit: *s,  Modifiers: [ *RateD, *Prev                    ], Models: *___-RXe-23 }
     - Peak VA Q1 + Q2 + Q4 Rate D:          { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD      ], Models: *___-RXe-23 }
     - Time of Peak VA Q1 + Q2 + Q4 Rate D:  { Unit: *s,      Modifiers: [ *RateD                           ], Models: *___-RXe-23 }
-    - Frozen Peak VA Q1 + Q2 + Q4 Rate D:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD, *Prev ], Models: *___-RXe-23, Mapped: false }
-    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate D: { Unit: *s, Modifiers: [ *RateD, *Prev                   ], Models: *___-RXe-23, Mapped: false }
+    - Frozen Peak VA Q1 + Q2 + Q4 Rate D:   { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD, *Prev ], Models: *___-RXe-23 }
+    - Time of Frozen Peak VA Q1 + Q2 + Q4 Rate D: { Unit: *s, Modifiers: [ *RateD, *Prev                   ], Models: *___-RXe-23 }
     - Peak Daily Voltage:                   { Unit: *V,      Modifiers: [ *DayMax, *milli                  ], Models: *AXe-RXe-23 }
     - Coincident Time of Peak Daily Voltage: { Unit: *s,     Modifiers: [                                  ], Models: *AXe-RXe-23 }
     - Minimum Daily Voltage:                { Unit: *V,      Modifiers: [ *DayMin, *milli                  ], Models: *AXe-RXe-23 }
@@ -1930,9 +1930,9 @@ Metric IDs:
     52:  { name: "VA received, peak demand",             Unit: *VA,     Modifiers: [ *Q2, *Q3, *Max                        ] }
     53:  { name: "VA delivered, peak demand (Frozen)",   Unit: *VA,     Modifiers: [ *Q1, *Q4, *Max, *Prev                 ] }
     54:  { name: "VA received, peak demand (Frozen)",    Unit: *VA,     Modifiers: [ *Q2, *Q3, *Max, *Prev                 ] }
-    55:  { name: "VA lagging peak",                      Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max                   ] }
-    56:  { name: "VA lagging peak (Frozen)",             Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev            ] }
-    57:  { name: "VA lagging",                           Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4                         ] }
+    55:  { name: "VA Q1 + Q2 + Q4, peak",                Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max                   ] }
+    56:  { name: "VA Q1 + Q2 + Q4, peak (Frozen)",       Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev            ] }
+    57:  { name: "VA Q1 + Q2 + Q4",                      Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4                         ] }
     # ------     
     59:  { name: "Q hour Q1 + Q4",                       Unit: *Qh,     Modifiers: [ *Q1, *Q4                              ] }
     60:  { name: "Q hour Q2 + Q3",                       Unit: *Qh,     Modifiers: [ *Q2, *Q3                              ] }

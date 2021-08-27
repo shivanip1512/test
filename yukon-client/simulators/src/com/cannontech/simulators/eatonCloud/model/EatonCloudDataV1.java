@@ -150,11 +150,10 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     }
 
 
-    public EatonCloudSimulatorResponse timeseriesV1(EatonCloudTimeSeriesDataRequestV1 eatonCloudTimeSeriesDataRequestV1) {
-
+    public EatonCloudSimulatorResponse timeseriesV1(EatonCloudTimeSeriesDataRequestV1 eatonCloudTimeSeriesDataRequestV1) {        
         if (status == HttpStatus.BAD_REQUEST.value()) {
-            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("DeviceID"), "Invalid UUID-76f93adc-4e9e-4aae-9700-e4ca684e7af51",
-                    "b7074310-050c-4c11-ada0-a4ae542fa645", status, "2021-02-25T13:45:10.4807211+00:00", 10022);
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("ClientId"),  "The field \u0027ClientId\u0027 is not a valid uuid.",
+                    "4aeacd2f-9424-4e6d-a218-c0b621d0f4c9", status, "2021-02-25T13:45:10.4807211+00:00", 10022);
             return new EatonCloudSimulatorResponse(error, status);
         } else if (status == HttpStatus.UNAUTHORIZED.value()) {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of(),

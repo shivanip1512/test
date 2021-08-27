@@ -293,9 +293,11 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
     protected void sendAcknowledgement(T request) {
         Object response = getRfnArchiveResponse(request);
-        YukonJmsTemplate jmsTemplate = getJmsTemplate();
-        rfnLogger.info("<<< Sent " + response);
-        jmsTemplate.convertAndSend(response);
+        if (response != null) {
+            YukonJmsTemplate jmsTemplate = getJmsTemplate();
+            rfnLogger.info("<<< Sent " + response);
+            jmsTemplate.convertAndSend(response);
+        }
     }
     
     @ManagedAttribute

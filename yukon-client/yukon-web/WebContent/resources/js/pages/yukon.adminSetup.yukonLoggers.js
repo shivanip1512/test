@@ -102,6 +102,7 @@ yukon.adminSetup.yukonLoggers = (function () {
                     },
                     error: function (xhr) {
                         popup.html(xhr.responseText);
+                        yukon.ui.initDateTimePickers();
                     }
                 });
             });

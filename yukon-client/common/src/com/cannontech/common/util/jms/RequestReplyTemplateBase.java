@@ -20,7 +20,6 @@ import com.cannontech.common.util.ExceptionHelper;
 
 public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
     protected static final Logger log = YukonLogManager.getLogger(RequestReplyTemplateBase.class);
-    protected Logger commsLogger;
     
     protected ConfigurationSource configurationSource;
     protected YukonJmsTemplate jmsTemplate;
@@ -35,7 +34,6 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
      */
     public RequestReplyTemplateBase(String configurationName, ConfigurationSource configurationSource,
             YukonJmsTemplate jmsTemplate, boolean isInternalMessage) {
-        this.commsLogger = jmsTemplate.getCommsLogger();
         this.configurationName = configurationName;
         this.configurationSource = configurationSource;
         this.jmsTemplate = jmsTemplate;
@@ -91,9 +89,10 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
      * Adds an entry in rfnLogger
      */
     private void log(String text) {
-        if(commsLogger == null) {
+        if (jmsTemplate.isCommsLoggingDisabled()) {
             return;
         }
+        Logger commsLogger = jmsTemplate.getCommsLogger();
         if (!internalMessage && commsLogger.isInfoEnabled()) {
             commsLogger.info(text);
         } else if (internalMessage && commsLogger.isDebugEnabled()) {

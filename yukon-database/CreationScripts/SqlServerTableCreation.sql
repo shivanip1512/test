@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/19/2021 12:36:35 AM                        */
+/* Created on:     8/20/2021 1:42:52 PM                         */
 /*==============================================================*/
 
 
@@ -10963,7 +10963,6 @@ INSERT INTO YukonListEntry VALUES (2037, 1005, 0, 'LCR-6600S', 1340);
 
 INSERT INTO YukonListEntry VALUES (2038, 1005, 0, 'LCR-6200C', 1342);
 INSERT INTO YukonListEntry VALUES (2039, 1005, 0, 'LCR-6600C', 1343);
-INSERT INTO YukonListEntry VALUES (2040, 1005, 0, 'LCR-DisconnectC', 1344);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
