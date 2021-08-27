@@ -3346,7 +3346,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Lagging">
+        <point name="kVAh (Quadrants 1 2 4)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3356,7 +3356,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Lagging Rate A">
+        <point name="kVAh (Quadrants 1 2 4) (Rate A kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3367,7 +3367,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Lagging Rate B">
+        <point name="kVAh (Quadrants 1 2 4) (Rate B kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3378,7 +3378,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Lagging Rate C">
+        <point name="kVAh (Quadrants 1 2 4) (Rate C kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3389,7 +3389,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Lagging Rate D">
+        <point name="kVAh (Quadrants 1 2 4) (Rate D kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

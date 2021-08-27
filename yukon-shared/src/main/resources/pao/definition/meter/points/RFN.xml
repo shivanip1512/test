@@ -1034,31 +1034,31 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="245" type="Analog">
-        <name>kVAh Lagging</name>
+        <name>kVAh (Quadrants 1 2 4)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="246" type="Analog">
-        <name>kVAh Lagging Rate A</name>
+        <name>kVAh (Quadrants 1 2 4) (Rate A kVAh)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="247" type="Analog">
-        <name>kVAh Lagging Rate B</name>
+        <name>kVAh (Quadrants 1 2 4) (Rate B kVAh)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="248" type="Analog">
-        <name>kVAh Lagging Rate C</name>
+        <name>kVAh (Quadrants 1 2 4) (Rate C kVAh)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="249" type="Analog">
-        <name>kVAh Lagging Rate D</name>
+        <name>kVAh (Quadrants 1 2 4) (Rate D kVAh)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
@@ -2409,36 +2409,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <name>Delivered Peak kVA (Quadrants 1 2) (Rate D kVA)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="484" type="Analog">
-        <name>kVAh (Quadrants 1 2 4)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="485" type="Analog">
-        <name>kVAh (Quadrants 1 2 4) (Rate A kVAh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="486" type="Analog">
-        <name>kVAh (Quadrants 1 2 4) (Rate B kVAh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="487" type="Analog">
-        <name>kVAh (Quadrants 1 2 4) (Rate C kVAh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="488" type="Analog">
-        <name>kVAh (Quadrants 1 2 4) (Rate D kVAh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="489" type="Analog">
