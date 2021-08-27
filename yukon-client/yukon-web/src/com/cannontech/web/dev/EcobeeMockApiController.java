@@ -80,11 +80,16 @@ public class EcobeeMockApiController {
     @GetMapping("tstatgroups/{thermostatGroupID}/thermostats")
     public ResponseEntity<Object> retrieveThermostats(@PathVariable String thermostatGroupID,
             @RequestParam(name = "enrollment_state", required = false) ZeusThermostatState state,
-            @RequestParam(name = "thermostat_ids", required = false) List<String> thermostatIds) {
+            @RequestParam(name = "thermostat_ids", required = false) List<String> thermostatIds,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer pageNumber) {
         int createDeviceCode = zeusEcobeeDataConfiguration.getCreateDevice();
         if (createDeviceCode == 0) {
             if (thermostatIds == null) {
-                return new ResponseEntity<>(responseFactory.getThermostatsInGroup(thermostatGroupID), HttpStatus.OK);
+                if (zeusEcobeeDataConfiguration.getPaginatedResponse() == 1) {
+                    return responseFactory.getPaginatedThermostatsInGroup(thermostatGroupID, pageNumber);
+                } else {
+                    return new ResponseEntity<>(responseFactory.getThermostatsInGroup(thermostatGroupID), HttpStatus.OK);
+                }
             } else {
                 return new ResponseEntity<>(responseFactory.retrieveThermostats(thermostatIds), HttpStatus.OK);
             }
@@ -271,10 +276,15 @@ public class EcobeeMockApiController {
     
     @IgnoreCsrfCheck
     @GetMapping("tstatgroups")
-    public ResponseEntity<Object> getAllGroups(@RequestParam(name = "program_id") String programId) {
+    public ResponseEntity<Object> getAllGroups(@RequestParam(name = "program_id") String programId,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer pageNumber) {
         int getGroupCode = zeusEcobeeDataConfiguration.getGetGroup();
         if (getGroupCode == 0) {
-            return new ResponseEntity<>(responseFactory.retrieveGroups(programId), HttpStatus.OK);
+            if (zeusEcobeeDataConfiguration.getPaginatedResponse() == 1) {
+                return responseFactory.retrievePaginatedGroups(programId, pageNumber);
+            } else {
+                return new ResponseEntity<>(responseFactory.retrieveGroups(programId), HttpStatus.OK);
+            }
         } else if (getGroupCode == 1) {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else if (getGroupCode == 3) {
