@@ -177,6 +177,12 @@ public class RFNetworkSupportBundleService {
         buildAndSendMutiDataRequest(request, PaoType.getRfRelayTypes(), destDir, relayLocationFileName, relayLocationcolumnCount,
                 RfnNetworkDataType.LOCATIONDATA, RfnMetadataMulti.NODE_DATA);
         buildAndWriteGatewayLocationData(request, destDir, gatewayLocationFileName);
+        String[] locationFiles = new File(destDir).list();
+        try {
+            FileUtil.zipDir(destDir, locationFiles, destDir + ".zip");
+        } catch (IOException e) {
+            log.error("Error found while zipping Location Data files.");
+        }
     }
     
     /**
@@ -189,6 +195,12 @@ public class RFNetworkSupportBundleService {
         buildAndSendMutiDataRequest(request, PaoType.getRftypes(), destDir, electricNodeLocationFileName,
                 electricNodecolumnCount, RfnNetworkDataType.NETWORKSNAPSHOTDATA, RfnMetadataMulti.NODE_DATA,
                 RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
+        String[] snapshotFiles = new File(destDir).list();
+        try {
+            FileUtil.zipDir(destDir, snapshotFiles, destDir + ".zip");
+        } catch (IOException e) {
+            log.error("Error found while zipping Network snapshot Data files.");
+        }
     }
 
     /**
