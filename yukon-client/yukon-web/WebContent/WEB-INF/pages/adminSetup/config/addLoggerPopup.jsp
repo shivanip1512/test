@@ -45,7 +45,7 @@
                         hideErrors="${invalidDateError}" cssClass="${status.error ? 'error' : ''}" displayValidationToRight="${!isEditMode}"/>
                     <c:if test="${invalidDateError}">
                         <div class="error">
-                            <i:inline key=".inValidDate"/>
+                            <i:inline key=".invalidDate"/>
                         </div>
                     </c:if>
                 </span>

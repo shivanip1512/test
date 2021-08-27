@@ -27,8 +27,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -98,10 +96,10 @@ public class YukonLoggersController {
             HttpServletResponse resp, YukonUserContext userContext, ModelMap model) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<String, Object>();
-        if (specifiedDateTime && logger.getExpirationDate() == null) {
+        if (BooleanUtils.isTrue(specifiedDateTime) && logger.getExpirationDate() == null) {
             model.addAttribute("invalidDateError", true);
         }
-        if (BooleanUtils.isNotTrue(specifiedDateTime) || logger.getExpirationDate() == null) {
+        if (BooleanUtils.isNotTrue(specifiedDateTime)) {
             logger.setExpirationDate(null);
         }
         logger.setLoggerType(SystemLogger.isSystemLogger(logger.getLoggerName()) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER );
