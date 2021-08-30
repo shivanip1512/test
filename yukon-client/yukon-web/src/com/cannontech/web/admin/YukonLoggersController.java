@@ -74,7 +74,10 @@ public class YukonLoggersController {
 
     @GetMapping("/config/loggers")
     public String addLogger(@ModelAttribute YukonLogger logger, ModelMap model) {
-
+        if (model.containsAttribute("logger")) {
+            logger = (YukonLogger) model.get("logger");
+        }
+        
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("isEditMode", false);
         if (logger.getLevel() == null) {
@@ -89,10 +92,13 @@ public class YukonLoggersController {
     }
 
     @PostMapping("/config/loggers")
-    public String saveLogger(@ModelAttribute("logger") YukonLogger logger,BindingResult result, Boolean specifiedDateTime, HttpServletRequest request,
+    public String saveLogger(@ModelAttribute("logger") YukonLogger logger, BindingResult result, Boolean specifiedDateTime, HttpServletRequest request,
             HttpServletResponse resp, YukonUserContext userContext, ModelMap model) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<String, Object>();
+        if (BooleanUtils.isTrue(specifiedDateTime) && logger.getExpirationDate() == null) {
+            model.addAttribute("invalidDateError", true);
+        }
         if (BooleanUtils.isNotTrue(specifiedDateTime)) {
             logger.setExpirationDate(null);
         }
@@ -101,7 +107,7 @@ public class YukonLoggersController {
         
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            addModelAttributes(model, logger);
+            addModelAttributes(model, logger, specifiedDateTime);
             return "config/addLoggerPopup.jsp";
         }
         try {
@@ -114,7 +120,7 @@ public class YukonLoggersController {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 BindException error = new BindException(logger, "logger");
                 result = apiControllerHelper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
-                addModelAttributes(model, logger);
+                addModelAttributes(model, logger, specifiedDateTime);
                 return "config/addLoggerPopup.jsp";
             }
         } catch (ApiCommunicationException e) {
@@ -127,10 +133,10 @@ public class YukonLoggersController {
         return JsonUtils.writeResponse(resp, json);
     }
 
-    private void addModelAttributes(ModelMap model, YukonLogger logger) {
+    private void addModelAttributes(ModelMap model, YukonLogger logger, Boolean specifiedDateTime) {
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("now", new Date());
-        model.addAttribute("specifiedDateTime", logger.getExpirationDate() != null);
+        model.addAttribute("specifiedDateTime", specifiedDateTime);
         boolean allowDateTimeSelection = !SystemLogger.isSystemLogger(logger.getLoggerName());
         model.addAttribute("allowDateTimeSelection", allowDateTimeSelection);
         model.addAttribute("isEditMode", logger.getLoggerId() != -1);
@@ -149,7 +155,7 @@ public class YukonLoggersController {
 
             if (loggerResponse.getStatusCode() == HttpStatus.OK) {
                 logger = (YukonLogger) loggerResponse.getBody();
-                addModelAttributes(model, logger);
+                addModelAttributes(model, logger, logger.getExpirationDate() != null);
                 model.addAttribute("isEditMode", true);
               }
         } catch (ApiCommunicationException e) {
@@ -187,8 +193,8 @@ public class YukonLoggersController {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", loggerName));
         } else {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String inValidId = accessor.getMessage(baseKey + "inValidId");
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", loggerName, inValidId));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", loggerName,
+                    accessor.getMessage(baseKey + "invalidId")));
         }
         return redirectLink;
     }

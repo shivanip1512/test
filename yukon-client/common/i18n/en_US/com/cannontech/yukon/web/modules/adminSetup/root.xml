@@ -424,6 +424,7 @@
     <entry key="yukon.web.modules.adminSetup.config.loggers.viewNote">View Note</entry>
     <entry key="yukon.web.modules.adminSetup.config.loggers.noteText.placeHolder">Note Text (255 characters max)</entry>
     <entry key="yukon.web.modules.adminSetup.config.loggers.loggersLabel">Logger(s)</entry>
-    <entry key="yukon.web.modules.adminSetup.config.loggers.inValidId">Invalid Logger Id</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.invalidId">Invalid Logger Id</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.invalidDate">Expiration must have a valid date.</entry>
 
 </properties>

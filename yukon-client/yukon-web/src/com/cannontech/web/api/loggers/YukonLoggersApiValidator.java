@@ -130,11 +130,11 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
         }
     }
 
-    public void validateExpirationDate(Errors errors, YukonLogger logger, String string) {
+    public void validateExpirationDate(Errors errors, YukonLogger logger, String i18text) {
         if (logger.getLoggerType() == LoggerType.USER_LOGGER) {
             Date today = DateUtils.truncate(new Date(), Calendar.DAY_OF_MONTH);
             if (logger.getExpirationDate().before(today)) {
-                errors.rejectValue("expirationDate", ApiErrorDetails.FUTURE_DATE.getCodeString());
+                errors.rejectValue("expirationDate", ApiErrorDetails.FUTURE_DATE.getCodeString(), new Object[] { i18text }, "");
             }
         } else {
             errors.rejectValue("expirationDate", ApiErrorDetails.NOT_SUPPORTED.getCodeString(),
