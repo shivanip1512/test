@@ -2640,6 +2640,8 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
     double multiTapEstBw = powerFactorComponentMultiTap;
 
+    state->_tapOpInhibit.clear();
+
     if ( canDoMultiTap )
     {
         PointValueMap multiTapVoltages( pointValues );      // copy data
@@ -2649,6 +2651,10 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         // we now have a tap solution for our over-voltage
 
         calculateMultiTapOperation( multiTapVoltages, subbus, strategy, state->_tapOps );
+
+        // 'finalize' the multi-tap solution - check for inhibited regulators.
+
+        finalizeMultiTapSolution( subbus, state );
 
         // calculate the bus weight
 
@@ -4948,5 +4954,86 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
     }
 
     return false;
+}
+
+
+bool IVVCAlgorithm::finalizeMultiTapSolution( CtiCCSubstationBusPtr subbus, IVVCStatePtr state )
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    // get all zones on the subbus...
+
+    long subbusId = subbus->getPaoId();
+
+    ZoneManager & zoneManager = store->getZoneManager();
+    Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
+
+    for ( const Zone::IdSet::value_type & ID : subbusZoneIds )
+    {
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        try
+        {
+            for ( const Zone::PhaseIdMap::value_type & mapping : zone->getRegulatorIds() )
+            {
+                VoltageRegulatorManager::SharedPtr regulator =
+                         store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                state->_tapOpInhibit[ regulator->getPaoId() ] = regulator->isTapInhibited();
+
+                switch ( state->_tapOpInhibit[ regulator->getPaoId() ] )
+                {
+                    case VoltageRegulator::TapInhibit::NoTap:
+                    {
+                        if ( state->_tapOps[ regulator->getPaoId() ] != 0 )
+                        {
+                            state->_tapOps[ regulator->getPaoId() ] = 0;
+                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                                << " is inhibited from control, it is either missing it's TapPosition point or in IndeterminateFlow.");
+                        }
+                        break;
+                    }
+                    case VoltageRegulator::TapInhibit::NoTapDown:
+                    {
+                        if ( state->_tapOps[ regulator->getPaoId() ] < 0 )
+                        {
+                            state->_tapOps[ regulator->getPaoId() ] = 0;
+                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                                << " is inhibited from tapping down, it is already at it's minimum allowable TapPosition.");
+                        }
+                        break;
+                    }
+                    case VoltageRegulator::TapInhibit::NoTapUp:
+                    {
+                        if ( state->_tapOps[ regulator->getPaoId() ] > 0 )
+                        {
+                            state->_tapOps[ regulator->getPaoId() ] = 0;
+                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                                << " is inhibited from tapping up, it is already at it's maximum allowable TapPosition.");
+                        }
+                        break;
+                    }
+                    case VoltageRegulator::TapInhibit::None:
+                    default:
+                    {
+                        // nothing to do here...
+                    }
+                }
+            }
+        }
+        catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+        {
+            CTILOG_EXCEPTION_ERROR(dout, noRegulator);
+        }
+        catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+        {
+            if (missingAttribute.complain())
+            {
+                CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
+            }
+        }
+    }
+
+    return true;
 }
 

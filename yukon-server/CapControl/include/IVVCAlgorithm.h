@@ -130,6 +130,8 @@ class IVVCAlgorithm
                                                IVVCStrategy * strategy,
                                                IVVCState::TapOperationZoneMap & solution );
 
+        bool finalizeMultiTapSolution( CtiCCSubstationBusPtr subbus, IVVCStatePtr state );
+
         double getVmaxForPoint( const long pointID, CtiCCSubstationBusPtr subbus, IVVCStrategy * strategy ) const;
 
         void findPointInRequest( const long pointID, const PointValueMap & pointValues, PointDataRequestPtr & request, const CtiTime & timeNow,
