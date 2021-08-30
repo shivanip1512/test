@@ -69,8 +69,8 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                 // This may be a gateway 2.0 that got put into the system as a gateway 1. Update the type & model.
                 if (identifier.getSensorModel().equals(GATEWAY_2_MODEL_STRING)) {
                     RfnIdentifier model1Identifier = new RfnIdentifier(identifier.getSensorSerialNumber(),
-                            identifier.getSensorManufacturer(),
-                            GATEWAY_1_MODEL_STRING);
+                                                                       identifier.getSensorManufacturer(),
+                                                                       GATEWAY_1_MODEL_STRING);
 
                     if (rfnDeviceDao.deviceExists(model1Identifier)) {
                         // Found a match. Update the gateway model to 2.0
@@ -86,11 +86,10 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                         log.info("Received gateway data for unknown gateway for more than 2 hours. Creating for " + identifier);
                         missingGatewayFirstDataTimes.remove(identifier);
                         try {
-                            RfnDevice device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(),
-                                    identifier);
+                            RfnDevice device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(), identifier);
                             log.debug("Created new gateway: " + device);
                             gatewayEventLogService.createdGatewayAutomatically(device.getName(),
-                                    device.getRfnIdentifier().getSensorSerialNumber());
+                                                                               device.getRfnIdentifier().getSensorSerialNumber());
                             return device;
                         } catch (Exception e) {
                             log.warn("Waiting to create gateway for " + identifier, e);
@@ -98,8 +97,8 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                         }
                     } else {
                         log.info("Received data for unknown gateway (" + identifier
-                                + "). Gateway will be automatically created if data messages are received over at least"
-                                + " 2 hours and no creation message is received for this gateway.");
+                                 + "). Gateway will be automatically created if data messages are received over at least"
+                                 + " 2 hours and no creation message is received for this gateway.");
                         throw new RuntimeException("Waiting to create gateway for " + identifier);
                     }
                 } else {
@@ -107,8 +106,8 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                     // gateway if we don't receive a creation request in the next 2 hours.
                     missingGatewayFirstDataTimes.put(identifier, Instant.now());
                     log.info("Received data for unknown gateway (" + identifier
-                            + "). Gateway will be automatically created if data messages are received over at least"
-                            + " 2 hours and no creation message is received for this gateway.");
+                             + "). Gateway will be automatically created if data messages are received over at least"
+                             + " 2 hours and no creation message is received for this gateway.");
                     throw new RuntimeException("Waiting to create gateway for " + identifier);
                 }
             }
