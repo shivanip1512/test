@@ -1,5 +1,6 @@
 package com.cannontech.web.admin;
 
+import java.beans.PropertyEditor;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,8 +22,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +42,7 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -48,6 +52,7 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.input.DatePropertyEditorFactory;
 
 @Controller
 public class YukonLoggersController {
@@ -58,6 +63,7 @@ public class YukonLoggersController {
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private ApiControllerHelper apiControllerHelper;
     @Autowired private YukonLoggersValidator yukonLoggersValidator;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     
     private static final String baseKey = "yukon.web.modules.adminSetup.config.loggers.";
     private static final String redirectLink = "redirect:/admin/config/loggers/allLoggers";
@@ -292,5 +298,12 @@ public class YukonLoggersController {
         public String getFormatKey() {
             return "yukon.web.modules.adminSetup.config.loggers." + name();
         }
+    }
+    
+    @InitBinder
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        PropertyEditor fullDateTimeEditor =
+                datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATE, userContext);
+            binder.registerCustomEditor(Date.class, fullDateTimeEditor);
     }
 }
