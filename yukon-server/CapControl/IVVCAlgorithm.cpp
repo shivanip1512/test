@@ -2908,46 +2908,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                     ? 0
                     : calculateVte(zonePointValues, strategy, subbus->getAllMonitorPoints(), isPeakTime, regulator);
 
-                state->_tapOpInhibit[ regulator->getPaoId() ] = regulator->isTapInhibited();
-
-                switch ( state->_tapOpInhibit[ regulator->getPaoId() ] )
-                {
-                    case VoltageRegulator::TapInhibit::NoTap:
-                    {
-                        if ( state->_tapOps[ regulator->getPaoId() ] != 0 )
-                        {
-                            state->_tapOps[ regulator->getPaoId() ] = 0;
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
-                                                << " is inhibited from control, it is either missing it's TapPosition point or in IndeterminateFlow.");
-                        }
-                        break;
-                    }
-                    case VoltageRegulator::TapInhibit::NoTapDown:
-                    {
-                        if ( state->_tapOps[ regulator->getPaoId() ] < 0 )
-                        {
-                            state->_tapOps[ regulator->getPaoId() ] = 0;
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
-                                                << " is inhibited from tapping down, it is already at it's minimum allowable TapPosition.");
-                        }
-                        break;
-                    }
-                    case VoltageRegulator::TapInhibit::NoTapUp:
-                    {
-                        if ( state->_tapOps[ regulator->getPaoId() ] > 0 )
-                        {
-                            state->_tapOps[ regulator->getPaoId() ] = 0;
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
-                                                << " is inhibited from tapping up, it is already at it's maximum allowable TapPosition.");
-                        }
-                        break;
-                    }
-                    case VoltageRegulator::TapInhibit::None:
-                    default:
-                    {
-                        // nnothing to do here...
-                    }
-                }
+                processInhibitedRegulator( regulator, state );
             }
         }
         catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -4957,68 +4918,26 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
 }
 
 
-bool IVVCAlgorithm::finalizeMultiTapSolution( CtiCCSubstationBusPtr subbus, IVVCStatePtr state )
+void IVVCAlgorithm::finalizeMultiTapSolution( CtiCCSubstationBusPtr subbus, IVVCStatePtr state )
 {
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    auto store = CtiCCSubstationBusStore::getInstance();
 
     // get all zones on the subbus...
 
-    long subbusId = subbus->getPaoId();
-
     ZoneManager & zoneManager = store->getZoneManager();
-    Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
 
-    for ( const Zone::IdSet::value_type & ID : subbusZoneIds )
+    for ( const auto ID : zoneManager.getZoneIdsBySubbus( subbus->getPaoId() ) )
     {
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
         try
         {
-            for ( const Zone::PhaseIdMap::value_type & mapping : zone->getRegulatorIds() )
+            for ( const auto & [ phase, regulatorID ] : zone->getRegulatorIds() )
             {
                 VoltageRegulatorManager::SharedPtr regulator =
-                         store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+                         store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
 
-                state->_tapOpInhibit[ regulator->getPaoId() ] = regulator->isTapInhibited();
-
-                switch ( state->_tapOpInhibit[ regulator->getPaoId() ] )
-                {
-                    case VoltageRegulator::TapInhibit::NoTap:
-                    {
-                        if ( state->_tapOps[ regulator->getPaoId() ] != 0 )
-                        {
-                            state->_tapOps[ regulator->getPaoId() ] = 0;
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
-                                                << " is inhibited from control, it is either missing it's TapPosition point or in IndeterminateFlow.");
-                        }
-                        break;
-                    }
-                    case VoltageRegulator::TapInhibit::NoTapDown:
-                    {
-                        if ( state->_tapOps[ regulator->getPaoId() ] < 0 )
-                        {
-                            state->_tapOps[ regulator->getPaoId() ] = 0;
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
-                                                << " is inhibited from tapping down, it is already at it's minimum allowable TapPosition.");
-                        }
-                        break;
-                    }
-                    case VoltageRegulator::TapInhibit::NoTapUp:
-                    {
-                        if ( state->_tapOps[ regulator->getPaoId() ] > 0 )
-                        {
-                            state->_tapOps[ regulator->getPaoId() ] = 0;
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
-                                                << " is inhibited from tapping up, it is already at it's maximum allowable TapPosition.");
-                        }
-                        break;
-                    }
-                    case VoltageRegulator::TapInhibit::None:
-                    default:
-                    {
-                        // nothing to do here...
-                    }
-                }
+                processInhibitedRegulator( regulator, state );
             }
         }
         catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -5033,7 +4952,52 @@ bool IVVCAlgorithm::finalizeMultiTapSolution( CtiCCSubstationBusPtr subbus, IVVC
             }
         }
     }
+}
 
-    return true;
+
+void IVVCAlgorithm::processInhibitedRegulator( VoltageRegulatorManager::SharedPtr regulator, IVVCStatePtr state )
+{
+    const long regulatorID = regulator->getPaoId();
+
+    state->_tapOpInhibit[ regulatorID ] = regulator->isTapInhibited();
+
+    switch ( state->_tapOpInhibit[ regulatorID ] )
+    {
+        case VoltageRegulator::TapInhibit::NoTap:
+        {
+            if ( state->_tapOps[ regulatorID ] != 0 )
+            {
+                state->_tapOps[ regulatorID ] = 0;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                    << " is inhibited from control, it is either missing its TapPosition point or is in IndeterminateFlow.");
+            }
+            break;
+        }
+        case VoltageRegulator::TapInhibit::NoTapDown:
+        {
+            if ( state->_tapOps[ regulatorID ] < 0 )
+            {
+                state->_tapOps[ regulatorID ] = 0;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                    << " is inhibited from tapping down, it is already at its minimum allowable TapPosition.");
+            }
+            break;
+        }
+        case VoltageRegulator::TapInhibit::NoTapUp:
+        {
+            if ( state->_tapOps[ regulatorID ] > 0 )
+            {
+                state->_tapOps[ regulatorID ] = 0;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                    << " is inhibited from tapping up, it is already at its maximum allowable TapPosition.");
+            }
+            break;
+        }
+        case VoltageRegulator::TapInhibit::None:
+        default:
+        {
+            // nothing to do here...
+        }
+    }
 }
 
