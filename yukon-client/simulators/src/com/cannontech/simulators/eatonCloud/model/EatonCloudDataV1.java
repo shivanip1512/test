@@ -243,15 +243,6 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         }
         creatingGuids.put(deviceId,deviceId);
         EatonCloudDeviceDetailV1 detail = new EatonCloudDeviceDetailV1(deviceId, "", "", "", "", "2143535", "", "", "", "", "", "", "", "", "", "YUKON_SIMULATOR", true, "");
-        sleep();
         return new EatonCloudSimulatorResponse(detail, status);
-    }
-    
-    private void sleep() {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            log.warn("Sleep interrupted", e);
-        }
     }
 }

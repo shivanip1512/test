@@ -212,7 +212,7 @@ public class EatonCloudMessageListener {
                 } else {
                     throw new EatonCloudException(response.getMessage());
                 }
-                log.info("Command sent to {}", deviceName);
+                log.trace("Command sent to {}", deviceName);
             } catch (EatonCloudCommunicationExceptionV1 e) {
                 totalFailed.getAndIncrement();
                 log.error("Error sending command device id:{}, name:{} params:{}", deviceId, params, e);
@@ -231,7 +231,7 @@ public class EatonCloudMessageListener {
         });
         
         stopwatch.stop();
-        log.info("Commands timer - devices: {}, total seconds: {} ({} minutes)", guids.size(), stopwatch.getTotalTimeSeconds(), stopwatch.getTotalTimeSeconds()/60);
+        log.trace("Commands timer - devices: {}, total seconds: {} ({} minutes)", guids.size(), stopwatch.getTotalTimeSeconds(), stopwatch.getTotalTimeSeconds()/60);
         
         DateTime dateTime = new DateTime();
         if (!successDeviceIds.isEmpty()) {
