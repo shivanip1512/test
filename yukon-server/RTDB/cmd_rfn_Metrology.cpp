@@ -41,13 +41,23 @@ static const std::map<unsigned char, States>  stateDecoder
 
 static const std::set<DeviceTypes>  supportedDeviceTypes
 {
+    //  RFN-500 Focus AX (gen 1)
     TYPE_RFN520FAX,
     TYPE_RFN520FAXD,
     TYPE_RFN520FRX,
     TYPE_RFN520FRXD,
 
     TYPE_RFN530FAX,
-    TYPE_RFN530FRX
+    TYPE_RFN530FRX,
+
+    //  RFN-500 Focus AXe (gen 2)
+    TYPE_RFN520FAXE,
+    TYPE_RFN520FAXED,
+    TYPE_RFN520FRXE,
+    TYPE_RFN520FRXED,
+
+    TYPE_RFN530FAXE,
+    TYPE_RFN530FRXE
 };
 
 }   // -- anon

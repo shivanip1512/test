@@ -171,12 +171,21 @@ string desolveDeviceType( int aType )
         case TYPE_RFN430SL4:    Ret = "rfn-430sl4";     break;
 
         case TYPE_RFN510FL:     Ret = "rfn-510fl";      break;
+        //  RFN-500 Focus AX (gen 1)
         case TYPE_RFN520FAX:    Ret = "rfn-520fax";     break;
         case TYPE_RFN520FRX:    Ret = "rfn-520frx";     break;
         case TYPE_RFN520FAXD:   Ret = "rfn-520faxd";    break;
         case TYPE_RFN520FRXD:   Ret = "rfn-520frxd";    break;
         case TYPE_RFN530FAX:    Ret = "rfn-530fax";     break;
         case TYPE_RFN530FRX:    Ret = "rfn-530frx";     break;
+        //  RFN-500 Focus AXe (gen 2)
+        case TYPE_RFN520FAXE:   Ret = "rfn-520faxe";    break;
+        case TYPE_RFN520FRXE:   Ret = "rfn-520frxe";    break;
+        case TYPE_RFN520FAXED:  Ret = "rfn-520faxed";   break;
+        case TYPE_RFN520FRXED:  Ret = "rfn-520frxed";   break;
+        case TYPE_RFN530FAXE:   Ret = "rfn-530faxe";    break;
+        case TYPE_RFN530FRXE:   Ret = "rfn-530frxe";    break;
+        //  RFN-500 S4
         case TYPE_RFN530S4X:    Ret = "rfn-530s4x";     break;
         case TYPE_RFN530S4EAX:  Ret = "rfn-530s4eax";   break;
         case TYPE_RFN530S4EAXR: Ret = "rfn-530s4eaxr";  break;

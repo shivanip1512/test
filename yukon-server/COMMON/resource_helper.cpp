@@ -200,12 +200,21 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "RFN440_2132TD",               _unmapped_ },
         { "RFN440_2133TD",               _unmapped_ },
         { "RFN510FL",                    TYPE_RFN510FL },
+        //  RFN-500 Focus AX (gen 1)
         { "RFN520FAX",                   TYPE_RFN520FAX },
         { "RFN520FRX",                   TYPE_RFN520FRX },
         { "RFN520FAXD",                  TYPE_RFN520FAXD },
         { "RFN520FRXD",                  TYPE_RFN520FRXD },
         { "RFN530FAX",                   TYPE_RFN530FAX },
         { "RFN530FRX",                   TYPE_RFN530FRX },
+        //  RFN-500 Focus AXe (gen 2)
+        { "RFN520FAXE",                  TYPE_RFN520FAXE },
+        { "RFN520FRXE",                  TYPE_RFN520FRXE },
+        { "RFN520FAXED",                 TYPE_RFN520FAXED },
+        { "RFN520FRXED",                 TYPE_RFN520FRXED },
+        { "RFN530FAXE",                  TYPE_RFN530FAXE },
+        { "RFN530FRXE",                  TYPE_RFN530FRXE },
+        //  RFN-500 S4
         { "RFN530S4X",                   TYPE_RFN530S4X },
         { "RFN530S4EAX",                 TYPE_RFN530S4EAX },
         { "RFN530S4EAXR",                TYPE_RFN530S4EAXR },

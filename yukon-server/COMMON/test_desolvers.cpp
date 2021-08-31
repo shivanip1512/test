@@ -74,12 +74,21 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         "RFN-420FRX",
         "RFN-420FRD",
         "RFN-510FL",
+        //  RFN-500 Focus AX (gen 1)
         "RFN-520FAX",
         "RFN-520FRX",
         "RFN-520FAXD",
         "RFN-520FRXD",
         "RFN-530FAX",
         "RFN-530FRX",
+        //  RFN-500 Focus AXe (gen 2)
+        "RFN-520FAXE",
+        "RFN-520FRXE",
+        "RFN-520FAXED",
+        "RFN-520FRXED",
+        "RFN-530FAXE",
+        "RFN-530FRXE",
+        //
         "RFN-410CL",
         "RFN-420CL",
         "WRL-420CL",
