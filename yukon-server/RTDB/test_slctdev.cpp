@@ -54,13 +54,13 @@ BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  60
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
-    (_)(_)(_)(_)(_) (_)(_)(X)(_)(_)  //  90
-    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  100
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  90
+    (_)(_)(_)(X)(_) (_)(_)(_)(_)(_)  //  100
 */
     expected[ 46 ] = true;
     expected[ 47 ] = true;
     expected[ 49 ] = true;
-    expected[ 97 ] = true;
+    expected[ 103 ] = true;
 
     std::vector<bool> results;
 
@@ -153,18 +153,18 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
     *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
     *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
+    *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
+    *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
+    *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
+    *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
+    *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
+    //  70
+    *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
     *i++ = "class Cti::Devices::Rfn410CentronDevice";
     *i++ = "class Cti::Devices::Rfn420CentronDevice";
     *i++ = "class Cti::Devices::Rfn420CentronDevice";
     *i++ = "class Cti::Devices::Rfn420CentronDevice";
     *i++ = "class Cti::Devices::Rfn420CentronDevice";
-    //  70
-    *i++ = "class Cti::Devices::RfnCommercialDevice";
-    *i++ = "class Cti::Devices::RfnCommercialDevice";
-    *i++ = "class Cti::Devices::RfnCommercialDevice";
-    *i++ = "class Cti::Devices::RfnCommercialDevice";
-    *i++ = "class Cti::Devices::RfnCommercialDevice";
-    *i++ = "class Cti::Devices::RfnCommercialDevice";
     *i++ = "class Cti::Devices::RfnCommercialDevice";
     *i++ = "class Cti::Devices::RfnCommercialDevice";
     *i++ = "class Cti::Devices::RfnCommercialDevice";
@@ -175,88 +175,93 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::RfnCommercialDevice";
     *i++ = "class Cti::Devices::RfnCommercialDevice";
     *i++ = "class Cti::Devices::RfnCommercialDevice";
+    *i++ = "class Cti::Devices::RfnCommercialDevice";
+    *i++ = "class Cti::Devices::RfnCommercialDevice";
+    *i++ = "class Cti::Devices::RfnCommercialDevice";
+    *i++ = "class Cti::Devices::RfnCommercialDevice";
+    *i++ = "class Cti::Devices::RfnCommercialDevice";
+    //  90
+    *i++ = "class Cti::Devices::RfnCommercialDevice";
     *i++ = "class Cti::Devices::RfDaDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfCellularRelayDevice";
-    //  90
     *i++ = "class CtiDeviceCCU710";
     *i++ = "class CtiDeviceCCU710";
     *i++ = "class CtiDeviceCCU";
     *i++ = "class Cti::Devices::Ccu721Device";
+    //  100
     *i++ = "class CtiDeviceILEX";
     *i++ = "class CtiDeviceWelco";
     *i++ = "class CtiDeviceRemote";
     *i++ = "class Cti::Devices::DnpRtuDevice";
     *i++ = "class Cti::Devices::DnpRtuDevice";
     *i++ = "class CtiDeviceION";
-    //  100
     *i++ = "class CtiDeviceION";
     *i++ = "class CtiDeviceION";
     *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceLCU";
+    //  110
     *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceTCU";
     *i++ = "class CtiDeviceTCU";
     *i++ = "class CtiDeviceMarkV";
     *i++ = "class CtiDeviceDavis";
-    //  110
     *i++ = "class CtiDeviceAlphaPPlus";
     *i++ = "class CtiDeviceFulcrum";
     *i++ = "class CtiDeviceLandisGyrS4";
     *i++ = "class CtiDeviceVectron";
+    //  120
     *i++ = "class CtiDeviceAlphaA1";
     *i++ = "class CtiDeviceDR87";
     *i++ = "class CtiDeviceQuantum";
     *i++ = "class CtiDeviceKV2";
     *i++ = "class Cti::Devices::CtiDeviceSentinel";
     *i++ = "class Cti::Devices::CtiDeviceFocus";
-    //  120
     *i++ = "class CtiDeviceKV2";
     *i++ = "class CtiDeviceSixnet";
     *i++ = "class Cti::Devices::Ipc410ALDevice";
     *i++ = "class Cti::Devices::Ipc420ADDevice";
+    //  130
     *i++ = "class CtiDeviceLandisGyrS4";
     *i++ = "class Cti::Devices::CtiDeviceSentinel";
     *i++ = "class Cti::Devices::TapPagingTerminal";
     *i++ = "class CtiDeviceWctpTerminal";
     *i++ = "class Cti::Devices::RDSTransmitter";
     *i++ = "class CtiDeviceSnppPagingTerminal";
-    //  130
     *i++ = "class CtiDevicePagingReceiver";
     *i++ = "class CtiDeviceTnppPagingTerminal";
     *i++ = "class CtiDeviceRTC";
     *i++ = "class CtiDeviceRTM";
+    //  140
     *i++ = "class CtiDeviceSeriesV";
     *i++ = "class CtiDeviceLMI";
     *i++ = "class Cti::Devices::ModbusDevice";
     *i++ = "class CtiDeviceGridAdvisor";
     *i++ = "class CtiDeviceGridAdvisor";
     *i++ = "class CtiDeviceGroupEmetcon";
-    //  140
     *i++ = "class CtiDeviceGroupVersacom";
     *i++ = "class CtiDeviceGroupRipple";
     *i++ = "class CtiDeviceGroupPoint";
     *i++ = "class CtiDeviceGroupExpresscom";
+    //  150
     *i++ = "class CtiDeviceGroupRfnExpresscom";
     i += 5;
-    //  150
     i++;
     *i++ = "class CtiDeviceGroupMCT";
     i++;
     *i++ = "class CtiDeviceGroupGolay";
+    //  160
     *i++ = "class CtiDeviceGroupSADigital";
     *i++ = "class CtiDeviceGroupSA105";
     *i++ = "class CtiDeviceGroupSA205";
     *i++ = "class CtiDeviceGroupSA305";
     *i++ = "class Cti::Devices::MctBroadcastDevice";
-    i++;
-    //  160
-    i += 10;
+    i += 5;
     //  170
-    i += 2;
+    i += 8;
     *i++ = "class CtiDeviceMacro";
     *i++ = "class CtiDeviceSystem";
 
