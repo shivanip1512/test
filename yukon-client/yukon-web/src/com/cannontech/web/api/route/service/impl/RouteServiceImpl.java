@@ -51,7 +51,7 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public RouteBaseModel<? extends RouteBase> update(int id, RouteBaseModel routeBaseModel, LiteYukonUser liteYukonUser) {
-        LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(id);
+        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes().get(id);
         if (pao == null) {
             throw new NotFoundException("Route Id not found");
         }
@@ -65,7 +65,7 @@ public class RouteServiceImpl implements RouteService {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public RouteBaseModel<? extends RouteBase> retrieve(int routeId) {
-        LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(routeId);
+        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes().get(routeId);
         if (pao == null) {
             throw new NotFoundException("Route Id not found");
         }
