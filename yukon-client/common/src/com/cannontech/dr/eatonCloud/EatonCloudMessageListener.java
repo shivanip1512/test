@@ -231,7 +231,10 @@ public class EatonCloudMessageListener {
         });
         
         stopwatch.stop();
-        log.trace("Commands timer - devices: {}, total seconds: {} ({} minutes)", guids.size(), stopwatch.getTotalTimeSeconds(), stopwatch.getTotalTimeSeconds()/60);
+        if (log.isDebugEnabled()) {
+            var duration = Duration.standardSeconds((long) stopwatch.getTotalTimeSeconds());
+            log.debug("Commands timer - devices: {}, total time: {}", guids.size(), duration);
+        }
         
         DateTime dateTime = new DateTime();
         if (!successDeviceIds.isEmpty()) {
