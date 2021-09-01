@@ -235,7 +235,7 @@ public class EatonCloudDataRetrievalService {
      * Hourly read at 1:01 has range 12:00-1:01
      */
     private Range<Instant> getIntervalReadRange() {
-        DateTime now = new DateTime(Instant.now());
+        var now = DateTime.now();
         int readInterval = settingDao.getInteger(GlobalSettingType.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES);
         DateTime startTime = now.minusMinutes(readInterval);
         startTime = startTime.minusMinutes(startTime.getMinuteOfHour());
