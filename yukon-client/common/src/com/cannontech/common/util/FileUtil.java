@@ -582,6 +582,9 @@ public final class FileUtil {
         }
     }
     
+    /**
+     * Zip directory in the passed directory path.
+     */
     public static void zipDir(String srcDir, String[] srcFiles, String zippedDir) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(zippedDir); ZipOutputStream zipOut = new ZipOutputStream(fos)) {
             if (srcFiles != null && srcFiles.length > 0) {
