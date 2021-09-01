@@ -111,7 +111,7 @@ public class EatonCloudDataRetrievalService {
         isRunningDeviceRead.set(true);
         log.info("Eaton Cloud read all LCRs task started.");
         List<Integer> deviceIds = deviceDao.getDeviceIdsWithGuids();
-        eatonCloudDataReadService.collectDataForRead(new HashSet<>(deviceIds), getRange());
+        eatonCloudDataReadService.collectDataForRead(new HashSet<>(deviceIds), getIntervalReadRange());
         isRunningDeviceRead.set(false);
         log.info("Eaton Cloud read all LCRs task completed - {} devices read", deviceIds.size());
     }
@@ -225,6 +225,21 @@ public class EatonCloudDataRetrievalService {
         DateTime today = new DateTime(Instant.now());
         DateTime yesterday = today.minusDays(1);
         Range<Instant> timeRange = new Range<Instant>(yesterday.toInstant(), false, today.toInstant(), false);
+        return timeRange;
+    }
+
+    /**
+     * Range is interval plus up to 59Min
+     * Rounds to hourly FLOOR(NOW-INTERVAL)
+     * Hourly read at 1:59 has range 12:00 - 1:59
+     * Hourly read at 1:01 has range 12:00-1:01
+     */
+    private Range<Instant> getIntervalReadRange() {
+        DateTime now = new DateTime(Instant.now());
+        int readInterval = settingDao.getInteger(GlobalSettingType.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES);
+        DateTime startTime = now.minusMinutes(readInterval);
+        startTime = startTime.minusMinutes(startTime.getMinuteOfHour());
+        Range<Instant> timeRange = new Range<Instant>(startTime.toInstant(), false, now.toInstant(), false);
         return timeRange;
     }
 
