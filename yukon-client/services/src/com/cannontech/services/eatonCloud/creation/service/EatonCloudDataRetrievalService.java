@@ -240,7 +240,6 @@ public class EatonCloudDataRetrievalService {
         DateTime startTime = now.minusMinutes(readInterval);
         startTime = startTime.minusMinutes(startTime.getMinuteOfHour());
         return new Range<Instant>(startTime.toInstant(), false, now.toInstant(), false);
-        return timeRange;
     }
 
     private String getSiteGuid() {
