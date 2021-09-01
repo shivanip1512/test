@@ -35,7 +35,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     private EatonCloudFakeTimeseriesDataV1 timeseriesData;
  
     public EatonCloudDataV1(EatonCloudFakeTimeseriesDataV1 eatonCloudTimeSeriesResultV1) {
-        timeseriesData = eatonCloudTimeSeriesResultV1;;
+        timeseriesData = eatonCloudTimeSeriesResultV1;
     }
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudDataV1.class);

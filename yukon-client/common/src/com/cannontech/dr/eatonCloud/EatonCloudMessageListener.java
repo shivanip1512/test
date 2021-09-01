@@ -229,13 +229,13 @@ public class EatonCloudMessageListener {
                     command.getDutyCyclePeriod(),
                     command.getCriticality());
         });
-        
+
         stopwatch.stop();
         if (log.isDebugEnabled()) {
             var duration = Duration.standardSeconds((long) stopwatch.getTotalTimeSeconds());
             log.debug("Commands timer - devices: {}, total time: {}", guids.size(), duration);
         }
-        
+
         DateTime dateTime = new DateTime();
         if (!successDeviceIds.isEmpty()) {
             int readTimeFromNowInMinutes = command.getDutyCyclePeriod() == null ? 5 : IntMath.divide(command.getDutyCyclePeriod(),
