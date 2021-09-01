@@ -239,7 +239,7 @@ public class EatonCloudDataRetrievalService {
         int readInterval = settingDao.getInteger(GlobalSettingType.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES);
         DateTime startTime = now.minusMinutes(readInterval);
         startTime = startTime.minusMinutes(startTime.getMinuteOfHour());
-        Range<Instant> timeRange = new Range<Instant>(startTime.toInstant(), false, now.toInstant(), false);
+        return new Range<Instant>(startTime.toInstant(), false, now.toInstant(), false);
         return timeRange;
     }
 
