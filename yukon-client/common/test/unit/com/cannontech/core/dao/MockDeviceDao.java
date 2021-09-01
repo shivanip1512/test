@@ -73,12 +73,7 @@ public class MockDeviceDao implements DeviceDao {
     }
 
     @Override
-    public List<Integer> getDevicesByPort(int portId) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
+    public List<DisplayableDevice> getDevicesByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
         throw new MethodNotImplementedException();
     }
 

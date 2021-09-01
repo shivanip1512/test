@@ -75,9 +75,7 @@ public interface DeviceDao {
      */
     LiteYukonPAObject getLiteYukonPAObject(String deviceName, PaoType paoType);
 
-    List<Integer> getDevicesByPort(int portId);
-
-    List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);
+    List<DisplayableDevice> getDevicesByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress);
 
     void enableDevice(YukonDevice device);
 

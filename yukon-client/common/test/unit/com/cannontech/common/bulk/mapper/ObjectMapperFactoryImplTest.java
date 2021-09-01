@@ -399,12 +399,7 @@ public class ObjectMapperFactoryImplTest {
         }
 
         @Override
-        public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public List<Integer> getDevicesByPort(int portId) {
+        public List<DisplayableDevice> getDevicesByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 

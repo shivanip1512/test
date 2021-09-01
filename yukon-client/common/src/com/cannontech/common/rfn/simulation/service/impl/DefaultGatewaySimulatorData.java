@@ -86,7 +86,7 @@ public class DefaultGatewaySimulatorData {
         response.setUpdateServerLogin(customData.getUpdateServerLogin());
         response.setUpdateServerUrl(customData.getUpdateServerUrl());
         
-        response.setPort(port);
+        response.setPort(customData.getPort().toString());
         response.setConnectionType(connectionType);
         
         response.setConnectionStatus(settings.getConnectionStatus()); 
@@ -158,6 +158,7 @@ public class DefaultGatewaySimulatorData {
         GatewaySaveData data = new GatewaySaveData();
         data.setAdmin(admin);
         data.setIpAddress(ipAddress);
+        data.setPort(Integer.valueOf(port));
         data.setSuperAdmin(superAdmin);
         data.setUpdateServerLogin(updateServerAdmin);
         data.setUpdateServerUrl(updateServerUrl);

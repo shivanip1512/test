@@ -221,14 +221,17 @@ public class RtuController {
     public String copy(@ModelAttribute("rtu") RtuDnp newRtu, BindingResult result, ModelMap model, FlashScope flash,
             HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException {
         rtuDnpValidationUtil.validateName(newRtu, result, true);
-        rtuDnpValidationUtil.validateMasterSlaveAddress(newRtu, result, true);
+        rtuDnpValidationUtil.validateAddressing(
+                newRtu.getDeviceDirectCommSettings(), 
+                newRtu.getDeviceAddress(), 
+                newRtu.getIpAddress(),
+                newRtu.getPort(),
+                result, baseKey + "error.masterSlave");
         if (result.hasErrors()) {
-            List<DevicePointDetail> drvicPointDetails = rtuDnpService.getRtuPointDetail(newRtu.getId());
-            if (CollectionUtils.isNotEmpty(drvicPointDetails)) {
-                model.addAttribute("isPointsAvailable", true);
-            } else {
-                model.addAttribute("isPointsAvailable", false);
-            }
+            var hasPoints = !rtuDnpService.getRtuPointDetail(newRtu.getId()).isEmpty();
+            model.addAttribute("isPointsAvailable", hasPoints);
+            var commChannel = cache.getAllPaosMap().get(newRtu.getDeviceDirectCommSettings().getPortID());
+            model.addAttribute("commChannelName", commChannel.getPaoName());
             model.addAttribute("rtu", newRtu);
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return "rtu/copyRtuPopup.jsp";
@@ -248,20 +251,15 @@ public class RtuController {
     @RequestMapping(value = "rtu/{rtuId}/render-copy-rtu", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String renderCopyRtuPopup(@PathVariable int rtuId, ModelMap model, YukonUserContext userContext) {
-        RtuDnp rtuDnp = null;
-        if (model.containsAttribute("rtu")) {
-            rtuDnp = (RtuDnp) model.get("rtu");
-        } else {
-            rtuDnp = rtuDnpService.getRtuDnp(rtuId);
-            List<DevicePointDetail> devicePointDetails = rtuDnpService.getRtuPointDetail(rtuId);
-            if (!CollectionUtils.isEmpty(devicePointDetails)) {
-                model.addAttribute("isPointsAvailable", true);
-                rtuDnp.setCopyPointFlag(true);
-            } else {
-                model.addAttribute("isPointsAvailable", false);
-            }
+        if (!model.containsAttribute("rtu")) {
+            var rtuDnp = rtuDnpService.getRtuDnp(rtuId);
+            var hasPoints = !rtuDnpService.getRtuPointDetail(rtuId).isEmpty();
+            model.addAttribute("isPointsAvailable", hasPoints);
+            rtuDnp.setCopyPointFlag(hasPoints);
             MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
             rtuDnp.setName(messageSourceAccessor.getMessage("yukon.common.copyof", rtuDnp.getName()));
+            var commChannel = cache.getAllPaosMap().get(rtuDnp.getDeviceDirectCommSettings().getPortID());
+            model.addAttribute("commChannelName", commChannel.getPaoName());
             model.addAttribute("rtu", rtuDnp);
         }
         return "rtu/copyRtuPopup.jsp";
