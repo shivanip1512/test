@@ -43,7 +43,7 @@ public class RouteHelperImpl implements RouteHelper {
             } else if (paoType.isCcu()) {
                 routePaoType = PaoType.ROUTE_CCU;
             } else {
-                throw new NotFoundException(paoType+" is not a SignalTransmitter");
+                throw new NotFoundException(paoType+" is not a Transmitter Type");
             }
         }
         return routePaoType;
