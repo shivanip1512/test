@@ -111,7 +111,7 @@ public class YukonLoggersController {
         logger.setLoggerType(SystemLogger.isSystemLogger(logger.getLoggerName()) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER );
         yukonLoggersValidator.validate(logger, result);
         
-        if (result.hasErrors()) {
+        if (result.hasErrors() || (BooleanUtils.isTrue(specifiedDateTime) && logger.getExpirationDate() == null)) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             addModelAttributes(model, logger, specifiedDateTime);
             return "config/addLoggerPopup.jsp";
