@@ -89,6 +89,7 @@ public class YukonLoggersController {
         if (logger.getLevel() == null) {
             logger.setLevel(LoggerLevel.DEBUG);
         }
+        logger.setExpirationDate(new Date());
         model.addAttribute("logger", logger);
         Date expirationDate = new Date();
         model.addAttribute("now", expirationDate);
@@ -102,7 +103,9 @@ public class YukonLoggersController {
             HttpServletResponse resp, YukonUserContext userContext, ModelMap model) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<String, Object>();
+        Boolean invalidDate = false;
         if (BooleanUtils.isTrue(specifiedDateTime) && logger.getExpirationDate() == null) {
+            invalidDate = true;
             model.addAttribute("invalidDateError", true);
         }
         if (BooleanUtils.isNotTrue(specifiedDateTime)) {
@@ -111,7 +114,7 @@ public class YukonLoggersController {
         logger.setLoggerType(SystemLogger.isSystemLogger(logger.getLoggerName()) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER );
         yukonLoggersValidator.validate(logger, result);
         
-        if (result.hasErrors()) {
+        if (result.hasErrors() || invalidDate) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             addModelAttributes(model, logger, specifiedDateTime);
             return "config/addLoggerPopup.jsp";
@@ -162,8 +165,11 @@ public class YukonLoggersController {
             if (loggerResponse.getStatusCode() == HttpStatus.OK) {
                 logger = (YukonLogger) loggerResponse.getBody();
                 addModelAttributes(model, logger, logger.getExpirationDate() != null);
+                if (logger.getExpirationDate() == null) {
+                    logger.setExpirationDate(new Date());
+                }
                 model.addAttribute("isEditMode", true);
-              }
+            }
         } catch (ApiCommunicationException e) {
             log.error(e);
         } catch (RestClientException ex) {

@@ -40,9 +40,8 @@
                        onNameKey="yukon.common.specified" offNameKey="yukon.common.never" checked="${specifiedDateTime}"/>
                 <c:set var="specifiedClass" value="${specifiedDateTime ? '' : 'dn'}"/>
                 <span data-toggle-group="js-date-time" class="${specifiedClass}">
-                    <c:set var="expiration" value="${not empty logger.expirationDate ? logger.expirationDate : now}"/>
-                    <dt:date value="${expiration}" path="expirationDate" minDate="${now}"
-                        hideErrors="${invalidDateError}" cssClass="${status.error ? 'error' : ''}" displayValidationToRight="${!isEditMode}"/>
+                    <dt:date path="expirationDate" minDate="${now}" hideErrors="${invalidDateError}"
+                             cssClass="${status.error ? 'error' : ''}" displayValidationToRight="${!isEditMode}"/>
                     <c:if test="${invalidDateError}">
                         <div class="error">
                             <i:inline key=".invalidDate"/>
