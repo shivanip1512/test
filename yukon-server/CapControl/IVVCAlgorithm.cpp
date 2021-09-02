@@ -4996,7 +4996,41 @@ void IVVCAlgorithm::processInhibitedRegulator( VoltageRegulatorManager::SharedPt
         case VoltageRegulator::TapInhibit::None:
         default:
         {
-            // nothing to do here...
+            // cap the max adjustment depending on how many tap positions are available
+
+            if ( const auto currentTapPosition = regulator->getTapPosition() )
+            {
+                const double requestedVoltage = state->_tapOps[ regulatorID ];
+
+                if ( requestedVoltage > 0 )
+                {
+                    const double availableVoltage =
+                        ( regulator->getMaxTapPosition() - *currentTapPosition ) * regulator->getVoltageChangePerTap();
+
+                    if ( requestedVoltage > availableVoltage )
+                    {
+                        state->_tapOps[ regulatorID ] = availableVoltage;
+
+                        CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " << regulator->getPaoName()
+                                            << " is paritally inhibited from tapping up due to its TapPosition.  Requested voltage change of "
+                                            << requestedVoltage << " will be decreased to " << availableVoltage );
+                    }
+                }
+                else if ( requestedVoltage < 0 )
+                {
+                    const double availableVoltage =
+                        ( regulator->getMinTapPosition() - *currentTapPosition ) * regulator->getVoltageChangePerTap();
+
+                    if ( requestedVoltage < availableVoltage )
+                    {
+                        state->_tapOps[ regulatorID ] = availableVoltage;
+
+                        CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " << regulator->getPaoName()
+                                            << " is paritally inhibited from tapping down due to its TapPosition.  Requested voltage change of "
+                                            << requestedVoltage << " will be decreased to " << availableVoltage );
+                    }
+                }
+            }
         }
     }
 }
