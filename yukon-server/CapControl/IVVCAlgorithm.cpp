@@ -2640,6 +2640,8 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
     double multiTapEstBw = powerFactorComponentMultiTap;
 
+    state->_tapOpInhibit.clear();
+
     if ( canDoMultiTap )
     {
         PointValueMap multiTapVoltages( pointValues );      // copy data
@@ -2649,6 +2651,10 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         // we now have a tap solution for our over-voltage
 
         calculateMultiTapOperation( multiTapVoltages, subbus, strategy, state->_tapOps );
+
+        // 'finalize' the multi-tap solution - check for inhibited regulators.
+
+        finalizeMultiTapSolution( subbus, state );
 
         // calculate the bus weight
 
@@ -2902,46 +2908,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                     ? 0
                     : calculateVte(zonePointValues, strategy, subbus->getAllMonitorPoints(), isPeakTime, regulator);
 
-                state->_tapOpInhibit[ regulator->getPaoId() ] = regulator->isTapInhibited();
-
-                switch ( state->_tapOpInhibit[ regulator->getPaoId() ] )
-                {
-                    case VoltageRegulator::TapInhibit::NoTap:
-                    {
-                        if ( state->_tapOps[ regulator->getPaoId() ] != 0 )
-                        {
-                            state->_tapOps[ regulator->getPaoId() ] = 0;
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
-                                                << " is inhibited from control, it is either missing it's TapPosition point or in IndeterminateFlow.");
-                        }
-                        break;
-                    }
-                    case VoltageRegulator::TapInhibit::NoTapDown:
-                    {
-                        if ( state->_tapOps[ regulator->getPaoId() ] < 0 )
-                        {
-                            state->_tapOps[ regulator->getPaoId() ] = 0;
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
-                                                << " is inhibited from tapping down, it is already at it's minimum allowable TapPosition.");
-                        }
-                        break;
-                    }
-                    case VoltageRegulator::TapInhibit::NoTapUp:
-                    {
-                        if ( state->_tapOps[ regulator->getPaoId() ] > 0 )
-                        {
-                            state->_tapOps[ regulator->getPaoId() ] = 0;
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
-                                                << " is inhibited from tapping up, it is already at it's maximum allowable TapPosition.");
-                        }
-                        break;
-                    }
-                    case VoltageRegulator::TapInhibit::None:
-                    default:
-                    {
-                        // nnothing to do here...
-                    }
-                }
+                processInhibitedRegulator( regulator, state );
             }
         }
         catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -4948,5 +4915,123 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
     }
 
     return false;
+}
+
+
+void IVVCAlgorithm::finalizeMultiTapSolution( CtiCCSubstationBusPtr subbus, IVVCStatePtr state )
+{
+    auto store = CtiCCSubstationBusStore::getInstance();
+
+    // get all zones on the subbus...
+
+    ZoneManager & zoneManager = store->getZoneManager();
+
+    for ( const auto ID : zoneManager.getZoneIdsBySubbus( subbus->getPaoId() ) )
+    {
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        try
+        {
+            for ( const auto & [ phase, regulatorID ] : zone->getRegulatorIds() )
+            {
+                VoltageRegulatorManager::SharedPtr regulator =
+                         store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
+
+                processInhibitedRegulator( regulator, state );
+            }
+        }
+        catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+        {
+            CTILOG_EXCEPTION_ERROR(dout, noRegulator);
+        }
+        catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+        {
+            if (missingAttribute.complain())
+            {
+                CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
+            }
+        }
+    }
+}
+
+
+void IVVCAlgorithm::processInhibitedRegulator( VoltageRegulatorManager::SharedPtr regulator, IVVCStatePtr state )
+{
+    const long regulatorID = regulator->getPaoId();
+
+    state->_tapOpInhibit[ regulatorID ] = regulator->isTapInhibited();
+
+    switch ( state->_tapOpInhibit[ regulatorID ] )
+    {
+        case VoltageRegulator::TapInhibit::NoTap:
+        {
+            if ( state->_tapOps[ regulatorID ] != 0 )
+            {
+                state->_tapOps[ regulatorID ] = 0;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                    << " is inhibited from control, it is either missing its TapPosition point or is in IndeterminateFlow.");
+            }
+            break;
+        }
+        case VoltageRegulator::TapInhibit::NoTapDown:
+        {
+            if ( state->_tapOps[ regulatorID ] < 0 )
+            {
+                state->_tapOps[ regulatorID ] = 0;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                    << " is inhibited from tapping down, it is already at its minimum allowable TapPosition.");
+            }
+            break;
+        }
+        case VoltageRegulator::TapInhibit::NoTapUp:
+        {
+            if ( state->_tapOps[ regulatorID ] > 0 )
+            {
+                state->_tapOps[ regulatorID ] = 0;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " <<  regulator->getPaoName()
+                                    << " is inhibited from tapping up, it is already at its maximum allowable TapPosition.");
+            }
+            break;
+        }
+        case VoltageRegulator::TapInhibit::None:
+        default:
+        {
+            // cap the max adjustment depending on how many tap positions are available
+
+            if ( const auto currentTapPosition = regulator->getTapPosition() )
+            {
+                const double requestedVoltage = state->_tapOps[ regulatorID ];
+
+                if ( requestedVoltage > 0 )
+                {
+                    const double availableVoltage =
+                        ( regulator->getMaxTapPosition() - *currentTapPosition ) * regulator->getVoltageChangePerTap();
+
+                    if ( requestedVoltage > availableVoltage )
+                    {
+                        state->_tapOps[ regulatorID ] = availableVoltage;
+
+                        CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " << regulator->getPaoName()
+                                            << " is paritally inhibited from tapping up due to its TapPosition.  Requested voltage change of "
+                                            << requestedVoltage << " will be decreased to " << availableVoltage );
+                    }
+                }
+                else if ( requestedVoltage < 0 )
+                {
+                    const double availableVoltage =
+                        ( regulator->getMinTapPosition() - *currentTapPosition ) * regulator->getVoltageChangePerTap();
+
+                    if ( requestedVoltage < availableVoltage )
+                    {
+                        state->_tapOps[ regulatorID ] = availableVoltage;
+
+                        CTILOG_DEBUG(dout, "IVVC Algorithm: Regulator: " << regulator->getPaoName()
+                                            << " is paritally inhibited from tapping down due to its TapPosition.  Requested voltage change of "
+                                            << requestedVoltage << " will be decreased to " << availableVoltage );
+                    }
+                }
+            }
+        }
+    }
 }
 

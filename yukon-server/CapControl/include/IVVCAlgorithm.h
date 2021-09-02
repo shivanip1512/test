@@ -6,6 +6,8 @@
 #include "ZoneManager.h"
 #include "VoltageRegulatorManager.h"
 
+using Cti::CapControl::VoltageRegulatorManager;
+
 
 namespace Cti           {
 namespace Messaging     {
@@ -129,6 +131,9 @@ class IVVCAlgorithm
                                                CtiCCSubstationBusPtr subbus,
                                                IVVCStrategy * strategy,
                                                IVVCState::TapOperationZoneMap & solution );
+
+        void finalizeMultiTapSolution( CtiCCSubstationBusPtr subbus, IVVCStatePtr state );
+        void processInhibitedRegulator( VoltageRegulatorManager::SharedPtr regulator, IVVCStatePtr state );
 
         double getVmaxForPoint( const long pointID, CtiCCSubstationBusPtr subbus, IVVCStrategy * strategy ) const;
 
