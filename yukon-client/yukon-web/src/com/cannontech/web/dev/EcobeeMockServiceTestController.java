@@ -61,6 +61,7 @@ public class EcobeeMockServiceTestController {
             "UNAUTHORIZED(1)", "BAD_REQUEST(2)", "NOT_FOUND(3)", "PARTIAL_CONTENT(4)", "FORBIDDEN(5)");
     
     private static final List<String> descrepencyStatus = ImmutableList.of("NONE(0)", "ALL(1)");
+    private static final List<String> paginatedStatus = ImmutableList.of("NO(0)", "YES(1)");
 
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
     @Autowired private EcobeeZeusJwtTokenAuthService ecobeeZeusJwtTokenAuthService;
@@ -74,7 +75,7 @@ public class EcobeeMockServiceTestController {
     @RequestMapping(value = "zeus/update", method = RequestMethod.POST)
     public String updateZeus(Integer authenticateOp, Integer createDeviceOp, Integer deleteDeviceOp, Integer enrollmentOp, Integer issueDemandResponseOp,
             Integer showUserOp, Integer createPushConfigurationOp, Integer showPushConfigurationOp, boolean enableRuntime, Integer getAllGroupOp, Integer generateAllDiscrepencyOp,
-            Integer cancelDemandResponseOp, FlashScope flashScope, ModelMap modelMap) throws Exception {
+            Integer cancelDemandResponseOp, Integer paginatedResponseOp, FlashScope flashScope, ModelMap modelMap) throws Exception {
         zeusEcobeeDataConfiguration.setZeusEcobeeDataConfiguration(authenticateOp,
                                                                    createDeviceOp,
                                                                    deleteDeviceOp,
@@ -86,7 +87,8 @@ public class EcobeeMockServiceTestController {
                                                                    enableRuntime,
                                                                    getAllGroupOp,
                                                                    generateAllDiscrepencyOp,
-                                                                   cancelDemandResponseOp);
+                                                                   cancelDemandResponseOp,
+                                                                   paginatedResponseOp);
                                                                    
         if (enableRuntime == true) {
             future = scheduledExecutor.scheduleAtFixedRate(() -> {
@@ -113,6 +115,7 @@ public class EcobeeMockServiceTestController {
     public String viewZeusBase(ModelMap model) {
         model.addAttribute("status", zeusStatus);
         model.addAttribute("decrepencyStatus", descrepencyStatus);
+        model.addAttribute("paginatedStatus", paginatedStatus);
         return "ecobee/zeusViewBase.jsp";
     }
 

@@ -15,6 +15,7 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -512,8 +513,19 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                     .callEcobeeAPIForObject(getAllGroupsForProgram, HttpMethod.GET, ZeusGroupResponse.class);
 
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                ZeusGroupResponse zeusGroupResponse = responseEntity.getBody();
-                zeusGroups = zeusGroupResponse.getGroups();
+                zeusGroups = responseEntity.getBody().getGroups();
+                int numberOfPages = getNumberOfPages(responseEntity, 20);
+                if (numberOfPages > 0) {
+                    for (int i = 1; i <= numberOfPages; i++) {
+                        zeusGroups = responseEntity.getBody().getGroups();
+                        getAllGroupsForProgram = getAllGroupsForProgram.concat("&page=" + i);
+                        responseEntity = (ResponseEntity<ZeusGroupResponse>) requestHelper
+                                .callEcobeeAPIForObject(getAllGroupsForProgram, HttpMethod.GET, ZeusGroupResponse.class);
+                        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                            zeusGroups.addAll(responseEntity.getBody().getGroups());
+                        }
+                    }
+                }
             }
             return zeusGroups;
         } catch (RestClientException | EcobeeAuthenticationException e) {
@@ -531,13 +543,37 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                     .callEcobeeAPIForObject(getThermostatsURL, HttpMethod.GET, ZeusThermostatsResponse.class);
 
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                ZeusThermostatsResponse zeusGroupResponse = responseEntity.getBody();
-                zeusThermostats = zeusGroupResponse.getThermostats();
+                zeusThermostats = responseEntity.getBody().getThermostats();
+                int numberOfPages = getNumberOfPages(responseEntity, 100);
+                if (numberOfPages > 0) {
+                    for (int i = 1; i <= numberOfPages; i++) {
+                        getThermostatsURL = getThermostatsURL.concat("?page=" + i);
+                        responseEntity = (ResponseEntity<ZeusThermostatsResponse>) requestHelper
+                                .callEcobeeAPIForObject(getThermostatsURL, HttpMethod.GET, ZeusThermostatsResponse.class);
+                        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                            zeusThermostats.addAll(responseEntity.getBody().getThermostats());
+                        }
+                    }
+                }
             }
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
         return zeusThermostats;
+    }
+
+    /**
+     * Calculate and return the number of pages required from x-total-count property from response header
+     */
+    private int getNumberOfPages(ResponseEntity<?> responseEntity, int itemsPerPage) {
+        int numberOfPages = 0;
+        HttpHeaders headers = responseEntity.getHeaders();
+        List<String> countList = headers.get("x-total-count");
+        if (CollectionUtils.isNotEmpty(countList)) {
+            int itemsCount = Integer.valueOf(countList.get(0));
+            numberOfPages = (itemsCount / itemsPerPage);
+        }
+        return numberOfPages;
     }
 
     @Override

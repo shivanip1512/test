@@ -84,11 +84,11 @@
         <pointInfo name="kVA Load Profile" attributes="KVA_LOAD_PROFILE"/>
         <pointInfo name="Delivered kVAh per Interval" attributes="DELIVERED_KVAH_PER_INTERVAL"/>
         <pointInfo name="kVAh" attributes="KVAH"/>
-        <pointInfo name="kVAh Lagging" attributes="KVAH_Q124"/>
-        <pointInfo name="kVAh Lagging Rate A"/>
-        <pointInfo name="kVAh Lagging Rate B"/>
-        <pointInfo name="kVAh Lagging Rate C"/>
-        <pointInfo name="kVAh Lagging Rate D"/>
+        <pointInfo name="kVAh (Quadrants 1 2 4)" attributes="KVAH_Q124"/>
+        <pointInfo name="kVAh (Quadrants 1 2 4) (Rate A kVAh)" attributes="KVAH_Q124_RATE_A"/>
+        <pointInfo name="kVAh (Quadrants 1 2 4) (Rate B kVAh)" attributes="KVAH_Q124_RATE_B"/>
+        <pointInfo name="kVAh (Quadrants 1 2 4) (Rate C kVAh)" attributes="KVAH_Q124_RATE_C"/>
+        <pointInfo name="kVAh (Quadrants 1 2 4) (Rate D kVAh)" attributes="KVAH_Q124_RATE_D"/>
         <pointInfo name="kVAr" attributes="KVAR"/>
         <pointInfo name="kW" attributes="DEMAND,INSTANTANEOUS_KW"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>

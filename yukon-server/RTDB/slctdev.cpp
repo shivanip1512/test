@@ -255,12 +255,21 @@ const DeviceLookup deviceFactory {
     { TYPE_RFN430SL3,    MakeDeviceFunc(makeDevice<Rfn430sl3Device>) },
     { TYPE_RFN430SL4,    MakeDeviceFunc(makeDevice<Rfn430sl4Device>) },
     { TYPE_RFN510FL,     MakeDeviceFunc(makeDevice<Rfn510flDevice>) },
+    //  RFN-500 Focus AX (gen 1)
     { TYPE_RFN520FAX,    MakeDeviceFunc(makeDevice<Rfn520faxDevice>) },
     { TYPE_RFN520FRX,    MakeDeviceFunc(makeDevice<Rfn520frxDevice>) },
     { TYPE_RFN520FAXD,   MakeDeviceFunc(makeDevice<Rfn520faxdDevice>) },
     { TYPE_RFN520FRXD,   MakeDeviceFunc(makeDevice<Rfn520frxdDevice>) },
     { TYPE_RFN530FAX,    MakeDeviceFunc(makeDevice<Rfn530faxDevice>) },
     { TYPE_RFN530FRX,    MakeDeviceFunc(makeDevice<Rfn530frxDevice>) },
+    //  RFN-500 Focus AXe (gen 2)
+    { TYPE_RFN520FAXE,   MakeDeviceFunc(makeDevice<Rfn520faxeDevice>) },
+    { TYPE_RFN520FRXE,   MakeDeviceFunc(makeDevice<Rfn520frxeDevice>) },
+    { TYPE_RFN520FAXED,  MakeDeviceFunc(makeDevice<Rfn520faxedDevice>) },
+    { TYPE_RFN520FRXED,  MakeDeviceFunc(makeDevice<Rfn520frxedDevice>) },
+    { TYPE_RFN530FAXE,   MakeDeviceFunc(makeDevice<Rfn530faxeDevice>) },
+    { TYPE_RFN530FRXE,   MakeDeviceFunc(makeDevice<Rfn530frxeDevice>) },
+    //  RFN-500 S4
     { TYPE_RFN530S4X,    MakeDeviceFunc(makeDevice<Rfn530s4xDevice>) },
     { TYPE_RFN530S4EAX,  MakeDeviceFunc(makeDevice<Rfn530s4eaxDevice>) },
     { TYPE_RFN530S4EAXR, MakeDeviceFunc(makeDevice<Rfn530s4eaxrDevice>) },

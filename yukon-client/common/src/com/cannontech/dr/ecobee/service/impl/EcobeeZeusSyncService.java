@@ -125,7 +125,7 @@ public class EcobeeZeusSyncService {
             try {
                 LMHardwareBase lMHardwareBase = lmHardwareBaseDao.getBySerialNumber(zeusThermostat.getSerialNumber());
                 ecobeeZeusGroupService.mapInventoryToZeusGroupId(lMHardwareBase.getInventoryId(), zeusGroupId);
-                log.debug("Mapped total thermostats " + zeusThermostats.size() + " to group", zeusGroupId);
+                log.debug("Mapped thermostat with inventory ID {} to group {}", lMHardwareBase.getInventoryId(), zeusGroupId);
             } catch (NotFoundException e) {
                 log.error("Hardware not found with serialNumber. Skipping serialNumber " + zeusThermostat.getSerialNumber());
             }

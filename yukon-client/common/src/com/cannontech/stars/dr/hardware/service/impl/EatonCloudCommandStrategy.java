@@ -109,7 +109,7 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
         // See LCR Control Command Payloads reference:
         // https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=137056391
 
-        params.put(CommandParam.VRELAY.getParamName(), relay);
+        params.put(CommandParam.VRELAY.getParamName(), relay - 1);
         params.put(CommandParam.CYCLE_PERCENT.getParamName(), 100);
         params.put(CommandParam.CYCLE_PERIOD.getParamName(), (duration.getMillis() / 1000) / 60);
         params.put(CommandParam.CYCLE_COUNT.getParamName(), 1);

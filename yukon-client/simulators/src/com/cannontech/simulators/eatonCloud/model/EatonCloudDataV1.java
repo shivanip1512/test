@@ -35,7 +35,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     private EatonCloudFakeTimeseriesDataV1 timeseriesData;
  
     public EatonCloudDataV1(EatonCloudFakeTimeseriesDataV1 eatonCloudTimeSeriesResultV1) {
-        this.timeseriesData = eatonCloudTimeSeriesResultV1;
+        timeseriesData = eatonCloudTimeSeriesResultV1;
     }
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudDataV1.class);
@@ -189,7 +189,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
 
         int devices = createRequest == null ? 0 : createRequest.getDevices();
 
-        List<EatonCloudSiteDeviceV1> siteDeviceList = new ArrayList<EatonCloudSiteDeviceV1>();
+        List<EatonCloudSiteDeviceV1> siteDeviceList = new ArrayList<>();
 
         IntStream.range(0, devices).forEach(i -> {
             String guid = UUID.randomUUID().toString();

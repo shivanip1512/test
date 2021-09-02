@@ -361,6 +361,7 @@
     </ClCompile>
     <ClCompile Include="test_desolvers.cpp">
     </ClCompile>
+    <ClCompile Include="test_DeviceConfigDescription.cpp" />
     <ClCompile Include="test_encryption.cpp">
     </ClCompile>
     <ClCompile Include="test_error.cpp">

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <optional>
 
 enum DeviceTypes;
 
@@ -11,7 +12,7 @@ using DataBuffer = std::vector<unsigned char>;
 
 DataBuffer loadResourceFromLibrary( const int resourceID, const char * resourceType, const char * libraryName );
 
-DeviceTypes resolvePaoIdXmlType( const std::string & type );
+std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type );
 
 }
 

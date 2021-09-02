@@ -36,12 +36,20 @@ const std::map<DeviceTypes, bool> typeIsDisconnect
     { TYPE_RFN420FRX,  false },
     { TYPE_RFN420FRD,  true },
     { TYPE_RFN510FL,   false },
+    //  RFN-500 Focus AX (gen 1)
     { TYPE_RFN520FAX,  false },
     { TYPE_RFN520FRX,  false },
     { TYPE_RFN520FAXD, true },
     { TYPE_RFN520FRXD, true },
     { TYPE_RFN530FAX,  false },
     { TYPE_RFN530FRX,  false },
+    //  RFN-500 Focus AXe (gen 2)
+    { TYPE_RFN520FAXE,  false },
+    { TYPE_RFN520FRXE,  false },
+    { TYPE_RFN520FAXED, true },
+    { TYPE_RFN520FRXED, true },
+    { TYPE_RFN530FAXE,  false },
+    { TYPE_RFN530FRXE,  false },
     //  RFN Centron
     { TYPE_RFN410CL, false },
     { TYPE_RFN420CL, false },

@@ -8,12 +8,15 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -158,5 +161,39 @@ public class MockZeusResponseFactory {
         }
         response.setThermostats(thermostats);
         return response;
+    }
+
+    public ResponseEntity<Object> retrievePaginatedGroups(String programId, Integer pageNumber) {
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(1);
+        headers.add("x-total-count", "21");
+        ZeusGroupResponse response = new ZeusGroupResponse();
+        List<ZeusGroup> groups = new ArrayList<ZeusGroup>();
+        int maxSize = pageNumber == 1 ? 1 : 20;
+        for (int i = 1; i <= maxSize; i++) {
+            ZeusGroup group = new ZeusGroup();
+            group.setGroupId(Integer.toString(pageNumber * 20 + i));
+            group.setName(group.getGroupId());
+            groups.add(group);
+        }
+        response.setGroups(groups);
+        ResponseEntity<Object> responseEntity = new ResponseEntity<>(response, headers, HttpStatus.OK);
+        return responseEntity;
+    }
+
+    public ResponseEntity<Object> getPaginatedThermostatsInGroup(String thermostatGroupID, Integer pageNumber) {
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(1);
+        headers.add("x-total-count", "105");
+        int maxSize = pageNumber == 1 ? 5 : 100;
+        ZeusThermostatsResponse response = new ZeusThermostatsResponse();
+        List<ZeusThermostat> thermostats = new ArrayList<ZeusThermostat>();
+        for (int i = 1; i <= maxSize; i++) {
+            ZeusThermostat thermostat = new ZeusThermostat();
+            thermostat.setSerialNumber(Integer.toString(pageNumber * 100 + i));
+            thermostat.setState(ZeusThermostatState.ENROLLED);
+            thermostats.add(thermostat);
+        }
+        response.setThermostats(thermostats);
+        ResponseEntity<Object> responseEntity = new ResponseEntity<>(response, headers, HttpStatus.OK);
+        return responseEntity;
     }
 }
