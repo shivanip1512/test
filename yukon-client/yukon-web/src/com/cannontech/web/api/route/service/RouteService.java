@@ -34,6 +34,6 @@ public interface RouteService {
     /**
      * Update the Route.
      */
-    RouteBaseModel<? extends RouteBase> update(int id, RouteBaseModel<?> routeBase, LiteYukonUser liteYukonUser);
+    RouteBaseModel<? extends RouteBase> update(int id, RouteBaseModel routeBase, LiteYukonUser liteYukonUser);
 
 }

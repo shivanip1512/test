@@ -1,7 +1,5 @@
 package com.cannontech.web.api.route.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.NotFoundException;
@@ -12,9 +10,10 @@ import com.cannontech.web.api.route.model.RouteModelFactory;
 import com.cannontech.web.api.route.service.RouteHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class RouteHelperImpl implements RouteHelper{
-    
-    @Autowired private IDatabaseCache serverDatabaseCache = YukonSpringHook.getBean(IDatabaseCache.class);
+public class RouteHelperImpl implements RouteHelper {
+
+    private IDatabaseCache serverDatabaseCache = YukonSpringHook.getBean(IDatabaseCache.class);
+
     /**
      * Retrieve route type using Signal Transmitter Id
      */
@@ -41,10 +40,10 @@ public class RouteHelperImpl implements RouteHelper{
                 routePaoType = PaoType.ROUTE_SERIES_5_LMI;
             } else if (paoType == PaoType.RDS_TERMINAL) {
                 routePaoType = PaoType.ROUTE_RDS_TERMINAL;
-            } else if (paoType.isCcu() || paoType.isRepeater()) {
+            } else if (paoType.isCcu()) {
                 routePaoType = PaoType.ROUTE_CCU;
             } else {
-                throw new NotFoundException("paoType - Unknown transmitter type");
+                throw new NotFoundException("signalTransmitterId " + id + " is not valid");
             }
         }
         return routePaoType;
@@ -61,8 +60,7 @@ public class RouteHelperImpl implements RouteHelper{
         }
         return pao.getPaoType();
     }
-    
-    
+
     /**
      * Retrieves RouteBaseModel from model factory.
      */

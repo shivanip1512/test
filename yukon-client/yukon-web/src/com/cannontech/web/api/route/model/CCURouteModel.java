@@ -43,9 +43,14 @@ public class CCURouteModel<T extends CCURoute> extends RouteBaseModel<T> {
 
         List<RepeaterRoute> repeaterRoutesList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(getRepeaters())) {
+            int i=1;
             for (RepeaterRouteModel repeaterRouteModel : getRepeaters()) {
                 RepeaterRoute repeaterRoute = new RepeaterRoute();
                 repeaterRouteModel.buildDBPersistent(repeaterRoute);
+                if(route.getPAObjectID() != null) {
+                    repeaterRoute.setRouteID(route.getPAObjectID());
+                }
+                repeaterRoute.setRepeaterOrder(i++);
                 repeaterRoutesList.add(repeaterRoute);
             }
             route.setRepeaters(repeaterRoutesList);

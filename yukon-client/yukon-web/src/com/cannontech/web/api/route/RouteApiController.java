@@ -59,7 +59,7 @@ public class RouteApiController {
         return new ResponseEntity<>(routeBaseModel, HttpStatus.OK);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<Object> retrieveAllRoutes() {
         List<RouteBaseModel> listOfRoutes = routeService.retrieveAllRoutes();
         return new ResponseEntity<>(listOfRoutes, HttpStatus.OK);
