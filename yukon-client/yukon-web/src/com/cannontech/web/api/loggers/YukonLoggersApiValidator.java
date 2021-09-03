@@ -89,7 +89,7 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
             }
             // validate notes
             if (logger.getNotes() != null) {
-                YukonApiValidationUtils.checkExceedsMaxLength(errors, accessor.getMessage(basekey + "notes"), logger.getNotes(),
+                YukonApiValidationUtils.checkExceedsMaxLength(errors, "notes", logger.getNotes(),
                         255);
             }
         }
