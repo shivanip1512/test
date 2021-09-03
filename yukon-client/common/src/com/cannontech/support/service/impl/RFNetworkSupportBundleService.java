@@ -192,10 +192,29 @@ public class RFNetworkSupportBundleService {
     }
 
     /**
-     * Zip Rf Support Bundle directory and delete the original directory once zipping is done.
+     * Zip network snapshot, location data and Rf Support Bundle directory, and delete the original directory once zipping is
+     * done.
      */
     private void zipRfSupportBundle(String dirPath) {
         try {
+            File tmpDir = new File(dirPath);
+            if (!tmpDir.exists() && !tmpDir.mkdir()) {
+                String errorMsg = "Unable to create directory at " + dirPath;
+                if (log.isErrorEnabled()) {
+                    log.error(errorMsg);
+                }
+            }
+            String zipFileExtention = ".zip";
+            File[] files = tmpDir.listFiles((file) -> {
+                return !file.getAbsolutePath().contains(zipFileExtention) && file.isDirectory();
+            });
+            if (files != null && files.length > 0) {
+                for (File file : files) {
+                    FileUtil.zipDir(file.getPath(), file.list(), file.getPath() + zipFileExtention);
+                    FileUtil.deleteAllFilesInDirectory(file.getPath());
+                }
+            }
+
             String zippedDirPath = dirPath + ".zip";
             FileUtil.zipFolder(dirPath, zippedDirPath);
             FileUtil.deleteAllFilesInDirectory(dirPath);

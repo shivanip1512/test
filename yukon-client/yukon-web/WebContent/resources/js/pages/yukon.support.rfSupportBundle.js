@@ -66,11 +66,11 @@ yukon.support.rfSupportBundle = (function() {
                 });
             });
             
-            $('.js-previous-rf-bundles').click (function(event) {
+            $(document).on('click', '.js-previous-rf-bundles', function(event) {
                $.ajax({
                     url : yukon.url("/support/viewRfBundle"),
                     type : "GET"
-                }).done(function(data) {                
+                }).done(function(data) {
                     $('#rf-support-bundle-tab').html(data);
                 });
             });
