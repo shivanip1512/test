@@ -106,6 +106,7 @@ public class RtuDnpValidationUtil extends ValidationUtils {
         }
         
         conflictingDevices
+            .filter(conflict -> conflict.getId() != directCommSettings.getDeviceID())
             .findFirst()
             .ifPresent(conflict -> {
                 errors.rejectValue(ADDRESS_MASTER, masterSlaveErrorKey, ArrayUtils.toArray(conflict.getName()), "Master/Slave combination in use");
