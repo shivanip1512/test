@@ -56,7 +56,7 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
             validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"), loggerId, loggers);
             if (!errors.hasFieldErrors("loggerName")) {
                 // validate logger type
-                YukonApiValidationUtils.checkIfFieldRequired("loggerType", errors, logger.getLevel(),
+                YukonApiValidationUtils.checkIfFieldRequired("loggerType", errors, logger.getLoggerType(),
                         accessor.getMessage(basekey + "loggerType"));
                 if (!errors.hasFieldErrors("loggerType")) {
                     if (logger.getLoggerType() == LoggerType.SYSTEM_LOGGER) {
@@ -95,6 +95,7 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
                         255);
             }
         }
+
     }
 
     public void validateLoggerName(Errors errors, YukonLogger logger, String i18Text, Integer loggerId, List<YukonLogger> loggers) {
