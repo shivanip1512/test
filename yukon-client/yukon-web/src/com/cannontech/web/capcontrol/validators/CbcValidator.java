@@ -43,6 +43,7 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
                         yukonValidationHelper.getMessage("yukon.web.modules.capcontrol.cbc.port"), cbc.getPort());
             }
             rtuDnpValidationUtil.validateAddressing(
+                    cbc.getId(),
                     cbc.getDeviceDirectCommSettings(), 
                     cbc.getDeviceAddress(),
                     cbc.getIpAddress(),

@@ -63,8 +63,8 @@ public class RtuDnpValidationUtil extends ValidationUtils {
         }
     }
 
-    public void validateAddressing(DeviceDirectCommSettings directCommSettings, DeviceAddress address, String tcpIpAddress, String tcpPort, 
-            Errors errors, String masterSlaveErrorKey) {
+    public void validateAddressing(Integer deviceId, DeviceDirectCommSettings directCommSettings, DeviceAddress address, 
+            String tcpIpAddress, String tcpPort, Errors errors, String masterSlaveErrorKey) {
         
         YukonValidationUtils.checkRange(errors, POST_COMM_WAIT, address.getPostCommWait(), 
                 0, 99999, true);
@@ -94,6 +94,11 @@ public class RtuDnpValidationUtil extends ValidationUtils {
                         address.getMasterAddress(),
                         address.getSlaveAddress()).stream();
 
+        if (deviceId != null) {
+            conflictingDevices = conflictingDevices.filter(conflict -> // NOSONAR - disable S3958, the stream is used below
+                    conflict.getId() != deviceId);  //  Don't conflict with our existing DB record
+        }
+
         var port = dbCache.getAllPaosMap().get(directCommSettings.getPortID());
         if (port.getPaoType() == PaoType.TCPPORT) {
             if (errors.hasFieldErrors(TCP_IP_ADDRESS) || errors.hasFieldErrors(TCP_PORT)) {
@@ -106,7 +111,6 @@ public class RtuDnpValidationUtil extends ValidationUtils {
         }
         
         conflictingDevices
-            .filter(conflict -> conflict.getId() != directCommSettings.getDeviceID())
             .findFirst()
             .ifPresent(conflict -> {
                 errors.rejectValue(ADDRESS_MASTER, masterSlaveErrorKey, ArrayUtils.toArray(conflict.getName()), "Master/Slave combination in use");
