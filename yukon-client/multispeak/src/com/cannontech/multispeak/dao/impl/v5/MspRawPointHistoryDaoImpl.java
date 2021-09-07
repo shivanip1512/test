@@ -156,7 +156,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                                                                                             // check
                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) {
                     MeterReading meterReading = meterReadProcessingService.createMeterRead(meter);
-                    meterReadProcessingService.updateMeterRead(meterReading, attribute, pointValueQualityHolder);
+                    meterReadProcessingService.updateMeterRead(meterReading, attribute, pointValueQualityHolder, meter.getPaoType());
                     meterReads.add(meterReading);
                 }
             }
@@ -212,7 +212,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                                                                                          // somewhat in check
 
                 if (pointValueQualityHolder != null) {
-                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder);
+                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder, meter.getPaoType());
                     hasReadings = true;
                 }
             }
