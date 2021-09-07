@@ -28,7 +28,6 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.CriteriaSelector;
-import com.cannontech.dr.ecobee.message.DrEventState;
 import com.cannontech.dr.ecobee.message.EcoplusSelector;
 import com.cannontech.dr.ecobee.message.Selector;
 import com.cannontech.dr.ecobee.message.ZeusCreatePushConfig;
@@ -475,8 +474,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         event.setMessage(eventDisplayMessage);
         event.setSendEmail(settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
 
-        event.setEcoplusSelector(EcoplusSelector.ALL);
-        event.setState(DrEventState.SUBMITTED_DIRECTLY);
+        event.setEcoplusSelector(EcoplusSelector.NON_ECOPLUS);
         event.setShowThermostat(true);
         event.setShowWeb(true);
         return event;
