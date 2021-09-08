@@ -39,6 +39,7 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
             }
         }
         rtuDnpValidationUtil.validateAddressing(
+                rtuDnp.getId(),
                 rtuDnp.getDeviceDirectCommSettings(), 
                 rtuDnp.getDeviceAddress(), 
                 rtuDnp.getIpAddress(),

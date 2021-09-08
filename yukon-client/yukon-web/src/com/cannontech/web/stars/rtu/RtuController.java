@@ -222,6 +222,7 @@ public class RtuController {
             HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException {
         rtuDnpValidationUtil.validateName(newRtu, result, true);
         rtuDnpValidationUtil.validateAddressing(
+                null, // no ID for this copy until rtuService.copyRtu() creates it in the DB
                 newRtu.getDeviceDirectCommSettings(), 
                 newRtu.getDeviceAddress(), 
                 newRtu.getIpAddress(),
