@@ -250,7 +250,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     POWER_FACTOR("Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR_COIN("Power Factor Coincidental", AttributeGroup.REACTIVE),
     MINIMUM_POWER_FACTOR("Minimum Power Factor", AttributeGroup.REACTIVE),
-    PREVIOUS_MINIMUM_POWER_FACTOR("Previous Minimum Power Factor", AttributeGroup.REACTIVE),
+    MINIMUM_POWER_FACTOR_FROZEN("Minimum Power Factor Frozen", AttributeGroup.REACTIVE),
 
     COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA("Coincident Power Factor at Delivered Peak kVA", AttributeGroup.REACTIVE),
     COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A("Coincident Power Factor at Delivered Peak kVA Rate A", AttributeGroup.REACTIVE),
