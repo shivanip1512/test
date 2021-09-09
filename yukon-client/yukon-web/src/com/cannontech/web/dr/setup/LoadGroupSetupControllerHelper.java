@@ -254,13 +254,12 @@ public class LoadGroupSetupControllerHelper {
     private void setCommunicationRoute(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         // Give API call to get all routes
         List<RouteBaseModel> routes = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl + "/");
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
         ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, 
                                                                                           request, 
                                                                                           url,
-                                                                                          RouteBaseModel.class, 
-                                                                                          HttpMethod.GET, 
-                                                                                          RouteBaseModel.class);
+                                                                                          Object.class, 
+                                                                                          HttpMethod.GET);
 
         if (response.getStatusCode() == HttpStatus.OK) {
             routes = (List<RouteBaseModel>) response.getBody();
