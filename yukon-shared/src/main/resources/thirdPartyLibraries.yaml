@@ -3131,18 +3131,18 @@ Java :
     jira : YUK-24693
     notes : 
   
-  - filename : tomcat-juli-9.0.41.jar
+  - filename : tomcat-juli-9.0.50.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.41
+    version : 9.0.50
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.41"
-    md5 : 0933e016150e4ccccf93bb8b0bcd39ba
-    sha1 : ea26a9f55448e19158c24d78075d16ca62306c27
-    updated : 2021-01-11
-    jira : YUK-23077
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.50"
+    md5 : 6ca7c3d023775de6a9169c2045802a5f
+    sha1 : 8f667854088e3b867302ff939d7d1997d49878e2
+    updated : 2021-09-09
+    jira : YUK-25031
     notes : 
   
   - filename : tomcat-util.jar
