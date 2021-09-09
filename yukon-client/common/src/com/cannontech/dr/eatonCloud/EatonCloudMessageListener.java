@@ -201,10 +201,10 @@ public class EatonCloudMessageListener {
         Stream<Entry<Integer, String>> stream;
         boolean isErrorReportingEnabled = globalSettingDao.getBoolean(GlobalSettingType.ERROR_REPORTING);
         if (isErrorReportingEnabled) {
-            log.trace("*******************************parallel stream");
+            log.trace("*******************************parallel processing");
             stream = guids.entrySet().parallelStream();
         } else {
-            log.trace("*******************************not parallel stream");
+            log.trace("*******************************sequential processing");
             stream = guids.entrySet().stream();
         }
         stream.forEach(entry -> {
