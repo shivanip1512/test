@@ -12,8 +12,8 @@
         <tags:alertBox type="error">${errorMessage}</tags:alertBox>
     </c:if>
     <div id="rf-js-message"></div>
-    <tags:alertBox type="warning" key=".rfSupportBundle.warning"/>
     <tags:sectionContainer2 nameKey="rfSupportBundle">
+    	<div class="notes MB5"><i:inline key=".rfSupportBundle.note"/></div>
         <cti:tabs>
             <cti:msg2 key=".supportBundle.createNewHeading" var="createNewHeading"/>
             <cti:tab title="${createNewHeading}" >

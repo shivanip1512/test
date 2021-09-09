@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +73,9 @@ public final class DeviceDaoImpl implements DeviceDao {
             return new SimpleDevice(deviceId, paoType);
         }
     };
+
+    public static final YukonRowMapper<DisplayableDevice> DISPLAYABLE_DEVICE_MAPPER = rs ->
+        new DisplayableDevice(rs.getPaoIdentifier("PAObjectID", "Type"), rs.getString("PAOName"));
 
     public static final YukonRowMapper<PaoMacAddress> PAO_MAC_ROW_MAPPER = (YukonResultSet rs) -> {
         PaoIdentifier paoIdentifier = rs.getPaoIdentifier("DeviceId", "Type");
@@ -419,11 +420,7 @@ public final class DeviceDaoImpl implements DeviceDao {
         sqlBuilder.append("   JOIN DeviceParent DP ON Y.PaObjectId = DP.DeviceId");
         sqlBuilder.append("WHERE DP.ParentId").eq(parentId);
 
-        List<DisplayableDevice> paos = jdbcTemplate.query(sqlBuilder, (YukonRowMapper<DisplayableDevice>) rs -> {
-            return new DisplayableDevice(rs.getPaoIdentifier("PAObjectID", "Type"), rs.getString("PAOName"));
-        });
-
-        return paos;
+        return jdbcTemplate.query(sqlBuilder, DISPLAYABLE_DEVICE_MAPPER);
     }
 
     @Override
@@ -458,15 +455,19 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
     
     @Override
-    public List<Integer> getDevicesByPort(int portId) {
-        List<Integer> devices = cache.getDevicesByCommPort(portId);
-        return devices;
-    }
-
-    @Override
-    public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
-        List<Integer> devicesByAddress = cache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
-        return devicesByAddress;
+    public List<DisplayableDevice> getDevicesByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
+        var sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT");
+        sql.append(    "yp.PAObjectID, yp.Type, yp.PAOName");
+        sql.append("FROM YukonPAObject yp");
+        sql.append(    "JOIN DeviceDirectCommSettings ddcs ON yp.PAObjectId = ddcs.DeviceId");
+        sql.append(    "JOIN DeviceAddress da ON yp.PAObjectId = da.DeviceId");
+        sql.append("WHERE ddcs.PortId").eq(portId);
+        sql.append(    "AND da.MasterAddress").eq(masterAddress);
+        sql.append(    "AND da.SlaveAddress").eq(slaveAddress);
+        
+        return jdbcTemplate.query(sql, DISPLAYABLE_DEVICE_MAPPER);
     }
 
     @Override

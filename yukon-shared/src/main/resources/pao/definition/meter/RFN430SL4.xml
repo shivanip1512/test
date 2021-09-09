@@ -84,11 +84,11 @@
         <pointInfo name="kVA Load Profile" attributes="KVA_LOAD_PROFILE"/>
         <pointInfo name="kVAh" attributes="KVAH"/>
         <pointInfo name="Delivered kVAh per Interval" attributes="DELIVERED_KVAH_PER_INTERVAL"/>
-        <pointInfo name="kVAh Lagging" attributes="KVAH_Q124"/>
-        <pointInfo name="kVAh Lagging Rate A"/>
-        <pointInfo name="kVAh Lagging Rate B"/>
-        <pointInfo name="kVAh Lagging Rate C"/>
-        <pointInfo name="kVAh Lagging Rate D"/>
+        <pointInfo name="kVAh (Quadrants 1 2 4)" attributes="KVAH_Q124"/>
+        <pointInfo name="kVAh (Quadrants 1 2 4) (Rate A kVAh)" attributes="KVAH_Q124_RATE_A"/>
+        <pointInfo name="kVAh (Quadrants 1 2 4) (Rate B kVAh)" attributes="KVAH_Q124_RATE_B"/>
+        <pointInfo name="kVAh (Quadrants 1 2 4) (Rate C kVAh)" attributes="KVAH_Q124_RATE_C"/>
+        <pointInfo name="kVAh (Quadrants 1 2 4) (Rate D kVAh)" attributes="KVAH_Q124_RATE_D"/>
         <pointInfo name="kVAr" attributes="KVAR"/>
         <pointInfo name="kW" attributes="DEMAND,INSTANTANEOUS_KW"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
@@ -124,11 +124,11 @@
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Peak kVA" attributes="PEAK_KVA"/>
         <pointInfo name="Peak kVA Frozen" attributes="PEAK_KVA_FROZEN"/>
-        <pointInfo name="Peak kVA Lagging" attributes="DELIVERED_PEAK_KVA_LAGGING"/>
-        <pointInfo name="Peak kVA Lagging Rate A"/>
-        <pointInfo name="Peak kVA Lagging Rate B"/>
-        <pointInfo name="Peak kVA Lagging Rate C"/>
-        <pointInfo name="Peak kVA Lagging Rate D"/>
+        <pointInfo name="Peak kVA (Quadrants 1 2 4)" attributes="PEAK_KVA_Q124"/>
+        <pointInfo name="Peak kVA (Quadrants 1 2 4) (Rate A kVA)" attributes="PEAK_KVA_Q124_RATE_A"/>
+        <pointInfo name="Peak kVA (Quadrants 1 2 4) (Rate B kVA)" attributes="PEAK_KVA_Q124_RATE_B"/>
+        <pointInfo name="Peak kVA (Quadrants 1 2 4) (Rate C kVA)" attributes="PEAK_KVA_Q124_RATE_C"/>
+        <pointInfo name="Peak kVA (Quadrants 1 2 4) (Rate D kVA)" attributes="PEAK_KVA_Q124_RATE_D"/>
         <pointInfo name="Peak kVAr" attributes="PEAK_KVAR"/>
         <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
         <pointInfo name="Peak kW (Rate A kW)" init="true" attributes="PEAK_DEMAND_RATE_A"/>

@@ -16,7 +16,11 @@ import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.dao.PortDao;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.common.events.loggers.CommChannelEventLogService;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
@@ -33,6 +37,7 @@ public class PortServiceImpl implements PortService {
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private CommChannelEventLogService commChannelEventLogService;
     @Autowired private PortDao portDao;
+    private static final String baseKey = "yukon.common.";
 
     @Override
     @Transactional
@@ -136,7 +141,29 @@ public class PortServiceImpl implements PortService {
     }
 
     @Override
-    public List<DeviceBaseModel> getDevicesAssignedPort(int portId) {
-        return portDao.getDevicesAssignedPort(portId);
+    public SearchResults<DeviceBaseModel> getDevicesAssignedPort(int portId, CommChannelSortBy sortBy, PagingParameters paging, Direction direction) {
+        return portDao.getDevicesAssignedPort(portId, sortBy, paging, direction);
+    }
+    
+    // enum for sorting commchannels and linked devices
+    public enum CommChannelSortBy implements DisplayableEnum {
+        name("PAOName"),
+        type("type"),
+        status("DisableFlag");
+
+        private CommChannelSortBy(String dbString) {
+            this.dbString = dbString;
+        }
+        
+        private final String dbString;
+
+        public String getDbString() {
+            return dbString;
+        }
+
+        @Override
+        public String getFormatKey() {
+            return baseKey + name();
+        }
     }
 }

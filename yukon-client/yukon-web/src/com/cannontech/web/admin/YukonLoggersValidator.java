@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.time.DateUtils;
@@ -81,15 +80,14 @@ public class YukonLoggersValidator extends SimpleValidator<YukonLogger> {
         }
     }
     
-    public void validateExpirationDate(Errors errors, YukonLogger logger, String string) {
+    public void validateExpirationDate(Errors errors, YukonLogger logger, String i18Text) {
         if (logger.getLoggerType() == LoggerType.USER_LOGGER) {
             Date today = DateUtils.truncate(new Date(), Calendar.DAY_OF_MONTH);
-            if (logger.getExpirationDate().before(today)) {
-                errors.rejectValue("expirationDate", errorkey + "date.inFuture");
+            if (!errors.hasFieldErrors("expirationDate") && logger.getExpirationDate().before(today)) {
+                errors.rejectValue("expirationDate", errorkey + "date.inFuture", new Object[] { i18Text }, "");
             }
         } else {
-            errors.rejectValue("expirationDate", errorkey + "notSupported",
-                    new Object[] { logger.getExpirationDate() }, "");
+            errors.rejectValue("expirationDate", errorkey + "notSupported", new Object[] { logger.getExpirationDate() }, "");
         }
     }
 

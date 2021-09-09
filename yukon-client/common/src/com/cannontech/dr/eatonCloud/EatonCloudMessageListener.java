@@ -2,12 +2,12 @@ package com.cannontech.dr.eatonCloud;
 
 import java.math.RoundingMode;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -27,6 +28,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StopWatch;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -59,6 +61,8 @@ import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.math.IntMath;
 
@@ -82,6 +86,7 @@ public class EatonCloudMessageListener {
     @Autowired private EatonCloudDataReadService eatonCloudDataReadService;
     private Executor executor = Executors.newCachedThreadPool();
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
+    @Autowired private GlobalSettingDao globalSettingDao;
     
     // next read time, send time, set of ids to read
     private Map<Pair<Instant, Instant>, Set<Integer>> nextRead = new ConcurrentHashMap<Pair<Instant, Instant>, Set<Integer>>();
@@ -136,7 +141,8 @@ public class EatonCloudMessageListener {
         STOP_TIME("stop time"),
         STOP_FLAGS("stop flags"), 
         CRITICALITY("criticality"),
-        EVENT_ID("event id");
+        EVENT_ID("event id"),
+        RANDOMIZATION("randomization");
         
         private String paramName;
 
@@ -160,8 +166,7 @@ public class EatonCloudMessageListener {
         }   
 
         Integer eventId = nextValueHelper.getNextValue("EatonCloudEventIdIncrementor");
-        log.info("Sending LM Eaton Cloud Shed Command:{} devices:{} event id:{}", command, devices.size(), eventId);
-        
+
         List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(command.getGroupId());
         int programId = programsByLMGroupId.get(0).getPaobjectId();
         
@@ -182,19 +187,38 @@ public class EatonCloudMessageListener {
     }
 
     private void sendShedCommands(int programId, Set<Integer> devices, LMEatonCloudScheduledCycleCommand command, Integer eventId) {
+        
+        log.info("Sending LM Eaton Cloud Shed Command:{} devices:{} event id:{}", command, devices.size(), eventId);
+        
         Map<String, Object> params = getShedParams(command, eventId);
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         AtomicInteger totalFailed = new AtomicInteger(0);
         Set<Integer> successDeviceIds = new HashSet<>();
         Instant sendTime = new Instant();
         
-        guids.forEach((deviceId, guid) -> {
+        StopWatch stopwatch = new StopWatch();
+        stopwatch.start();
+        Stream<Entry<Integer, String>> stream;
+        boolean isErrorReportingEnabled = globalSettingDao.getBoolean(GlobalSettingType.ERROR_REPORTING);
+        if (isErrorReportingEnabled) {
+            log.trace("*******************************parallel processing");
+            stream = guids.entrySet().parallelStream();
+        } else {
+            log.trace("*******************************sequential processing");
+            stream = guids.entrySet().stream();
+        }
+        stream.forEach(entry -> {
+            int deviceId = entry.getKey();
+            String guid = entry.getValue();
+
             String deviceName = dbCache.getAllDevices().stream()
                     .filter(d -> d.getLiteID() == deviceId)
                     .findAny()
-                    .map(d -> d.getPaoName())
+                    .map(LiteYukonPAObject::getPaoName)
                     .orElse(null);
             try {
+                log.trace("Attampting to send shed command to device id:{} guid:{} name:{} event id:{} relay:{}", deviceId, guid,
+                        deviceName, eventId, command.getVirtualRelayId());
                 EatonCloudCommandResponseV1 response = eatonCloudCommunicationService.sendCommand(guid,
                         new EatonCloudCommandRequestV1("LCR_Control", params));
                 if (response.getStatusCode() == HttpStatus.OK.value()) {
@@ -202,26 +226,36 @@ public class EatonCloudMessageListener {
                             ControlEventDeviceStatus.SUCCESS_RECEIVED, new Instant(),
                             null, null);
                     successDeviceIds.add(deviceId);
+                    log.trace("Success sending shed command to device id:{} guid:{} name:{} eventId:{} relay:{}", deviceId,
+                            guid, deviceName, eventId, command.getVirtualRelayId(), params);
                 } else {
                     throw new EatonCloudException(response.getMessage());
                 }
             } catch (EatonCloudCommunicationExceptionV1 e) {
                 totalFailed.getAndIncrement();
-                log.error("Error sending command device id:{} params:{}", deviceId, params, e);
+                log.error("Error sending shed command device id:{} guid:{} name:{} eventId:{} relay:{}", deviceId, guid,
+                        deviceName, eventId, command.getVirtualRelayId(), e);
                 processError(eventId, params, deviceId, e.getErrorMessage().getMessage());
             } catch (EatonCloudException e) {
                 totalFailed.getAndIncrement();
-                log.error("Error sending command device id:{} params:{}", deviceId, params, e);
+                log.error("Error sending shed command device id:{} guid:{} name:{} eventId:{} relay:{}", deviceId, guid,
+                        deviceName, eventId, command.getVirtualRelayId(), e);
                 processError(eventId, params, deviceId, e.getMessage());
             }
-            
+
             eatonCloudEventLogService.sendShed(deviceName,
                     guid,
                     command.getDutyCyclePercentage(),
                     command.getDutyCyclePeriod(),
                     command.getCriticality());
         });
-        
+
+        stopwatch.stop();
+        if (log.isDebugEnabled()) {
+            var duration = Duration.standardSeconds((long) stopwatch.getTotalTimeSeconds());
+            log.debug("Commands timer - devices: {}, total time: {}", guids.size(), duration);
+        }
+
         DateTime dateTime = new DateTime();
         if (!successDeviceIds.isEmpty()) {
             int readTimeFromNowInMinutes = command.getDutyCyclePeriod() == null ? 5 : IntMath.divide(command.getDutyCyclePeriod(),
@@ -229,6 +263,8 @@ public class EatonCloudMessageListener {
             nextRead.put(Pair.of(dateTime.plusMinutes(readTimeFromNowInMinutes).toInstant(), sendTime), successDeviceIds);
         }
         sendSmartNotifications(command.getGroupId(), programId, devices.size(), totalFailed.intValue());
+        
+        log.info("Finished sending LM Eaton Cloud Shed Command:{} devices:{} event id:{} failed:{}", command, devices.size(), eventId, totalFailed.intValue());
         
     }
     
@@ -259,17 +295,19 @@ public class EatonCloudMessageListener {
         Map<String, Object> params = getRestoreParams(command, eventId);
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         guids.forEach((deviceId, guid) -> {
+            String deviceName = dbCache.getAllDevices().stream()
+                    .filter(d -> d.getLiteID() == deviceId)
+                    .findAny()
+                    .map(d -> d.getPaoName())
+                    .orElse(null);
+            log.trace("Attampting to send restore command to device id:{} eventId:{} name:{} relay:{}", deviceId,
+                    eventId, deviceName, command.getVirtualRelayId());
             try {
-                String deviceName = dbCache.getAllDevices().stream()
-                        .filter(d -> d.getLiteID() == deviceId)
-                        .findAny()
-                        .map(d -> d.getPaoName())
-                        .orElse(null);
-                
                 eatonCloudCommunicationService.sendCommand(guid, new EatonCloudCommandRequestV1("LCR_Control", params));
                 eatonCloudEventLogService.sendRestore(deviceName, guid);
             } catch (Exception e) {
-                log.error("Error sending command device id:{} params:{}", deviceId, params, e);
+                log.error("Error sending restore command to device id:{} eventId:{} name:{} relay:{}", deviceId,
+                        eventId, deviceName, command.getVirtualRelayId());
             }
         });
     }
@@ -278,7 +316,7 @@ public class EatonCloudMessageListener {
      * Returns shed parameters
      */
     private Map<String, Object> getShedParams(LMEatonCloudScheduledCycleCommand command, int eventId) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new LinkedHashMap<>();
         long startTimeSeconds = System.currentTimeMillis() / 1000;
         long stopTimeSeconds = 0;
 
@@ -291,20 +329,33 @@ public class EatonCloudMessageListener {
         }
 
         double durationSeconds = stopTimeSeconds - startTimeSeconds;
-        double cycleCount = 1;
+        int cycleCount = 1;
         if (stopTimeSeconds != 0) {
-            cycleCount = Math.ceil(durationSeconds / command.getDutyCyclePeriod());
+            cycleCount = (int) Math.ceil(durationSeconds / command.getDutyCyclePeriod());
         }
 
-        params.put(CommandParam.START_TIME.getParamName(), startTimeSeconds);
-        params.put(CommandParam.STOP_TIME.getParamName(), stopTimeSeconds);
-        params.put(CommandParam.EVENT_ID.getParamName(), eventId);
+        /*
+         * See LCR Control Command Payloads reference:
+         * https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=137056391
+         * 
+         *                RampIN - TRUE | RampIN - FALSE
+         * randomization|        1      |        0
+         * 
+         *               RampOUT - TRUE | RampOUT - FALSE
+         * stop flag    |        1      |         0
+         */
+
+        params.put(CommandParam.VRELAY.getParamName(), command.getVirtualRelayId() - 1);
         params.put(CommandParam.CYCLE_PERCENT.getParamName(), command.getDutyCyclePercentage());
         params.put(CommandParam.CYCLE_PERIOD.getParamName(), command.getDutyCyclePeriod() / 60);
         params.put(CommandParam.CYCLE_COUNT.getParamName(), cycleCount);
+        params.put(CommandParam.START_TIME.getParamName(), startTimeSeconds);
+        params.put(CommandParam.EVENT_ID.getParamName(), eventId);
         params.put(CommandParam.CRITICALITY.getParamName(), command.getCriticality());
+        params.put(CommandParam.RANDOMIZATION.getParamName(), command.getIsRampIn() ? 1 : 0);
         params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
-        params.put(CommandParam.VRELAY.getParamName(), command.getVirtualRelayId());
+        params.put(CommandParam.STOP_TIME.getParamName(), stopTimeSeconds);
+        params.put(CommandParam.STOP_FLAGS.getParamName(), command.getIsRampOut() ? 1 : 0);
         return params;
     }
 
@@ -333,12 +384,7 @@ public class EatonCloudMessageListener {
     private Map<String, Object> getRestoreParams(LMEatonCloudStopCommand command, int eventId) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
-        if (command.getRestoreTime() != null) {
-            params.put(CommandParam.STOP_TIME.getParamName(), command.getRestoreTime().getMillis() / 1000);
-        } else {
-            params.put(CommandParam.STOP_TIME.getParamName(), 0);
-        }
-        params.put(CommandParam.STOP_FLAGS.getParamName(), 0);
+        params.put(CommandParam.FLAGS.getParamName(), 0);
         return params;
     }
 

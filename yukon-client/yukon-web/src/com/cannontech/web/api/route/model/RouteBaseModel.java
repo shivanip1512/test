@@ -45,7 +45,7 @@ public class RouteBaseModel<T extends RouteBase> extends DeviceBaseModel impleme
     }
 
     @Override
-    public void buildModel(RouteBase routeBase) {
+    public void buildModel(T routeBase) {
         setRouteId(routeBase.getRouteID());
         setId(routeBase.getRouteID());
         setName(routeBase.getRouteName());
@@ -54,7 +54,7 @@ public class RouteBaseModel<T extends RouteBase> extends DeviceBaseModel impleme
     }
 
     @Override
-    public void buildDBPersistent(RouteBase routeBase) {
+    public void buildDBPersistent(T routeBase) {
         if (getId() != null) {
             routeBase.setRouteID(getId());
         }

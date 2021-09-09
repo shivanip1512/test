@@ -78,7 +78,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         
         @Override
         public Optional<String> processData(RfnDevice rfnDevice, RfnLcrArchiveRequest request) {
-            
+            incrementProcessedArchiveRequest();
             Instant startTime = new Instant();
             
             // Make sure dispatch message handling isn't blocked up.

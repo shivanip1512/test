@@ -41,7 +41,7 @@ yukon.highChart = (function () {
         buildChart : function (chartContainer, jsonResponse, title, chartHeight, chartWidth) {
             var gridLineWidth = 0;
             $.each(jsonResponse.seriesDetails, function(index, item) {
-                if (item.data.length > 0) {
+                if (item && item.data && item.data.length > 0) {
                     gridLineWidth = 1;
                 }
             });

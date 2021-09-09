@@ -3,11 +3,17 @@ package com.cannontech.common.validator;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
+import org.springframework.validation.AbstractBindingResult;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 
 public class YukonValidationUtilsTest {
-    BindException error = null;
+    Errors error = null;
 
     @Test
     public void checkExceedsMaxLength_Test() {
@@ -119,15 +125,106 @@ public class YukonValidationUtilsTest {
         assertFalse(error.hasFieldErrors("name"));
     }
 
+    AbstractBindingResult makeBindingResult(String field, String value) {
+        return  new AbstractBindingResult("testObject") {
+            @Override
+            public Object getTarget() {
+                return null;
+            }
+            @Override
+            public Object getFieldValue(String arg0) {
+                return getActualFieldValue(arg0);
+            }
+            @Override
+            protected Object getActualFieldValue(String arg0) {
+                return arg0.equals(field)
+                        ? value
+                        : null;
+            }
+        };
+    }
+
     @Test
     public void ipHostNameValidator_Test() {
-        // TODO
-        /*
-         * BindException error = new BindException(Object.class, "testObject");
-         * assertTrue(YukonValidationUtils.ipHostNameValidator(error, "ipAddress", "127.0.0.1"));
-         * assertFalse("Invalid IP Address",YukonValidationUtils.ipHostNameValidator(error, "ipAddress",
-         * "300.225.255.0"));
-         */
+        final String IP_ADDRESS = "ipAddress";
+
+        //  Failure cases
+        Stream.of(
+                null, 
+                "    ",
+                "\t    tabs vs spaces\n",
+                // 100 chars
+                "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
+                // 64 chars, longer than an individual domain segment
+                "1234567890123456789012345678901234567890123456789012345678901234",
+                // Same, but with alphanumeric and dashes
+                "1234567890abcdefghijklmnopqrstuvwxyz-123456789012345678901234567",
+                // Segment cannot start with a dash
+                "-not-a-domain.com",
+                // Segment cannot end with a dash
+                "not-a-domain-.com",
+                // Cannot contain underscores
+                "not_a_domain.com",
+                "not a domain",
+                // @ is invalid 
+                "joe@eaton.com"
+                ).forEach(value -> { 
+            error = makeBindingResult(IP_ADDRESS, value);
+            YukonValidationUtils.ipHostNameValidator(error, IP_ADDRESS, value);
+            assertTrue(error.hasFieldErrors(IP_ADDRESS), "Unexpectedly passed validation: " + value);
+        });    
+
+        // Success cases
+        Stream.of(
+                "127.0.0.1", 
+                "blu-dr.eaton.com", 
+                //  No range validation on entries that look like IPs
+                "300.225.255.0",
+                //  63 char domain is okay
+                "123456789012345678901234567890123456789012345678901234567890123",
+                "123456789-123456789-123456789-123456789-123456789-123456789-123",
+                "123456789-123456789-123456789-123456789-123456789-123456789-123.com",
+                "1234567890abcdefghijklmnopqrstuvwxyz-12345678901234567890123456",
+                //  Repeating dashes are okay as long as they start and end with alphanumeric 
+                "1-------------------------------------------------------------z",
+                "0.a-hyphenated-domain.com",
+                "a.a"
+                ).forEach(value -> { 
+            error = makeBindingResult(IP_ADDRESS, value);
+            YukonValidationUtils.ipHostNameValidator(error, IP_ADDRESS, value);
+            assertFalse(error.hasFieldErrors(IP_ADDRESS), error.toString());
+        });    
+    }
+    
+    @Test
+    public void validatePort_Test() {
+        final String PORT = "port";
+
+        //  Failure cases
+        Stream.of(
+                null, 
+                "    ", 
+                "null", 
+                "bananaphone", 
+                "0", 
+                "-17", 
+                "65536"
+                ).forEach(value -> { 
+            error = makeBindingResult(PORT, value);
+            YukonValidationUtils.validatePort(error, PORT, "TCP port", value);
+            assertTrue(error.hasFieldErrors(PORT), error.toString());
+        });    
+
+        // Success cases
+        Stream.of(
+                "1", 
+                "65535", 
+                "32768"
+                ).forEach(value -> { 
+            error = makeBindingResult(PORT, value);
+            YukonValidationUtils.validatePort(error, PORT, "TCP port", value);
+            assertFalse(error.hasFieldErrors(PORT), error.toString());
+        });    
     }
 
     @Test

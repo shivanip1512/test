@@ -43,17 +43,18 @@ public class RouteServiceImpl implements RouteService {
         dbPersistentDao.performDBChange(routeBase, TransactionType.INSERT);
         SimpleDevice device = SimpleDevice.of(routeBase.getPAObjectID(), routeBase.getPaoType());
         paoCreationHelper.addDefaultPointsToPao(device);
+        routeBase = (RouteBase) dbPersistentDao.retrieveDBPersistent(routeBase);
         routeBaseModel.buildModel(routeBase);
         return routeBaseModel;
 
     }
 
     @Override
-    public RouteBaseModel<? extends RouteBase> update(int id, RouteBaseModel<?> routeBaseModel, LiteYukonUser liteYukonUser) {
-        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes().get(id);
-        if (pao == null) {
-            throw new NotFoundException("Route Id not found");
-        }
+    public RouteBaseModel<? extends RouteBase> update(int id, RouteBaseModel routeBaseModel, LiteYukonUser liteYukonUser) {
+        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes().stream()
+                .filter(route -> route.getLiteID() == id)
+                .findFirst().orElseThrow(() -> new NotFoundException("Route id not found"));
+
         RouteBase routeBase = (RouteBase) dbPersistentDao.retrieveDBPersistent(pao);
         routeBaseModel.buildDBPersistent(routeBase);
         dbPersistentDao.performDBChange(routeBase, TransactionType.UPDATE);
@@ -64,10 +65,9 @@ public class RouteServiceImpl implements RouteService {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public RouteBaseModel<? extends RouteBase> retrieve(int routeId) {
-        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes().get(routeId);
-        if (pao == null) {
-            throw new NotFoundException("Route Id not found");
-        }
+        LiteYukonPAObject pao = serverDatabaseCache.getAllRoutes().stream()
+                .filter(route -> route.getLiteID() == routeId)
+                .findFirst().orElseThrow(() -> new NotFoundException("Route id not found"));
 
         RouteBase routeBase = (RouteBase) dbPersistentDao.retrieveDBPersistent(pao);
         RouteBaseModel routeBaseModel = routeHelper.getRouteFromModelFactory(pao.getPaoType());// new factory

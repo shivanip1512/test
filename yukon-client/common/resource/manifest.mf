@@ -62,7 +62,6 @@ Class-Path: ./
  jtds-1.3.1.jar 
  ojdbc10.jar 
  activation.jar 
- mailapi-1.5.1.jar 
  smtp-1.5.1.jar 
  yukon-help.jar 
  commons-fileupload-1.3.3.jar 
@@ -119,7 +118,6 @@ Class-Path: ./
  jackson-module-jaxb-annotations-2.12.3.jar 
  jakarta.activation-api-1.2.1.jar 
  jakarta.xml.bind-api-2.3.2.jar
- json-smart-2.3.jar 
  netty-buffer-4.1.65.Final.jar 
  netty-codec-4.1.65.Final.jar 
  netty-codec-dns-4.1.63.Final.jar 

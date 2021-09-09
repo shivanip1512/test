@@ -105,15 +105,22 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
         Integer eventId = nextValueHelper.getNextValue("EatonCloudEventIdIncrementor");
         Integer relay = (Integer) command.getParams().get(LmHardwareCommandParam.RELAY);
         Duration duration = (Duration) command.getParams().get(LmHardwareCommandParam.DURATION);
-        params.put(CommandParam.VRELAY.getParamName(), relay);
+
+        // See LCR Control Command Payloads reference:
+        // https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=137056391
+
+        params.put(CommandParam.VRELAY.getParamName(), relay - 1);
         params.put(CommandParam.CYCLE_PERCENT.getParamName(), 100);
         params.put(CommandParam.CYCLE_PERIOD.getParamName(), (duration.getMillis() / 1000) / 60);
         params.put(CommandParam.CYCLE_COUNT.getParamName(), 1);
         params.put(CommandParam.START_TIME.getParamName(), System.currentTimeMillis() / 1000);
-        params.put(CommandParam.STOP_TIME.getParamName(), (System.currentTimeMillis() + duration.getMillis()) / 1000);
-        params.put(CommandParam.CRITICALITY.getParamName(), 255);
-        params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
+        params.put(CommandParam.CRITICALITY.getParamName(), 255);
+        params.put(CommandParam.RANDOMIZATION.getParamName(), 0);
+        params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
+        params.put(CommandParam.STOP_TIME.getParamName(), (System.currentTimeMillis() + duration.getMillis()) / 1000);
+        params.put(CommandParam.STOP_FLAGS.getParamName(), 0);
+
         return params;
     }
     
@@ -121,9 +128,7 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
         Map<String, Object> params = new LinkedHashMap<>();
         Integer relay = (Integer) command.getParams().get(LmHardwareCommandParam.RELAY);
         params.put(CommandParam.VRELAY.getParamName(), relay);
-        params.put(CommandParam.STOP_TIME.getParamName(), 0);
         params.put(CommandParam.FLAGS.getParamName(), 0);
-        params.put(CommandParam.STOP_FLAGS.getParamName(), 0);
         return params;
     }
 

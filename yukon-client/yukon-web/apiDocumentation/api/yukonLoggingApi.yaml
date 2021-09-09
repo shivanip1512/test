@@ -3,7 +3,7 @@ post-get-all-operation:
     tags:
      - Logger
     summary: 'Create Logger'
-    description: 'API to create Logger.'
+    description: 'API to create logger.'
     requestBody:
       content:
         application/json:
@@ -11,7 +11,7 @@ post-get-all-operation:
             $ref: '../schemas/yukonLoggingSchema.yaml#/Logger'
           examples:
             Logger:
-              $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger'
+              $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger Request'
       required: true
     responses:
       '201':
@@ -19,10 +19,10 @@ post-get-all-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger'
+              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger Response Schema'
             examples:
               Logger:
-                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger'
+                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger Response'
                 
   get:
     tags:
@@ -36,10 +36,10 @@ post-get-all-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger List'
+              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger Response Schema'
              
             examples:
-              Virtual Devices List:
+              Logger List:
                 $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/List of Logger'
 
 get-update-delete-operation:
@@ -47,7 +47,7 @@ get-update-delete-operation:
     tags:
      - Logger
     summary: 'Retrieve Logger'
-    description: 'API to retrieve yukon logger based on passed id.'
+    description: 'API to retrieve yukon logger based on passed Id.'
     parameters:
       - name: id
         in: path
@@ -61,15 +61,15 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger'
+              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger Response Schema'
             examples:
               Logger:
-                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger'
+                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger Response'
   patch:
     tags:
      - Logger
     summary: 'Update Logger'
-    description: 'API to update logger based on passed id.'
+    description: 'API to update logger based on passed loggerId.'
     parameters:
       - name: id
         in: path
@@ -84,7 +84,7 @@ get-update-delete-operation:
             $ref: '../schemas/yukonLoggingSchema.yaml#/Logger'
           examples:
             Logger:
-              $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger'
+              $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger Request'
       required: true
     responses:
       '200':
@@ -92,15 +92,15 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger'
+              $ref: '../schemas/yukonLoggingSchema.yaml#/Logger Response Schema'
             examples:
               Logger:
-                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger'
+                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger Response'
   delete:
     tags:
      - Logger
     summary: 'Delete Logger'
-    description: 'API to delete logger based on passed id.'
+    description: 'API to delete logger based on passed loggerId.'
     parameters:
       - name: id
         in: path
@@ -114,7 +114,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/yukonLoggingSchema.yaml#/id'
+              $ref: '../schemas/yukonLoggingSchema.yaml#/loggerId'
             examples:
               LoggerId:
-                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/id'
+                $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/loggerId'

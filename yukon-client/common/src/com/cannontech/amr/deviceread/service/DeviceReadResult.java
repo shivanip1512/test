@@ -3,10 +3,8 @@ package com.cannontech.amr.deviceread.service;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
-import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.core.dynamic.PointValueHolder;
 
@@ -43,15 +41,6 @@ public class DeviceReadResult {
 
     public boolean isSuccess() {
         return errors.isEmpty();
-    }
-    
-    public boolean hasTimeoutError() {
-        Optional<SpecificDeviceErrorDescription> timeoutError = errors.stream()
-                .filter(error -> error.getDeviceError() == DeviceError.TIMEOUT).findFirst();
-        if (timeoutError.isPresent()) {
-            return true;
-        }
-        return false;
     }
 
     public boolean isTimeout() {

@@ -583,6 +583,28 @@ public final class FileUtil {
     }
     
     /**
+     * Zip directory in the passed directory path.
+     */
+    public static void zipDir(String srcDir, String[] srcFiles, String zippedDir) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(zippedDir); ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+            if (srcFiles != null && srcFiles.length > 0) {
+                for (String srcFile : srcFiles) {
+                    File fileToZip = new File(srcDir + File.separator + srcFile);
+                    try (FileInputStream fis = new FileInputStream(fileToZip)) {
+                        ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+                        zipOut.putNextEntry(zipEntry);
+                        byte[] bytes = new byte[1024];
+                        int length;
+                        while ((length = fis.read(bytes)) >= 0) {
+                            zipOut.write(bytes, 0, length);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
      * Filter all the zip files and ordered them based on last modified date i.e latest file first.
      */
     public static List<File> filterAndOrderZipFile(File dir) {

@@ -17,7 +17,7 @@ import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupPoint;
 import com.cannontech.common.dr.setup.LoadGroupRoute;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.exception.LMObjectDeletionFailureException;
+import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -206,12 +206,12 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
             if ((program = com.cannontech.database.db.device.lm.LMGroup.isGroupUsed(paoId)) != null) {
                 String message = "You cannot delete the device '" + Groupname
                     + "' because it is utilized by the LM program named '" + program + "'";
-                throw new LMObjectDeletionFailureException(message);
+                throw new DeletionFailureException(message);
             }
         } catch (SQLException e) {
             String message = "Unable to delete load group with name : " + Groupname + e;
             log.error(message);
-            throw new LMObjectDeletionFailureException(message);
+            throw new DeletionFailureException(message);
         }
     }
 

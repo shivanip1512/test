@@ -359,16 +359,6 @@ public class StubServerDatabaseCache implements IDatabaseCache {
     }
 
     @Override
-    public List<Integer> getDevicesByCommPort(int portId) {
-        throw new MethodNotImplementedException("Method not implemented yet.");
-    }
-
-    @Override
-    public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
-        throw new MethodNotImplementedException("Method not implemented yet.");
-    }
-
-    @Override
     public Map<Integer, LiteYukonImage> getImages() {
         throw new MethodNotImplementedException("Method not implemented yet.");
     }

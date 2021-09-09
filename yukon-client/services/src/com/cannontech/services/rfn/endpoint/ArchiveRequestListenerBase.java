@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -40,6 +41,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PointDataTracker pointDataTracker; 
     private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
+    private AtomicInteger processedArchiveRequest = new AtomicInteger();
  
     protected abstract class ConverterBase extends Thread {
         private ArrayBlockingQueue<T> inQueue;
@@ -291,9 +293,19 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
     protected void sendAcknowledgement(T request) {
         Object response = getRfnArchiveResponse(request);
-        YukonJmsTemplate jmsTemplate = getJmsTemplate();
-        rfnLogger.info("<<< Sent " + response);
-        jmsTemplate.convertAndSend(response);
+        if (response != null) {
+            YukonJmsTemplate jmsTemplate = getJmsTemplate();
+            rfnLogger.info("<<< Sent " + response);
+            jmsTemplate.convertAndSend(response);
+        }
     }
-
+    
+    @ManagedAttribute
+    public int getProcessedArchiveRequest() {
+        return processedArchiveRequest.get();
+    }
+    
+    public void incrementProcessedArchiveRequest() {
+        processedArchiveRequest.incrementAndGet();
+    }
 }

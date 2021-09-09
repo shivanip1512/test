@@ -203,12 +203,20 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
 
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420frx"),  TYPE_RFN420FRX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420frd"),  TYPE_RFN420FRD);
+    //  RFN-500 Focus AX (gen 1)
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520fax"),  TYPE_RFN520FAX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520frx"),  TYPE_RFN520FRX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530fax"),  TYPE_RFN530FAX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530frx"),  TYPE_RFN530FRX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520faxd"), TYPE_RFN520FAXD);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520frxd"), TYPE_RFN520FRXD);
+    //  RFN-500 Focus AXe (gen 2)
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520faxe"),  TYPE_RFN520FAXE);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520frxe"),  TYPE_RFN520FRXE);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530faxe"),  TYPE_RFN530FAXE);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530frxe"),  TYPE_RFN530FRXE);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520faxed"), TYPE_RFN520FAXED);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520frxed"), TYPE_RFN520FRXED);
 
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-410cl"),   TYPE_RFN410CL);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420cl"),   TYPE_RFN420CL);

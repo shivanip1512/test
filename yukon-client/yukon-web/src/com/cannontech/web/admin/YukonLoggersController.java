@@ -1,5 +1,6 @@
 package com.cannontech.web.admin;
 
+import java.beans.PropertyEditor;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,8 +22,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,12 +35,14 @@ import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.log.model.LoggerLevel;
+import com.cannontech.common.log.model.LoggerType;
 import com.cannontech.common.log.model.SystemLogger;
 import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -47,6 +52,7 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.input.DatePropertyEditorFactory;
 
 @Controller
 public class YukonLoggersController {
@@ -57,6 +63,7 @@ public class YukonLoggersController {
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private ApiControllerHelper apiControllerHelper;
     @Autowired private YukonLoggersValidator yukonLoggersValidator;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     
     private static final String baseKey = "yukon.web.modules.adminSetup.config.loggers.";
     private static final String redirectLink = "redirect:/admin/config/loggers/allLoggers";
@@ -73,9 +80,16 @@ public class YukonLoggersController {
 
     @GetMapping("/config/loggers")
     public String addLogger(@ModelAttribute YukonLogger logger, ModelMap model) {
-
+        if (model.containsAttribute("logger")) {
+            logger = (YukonLogger) model.get("logger");
+        }
+        
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("isEditMode", false);
+        if (logger.getLevel() == null) {
+            logger.setLevel(LoggerLevel.DEBUG);
+        }
+        logger.setExpirationDate(new Date());
         model.addAttribute("logger", logger);
         Date expirationDate = new Date();
         model.addAttribute("now", expirationDate);
@@ -85,18 +99,24 @@ public class YukonLoggersController {
     }
 
     @PostMapping("/config/loggers")
-    public String saveLogger(@ModelAttribute("logger") YukonLogger logger,BindingResult result, Boolean specifiedDateTime, HttpServletRequest request,
+    public String saveLogger(@ModelAttribute("logger") YukonLogger logger, BindingResult result, Boolean specifiedDateTime, HttpServletRequest request,
             HttpServletResponse resp, YukonUserContext userContext, ModelMap model) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<String, Object>();
+        Boolean invalidDate = false;
+        if (BooleanUtils.isTrue(specifiedDateTime) && logger.getExpirationDate() == null) {
+            invalidDate = true;
+            model.addAttribute("invalidDateError", true);
+        }
         if (BooleanUtils.isNotTrue(specifiedDateTime)) {
             logger.setExpirationDate(null);
         }
+        logger.setLoggerType(SystemLogger.isSystemLogger(logger.getLoggerName()) ? LoggerType.SYSTEM_LOGGER : LoggerType.USER_LOGGER );
         yukonLoggersValidator.validate(logger, result);
         
-        if (result.hasErrors()) {
+        if (result.hasErrors() || invalidDate) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            addModelAttributes(model, logger);
+            addModelAttributes(model, logger, specifiedDateTime);
             return "config/addLoggerPopup.jsp";
         }
         try {
@@ -109,7 +129,7 @@ public class YukonLoggersController {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 BindException error = new BindException(logger, "logger");
                 result = apiControllerHelper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
-                addModelAttributes(model, logger);
+                addModelAttributes(model, logger, specifiedDateTime);
                 return "config/addLoggerPopup.jsp";
             }
         } catch (ApiCommunicationException e) {
@@ -122,10 +142,10 @@ public class YukonLoggersController {
         return JsonUtils.writeResponse(resp, json);
     }
 
-    private void addModelAttributes(ModelMap model, YukonLogger logger) {
+    private void addModelAttributes(ModelMap model, YukonLogger logger, Boolean specifiedDateTime) {
         model.addAttribute("loggerLevels", LoggerLevel.values());
         model.addAttribute("now", new Date());
-        model.addAttribute("specifiedDateTime", logger.getExpirationDate() != null);
+        model.addAttribute("specifiedDateTime", specifiedDateTime);
         boolean allowDateTimeSelection = !SystemLogger.isSystemLogger(logger.getLoggerName());
         model.addAttribute("allowDateTimeSelection", allowDateTimeSelection);
         model.addAttribute("isEditMode", logger.getLoggerId() != -1);
@@ -144,9 +164,12 @@ public class YukonLoggersController {
 
             if (loggerResponse.getStatusCode() == HttpStatus.OK) {
                 logger = (YukonLogger) loggerResponse.getBody();
-                addModelAttributes(model, logger);
+                addModelAttributes(model, logger, logger.getExpirationDate() != null);
+                if (logger.getExpirationDate() == null) {
+                    logger.setExpirationDate(new Date());
+                }
                 model.addAttribute("isEditMode", true);
-              }
+            }
         } catch (ApiCommunicationException e) {
             log.error(e);
         } catch (RestClientException ex) {
@@ -157,7 +180,6 @@ public class YukonLoggersController {
 
     private ResponseEntity<? extends Object> save(YukonLogger logger, Boolean specifiedDateTime,
             HttpServletRequest request, YukonUserContext userContext) {
-        
         if (logger.getLoggerId() == -1) {
             String url = apiControllerHelper.findWebServerUrl(request, userContext, ApiURL.loggerUrl);
             return apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
@@ -183,8 +205,8 @@ public class YukonLoggersController {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", loggerName));
         } else {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String inValidId = accessor.getMessage(baseKey + "inValidId");
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", loggerName, inValidId));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", loggerName,
+                    accessor.getMessage(baseKey + "invalidId")));
         }
         return redirectLink;
     }
@@ -282,5 +304,12 @@ public class YukonLoggersController {
         public String getFormatKey() {
             return "yukon.web.modules.adminSetup.config.loggers." + name();
         }
+    }
+    
+    @InitBinder
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        PropertyEditor fullDateTimeEditor =
+                datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATE, userContext);
+            binder.registerCustomEditor(Date.class, fullDateTimeEditor);
     }
 }

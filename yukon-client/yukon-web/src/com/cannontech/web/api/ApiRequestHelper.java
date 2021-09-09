@@ -119,6 +119,8 @@ public class ApiRequestHelper {
         });
         paramTypeRefMap.put(YukonLogger.class, new ParameterizedTypeReference<List<YukonLogger>>() {
         });
+        paramTypeRefMap.put(Object.class, new ParameterizedTypeReference<List<Object>>() {
+        });
     }
     
     @SuppressWarnings("rawtypes")
@@ -144,6 +146,7 @@ public class ApiRequestHelper {
         });
         paramTypeObjectRefMap.put(VirtualDeviceBaseModel.class, new ParameterizedTypeReference<PaginatedResponse<VirtualDeviceBaseModel<?>>>() {
         });
+        paramTypeObjectRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<SearchResults<DeviceBaseModel>>() {});
     }
 
     /**
@@ -203,7 +206,6 @@ public class ApiRequestHelper {
             throws RestClientException {
         HttpEntity<?> requestEntity = getRequestEntity(userContext, request, requestObject);
         ResponseEntity<List<? extends Object>> response = apiRestTemplate.exchange(url, method, requestEntity, paramTypeRefMap.get(responseType));
-            ;
         return response;
     }
 

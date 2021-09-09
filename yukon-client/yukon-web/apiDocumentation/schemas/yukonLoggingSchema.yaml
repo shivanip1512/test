@@ -3,23 +3,23 @@ Logger:
   required:
     - type
     - level
-    - name
+    - loggerName
+    - loggerType
   type: object
   properties:
-    id:
-      type: integer
-      default: -1
-    type:
+    loggerName:
         type: string
-        default: 
-        description: 'Logger Type of Yukon Logger.'
+        description: 'Name of the logger.'
+        maxLength: 200
+    loggerType:
+        type: string
+        description: 'Type of the logger.'
         enum:
           - SYSTEM_LOGGER
           - USER_LOGGER
     level:
         type: string
-        default: OFF
-        description: 'Logger level of Yukon Logger.'
+        description: 'Logging level of the logger.'
         enum:
            - OFF
            - FATAL
@@ -28,64 +28,92 @@ Logger:
            - INFO
            - DEBUG
            - TRACE
-    name:
-        type: string
-        description: 'Yukon Logger Name.'
-        maxLength: 200
     expirationDate:
         type: Date
-        description: 'Expiration Date of Yukon Logger.'
+        description: 'Expiration date of the logger in MM/dd/yyyy format. Only applicable to USER_LOGGER.'
     notes:
         type: string
         maxLength: 255
-        description: 'Notes'
-id:
-  title: id
+        description: 'Notes for the logger.'
+loggerId:
+  title: loggerId
   required:
-    - id
+    - loggerId
   type: object
   properties:
-    id:
-      type: integer
-      description: 'Unique identifier for Logger.'
-      
-Logger List:
-  type: object
-  properties:
-    id:
+    loggerId:
       type: integer
       description: 'Unique identifier for the logger.'
-        
+      
+Logger Response Schema:
+  type: object
+  properties:
+    loggerId:
+      type: integer
+      description: 'Unique identifier for the logger.'
+    loggerName:
+       type: string
+       description: 'Name of the logger.'
+    loggerType:
+       type: string
+       description: 'Type of the logger.'
+       enum:
+          - SYSTEM_LOGGER
+          - USER_LOGGER
+    level:
+       type: string
+       description: 'Logging level of the logger.'
+       enum:
+           - OFF
+           - FATAL
+           - ERROR
+           - WARN
+           - INFO
+           - DEBUG
+           - TRACE
+    expirationDate:
+       type: Date
+       description: 'Expiration date of the logger in MM/dd/yyyy format. Only applicable to USER_LOGGER.'
+    notes:
+       type: string
+       description: 'Notes for the logger.'
 
 components:
   examples:
-    Logger:
+    Logger Request:
       value:
         loggerName: com.cannontech.test
         loggerType: USER_LOGGER
         level: ERROR
         expirationDate: 08/27/2021
-        notes: Sample logger
-    id:
+        notes: Sample notes
+    Logger Response:
       value:
-        id: 11
+        loggerId: 1
+        loggerName: com.cannontech.test
+        loggerType: USER_LOGGER
+        level: ERROR
+        expirationDate: 08/27/2021
+        notes: Sample notes
+    loggerId:
+      value:
+        loggerId: 11
     List of Logger:
       value:
-          - id: 1
+          - loggerId: 1
             loggerName: com.cannontech.test1
             loggerType: USER_LOGGER
             level: ERROR
             expirationDate: 08/27/2021
-            notes: Sample logger
-          - id: 2
+            notes: Sample notes
+          - loggerId: 2
             loggerName: com.cannontech.test2
             loggerType: USER_LOGGER
             level: ERROR
             expirationDate: 09/27/2021
-            notes: Sample logger
-          - id: 3
-            loggerName: com.cannontech.test3
-            loggerType: USER_LOGGER
+            notes: Sample notes
+          - loggerId: 3
+            loggerName: com.cannontech
+            loggerType: SYSTEM_LOGGER
             level: ERROR
-            expirationDate: 10/27/2021
-            notes: Sample logger
+            notes: Sample notes

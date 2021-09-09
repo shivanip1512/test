@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData, #cancelDemandResponse, #getGroup, #generateDiscrepency').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData, #cancelDemandResponse, #getGroup, #generateDiscrepency, #paginatedResponse').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -53,6 +53,9 @@
              } break;
              case 'generateDiscrepency' : {
                  enabledSelectedOption(generateDiscrepency, generateAllDiscrepencyOp);
+             } break;
+             case 'paginatedResponse' : {
+                 enabledSelectedOption(paginatedResponse, paginatedResponseOp);
              } break;
          }
          });
@@ -137,6 +140,12 @@
                             <label> 
                                 <input id="generateDiscrepency" type="checkbox" name="generateDiscrepency"> 
                                 <i:inline key=".generateDiscrepency" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="paginatedResponse" type="checkbox" name="paginatedResponse"> 
+                                <i:inline key=".paginatedResponse" />
                             </label>
                         </li>
                     </ul>
@@ -233,6 +242,14 @@
                                     </c:forEach>
                                 </select>
                                 <input type="hidden" name="generateAllDiscrepencyOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="paginatedResponseOp" name="paginatedResponseOp" disabled="disabled">
+                                    <c:forEach var="paginatedStatus" items="${paginatedStatus}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${paginatedStatus}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="paginatedStatusOp" value="0" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>

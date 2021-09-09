@@ -57,7 +57,7 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
                 boolean decryptValueFailed = false;
                 GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
                 Object value = InputTypeFactory.convertPropertyValue(type.getType(), rs.getString("Value"));
-                if (value != null && type.isSensitiveInformation()) {
+                if (value != null && (type.isSensitiveInformation() || type.isNonViewableSensitiveInformation())) {
                     try {
                         if (GlobalSettingCryptoUtils.isEncrypted((String) value)) {
                             value = GlobalSettingCryptoUtils.decryptValue((String) value);

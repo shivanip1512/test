@@ -417,12 +417,14 @@
 
     <entry key="yukon.web.modules.adminSetup.config.loggers.loggerName">Logger Name</entry>
     <entry key="yukon.web.modules.adminSetup.config.loggers.loggerLevel">Logger Level</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggerType">Logger Type</entry>
     <entry key="yukon.web.modules.adminSetup.config.loggers.expirationDate">Expiration</entry>
     <entry key="yukon.web.modules.adminSetup.config.loggers.notes">Notes</entry>
 
     <entry key="yukon.web.modules.adminSetup.config.loggers.viewNote">View Note</entry>
     <entry key="yukon.web.modules.adminSetup.config.loggers.noteText.placeHolder">Note Text (255 characters max)</entry>
     <entry key="yukon.web.modules.adminSetup.config.loggers.loggersLabel">Logger(s)</entry>
-    <entry key="yukon.web.modules.adminSetup.config.loggers.inValidId">Invalid Logger Id</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.invalidId">Invalid Logger Id</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.invalidDate">Expiration must have a valid date.</entry>
 
 </properties>

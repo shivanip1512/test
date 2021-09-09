@@ -252,12 +252,20 @@ static const std::map<std::string, DeviceTypes> device_lookups
 
     { "rfn-420frx",         TYPE_RFN420FRX },
     { "rfn-420frd",         TYPE_RFN420FRD },
+    //  RFN-500 Focus AX (gen 1)
     { "rfn-520fax",         TYPE_RFN520FAX },
     { "rfn-520frx",         TYPE_RFN520FRX },
     { "rfn-520faxd",        TYPE_RFN520FAXD },
     { "rfn-520frxd",        TYPE_RFN520FRXD },
     { "rfn-530fax",         TYPE_RFN530FAX },
     { "rfn-530frx",         TYPE_RFN530FRX },
+    //  RFN-500 Focus AXe (gen 2)
+    { "rfn-520faxe",        TYPE_RFN520FAXE },
+    { "rfn-520frxe",        TYPE_RFN520FRXE },
+    { "rfn-520faxed",       TYPE_RFN520FAXED },
+    { "rfn-520frxed",       TYPE_RFN520FRXED },
+    { "rfn-530faxe",        TYPE_RFN530FAXE },
+    { "rfn-530frxe",        TYPE_RFN530FRXE },
 
     { "rfn-410cl",          TYPE_RFN410CL },
     { "rfn-420cl",          TYPE_RFN420CL },
@@ -742,12 +750,21 @@ bool resolveIsDeviceTypeSingle(INT Type)
         TYPE_RFN430SL3,
         TYPE_RFN430SL4,
         TYPE_RFN510FL,
+        //  RFN-500 Focus AX (gen 1)
         TYPE_RFN520FAX,
         TYPE_RFN520FRX,
         TYPE_RFN520FAXD,
         TYPE_RFN520FRXD,
         TYPE_RFN530FAX,
         TYPE_RFN530FRX,
+        //  RFN-500 Focus AX (gen 1)
+        TYPE_RFN520FAXE,
+        TYPE_RFN520FRXE,
+        TYPE_RFN520FAXED,
+        TYPE_RFN520FRXED,
+        TYPE_RFN530FAXE,
+        TYPE_RFN530FRXE,
+        //  RFN-500 S4
         TYPE_RFN530S4X,
         TYPE_RFN530S4EAX,
         TYPE_RFN530S4EAXR,

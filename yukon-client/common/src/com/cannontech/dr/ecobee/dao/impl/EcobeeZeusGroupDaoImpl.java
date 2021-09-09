@@ -14,6 +14,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.dr.ecobee.dao.EcobeeZeusGroupDao;
 import com.cannontech.dr.ecobee.service.EcobeeZeusGroupService;
 import com.google.common.collect.ArrayListMultimap;
@@ -21,7 +22,8 @@ import com.google.common.collect.Multimap;
 
 public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
 
-    @Autowired YukonJdbcTemplate jdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private DatabaseVendorResolver databaseVendorResolver;
 
     @Override
     public List<String> getZeusGroupIdsForLmGroup(int yukonGroupId, int programId) {
@@ -100,7 +102,9 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         sql.append("SELECT EcobeeEventId FROM LMGroupZeusMapping");
         sql.append("WHERE YukonGroupId").eq(yukonGroupId);
         sql.append("AND EcobeeEventId IS NOT NULL");
-        sql.append("AND EcobeeEventId !=''");
+        if (databaseVendorResolver.getDatabaseVendor().isSqlServer()) {
+            sql.append("AND EcobeeEventId !=''");
+        }
         return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
 
