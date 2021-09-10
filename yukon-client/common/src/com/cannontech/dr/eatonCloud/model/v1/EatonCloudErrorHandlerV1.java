@@ -27,10 +27,18 @@ public class EatonCloudErrorHandlerV1 implements ResponseErrorHandler {
         String body = "";
         try {
             body = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
-            exception = new EatonCloudCommunicationExceptionV1(status.value(), parseErrorMessage(body));
-            log.error(
-                    new GsonBuilder().setPrettyPrinting().create().toJson(exception.getErrorMessage()),
-                    exception);
+            EatonCloudErrorV1 error = parseErrorMessage(body);
+            if (error == null) {
+                exception = new EatonCloudCommunicationExceptionV1(status.value());
+                log.error(
+                        "Unable to parse error for Status: {} Error Response Body(Converted to string): {} Error Response Body(Recieved from device): {}",
+                        status, body, response.getBody());
+            } else {
+                exception = new EatonCloudCommunicationExceptionV1(status.value(), error);
+                log.error(
+                        new GsonBuilder().setPrettyPrinting().create().toJson(exception.getErrorMessage()),
+                        exception);
+            }
         } catch (Exception e) {
             exception = new EatonCloudCommunicationExceptionV1(status.value());
             log.error("Status: {} Error Response Body: {}", status, body, e);
