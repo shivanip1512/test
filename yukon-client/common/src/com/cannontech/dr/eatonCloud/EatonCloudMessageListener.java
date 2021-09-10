@@ -294,6 +294,10 @@ public class EatonCloudMessageListener {
     private void sendRestoreCommands(Set<Integer> devices, LMEatonCloudStopCommand command, Integer eventId) {
         Map<String, Object> params = getRestoreParams(command, eventId);
         Map<Integer, String> guids = deviceDao.getGuids(devices);
+        
+        log.info("Sending LM Eaton Cloud Restore Command:{} devices:{} event id:{}", command, devices.size(), eventId);
+        
+        AtomicInteger totalFailed = new AtomicInteger(0);
         guids.forEach((deviceId, guid) -> {
             String deviceName = dbCache.getAllDevices().stream()
                     .filter(d -> d.getLiteID() == deviceId)
@@ -306,10 +310,13 @@ public class EatonCloudMessageListener {
                 eatonCloudCommunicationService.sendCommand(guid, new EatonCloudCommandRequestV1("LCR_Control", params));
                 eatonCloudEventLogService.sendRestore(deviceName, guid);
             } catch (Exception e) {
+                totalFailed.incrementAndGet();
                 log.error("Error sending restore command to device id:{} eventId:{} name:{} relay:{}", deviceId,
                         eventId, deviceName, command.getVirtualRelayId());
             }
         });
+        
+        log.info("Finished sending LM Eaton Cloud Restore Command:{} devices:{} event id:{} failed:{}", command, devices.size(), eventId, totalFailed.intValue());
     }
 
     /**
