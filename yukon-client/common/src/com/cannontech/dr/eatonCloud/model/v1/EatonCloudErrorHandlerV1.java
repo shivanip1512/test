@@ -31,7 +31,7 @@ public class EatonCloudErrorHandlerV1 implements ResponseErrorHandler {
             if (error == null) {
                 exception = new EatonCloudCommunicationExceptionV1(status.value());
                 log.error(
-                        "Unable to parse error for Status: {} Error Response Body(Converted to string): {} Error Response Body(Recieved from device): {}",
+                        "Unable to parse error for Status: {} Error Response Body(Converted to string): {} Error Response Body(Received from device): {}",
                         status, body, response.getBody());
             } else {
                 exception = new EatonCloudCommunicationExceptionV1(status.value(), error);
