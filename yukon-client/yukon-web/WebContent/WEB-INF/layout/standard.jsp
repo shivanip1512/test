@@ -85,7 +85,12 @@
             <!-- Needed to render React Navigation menu -->
             <c:set var="path" value='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}'/>
             <c:set var="reactPath" value='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}'/>
-            <div id="navigation" style="position:sticky;top:0;z-index:1200" data-path="${path}" data-react-path="${reactPath}"></div>
+            <div id="navigation" style="position:sticky;top:0;z-index:1200;min-height:60px" data-path="${path}" data-react-path="${reactPath}"></div>
+
+                
+            <!-- Renders React Navigation Menu -->
+    		<script src="<c:url value="/resources/js/lib/react/react.production.min.js"/>"></script>
+    		<script src="<c:url value="/resources/js/common/react/yukon.react.navigationContainer.js"/>"></script>
             
             <header class="yukon-header">
 <%--                 <div class="toolbar-outer">
@@ -290,10 +295,6 @@
         data-width="600" data-load-event="yukon:notifications:load"
         data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"></div>
     </c:if>
-    
-    <!-- Renders React Navigation Menu -->
-    <script src="<c:url value="/resources/js/lib/react/react.production.min.js"/>"></script>
-    <script src="<c:url value="/resources/js/common/react/yukon.react.navigationContainer.js"/>"></script>
     
 </body>
 

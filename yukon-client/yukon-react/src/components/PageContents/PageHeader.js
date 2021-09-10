@@ -8,18 +8,21 @@ import { useTheme } from '@material-ui/core/styles';
 import { Spacer } from '@pxblue/react-components';
 
 import StarBorderIcon from '@material-ui/icons/StarBorder';
-import SettingsIcon from '@material-ui/icons/Settings';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+
+import Button from '../controls/Button';
 
 import { CLEAR_FLASH_ERRORS, CLEAR_FLASH_SUCCESS } from '../../redux/actions/actionTypes';
 
 const PageHeader = (props) => {
 
-    const { pageTitle, breadcrumbs, actionMenuOptions } = props;
+    const { pageTitle, breadcrumbs, actionButtons, actionMenuOptions } = props;
 
     PageHeader.propTypes = {
         pageTitle: PropTypes.string.isRequired,         //i18n function to get title for the page
         breadcrumbs: PropTypes.array.isRequired,        //array of breadcrumbs, each should have link and title defined
-        actionMenuOptions: PropTypes.array              //array of action menu items, each should have title and icon defined
+        actionButtons: PropTypes.array,                 //array of action buttons, each should have label and optional icon defined
+        actionMenuOptions: PropTypes.array              //array of action menu items, each should have title and optional icon defined
     }
 
     const dispatch = useDispatch();
@@ -37,6 +40,16 @@ const PageHeader = (props) => {
     const handleClearFlashSuccess = () => dispatch({type: CLEAR_FLASH_SUCCESS});
 
     let actionMenu = <div></div>;
+    let actionButtonContent = <div></div>;
+
+    if (actionButtons != null) {
+        actionButtonContent = 
+        <div style={{float: 'right'}}>
+            {actionButtons.map((button) => 
+                <Button label={button.label} variant="outlined" color="primary" icon={button.icon} style={{marginRight: theme.spacing(2)}}/>
+            )}
+        </div>
+    }
 
     if (actionMenuOptions != null) {
         actionMenu =
@@ -46,7 +59,7 @@ const PageHeader = (props) => {
                     aria-haspopup="true"
                     variant="contained"
                     onClick={handleClick}>
-                    <SettingsIcon/>
+                    <MoreVertIcon/>
                 </IconButton>
                 <Menu
                     id="customized-menu"
@@ -85,6 +98,7 @@ const PageHeader = (props) => {
             <div style={{display: 'flex', marginTop: theme.spacing(2), alignItems: 'center'}}>
                 <StarBorderIcon/><Typography variant="h6" style={{paddingLeft: theme.spacing(2)}}>{pageTitle}</Typography>
                 <Spacer flex={1} />
+                {actionButtonContent}
                 {actionMenu}
             </div>
             { flashErrors 

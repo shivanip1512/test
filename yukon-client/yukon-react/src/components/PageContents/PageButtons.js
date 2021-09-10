@@ -21,9 +21,10 @@ const PageButtons = (props) => {
                 return <Button 
                             key={index}
                             label={button.label}
-                            color={index === 0 ? 'primary' : 'default'}
+                            color='primary'
                             onClick={button.onClick}
                             href={button.href}
+                            variant={index === 0 ? 'contained' : 'outlined'}
                             style={{marginRight: theme.spacing(2)}}/>
             })}
         </div>

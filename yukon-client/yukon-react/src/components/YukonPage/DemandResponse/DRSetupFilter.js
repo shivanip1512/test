@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Divider, InputLabel } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { useTheme } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
 
 import PageHeader from '../../PageContents/PageHeader';
 import PageContents from '../../PageContents/PageContents';
@@ -50,8 +51,8 @@ const DRSetupFilter = () => {
         { link: '/dr/home', title: i18n('yukon.web.menu.dr') }
     ];
 
-    const actionMenuOptions = [
-        { icon: <AddIcon/>, title: "Create" }
+    const actionButtons = [
+        { icon: <AddIcon/>, label: "Create" }
     ];
 
     const drTypes = [
@@ -170,17 +171,20 @@ const DRSetupFilter = () => {
     return (
         pageKeysReceived ?
             <div>
-                <PageHeader breadcrumbs={breadcrumbs} pageTitle={i18n('yukon.web.menu.dr.setup')} actionMenuOptions={actionMenuOptions}/>
+                <PageHeader breadcrumbs={breadcrumbs} pageTitle={i18n('yukon.web.menu.dr.setup')} actionButtons={actionButtons}/>
                 <PageContents>
-                    <Divider/>
-                    <InputLabel style={{display: 'inline-block', paddingTop: theme.spacing(1)}}>Filter By:</InputLabel>
-                    <Dropdown value={drType} style={{marginLeft: theme.spacing(2), marginBottom: theme.spacing(1)}} 
-                        wrapperStyle={{display: 'inline-block', marginBottom: theme.spacing(0)}} 
-                        onChange={handleChangeType} items={drTypes}/>
-                    <Input label={i18n('yukon.common.name')} value={name} style={{margin: theme.spacing(1)}} onChange={handleChangeName} validationSchema={validationSchema.name}/>
-                    <Divider/>
+                    <Paper style={{padding: theme.spacing(4)}}>
+                        <Divider/>
+                        <InputLabel style={{display: 'inline-block', paddingTop: theme.spacing(1)}}>Filter By:</InputLabel>
+                        <Dropdown value={drType} style={{marginLeft: theme.spacing(2), marginBottom: theme.spacing(1)}} 
+                            wrapperStyle={{display: 'inline-block', marginBottom: theme.spacing(0)}} 
+                            onChange={handleChangeType} items={drTypes}/>
+                        <Input label={i18n('yukon.common.name')} value={name} style={{margin: theme.spacing(1), width: '20%'}} 
+                            onChange={handleChangeName} validationSchema={validationSchema.name}/>
+                        <Divider/>
 
-                    {drFilterTable}
+                        {drFilterTable}
+                    </Paper>
                 </PageContents>
             </div>
         : null

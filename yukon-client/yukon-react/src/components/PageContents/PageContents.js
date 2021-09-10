@@ -7,7 +7,7 @@ const PageContents = (props) => {
     const theme = useTheme();
 
     return (
-        <div style={{margin: theme.spacing(3)}}>
+        <div style={{...props.style, margin: theme.spacing(3)}}>
             {props.children}
         </div>
     )

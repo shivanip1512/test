@@ -8,6 +8,7 @@ import NavigationDrawer from './components/Navigation/NavigationDrawer';
 import DRSetupFilterPage from './components/YukonPage/DemandResponse/DRSetupFilter';
 import DRTestPage from './components/YukonPage/DemandResponse/DRTestPage';
 import CommChannelCreatePage from './components/YukonPage/Assets/CommChannelCreate';
+import DashboardPage from './components/YukonPage/Dashboards/Dashboard';
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -27,6 +28,7 @@ export function App() {
             <DrawerLayout drawer={<NavigationDrawer yukonPath={window.configs.YUKON_API_URL} reactPath={window.configs.YUKON_REACT_URL} />}>
                 <NavigationMenu yukonPath={window.configs.YUKON_API_URL} reactPath={window.configs.YUKON_REACT_URL}/>
                 <Switch>
+                    <Route path="/yukon-ui/dashboard" component={DashboardPage}/>
                     <Route path="/yukon-ui/dr/setup/list" component={DRSetupFilterPage}/>
                     <Route path="/yukon-ui/dr/setup/test" component={DRTestPage}/>
                     <Route path="/yukon-ui/stars/device/commChannel/create" component={CommChannelCreatePage}/>

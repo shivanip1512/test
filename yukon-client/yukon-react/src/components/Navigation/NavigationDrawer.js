@@ -7,12 +7,12 @@ import Divider from '@material-ui/core/Divider';
 
 /*Icons*/
 import MenuIcon from '@material-ui/icons/Menu';
-import HomeIcon from '@material-ui/icons/Home';
+import DashboardIcon from '@material-ui/icons/Dashboard';
 import PowerIcon from '@material-ui/icons/Power';
 import UtilityIcon from '@pxblue/icons-mui/Utility';
 import RepeatIcon from '@material-ui/icons/Repeat';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import HelpIcon from '@material-ui/icons/Help';
+import DeviceIcon from '@pxblue/icons-mui/Device';
+import SupportIcon from '@pxblue/icons-mui/Support';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import ExitIcon from '@material-ui/icons/ExitToApp';
 import BuildIcon from '@material-ui/icons/Build';
@@ -100,7 +100,12 @@ const NavigationDrawer = (props) => {
                             itemID="1"
                             title="Dashboard"
                             onClick={() => {onNavItemClick("/dashboard")}}
-                            icon={<HomeIcon/>} />
+                            icon={<DashboardIcon/>} />
+                        <DrawerNavItem
+                            itemID="1-1"
+                            title="Dashboard - React"
+                            onClick={() => {onNavItemClick("/yukon-ui/dashboard")}}
+                            icon={<DashboardIcon/>} />
                         <DrawerNavItem
                             itemID="2"
                             title="AMI" 
@@ -139,7 +144,7 @@ const NavigationDrawer = (props) => {
                             itemID="17" 
                             title="Assets" 
                             onClick={() => {onNavItemClick("/stars/operator/inventory/home")}}
-                            icon={<ViewModuleIcon/>}>
+                            icon={<DeviceIcon/>}>
                             <DrawerNavItem
                                 itemID="17-33"
                                 title="Dashboard"
@@ -175,7 +180,7 @@ const NavigationDrawer = (props) => {
                             itemID="19" 
                             title="Support"
                             onClick={() => {onNavItemClick("/support")}} 
-                            icon={<HelpIcon/>}/>                    
+                            icon={<SupportIcon/>}/>                    
                         <DrawerNavItem 
                             itemID="20" 
                             title="Site Map"

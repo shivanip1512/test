@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { useTheme } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+
 import PageHeader from '../../PageContents/PageHeader';
 import PageContents from '../../PageContents/PageContents';
 import Input from '../../controls/Input';
@@ -19,6 +22,7 @@ import { i18n, getPagei18nValues } from '../../../utils/Helpers';
 const CommChannelCreate = () => {
 
     const dispatch = useDispatch();
+    const theme = useTheme();
     const [pageKeysReceived, setPageKeysReceived] = useState(false);
 
     useEffect(() => {
@@ -126,14 +130,16 @@ const CommChannelCreate = () => {
             <div>
                 <PageHeader breadcrumbs={breadcrumbs} pageTitle={i18n('yukon.web.modules.operator.commChannel.create')}/>
                 <PageContents>
-                    <Input label={i18n("yukon.common.name")} name="name" value={name} width={400} maxLength={60}
-                        onChange={handleNameChanged} validationSchema={validationSchema.name}/>
-                    <Dropdown value={type} name="type" label={i18n('yukon.common.type')} onChange={handleTypeChanged} items={types}/>
-                    <Input label={i18n("yukon.web.modules.operator.commChannelInfoWidget.portNumber")} name="portNumber" value={port} maxLength={5} 
-                        onChange={handlePortChanged} validationSchema={validationSchema.port}/>
-                    <Dropdown value={baudRate} name="baudRate" label={i18n('yukon.web.modules.operator.commChannelInfoWidget.baudRate')} onChange={handleBaudRateChanged} items={baudRates}/>
-                    <ToggleButtons value={enabled} name="enabled" label={i18n('yukon.common.status')} onChange={handleStatusChanged} buttons={statusButtons}/>
-                    <PageButtons buttons={pageButtons}/>
+                    <Paper style={{padding: theme.spacing(4)}}>
+                        <Input label={i18n("yukon.common.name")} name="name" value={name} maxLength={60} style={{width: '30%'}}
+                            onChange={handleNameChanged} validationSchema={validationSchema.name}/>
+                        <Dropdown value={type} name="type" label={i18n('yukon.common.type')} onChange={handleTypeChanged} items={types}/>
+                        <Input label={i18n("yukon.web.modules.operator.commChannelInfoWidget.portNumber")} name="portNumber" value={port} maxLength={5} 
+                            onChange={handlePortChanged} validationSchema={validationSchema.port}/>
+                        <Dropdown value={baudRate} name="baudRate" label={i18n('yukon.web.modules.operator.commChannelInfoWidget.baudRate')} onChange={handleBaudRateChanged} items={baudRates}/>
+                        <ToggleButtons value={enabled} name="enabled" label={i18n('yukon.common.status')} onChange={handleStatusChanged} buttons={statusButtons}/>
+                        <PageButtons buttons={pageButtons}/>
+                    </Paper>
                 </PageContents>
             </div>
         : null

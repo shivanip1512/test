@@ -10,13 +10,12 @@ import { checkForApiValidationError, displayApiValidationError } from '../../uti
 
 const Input = (props) => {
 
-    const { label, name, value, width, maxLength, style, onChange, validationSchema } = props;
+    const { label, name, value, maxLength, style, onChange, validationSchema } = props;
 
     Input.propTypes = {
         label: PropTypes.string,         //i18n key for the label to give the Input
         name: PropTypes.string,             //name for Input, should match field name for validation errors from API
         value: PropTypes.string,            //default value for Input
-        width: PropTypes.number,            //width for Input
         maxLength: PropTypes.number,        //max length to allow for Input
         style: PropTypes.object,            //additional styling for Input
         onChange: PropTypes.func,           //function to call on change of value
@@ -77,7 +76,7 @@ const Input = (props) => {
             variant="filled"
             size="small"
             value={value}
-            style={{ width: width + 'px', marginBottom: theme.spacing(2), ...style }}
+            style={{ marginBottom: theme.spacing(2), ...style }}
             onChange={onTextChangedHandler}
             error={checkForFieldError()}
             helperText={getHelperText()}
