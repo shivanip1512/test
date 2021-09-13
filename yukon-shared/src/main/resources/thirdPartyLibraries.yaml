@@ -4983,15 +4983,15 @@ Network Manager :
   - filename : jsp-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 6.0.18
+    version : 9.0.50
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api/"
-    md5 : 8c0da0161ff80f6d3b4122974f1acc7e
-    sha1 : 8c9517ff993f2a71537d5e2973e9ae02dd1d5fdd
-    updated : 2009-02-10
-    jira : none
+    md5 : c9de8ca8a92acb69e0d5dee0bc16fa11
+    sha1 : 81101360d68698394b2ea15e734e1cee56522d8f
+    updated : 2021-09-13
+    jira : NM-2169
     notes : NM-1642 - do not update this jar with Tomcat upgrade, avoid incompatibility issue with Jakata Struts page redirect.
     
   - filename : joda-time-2.10.8.jar
@@ -5655,15 +5655,15 @@ Network Manager :
   - filename : tomcat-juli.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.50
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.37"
-    md5 : 11972e561822ab613e1a0b5310c5fa12
-    sha1 : 5112dae6d0295717ab8fcc9b100af612d5486663
-    updated : 2020-09-02
-    jira : NM-1732
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.50"
+    md5 : 6ca7c3d023775de6a9169c2045802a5f
+    sha1 : 8f667854088e3b867302ff939d7d1997d49878e2
+    updated : 2021-09-13
+    jira : NM-2169
     notes : 
 
   - filename : tomcat-util-scan.jar
