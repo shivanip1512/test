@@ -51,9 +51,9 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
         int deviceId = command.getDevice().getDeviceID();
         String deviceName = command.getDevice().getDeviceLabel();
         String deviceGuid = deviceDao.getGuid(deviceId);
-        Map<String, Object> shedParams = getShedParams(command);
         switch (command.getType()) {
         case SHED:
+            Map<String, Object> shedParams = getShedParams(command);
             checkOptout(command);
             sendRequest(command, shedParams);
             eatonCloudEventLogService.sendShed(deviceName, 
