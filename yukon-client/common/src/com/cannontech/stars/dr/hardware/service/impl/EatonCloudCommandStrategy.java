@@ -111,7 +111,7 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
 
         params.put(CommandParam.VRELAY.getParamName(), relay - 1);
         params.put(CommandParam.CYCLE_PERCENT.getParamName(), 100);
-        params.put(CommandParam.CYCLE_PERIOD.getParamName(), (duration.getMillis() / 1000) / 60);
+        params.put(CommandParam.CYCLE_PERIOD.getParamName(), Math.toIntExact(duration.getStandardMinutes()));
         params.put(CommandParam.CYCLE_COUNT.getParamName(), 1);
         params.put(CommandParam.START_TIME.getParamName(), System.currentTimeMillis() / 1000);
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
