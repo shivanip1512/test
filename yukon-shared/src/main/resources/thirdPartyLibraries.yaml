@@ -4983,15 +4983,15 @@ Network Manager :
   - filename : jsp-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 6.0.18
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api/"
-    md5 : c9de8ca8a92acb69e0d5dee0bc16fa11
-    sha1 : 81101360d68698394b2ea15e734e1cee56522d8f
-    updated : 2021-09-13
-    jira : NM-2169
+    md5 : 8c0da0161ff80f6d3b4122974f1acc7e
+    sha1 : 8c9517ff993f2a71537d5e2973e9ae02dd1d5fdd
+    updated : 2009-02-10
+    jira : none
     notes : NM-1642 - do not update this jar with Tomcat upgrade, avoid incompatibility issue with Jakata Struts page redirect.
     
   - filename : joda-time-2.10.8.jar
