@@ -160,7 +160,7 @@ public class EimJavaLibraryTest {
         "tomcat-i18n-zh-CN.jar",
         "tomcat-jdbc.jar",
         "tomcat-jni.jar",
-        "tomcat-juli-9.0.41.jar",
+        "tomcat-juli-9.0.50.jar",
         "tomcat-util-scan.jar",
         "tomcat-util.jar",
         "tomcat-websocket.jar",
