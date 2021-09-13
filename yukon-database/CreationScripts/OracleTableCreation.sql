@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/20/2021 1:44:33 PM                         */
+/* Created on:     9/13/2021 10:31:39 AM                        */
 /*==============================================================*/
 
 
@@ -8940,8 +8940,8 @@ INSERT INTO State VALUES(-9,-1, 'Any', 2, 6 , 0);
 INSERT INTO State VALUES(-9, 0, 'Open', 0, 6 , 0);
 INSERT INTO State VALUES(-9, 1, 'Closed', 1, 6 , 0);
 INSERT INTO State VALUES(-9, 2, 'Unknown', 2, 6 , 0);
-INSERT INTO State VALUES(-8, 0, 'Inactive', 0, 6, 0);
-INSERT INTO State VALUES(-8, 1, 'Active', 2, 6, 0);
+INSERT INTO State VALUES(-8, 0, 'Inactive', 1, 6, 0);
+INSERT INTO State VALUES(-8, 1, 'Active', 0, 6, 0);
 INSERT INTO State VALUES(-7, 0, 'Normal',0,6,0);
 INSERT INTO State VALUES(-7, 1, 'NonCriticalFailure',1,6,0);
 INSERT INTO State VALUES(-7, 2, 'CriticalFailure',2,6,0);
