@@ -51,4 +51,9 @@ public class ConfigCryptoUtilsTest {
                 "Encrypted string was changed unexpectedly during encryption/decryption");
     }
 
+    @Test 
+    public void test_encrypt_string_with_null() throws CryptoException, IOException, JDOMException, DecoderException {
+        String encryptedString = ConfigCryptoUtils.encryptValue(null, null);
+        assertTrue(encryptedString == null);
+    }
 }
