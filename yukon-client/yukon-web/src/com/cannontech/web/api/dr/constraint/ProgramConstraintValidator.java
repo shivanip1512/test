@@ -25,16 +25,16 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
     protected void doValidation(ProgramConstraint programConstraint, Errors errors) {
         // Mandatory, max length(60) and special character check for name.
         lmValidatorHelper.validateName(programConstraint.getName(), errors, "Name");
-        if(!errors.hasFieldErrors("name")) {
+        if (!errors.hasFieldErrors("name")) {
             dbCache.getAllLMProgramConstraints()
-            .stream()
-            .filter(constraint-> constraint.getConstraintName().equalsIgnoreCase(programConstraint.getName()))
-            .findAny()
-            .ifPresent(liteConstraint-> {
-                if (programConstraint.getId()== null || liteConstraint.getLiteID() != programConstraint.getId()) {
-                    errors.rejectValue("name", "yukon.web.modules.dr.setup.error.unique", new Object[] {"Name"}, "");
-                }
-            });
+                    .stream()
+                    .filter(constraint -> constraint.getConstraintName().equalsIgnoreCase(programConstraint.getName()))
+                    .findAny()
+                    .ifPresent(liteConstraint -> {
+                        if (programConstraint.getId() == null || liteConstraint.getLiteID() != programConstraint.getId()) {
+                            errors.rejectValue("name", "yukon.web.modules.dr.setup.error.unique", new Object[] { "Name" }, "");
+                        }
+                    });
         }
         
         if (programConstraint.getSeasonSchedule() == null || programConstraint.getSeasonSchedule().getId() == null) {
