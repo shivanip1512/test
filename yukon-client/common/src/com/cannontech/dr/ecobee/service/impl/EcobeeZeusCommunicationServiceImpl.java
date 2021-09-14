@@ -364,6 +364,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                     parameters.getStartTime(), parameters.getEndTime(), parameters.isMandatory()));
             dutyCycleDr.getEvent().setDutyCyclePercentage(parameters.getDutyCyclePercent());
             dutyCycleDr.getEvent().setRandomTimeSeconds(parameters.getRandomTimeSeconds());
+            dutyCycleDr.getEvent().setEcoplusSelector(EcoplusSelector.ALL);
             if (log.isDebugEnabled()) {
                 try {
                     log.debug("Sending ecobee duty cycle DR with body: {}", JsonUtils.toJson(dutyCycleDr));
@@ -396,7 +397,14 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             ZeusDemandResponseRequest setpointDr = new ZeusDemandResponseRequest(buildZeusEvent(zeusGroupId,
                     parameters.getStartTime(), parameters.getStopTime(), parameters.isMandatory()));
             setpointDr.getEvent().setIsHeatingEvent(parameters.isTempOptionHeat());
-            setpointDr.getEvent().setRelativeTemp((float) parameters.getTempOffset());
+            float relativeTemp = (float) parameters.getTempOffset();
+            setpointDr.getEvent().setRelativeTemp(relativeTemp);
+            if (relativeTemp < 0) {
+                log.info("Relative temperature is negative. Setting ecoplus selector as NON_ECOPLUS for the demand response event.");
+                setpointDr.getEvent().setEcoplusSelector(EcoplusSelector.NON_ECOPLUS);
+            } else {
+                setpointDr.getEvent().setEcoplusSelector(EcoplusSelector.ALL);
+            }
             if (log.isDebugEnabled()) {
                 try {
                     log.debug("Sending ecobee set point DR with body: {}", JsonUtils.toJson(setpointDr));
@@ -474,7 +482,6 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         event.setMessage(eventDisplayMessage);
         event.setSendEmail(settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
 
-        event.setEcoplusSelector(EcoplusSelector.NON_ECOPLUS);
         event.setShowThermostat(true);
         event.setShowWeb(true);
         return event;

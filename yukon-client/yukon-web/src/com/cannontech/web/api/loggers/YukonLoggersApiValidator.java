@@ -52,34 +52,36 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
                 throw new NotFoundException("Logger Id not found");
             }
 
-            // validate logger type
-            YukonApiValidationUtils.checkIfFieldRequired("loggerType", errors, logger.getLevel(),
-                    accessor.getMessage(basekey + "loggerType"));
-            if (!errors.hasFieldErrors("loggerType")) {
-                if (logger.getLoggerType() == LoggerType.SYSTEM_LOGGER) {
-                    if (StringUtils.isEmpty(id)) {
-                        // System logger creation not supported.
-                        if (!SystemLogger.isSystemLogger(logger.getLoggerName())) {
-                            errors.rejectValue("loggerType", ApiErrorDetails.NOT_SUPPORTED.getCodeString());
+            Integer loggerId = id == null ? -1 : Integer.valueOf(id);
+            validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"), loggerId, loggers);
+            if (!errors.hasFieldErrors("loggerName")) {
+                // validate logger type
+                YukonApiValidationUtils.checkIfFieldRequired("loggerType", errors, logger.getLoggerType(),
+                        accessor.getMessage(basekey + "loggerType"));
+                if (!errors.hasFieldErrors("loggerType")) {
+                    if (logger.getLoggerType() == LoggerType.SYSTEM_LOGGER) {
+                        if (StringUtils.isEmpty(id)) {
+                            // System logger creation not supported.
+                            if (!SystemLogger.isSystemLogger(logger.getLoggerName())) {
+                                errors.rejectValue("loggerType", ApiErrorDetails.NOT_SUPPORTED.getCodeString());
+                            }
+                        } else {
+                            // System logger update check
+                            if (!SystemLogger.isSystemLogger(logger.getLoggerName())) {
+                                errors.rejectValue("loggerType", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                        new Object[] { LoggerType.USER_LOGGER }, "");
+                            }
                         }
-                    } else {
-                        // System logger update check
-                        if (!SystemLogger.isSystemLogger(logger.getLoggerName())) {
-                            errors.rejectValue("loggerType", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                                    new Object[] { LoggerType.USER_LOGGER }, "");
-                        }
-                    }
 
-                } else {
-                    // User logger check
-                    if (SystemLogger.isSystemLogger(logger.getLoggerName())) {
-                        errors.rejectValue("loggerType", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                                new Object[] { LoggerType.SYSTEM_LOGGER }, "");
+                    } else {
+                        // User logger check
+                        if (SystemLogger.isSystemLogger(logger.getLoggerName())) {
+                            errors.rejectValue("loggerType", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                    new Object[] { LoggerType.SYSTEM_LOGGER }, "");
+                        }
                     }
                 }
             }
-            Integer loggerId = id == null ? -1 : Integer.valueOf(id);
-            validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"), loggerId, loggers);
             // validate logger level
             YukonApiValidationUtils.checkIfFieldRequired("level", errors, logger.getLevel(),
                     accessor.getMessage(basekey + "loggerLevel"));

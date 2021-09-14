@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.msp.beans.v5.commontypes.MeterID;
@@ -37,7 +38,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
     private Map<BuiltInAttribute, ReadingProcessor> attributesToLoad;
 
     public interface ReadingProcessor {
-        public void apply(PointValueHolder value, MeterReading reading);
+        public void apply(PointValueHolder value, MeterReading reading, PaoType type);
     }
 
     @PostConstruct
@@ -48,7 +49,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
 
         ReadingProcessor usageConverter = new ReadingProcessor() {
             @Override
-            public void apply(PointValueHolder value, MeterReading reading) {
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
                 // Reading Timestamp
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
@@ -67,7 +68,13 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingTypeCodeItems readingTypeCodeItems = new ReadingTypeCodeItems();
                 ReadingTypeCodeItem readingTypeCodeItem = new ReadingTypeCodeItem();
                 ReadingTypeCode readingTypeCode = new ReadingTypeCode();
-                readingTypeCode.setFieldName(FieldNameKind.POS_K_WH);
+                
+                if(type.isWaterMeter()) {
+                    readingTypeCode.setFieldName(FieldNameKind.WATER_VOLUME);
+                } else {
+                    readingTypeCode.setFieldName(FieldNameKind.POS_K_WH);
+                }
+
                 readingTypeCodeItem.setReadingTypeCode(readingTypeCode);
                 readingTypeCodeItems.getReadingTypeCodeItem().add(readingTypeCodeItem);
                 reading.setReadingTypeCodeItems(readingTypeCodeItems);
@@ -80,7 +87,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
 
         ReadingProcessor peakDemandConverter = new ReadingProcessor() {
             @Override
-            public void apply(PointValueHolder value, MeterReading reading) {
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
                 // Reading Timestamp
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
@@ -112,7 +119,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
 
         ReadingProcessor blinkConverter = new ReadingProcessor() {
             @Override
-            public void apply(PointValueHolder value, MeterReading reading) {
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
                 // Reading Timestamp
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
@@ -148,7 +155,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
     }
 
     @Override
-    public MeterReadUpdater buildMeterReadUpdater(BuiltInAttribute attribute, final PointValueHolder pointValueHolder) {
+    public MeterReadUpdater buildMeterReadUpdater(BuiltInAttribute attribute, final PointValueHolder pointValueHolder, PaoType type) {
         final ReadingProcessor processor = attributesToLoad.get(attribute);
         if (processor == null) {
             throw new IllegalArgumentException("Attribute " + attribute + " is not supported");
@@ -156,18 +163,19 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
         return new MeterReadUpdater() {
             @Override
             public void update(MeterReading reading) {
-                processor.apply(pointValueHolder, reading);
+                processor.apply(pointValueHolder, reading, type);
             }
         };
     }
 
     @Override
-    public void updateMeterRead(MeterReading reading, BuiltInAttribute attribute, PointValueHolder pointValueHolder) {
+    public void updateMeterRead(MeterReading reading, BuiltInAttribute attribute, PointValueHolder pointValueHolder, PaoType type) {
         final ReadingProcessor processor = attributesToLoad.get(attribute);
         if (processor == null) {
             throw new IllegalArgumentException("Attribute " + attribute + " is not supported");
         }
-        processor.apply(pointValueHolder, reading);
+        
+        processor.apply(pointValueHolder, reading, type);
 
     }
 
@@ -175,7 +183,15 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
     public MeterReading createMeterRead(YukonMeter meter) {
         MeterReading reading = new MeterReading();
         MeterID meterId = new MeterID();
-        meterId.setServiceType(ServiceKind.ELECTRIC);
+
+        if (meter.getPaoType().isWaterMeter()) {
+            meterId.setServiceType(ServiceKind.WATER);
+        } else if (meter.getPaoType().isGasMeter()) {
+            meterId.setServiceType(ServiceKind.GAS);
+        } else {
+            meterId.setServiceType(ServiceKind.ELECTRIC);
+        }
+
         meterId.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
         meterId.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
         meterId.setUtility(MultispeakDefines.AMR_VENDOR);
