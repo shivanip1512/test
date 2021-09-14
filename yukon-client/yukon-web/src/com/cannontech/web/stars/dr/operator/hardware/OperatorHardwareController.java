@@ -873,7 +873,7 @@ public class OperatorHardwareController {
         case SWITCH:
             model.addAttribute("showSwitchAndTstatConfigAction", true);
             if (allowAccountEditing) {
-                if (inventoryChecking) {
+                if (inventoryChecking && !type.isEatonCloud()) {
                     model.addAttribute("showSwitchChangeoutAction", true);
                 }
             }
