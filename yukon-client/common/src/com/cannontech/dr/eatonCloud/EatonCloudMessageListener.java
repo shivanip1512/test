@@ -61,8 +61,6 @@ import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.math.IntMath;
 
@@ -86,7 +84,6 @@ public class EatonCloudMessageListener {
     @Autowired private EatonCloudDataReadService eatonCloudDataReadService;
     private Executor executor = Executors.newCachedThreadPool();
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-    @Autowired private GlobalSettingDao globalSettingDao;
     
     // next read time, send time, set of ids to read
     private Map<Pair<Instant, Instant>, Set<Integer>> nextRead = new ConcurrentHashMap<Pair<Instant, Instant>, Set<Integer>>();
@@ -198,15 +195,7 @@ public class EatonCloudMessageListener {
         
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
-        Stream<Entry<Integer, String>> stream;
-        boolean isErrorReportingEnabled = globalSettingDao.getBoolean(GlobalSettingType.ERROR_REPORTING);
-        if (isErrorReportingEnabled) {
-            log.trace("*******************************parallel processing");
-            stream = guids.entrySet().parallelStream();
-        } else {
-            log.trace("*******************************sequential processing");
-            stream = guids.entrySet().stream();
-        }
+        Stream<Entry<Integer, String>> stream = guids.entrySet().parallelStream();
         stream.forEach(entry -> {
             int deviceId = entry.getKey();
             String guid = entry.getValue();
@@ -298,7 +287,13 @@ public class EatonCloudMessageListener {
         log.info("Sending LM Eaton Cloud Restore Command:{} devices:{} event id:{}", command, devices.size(), eventId);
         
         AtomicInteger totalFailed = new AtomicInteger(0);
-        guids.forEach((deviceId, guid) -> {
+        StopWatch stopwatch = new StopWatch();
+        stopwatch.start();
+        Stream<Entry<Integer, String>> stream = guids.entrySet().parallelStream();
+        stream.forEach(entry -> {
+            int deviceId = entry.getKey();
+            String guid = entry.getValue();
+
             String deviceName = dbCache.getAllDevices().stream()
                     .filter(d -> d.getLiteID() == deviceId)
                     .findAny()
@@ -315,7 +310,11 @@ public class EatonCloudMessageListener {
                         eventId, deviceName, command.getVirtualRelayId());
             }
         });
-        
+        stopwatch.stop();
+        if (log.isDebugEnabled()) {
+            var duration = Duration.standardSeconds((long) stopwatch.getTotalTimeSeconds());
+            log.debug("Commands timer - devices: {}, total time: {}", guids.size(), duration);
+        }
         log.info("Finished sending LM Eaton Cloud Restore Command:{} devices:{} event id:{} failed:{}", command, devices.size(), eventId, totalFailed.intValue());
     }
 
