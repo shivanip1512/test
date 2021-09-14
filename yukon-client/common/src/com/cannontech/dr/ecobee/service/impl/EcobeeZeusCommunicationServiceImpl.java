@@ -584,7 +584,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
             List<String> zeusEventIds = ecobeeZeusGroupService.getEventIds(yukonGroupId);
             for (String zeusEventId : zeusEventIds) {
-                String cancelDrUrl = getUrlBase() + "/events/dr/" + zeusEventId;
+                String cancelDrUrl = getUrlBase() + "events/dr/" + zeusEventId;
                 if (isNotEmptyThermostats) {
                     cancelDrUrl = cancelDrUrl.concat("?thermostat_ids=").concat(String.join(",", serialNumbers));
                 }
