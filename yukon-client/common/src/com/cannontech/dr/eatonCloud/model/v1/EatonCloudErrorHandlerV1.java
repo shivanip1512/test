@@ -19,7 +19,7 @@ import com.google.gson.GsonBuilder;
  */
 public class EatonCloudErrorHandlerV1 implements ResponseErrorHandler {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudErrorHandlerV1.class);
-    
+
     @Override
     public void handleError(ClientHttpResponse response) throws IOException {
         HttpStatus status = response.getStatusCode();
@@ -27,13 +27,14 @@ public class EatonCloudErrorHandlerV1 implements ResponseErrorHandler {
         String body = "";
         try {
             body = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
-            exception = new EatonCloudCommunicationExceptionV1(status.value(), parseErrorMessage(body));
-            log.error(
+            EatonCloudErrorV1 error = parseErrorMessage(body);
+            exception = new EatonCloudCommunicationExceptionV1(error);
+            log.error("Parsed error status: {} response : {} formated response: {} ", status, body,
                     new GsonBuilder().setPrettyPrinting().create().toJson(exception.getErrorMessage()),
                     exception);
         } catch (Exception e) {
-            exception = new EatonCloudCommunicationExceptionV1(status.value());
-            log.error("Status: {} Error Response Body: {}", status, body, e);
+            exception = new EatonCloudCommunicationExceptionV1();
+            log.error("Unable to parse error for status: {} response body: {}", status, body, e);
         }
         throw exception;
     }
