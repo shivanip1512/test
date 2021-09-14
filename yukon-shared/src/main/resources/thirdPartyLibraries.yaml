@@ -5655,15 +5655,15 @@ Network Manager :
   - filename : tomcat-juli.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.50
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.37"
-    md5 : 11972e561822ab613e1a0b5310c5fa12
-    sha1 : 5112dae6d0295717ab8fcc9b100af612d5486663
-    updated : 2020-09-02
-    jira : NM-1732
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.50"
+    md5 : 6ca7c3d023775de6a9169c2045802a5f
+    sha1 : 8f667854088e3b867302ff939d7d1997d49878e2
+    updated : 2021-09-13
+    jira : NM-2169
     notes : 
 
   - filename : tomcat-util-scan.jar
