@@ -19,7 +19,7 @@ post-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
+              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRouteResponseSchema'
             examples:
               MacroRoute:
                 $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
@@ -36,9 +36,9 @@ post-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
+              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRouteResponseSchema'
             examples:
-              RouteIds:
+              MacroRoutes List:
                 $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/List MacroRoutes'
 
 get-update-delete-operation:
@@ -60,7 +60,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
+              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRouteResponseSchema'
             examples:
               MacroRoute:
                 $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
@@ -92,7 +92,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
+              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRouteResponseSchema'
             examples:
               Macro Route:
                 $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
@@ -117,5 +117,5 @@ get-update-delete-operation:
             schema:
               $ref: '../schemas/macroRoutesSchema.yaml#/id'
             examples:
-              RouteId:
-                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/routeId'
+              MacroRoute:
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/macroRouteId'
