@@ -170,10 +170,10 @@ public class AttributesController {
                 .collect(Collectors.toList());
         
         // check if the virtual meter or virtual system are not present in your system, then add them to the dropdown
-        if(!deviceTypes.contains(PaoType.VIRTUAL_METER)){
+        if (!deviceTypes.contains(PaoType.VIRTUAL_METER)) {
             deviceTypes.add(PaoType.VIRTUAL_METER);
         }
-        if(!deviceTypes.contains(PaoType.VIRTUAL_SYSTEM)){
+        if (!deviceTypes.contains(PaoType.VIRTUAL_SYSTEM)) {
             deviceTypes.add(PaoType.VIRTUAL_SYSTEM);
         }
         return deviceTypes;
