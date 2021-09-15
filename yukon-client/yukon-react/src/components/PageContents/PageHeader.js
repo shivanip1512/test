@@ -21,7 +21,7 @@ const PageHeader = (props) => {
     PageHeader.propTypes = {
         pageTitle: PropTypes.string.isRequired,         //i18n function to get title for the page
         breadcrumbs: PropTypes.array.isRequired,        //array of breadcrumbs, each should have link and title defined
-        actionButtons: PropTypes.array,                 //array of action buttons, each should have label and optional icon defined
+        actionButtons: PropTypes.array,                 //array of action buttons, each should have label, clickEvent and optional icon defined
         actionMenuOptions: PropTypes.array              //array of action menu items, each should have title and optional icon defined
     }
 
@@ -46,7 +46,9 @@ const PageHeader = (props) => {
         actionButtonContent = 
         <div style={{float: 'right'}}>
             {actionButtons.map((button) => 
-                <Button label={button.label} variant="outlined" color="primary" icon={button.icon} style={{marginRight: theme.spacing(2)}}/>
+                <Button label={button.label} onClick={button.clickEvent} 
+                    variant="outlined" color="primary" 
+                    icon={button.icon} style={{marginRight: theme.spacing(2)}}/>
             )}
         </div>
     }

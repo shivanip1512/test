@@ -25,7 +25,7 @@ const PageButtons = (props) => {
                             onClick={button.onClick}
                             href={button.href}
                             variant={index === 0 ? 'contained' : 'outlined'}
-                            style={{marginRight: theme.spacing(2)}}/>
+                            style={{...button.style, marginRight: theme.spacing(2)}}/>
             })}
         </div>
     )

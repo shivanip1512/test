@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Divider, InputLabel } from '@material-ui/core';
+import { Paper, Divider, InputLabel } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { useTheme } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 
 import PageHeader from '../../PageContents/PageHeader';
 import PageContents from '../../PageContents/PageContents';

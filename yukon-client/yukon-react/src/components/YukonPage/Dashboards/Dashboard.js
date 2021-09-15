@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Grid, List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
-import { Avatar, Badge, Card, CardHeader, CardContent, CardActions } from '@material-ui/core';
+import { Grid, List, ListItem, ListItemLink, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
+import { Avatar, Card, CardHeader, CardContent, CardActions } from '@material-ui/core';
 
 import IconButton from '@material-ui/core/IconButton';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
@@ -15,6 +15,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import ConfigureIcon from '@pxblue/icons-mui/Configuration';
 import WarningIcon from '@material-ui/icons/Warning';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import SearchIcon from '@material-ui/icons/Search';
 
 import { ScoreCard } from '@pxblue/react-components';
 import { InfoListItem } from '@pxblue/react-components';
@@ -24,7 +25,6 @@ import PageContents from '../../PageContents/PageContents';
 
 import Input from '../../controls/Input';
 import Button from '../../controls/Button';
-import Table from '../../controls/Table';
 
 const useStyles = makeStyles(theme => ({
     availableCircle: {
@@ -77,8 +77,9 @@ const Dashboard = () => {
             <PageContents>
                 <Grid container spacing={4}>
                     <Grid item xs>
-                        <Card variant="outlined">
-                            <CardHeader title="Meter Search" titleTypographyProps={{variant: 'h6'}}
+                        <Card variant="outlined" color="primary">
+                            <CardHeader title="Meter Search" titleTypographyProps={{variant: 'h6', color: 'primary'}} 
+                                style={{borderBottom: '1px solid rgba(0, 0, 0, 0.12)'}}
                                 action={[
                                     <IconButton><HelpIcon/></IconButton>, <IconButton><ExpandLessIcon/></IconButton>
                                 ]}/>
@@ -90,8 +91,8 @@ const Dashboard = () => {
                                 <Input label="Address/Serial" name="addressSerial" style={{width: '90%'}}/>
                                 <Input label="Route" name="route" style={{width: '90%'}}/>
                             </CardContent>
-                            <CardActions style={{float:'right', paddingRight: theme.spacing(4)}}>
-                                <Button label="Search"/>
+                            <CardActions style={{float:'right', paddingRight: theme.spacing(4), paddingBottom: theme.spacing(2)}}>
+                                <Button variant="outlined" color="primary" icon={<SearchIcon/>} label="Search"/>
                             </CardActions>
                         </Card>
                     </Grid>
@@ -102,13 +103,17 @@ const Dashboard = () => {
                             ]}
                             actionRow={[
                                 <List>
-                                    <ListItem>
-                                        <ListItemText primary="View Details"/>
-                                        <ListItemSecondaryAction><ChevronRightIcon/></ListItemSecondaryAction>
+                                    <ListItem button dense={true}>
+                                        <ListItemText primary="View Details" primaryTypographyProps={{color: 'primary'}}/>
+                                        <ListItemSecondaryAction>
+                                            <IconButton><ChevronRightIcon/></IconButton>
+                                        </ListItemSecondaryAction>
                                     </ListItem>
-                                    <ListItem>
+                                    <ListItem dense={true}>
                                         <ListItemText primary="Last Refresh: 09/09/2021 10:22:34 PM"/>
-                                        <ListItemSecondaryAction><SyncIcon/></ListItemSecondaryAction>
+                                        <ListItemSecondaryAction>
+                                            <IconButton><SyncIcon/></IconButton>
+                                        </ListItemSecondaryAction>
                                     </ListItem>
                                 </List>
                             ]}>
@@ -147,20 +152,24 @@ const Dashboard = () => {
                             ]}
                             actionRow={[
                                 <List>
-                                    <ListItem>
-                                        <ListItemText primary="View Details"/>
-                                        <ListItemSecondaryAction><ChevronRightIcon/></ListItemSecondaryAction>
+                                    <ListItem button dense={true}>
+                                        <ListItemText primary="View Details" primaryTypographyProps={{color: 'primary'}}/>
+                                        <ListItemSecondaryAction>
+                                            <IconButton><ChevronRightIcon/></IconButton>
+                                        </ListItemSecondaryAction>
                                     </ListItem>
-                                    <ListItem>
+                                    <ListItem dense={true}>
                                         <ListItemText primary="Last Refresh: 09/09/2021 10:22:34 PM"/>
-                                        <ListItemSecondaryAction><SyncIcon/></ListItemSecondaryAction>
+                                        <ListItemSecondaryAction>
+                                            <IconButton><SyncIcon/></IconButton>
+                                        </ListItemSecondaryAction>
                                     </ListItem>
                                 </List>
                             ]}>
                             <div style={{margin: theme.spacing(4)}}>
-                                <Grid container spacing={4} align="center" alignItems="stretch">
-                                    <Grid item xs>
-                                        <Grid container spacing={2} alignItems="center"
+                                <Grid container spacing={4} align="center" alignItems="stretch" direction="row">
+                                    <Grid item xs style={{height: '100%'}}>
+                                        <Grid container spacing={2} alignItems="center" direction="row"
                                             style={{backgroundColor: theme.palette.warning.dark, borderRadius: '4px'}}>
                                             <Grid item xs>
                                                 <WarningIcon style={{color: theme.palette.warning.light}}/>
@@ -173,8 +182,7 @@ const Dashboard = () => {
                                         </Grid>
                                     </Grid>
                                     <Grid item xs style={{height: '100%'}}>
-                                        <div style={{height: '100%'}}>
-                                        <Grid container spacing={2} alignItems="center"
+                                        <Grid container spacing={2} alignItems="center" direction="row"
                                             style={{backgroundColor: theme.palette.success.light, height: '100%', borderRadius: '4px'}}>
                                             <Grid item xs>
                                                 <CheckCircleIcon style={{color: theme.palette.success.main}}/>
@@ -184,10 +192,9 @@ const Dashboard = () => {
                                                 <div style={{fontSize: '20px'}}>OK</div>
                                             </Grid>
                                         </Grid>
-                                        </div>
                                     </Grid>
-                                    <Grid item xs>
-                                        <Grid container spacing={2} alignItems="center"
+                                    <Grid item xs style={{height: '100%'}}>
+                                        <Grid container spacing={2} alignItems="center" direction="row"
                                             style={{backgroundColor: theme.palette.warning.dark, borderRadius: '4px'}}>
                                             <Grid item xs>
                                                 <WarningIcon style={{color: theme.palette.warning.light}}/>
@@ -199,8 +206,8 @@ const Dashboard = () => {
                                             </Grid>
                                         </Grid>
                                     </Grid>
-                                    <Grid item xs>
-                                        <Grid container spacing={2} alignItems="center"
+                                    <Grid item xs style={{height: '100%'}}>
+                                        <Grid container spacing={2} alignItems="center" direction="row"
                                             style={{backgroundColor: theme.palette.success.light, height: '100%', borderRadius: '4px'}}>
                                             <Grid item xs>
                                                 <CheckCircleIcon style={{color: theme.palette.success.main}}/>

@@ -21,9 +21,13 @@ const Button = (props) => {
 
     const yukonTheme = useSelector(store => store.app.theme);
 
-    var themeColor = "";
-    if (color === 'primary' && yukonTheme != null) {
-        themeColor = yukonTheme.properties.BUTTON_COLOR;
+    var buttonFillColor = "";
+    var buttonBorderColor = "";
+    if (color === 'primary' && variant === 'contained' && yukonTheme != null) {
+        buttonFillColor = yukonTheme.properties.BUTTON_COLOR;
+    }
+    if (color === 'primary' && variant === 'outlined' && yukonTheme != null) {
+        buttonBorderColor = yukonTheme.properties.BUTTON_COLOR;
     }
 
     return (
@@ -33,7 +37,7 @@ const Button = (props) => {
             href={href}
             variant={variant}
             startIcon={icon}
-            style={{...style, backgroundColor: themeColor}}>{label}</MuiButton>
+            style={{backgroundColor: buttonFillColor, borderColor: buttonBorderColor, color: buttonBorderColor, ...style}}>{label}</MuiButton>
     )
 }
 
