@@ -1491,7 +1491,7 @@ ControlStatus DnpSlave::waitForResponse(const long userMessageId, const bool isP
     return ControlStatus::Undefined;
 }
 
-bool DnpSlave::requireValidRange(unsigned low, unsigned high, unsigned x)
+void DnpSlave::requireValidRange(int low, int high, int x)
 {
     if (x < low)  throw std::invalid_argument(std::to_string(x) + " is lower than " + std::to_string(low));
     if (x > high) throw std::invalid_argument(std::to_string(x) + " is higher than " + std::to_string(high));
