@@ -92,7 +92,7 @@ public class PaoIndexManager extends SimpleIndexManager {
         doc.add(new TextField("meterNumber", meterNumber, Field.Store.YES));
         doc.add(new Field("isMeter", isMeter, TYPE_NOT_STORED));
         
-        String all = paoName + " " + type + " " + paoIdStr + " " + paoClass + " " + meterNumber + " "+ category;
+        String all = paoName + " " + type + " " + paoIdStr + " " + paoClass + " " + meterNumber + " " + category;
         doc.add(new TextField("all", all, Field.Store.YES));
 
         DisplayablePao displayablePao =
