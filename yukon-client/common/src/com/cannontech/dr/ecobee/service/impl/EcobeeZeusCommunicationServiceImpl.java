@@ -396,11 +396,12 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         for (String zeusGroupId : zeusGroupIds) {
             ZeusDemandResponseRequest setpointDr = new ZeusDemandResponseRequest(buildZeusEvent(zeusGroupId,
                     parameters.getStartTime(), parameters.getStopTime(), parameters.isMandatory()));
-            setpointDr.getEvent().setIsHeatingEvent(parameters.isTempOptionHeat());
+            boolean isHeatingEvent = parameters.isTempOptionHeat();
             float relativeTemp = (float) parameters.getTempOffset();
+            setpointDr.getEvent().setIsHeatingEvent(isHeatingEvent);
             setpointDr.getEvent().setRelativeTemp(relativeTemp);
-            if (relativeTemp < 0) {
-                log.info("Relative temperature is negative. Setting ecoplus selector as NON_ECOPLUS for the demand response event.");
+            if (relativeTemp < 0 && !isHeatingEvent) {
+                log.info("Relative temperature is negative for the cool event so setting ecoplus selector as NON_ECOPLUS");
                 setpointDr.getEvent().setEcoplusSelector(EcoplusSelector.NON_ECOPLUS);
             } else {
                 setpointDr.getEvent().setEcoplusSelector(EcoplusSelector.ALL);
