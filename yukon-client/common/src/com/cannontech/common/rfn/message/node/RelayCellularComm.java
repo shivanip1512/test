@@ -93,13 +93,13 @@ public class RelayCellularComm implements Serializable{
         final int prime = 31;
         int result = 1;
         result = prime * result
-            + (int) (cellularCommStatusTimestamp ^ (cellularCommStatusTimestamp >>> 32));
+            + ((cellularCommStatusTimestamp == null) ? 0 : cellularCommStatusTimestamp.hashCode());
         result =
             prime * result + ((deviceRfnIdentifier == null) ? 0 : deviceRfnIdentifier.hashCode());
         result =
             prime * result + ((gatewayRfnIdentifier == null) ? 0 : gatewayRfnIdentifier.hashCode());
         result = prime * result
-                + ((relayCellularCommStatus == null) ? 0 : relayCellularCommStatus.hashCode());
+            + ((relayCellularCommStatus == null) ? 0 : relayCellularCommStatus.hashCode());
         result = prime * result + ((rsrp == null) ? 0 : rsrp.hashCode());
         result = prime * result + ((rsrq == null) ? 0 : rsrq.hashCode());
         result = prime * result + ((rssi == null) ? 0 : rssi.hashCode());
@@ -116,7 +116,10 @@ public class RelayCellularComm implements Serializable{
         if (getClass() != obj.getClass())
             return false;
         RelayCellularComm other = (RelayCellularComm) obj;
-        if (cellularCommStatusTimestamp != other.cellularCommStatusTimestamp)
+        if (cellularCommStatusTimestamp == null) {
+            if (other.cellularCommStatusTimestamp != null)
+                return false;
+        } else if (!cellularCommStatusTimestamp.equals(other.cellularCommStatusTimestamp))
             return false;
         if (deviceRfnIdentifier == null) {
             if (other.deviceRfnIdentifier != null)
@@ -155,10 +158,15 @@ public class RelayCellularComm implements Serializable{
 
     @Override
     public String toString() {
-        return "RelayCellularComm [deviceRfnIdentifier=" + deviceRfnIdentifier
-                + ", gatewayRfnIdentifier=" + gatewayRfnIdentifier + ", relayCellularCommStatus="
-                + relayCellularCommStatus + ", cellularCommStatusTimestamp="
-                + cellularCommStatusTimestamp + ", rssi=" + rssi + ", sinr=" + sinr + ", rsrp=" + rsrp
-                + ", rsrq=" + rsrq + "]";
+        return String
+            .format("RelayCellularComm [deviceRfnIdentifier=%s, gatewayRfnIdentifier=%s, relayCellularCommStatus=%s, cellularCommStatusTimestamp=%s, rssi=%s, sinr=%s, rsrp=%s, rsrq=%s]",
+                    deviceRfnIdentifier,
+                    gatewayRfnIdentifier,
+                    relayCellularCommStatus,
+                    cellularCommStatusTimestamp,
+                    rssi,
+                    sinr,
+                    rsrp,
+                    rsrq);
     }
 }
