@@ -77,6 +77,8 @@ yukon.adminSetup.yukonLoggers = (function () {
                         "data-load-event" : "yukon:logger:load",
                         "data-event" : "yukon:logger:save",
                         "data-title" : popupTitle,
+                        "data-width" : "650",
+                        "data-height" : "auto",
                         "data-ok-text" : yg.text.save,
                         "data-destroy-dialog-on-close" : "",
                     };
