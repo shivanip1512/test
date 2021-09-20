@@ -66,7 +66,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     public void initialize() {
         loadControlClientConnection.addMessageListener(this);
         dirtyCache = true;
-        loadTodaysProgramsDataCache();
+        loadTodaysProgramsDataCacheIfDirty();
     }
     
     @Override
@@ -74,7 +74,9 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         Message obj = e.getMessage();
         // If any LMProgram change event happens, reload the today's program data cache. 
         if (obj instanceof LMProgramChanged || obj instanceof LMGroupChanged) {
-            log.debug("Recieved updates from LM. Marking the program widget cache as dirty.");
+            if (dirtyCache == false) {
+                log.debug("Recieved updates from LM. Marking the program widget cache as dirty.");
+            }
             dirtyCache = true;
         }
     }
@@ -97,12 +99,12 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
      * if data (gear history) is associated with current running program we are updating that in the
      * programData records which are already there in todaysProgramsDataCache.
      */
-    private synchronized void loadTodaysProgramsDataCache() {
+    private synchronized void loadTodaysProgramsDataCacheIfDirty() {
         if (dirtyCache == false) {
-            log.debug("Skipping cache update. Cache is not dirty");
+            log.trace("Skipping cache update. Cache is not dirty");
             return;
         }
-        log.debug("Updating scheduled program cache");
+        log.trace("Updating scheduled program cache");
         todaysProgramsDataCache.clear();
         DateTime from = new DateTime().withTimeAtStartOfDay();
         DateTime to = from.plusHours(24);
@@ -578,7 +580,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
                 dirtyCache = true;
             }
         }
-        loadTodaysProgramsDataCache();
+        loadTodaysProgramsDataCacheIfDirty();
         return todaysProgramsDataCache;
     }
 
