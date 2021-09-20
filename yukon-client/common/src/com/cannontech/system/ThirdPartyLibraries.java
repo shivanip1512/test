@@ -29,6 +29,7 @@ public class ThirdPartyLibraries {
                      .distinct()
                      .sorted()
                      .filter(ThirdPartyProject::isAttributionRequired)
+                     .filter(ThirdPartyProject::isNotJunitProject)
                      .collect(Collectors.toList());
     }
 }
