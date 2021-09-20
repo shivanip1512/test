@@ -55,13 +55,12 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     public static final int MAX_PROGRAM_TO_DISPLAY_ON_WIDGET = 10;
     private static final int PROGRAM_EVENT_SAFEGAURD_WINDOW = 15000; // 15 Seconds
     private final static String todayKey = "yukon.web.widgets.programWidget.today";
+    private boolean dirtyCache = true;
     private List<ProgramData> programsDataCache = new ArrayList<>();
     private List<ProgramData> todaysProgramsDataCache = new ArrayList<>();
     private long tomorrowStartInMillis = 0L;
     private final static String ACTIVE_CSS_CLASS = "green";
     private final static String SCHEDULED_CSS_CLASS = "orange";
-    
-    private boolean dirtyCache = true;
     
     @PostConstruct
     public void initialize() {
@@ -75,6 +74,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         Message obj = e.getMessage();
         // If any LMProgram change event happens, reload the today's program data cache. 
         if (obj instanceof LMProgramChanged || obj instanceof LMGroupChanged) {
+            log.debug("Recieved updates from LM. Marking the program widget cache as dirty.");
             dirtyCache = true;
         }
     }
@@ -576,7 +576,6 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
             Duration duration = new Duration(startOfToday, startofTomorrow);
             if (duration.getStandardDays() > 1) {
                 dirtyCache = true;
-                
             }
         }
         loadTodaysProgramsDataCache();
