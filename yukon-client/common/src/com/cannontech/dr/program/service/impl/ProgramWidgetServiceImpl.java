@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -61,6 +62,8 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     private final static String ACTIVE_CSS_CLASS = "green";
     private final static String SCHEDULED_CSS_CLASS = "orange";
     
+    private Instant lastCacheUpdate = new Instant(0);
+    
     @PostConstruct
     public void initialize() {
         loadControlClientConnection.addMessageListener(this);
@@ -95,6 +98,12 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
      * programData records which are already there in todaysProgramsDataCache.
      */
     private synchronized void loadTodaysProgramsDataCache() {
+        Instant currentTime = new Instant();
+        Instant nextUpdateTime = lastCacheUpdate.plus(60000);
+        if (currentTime.isBefore(nextUpdateTime)) {
+            log.debug("Skipping cache update. Previous update is less than one minute old: {}", lastCacheUpdate);
+            return;
+        }
         todaysProgramsDataCache.clear();
         DateTime from = new DateTime().withTimeAtStartOfDay();
         DateTime to = from.plusHours(24);
@@ -133,6 +142,9 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
                 todaysProgramsDataCache.add(program);
             }
         }
+        
+        lastCacheUpdate = new Instant();
+        
     }
 
     @Override
