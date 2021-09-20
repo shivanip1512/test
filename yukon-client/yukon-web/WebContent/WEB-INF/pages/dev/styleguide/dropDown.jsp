@@ -25,13 +25,12 @@
     
     <h2>Attributes</h2>
     <tags:nameValueContainer>
-        <tags:nameValue name="item">
+        <tags:nameValue name="items">
             The 'item' of the selectWithItems. <span class="label label-attr">selectWithItems</span> tag should be used to pass the values which are shown in the dropdown.
         </tags:nameValue>
         <tags:nameValue name="path">
             The 'path' value passed to the <span class="label label-attr">&lt;form:form&gt;</span> tag which builds an input
-            with a special name.  <span class="label label-attr">path</span> should not be used if also using 
-            <span class="label label-attr">name</span>.
+            with a special name.
         </tags:nameValue>
     </tags:nameValueContainer>
     
@@ -52,7 +51,7 @@
     
     <p class="description">
         To make single select dropdown into searchable dropdown ".chosen()" function is being called upon the ID/Class.
-        That chosen() fuction is a part one JQuery plugin used in Yukon developed by Harvest.
+        The chosen() function is part of a jQuery plugin developed by Harvest.
         For more information on the used plugin please visit <a href="https://harvesthq.github.io/chosen/">https://harvesthq.github.io/chosen/</a>
     </p>
     
