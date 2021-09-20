@@ -144,4 +144,10 @@ public class KeyfileTest {
         }
         assertNull(passkey);
     }
+
+    @Test
+    public void test_Passkey_with_null_File() throws IOException, JDOMException {
+        char[] passkey = CryptoUtils.getPasskeyFromCryptoFile(null);
+        assertNull(passkey);
+    }
 }
