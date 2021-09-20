@@ -56,7 +56,7 @@
             <c:set var="clazz" value="${page == 'charts' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/charts"/>">Charts & Graphs</a></li>
             <c:set var="clazz" value="${page == 'drop-down' ? 'selected' : ''}"/>
-            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/drop-down"/>">Drop Down</a></li>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/drop-down"/>">Dropdowns</a></li>
         </ul>
     </div>
     <div class="column two nogutter"><jsp:doBody/></div>

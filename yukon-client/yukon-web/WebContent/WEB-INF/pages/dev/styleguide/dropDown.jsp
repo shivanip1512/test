@@ -74,7 +74,7 @@
         </div>
     </div>
     <h4 class="subtle">HTML Code:</h4>
-        <pre class="code prettyprint">
+    <pre class="code prettyprint">
 &lt;select name=&quot;cars&quot; id=&quot;cars&quot;&gt;
   &lt;option value=&quot;saab&quot;&gt;Saab&lt;option&gt;
   &lt;option value=&quot;volvo&quot;&gt;Volvo&lt;option&gt;
@@ -116,16 +116,16 @@ $ (&quot;#cars&quot;).chosen();
         </div>
     </div>
     <h4 class="subtle">HTML Code:</h4>
-        <pre class="code prettyprint">
+    <pre class="code prettyprint">
 &lt;select name=&quot;citys&quot; id=&quot;citys&quot; multiple&gt;
-  &lt;option value=&quot;saab&quot;&gt;New York&lt;option&gt;
-  &lt;option value=&quot;volvo&quot;&gt;London&lt;option&gt;
-  &lt;option value=&quot;mercedes&quot;&quot;&gt;Bangkok&lt;option&gt;
-  &lt;option value=&quot;audi&quot;&gt;Hong Kong&lt;option&gt;
-  &lt;option value=&quot;bmw&quot;&gt;Dubai&lt;option&gt;
-  &lt;option value=&quot;rangeRover&quot;&gt;Singapore&lt;option&gt;
-  &lt;option value=&quot;kia&quot; id=&quot;cars&quot;&gt;Rome&lt;option&gt;
-  &lt;option value=&quot;kia&quot; id=&quot;cars&quot;&gt;Paris&lt;option&gt;
+  &lt;option value=&quot;newYork&quot;&gt;New York&lt;option&gt;
+  &lt;option value=&quot;london&quot;&gt;London&lt;option&gt;
+  &lt;option value=&quot;bangkok&quot;&gt;Bangkok&lt;option&gt;
+  &lt;option value=&quot;hongKong&quot;&gt;Hong Kong&lt;option&gt;
+  &lt;option value=&quot;dubai&quot;&gt;Dubai&lt;option&gt;
+  &lt;option value=&quot;singapore&quot;&gt;Singapore&lt;option&gt;
+  &lt;option value=&quot;rome&quot;&gt;Rome&lt;option&gt;
+  &lt;option value=&quot;paris&quot;&gt;Paris&lt;option&gt;
 &lt;/select&gt;
 </pre>
 

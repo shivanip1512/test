@@ -266,12 +266,8 @@ public class StyleGuideController {
     }
     
     @RequestMapping("/styleguide/drop-down")
-    public String dropDown(ModelMap model, @ModelAttribute LMSetupFilter lmSetupFilter) {
+    public String dropDown(ModelMap model) {
         model.addAttribute("operationalStates", OperationalState.values());
-        model.addAttribute("lmSetupFilter", lmSetupFilter);
-        model.addAttribute("loadGroupTypes", PaoType.getAllLMGroupTypes().stream()
-                .sorted(Comparator.comparing(PaoType::getDbString, String.CASE_INSENSITIVE_ORDER))
-                .collect(Collectors.toList()));
         return "styleguide/dropDown.jsp";
     }
     
