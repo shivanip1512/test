@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -62,11 +61,12 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     private final static String ACTIVE_CSS_CLASS = "green";
     private final static String SCHEDULED_CSS_CLASS = "orange";
     
-    private Instant lastCacheUpdate = new Instant(0);
+    private boolean dirtyCache = true;
     
     @PostConstruct
     public void initialize() {
         loadControlClientConnection.addMessageListener(this);
+        dirtyCache = true;
         loadTodaysProgramsDataCache();
     }
     
@@ -75,7 +75,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         Message obj = e.getMessage();
         // If any LMProgram change event happens, reload the today's program data cache. 
         if (obj instanceof LMProgramChanged || obj instanceof LMGroupChanged) {
-            loadTodaysProgramsDataCache();
+            dirtyCache = true;
         }
     }
 
@@ -98,12 +98,11 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
      * programData records which are already there in todaysProgramsDataCache.
      */
     private synchronized void loadTodaysProgramsDataCache() {
-        Instant currentTime = new Instant();
-        Instant nextUpdateTime = lastCacheUpdate.plus(60000);
-        if (currentTime.isBefore(nextUpdateTime)) {
-            log.debug("Skipping cache update. Previous update is less than one minute old: {}", lastCacheUpdate);
+        if (dirtyCache == false) {
+            log.debug("Skipping cache update. Cache is not dirty");
             return;
         }
+        log.debug("Updating scheduled program cache");
         todaysProgramsDataCache.clear();
         DateTime from = new DateTime().withTimeAtStartOfDay();
         DateTime to = from.plusHours(24);
@@ -142,9 +141,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
                 todaysProgramsDataCache.add(program);
             }
         }
-        
-        lastCacheUpdate = new Instant();
-        
+        dirtyCache = false;
     }
 
     @Override
@@ -578,9 +575,11 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
             long startofTomorrow = new DateTime().withTimeAtStartOfDay().plusDays(1).getMillis();
             Duration duration = new Duration(startOfToday, startofTomorrow);
             if (duration.getStandardDays() > 1) {
-                loadTodaysProgramsDataCache();
+                dirtyCache = true;
+                
             }
         }
+        loadTodaysProgramsDataCache();
         return todaysProgramsDataCache;
     }
 
