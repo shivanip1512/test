@@ -187,13 +187,15 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
                         }
                     }
                 }
-
+                ecobeeAuthTokenResponseCache.invalidateAll();
                 if (authenticationResponse.getStatusCode() == HttpStatus.OK) {
                     authTokenResponse = buildZeusEcobeeAuthTokenResponse(authenticationResponse.getBody());
                 } else {
-                    throw new EcobeeCommunicationException(
-                            "Unable to communicate with Ecobee API." + authenticationResponse.getStatusCode().toString());
+                    log.info("Ecobee refresh API call was unsuccessfull. Generating new tokens.");
+                    cancelExistingScheduler();
+                    authTokenResponse = generateEcobeeAuthTokenResponse();
                 }
+                ecobeeAuthTokenResponseCache.put(responseCacheKey, authTokenResponse);
             } catch (RestClientException e) {
                 throw new EcobeeCommunicationException("Unable to communicate with Ecobee API.", e);
             }
