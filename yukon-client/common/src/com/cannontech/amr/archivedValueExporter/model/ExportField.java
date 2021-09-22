@@ -7,19 +7,23 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ExportField implements Displayable {
-    
+
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private int fieldId;
     private Field field = new Field();
     private int formatId;
     private AttributeField attributeField;
-    private ReadingPattern readingPattern = ReadingPattern.FIVE_ZERO;
-    private TimestampPattern timestampPattern = TimestampPattern.MONTH_DAY_YEAR; // MERICA!
+    // private ReadingPattern readingPattern = ReadingPattern.FIVE_ZERO;
+    // private TimestampPattern timestampPattern = TimestampPattern.MONTH_DAY_YEAR; // MERICA!
     private Integer maxLength = 0;
     private String padChar;
     private PadSide padSide = PadSide.NONE;
@@ -27,16 +31,16 @@ public class ExportField implements Displayable {
     private MissingAttribute missingAttribute;
     private String missingAttributeValue;
     private String pattern;
-    private FieldValue fieldValue;
-    
+    // private FieldValue fieldValue;
+
     public int getFieldId() {
         return fieldId;
     }
-    
+
     public void setFieldId(int fieldId) {
         this.fieldId = fieldId;
     }
-    
+
     public Field getField() {
         return field;
     }
@@ -61,53 +65,57 @@ public class ExportField implements Displayable {
         this.attributeField = attributeField;
     }
 
-    public ReadingPattern getReadingPattern() {
-        boolean patternFound = false;
-        if(isValue()){
-            for (ReadingPattern type : ReadingPattern.values()) {
-                if (type.getPattern().equals(pattern)) {
-                    readingPattern = type;
-                    patternFound = true;
-                    break;
-                }
-            }
-            if(!patternFound) readingPattern = ReadingPattern.valueOf("CUSTOM");
-        }
-        return readingPattern;
-    }
+//    public ReadingPattern getReadingPattern() {
+//        boolean patternFound = false;
+//        if (isValue()) {
+//            for (ReadingPattern type : ReadingPattern.values()) {
+//                if (type.getPattern().equals(pattern)) {
+//                    readingPattern = type;
+//                    patternFound = true;
+//                    break;
+//                }
+//            }
+//            if (!patternFound)
+//                readingPattern = ReadingPattern.valueOf("CUSTOM");
+//        }
+//        return readingPattern;
+//    }
+//
+//    public void setReadingPattern(ReadingPattern readingPattern) {
+//        // In yaml file, either readingPattern or pattern is mandatory. If it contains anything except CUSTOM, set pattern.
+//        // If it contains CUSTOM, yaml should contain a valid pattern.
+//        if (isValue() && readingPattern != ReadingPattern.CUSTOM) {
+//            this.pattern = readingPattern.getPattern();
+//        }
+//        this.readingPattern = readingPattern;
+//    }
 
-    public void setReadingPattern(ReadingPattern readingPattern) {
-        // In yaml file, either readingPattern or pattern is mandatory. If it contains anything except CUSTOM, set pattern.
-        // If it contains CUSTOM, yaml should contain a valid pattern.
-        if (isValue() && readingPattern != ReadingPattern.CUSTOM) {
-            this.pattern = readingPattern.getPattern();
-        }
-        this.readingPattern = readingPattern;
-    }
+//    public TimestampPattern getTimestampPattern() {
+//        // if not custom this checks if selected pattern is custom then timestamp patter is custom value and pattern has the
+//        // pattern value
+//        boolean patternFound = false;
+//        if (isTimestamp()) {
+//            for (TimestampPattern type : TimestampPattern.values()) {
+//                if (type.getPattern().equals(pattern)) {
+//                    timestampPattern = type;
+//                    patternFound = true;
+//                    break;
+//                }
+//            }
+//            if (!patternFound)
+//                timestampPattern = TimestampPattern.valueOf("CUSTOM");
+//        }
+//        return timestampPattern;
+//    }
 
-    public TimestampPattern getTimestampPattern() {
-        boolean patternFound = false;
-        if(isTimestamp()){
-            for (TimestampPattern type : TimestampPattern.values()) {
-                if (type.getPattern().equals(pattern)) {
-                    timestampPattern = type;
-                    patternFound = true;
-                    break;
-                }
-            }
-            if(!patternFound) timestampPattern = TimestampPattern.valueOf("CUSTOM");
-        }
-        return timestampPattern;
-    }
-
-    public void setTimestampPattern(TimestampPattern timestampPattern) {
-        // In yaml file, either timestampPattern or pattern is mandatory. If it contains anything except CUSTOM, set the pattern.
-        // If it contains CUSTOM, yaml should contain a valid pattern.
-        if (isTimestamp() && timestampPattern != TimestampPattern.CUSTOM) {
-            this.pattern = timestampPattern.getPattern();
-        }
-        this.timestampPattern = timestampPattern;
-    }
+//    public void setTimestampPattern(TimestampPattern timestampPattern) {
+//        // In yaml file, either timestampPattern or pattern is mandatory. If it contains anything except CUSTOM, set the pattern.
+//        // If it contains CUSTOM, yaml should contain a valid pattern.
+//        if (isTimestamp() && timestampPattern != TimestampPattern.CUSTOM) {
+//            this.pattern = timestampPattern.getPattern();
+//        }
+//        this.timestampPattern = timestampPattern;
+//    }
 
     public Integer getMaxLength() {
         return maxLength;
@@ -158,6 +166,39 @@ public class ExportField implements Displayable {
     }
 
     public String getPattern() {
+
+        /*
+         * boolean patternFound = false;
+         * if (isValue()) {
+         * for (ReadingPattern type : ReadingPattern.values()) {
+         * if (type.getPattern().equals(pattern)) {
+         * patternFound = true;
+         * break;
+         * }
+         * }
+         * // set a default value if pattern empty
+         * if (!patternFound)
+         * pattern = ReadingPattern.FIVE_ZERO.getPattern();
+         * } else if (isTimestamp()) {
+         * for (TimestampPattern type : TimestampPattern.values()) {
+         * if (type.getPattern().equals(pattern)) {
+         * patternFound = true;
+         * break;
+         * }
+         * }
+         * if (!patternFound)
+         * pattern = TimestampPattern.MONTH_DAY_YEAR.getPattern();
+         * } else if (field.isAttributeName()) {
+         * for (FieldValue value : FieldValue.values()) {
+         * if (value.name().equals(pattern)) {
+         * patternFound = true;
+         * break;
+         * }
+         * }
+         * if (!patternFound)
+         * pattern = FieldValue.DEFAULT.toString();
+         * }
+         */
         return pattern;
     }
 
@@ -165,46 +206,46 @@ public class ExportField implements Displayable {
         this.pattern = pattern;
     }
 
-    public FieldValue getFieldValue() {
-        boolean patternFound = false;
-        if (field.isAttributeName()) {
-            for (FieldValue value : FieldValue.values()) {
-                if (value.name().equals(pattern)) {
-                    fieldValue = value;
-                    patternFound = true;
-                    break;
-                }
-            }
-            if (!patternFound)
-                fieldValue = FieldValue.DEFAULT;
-        }
-        return fieldValue;
-    }
+//    public FieldValue getFieldValue() {
+//        boolean patternFound = false;
+//        if (field.isAttributeName()) {
+//            for (FieldValue value : FieldValue.values()) {
+//                if (value.name().equals(pattern)) {
+//                    fieldValue = value;
+//                    patternFound = true;
+//                    break;
+//                }
+//            }
+//            if (!patternFound)
+//                fieldValue = FieldValue.DEFAULT;
+//        }
+//        return fieldValue;
+//    }
 
-    public void setFieldValue(FieldValue fieldValue) {
-        if (field.isAttributeName()) {
-            this.pattern = fieldValue.name();
-        }
-        this.fieldValue = fieldValue;
-    }
+//    public void setFieldValue(FieldValue fieldValue) {
+//        if (field.isAttributeName()) {
+//            this.pattern = fieldValue.name();
+//        }
+//        this.fieldValue = fieldValue;
+//    }
 
     public boolean isValue() {
         return field.getType() == FieldType.POINT_VALUE || (field.isAttributeType() && attributeField == AttributeField.VALUE);
     }
-    
+
     public boolean isTimestamp() {
-        return field.getType() == FieldType.POINT_TIMESTAMP || 
+        return field.getType() == FieldType.POINT_TIMESTAMP ||
                 (field.isAttributeType() && attributeField == AttributeField.TIMESTAMP) ||
                 field.getType() == FieldType.RUNTIME;
     }
-    
+
     @JsonIgnore
     @Override
     public MessageSourceResolvable getMessage() {
-        MessageSourceResolvable  messageSourceResolvable = null;
+        MessageSourceResolvable messageSourceResolvable = null;
         if (field.getType() != null) {
             if (field.getType() == FieldType.ATTRIBUTE && field.getAttribute() != null
-                && field.getAttribute().getAttribute() != null) {
+                    && field.getAttribute().getAttribute() != null) {
                 messageSourceResolvable = field.getAttribute().getAttribute().getMessage();
             } else {
                 messageSourceResolvable = field.getType().getMessage();
@@ -212,7 +253,7 @@ public class ExportField implements Displayable {
         }
         return messageSourceResolvable;
     }
-    
+
     /**
      * This method takes care of any modifying that needs to take place
      * on the valueString to output the wanted representation.
@@ -236,8 +277,7 @@ public class ExportField implements Displayable {
                     // Put the padding on the left or right
                     if (padSide == PadSide.LEFT) {
                         valueString = paddedStr + valueString;
-                    }
-                    else if (padSide == PadSide.RIGHT) {
+                    } else if (padSide == PadSide.RIGHT) {
                         valueString += paddedStr;
                     }
                 }
@@ -249,7 +289,7 @@ public class ExportField implements Displayable {
         }
         return valueString;
     }
-    
+
     /**
      * Formats value by applying the value pattern.
      *
@@ -257,11 +297,11 @@ public class ExportField implements Displayable {
      * @return formatted String
      */
     public String formatValue(double value) {
-        
+
         DecimalFormat formatter = new DecimalFormat(pattern);
         formatter.setRoundingMode(roundingMode.getRoundingMode());
         String formatedValue = formatter.format(value);
-        
+
         return formatedValue;
     }
 
@@ -273,7 +313,7 @@ public class ExportField implements Displayable {
      */
     public String formatTimestamp(DateTime dateTime) {
         DateTimeFormatter formatter = DateTimeFormat.forPattern(pattern);
-        
+
         return dateTime.toString(formatter);
     }
 
@@ -298,13 +338,10 @@ public class ExportField implements Displayable {
         result = prime * result + ((padChar == null) ? 0 : padChar.hashCode());
         result = prime * result + ((padSide == null) ? 0 : padSide.hashCode());
         result = prime * result + ((pattern == null) ? 0 : pattern.hashCode());
-        result = prime * result
-                + ((readingPattern == null) ? 0 : readingPattern.hashCode());
+
         result = prime * result
                 + ((roundingMode == null) ? 0 : roundingMode.hashCode());
-        result = prime
-                * result
-                + ((timestampPattern == null) ? 0 : timestampPattern.hashCode());
+
         return result;
     }
 
@@ -370,22 +407,20 @@ public class ExportField implements Displayable {
         } else if (!pattern.equals(other.pattern)) {
             return false;
         }
-        if (readingPattern != other.readingPattern) {
-            return false;
-        }
+
         if (roundingMode != other.roundingMode) {
             return false;
         }
-        if (timestampPattern != other.timestampPattern) {
-            return false;
-        }
+
         return true;
     }
-    
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 + System.getProperty("line.separator");
     }
-    
+
+
+
 }

@@ -91,7 +91,7 @@ import com.google.common.collect.Lists;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_EXPORT)
 public class DataExporterFormatController {
-    
+
     public final static String BASE_KEY = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     private final static Logger log = YukonLogManager.getLogger(DataExporterFormatController.class);
 
@@ -110,19 +110,19 @@ public class DataExporterFormatController {
 
     @GetMapping(value = "/data-exporter/format/{id}")
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
-        
+
         model.addAttribute("mode", PageEditMode.EDIT);
-        
+
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(id);
-        
+
         model.addAttribute("format", format);
         model.addAttribute("formatName", format.getFormatName());
-        
+
         setupModel(model, userContext, format);
-        
+
         return "data-exporter/format/format.jsp";
     }
-    
+
     @GetMapping(value = "/data-exporter/format/renderTemplatePreview/{fileName}")
     public String renderTemplatePreview(ModelMap model, YukonUserContext userContext, FlashScope flashScope,
             @PathVariable String fileName, @ModelAttribute ExportFormat exportFormat, BindingResult result) {
@@ -144,7 +144,7 @@ public class DataExporterFormatController {
 
     @RequestMapping(value = "/data-exporter/format/{id}/copy", method = RequestMethod.GET)
     public String copy(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
-        
+
         String name = "";
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(id);
         name = format.getFormatName();
@@ -153,10 +153,10 @@ public class DataExporterFormatController {
 
         model.addAttribute("format", format);
         model.addAttribute("mode", PageEditMode.CREATE);
-        
+
         setupModel(model, userContext, format);
         toolsEventLogService.dataExportFormatCopyAttempted(userContext.getYukonUser(), name);
-        
+
         return "data-exporter/format/format.jsp";
     }
 
@@ -185,7 +185,7 @@ public class DataExporterFormatController {
         setupModel(model, userContext, exportFormat);
         return "data-exporter/format/format.jsp";
     }
-    
+
     private ExportFormat setExportFormatForErrorScenario() {
         ExportFormat format = new ExportFormat();
         format.setFormatType(ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
@@ -195,23 +195,23 @@ public class DataExporterFormatController {
     }
 
     @RequestMapping(value = "/data-exporter/format", method = RequestMethod.POST)
-    public String save(FlashScope flashScope, 
-            ModelMap model, 
+    public String save(FlashScope flashScope,
+            ModelMap model,
             YukonUserContext userContext,
-            @ModelAttribute("format") ExportFormat format, 
+            @ModelAttribute("format") ExportFormat format,
             BindingResult result) {
 
         exportFormatValidator.validate(format, result);
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flashScope.setError(messages);
-            
+
             model.addAttribute("mode", format.getFormatId() == 0 ? PageEditMode.CREATE : PageEditMode.EDIT);
             setupModel(model, userContext, format);
-            
+
             return "data-exporter/format/format.jsp";
         }
-        
+
         if (format.getFormatId() == 0) {
             archiveValuesExportFormatDao.create(format);
             toolsEventLogService.dataExportFormatCreated(userContext.getYukonUser(), format.getFormatName());
@@ -224,95 +224,96 @@ public class DataExporterFormatController {
 
         ArchivedValuesExporter archivedValuesExporter = new ArchivedValuesExporter();
         archivedValuesExporter.setFormatId(format.getFormatId());
-        
+
         return "redirect:view";
     }
-    
+
     @RequestMapping(value = "/data-exporter/format/{id}", method = RequestMethod.DELETE)
     public String delete(FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
-        
+
         String name = archiveValuesExportFormatDao.getName(id);
         archiveValuesExportFormatDao.delete(id);
-        //delete any jobs using this format
+        // delete any jobs using this format
         scheduledFileExportService.deleteAdeJobsByFormatId(id);
         toolsEventLogService.dataExportFormatDeleted(userContext.getYukonUser(), name);
         flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "deletedFormat", name));
-        
+
         return "redirect:/tools/data-exporter/view";
     }
-    
+
     @RequestMapping(value = "/data-exporter/format/attribute", method = RequestMethod.GET)
     public String attributePopup(ModelMap model, YukonUserContext userContext) {
-        
+
         model.addAttribute("attribute", new ExportAttribute());
-        
+
         Map<AttributeGroup, List<Attribute>> groupedAttributes = attributeService.getAllGroupedAttributes(userContext);
         model.addAttribute("groupedAttributes", groupedAttributes);
         model.addAttribute("dataSelection", DataSelection.values());
-        
+
         return "data-exporter/format/attribute.jsp";
     }
-    
+
     @RequestMapping(value = "/data-exporter/format/attribute", method = RequestMethod.POST)
-    public String attribute(ModelMap model, 
+    public String attribute(ModelMap model,
             YukonUserContext userContext,
             HttpServletResponse resp,
             @ModelAttribute("attribute") ExportAttribute attribute,
             BindingResult result) throws JsonGenerationException, JsonMappingException, IOException {
-        
+
         exportAttributeValidator.validate(attribute, result);
-        
+
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            
+
             Map<AttributeGroup, List<Attribute>> groupedAttributes = attributeService.getAllGroupedAttributes(userContext);
             model.addAttribute("groupedAttributes", groupedAttributes);
             model.addAttribute("dataSelection", DataSelection.values());
-            
+
             return "data-exporter/format/attribute.jsp";
         }
-        
+
         // success
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.clear();
-        
+
         Map<String, Object> json = new HashMap<>();
         json.put("attribute", attribute);
-        
+
         Map<String, Object> text = new HashMap<>();
         text.put("attribute", accessor.getMessage(attribute.getAttribute().getMessage()));
         text.put("dataSelection", accessor.getMessage(attribute.getDataSelection()));
         text.put("daysPrevious", attribute.getDaysPrevious());
-        
+
         json.put("text", text);
-        
+
         resp.setContentType("application/json");
         JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-        
+
         return null;
     }
-    
+
     @RequestMapping(value = "/data-exporter/format/field", method = RequestMethod.GET)
-    public String fieldPopup(ModelMap model, 
-            YukonUserContext userContext, 
-            @ModelAttribute AttributeList attributeList, 
+    public String fieldPopup(ModelMap model,
+            YukonUserContext userContext,
+            @ModelAttribute AttributeList attributeList,
             ArchivedValuesExportFormatType formatType,
             String exportFieldJson) throws IOException {
-        
+
         if (StringUtils.isEmpty(exportFieldJson)) {
             // add field popup
             ExportField exportField = new ExportField();
             RoundingMode roundingMode = globalSettingDao
-                .getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class)
-                .getRoundingMode();
+                    .getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class)
+                    .getRoundingMode();
             exportField.setRoundingMode(YukonRoundingMode.valueOf(roundingMode.name()));
             model.addAttribute("exportField", exportField);
         } else {
             // edit field popup
             ExportField exportField = JsonUtils.fromJson(exportFieldJson, ExportField.class);
             model.addAttribute("exportField", exportField);
+            model.addAttribute("customSelected", isCustom(exportField));
         }
-        
+
         model.addAttribute("fields", getFields(formatType, attributeList.getAttributes()));
         model.addAttribute("padSides", PadSide.values());
         model.addAttribute("fieldValues", FieldValue.values());
@@ -321,26 +322,26 @@ public class DataExporterFormatController {
         model.addAttribute("roundingModes", YukonRoundingMode.values());
         model.addAttribute("readingPatterns", ReadingPattern.values());
         model.addAttribute("timestampPatterns", TimestampPattern.values());
-        
+
         return "data-exporter/format/field.jsp";
     }
-    
+
     @RequestMapping(value = "/data-exporter/format/field", method = RequestMethod.POST)
-    public String field(ModelMap model, 
+    public String field(ModelMap model,
             YukonUserContext userContext,
             HttpServletResponse resp,
             ArchivedValuesExportFormatType formatType,
             @ModelAttribute AttributeList attributeList,
             @ModelAttribute("exportField") ExportField exportField,
             BindingResult result) throws JsonGenerationException, JsonMappingException, IOException {
-        
+
         exportFieldValidator.validate(exportField, result);
-        
+
         boolean failed = result.hasErrors();
-        
+
         if (failed) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            
+
             model.addAttribute("fields", getFields(formatType, attributeList.getAttributes()));
             model.addAttribute("fieldValues", FieldValue.values());
             model.addAttribute("padSides", PadSide.values());
@@ -349,7 +350,7 @@ public class DataExporterFormatController {
             model.addAttribute("roundingModes", YukonRoundingMode.values());
             model.addAttribute("readingPatterns", ReadingPattern.values());
             model.addAttribute("timestampPatterns", TimestampPattern.values());
-            
+
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             FieldError patternError = result.getFieldError("timestampPattern");
             if (patternError != null) {
@@ -359,10 +360,10 @@ public class DataExporterFormatController {
             if (patternError != null) {
                 model.addAttribute("readingPatternError", accessor.getMessage(patternError));
             }
-            
+
             return "data-exporter/format/field.jsp";
         }
-        
+
         // success
         FieldType type = exportField.getField().getType();
         boolean isPlainText = type == FieldType.PLAIN_TEXT;
@@ -377,9 +378,10 @@ public class DataExporterFormatController {
         Map<String, String> text = new HashMap<>();
         text.put("exportField", accessor.getMessage(exportField.getMessage()));
         text.put("attributeField", isAttribute ? accessor.getMessage(exportField.getAttributeField()) : "");
-        text.put("dataSelection", isAttribute ? accessor.getMessage(exportField.getField().getAttribute().getDataSelection()) : "");
+        text.put("dataSelection",
+                isAttribute ? accessor.getMessage(exportField.getField().getAttribute().getDataSelection()) : "");
         text.put("daysPrevious", isAttribute ? exportField.getField().getAttribute().getDaysPrevious().toString() : "");
-        
+
         if (isPlainText) {
             text.put("missingAttribute", "");
         } else {
@@ -389,37 +391,33 @@ public class DataExporterFormatController {
             }
             text.put("missingAttribute", missingText);
         }
-        
+
         text.put("roundingMode", isAttribute && isValue ? accessor.getMessage(exportField.getRoundingMode()) : "");
-        
+
         if (isPlainText || isTimestamp || isValue) {
             String pattern = exportField.getPattern();
             if (isValue) {
-                if (!exportField.getReadingPattern().isCustom()) {
-                    pattern = accessor.getMessage(exportField.getReadingPattern());
-                } else { // custom format, default if empty
-                    if (pattern.isEmpty()) {
-                        pattern = "#####.00";
-                    }
+                // custom format, default if empty
+                if (pattern.isEmpty()) {
+                    pattern = "#####.00";
                 }
+
             } else if (isTimestamp) {
-                if (!exportField.getTimestampPattern().isCustom()) {
-                    pattern = accessor.getMessage(exportField.getTimestampPattern());
-                } else { // custom format, default if empty
-                    if (pattern.isEmpty()) {
-                        pattern = "MM/dd/yyyy hh:mm:ss zZ";
-                    }
+                // custom format, default if empty
+                if (pattern.isEmpty()) {
+                    pattern = "MM/dd/yyyy hh:mm:ss zZ";
                 }
-            } 
+            }
             text.put("pattern", pattern);
         } else if (exportField.getField().isAttributeName()) {
-            exportField.setPattern(exportField.getFieldValue().name());
-            text.put("pattern", exportField.getFieldValue().toString());
+            exportField.setPattern(exportField.getPattern());
+            text.put("pattern", exportField.getPattern().toString());
         } else {
             text.put("pattern", "");
         }
-        
-        text.put("maxLength", exportField.getMaxLength() == 0 ? accessor.getMessage(BASE_KEY + "noMax") : exportField.getMaxLength().toString());
+
+        text.put("maxLength", exportField.getMaxLength() == 0 ? accessor.getMessage(BASE_KEY + "noMax") : exportField
+                .getMaxLength().toString());
         if (!isPlainText) {
             String padding = accessor.getMessage(exportField.getPadSide());
             if (exportField.getPadSide() != PadSide.NONE) {
@@ -434,59 +432,60 @@ public class DataExporterFormatController {
 
         resp.setContentType("application/json");
         JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-        
+
         return null;
     }
-    
+
     @RequestMapping(value = "/data-exporter/format/preview", method = RequestMethod.POST)
     public @ResponseBody Preview preview(YukonUserContext userContext, @ModelAttribute("format") ExportFormat format) {
-        
+
         Preview preview = exportReportGeneratorService.generatePreview(format, userContext);
-        
+
         return preview;
     }
-    
+
     public List<Field> getFields(ArchivedValuesExportFormatType formatType, List<ExportAttribute> attributes) {
-        
+
         List<Field> fieldSelect = Lists.newArrayList();
-        
+
         List<FieldType> fieldTypes = null;
         if (formatType == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE) {
             fieldTypes = Lists.newArrayList(FieldType.FIXED_ATTRIBUTE_FIELD_TYPES);
         } else if (formatType == ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE) {
             fieldTypes = Lists.newArrayList(FieldType.DYNAMIC_ATTRIBUTE_FIELD_TYPES);
         }
-        
+
         for (FieldType type : fieldTypes) {
             if (type != FieldType.ATTRIBUTE) {
                 fieldSelect.add(new Field(type, null));
             }
         }
-        
+
         if (!attributes.isEmpty()) {
             for (ExportAttribute attribute : attributes) {
                 Field field = new Field(FieldType.ATTRIBUTE, attribute);
                 fieldSelect.add(field);
             }
         }
-        
+
         return fieldSelect;
     }
-    
+
     /**
      * This method sets up the model for all the base information for the create and edit methods.
+     * 
      * @return Returns the javascript configuration map, incase more needs to be added to it.
      */
     private Map<String, Object> setupModel(ModelMap model, YukonUserContext userContext, ExportFormat format) {
-        
+
         model.addAttribute("showAttributeSection", format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
         model.addAttribute("delimiters", DataExportDelimiter.values());
         model.addAttribute("attributes", BuiltInAttribute.values());
         model.addAttribute("dateTimeZoneFormats", TimeZoneFormat.values());
-        
+
         Preview preview = exportReportGeneratorService.generatePreview(format, userContext);
         model.addAttribute("preview", preview);
-        
+
         /* json configuration object to pass to the js module */
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> config = new HashMap<>();
@@ -497,13 +496,13 @@ public class DataExporterFormatController {
         text.put("addField", accessor.getMessage("yukon.web.modules.tools.bulk.archivedValueExporter.addField.title"));
         config.put("text", text);
         model.put("jsConfig", config);
-        
+
         return config;
     }
-    
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        
+
         if (binder.getTarget() != null) {
             binder.setMessageCodesResolver(new YukonMessageCodeResolver(BASE_KEY));
         }
@@ -531,6 +530,7 @@ public class DataExporterFormatController {
                     setValue(null);
                 }
             }
+
             @Override
             public String getAsText() {
                 Field field = (Field) getValue();
@@ -561,6 +561,7 @@ public class DataExporterFormatController {
                     setValue(null);
                 }
             }
+
             @Override
             public String getAsText() {
                 ExportField exportField = (ExportField) getValue();
@@ -591,6 +592,7 @@ public class DataExporterFormatController {
                     setValue(null);
                 }
             }
+
             @Override
             public String getAsText() {
                 ExportAttribute exportAttribute = (ExportAttribute) getValue();
@@ -647,5 +649,29 @@ public class DataExporterFormatController {
             }
         }
         return validationErrors;
+    }
+    public Boolean isCustom(ExportField exportField) {
+
+        if (exportField.isValue()) {
+            for (ReadingPattern type : ReadingPattern.values()) {
+                if (type.getPattern().equals(exportField.getPattern())) {
+                    return false;
+                }
+            }
+        } else if (exportField.isTimestamp()) {
+            for (TimestampPattern type : TimestampPattern.values()) {
+                if (type.getPattern().equals(exportField.getPattern())) {
+                    return false;
+                }
+            }
+        } else if (exportField.getField().isAttributeName()) {
+            for (FieldValue value : FieldValue.values()) {
+                if (value.name().equals(exportField.getPattern())) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
