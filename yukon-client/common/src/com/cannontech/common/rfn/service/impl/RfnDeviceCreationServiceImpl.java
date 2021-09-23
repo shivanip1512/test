@@ -204,6 +204,72 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             throw createRuntimeException("Unable to create or find device for " + newDeviceIdentifier);
         }
     }
+    
+    @Override
+    public synchronized RfnDevice findDevices(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
+
+        dataTimestamp = dataTimestamp == null ? new Instant() : dataTimestamp;
+
+        if (newDeviceIdentifier == null || newDeviceIdentifier.is_Empty_()) {
+            throw createRuntimeException("Unable to find device for " + newDeviceIdentifier);
+        }
+        try {
+            return rfnDeviceDao.getDeviceForExactIdentifier(newDeviceIdentifier);
+        } catch (NotFoundException e) {
+            // find partially matching devices
+            List<RfnDevice> devices = rfnDeviceDao.getPartiallyMatchedDevices(newDeviceIdentifier.getSensorSerialNumber(),
+                    newDeviceIdentifier.getSensorManufacturer());
+
+            if (devices.size() > 1) {
+                log.debug(
+                        "Multiple matching devices found. Matching devices found:{}", newDeviceIdentifier, devices);
+                throw createRuntimeException(
+                        "found 2 or more partial matches " + devices);
+            }
+
+            if (devices.isEmpty()) {
+                log.debug("No matching devices found.", newDeviceIdentifier);
+
+            }
+
+            RfnDevice partiallyMatchedDevice = devices.get(0);
+            if (!partiallyMatchedDevice.getPaoIdentifier().getPaoType().isMeter()) {
+                log.warn("Matching device found but it is not a meter. Device found:{}",
+                        newDeviceIdentifier, partiallyMatchedDevice);
+            }
+
+            // time stamp of the last model change for this device
+            Instant lastChangeDataTimestamp = rfnDeviceDao
+                    .findModelChangeDataTimestamp(partiallyMatchedDevice.getPaoIdentifier().getPaoId());
+
+            if (lastChangeDataTimestamp == null) {
+                log.debug(
+                        "Matching device found. This device never had a model change. Updating exiting device. Device found:{} to be updating to:{}",
+                        partiallyMatchedDevice, newDeviceIdentifier);
+                return updateDeviceWithTheNewModel(newDeviceIdentifier, partiallyMatchedDevice, dataTimestamp);
+            }
+
+            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            if (dataTimestamp.isBefore(lastChangeDataTimestamp) || lastChangeDataTimestamp.isEqual(dataTimestamp)) {
+                log.info(
+                        "Data is out-of-order. The date of the point data {} is before the date of most recent device model change date {}. Using existing partially matched device without any modifications. Device found: {}",
+                        format.format(dataTimestamp.toDate()), format.format(lastChangeDataTimestamp.toDate()),
+                        partiallyMatchedDevice);
+                return partiallyMatchedDevice;
+            }
+
+            if (dataTimestamp.isAfter(lastChangeDataTimestamp)) {
+                log.debug(
+                        "The most recent device model change date {} is after point data date {}. Updating exiting device. Device found:{} to be updating to:{}",
+                        format.format(dataTimestamp.toDate()), format.format(lastChangeDataTimestamp.toDate()),
+                        partiallyMatchedDevice,
+                        newDeviceIdentifier);
+                return updateDeviceWithTheNewModel(newDeviceIdentifier, partiallyMatchedDevice, dataTimestamp);
+            }
+
+            throw createRuntimeException("Unable to find device for " + newDeviceIdentifier);
+        }
+    }
 
     /**
      * Updates device with the new model and changes pao type is applicable
@@ -469,4 +535,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     public String getUnknownTemplates() {
         return unknownTemplatesEncountered.entrySet().toString();
     }
+
+    
 }

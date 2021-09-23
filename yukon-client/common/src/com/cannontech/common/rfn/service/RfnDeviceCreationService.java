@@ -67,4 +67,10 @@ public interface RfnDeviceCreationService {
     RfnDevice create(RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user);
     
     public String getUnknownTemplates();
+    
+    /**
+     * This method is used to find devices based on passed newDeviceIdentifier
+     */
+    RfnDevice findDevices(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp);
+
 }
