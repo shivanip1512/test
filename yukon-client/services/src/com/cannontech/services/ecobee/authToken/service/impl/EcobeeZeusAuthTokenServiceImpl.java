@@ -75,6 +75,11 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
     private static final String refreshUrlPart = "auth/refresh?refresh_token=";
     private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
 
+    private static String ecobeePassword;
+    private static String ecobeeUsername;
+    private static String ecobeeServerURL;
+    private static DateTime tokenGeneratedTime;
+
     public EcobeeZeusAuthTokenServiceImpl(RestTemplate proxiedTemplate) {
         this.restTemplate = proxiedTemplate;
     }
@@ -90,6 +95,21 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
             factory.setHttpClient(httpClient);
         });
         restTemplate.setRequestFactory(factory);
+
+        ecobeePassword = globalSettingDao.getString(GlobalSettingType.ECOBEE_PASSWORD);
+        ecobeeUsername = globalSettingDao.getString(GlobalSettingType.ECOBEE_USERNAME);
+        ecobeeServerURL = globalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
+        asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
+            if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_PASSWORD) ||
+                    globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_USERNAME) ||
+                    globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_SERVER_URL)) {
+                ecobeePassword = globalSettingDao.getString(GlobalSettingType.ECOBEE_PASSWORD);
+                ecobeeUsername = globalSettingDao.getString(GlobalSettingType.ECOBEE_USERNAME);
+                ecobeeServerURL = globalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
+                ecobeeAuthTokenResponseCache.invalidateAll();
+                ecobeeAuthTokenResponseCache.put(responseCacheKey, generateEcobeeAuthTokenResponse());
+            }
+        });
     }
 
     @Override
@@ -106,23 +126,12 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
      */
     private ZeusEcobeeAuthTokenResponse generateEcobeeAuthTokenResponse() {
         try {
-            String ecobeePassword = globalSettingDao.getString(GlobalSettingType.ECOBEE_PASSWORD);
-            String ecobeeUsername = globalSettingDao.getString(GlobalSettingType.ECOBEE_USERNAME);
-            String ecobeeServerURL = globalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
             // Check if username, password and Ecobee URL available in global settings or not.
             if (StringUtils.isEmpty(ecobeeUsername) || StringUtils.isEmpty(ecobeePassword)
                     || StringUtils.isEmpty(ecobeeServerURL)) {
                 throw new EcobeeAuthenticationException("One or more ecobee configuration settings is empty.");
             }
 
-            asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
-                if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_PASSWORD) ||
-                        globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_USERNAME) ||
-                        globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_SERVER_URL)) {
-                    cancelExistingScheduler();
-                    generateEcobeeAuthTokenResponse();
-                }
-            });
             String url = ecobeeServerURL + authUrlPart;
             log.debug("Attempting login with ecobeeUsername " + ecobeeUsername + " URL: " + url);
 
@@ -137,6 +146,7 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
                 ZeusAuthenticationResponse response = authenticationResponse.getBody();
                 ZeusEcobeeAuthTokenResponse ecobeeAuthTokenResponse = buildZeusEcobeeAuthTokenResponse(response);
 
+                tokenGeneratedTime = DateTime.now(DateTimeZone.UTC);
                 scheduleRefreshAuthToken(ecobeeServerURL);
                 return ecobeeAuthTokenResponse;
             } else if (authenticationResponse.getStatusCode() == HttpStatus.UNAUTHORIZED) {
@@ -187,13 +197,15 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
                         }
                     }
                 }
-
+                ecobeeAuthTokenResponseCache.invalidateAll();
                 if (authenticationResponse.getStatusCode() == HttpStatus.OK) {
                     authTokenResponse = buildZeusEcobeeAuthTokenResponse(authenticationResponse.getBody());
                 } else {
-                    throw new EcobeeCommunicationException(
-                            "Unable to communicate with Ecobee API." + authenticationResponse.getStatusCode().toString());
+                    log.info("Ecobee refresh API call was unsuccessfull. Generating new tokens.");
+                    cancelExistingScheduler();
+                    authTokenResponse = generateEcobeeAuthTokenResponse();
                 }
+                ecobeeAuthTokenResponseCache.put(responseCacheKey, authTokenResponse);
             } catch (RestClientException e) {
                 throw new EcobeeCommunicationException("Unable to communicate with Ecobee API.", e);
             }
@@ -216,7 +228,7 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
      * the scheduler. Fresh scheduler will be scheduled for subsequent Ecobee call.
      */
     private void cancelRunningScheduler(String getExpiryTimestamp) {
-        if (isExpiredAuthToken(getExpiryTimestamp)) {
+        if (isExpiredRefreshToken(getExpiryTimestamp)) {
             schedulerFuture.cancel(true);
         }
     }
@@ -233,12 +245,11 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
     }
 
     /**
-     * Return true if the token is expired i.e current time is after expire time.
+     * Return true if the refresh token is expired i.e current time is after expire time.
      */
-    private boolean isExpiredAuthToken(String expiryTimestamp) {
-        DateTime currentTime = DateTime.now(DateTimeZone.UTC);
+    private boolean isExpiredRefreshToken(String expiryTimestamp) {
         DateTime expiryTime = formatter.parseDateTime(expiryTimestamp);
-        return currentTime.isAfter(expiryTime);
+        return tokenGeneratedTime.plusHours(24).isAfter(expiryTime);
     }
 
     @Override
