@@ -103,6 +103,9 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
             if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_PASSWORD) ||
                     globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_USERNAME) ||
                     globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_SERVER_URL)) {
+                ecobeePassword = globalSettingDao.getString(GlobalSettingType.ECOBEE_PASSWORD);
+                ecobeeUsername = globalSettingDao.getString(GlobalSettingType.ECOBEE_USERNAME);
+                ecobeeServerURL = globalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
                 ecobeeAuthTokenResponseCache.invalidateAll();
                 ecobeeAuthTokenResponseCache.put(responseCacheKey, generateEcobeeAuthTokenResponse());
             }
