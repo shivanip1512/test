@@ -469,4 +469,16 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     public String getUnknownTemplates() {
         return unknownTemplatesEncountered.entrySet().toString();
     }
+    
+    /**
+     * This method is used to find devices based on passed identifier
+     */
+    public RfnDevice findRfnDevices(RfnIdentifier identifier) {
+        try {
+            return rfnDeviceLookupService.getDevice(identifier);
+        } catch (NotFoundException ex) {
+            log.warn("Received devices for a gateway that's not in the database: " + identifier);
+            return null;
+        }
+    }
 }
