@@ -466,5 +466,5 @@ public class ComprehensiveMapController {
                     accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.errorMsg"));
         }
         return json;
-    }  
+    }
 }
