@@ -176,7 +176,10 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
 
                 //As refresh token is valid for 24 hours and our cache also get invalidated after 1439 minutes. We should cancel this scheduler after that.
                 cancelRunningScheduler(authTokenResponse.getExpiryTimestamp());
-
+                // Don't make API call if the scheduler is cancelled.
+                if (schedulerFuture.isCancelled()) {
+                    return;
+                }
                 String refreshToken = authTokenResponse.getRefreshToken();
                 String url = ecobeeServerURL + refreshUrlPart + refreshToken;
                 if(log.isDebugEnabled()) {
@@ -249,7 +252,7 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
      */
     private boolean isExpiredRefreshToken(String expiryTimestamp) {
         DateTime expiryTime = formatter.parseDateTime(expiryTimestamp);
-        return tokenGeneratedTime.plusHours(24).isAfter(expiryTime);
+        return tokenGeneratedTime.plusHours(24).isBefore(expiryTime);
     }
 
     @Override
