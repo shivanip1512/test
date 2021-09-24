@@ -75,7 +75,160 @@ yukon.tools.dataExporterFormat = (function() {
 
 			return data;
 		},
-	
+		/*This method disables other Fields which are binded to pattern while submitting Add form/ Edit form for Attribute/ Field Setup*/
+		disableOtherPatternsWhileSubmit = function() {
+			var popup = $('#format-popup'),
+				readingPatternCustom = popup.find('#reading-pattern-input'),
+				timestampPatternCustom = popup.find('#timestamp-pattern-input'),
+				field = JSON.parse(popup.find('#field-select').val()).type,
+				attributeField = popup.find('#attribute-field').val();
+
+			if (field === 'ATTRIBUTE') {
+				if ((!timestampPatternCustom.hasClass('dn') || timestampPatternCustom.hasClass('error')) && (attributeField === 'TIMESTAMP')) {
+					popup.find('.timestamp-pattern-select').prop('disabled', true);
+					popup.find('#reading-pattern-input').prop('disabled', true);
+					popup.find('.reading-pattern-select').prop('disabled', true);
+					popup.find('#field-value-pattern-select').prop('disabled', true);
+
+				}
+				else if (timestampPatternCustom.hasClass('dn') && (attributeField === 'TIMESTAMP')) {
+					popup.find('#timestamp-pattern-input').prop('disabled', true);
+					popup.find('#reading-pattern-input').prop('disabled', true);
+					popup.find('.reading-pattern-select').prop('disabled', true);
+					popup.find('#field-value-pattern-select').prop('disabled', true);
+				}
+				if ((!readingPatternCustom.hasClass('dn') || readingPatternCustom.hasClass('error')) && attributeField === 'VALUE') {
+					popup.find('.reading-pattern-select').prop('disabled', true);
+					popup.find('#timestamp-pattern-input').prop('disabled', true);
+					popup.find('.timestamp-pattern-select').prop('disabled', true);
+					popup.find('#field-value-pattern-select').prop('disabled', true);
+
+				}
+				else if (readingPatternCustom.hasClass('dn') && attributeField === 'VALUE') {
+					popup.find('#reading-pattern-input').prop('disabled', true);
+					popup.find('#timestamp-pattern-input').prop('disabled', true);
+					popup.find('.timestamp-pattern-select').prop('disabled', true);
+					popup.find('#field-value-pattern-select').prop('disabled', true);
+				}
+
+			}
+			else {
+				if ((!timestampPatternCustom.hasClass('dn') || timestampPatternCustom.hasClass('error')) && (field === 'POINT_TIMESTAMP' || field === 'RUNTIME')) {
+					popup.find('.timestamp-pattern-select').prop('disabled', true);
+					popup.find('#reading-pattern-input').prop('disabled', true);
+					popup.find('.reading-pattern-select').prop('disabled', true);
+					popup.find('#field-value-pattern-select').prop('disabled', true);
+				}
+				else if (timestampPatternCustom.hasClass('dn') && (field === 'POINT_TIMESTAMP' || field === 'RUNTIME')) {
+					popup.find('#timestamp-pattern-input').prop('disabled', true);
+					popup.find('#reading-pattern-input').prop('disabled', true);
+					popup.find('#field-value-pattern-select').prop('disabled', true);
+					popup.find('.reading-pattern-select').prop('disabled', true);
+				}
+				if ((!readingPatternCustom.hasClass('dn') || readingPatternCustom.hasClass('error')) && field === 'POINT_VALUE') {
+					popup.find('.reading-pattern-select').prop('disabled', true);
+					popup.find('#timestamp-pattern-input').prop('disabled', true);
+					popup.find('.timestamp-pattern-select').prop('disabled', true);
+					popup.find('#field-value-pattern-select').prop('disabled', true);
+				}
+				else if (readingPatternCustom.hasClass('dn') && field === 'POINT_VALUE') {
+					popup.find('#reading-pattern-input').prop('disabled', true);
+					popup.find('#timestamp-pattern-input').prop('disabled', true);
+					popup.find('.timestamp-pattern-select').prop('disabled', true);
+					popup.find('#field-value-pattern-select').prop('disabled', true);
+				}
+				else if (field === 'ATTRIBUTE_NAME') {
+					popup.find('#timestamp-pattern-input').prop('disabled', true);
+					popup.find('#reading-pattern-input').prop('disabled', true);
+					popup.find('.timestamp-pattern-select').prop('disabled', true);
+					popup.find('.reading-pattern-select').prop('disabled', true);
+
+				}
+			}
+
+		},
+
+		/*For Attribute/Field Setup  : This function removes binding of pattern errror to both textbox and  timestamp pattern/reading pattern and shows only one of them*/
+		removePatternDoubleError = function() {
+			var popup = $('#format-popup'),
+				timestampPattern = popup.find('.timestamp-pattern-select'),
+				readingPattern = popup.find('.reading-pattern-select'),
+				field = JSON.parse($('#format-popup').find('#field-select').val()).type,
+				attributeField = popup.find('#attribute-field').val();
+			if (field === 'ATTRIBUTE') {
+				if (attributeField === 'TIMESTAMP') {
+					var timestampPatternError = popup.find('#timestampPatternErrors').val();
+					if (timestampPatternError) {
+						var timestampPatternRow = popup.find('#timestamp-pattern'),
+							firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
+						//remove second validation error and line break
+						firstTimestampPatternError.prev('br').remove();
+						firstTimestampPatternError.remove();
+						firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
+						firstTimestampPatternError.prev('br').remove();
+						timestampPattern.removeClass("error");
+						//default value of respnse text is mm/dd/yy , setting it to custom
+						popup.find('.timestamp-pattern-select').val('CUSTOM');
+						$('#timestamp-pattern-input').show();
+						timestampPatternRow.find("span[id='pattern.errors']");
+					}
+				}
+				else if (attributeField === 'VALUE') {
+					var readingPatternError = popup.find('#readingPatternErrors').val();
+					if (readingPatternError) {
+						var readingPatternRow = popup.find('#reading-pattern'),
+							firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
+						//remove second validation error and line break
+						firstReadingPatternError.prev('br').remove();
+						firstReadingPatternError.remove();
+						firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
+						firstReadingPatternError.prev('br').remove();
+						readingPattern.removeClass("error");
+						popup.find('.reading-pattern-select').val('CUSTOM');
+						$('#reading-pattern-input').show();
+						readingPatternRow.find("span[id='pattern.errors']");
+					}
+				}
+			}
+			else {
+				if (field === 'POINT_TIMESTAMP' || field === 'RUNTIME') {
+					var timestampPatternError = popup.find('#timestampPatternErrors').val();
+					if (timestampPatternError) {
+						var timestampPatternRow = popup.find('#timestamp-pattern'),
+							firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
+						//remove second validation error and line break
+						firstTimestampPatternError.prev('br').remove();
+						firstTimestampPatternError.remove();
+						firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
+						firstTimestampPatternError.prev('br').remove();
+						timestampPattern.removeClass("error");
+						//default value of respnse text is mm/dd/yy , setting it to custom
+						$('#format-popup').find('.timestamp-pattern-select').val('CUSTOM');
+						$('#timestamp-pattern-input').show();
+						timestampPatternRow.find("span[id='pattern.errors']");
+					}
+				}
+				else if (field === 'POINT_VALUE') {
+					var readingPatternError = popup.find('#readingPatternErrors').val();
+					if (readingPatternError) {
+						var readingPatternRow = popup.find('#reading-pattern'),
+							firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
+						//remove second validation error and line break
+						firstReadingPatternError.prev('br').remove();
+						firstReadingPatternError.remove();
+						firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
+						firstReadingPatternError.prev('br').remove();
+						readingPattern.removeClass("error");
+						popup.find('.reading-pattern-select').val('CUSTOM');
+						$('#reading-pattern-input').show();
+						readingPatternRow.find("span[id='pattern.errors']");
+					}
+				}
+			}
+
+
+		},
+
 		mod = {
 
 			/**
@@ -176,6 +329,7 @@ yukon.tools.dataExporterFormat = (function() {
 						},
 						error: function(xhr, status, error, $form) {
 							$('#format-popup').html(xhr.responseText);
+
 						}
 					});
 				});
@@ -186,75 +340,8 @@ yukon.tools.dataExporterFormat = (function() {
 				 * or closes popup and updates row if validation succeded. 
 				 */
 				$('#format-popup').on('yukon.data.export.format.field.add', function(event) {
-					var popup = $('#format-popup'),
-						readingPatternCustom = popup.find('#reading-pattern-input'),
-						timestampPatternCustom = popup.find('#timestamp-pattern-input'),
-						field = JSON.parse(popup.find('#field-select').val()).type,
-						attributeField = popup.find('#attribute-field').val();
 
-				
-					if (field === 'ATTRIBUTE') {
-						if ((!timestampPatternCustom.hasClass('dn') || timestampPatternCustom.hasClass('error')) && (attributeField === 'TIMESTAMP')) {
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('.reading-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-
-						}
-						else if (timestampPatternCustom.hasClass('dn') && (attributeField === 'TIMESTAMP')) {
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('.reading-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-						if ((!readingPatternCustom.hasClass('dn') || readingPatternCustom.hasClass('error')) && attributeField === 'VALUE') {
-							popup.find('.reading-pattern-select').prop('disabled', true);
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-
-						}
-						else if (readingPatternCustom.hasClass('dn') && attributeField === 'VALUE') {
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-
-					}
-					else {
-						if ((!timestampPatternCustom.hasClass('dn') || timestampPatternCustom.hasClass('error')) && (field === 'POINT_TIMESTAMP' || field === 'RUNTIME')) {
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('.reading-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-						else if (timestampPatternCustom.hasClass('dn') && (field === 'POINT_TIMESTAMP' || field === 'RUNTIME')) {
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-							popup.find('.reading-pattern-select').prop('disabled', true);
-						}
-						if ((!readingPatternCustom.hasClass('dn') || readingPatternCustom.hasClass('error')) && field === 'POINT_VALUE') {
-							popup.find('.reading-pattern-select').prop('disabled', true);
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-						else if (readingPatternCustom.hasClass('dn') && field === 'POINT_VALUE') {
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-						else if (field === 'ATTRIBUTE_NAME') {
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('.reading-pattern-select').prop('disabled', true);
-
-						}
-					}
+					disableOtherPatternsWhileSubmit();
 
 					$('#field-form').ajaxSubmit({
 						url: _fieldUrl,
@@ -292,43 +379,7 @@ yukon.tools.dataExporterFormat = (function() {
 						},
 						error: function(xhr, status, error, $form) {
 							$('#format-popup').html(xhr.responseText);
-							var timestampPattern = $('#format-popup').find('.timestamp-pattern-select'),
-								readingPattern = $('#format-popup').find('.reading-pattern-select');
-							if ((field === 'ATTRIBUTE' && attributeField === 'TIMESTAMP') || field === 'POINT_TIMESTAMP' || field === 'RUNTIME') {
-								var timestampPatternError = $('#format-popup').find('#timestampPatternErrors').val();
-								if (timestampPatternError) {
-									var timestampPatternRow = $('#format-popup').find('#timestamp-pattern'),
-										firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
-									//remove second validation error and line break
-									firstTimestampPatternError.prev('br').remove();
-									firstTimestampPatternError.remove();
-									firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
-									firstTimestampPatternError.prev('br').remove();
-									timestampPattern.removeClass("error");
-									//default value of respnse text is mm/dd/yy , setting it to custom
-									$('#format-popup').find('.timestamp-pattern-select').val('CUSTOM');
-									$('#timestamp-pattern-input').show();
-									timestampPatternRow.find("span[id='pattern.errors']");
-									$('#timestamp-pattern-input').removeClass('dn');
-								}
-							}
-							else if ((field === 'ATTRIBUTE' && attributeField === 'VALUE') || field === 'POINT_VALUE') {
-								var readingPatternError = $('#format-popup').find('#readingPatternErrors').val();
-								if (readingPatternError) {
-									var readingPatternRow = $('#format-popup').find('#reading-pattern'),
-										firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
-									//remove second validation error and line break
-									firstReadingPatternError.prev('br').remove();
-									firstReadingPatternError.remove();
-									firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
-									firstReadingPatternError.prev('br').remove();
-									readingPattern.removeClass("error");
-									$('#format-popup').find('.reading-pattern-select').val('CUSTOM');
-									$('#reading-pattern-input').show();
-									readingPatternRow.find("span[id='pattern.errors']");
-								}
-
-							}
+							removePatternDoubleError();
 						}
 
 					});
@@ -439,6 +490,7 @@ yukon.tools.dataExporterFormat = (function() {
 						error: function(xhr, status, error, $form) {
 							// show the validated form
 							$('#format-popup').html(xhr.responseText);
+
 						}
 					});
 				});
@@ -449,74 +501,9 @@ yukon.tools.dataExporterFormat = (function() {
 				 * or closes popup and updates row if validation succeded.
 				 */
 				$(document).on('yukon.data.export.format.field.edit', function(ev) {
-					var popup = $('#format-popup'),
-						readingPatternCustom = popup.find('#reading-pattern-input'),
-						timestampPatternCustom = popup.find('#timestamp-pattern-input'),
-						field = JSON.parse(popup.find('#field-select').val()).type,
-						attributeField = popup.find('#attribute-field').val();
-					//type = field.type,
-					//fieldType = popup.find('#field-select').val;
-					/*	attributeNamePattern = popup.find('#field-value-pattern-select');
-					if (attributeNamePattern.exists()&& !attributeNamePattern.hasClass('dn')) {
-						attributeNamePattern.prop('disabled', true);
-					}*/
-					if (field === 'ATTRIBUTE') {
-						if ((!timestampPatternCustom.hasClass('dn') || timestampPatternCustom.hasClass('error')) && attributeField === 'TIMESTAMP') {
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('.reading-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-						else if (timestampPatternCustom.hasClass('dn') && (attributeField === 'TIMESTAMP')) {
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('.reading-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-						if ((!readingPatternCustom.hasClass('dn') || readingPatternCustom.hasClass('error')) && attributeField === 'VALUE') {
-							popup.find('.reading-pattern-select').prop('disabled', true);
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-						else if (readingPatternCustom.hasClass('dn') && attributeField === 'VALUE') {
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-					} else {
-						if ((!timestampPatternCustom.hasClass('dn') || timestampPatternCustom.hasClass('error')) && (field === 'POINT_TIMESTAMP' || field === 'RUNTIME')) {
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('.reading-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-						else if (timestampPatternCustom.hasClass('dn') && (field === 'POINT_TIMESTAMP' || field === 'RUNTIME')) {
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('.reading-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-						if ((!readingPatternCustom.hasClass('dn') || readingPatternCustom.hasClass('error')) && field === 'POINT_VALUE') {
-							popup.find('.reading-pattern-select').prop('disabled', true);
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-						else if (readingPatternCustom.hasClass('dn') && field === 'POINT_VALUE') {
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('#field-value-pattern-select').prop('disabled', true);
-						}
-						else if (field === 'ATTRIBUTE_NAME') {
-							popup.find('#timestamp-pattern-input').prop('disabled', true);
-							popup.find('#reading-pattern-input').prop('disabled', true);
-							popup.find('.timestamp-pattern-select').prop('disabled', true);
-							popup.find('.reading-pattern-select').prop('disabled', true);
-						}
-					}
+
+					disableOtherPatternsWhileSubmit();
+
 					var row = $(ev.target);
 					field = row.find('td:first-child'),
 						attributeField = field.next(),
@@ -553,80 +540,7 @@ yukon.tools.dataExporterFormat = (function() {
 						error: function(xhr, status, error, $form) {
 							// show the validated form
 							$('#format-popup').html(xhr.responseText);
-							var timestampPattern = $('#format-popup').find('.timestamp-pattern-select'),
-								readingPattern = $('#format-popup').find('.reading-pattern-select'),
-								attr = JSON.parse($('#format-popup').find('#field-select').val()).type,
-								attrField = popup.find('#attribute-field').val();
-							if (attr === 'ATTRIBUTE') {
-								if (attrField === 'TIMESTAMP') {
-									var timestampPatternError = $('#format-popup').find('#timestampPatternErrors').val();
-									if (timestampPatternError) {
-										var timestampPatternRow = $('#format-popup').find('#timestamp-pattern'),
-											firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
-										//remove second validation error and line break
-										firstTimestampPatternError.prev('br').remove();
-										firstTimestampPatternError.remove();
-										firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
-										firstTimestampPatternError.prev('br').remove();
-										timestampPattern.removeClass("error");
-										//default value of respnse text is mm/dd/yy , setting it to custom
-										$('#format-popup').find('.timestamp-pattern-select').val('CUSTOM');
-										$('#timestamp-pattern-input').show();
-										timestampPatternRow.find("span[id='pattern.errors']");
-									}
-								}
-								else if (attrField === 'VALUE') {
-									var readingPatternError = $('#format-popup').find('#readingPatternErrors').val();
-									if (readingPatternError) {
-										var readingPatternRow = $('#format-popup').find('#reading-pattern'),
-											firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
-										//remove second validation error and line break
-										firstReadingPatternError.prev('br').remove();
-										firstReadingPatternError.remove();
-										firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
-										firstReadingPatternError.prev('br').remove();
-										readingPattern.removeClass("error");
-										$('#format-popup').find('.reading-pattern-select').val('CUSTOM');
-										$('#reading-pattern-input').show();
-										readingPatternRow.find("span[id='pattern.errors']");
-									}
-								}
-							}
-							else {
-								if (attr === 'POINT_TIMESTAMP' || attr === 'RUNTIME') {
-									var timestampPatternError = $('#format-popup').find('#timestampPatternErrors').val();
-									if (timestampPatternError) {
-										var timestampPatternRow = $('#format-popup').find('#timestamp-pattern'),
-											firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
-										//remove second validation error and line break
-										firstTimestampPatternError.prev('br').remove();
-										firstTimestampPatternError.remove();
-										firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
-										firstTimestampPatternError.prev('br').remove();
-										timestampPattern.removeClass("error");
-										//default value of respnse text is mm/dd/yy , setting it to custom
-										$('#format-popup').find('.timestamp-pattern-select').val('CUSTOM');
-										$('#timestamp-pattern-input').show();
-										timestampPatternRow.find("span[id='pattern.errors']");
-									}
-								}
-								else if (attr === 'POINT_VALUE') {
-									var readingPatternError = $('#format-popup').find('#readingPatternErrors').val();
-									if (readingPatternError) {
-										var readingPatternRow = $('#format-popup').find('#reading-pattern'),
-											firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
-										//remove second validation error and line break
-										firstReadingPatternError.prev('br').remove();
-										firstReadingPatternError.remove();
-										firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
-										firstReadingPatternError.prev('br').remove();
-										readingPattern.removeClass("error");
-										$('#format-popup').find('.reading-pattern-select').val('CUSTOM');
-										$('#reading-pattern-input').show();
-										readingPatternRow.find("span[id='pattern.errors']");
-									}
-								}
-							}
+							removePatternDoubleError();
 						}
 					});
 				});
@@ -696,6 +610,7 @@ yukon.tools.dataExporterFormat = (function() {
 							$('.reading-pattern-select').prop('disabled', false);
 							$('.timestamp-pattern-select').prop('disabled', true);
 							$('#field-value-pattern-select').prop('disabled', true);
+							$('.timestamp-pattern-select').removeClass('error');
 							pattern.val(_getReadingPattern());
 							timestampPattern.hide();
 							readingPattern.show();
