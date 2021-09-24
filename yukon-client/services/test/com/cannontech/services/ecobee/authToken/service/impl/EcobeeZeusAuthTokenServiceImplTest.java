@@ -56,8 +56,8 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         ReflectionTestUtils.setField(impl, "tokenGeneratedTime", tokenGeneratedTime);
         DateTime beforeTime = DateTime.now(DateTimeZone.UTC).minusHours(1);
         DateTime afterTime = DateTime.now(DateTimeZone.UTC).plusHours(1);
-        assertTrue((boolean) method.invoke(impl, formatter.print(beforeTime)), "Must be true");
-        assertFalse((boolean) method.invoke(impl, formatter.print(afterTime)), "Must be false");
+        assertFalse((boolean) method.invoke(impl, formatter.print(beforeTime)), "Must be false");
+        assertTrue((boolean) method.invoke(impl, formatter.print(afterTime)), "Must be true");
     }
 
     @Test
