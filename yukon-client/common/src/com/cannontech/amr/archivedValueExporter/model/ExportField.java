@@ -7,23 +7,17 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
-import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ExportField implements Displayable {
 
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private int fieldId;
     private Field field = new Field();
     private int formatId;
     private AttributeField attributeField;
-    // private ReadingPattern readingPattern = ReadingPattern.FIVE_ZERO;
-    // private TimestampPattern timestampPattern = TimestampPattern.MONTH_DAY_YEAR; // MERICA!
     private Integer maxLength = 0;
     private String padChar;
     private PadSide padSide = PadSide.NONE;
@@ -31,7 +25,7 @@ public class ExportField implements Displayable {
     private MissingAttribute missingAttribute;
     private String missingAttributeValue;
     private String pattern;
-    // private FieldValue fieldValue;
+
 
     public int getFieldId() {
         return fieldId;
@@ -64,58 +58,6 @@ public class ExportField implements Displayable {
     public void setAttributeField(AttributeField attributeField) {
         this.attributeField = attributeField;
     }
-
-//    public ReadingPattern getReadingPattern() {
-//        boolean patternFound = false;
-//        if (isValue()) {
-//            for (ReadingPattern type : ReadingPattern.values()) {
-//                if (type.getPattern().equals(pattern)) {
-//                    readingPattern = type;
-//                    patternFound = true;
-//                    break;
-//                }
-//            }
-//            if (!patternFound)
-//                readingPattern = ReadingPattern.valueOf("CUSTOM");
-//        }
-//        return readingPattern;
-//    }
-//
-//    public void setReadingPattern(ReadingPattern readingPattern) {
-//        // In yaml file, either readingPattern or pattern is mandatory. If it contains anything except CUSTOM, set pattern.
-//        // If it contains CUSTOM, yaml should contain a valid pattern.
-//        if (isValue() && readingPattern != ReadingPattern.CUSTOM) {
-//            this.pattern = readingPattern.getPattern();
-//        }
-//        this.readingPattern = readingPattern;
-//    }
-
-//    public TimestampPattern getTimestampPattern() {
-//        // if not custom this checks if selected pattern is custom then timestamp patter is custom value and pattern has the
-//        // pattern value
-//        boolean patternFound = false;
-//        if (isTimestamp()) {
-//            for (TimestampPattern type : TimestampPattern.values()) {
-//                if (type.getPattern().equals(pattern)) {
-//                    timestampPattern = type;
-//                    patternFound = true;
-//                    break;
-//                }
-//            }
-//            if (!patternFound)
-//                timestampPattern = TimestampPattern.valueOf("CUSTOM");
-//        }
-//        return timestampPattern;
-//    }
-
-//    public void setTimestampPattern(TimestampPattern timestampPattern) {
-//        // In yaml file, either timestampPattern or pattern is mandatory. If it contains anything except CUSTOM, set the pattern.
-//        // If it contains CUSTOM, yaml should contain a valid pattern.
-//        if (isTimestamp() && timestampPattern != TimestampPattern.CUSTOM) {
-//            this.pattern = timestampPattern.getPattern();
-//        }
-//        this.timestampPattern = timestampPattern;
-//    }
 
     public Integer getMaxLength() {
         return maxLength;
@@ -166,68 +108,12 @@ public class ExportField implements Displayable {
     }
 
     public String getPattern() {
-
-        /*
-         * boolean patternFound = false;
-         * if (isValue()) {
-         * for (ReadingPattern type : ReadingPattern.values()) {
-         * if (type.getPattern().equals(pattern)) {
-         * patternFound = true;
-         * break;
-         * }
-         * }
-         * // set a default value if pattern empty
-         * if (!patternFound)
-         * pattern = ReadingPattern.FIVE_ZERO.getPattern();
-         * } else if (isTimestamp()) {
-         * for (TimestampPattern type : TimestampPattern.values()) {
-         * if (type.getPattern().equals(pattern)) {
-         * patternFound = true;
-         * break;
-         * }
-         * }
-         * if (!patternFound)
-         * pattern = TimestampPattern.MONTH_DAY_YEAR.getPattern();
-         * } else if (field.isAttributeName()) {
-         * for (FieldValue value : FieldValue.values()) {
-         * if (value.name().equals(pattern)) {
-         * patternFound = true;
-         * break;
-         * }
-         * }
-         * if (!patternFound)
-         * pattern = FieldValue.DEFAULT.toString();
-         * }
-         */
         return pattern;
     }
 
     public void setPattern(String pattern) {
         this.pattern = pattern;
     }
-
-//    public FieldValue getFieldValue() {
-//        boolean patternFound = false;
-//        if (field.isAttributeName()) {
-//            for (FieldValue value : FieldValue.values()) {
-//                if (value.name().equals(pattern)) {
-//                    fieldValue = value;
-//                    patternFound = true;
-//                    break;
-//                }
-//            }
-//            if (!patternFound)
-//                fieldValue = FieldValue.DEFAULT;
-//        }
-//        return fieldValue;
-//    }
-
-//    public void setFieldValue(FieldValue fieldValue) {
-//        if (field.isAttributeName()) {
-//            this.pattern = fieldValue.name();
-//        }
-//        this.fieldValue = fieldValue;
-//    }
 
     public boolean isValue() {
         return field.getType() == FieldType.POINT_VALUE || (field.isAttributeType() && attributeField == AttributeField.VALUE);
@@ -421,6 +307,29 @@ public class ExportField implements Displayable {
                 + System.getProperty("line.separator");
     }
 
+    public Boolean isCustomPattern() {
 
+        if (isValue()) {
+            for (ReadingPattern type : ReadingPattern.values()) {
+                if (type.getPattern().equals(pattern)) {
+                    return false;
+                }
+            }
+        } else if (isTimestamp()) {
+            for (TimestampPattern type : TimestampPattern.values()) {
+                if (type.getPattern().equals(pattern)) {
+                    return false;
+                }
+            }
+        } else if (getField().isAttributeName()) {
+            for (FieldValue value : FieldValue.values()) {
+                if (value.name().equals(pattern)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 
 }

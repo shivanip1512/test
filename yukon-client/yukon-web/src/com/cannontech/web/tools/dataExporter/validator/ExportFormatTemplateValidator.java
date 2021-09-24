@@ -227,7 +227,7 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                     Object fieldValue = field.get(exportField);
                     String fieldName = field.getName();
                     if (applicableFieldList.contains(fieldName) && fieldName.equals(readingPattern)) {
-                        if (exportField.getReadingPattern() == ReadingPattern.CUSTOM
+                        if (exportField.isCustomPattern()
                                 && StringUtils.isEmpty(exportField.getPattern())) {
                             if (!errors.hasFieldErrors(pattern)) {
                                 errors.rejectValue(pattern, requiredKey, new Object[] { pattern, type }, "");

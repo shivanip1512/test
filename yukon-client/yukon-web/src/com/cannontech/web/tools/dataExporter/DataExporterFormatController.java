@@ -311,7 +311,7 @@ public class DataExporterFormatController {
             // edit field popup
             ExportField exportField = JsonUtils.fromJson(exportFieldJson, ExportField.class);
             model.addAttribute("exportField", exportField);
-            model.addAttribute("customSelected", isCustom(exportField));
+            model.addAttribute("customSelected", exportField.isCustomPattern());
         }
 
         model.addAttribute("fields", getFields(formatType, attributeList.getAttributes()));
@@ -352,13 +352,15 @@ public class DataExporterFormatController {
             model.addAttribute("timestampPatterns", TimestampPattern.values());
 
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            FieldError patternError = result.getFieldError("timestampPattern");
-            if (patternError != null) {
+            FieldError patternError = result.getFieldError("pattern");
+            if (patternError != null && exportField.isTimestamp()) {
                 model.addAttribute("timestampPatternError", accessor.getMessage(patternError));
+               // result.getFieldErrors();
             }
-            patternError = result.getFieldError("readingPattern");
-            if (patternError != null) {
+            patternError = result.getFieldError("pattern");
+            if (patternError != null && exportField.isValue()) {
                 model.addAttribute("readingPatternError", accessor.getMessage(patternError));
+               // result.getFieldErrors().remove(patternError);
             }
 
             return "data-exporter/format/field.jsp";
@@ -650,28 +652,5 @@ public class DataExporterFormatController {
         }
         return validationErrors;
     }
-    public Boolean isCustom(ExportField exportField) {
 
-        if (exportField.isValue()) {
-            for (ReadingPattern type : ReadingPattern.values()) {
-                if (type.getPattern().equals(exportField.getPattern())) {
-                    return false;
-                }
-            }
-        } else if (exportField.isTimestamp()) {
-            for (TimestampPattern type : TimestampPattern.values()) {
-                if (type.getPattern().equals(exportField.getPattern())) {
-                    return false;
-                }
-            }
-        } else if (exportField.getField().isAttributeName()) {
-            for (FieldValue value : FieldValue.values()) {
-                if (value.name().equals(exportField.getPattern())) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
 }

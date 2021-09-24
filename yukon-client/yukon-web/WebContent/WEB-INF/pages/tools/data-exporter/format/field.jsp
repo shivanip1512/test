@@ -71,7 +71,7 @@
 					<tags:input id="reading-pattern-input" size="10" maxlength="30"
 						inputClass="dn" path="pattern" />
 					<c:if test="${not empty readingPatternError}">
-						<span class="error">${fn:escapeXml(readingPatternError)}</span>
+					 <input type="hidden" id="readingPatternErrors" value="true">
 					</c:if>
 					<cti:icon icon="icon-help" data-popup="#value-help" classes="cp fn" />
 				</tags:nameValue2>
@@ -85,7 +85,7 @@
 					<tags:input id="timestamp-pattern-input" size="10" maxlength="30"
 						inputClass="dn" path="pattern" />
 					<c:if test="${not empty timestampPatternError}">
-						<span class="error">${fn:escapeXml(timestampPatternError)}</span>
+					  <input type="hidden" id="timestampPatternErrors" value="true">
 					</c:if>
 					<cti:icon icon="icon-help" data-popup="#value-help" classes="cp fn" />
 				</tags:nameValue2>
@@ -97,9 +97,9 @@
 				<c:set var="classes" value="${exportField.field.attributeName ? '' : 'dn'}"/>
                 <tags:nameValue2 rowId="field-value" nameKey=".fieldValue" rowClass="${classes}">
                     <form:select id="field-value-pattern-select" path="pattern">
-                        <c:forEach var="pattern" items="${fieldValues}">
-                            <form:option value="${pattern}">
-                            <cti:msg2 key="${pattern}"/></form:option>
+                        <c:forEach var="fieldValue" items="${fieldValues}">
+                            <form:option value="${fieldValue}">
+                            <cti:msg2 key="${fieldValue}"/></form:option>
                         </c:forEach>
                     </form:select>&nbsp;
                 </tags:nameValue2>
