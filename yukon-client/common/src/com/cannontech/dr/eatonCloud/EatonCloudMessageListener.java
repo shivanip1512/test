@@ -117,7 +117,7 @@ public class EatonCloudMessageListener {
                             List.of(ControlEventDeviceStatus.SUCCESS_RECEIVED));
                     executor.execute(() -> {
                         if (!devicesToRead.isEmpty()) {
-                            log.info("Reading devices: {} group id: {} for date range:{}-{} [original command sent at {}] ", 
+                            log.info("Reading devices: {} event id: {} for date range:{}-{} [original command sent at {}] ", 
                                     devicesToRead.size(),
                                     eventId,
                                     range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
