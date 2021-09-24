@@ -471,7 +471,7 @@ public class ComprehensiveMapController {
     }
     
     /**
-     * This method is used to find devices based on passed newDeviceIdentifier
+     * This method is used to find devices based on passed identifier
      */
     private RfnDevice findRfnDevices(RfnIdentifier identifier) {
         try {
