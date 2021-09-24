@@ -271,7 +271,7 @@ public class EatonCloudMessageListener {
                 devices.size(),
                 eventId, 
                 command.getVirtualRelayId(), 
-                totalFailed.intValue(), 
+                totalFailed, 
                 totalSucceeded,
                 readTimeFromNowInMinutes,
                 nextReadTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
