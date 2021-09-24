@@ -78,7 +78,7 @@ public interface RecentEventParticipationDao {
             Instant deviceReceivedTime, String failReason, Instant retryTime);
 
     /**
-     * Returns a subset of device ids with given status
+     * Returns all devices for event id and list of statuses
      */
-    Set<Integer> getDeviceIdsByStatus(Set<Integer> deviceIds, ControlEventDeviceStatus status, Range<Instant> range);
+    Set<Integer> getDeviceIdsByExternalEventIdAndStatuses(Integer externalEventId, List<ControlEventDeviceStatus> statuses);
 }
