@@ -56,16 +56,18 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
             Map<String, Object> shedParams = getShedParams(command);
             checkOptout(command);
             sendRequest(command, shedParams);
-            eatonCloudEventLogService.sendShed(deviceName, 
-                                               deviceGuid,
-                                               (Integer) shedParams.get(CommandParam.CYCLE_PERCENT.getParamName()),
-                                               (Integer) shedParams.get(CommandParam.CYCLE_PERIOD.getParamName()),
-                                               (Integer) shedParams.get(CommandParam.CRITICALITY.getParamName()));
+            eatonCloudEventLogService.sendShed(deviceName,
+                    deviceGuid,
+                    (Integer) shedParams.get(CommandParam.CYCLE_PERCENT.getParamName()),
+                    (Integer) shedParams.get(CommandParam.CYCLE_PERIOD.getParamName()),
+                    (Integer) shedParams.get(CommandParam.CRITICALITY.getParamName()),
+                    (Integer) command.getParams().get(LmHardwareCommandParam.RELAY));
             break;
         case RESTORE:
             checkOptout(command);
             sendRequest(command, getRestoreParams(command));
-            eatonCloudEventLogService.sendRestore(deviceName, deviceGuid);
+            eatonCloudEventLogService.sendRestore(deviceName, deviceGuid,
+                    (Integer) command.getParams().get(LmHardwareCommandParam.RELAY));
             break;
         case TEMP_OUT_OF_SERVICE:
             sendRequest(command, null);

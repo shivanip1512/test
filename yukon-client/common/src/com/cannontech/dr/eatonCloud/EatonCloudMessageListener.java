@@ -249,7 +249,8 @@ public class EatonCloudMessageListener {
                     guid,
                     command.getDutyCyclePercentage(),
                     command.getDutyCyclePeriod(),
-                    command.getCriticality());
+                    command.getCriticality(),
+                    command.getVirtualRelayId());
         });
 
         stopwatch.stop();
@@ -324,7 +325,7 @@ public class EatonCloudMessageListener {
                     eventId, deviceName, command.getVirtualRelayId());
             try {
                 eatonCloudCommunicationService.sendCommand(guid, new EatonCloudCommandRequestV1("LCR_Control", params));
-                eatonCloudEventLogService.sendRestore(deviceName, guid);
+                eatonCloudEventLogService.sendRestore(deviceName, guid, command.getVirtualRelayId());
             } catch (Exception e) {
                 totalFailed.incrementAndGet();
                 log.error("Error sending restore command to device id:{} eventId:{} name:{} relay:{}", deviceId,
