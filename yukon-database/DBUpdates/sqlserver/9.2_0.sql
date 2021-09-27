@@ -13,7 +13,7 @@ WHERE p.PointType = 'Analog'
     AND p.PointName = 'Previous Minimum Power Factor'
     AND y.Type IN ('RFN530S4X', 'RFN530S4ERX', 'RFN530S4ERXR');
     
-INSERT INTO DBUpdates VALUES ('YUK-24891', '9.1.0', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-24891', '9.2.0', GETDATE());
 
 /* @end YUK-24891 */
 
