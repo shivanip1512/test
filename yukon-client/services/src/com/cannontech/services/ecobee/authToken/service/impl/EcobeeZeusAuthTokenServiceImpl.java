@@ -170,10 +170,9 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
         cancelExistingScheduler();
         log.info("Scheduling Auth token refresh API call to run before every hour.");
         schedulerFuture = scheduledExecutor.scheduleAtFixedRate(() -> {
+            ZeusEcobeeAuthTokenResponse authTokenResponse = ecobeeAuthTokenResponseCache.getIfPresent(responseCacheKey);
             try {
                 log.info("trying ecobee refresh");
-                ZeusEcobeeAuthTokenResponse authTokenResponse = ecobeeAuthTokenResponseCache.getIfPresent(responseCacheKey);
-
                 //As refresh token is valid for 24 hours and our cache also get invalidated after 1439 minutes. We should cancel this scheduler after that.
                 cancelRunningScheduler(authTokenResponse.getExpiryTimestamp());
                 // Don't make API call if the scheduler is cancelled.
@@ -182,9 +181,10 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
                 }
                 String refreshToken = authTokenResponse.getRefreshToken();
                 String url = ecobeeServerURL + refreshUrlPart + refreshToken;
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Request Header : " + HttpMethod.GET + " : " + url);
                 }
+                ecobeeAuthTokenResponseCache.invalidateAll();
                 // Make API calls in every 59 minutes for refreshing authentication token.
                 ResponseEntity<ZeusAuthenticationResponse> authenticationResponse = restTemplate.getForEntity(url,
                         ZeusAuthenticationResponse.class);
@@ -200,19 +200,25 @@ public class EcobeeZeusAuthTokenServiceImpl implements EcobeeZeusAuthTokenServic
                         }
                     }
                 }
-                ecobeeAuthTokenResponseCache.invalidateAll();
                 if (authenticationResponse.getStatusCode() == HttpStatus.OK) {
                     authTokenResponse = buildZeusEcobeeAuthTokenResponse(authenticationResponse.getBody());
                 } else {
-                    log.info("Ecobee refresh API call was unsuccessfull. Generating new tokens.");
-                    cancelExistingScheduler();
-                    authTokenResponse = generateEcobeeAuthTokenResponse();
+                    authTokenResponse = logAndGenerateNewAuthToken();
                 }
-                ecobeeAuthTokenResponseCache.put(responseCacheKey, authTokenResponse);
             } catch (RestClientException e) {
-                throw new EcobeeCommunicationException("Unable to communicate with Ecobee API.", e);
+                authTokenResponse = logAndGenerateNewAuthToken();
             }
+            ecobeeAuthTokenResponseCache.put(responseCacheKey, authTokenResponse);
         }, 59, 60, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Log the error, cancel the existing scheduler if running and generate a fresh access token.
+     */
+    private ZeusEcobeeAuthTokenResponse logAndGenerateNewAuthToken() {
+        log.info("Ecobee refresh API call was unsuccessfull. Generating new tokens.");
+        cancelExistingScheduler();
+        return generateEcobeeAuthTokenResponse();
     }
 
     /**
