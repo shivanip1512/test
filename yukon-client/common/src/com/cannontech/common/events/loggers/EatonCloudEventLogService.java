@@ -7,14 +7,15 @@ import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 public interface EatonCloudEventLogService {
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.eatoncloud")
-    public void sendShed(String deviceLabel,
-                         String deviceGuid,
-                         int dutyCyclePercent,
-                         int dutyCyclePeriod,
-                         int criticality);
+    public void sendShed(@Arg(ArgEnum.deviceLabel) String deviceLabel,
+            String deviceGuid,
+            int dutyCyclePercent,
+            int dutyCyclePeriod,
+            int criticality,
+            int relay);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.eatoncloud")
     public void sendRestore(@Arg(ArgEnum.deviceLabel) String deviceLabel,
-                            String deviceGuid);
+            String deviceGuid, int relay);
 
 }
