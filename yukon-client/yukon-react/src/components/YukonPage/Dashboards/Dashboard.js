@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Grid, List, ListItem, ListItemLink, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
+import { Grid, List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import { Avatar, Card, CardHeader, CardContent, CardActions } from '@material-ui/core';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -62,14 +62,6 @@ const Dashboard = () => {
 
     const theme = useTheme();
     const classes = useStyles();
-
-    const tableHeaders = [
-        { label: 'Most Recent Warnings' }
-    ]
-
-    const tableRows = [
-        { id: 1, columns: [ 'Gateway 1000012', "Gateway's total ready node count (20) is lower than the warning threshold (25).", '1 week']}
-    ];
 
     return (
         <div>

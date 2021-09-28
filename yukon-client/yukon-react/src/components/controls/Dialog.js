@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Dialog as MuiDialog, DialogTitle, DialogContent, DialogActions, IconButton, Typography } from '@material-ui/core';
+import { Dialog as MuiDialog, DialogTitle, DialogContent, DialogActions, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { useTheme } from '@material-ui/core/styles';
 

@@ -4,5 +4,7 @@
     },
     "deviceName": "Device Name",
     "dashboard": "Dashboard",
-    "name": "Name"
+    "name": "Name",
+    "home": "Home",
+    "demandResponse": "Demand Response"
 }

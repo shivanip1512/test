@@ -3,6 +3,9 @@ import React, { useCallback }  from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
+import { useSecurityActions } from '@pxblue/react-auth-shared';
+import { LocalStorage } from '../../store/local-storage';
+
 import { UserMenu, Spacer } from '@pxblue/react-components';
 import { useTheme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -68,6 +71,13 @@ const NavigationMenu = (props) => {
     const history = useHistory();
     const yukonTheme = useSelector(store => store.app.theme);
     const renderDrawer = useSelector(store => store.app.renderDrawer);
+    const securityHelper = useSecurityActions();
+
+    const logOut = () => {
+        LocalStorage.clearAuthCredentials();
+        //onNavItemClick("/servlet/LoginController/logout")
+        securityHelper.onUserNotAuthenticated();
+    };
 
     const onNavItemClick = useCallback(
         (url) => {
@@ -135,7 +145,7 @@ const NavigationMenu = (props) => {
                                     {
                                         title: 'Log Out',
                                         icon: <ExitIcon />,
-                                        onClick: () => {onNavItemClick("/servlet/LoginController/logout")},
+                                        onClick: () => {logOut()},
                                     },
                                 ],
                             },
