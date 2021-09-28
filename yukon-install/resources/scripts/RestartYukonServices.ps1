@@ -32,6 +32,7 @@ Clear-Host
 "YukonWebApplicationService",
 "YukonSimulatorsService",
 "Yukon Field Simulator Service"),
+@("Yukon Network manager"),
 @("Yukon Load Management Service",
 "Yukon Cap Control Service",
 "Yukon Calc-Logic Service",
