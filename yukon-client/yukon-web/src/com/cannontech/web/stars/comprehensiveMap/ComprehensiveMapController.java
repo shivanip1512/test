@@ -318,7 +318,7 @@ public class ComprehensiveMapController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         List<RfnDevice> devices = metaData.keySet().stream()
-                .map(rfnIdentifier -> rfnDeviceCreationService.findOrCreate(rfnIdentifier))
+                .map(rfnIdentifier -> rfnDeviceCreationService.findRfnDevices(rfnIdentifier))
                 // remove devices not created or found
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
