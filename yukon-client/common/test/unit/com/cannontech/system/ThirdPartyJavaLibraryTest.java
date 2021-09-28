@@ -141,13 +141,13 @@ public class ThirdPartyJavaLibraryTest {
     @Test
     public void test_junitJarsExcluded()
             throws IOException, NoSuchAlgorithmException, ParserConfigurationException, SAXException {
-        Set<String> junitJars = new HashSet<>();
-        String userDirectory = System.getProperty("user.dir");
-        if (!userDirectory.contains("yukon-build")) {
-            String clientDir = userDirectory.substring(0, userDirectory.indexOf("yukon-client"));
-            userDirectory = clientDir + "yukon-build";
+        Set<String> unitTestJars = new HashSet<>();
+        String buildDirectory = System.getProperty("user.dir");
+        if (!buildDirectory.contains("yukon-build")) {
+            String yukonDirectory = buildDirectory.substring(0, buildDirectory.indexOf("yukon-client"));
+            buildDirectory = yukonDirectory + "yukon-build";
         }
-        File resourceFile = new File(userDirectory + File.separatorChar + "build.xml");
+        File resourceFile = new File(buildDirectory + File.separatorChar + "build.xml");
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
         DefaultHandler handler = new DefaultHandler() {
@@ -155,7 +155,7 @@ public class ThirdPartyJavaLibraryTest {
             public void startElement(String uri, String localName, String qName, Attributes attributes)
                     throws SAXException {
                 if (qName.equals("exclude") && attributes.getValue("name").endsWith(".jar")) {
-                    junitJars.add(attributes.getValue("name"));
+                    unitTestJars.add(attributes.getValue("name"));
                 }
             }
         };
@@ -167,10 +167,10 @@ public class ThirdPartyJavaLibraryTest {
         Map<String, ThirdPartyJavaLibrary> documentedLibrariesByFilename = Maps.uniqueIndex(documentedLibraries.javaLibraries,
                 l -> l.filename);
 
-        Set<String> junitJarname = documentedLibrariesByFilename.entrySet().stream()
+        Set<String> unitTestjarsFromYaml = documentedLibrariesByFilename.entrySet().stream()
                 .filter(e -> e.getValue().group == LibraryGroup.UNIT_TESTS).map(e -> e.getKey()).collect(Collectors.toSet());
-        Set<String> missingJars = Sets.difference(junitJarname, junitJars);
+        Set<String> missingJars = Sets.difference(unitTestjarsFromYaml, unitTestJars);
         assertTrue(missingJars.isEmpty(),
-                "Unknown JAR files found. These must be excluded in build.xml file of yukon-build " + missingJars);
+                "New Unit Tests related JAR found. These must be excluded in build.xml file of yukon-build " + missingJars);
     }
 }

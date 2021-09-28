@@ -94,6 +94,6 @@ public class ThirdPartyProject implements Comparable<ThirdPartyProject> {
 
 
     public boolean isNotJunitProject() {
-        return group != LibraryGroup.UNIT_TESTS ? true : false;
+        return group != LibraryGroup.UNIT_TESTS;
     }
 }
