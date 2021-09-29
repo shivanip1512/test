@@ -28,7 +28,6 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.CriteriaSelector;
-import com.cannontech.dr.ecobee.message.DrEventState;
 import com.cannontech.dr.ecobee.message.EcoplusSelector;
 import com.cannontech.dr.ecobee.message.Selector;
 import com.cannontech.dr.ecobee.message.ZeusCreatePushConfig;
@@ -365,6 +364,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                     parameters.getStartTime(), parameters.getEndTime(), parameters.isMandatory()));
             dutyCycleDr.getEvent().setDutyCyclePercentage(parameters.getDutyCyclePercent());
             dutyCycleDr.getEvent().setRandomTimeSeconds(parameters.getRandomTimeSeconds());
+            dutyCycleDr.getEvent().setEcoplusSelector(EcoplusSelector.ALL);
             if (log.isDebugEnabled()) {
                 try {
                     log.debug("Sending ecobee duty cycle DR with body: {}", JsonUtils.toJson(dutyCycleDr));
@@ -396,8 +396,16 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         for (String zeusGroupId : zeusGroupIds) {
             ZeusDemandResponseRequest setpointDr = new ZeusDemandResponseRequest(buildZeusEvent(zeusGroupId,
                     parameters.getStartTime(), parameters.getStopTime(), parameters.isMandatory()));
-            setpointDr.getEvent().setIsHeatingEvent(parameters.isTempOptionHeat());
-            setpointDr.getEvent().setRelativeTemp((float) parameters.getTempOffset());
+            boolean isHeatingEvent = parameters.isTempOptionHeat();
+            float relativeTemp = (float) parameters.getTempOffset();
+            setpointDr.getEvent().setIsHeatingEvent(isHeatingEvent);
+            setpointDr.getEvent().setRelativeTemp(relativeTemp);
+            if (relativeTemp < 0 && !isHeatingEvent) {
+                log.info("Relative temperature is negative for the cool event so setting ecoplus selector as NON_ECOPLUS");
+                setpointDr.getEvent().setEcoplusSelector(EcoplusSelector.NON_ECOPLUS);
+            } else {
+                setpointDr.getEvent().setEcoplusSelector(EcoplusSelector.ALL);
+            }
             if (log.isDebugEnabled()) {
                 try {
                     log.debug("Sending ecobee set point DR with body: {}", JsonUtils.toJson(setpointDr));
@@ -458,7 +466,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
      * Method to build Zeus event.
      */
     private ZeusEvent buildZeusEvent(String zeusGroupId, Instant startTime, Instant stopTime, boolean isMandatory) {
-        DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
+        DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         String eventDisplayMessage = messageSourceAccessor.getMessage("yukon.web.modules.dr.ecobee.eventDisplayMessage");
 
@@ -475,8 +483,6 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
         event.setMessage(eventDisplayMessage);
         event.setSendEmail(settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
 
-        event.setEcoplusSelector(EcoplusSelector.ALL);
-        event.setState(DrEventState.SUBMITTED_DIRECTLY);
         event.setShowThermostat(true);
         event.setShowWeb(true);
         return event;
@@ -487,7 +493,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
      * Method to build Zeus eco+ event.
      */
     private ZeusEvent buildZeusEcoPlusEvent(String zeusGroupId, Instant startTime, Instant stopTime, Integer randomTimeSeconds, Boolean isHeatingEvent) {
-        DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
+        DateTimeFormatter dateTimeFormmater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
         ZeusEvent event = new ZeusEvent();
         event.setName(YUKON_CYCLE_EVENT_NAME);
@@ -584,7 +590,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
 
             List<String> zeusEventIds = ecobeeZeusGroupService.getEventIds(yukonGroupId);
             for (String zeusEventId : zeusEventIds) {
-                String cancelDrUrl = getUrlBase() + "/events/dr/" + zeusEventId;
+                String cancelDrUrl = getUrlBase() + "events/dr/" + zeusEventId;
                 if (isNotEmptyThermostats) {
                     cancelDrUrl = cancelDrUrl.concat("?thermostat_ids=").concat(String.join(",", serialNumbers));
                 }

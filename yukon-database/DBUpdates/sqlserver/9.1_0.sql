@@ -477,8 +477,22 @@ WHERE p.PointType = 'Analog'
 INSERT INTO DBUpdates VALUES ('YUK-24845', '9.1.0', GETDATE());
 /* @end YUK-24845 */
 
+/* @start YUK-25018 */
+UPDATE STATE
+SET FOREGROUNDCOLOR = 1
+WHERE STATEGROUPID = -8
+AND RAWSTATE = 0;
+
+UPDATE STATE
+SET FOREGROUNDCOLOR = 0
+WHERE STATEGROUPID = -8
+AND RAWSTATE = 1;
+
+INSERT INTO DBUpdates VALUES ('YUK-25018', '9.1.0', GETDATE());
+/* @end YUK-25018 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/* INSERT INTO CTIDatabase VALUES ('9.1', '09-SEP-2020', 'Latest Update', 0, GETDATE()); */
+INSERT INTO CTIDatabase VALUES ('9.1', '16-SEP-2021', 'Latest Update', 0, GETDATE());

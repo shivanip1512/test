@@ -249,7 +249,7 @@
                                         <option value="${loopCounter.count-1}">${paginatedStatus}</option>
                                     </c:forEach>
                                 </select>
-                                <input type="hidden" name="paginatedStatusOp" value="0" />
+                                <input type="hidden" name="paginatedResponseOp" value="0" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>
