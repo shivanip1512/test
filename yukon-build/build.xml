@@ -427,7 +427,7 @@
                 <exclude name="5.2_5.sql"/>
                 <exclude name="5.2_6.sql"/>
                 <exclude name="5.2_7.sql"/>
-                <exclude name="stars"/>
+                <exclude name="**/stars/**"/>
             </fileset>
         </copy>
         <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseUpdates/SqlServer">
@@ -445,7 +445,7 @@
                 <exclude name="5.2_5.sql"/>
                 <exclude name="5.2_6.sql"/>
                 <exclude name="5.2_7.sql"/>
-                <exclude name="stars"/>
+                <exclude name="**/stars/**"/>
             </fileset>
         </copy>
         
