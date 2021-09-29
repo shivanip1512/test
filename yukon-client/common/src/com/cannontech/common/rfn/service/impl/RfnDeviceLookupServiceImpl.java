@@ -102,4 +102,17 @@ public class RfnDeviceLookupServiceImpl implements RfnDeviceLookupService {
         modelTranslations = builder.build();
     }
     
+    
+    /**
+     * This method is used to find devices based on passed identifier
+     */
+    public RfnDevice findRfnDevices(RfnIdentifier identifier) {
+        try {
+            return getDevice(identifier);
+        } catch (NotFoundException ex) {
+            log.warn("Received devices for a gateway that's not in the database: " + identifier);
+            return null;
+        }
+    }
+    
 }
