@@ -1339,8 +1339,8 @@ public class DevEventLogCreationService {
                 int dutyCyclePercent = 50;
                 int dutyCyclePeriod = 900;
                 int criticality = 100;
-                eatonCloudEventLogService.sendShed(deviceLabel, guid, dutyCyclePercent, dutyCyclePeriod, criticality);
-                eatonCloudEventLogService.sendRestore(deviceLabel, guid);
+                eatonCloudEventLogService.sendShed(deviceLabel, guid, dutyCyclePercent, dutyCyclePeriod, criticality, 1);
+                eatonCloudEventLogService.sendRestore(deviceLabel, guid, 1);
             }
         });
         eventLogExecutables = ImmutableMap.copyOf(executables);
