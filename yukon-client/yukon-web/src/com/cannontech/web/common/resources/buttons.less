@@ -29,22 +29,22 @@
 /* Button */
 
 button, .button, input[type=submit], input[type=button], input[type=reset] {
-    background-color: #f3f3f3;
-    border: solid 1px #bbb;
-    border-radius: 2px;
-    box-shadow: inset 0px 0px 0px #fff,0 1px 0 rgba(0,0,0,0.07);
-    color: #444;
+    background-color: #fff;
+    border: solid 1px @primary-button-color;
+    border-radius: 4px;
+    box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12);
+    color: @primary-button-color;
     cursor: pointer;
     display: inline-block;
     float: left;
-    font: bold 12px Helvetica, Arial, sans-serif;
+    font: normal 14px Helvetica, Arial, sans-serif;
     font-smoothing: antialiased;
-    height: 26px !important;
+    height: 36px !important;
     line-height: 16px;
-    margin: 0 5px;
+    margin: 0 8px;
     padding: 4px 8px;
     text-decoration: none;
-    text-shadow: 0 1px 0 #fff;
+    text-shadow: 0 1px 0 @primary-button-color;
     transition: border-color .20s;
     
     &:focus { outline: none; }
@@ -57,7 +57,7 @@ button .icon, .button .icon { margin: 0; }
 /* Naked Button (look like links) */
 
 button.naked, .button.naked {
-    background-color: transparent;
+    background-color: #fff;
     border: none;
     box-shadow: none;
     height: 16px !important;
@@ -145,25 +145,27 @@ input.right, select.right,
 }
 
 button:not([disabled]):not(.naked):not(.action):hover, .button:not([disabled]):not(.naked):not(.action):hover {
-    background-color: #f4f4f4;
-    border-color: #aaa;
-    box-shadow:0 0 10px #d4d4d4;
-    color: #333;
+    background-color: @primary-button-color-hover;
+    border-color: @primary-button-color;
+    box-shadow: none;
+    color: @primary-button-color;
 }
 
 button:not([disabled]):not(.naked):not(.action):focus, .button:not([disabled]):not(.naked):not(.action):focus {
-    box-shadow:0 0 4px #d4d4d4;
+    box-shadow:none;
     border-color: #999;
 }
 
 button:not([disabled]):active, .button:not([disabled]):active {
-    border-color: #aaa;
-    box-shadow: inset 0 0 10px #d4d4d4;
+    border-color: @primary-button-color;
+    box-shadow: none;
+    background-color: @primary-button-color-hover;
 }
 
 button.on, button.on:hover, .button.on, .button.on:hover {
-    border-color: #bbb;
-    box-shadow: inset 0 0 15px #bbb !important;
+    border-color: @primary-button-color;
+    box-shadow: none;
+    transition: border-color .20s;
 }
 
 
@@ -262,7 +264,7 @@ button.grey:focus, .button.grey:focus {
 /* Button Label */
 
 .b-label, .ui-button-text {
-    color: #444;
+    color: @primary-button-color;
     display: inline-block;
     float: left;
     height: 16px;
