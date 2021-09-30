@@ -22,8 +22,11 @@
 @primary-button-color-border: #444;
 @primary-button-color-hover: #888;
 
-@form-control-height: 26px;
+@secondary-button-color-hover: rgba(0, 0, 0, 0.04);
+@toggle-button-color-selected: rgba(0, 0, 0, 0.08);
+@toggle-button-color-border: rgba(0, 0, 0, 0.12);
 
+@form-control-height: 26px;
 
 
 /* Button */
@@ -106,6 +109,21 @@ button.action[disabled], .button.action[disabled] {
     opacity: .5;
 }
 
+/* Image Buttons */
+.image-btn {
+	border: 1px solid @toggle-button-color-border;
+	padding: 7px;
+}
+
+.image-btn.on {
+    background-color: @toggle-button-color-selected;
+}
+
+.image-btn:hover {
+    text-decoration: none;
+    background-color: @secondary-button-color-hover;
+}
+
 
 
 /* Button Group */
@@ -152,21 +170,26 @@ button:not([disabled]):not(.naked):not(.action):hover, .button:not([disabled]):n
     background-color: rgba(0, 123, 193, 0.05);
 }
 
-button:not([disabled]):not(.naked):not(.action):focus, .button:not([disabled]):not(.naked):not(.action):focus {
-    box-shadow:none;
-    border-color: #999;
+.b-user-menu .button:hover {
+	background-color: @secondary-button-color-hover !important;
 }
 
-button:not([disabled]):active, .button:not([disabled]):active {
-    border-color: @primary-button-color;
-    box-shadow: none;
-    background-color: @primary-button-color-hover;
+button.yes, button.no, .button.yes, .button.no {
+	padding: 7px;
+	border-color: @toggle-button-color-border;
 }
 
-button.on, button.on:hover, .button.on, .button.on:hover {
-    border-color: @primary-button-color;
-    color: @primary-button-color;
-    background-color: #e0eff8;
+button.yes .b-label, button.no .b-label, .button.yes .b-label, .button.no .b-label {
+	color: #727e84;
+	font-size: 0.8125rem;
+}
+
+button.yes:hover, button.no:hover, .button.yes:hover, .button.no:hover {
+	background-color: @secondary-button-color-hover !important;
+}
+
+button.on, {
+	background-color: @toggle-button-color-selected;
 }
 
 
@@ -252,7 +275,7 @@ button.grey:focus, .button.grey:focus {
     overflow: hidden;
     padding: 0 1px;
     transition: color .20s;
-} 
+}
 
 button:hover .b-label.red, .button:hover .b-label.red,
 button:hover .ui-button-text.red, .button:hover .ui-button-text.red {

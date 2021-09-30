@@ -62,7 +62,7 @@
                 <hr>
             </div>
             
-            <div id="filtered-devices" class="dn PB10">
+            <div id="filtered-devices" class="dn PB20">
                 <span class="fwn"><i:inline key="yukon.common.filteredResults"/></span>
                 <span class="badge js-number-devices"></span>&nbsp;<i:inline key="yukon.common.devices"/>
                 <input type="hidden" id="collection-group"/>

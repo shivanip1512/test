@@ -71,6 +71,7 @@
 .PR5 { padding-right: 5px; }
 .PB0 { padding-bottom: 0px; }
 .PB10 { padding-bottom: 10px; }
+.PB20 { padding-bottom: 20px; }
 .pa { position: absolute; }
 .pf { position: fixed; }
 .pr { position: relative; }
@@ -856,7 +857,9 @@ input[readonly], input[readonly="readonly"] {
 }
 
 .bl1 {
-    border-left: 1px solid #bbb !important;
+    border-left: 1px solid rgba(0, 0, 0, 0.12) !important;
+	border-top-left-radius: 4px !important;
+	border-bottom-left-radius: 4px !important;
 }
 /** Text area dynamic width. Overrides cols property */
 .tadw {

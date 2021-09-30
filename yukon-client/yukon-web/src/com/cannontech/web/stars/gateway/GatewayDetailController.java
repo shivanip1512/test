@@ -92,7 +92,7 @@ public class GatewayDetailController {
         model.addAttribute("isGateway", true);
         model.addAttribute("displayNeighborsLayer", true);
         model.addAttribute("displayNearbyLayer", true);
-        model.addAttribute("numLayers", 1);
+        model.addAttribute("numLayers", 2);
         model.addAttribute("isVirtualGateway", gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY);
         
         //Needed for mapping
