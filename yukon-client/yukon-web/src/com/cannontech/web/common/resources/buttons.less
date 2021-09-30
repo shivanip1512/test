@@ -32,20 +32,20 @@ button, .button, input[type=submit], input[type=button], input[type=reset] {
     background-color: #fff;
     border: solid 1px @primary-button-color;
     border-radius: 4px;
-    box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12);
     color: @primary-button-color;
     cursor: pointer;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     float: left;
-    font: normal 14px Helvetica, Arial, sans-serif;
-    font-smoothing: antialiased;
-    height: 36px !important;
-    line-height: 16px;
-    margin: 0 8px;
-    padding: 4px 8px;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    line-height: 1.75;
+    margin: 0;
+    margin-right: 16px;
+    padding: 5px 15px;
     text-decoration: none;
-    text-shadow: 0 1px 0 @primary-button-color;
-    transition: border-color .20s;
+    box-sizing: border-box;
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     
     &:focus { outline: none; }
 }
@@ -57,13 +57,12 @@ button .icon, .button .icon { margin: 0; }
 /* Naked Button (look like links) */
 
 button.naked, .button.naked {
-    background-color: #fff;
+    background-color: transparent;
     border: none;
     box-shadow: none;
     height: 16px !important;
-    margin-top: 0;
-    margin-bottom: 0;
     padding: 0;
+    margin: 0 5px;
 }
 
 button.naked .b-label, .button.naked .b-label {
@@ -86,7 +85,10 @@ button.naked:not([disabled]):hover .b-label,
 
 /* Disabled Button */
 
-button[disabled], .button[disabled] { border-color: #d6d6d6; }
+button[disabled], .button[disabled] { 
+    border-color: #d6d6d6;
+    cursor: default;
+}
 
 button[disabled] .b-label, 
 .button[disabled] .b-label,
@@ -145,10 +147,9 @@ input.right, select.right,
 }
 
 button:not([disabled]):not(.naked):not(.action):hover, .button:not([disabled]):not(.naked):not(.action):hover {
-    background-color: @primary-button-color-hover;
-    border-color: @primary-button-color;
     box-shadow: none;
     color: @primary-button-color;
+    background-color: rgba(0, 123, 193, 0.05)
 }
 
 button:not([disabled]):not(.naked):not(.action):focus, .button:not([disabled]):not(.naked):not(.action):focus {
@@ -164,30 +165,10 @@ button:not([disabled]):active, .button:not([disabled]):active {
 
 button.on, button.on:hover, .button.on, .button.on:hover {
     border-color: @primary-button-color;
-    box-shadow: none;
-    transition: border-color .20s;
+    color: @primary-button-color;
+    background-color: #e0eff8;
 }
 
-
-
-/* Action Button */
-
-button.action, .button.action {
-    background-color: #f2f2f2;
-    border: 1px solid #d8d8d8 !important;
-    transition: border .20s;
-    padding: 4px 12px;
-}
-button.action:active, .button.action:active,
-button.action:focus, .button.action:focus {
-    box-shadow: none !important;
-    border-color: #c6c6c6 !important;
-}
-button.action:hover, .button.action:hover {
-    box-shadow: 0 1px 0px #ddd;
-    background-color: #f3f3f3;
-    border: 1px solid #c6c6c6 !important;
-}
 
 button.blue, .button.blue {
     background-color: #4B8DF8;
@@ -267,19 +248,12 @@ button.grey:focus, .button.grey:focus {
     color: @primary-button-color;
     display: inline-block;
     float: left;
-    height: 16px;
-    line-height: 16px;
+    line-height: 1.75;
     overflow: hidden;
     padding: 0 1px;
     transition: color .20s;
 } 
 
-button:not([disabled]):hover .b-label, 
-.button:not([disabled]):hover .b-label,
-button:not([disabled]):hover .ui-button-text, 
-.button:not([disabled]):hover .ui-button-text {
-    color: #333;
-}
 button:hover .b-label.red, .button:hover .b-label.red,
 button:hover .ui-button-text.red, .button:hover .ui-button-text.red {
     color: @red;
@@ -363,13 +337,13 @@ button.primary, .button.primary {
     background-color: @primary-button-color;
     border: 1px solid @primary-button-color-border !important;
     transition: border .20s;
+    box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12);
 }
 
 button.primary:hover, .button.primary:hover,
 button.primary:active, .button.primary:active {
     background-color: @primary-button-color-hover !important;
     border: 1px solid @primary-button-color-border !important;
-    box-shadow: 0 0 10px #bbb;
 }
 
 button.primary:focus, .button.primary:focus {
@@ -381,7 +355,6 @@ button.primary:focus, .button.primary:focus {
 button.primary .b-label, .button.primary .b-label, 
 button.primary .ui-button-text, .button.primary .ui-button-text {
     color: #fff !important;
-    text-shadow: 0 1px 0 @primary-button-color !important;
 }
 
 
@@ -391,6 +364,11 @@ button.primary .ui-button-text, .button.primary .ui-button-text {
 button.delete:not([disabled]) .b-label,
 .button.delete:not([disabled]) .b-label,
 .ui-dialog-buttonpane .ui-dialog-buttonset button.delete:not([disabled]) { color: @red; }
+
+button.delete:not([disabled]),
+.ui-dialog-buttonpane .ui-dialog-buttonset button.delete:not([disabled]) { 
+    border: 1px solid @red;
+}
 
 
 
