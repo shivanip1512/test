@@ -203,4 +203,9 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
                 inventoryId, lmGroupId, accountId);
     }
 
+    @Override
+    public List<String> getZeusGroupIdsForInventoryId(int inventoryId) {
+        return ecobeeZeusGroupDao.getZeusGroupIdsForInventoryId(inventoryId);
+    }
+
 }
