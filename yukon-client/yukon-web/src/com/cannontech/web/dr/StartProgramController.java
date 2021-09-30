@@ -83,6 +83,9 @@ public class StartProgramController extends ProgramControllerBase {
 
         model.addAttribute("program", program);
 
+        Date stopDate = new Date();
+        model.addAttribute("now", stopDate);
+
         addConstraintsInfoToModel(model, fromBack, userContext, backingBean);
         addGearsToModel(program, model);
         addErrorsToFlashScopeIfNecessary(bindingResult, flashScope);
