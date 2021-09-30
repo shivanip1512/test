@@ -116,4 +116,8 @@ public interface EcobeeZeusGroupDao {
      */
     Multimap<String, String> getAllEcobeeGroupToSerialNumberMapping();
 
+    /**
+     * Return all ecobee groups mapped with the specified inventoryId
+     */
+    List<String> getZeusGroupIdsForInventoryId(int inventoryId);
 }

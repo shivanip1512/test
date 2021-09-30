@@ -259,7 +259,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                         ecobeeZeusGroupService.deleteZeusGroupMappingForInventory(inventoryId, zeusGroupId);
                     }
                 } else {
-                    throw new EnrollmentException("Error occurred while unenrolling thermostat " + serialNumber
+                    throw new EnrollmentException("Error occurred while unenrolling/opting out thermostat " + serialNumber
                             + " from the zeus group ID " + zeusGroupId);
                 }
             }
@@ -583,12 +583,16 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @Override
-    public boolean cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException {
-        boolean cancelledAnyDREvents = false;
+    public void cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException {
         for (int yukonGroupId : groupIds) {
             boolean isNotEmptyThermostats = ArrayUtils.isNotEmpty(serialNumbers);
 
             List<String> zeusEventIds = ecobeeZeusGroupService.getEventIds(yukonGroupId);
+            if (CollectionUtils.isEmpty(zeusEventIds)) {
+                log.debug("There are no events for the group: {}. No DR Event cancellation request sent to Ecobee.",
+                        yukonGroupId);
+                return;
+            }
             for (String zeusEventId : zeusEventIds) {
                 String cancelDrUrl = getUrlBase() + "events/dr/" + zeusEventId;
                 if (isNotEmptyThermostats) {
@@ -608,19 +612,12 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                             // group ID.
                             ecobeeZeusGroupService.removeEventId(zeusEventId);
                         }
-                        cancelledAnyDREvents = true;
                     }
                 } catch (RestClientException | EcobeeAuthenticationException e) {
                     throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
                 }
             }
         }
-        if (!cancelledAnyDREvents) {
-            log.info("There are no events for the provided groups/ serial numbers. No DR Event cancellation request"
-                    + " sent to Ecobee.");
-            throw new CommandCompletionException("No DR Event cancellation request sent to Ecobee.");
-        }
-        return cancelledAnyDREvents;
     }
 
     private String getUrlBase() {
@@ -634,6 +631,24 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             throw new EcobeeCommunicationException("Ecobee Zeus program id is empty.");
         }
         return programId;
+    }
+
+    @Override
+    public void optOut(String serialNumber, int inventoryId) {
+        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForInventoryId(inventoryId);
+        zeusGroupIds.stream().forEach(zeusGroupId -> {
+            // Do not remove the mapping from ZeusGroupInventoryMapping table.
+            removeThermostatFromGroup(zeusGroupId, serialNumber, inventoryId, false);
+        });
+    }
+
+    @Override
+    public void cancelOptOut(String serialNumber, int inventoryId) {
+        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForInventoryId(inventoryId);
+        zeusGroupIds.stream().forEach(zeusGroupId -> {
+            // Do not remove the mapping from ZeusGroupInventoryMapping table.
+            addThermostatToGroup(zeusGroupId, serialNumber, inventoryId, false);
+        });
     }
 
 }
