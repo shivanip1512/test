@@ -77,7 +77,7 @@ public interface EcobeeZeusCommunicationService {
      * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only. Return ture if API
      * call is successful.
      */
-    boolean cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException;
+    void cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException;
 
     /**
      * Initiates a eco+ demand response event in Ecobee.
@@ -93,4 +93,14 @@ public interface EcobeeZeusCommunicationService {
      * Remove the thermostat from a specific Ecobee zeus group.
      */
     void removeThermostatFromGroup(String zeusGroupId, String serialNumber, int inventoryId, boolean updateDeviceMapping);
+
+    /**
+     * Opt out the device.
+     */
+    void optOut(String serialNumber, int inventoryID);
+
+    /**
+     * Cancel opt out for the device.
+     */
+    void cancelOptOut(String serialNumber, int inventoryID);
 }
