@@ -234,4 +234,12 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         return jdbcTemplate.query(sql, TypeRowMapper.STRING);
 
     }
+
+    @Override
+    public List<String> getZeusGroupIdsForInventoryId(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EcobeeGroupId FROM ZeusGroupInventoryMapping");
+        sql.append("WHERE InventoryID").eq(inventoryId);
+        return jdbcTemplate.query(sql, TypeRowMapper.STRING);
+    }
 }
