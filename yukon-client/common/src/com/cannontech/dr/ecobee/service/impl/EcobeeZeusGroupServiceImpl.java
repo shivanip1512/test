@@ -208,4 +208,9 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
         return ecobeeZeusGroupDao.getZeusGroupIdsForInventoryId(inventoryId);
     }
 
+    @Override
+    public void deleteZeusGroupMapping(String zeusGroupId) {
+        ecobeeZeusGroupDao.deleteZeusGroupMapping(zeusGroupId);
+    }
+
 }

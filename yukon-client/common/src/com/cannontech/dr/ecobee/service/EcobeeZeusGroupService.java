@@ -116,4 +116,9 @@ public interface EcobeeZeusGroupService {
      */
     List<String> getZeusGroupIdsForInventoryId(int inventoryId);
 
+    /**
+     * Delete zeus group mapping.
+     */
+    void deleteZeusGroupMapping(String zeusGroupId);
+
 }

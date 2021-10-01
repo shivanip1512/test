@@ -120,4 +120,9 @@ public interface EcobeeZeusGroupDao {
      * Return all ecobee groups mapped with the specified inventoryId
      */
     List<String> getZeusGroupIdsForInventoryId(int inventoryId);
+
+    /**
+     * Delete zeus group mapping.
+     */
+    void deleteZeusGroupMapping(String zeusGroupId);
 }
