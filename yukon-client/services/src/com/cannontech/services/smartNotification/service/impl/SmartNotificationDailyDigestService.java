@@ -1,8 +1,12 @@
 package com.cannontech.services.smartNotification.service.impl;
 
+import static com.cannontech.common.smartNotification.model.SmartNotificationEventType.DEVICE_DATA_MONITOR;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -25,8 +29,8 @@ import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
-import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters.ProcessingType;
+import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.services.smartNotification.service.MessageParametersHelper;
@@ -60,45 +64,96 @@ public class SmartNotificationDailyDigestService implements MessageListener {
         }
     }
     
+    /**
+     * Sends 1 email for all subscription types and monitors
+     */
     private void doDailyDigestGrouped(String digestTime) {
-        List<SmartNotificationMessageParameters> allMessages = new ArrayList<>();
-        SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> combinedSubscriptions = subscriptionDao.getDailyDigestGrouped(digestTime);
-        for (SmartNotificationEventType type : combinedSubscriptions.keySet()) {
-            List<SmartNotificationMessageParameters> messageParameters =
-                getMessageParameters(getDecider(type), combinedSubscriptions.get(type));
-            allMessages.addAll(messageParameters);
-        }
-        deciderService.putMessagesOnAssemblerQueue(allMessages, 0, true, digestTime);
-    }
-    
-    private void doDailyDigestUngrouped(String digestTime) {
-        SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> subscriptionsPerEventType = subscriptionDao.getDailyDigestUngrouped(digestTime);
-        for (SmartNotificationEventType type : subscriptionsPerEventType.keySet()) {
-            List<SmartNotificationMessageParameters> messageParameters =
-                getMessageParameters(getDecider(type), subscriptionsPerEventType.get(type));
-            deciderService.putMessagesOnAssemblerQueue(messageParameters, 0, false, digestTime);
-        }
-    }
-    
-    private List<SmartNotificationMessageParameters> getMessageParameters(SmartNotificationDecider decider,
-            Set<SmartNotificationSubscription> subscriptions) {
+        SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> subscriptions = subscriptionDao
+                .getDailyDigestGrouped(digestTime);
+        SetMultimap<Integer, SmartNotificationSubscription> ddmSubscriptions = subscriptionDao
+                .getDailyDigestDeviceDataMonitorGrouped(digestTime);
         
+        
+        List<List<SmartNotificationMessageParameters>> allMessages = getAllMassages(digestTime, subscriptions, ddmSubscriptions);
+       
+        //group by recipient
+        Map<String, List<SmartNotificationMessageParameters>> messages = new HashMap<>();
+        
+        allMessages.stream().flatMap(List::stream).forEach(param -> {
+            param.getRecipients().forEach(recipient -> {
+                SmartNotificationMessageParameters message = new SmartNotificationMessageParameters(param.getType(),
+                        param.getMedia(),
+                        param.getVerbosity(), 
+                        List.of(recipient), 
+                        param.getEvents(), 
+                        param.getProcessingType());
+                if (!messages.containsKey(recipient)) {
+                    messages.put(recipient, new ArrayList<>());
+                }
+                messages.get(recipient).add(message);
+            });
+        });
+        
+       messages.forEach((recipient, params) -> {
+           //each monitor is its own type
+           commsLogger.info("Generating one DAILY email for recipient {} including {} notification types", recipient, params.size());
+           deciderService.putMessagesOnAssemblerQueue(params, 0, true, digestTime);
+       });
+    }
+
+    /**
+     * Sends 1 email for each subscription type and 1 email per monitor
+     */
+    private void doDailyDigestUngrouped(String digestTime) {
+        SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> subscriptions = subscriptionDao
+                .getDailyDigestUngrouped(digestTime);
+        SetMultimap<Integer, SmartNotificationSubscription> ddmSubscriptions = subscriptionDao
+                .getDailyDigestDeviceDataMonitorUngrouped(digestTime);
+        List<List<SmartNotificationMessageParameters>> messages = getAllMassages(digestTime, subscriptions, ddmSubscriptions); 
+        messages.forEach(messageParameters -> deciderService.putMessagesOnAssemblerQueue(messageParameters, 0, false, digestTime));
+    }
+
+    private List<List<SmartNotificationMessageParameters>> getAllMassages(String digestTime,
+            SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> subscriptions,
+            SetMultimap<Integer, SmartNotificationSubscription> ddmSubscriptions) {
+
+        Range<Instant> range = getDailyRange();
+        List<List<SmartNotificationMessageParameters>> allMessages = new ArrayList<>();
+        // all event types
+        for (SmartNotificationEventType type : subscriptions.keySet()) {
+            List<SmartNotificationEvent> events = getDecider(type).validate(eventDao.getEventsByTypeAndDate(type, range));
+            List<SmartNotificationMessageParameters> messageParameters = getMessageParameters(type, subscriptions.get(type),
+                    events);
+            allMessages.add(messageParameters);
+        }
+
+        // device data monitors
+        for (Integer monitorId : ddmSubscriptions.keySet()) {
+            List<SmartNotificationEvent> events = getDecider(DEVICE_DATA_MONITOR)
+                    .validate(eventDao.getEventsByMonitorIdAndDate(monitorId, range));
+            List<SmartNotificationMessageParameters> messageParameters = getMessageParameters(DEVICE_DATA_MONITOR,
+                    ddmSubscriptions.get(monitorId), events);
+            allMessages.add(messageParameters);
+        }
+        return allMessages;
+    }
+    
+    private Range<Instant> getDailyRange() {
         Instant now = new DateTime().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0).toInstant();
         Instant oneDayAgo = now.minus(Duration.standardDays(1));
-        List<SmartNotificationEvent> events = getEvents(decider, new Range<>(oneDayAgo, false, now, true)); //retrieved events correctly
+        return new Range<>(oneDayAgo, false, now, true);
+    }
+
+    private List<SmartNotificationMessageParameters> getMessageParameters(SmartNotificationEventType type,
+            Set<SmartNotificationSubscription> subscriptions, List<SmartNotificationEvent> events) {
+        SmartNotificationDecider decider = getDecider(type);
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionsToEvents =
             decider.mapSubscriptionsToEvents(subscriptions, events);
         List<SmartNotificationMessageParameters> messageParameters =
             MessageParametersHelper.getMessageParameters(decider.getEventType(), subscriptionsToEvents, 0, ProcessingType.DIGEST);
         return messageParameters;
     }
-    
-    private List<SmartNotificationEvent> getEvents(SmartNotificationDecider decider, Range<Instant> range){
-
-        List<SmartNotificationEvent> events = eventDao.getEventsByTypeAndDate(decider.getEventType(), range);
-        return decider.validate(events);
-    }
-    
+     
     private SmartNotificationDecider getDecider(SmartNotificationEventType type){
         return deciders.stream().filter(d -> d.getEventType() == type).findFirst().get();
     }
