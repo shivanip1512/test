@@ -44,7 +44,7 @@ public class MessageParametersHelper {
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 
             SmartNotificationMessageParameters param = new SmartNotificationMessageParameters(type, mv.media,
-                mv.verbosity, recipients, new ArrayList<>(events), eventPeriodMinutes, processingType);
+                mv.verbosity, recipients, new ArrayList<>(events), processingType);
             params.add(param);
         }
         return params;
