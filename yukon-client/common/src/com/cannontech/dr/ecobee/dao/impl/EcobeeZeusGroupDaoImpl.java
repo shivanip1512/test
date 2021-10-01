@@ -242,4 +242,11 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         sql.append("WHERE InventoryID").eq(inventoryId);
         return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
+
+    @Override
+    public void deleteZeusGroupMapping(String zeusGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM LMGroupZeusMapping WHERE EcobeeGroupId").eq(zeusGroupId);
+        jdbcTemplate.update(sql);
+    }
 }
