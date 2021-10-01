@@ -22,9 +22,10 @@
 @primary-button-color-border: #444;
 @primary-button-color-hover: #888;
 
-@secondary-button-color-hover: rgba(0, 0, 0, 0.04);
-@toggle-button-color-selected: rgba(0, 0, 0, 0.08);
-@toggle-button-color-border: rgba(0, 0, 0, 0.12);
+@secondary-button-color-hover: #f2f8fc;
+@toggle-button-color-hover: #f5f5f5;
+@toggle-button-color-selected: #ebebeb;
+@toggle-button-color-border: #cbcbcb;
 
 @form-control-height: 26px;
 
@@ -166,13 +167,7 @@ input.right, select.right,
 }
 
 button:not([disabled]):not(.naked):not(.action):hover, .button:not([disabled]):not(.naked):not(.action):hover {
-    box-shadow: none;
-    color: @primary-button-color;
-    background-color: rgba(0, 123, 193, 0.05);
-}
-
-.b-user-menu .button:hover {
-	background-color: @secondary-button-color-hover !important;
+    background-color: @secondary-button-color-hover;
 }
 
 button.yes, button.no, .button.yes, .button.no, 
@@ -193,7 +188,7 @@ button.yes .b-label, button.no .b-label, .button.yes .b-label, .button.no .b-lab
 button.yes:hover, button.no:hover, .button.yes:hover, .button.no:hover,
 .button-group .button:hover,
 .radio-btn .button:hover {
-	background-color: @secondary-button-color-hover !important;
+	background-color: @toggle-button-color-hover !important;
 }
 
 button.on, {
