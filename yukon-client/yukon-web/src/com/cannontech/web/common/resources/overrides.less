@@ -350,25 +350,26 @@ span.fancytree-node {
             margin-right: 10px;
             
             button {
-                background: #F3F3F3;
-                border: solid 1px #bbb;
-                border-radius: @border-radius;
-                color: #444;
-                display: inline-block;
+                background: #fff;
+                border: solid 1px @primary-button-color;
+                border-radius: 4px;
+                color: @primary-button-color;
+                display: inline-flex;
                 float: left;
-                font: bold 12px Helvetica, Arial, sans-serif;
-                font-smoothing: antialiased;
-                height: 26px;
-                line-height: 16px;
-                margin: 5px;
-                padding: 4px 8px;
+                font-size: 0.875rem !important;
+                font-weight: 600 !important;
+                line-height: 1.75;
+                margin: 0;
+                margin-right: 16px;
+                margin-bottom: 12px;
+                padding: 5px 15px;
+                box-sizing: border-box;
                 text-decoration: none;
-                text-shadow: 0 1px 0 #fff;
-                transition: border-color .20s;
+                transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
                 
                 .ui-button-text {
                     padding: 0;
-                    line-height: 16px;
+                    line-height: 1.75;
                 }
             }
             
@@ -387,7 +388,6 @@ span.fancytree-node {
                 background: @primary-button-color;
                 border: 1px solid @primary-button-color-border!important;
                 transition: border .20s;
-                text-shadow: 0 1px 0 #777777 !important;
                 color: #ffffff;
             }
         }

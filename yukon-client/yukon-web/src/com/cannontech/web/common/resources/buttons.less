@@ -113,6 +113,7 @@ button.action[disabled], .button.action[disabled] {
 .image-btn {
 	border: 1px solid @toggle-button-color-border;
 	padding: 7px;
+	height: 36px; 
 }
 
 .image-btn.on {
@@ -174,17 +175,24 @@ button:not([disabled]):not(.naked):not(.action):hover, .button:not([disabled]):n
 	background-color: @secondary-button-color-hover !important;
 }
 
-button.yes, button.no, .button.yes, .button.no {
+button.yes, button.no, .button.yes, .button.no, 
+.button-group .button,
+.radio-btn .button {
 	padding: 7px;
 	border-color: @toggle-button-color-border;
+	height: 36px;
 }
 
-button.yes .b-label, button.no .b-label, .button.yes .b-label, .button.no .b-label {
+button.yes .b-label, button.no .b-label, .button.yes .b-label, .button.no .b-label,
+.button-group .button .b-label,
+.radio-btn .button .b-label {
 	color: #727e84;
 	font-size: 0.8125rem;
 }
 
-button.yes:hover, button.no:hover, .button.yes:hover, .button.no:hover {
+button.yes:hover, button.no:hover, .button.yes:hover, .button.no:hover,
+.button-group .button:hover,
+.radio-btn .button:hover {
 	background-color: @secondary-button-color-hover !important;
 }
 
