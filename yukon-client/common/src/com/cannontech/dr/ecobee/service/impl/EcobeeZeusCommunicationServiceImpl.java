@@ -237,6 +237,10 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             if (programId != EcobeeZeusGroupService.DEFAULT_PROGRAM_ID) {
                 String zeusGroupId = ecobeeZeusGroupService.getZeusGroupId(lmGroupId, inventoryId, programId);
                 removeThermostatFromGroup(zeusGroupId, serialNumber, inventoryId, updateDeviceMapping);
+                List<Integer> inventories = ecobeeZeusGroupService.getInventoryIdsForZeusGrouID(zeusGroupId);
+                if (CollectionUtils.isEmpty(inventories)) {
+                    ecobeeZeusGroupService.deleteZeusGroupMapping(zeusGroupId);
+                }
             }
         }
     }
