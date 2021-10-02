@@ -76,7 +76,9 @@
         <include name="lucene-core-8.8.2.jar"/>
         <include name="lucene-queryparser-8.8.2.jar"/>
         <include name="javax.mail-1.6.1.jar"/>
-        <include name="smtp-1.5.1.jar"/>
+        <include name="jakarta.mail-2.0.1.jar"/>
+        <include name="jakarta.activation-api-2.0.1.jar"/>
+        <include name="smtp-2.0.1.jar"/>
         <include name="notification.jar"/>
         <include name="org.osgi.core-4.1.0.jar"/>
         <include name="quartz-2.3.2.jar"/>
