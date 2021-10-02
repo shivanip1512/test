@@ -91,6 +91,7 @@
     	<include name="log4j-api-2.14.0.jar"/>
     	<include name="log4j-core-2.14.0.jar"/>
     	<include name="log4j-jcl-2.14.0.jar"/>
+        <include name="logging-mailhandler-2.0.1.jar"/>
         <include name="lucene-analyzers-common-8.8.2.jar"/>
         <include name="lucene-core-8.8.2.jar"/>
         <include name="lucene-queryparser-8.8.2.jar"/>
