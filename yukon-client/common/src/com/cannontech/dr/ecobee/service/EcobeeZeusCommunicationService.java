@@ -42,7 +42,7 @@ public interface EcobeeZeusCommunicationService {
     /**
      * Create thermostat group
      */
-    void createThermostatGroup(String zeusGroupId, List<String> thermostatIds);
+    void createThermostatGroup(String zeusGroupId, List<Integer> inventoryIds);
     /**
      * Create push API configuration with a publicly accessible HTTPS endpoint and encoded private key.
      */

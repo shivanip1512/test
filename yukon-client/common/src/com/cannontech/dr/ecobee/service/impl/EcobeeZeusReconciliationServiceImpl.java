@@ -40,10 +40,8 @@ import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMissingGroupDiscrepa
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
-import com.google.common.base.Functions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconciliationService {
@@ -221,8 +219,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
             // Yukon group has no corresponding ecobee group
             case MISSING_GROUP:
                 // Create thermostat group in ecobee with all its enrollments.
-                List<Integer> ids = ecobeeZeusGroupDao.getInventoryIdsForYukonGroupID(error.getCorrectPath());
-                List<String> inventoryIds = Lists.transform(ids, Functions.toStringFunction());
+                List<Integer> inventoryIds = ecobeeZeusGroupDao.getInventoryIdsForYukonGroupID(error.getCorrectPath());
                 communicationService.createThermostatGroup(error.getCorrectPath(), inventoryIds);
                 return EcobeeZeusReconciliationResult.newSuccess(error);
 

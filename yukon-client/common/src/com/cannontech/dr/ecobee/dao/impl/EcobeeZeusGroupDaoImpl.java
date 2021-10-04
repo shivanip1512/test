@@ -249,4 +249,21 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         sql.append("DELETE FROM LMGroupZeusMapping WHERE EcobeeGroupId").eq(zeusGroupId);
         jdbcTemplate.update(sql);
     }
+
+    @Override
+    public void updateZeusGroupId(String oldZeusGroupId, String newZeusGroupId) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        updateSql.append("SET EcobeeGroupId").eq(newZeusGroupId);
+        updateSql.append("WHERE EcobeeGroupId").eq(oldZeusGroupId);
+
+        SqlStatementBuilder lMGroupZeusMappingSql = new SqlStatementBuilder();
+        lMGroupZeusMappingSql.append("UPDATE LMGroupZeusMapping");
+        lMGroupZeusMappingSql.append(updateSql);
+        jdbcTemplate.update(lMGroupZeusMappingSql);
+
+        SqlStatementBuilder zeusGroupInventoryMappingSql = new SqlStatementBuilder();
+        zeusGroupInventoryMappingSql.append("UPDATE ZeusGroupInventoryMapping");
+        zeusGroupInventoryMappingSql.append(updateSql);
+        jdbcTemplate.update(zeusGroupInventoryMappingSql);
+    }
 }

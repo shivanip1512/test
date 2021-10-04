@@ -125,4 +125,9 @@ public interface EcobeeZeusGroupDao {
      * Delete zeus group mapping.
      */
     void deleteZeusGroupMapping(String zeusGroupId);
+
+    /**
+     * Update mappings with new zeus group Id.
+     */
+    void updateZeusGroupId(String oldZeusGroupId, String newZeusGroupId);
 }

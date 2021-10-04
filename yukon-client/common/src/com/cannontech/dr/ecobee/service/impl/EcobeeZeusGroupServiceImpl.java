@@ -213,4 +213,9 @@ public class EcobeeZeusGroupServiceImpl implements EcobeeZeusGroupService {
         ecobeeZeusGroupDao.deleteZeusGroupMapping(zeusGroupId);
     }
 
+    @Override
+    public void updateZeusGroupId(String oldZeusGroupId, String newZeusGroupId) {
+        ecobeeZeusGroupDao.updateZeusGroupId(oldZeusGroupId, newZeusGroupId);
+    }
+
 }
