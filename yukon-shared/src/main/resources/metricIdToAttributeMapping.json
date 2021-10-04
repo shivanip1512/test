@@ -115,7 +115,7 @@
                 { "metricId" : 222, "attributeMagnitude" : 3, "attribute" : "KVAH_Q234" },
                 
                 { "metricId" : 230, "attributeMagnitude" : 3, "attribute" : "MINIMUM_POWER_FACTOR" },
-                { "metricId" : 231, "attributeMagnitude" : 3, "attribute" : "PREVIOUS_MINIMUM_POWER_FACTOR" },
+                { "metricId" : 231, "attributeMagnitude" : 3, "attribute" : "MINIMUM_POWER_FACTOR_FROZEN" },
                 
                 { "metricId" : 233, "attributeMagnitude" : 3, "attribute" : "AVERAGE_POWER_FACTOR" },
                 { "metricId" : 234, "attributeMagnitude" : 3, "attribute" : "AVERAGE_POWER_FACTOR_FROZEN" },
