@@ -240,6 +240,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                 List<Integer> inventories = ecobeeZeusGroupService.getInventoryIdsForZeusGrouID(zeusGroupId);
                 if (CollectionUtils.isEmpty(inventories)) {
                     ecobeeZeusGroupService.deleteZeusGroupMapping(zeusGroupId);
+                    deleteGroup(zeusGroupId);
                 }
             }
         }
@@ -291,18 +292,27 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @Override
-    public void createThermostatGroup(String zeusGroupId, List<String> thermostatIds) {
+    public void createThermostatGroup(String oldZeusGroupId, List<Integer> inventoryIds) {
 
+        List<String> thermostatIds = new ArrayList<String>();
+        for (int id : inventoryIds) {
+            thermostatIds.add(lmHardwareBaseDao.getSerialNumberForInventoryId(id));
+        }
         String createThermostatURL = getUrlBase() + "tstatgroups";
 
-        String groupName = ecobeeZeusGroupService.zeusGroupName(zeusGroupId);
+        String groupName = ecobeeZeusGroupService.zeusGroupName(oldZeusGroupId);
         CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), thermostatIds);
         ZeusGroup group = new ZeusGroup(groupName, getZeusProgramId());
         ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
         try {
-            requestHelper.callEcobeeAPIForObject(createThermostatURL, HttpMethod.POST, Object.class,
-                    zeusThermostatGroup);
+            ResponseEntity<Map> responseEntity = requestHelper.callEcobeeAPIForObject(createThermostatURL, HttpMethod.POST,
+                    Map.class, zeusThermostatGroup);
+            if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
+                Map<String, String> responseFields = (Map<String, String>) responseEntity.getBody().get("group");
+                String newZeusGroupId = responseFields.get("id");
+                ecobeeZeusGroupService.updateZeusGroupId(oldZeusGroupId, newZeusGroupId);
+            }
 
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
