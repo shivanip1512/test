@@ -121,4 +121,9 @@ public interface EcobeeZeusGroupService {
      */
     void deleteZeusGroupMapping(String zeusGroupId);
 
+    /**
+     * Update mappings with new zeus group Id.
+     */
+    void updateZeusGroupId(String oldZeusGroupId, String newZeusGroupId);
+
 }
