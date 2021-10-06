@@ -55,10 +55,9 @@
                     </form:select>
                     <cti:icon icon="icon-help" data-popup="#rounding-help" classes="cp fn"/>
                 </tags:nameValue2>
-
-				<c:set var="classes" value="${exportField.value ? '' : 'dn'}" />
-				<tags:nameValue2 rowId="reading-pattern" nameKey=".readingPattern"
-					rowClass="${classes}">
+                
+                <c:set var="classes" value="${exportField.value ? '' : 'dn'}" />
+				<tags:nameValue2 rowId="reading-pattern" nameKey=".readingPattern" rowClass="${classes}">
 					<input type="hidden" id="customPatternValue"
 						value="${exportField.pattern}">
 					<c:if test="${customSelected}">
@@ -74,9 +73,8 @@
 					<cti:icon icon="icon-help" data-popup="#value-help" classes="cp fn" />
 				</tags:nameValue2>
 
-				<c:set var="classes" value="${exportField.timestamp ? '' : 'dn'}" />
-				<tags:nameValue2 rowId="timestamp-pattern"
-					nameKey=".timestampPattern" rowClass="${classes}">
+                <c:set var="classes" value="${exportField.timestamp ? '' : 'dn'}" />
+                <tags:nameValue2 rowId="timestamp-pattern" nameKey=".timestampPattern" rowClass="${classes}">
 					<tags:selectWithItems path="pattern" items="${timestampPatterns}"
 						itemValue="pattern" inputClass="timestamp-pattern-select" hideErrors= "${customSelected}" />
 					<tags:input id="timestamp-pattern-input" size="10" maxlength="30"
@@ -110,7 +108,7 @@
                         </c:forEach>
                     </form:select>&nbsp;
                     
-                                        <c:set var="hasPadding" value="${exportField.padSide != 'NONE'}"/>
+                    <c:set var="hasPadding" value="${exportField.padSide != 'NONE'}"/>
                     <c:set var="classes" value="${hasPadding ? '' : 'dn'}"/>
                     <span id="pad-char-fields" class="dib ${classes}">
                         <c:set var="customPadChar" value="${hasPadding && exportField.padChar != ' ' && exportField.padChar != '0'}"/>
