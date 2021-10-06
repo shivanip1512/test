@@ -74,44 +74,44 @@ post-operation:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_DIGI_SEP LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EMETCON LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ECOBEE LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_METER_DISCONNECT LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_VERSACOM LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ITRON LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_HONEYWELL LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_NEST LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RFN_EXPRESSCOMM LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD LOAD_GROUP_COPY Response Schema'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT LOAD_GROUP_COPY Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_DIGI_SEP Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EMETCON Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ECOBEE Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_METER_DISCONNECT Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_VERSACOM Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ITRON Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_HONEYWELL Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_NEST Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RFN_EXPRESSCOMM Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD Response Schema'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT Response Schema'
               examples:
                 Digi SEP Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group Response' 
                 Emetcon Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Emetcon Group' 
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Emetcon Group Response' 
                 ecobee Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/ecobee Group'
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/ecobee Group Response'
                 Meter Disconnect Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Meter Disconnect Group' 
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Meter Disconnect Group Response' 
                 Versacom Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group' 
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group Response' 
                 Itron Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group'
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group Response'
                 Honeywell Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Honeywell Group' 
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Honeywell Group Response' 
                 Nest Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group' 
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group Response' 
                 MCT Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/MCT Group'
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/MCT Group Response'
                 Expresscomm Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group Response'
                 RFN Expresscomm Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/RFN Expresscomm Group'
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/RFN Expresscomm Group Response'
                 Eaton Cloud Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group'
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group Response'
                 Point Group:
                   $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group Response'
 get-update-delete-operation:
@@ -150,46 +150,46 @@ get-update-delete-operation:
           application/json:
             schema:
               oneOf:
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_DIGI_SEP LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EMETCON LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ECOBEE LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_METER_DISCONNECT LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_VERSACOM LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ITRON LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_HONEYWELL LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_NEST LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RFN_EXPRESSCOMM LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD LOAD_GROUP_COPY Response Schema'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT_Response LOAD_GROUP_COPY Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_DIGI_SEP Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EMETCON Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ECOBEE Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_METER_DISCONNECT Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_VERSACOM Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ITRON Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_HONEYWELL Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_NEST Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RFN_EXPRESSCOMM Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD Response Schema'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT Response Schema'
             examples:
               Digi SEP Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group Response' 
               Emetcon Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Emetcon Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Emetcon Group Response' 
               ecobee Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/ecobee Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/ecobee Group Response'
               Meter Disconnect Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Meter Disconnect Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Meter Disconnect Group Response' 
               Versacom Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group Response' 
               Itron Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group Response'
               Honeywell Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Honeywell Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Honeywell Group Response' 
               Nest Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group Response' 
               MCT Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/MCT Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/MCT Group Response'
               Expresscomm Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group Response'
               RFN Expresscomm Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/RFN Expresscomm Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/RFN Expresscomm Group Response'
               Eaton Cloud Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group Response'
               Point Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group Response LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group Response Response'
   put:
     tags:
       - Load Group
@@ -271,46 +271,46 @@ get-update-delete-operation:
           application/json:
             schema:
               oneOf:
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_DIGI_SEP LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EMETCON LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ECOBEE LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_METER_DISCONNECT LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_VERSACOM LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ITRON LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_HONEYWELL LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_NEST LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RFN_EXPRESSCOMM LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD LOAD_GROUP_COPY Response Schema'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT_Response LOAD_GROUP_COPY Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_DIGI_SEP Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EMETCON Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ECOBEE Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_METER_DISCONNECT Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_VERSACOM Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ITRON Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_HONEYWELL Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_NEST Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RFN_EXPRESSCOMM Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD Response Schema'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT Response Schema'
             examples:
               Digi SEP Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group Response' 
               Emetcon Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Emetcon Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Emetcon Group Response' 
               ecobee Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/ecobee Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/ecobee Group Response'
               Meter Disconnect Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Meter Disconnect Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Meter Disconnect Group Response' 
               Versacom Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group Response' 
               Itron Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group Response'
               Honeywell Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Honeywell Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Honeywell Group Response' 
               Nest Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group Response' 
               MCT Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/MCT Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/MCT Group Response'
               Expresscomm Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group Response'
               RFN Expresscomm Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/RFN Expresscomm Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/RFN Expresscomm Group Response'
               Eaton Cloud Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group Response'
               Point Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group Response LOAD_GROUP_COPY Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group Response'
              
   delete:
     tags:
@@ -387,7 +387,7 @@ copy-operation:
              
           examples:
             Load Group Copy:
-              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/LoadGroupCopy Request' 
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/LoadGroupCopy' 
            
       required: true
     responses:
@@ -396,8 +396,8 @@ copy-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/loadGroupsSchema.yaml#/LOAD_GROUP_COPY Response Schema'
+              $ref: '../schemas/loadGroupsSchema.yaml#/CopyResponse'
             examples:
               Load Group Copy:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/LOAD_GROUP_COPY Response' 
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/groupId' 
              

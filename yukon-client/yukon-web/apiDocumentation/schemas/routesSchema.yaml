@@ -86,6 +86,7 @@ repeaters:
         description: 'Order of the Repeater Route'
 
 Route Response Schema:
+  title: Route
   type: object
   properties:
     id:
