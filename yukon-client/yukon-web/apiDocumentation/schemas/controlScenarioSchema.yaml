@@ -60,10 +60,37 @@ id:
       type: integer
       description: 'Unique identifier of the control scenario.'
 
+ControlScenario Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the control scenario.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the control scenario.'
+    allPrograms:
+      description: 'Collection of programs required to create control scenario.'
+      $ref: '#/allPrograms'
+
 components:
   examples:
-    ControlScenario:
+    ControlScenario Request:
       value:
+        name: Test Control Scenario
+        allPrograms: 
+          - programId: 1234
+            startOffsetInMinutes: 123
+            stopOffsetInMinutes: 235
+            gears: 
+              - gearNumber: 1
+                gearName : Test Gear-1
+              - gearNumber: 2
+                gearName : Test Gear-2
+    ControlScenario Response:
+      value:
+        id: 11
         name: Test Control Scenario
         allPrograms: 
           - programId: 1234

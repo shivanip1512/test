@@ -42,6 +42,18 @@ attributeAssignments:
       type: integer
       description: 'The offset value is used to uniquely identify the type of data input.'
 
+attributes Response Schema:
+   type: object
+   properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the attribute.'
+    id:
+      type: integer
+      description: 'Unique identifier for the attribute'
+
+
 id:
   required:
     - id
@@ -54,8 +66,13 @@ id:
 
 components:
   examples:
-    Attributes: 
+    Attributes Request: 
       value:
+        name: Test API Attribute
+       
+    Attributes Response:
+      value:
+        id: 7
         name: Test API Attribute
        
     Attributes Assignment:   

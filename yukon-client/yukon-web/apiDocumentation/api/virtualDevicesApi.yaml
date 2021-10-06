@@ -136,7 +136,7 @@ get-update-delete-operation:
                  
               examples:
                 Virtual System:
-                  $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/Virtual System Response' 
+                  $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/Virtual System Response'
                 Virtual Meter:
                   $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/Virtual Meter Response'
   delete:

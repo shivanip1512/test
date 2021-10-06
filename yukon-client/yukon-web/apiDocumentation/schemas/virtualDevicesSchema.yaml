@@ -133,21 +133,20 @@ components:
         type: VIRTUAL_SYSTEM
         name: virtual system
         enable: true
-        
-    Virtual System Response: 
-      value:
-        id: 7
-        type: VIRTUAL_SYSTEM
-        name: virtual system
-        enable: true
-            
+
     Virtual Meter Request:
       value:
         type: VIRTUAL_METER
         name: Virtual meter
         enable: true
         meterNumber: '123312321321'
-        
+
+    Virtual System Response: 
+      value:
+        id: 7
+        type: VIRTUAL_SYSTEM
+        name: virtual system
+        enable: true
             
     Virtual Meter Response:
       value:

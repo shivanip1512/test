@@ -450,7 +450,425 @@ LM_EATON_CLOUD_PROGRAM:
       $ref: '#/notification'
     memberControl:
       $ref: '#/memberControl'
+
+LM_METER_DISCONNECT_PROGRAM Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the load program.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the load program.'
+    type:
+      type: string
+      enum: 
+        - LM_METER_DISCONNECT_PROGRAM
+      description: 'Type of load program.'
+    operationalState:
+      type: string
+      enum: 
+        - Automatic
+        - ManualOnly
+        - Timed
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
+    triggerOffset:
+      type: number
+      minimum: 0.0
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the trigger offset is added to the control area 
+                    trigger threshold. The trigger point defined in the control area must exceed the control area trigger 
+                    threshold plus the trigger offset before the load program can start control.'
+    restoreOffset:
+      type: number
+      minimum: -9999.9999
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the restore offset is subtracted from the control
+                    area trigger threshold. The trigger point defined in the control area must go below the control area
+                    trigger threshold minus the trigger offset before the load program can stop control. 
+                    A restore offset with a positive value causes the trigger threshold to be lowered; 
+                    a restore offset with a negative value causes the trigger threshold to be raised.'
+    constraint:
+      $ref: '#/constraint'
+    
+    gears:
+      type: array
+      items:
+        $ref: '#/MeterDisconnect'
       
+    controlWindow:
+      $ref: '#/controlWindow'
+    assignedGroups:
+      $ref: '#/assignedGroups'
+    notification:
+      $ref: '#/notification'
+    memberControl:
+      $ref: '#/memberControl'
+
+LM_SEP_PROGRAM Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the load program.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the load program.'
+    type:
+      type: string
+      enum: 
+        - LM_SEP_PROGRAM
+      description: 'Type of load program.'
+    operationalState:
+      type: string
+      enum: 
+        - Automatic
+        - ManualOnly
+        - Timed
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
+    triggerOffset:
+      type: number
+      minimum: 0.0
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the trigger offset is added to the control area 
+                    trigger threshold. The trigger point defined in the control area must exceed the control area trigger 
+                    threshold plus the trigger offset before the load program can start control.'
+    restoreOffset:
+      type: number
+      minimum: -9999.9999
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the restore offset is subtracted from the control
+                    area trigger threshold. The trigger point defined in the control area must go below the control area
+                    trigger threshold minus the trigger offset before the load program can stop control. 
+                    A restore offset with a positive value causes the trigger threshold to be lowered; 
+                    a restore offset with a negative value causes the trigger threshold to be raised.'
+    constraint:
+      $ref: '#/constraint'
+    gears:
+      type: array
+      items:
+        $ref: '#/NoControl'
+    controlWindow:
+      $ref: '#/controlWindow'
+    assignedGroups:
+      $ref: '#/assignedGroups'
+    notification:
+      $ref: '#/notification'
+    memberControl:
+      $ref: '#/memberControl'
+ 
+LM_ECOBEE_PROGRAM Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the load program.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the load program.'
+    type:
+      type: string
+      enum: 
+        - LM_ECOBEE_PROGRAM
+      description: 'Type of load program.'
+    operationalState:
+      type: string
+      enum: 
+        - Automatic
+        - ManualOnly
+        - Timed
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
+    triggerOffset:
+      type: number
+      minimum: 0.0
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the trigger offset is added to the control area 
+                    trigger threshold. The trigger point defined in the control area must exceed the control area trigger 
+                    threshold plus the trigger offset before the load program can start control.'
+    restoreOffset:
+      type: number
+      minimum: -9999.9999
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the restore offset is subtracted from the control
+                    area trigger threshold. The trigger point defined in the control area must go below the control area
+                    trigger threshold minus the trigger offset before the load program can stop control. 
+                    A restore offset with a positive value causes the trigger threshold to be lowered; 
+                    a restore offset with a negative value causes the trigger threshold to be raised.'
+    constraint:
+      $ref: '#/constraint'
+    
+    gears:
+      type: array
+      items:
+        $ref: '#/EcobeeCycle'
+    controlWindow:
+      $ref: '#/controlWindow'
+    assignedGroups:
+      $ref: '#/assignedGroups'
+    notification:
+      $ref: '#/notification'
+    memberControl:
+      $ref: '#/memberControl'
+      
+LM_HONEYWELL_PROGRAM Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the load program.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the load program.'
+    type:
+      type: string
+      enum: 
+        - LM_HONEYWELL_PROGRAM
+      description: 'Type of load program.'
+    operationalState:
+      type: string
+      enum: 
+        - Automatic
+        - ManualOnly
+        - Timed
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
+    triggerOffset:
+      type: number
+      minimum: 0.0
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the trigger offset is added to the control area 
+                    trigger threshold. The trigger point defined in the control area must exceed the control area trigger 
+                    threshold plus the trigger offset before the load program can start control.'
+    restoreOffset:
+      type: number
+      minimum: -9999.9999
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the restore offset is subtracted from the control
+                    area trigger threshold. The trigger point defined in the control area must go below the control area
+                    trigger threshold minus the trigger offset before the load program can stop control. 
+                    A restore offset with a positive value causes the trigger threshold to be lowered; 
+                    a restore offset with a negative value causes the trigger threshold to be raised.'
+    constraint:
+      $ref: '#/constraint'
+    gears:
+      type: array
+      items:
+        $ref: '#/HoneywellCycle'
+    controlWindow:
+      $ref: '#/controlWindow'
+    assignedGroups:
+      $ref: '#/assignedGroups'
+    notification:
+      $ref: '#/notification'
+    memberControl:
+      $ref: '#/memberControl'
+      
+LM_ITRON_PROGRAM Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the load program.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the load program.'
+    type:
+      type: string
+      enum: 
+        - LM_ITRON_PROGRAM
+      description: 'Type of load program.'
+    operationalState:
+      type: string
+      enum: 
+        - Automatic
+        - ManualOnly
+        - Timed
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
+    triggerOffset:
+      type: number
+      minimum: 0.0
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the trigger offset is added to the control area 
+                    trigger threshold. The trigger point defined in the control area must exceed the control area trigger 
+                    threshold plus the trigger offset before the load program can start control.'
+    restoreOffset:
+      type: number
+      minimum: -9999.9999
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the restore offset is subtracted from the control
+                    area trigger threshold. The trigger point defined in the control area must go below the control area
+                    trigger threshold minus the trigger offset before the load program can stop control. 
+                    A restore offset with a positive value causes the trigger threshold to be lowered; 
+                    a restore offset with a negative value causes the trigger threshold to be raised.'
+    constraint:
+      $ref: '#/constraint'
+    gears:
+      type: array
+      items:
+        $ref: '#/ItronCycle'
+    controlWindow:
+      $ref: '#/controlWindow'
+    assignedGroups:
+      $ref: '#/assignedGroups'
+    notification:
+      $ref: '#/notification'
+    memberControl:
+      $ref: '#/memberControl'
+      
+LM_DIRECT_PROGRAM Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the load program.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the load program.'
+    type:
+      type: string
+      enum: 
+        - LM_DIRECT_PROGRAM
+      description: 'Type of load program.'
+    operationalState:
+      type: string
+      enum: 
+        - Automatic
+        - ManualOnly
+        - Timed
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
+    triggerOffset:
+      type: number
+      minimum: 0.0
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the trigger offset is added to the control area 
+                    trigger threshold. The trigger point defined in the control area must exceed the control area trigger 
+                    threshold plus the trigger offset before the load program can start control.'
+    restoreOffset:
+      type: number
+      minimum: -9999.9999
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the restore offset is subtracted from the control
+                    area trigger threshold. The trigger point defined in the control area must go below the control area
+                    trigger threshold minus the trigger offset before the load program can stop control. 
+                    A restore offset with a positive value causes the trigger threshold to be lowered; 
+                    a restore offset with a negative value causes the trigger threshold to be raised.'
+    constraint:
+      $ref: '#/constraint'
+    gears:
+      type: array
+      items:
+        $ref: '#/NoControl'
+    controlWindow:
+      $ref: '#/controlWindow'
+    assignedGroups:
+      $ref: '#/assignedGroups'
+    notification:
+      $ref: '#/notification'
+    memberControl:
+      $ref: '#/memberControl'
+      
+LM_EATON_CLOUD_PROGRAM Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the load program.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the load program.'
+    type:
+      type: string
+      enum: 
+        - LM_EATON_CLOUD_PROGRAM
+      description: 'Type of load program.'
+    operationalState:
+      type: string
+      enum: 
+        - Automatic
+        - ManualOnly
+        - Timed
+      description: |-
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
+    triggerOffset:
+      type: number
+      minimum: 0.0
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the trigger offset is added to the control area 
+                    trigger threshold. The trigger point defined in the control area must exceed the control area trigger 
+                    threshold plus the trigger offset before the load program can start control.'
+    restoreOffset:
+      type: number
+      minimum: -9999.9999
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the restore offset is subtracted from the control
+                    area trigger threshold. The trigger point defined in the control area must go below the control area
+                    trigger threshold minus the trigger offset before the load program can stop control. 
+                    A restore offset with a positive value causes the trigger threshold to be lowered; 
+                    a restore offset with a negative value causes the trigger threshold to be raised.'
+    constraint:
+      $ref: '#/constraint'
+    gears:
+      type: array
+      items:
+        anyOf:
+          - $ref: '#/EatonCloudCycle'
+          - $ref: '#/NoControl'
+    controlWindow:
+      $ref: '#/controlWindow'
+    assignedGroups:
+      $ref: '#/assignedGroups'
+    notification:
+      $ref: '#/notification'
+    memberControl:
+      $ref: '#/memberControl'
+
 constraint:
   required:
     - constraintId
@@ -2163,7 +2581,7 @@ id:
 
 components:
   examples:
-    SEP Program: 
+    SEP Program Request: 
       value:
         name: Test SEP Program
         type: LM_SEP_PROGRAM
@@ -2193,8 +2611,40 @@ components:
             groupName: DigiSEP
             groupOrder: 1
             type: LM_GROUP_DIGI_SEP
-            
-    ecobee Program:
+
+    SEP Program Response: 
+      value:
+        id: 9
+        name: Test SEP Program
+        type: LM_SEP_PROGRAM
+        operationalState: Automatic
+        constraint:
+          constraintId: 0
+          constraintName: Default Constraint
+        triggerOffset: 0
+        restoreOffset: 0
+        gears:
+          - gearId: 0
+            gearName: SEP Cycle
+            gearNumber: 1
+            controlMethod: SepCycle
+            fields:
+              rampIn: true
+              rampOut: true
+              trueCycle: true
+              controlPercent: 50
+              criticality: 6
+              howToStopControl: TimeIn
+              capacityReduction: 100
+              whenToChangeFields:
+                whenToChange: None
+        assignedGroups:
+          - groupId: 54
+            groupName: DigiSEP
+            groupOrder: 1
+            type: LM_GROUP_DIGI_SEP
+
+    ecobee Program Request:
       value:
         name: TestEcobee
         type: LM_ECOBEE_PROGRAM
@@ -2241,8 +2691,55 @@ components:
             - notificationGrpID: 2
               notificationGrpName: Jess Notification
 
+    ecobee Program Response:
+      value:
+        id: 8
+        name: TestEcobee
+        type: LM_ECOBEE_PROGRAM
+        operationalState: Automatic
+        constraint:
+          constraintId: 0
+        triggerOffset: 1
+        restoreOffset: 2
+        gears:
+          - gearName: EcobeeSetpoint Gear1
+            gearNumber: 1
+            controlMethod: EcobeeSetpoint
+            fields:
+              mandatory: true
+              setpointOffset: -9
+              mode: HEAT
+              howToStopControl: Restore
+              capacityReduction: 100
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: EcobeeSetpoint Gear2
+            gearNumber: 2
+            controlMethod: EcobeeSetpoint
+            fields:
+              mandatory: true
+              setpointOffset: 7
+              mode: HEAT
+              howToStopControl: Restore
+              capacityReduction: 100
+              whenToChangeFields:
+                whenToChange: None
+        controlWindow:
+          controlWindowOne:
+            availableStartTimeInMinutes: 120
+            availableStopTimeInMinutes: 300
+        assignedGroups:
+          - groupId: 17588
+            groupName: ecobeeLoadGroup
+            type: LM_GROUP_ECOBEE
+        notification:
+          notifyOnAdjust: false
+          enableOnSchedule: false
+          assignedNotificationGroups:
+            - notificationGrpID: 2
+              notificationGrpName: Jess Notification
     
-    Direct Program:
+    Direct Program Request:
       value:  
         name: LMDirectTest001
         type: LM_DIRECT_PROGRAM
@@ -2385,8 +2882,151 @@ components:
             - notificationGrpID: 2
               notificationGrpName: Jess Notification
 
+    Direct Program Response:
+      value:  
+        id: 96
+        name: LMDirectTest001
+        type: LM_DIRECT_PROGRAM
+        operationalState: Automatic
+        constraint:
+          constraintId: 2
+          constraintName: '123444'
+        triggerOffset: 12
+        restoreOffset: 21
+        gears:
+          - gearName: GearSmartCycle
+            gearNumber: 2
+            controlMethod: SmartCycle
+            fields:
+              noRamp: false
+              controlPercent: 50
+              cyclePeriodInMinutes: 30
+              cycleCountSendType: FixedCount
+              maxCycleCount: 0
+              startingPeriodCount: 8
+              sendRate: 3600
+              stopCommandRepeat: 0
+              howToStopControl: StopCycle
+              capacityReduction: 100
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: GearMasterCycle
+            gearNumber: 3
+            controlMethod: MasterCycle
+            fields:
+              controlPercent: 50
+              cyclePeriodInMinutes: 30
+              groupSelectionMethod: LastControlled
+              howToStopControl: TimeIn
+              capacityReduction: 100
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: GearRotation
+            gearNumber: 4
+            controlMethod: Rotation
+            fields:
+              shedTime: 300
+              numberOfGroups: 0
+              sendRate: 1800
+              groupSelectionMethod: LastControlled
+              howToStopControl: TimeIn
+              capacityReduction: 100
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: GearTrueCycle
+            gearNumber: 5
+            controlMethod: TrueCycle
+            fields:
+              noRamp: false
+              controlPercent: 50
+              cyclePeriodInMinutes: 30
+              cycleCountSendType: FixedCount
+              maxCycleCount: 0
+              startingPeriodCount: 8
+              sendRate: 3600
+              stopCommandRepeat: 0
+              howToStopControl: StopCycle
+              capacityReduction: 100
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: GearMagnitude
+            gearNumber: 6
+            controlMethod: MagnitudeCycle
+            fields:
+              noRamp: false
+              controlPercent: 50
+              cyclePeriodInMinutes: 30
+              cycleCountSendType: FixedCount
+              maxCycleCount: 0
+              startingPeriodCount: 8
+              sendRate: 3600
+              stopCommandRepeat: 0
+              howToStopControl: StopCycle
+              capacityReduction: 100
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: GearTargetCycle
+            gearNumber: 7
+            controlMethod: TargetCycle
+            fields:
+              noRamp: false
+              controlPercent: 50
+              cycleCountSendType: FixedCount
+              maxCycleCount: 0
+              startingPeriodCount: 8
+              sendRate: 3600
+              stopCommandRepeat: 0
+              howToStopControl: StopCycle
+              capacityReduction: 100
+              kWReduction: 0
+              whenToChangeFields:
+                whenToChange: None
+              cyclePeriodInMinutes: 30
+          - gearName: GearSimpleThermo
+            gearNumber: 9
+            controlMethod: SimpleThermostatRamping
+            fields:
+              mode: COOL
+              randomStartTimeInMinutes: 60
+              preOpTemp: 4
+              preOpTimeInMinutes: 120
+              preOpHoldInMinutes: 120
+              rampPerHour: 0.4
+              max: 4
+              rampOutTimeInMinutes: 120
+              maxRuntimeInMinutes: 480
+              howToStopControl: TimeIn
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: GearBeatThePeak
+            gearNumber: 10
+            controlMethod: BeatThePeak
+            fields:
+              indicator: Yellow
+              timeoutInMinutes: 0
+              resendInMinutes: 0
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: GearNoControl
+            gearNumber: 11
+            controlMethod: NoControl
+            fields:
+              whenToChangeFields:
+                whenToChange: None
+        assignedGroups:
+          - groupId: 11705
+            groupName: E1
+            type: LM_GROUP_EMETCON
+        notification:
+          programStartInMinutes: 34
+          programStopInMinutes: 56
+          notifyOnAdjust: true
+          enableOnSchedule: true
+          assignedNotificationGroups:
+            - notificationGrpID: 2
+              notificationGrpName: Jess Notification
       
-    Meter Disconnect Program:
+    Meter Disconnect Program Request:
       value:    
         name: Test Meter Disconnect
         type: LM_METER_DISCONNECT_PROGRAM
@@ -2416,8 +3056,40 @@ components:
           controlWindowTwo:
             availableStartTimeInMinutes: 8
             availableStopTimeInMinutes: 8
-    
-    Itron Program:
+
+    Meter Disconnect Program Response:
+      value:   
+        id: 33 
+        name: Test Meter Disconnect
+        type: LM_METER_DISCONNECT_PROGRAM
+        operationalState: Automatic
+        constraint:
+          constraintId: 2
+          constraintName: constraint1
+        triggerOffset: 11
+        restoreOffset: 0
+        gears:
+          - gearName: gear001
+            gearNumber: 1
+            controlMethod: MeterDisconnect
+        assignedGroups:
+          - groupId: 15006
+            groupName: testmd01
+            groupOrder: 1
+            type: LM_GROUP_METER_DISCONNECT
+          - groupId: 14949
+            groupName: testmd02
+            groupOrder: 2
+            type: LM_GROUP_METER_DISCONNECT
+        controlWindow:
+          controlWindowOne:
+            availableStartTimeInMinutes: 540
+            availableStopTimeInMinutes: 360
+          controlWindowTwo:
+            availableStartTimeInMinutes: 8
+            availableStopTimeInMinutes: 8
+
+    Itron Program Request:
       value:       
         name: ItronProgramTest
         type: LM_ITRON_PROGRAM
@@ -2458,7 +3130,51 @@ components:
           assignedNotificationGroups:
             - notificationGrpID: 2
               notificationGrpName: Jess Notification
-    Eaton Cloud Program:
+
+    Itron Program Response:
+      value:      
+        id: 63 
+        name: ItronProgramTest
+        type: LM_ITRON_PROGRAM
+        operationalState: Automatic
+        constraint:
+          constraintId: 95
+        triggerOffset: 1
+        restoreOffset: 2
+        gears:
+          - gearName: TestGear1
+            gearNumber: 1
+            controlMethod: ItronCycle
+            fields:
+              dutyCycleType: STANDARD
+              rampIn: true
+              rampOut: true
+              dutyCyclePercent: 95
+              dutyCyclePeriodInMinutes: 30
+              criticality: 97
+              capacityReduction: 93
+              howToStopControl: Restore
+              whenToChangeFields:
+                whenToChange: None
+        controlWindow:
+          controlWindowOne:
+            availableStartTimeInMinutes: 0
+            availableStopTimeInMinutes: 0
+          controlWindowTwo:
+            availableStartTimeInMinutes: 1
+            availableStopTimeInMinutes: 5
+        assignedGroups:
+          - groupId: 48207
+            groupName: ItronTest
+            type: LM_GROUP_ITRON
+        notification:
+          notifyOnAdjust: false
+          enableOnSchedule: false
+          assignedNotificationGroups:
+            - notificationGrpID: 2
+              notificationGrpName: Jess Notification
+
+    Eaton Cloud Program Request:
       value:       
         name: EatonCloudProgramTest
         type: LM_EATON_CLOUD_PROGRAM
@@ -2506,8 +3222,105 @@ components:
             - notificationGrpID: 2
               notificationGrpName: Jess Notification
 
-    Honeywell Program:
+    Eaton Cloud Program Response:
+      value:       
+        id: 99
+        name: EatonCloudProgramTest
+        type: LM_EATON_CLOUD_PROGRAM
+        operationalState: Automatic
+        constraint:
+          constraintId: 95
+        triggerOffset: 1
+        restoreOffset: 2
+        gears:
+          - gearName: TestGear1
+            gearNumber: 1
+            controlMethod: EatonCycle
+            fields:
+              dutyCycleType: STANDARD
+              rampIn: true
+              rampOut: true
+              dutyCyclePercent: 95
+              dutyCyclePeriodInMinutes: 30
+              criticality: 97
+              capacityReduction: 93
+              howToStopControl: Restore
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: GearNoControl
+            gearNumber: 11
+            controlMethod: NoControl
+            fields:
+              whenToChangeFields:
+                whenToChange: None
+        controlWindow:
+          controlWindowOne:
+            availableStartTimeInMinutes: 0
+            availableStopTimeInMinutes: 0
+          controlWindowTwo:
+            availableStartTimeInMinutes: 1
+            availableStopTimeInMinutes: 5
+        assignedGroups:
+          - groupId: 49236
+            groupName: EatonCloudTest
+            type: LM_GROUP_EATON_CLOUD
+        notification:
+          notifyOnAdjust: false
+          enableOnSchedule: false
+          assignedNotificationGroups:
+            - notificationGrpID: 2
+              notificationGrpName: Jess Notification
+
+    Honeywell Program Request:
       value:     
+        name: Honeywell Program001
+        type: LM_HONEYWELL_PROGRAM
+        operationalState: Timed
+        constraint:
+          constraintId: 0
+          constraintName: Default Constraint
+        triggerOffset: 0
+        restoreOffset: 0
+        gears:
+          - gearName: HW Cycle
+            gearNumber: 1
+            controlMethod: HoneywellCycle
+            fields:
+              mandatory: true
+              rampInOut: true
+              controlPercent: 50
+              cyclePeriodInMinutes: 30
+              howToStopControl: Restore
+              capacityReduction: 100
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: HW Setpoint
+            gearNumber: 2
+            controlMethod: HoneywellSetpoint
+            fields:
+              mandatory: true
+              setpointOffset: 3
+              mode: COOL
+              howToStopControl: Restore
+              capacityReduction: 100
+              whenToChangeFields:
+                whenToChange: None
+        controlWindow:
+          controlWindowOne:
+            availableStartTimeInMinutes: 540
+            availableStopTimeInMinutes: 360
+          controlWindowTwo:
+            availableStartTimeInMinutes: 660
+            availableStopTimeInMinutes: 22
+        assignedGroups:
+          - groupId: 15851
+            groupName: LM_GROUP_HONEYWELL_Name
+            groupOrder: 1
+            type: LM_GROUP_HONEYWELL
+
+    Honeywell Program Response:
+      value:     
+        id: 95
         name: Honeywell Program001
         type: LM_HONEYWELL_PROGRAM
         operationalState: Timed
