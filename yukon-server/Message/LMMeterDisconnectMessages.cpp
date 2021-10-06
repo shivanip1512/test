@@ -1,12 +1,11 @@
-
 #include "precompiled.h"
 
 #include "LMMeterDisconnectMessages.h"
+#include "proton_encoder_proxy.h"
 
-#include <cms/StreamMessage.h>
 
-
-namespace Cti::Messaging::LoadManagement {
+namespace Cti::Messaging::LoadManagement
+{
 
 LMMeterDisconnectControlMessage::LMMeterDisconnectControlMessage( int groupId,
                                                                   long long startTime,
@@ -18,7 +17,7 @@ LMMeterDisconnectControlMessage::LMMeterDisconnectControlMessage( int groupId,
     // empty
 }
 
-void LMMeterDisconnectControlMessage::streamInto( cms::StreamMessage & message ) const
+void LMMeterDisconnectControlMessage::streamInto( Proton::EncoderProxy & message ) const
 {
     message.writeInt( _groupId );
     message.writeLong( _startTime );
@@ -33,7 +32,7 @@ LMMeterDisconnectRestoreMessage::LMMeterDisconnectRestoreMessage( int groupId,
     // empty
 }
 
-void LMMeterDisconnectRestoreMessage::streamInto( cms::StreamMessage & message ) const
+void LMMeterDisconnectRestoreMessage::streamInto( Proton::EncoderProxy & message ) const
 {
     message.writeInt( _groupId );
     message.writeLong( _restoreTime );

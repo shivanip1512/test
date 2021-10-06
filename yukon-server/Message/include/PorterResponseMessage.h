@@ -22,7 +22,7 @@ public:
 
     PorterResponseMessage(const CtiReturnMsg &msg, const ConnectionHandle connectionHandle);
 
-    void streamInto(cms::StreamMessage &message) const;
+    void streamInto(Proton::EncoderProxy &message) const;
 };
 
 

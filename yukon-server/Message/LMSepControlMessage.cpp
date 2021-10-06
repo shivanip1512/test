@@ -1,16 +1,11 @@
-
 #include "precompiled.h"
 
 #include "LMSepControlMessage.h"
-
 #include "msg_pcreturn.h"
+#include "proton_encoder_proxy.h"
 
-#include <cms/StreamMessage.h>
-
-namespace Cti {
-namespace Messaging {
-namespace LoadManagement {
-
+namespace Cti::Messaging::LoadManagement
+{
 
 static const char  SEPAverageCycleUnused  = 0x80;
 static const char  SEPStandardCycleUnused = 0xFF;
@@ -109,7 +104,7 @@ auto LMSepControlMessage::createCycleMessage(int            groupId,
     return retVal;
 }
 
-void LMSepControlMessage::streamInto(cms::StreamMessage &message) const
+void LMSepControlMessage::streamInto(Proton::EncoderProxy &message) const
 {
     // To make the java conversion work properly, we are sending all unsigned fields using
     // a larger element. Bytes are sent as shorts, shorts as ints, etc.
@@ -127,5 +122,4 @@ void LMSepControlMessage::streamInto(cms::StreamMessage &message) const
 }
 
 }
-}
-}
+

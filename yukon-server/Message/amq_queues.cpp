@@ -2,7 +2,7 @@
 
 #include "amq_queues.h"
 
-namespace Cti::Messaging::ActiveMQ::Queues {
+namespace Cti::Messaging::Qpid::Queues {
 
 const IM_EX_MSG OutboundQueue
     OutboundQueue::PorterResponses

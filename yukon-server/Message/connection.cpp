@@ -20,7 +20,7 @@
 
 using namespace std;
 using namespace Cti::Messaging::Serialization;
-using namespace Cti::Messaging::ActiveMQ;
+using namespace Cti::Messaging::Qpid;
 
 using Cti::WorkerThread;
 using Cti::Timing::Chrono;
@@ -52,14 +52,14 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
     // create message listener and register function and caller
     _messageListener =
             std::make_unique<MessageListener>(
-                [this]( const cms::Message* msg )
+                [this]( proton::message& msg )
                 {
                     onMessage(msg);
                 } );
     // create advisory message listener and register function and caller
     _advisoryListener =
             std::make_unique<MessageListener>(
-                [this]( const cms::Message* msg )
+                [this]( proton::message& msg )
                 {
                     onAdvisoryMessage(msg);
                 } );
@@ -190,7 +190,7 @@ void CtiConnection::outThreadFunc()
 
                         _outMessage.reset();
                     }
-                    catch( cms::CMSException& e )
+                    catch( proton::error& e )
                     {
                         _valid = false; //sending data failed
 
@@ -266,7 +266,7 @@ void CtiConnection::sendMessage( const CtiMessage& msg )
 
     _sendStart.exchange(time(nullptr));  // Mark when the send started
     // send the message
-    _producer->send( bytes_msg.get() );
+//jmoc    _producer->send( bytes_msg.get() );
     _sendStart.exchange(0);   // Mark send as complete
 }
 
@@ -296,10 +296,12 @@ void CtiConnection::receiveAllMessages()
                 break;
             }
 
-            onMessage( msg.get() );
+// jmoc
+
+       //     onMessage( msg.get() );
         }
     }
-    catch( cms::CMSException& e )
+    catch( proton::error& e )
     {
         CTILOG_EXCEPTION_WARN(dout, e, who() <<" - Exception while attempting to receive all messages");
     }
@@ -311,91 +313,96 @@ void CtiConnection::receiveAllMessages()
  * This function is registerd with the consumer message listener
  * @param message  pointer to the cms::message received
  */
-void CtiConnection::onMessage( const cms::Message* message )
+void CtiConnection::onMessage( proton::message& msg )
 {
-    MessagePtr<CtiMessage>::type omsg;
+    // jmoc
 
-    // deserialize received message
-    if( const cms::BytesMessage* bytes_msg = dynamic_cast<const cms::BytesMessage*>(message) )
-    {
-        vector<unsigned char> ibytes( bytes_msg->getBodyLength() );
-
-        bytes_msg->readBytes( ibytes );
-
-        // deserialize the message
-        omsg = g_messageFactory.deserialize( message->getCMSType(), ibytes );
-    }
-
-    // check for any deserialize failure
-    if( !omsg.get() )
-    {
-        CTILOG_ERROR(dout, who() << " - message: \"" << message->getCMSType() << "\" cannot be deserialized.");
-        triggerReconnect();
-        return;
-    }
-
-    omsg->setConnectionHandle( Cti::ConnectionHandle{ _connectionId } );
-
-    // write incoming message to _inQueue
-    if( !_inQueue )
-    {
-        CTILOG_ERROR(dout, who() << " - _inQueue is NULL.");
-        return;
-    }
-
-    if( isDebugLudicrous() )
-    {
-        CTILOG_TRACE(dout, getName() << " just received " << *omsg);
-    }
-
-    // Refresh the time...
-    _lastInQueueWrite = _lastInQueueWrite.now();
-
-    writeIncomingMessageToQueue( omsg.release() );
-
-    const auto inQueueSize = _inQueue->size();
-    auto inQueueSizeWarning = _inQueueSizeWarning.load();
-
-    if(inQueueSize > inQueueSizeWarning)
-    {
-        CTILOG_WARN(dout, who() << " - inQueue has more than " << inQueueSizeWarning << " elements (" << inQueueSize << ")");
-
-        if(!_inQueueSizeWarning.compare_exchange_strong(inQueueSizeWarning, inQueueSizeWarning * 2))
-        {
-            CTILOG_WARN(dout, who() << " - could not update _inQueueSizeWarning, value was set to " << inQueueSizeWarning << " by another thread");
-        }
-    }
+//    MessagePtr<CtiMessage>::type omsg;
+//
+//    // deserialize received message
+//    if( const cms::BytesMessage* bytes_msg = dynamic_cast<const cms::BytesMessage*>(message) )
+//    {
+//        vector<unsigned char> ibytes( bytes_msg->getBodyLength() );
+//
+//        bytes_msg->readBytes( ibytes );
+//
+//        // deserialize the message
+//        omsg = g_messageFactory.deserialize( message->getCMSType(), ibytes );
+//    }
+//
+//    // check for any deserialize failure
+//    if( !omsg.get() )
+//    {
+//        CTILOG_ERROR(dout, who() << " - message: \"" << message->getCMSType() << "\" cannot be deserialized.");
+//        triggerReconnect();
+//        return;
+//    }
+//
+//    omsg->setConnectionHandle( Cti::ConnectionHandle{ _connectionId } );
+//
+//    // write incoming message to _inQueue
+//    if( !_inQueue )
+//    {
+//        CTILOG_ERROR(dout, who() << " - _inQueue is NULL.");
+//        return;
+//    }
+//
+//    if( isDebugLudicrous() )
+//    {
+//        CTILOG_TRACE(dout, getName() << " just received " << *omsg);
+//    }
+//
+//    // Refresh the time...
+//    _lastInQueueWrite = _lastInQueueWrite.now();
+//
+//    writeIncomingMessageToQueue( omsg.release() );
+//
+//    const auto inQueueSize = _inQueue->size();
+//    auto inQueueSizeWarning = _inQueueSizeWarning.load();
+//
+//    if(inQueueSize > inQueueSizeWarning)
+//    {
+//        CTILOG_WARN(dout, who() << " - inQueue has more than " << inQueueSizeWarning << " elements (" << inQueueSize << ")");
+//
+//        if(!_inQueueSizeWarning.compare_exchange_strong(inQueueSizeWarning, inQueueSizeWarning * 2))
+//        {
+//            CTILOG_WARN(dout, who() << " - could not update _inQueueSizeWarning, value was set to " << inQueueSizeWarning << " by another thread");
+//        }
+//    }
 }
 
 /**
  * Function called when an advisory message is received. This function is registered with the advisory message listener
  * @param message pointer to the cms::message received
  */
-void CtiConnection::onAdvisoryMessage( const cms::Message* message )
+void CtiConnection::onAdvisoryMessage( proton::message& msg )
 {
-    /* YUK-15137: 
-     * If _closed is set, skip everything and don't attempt to get _advisoryMux.
-     */
-    if( _closed )
-    {
-        return;
-    }
+    // jmoc
 
-    if( message->getCMSType() != "Advisory" )
-    {
-        CTILOG_ERROR(dout, who() << " - received unexpected message: \"" << message->getCMSType() << "\" is not \"Advisory\".");
-    }
 
-    triggerReconnect();
-
-    {
-        CtiLockGuard<CtiCriticalSection> guard(_advisoryMux);
-        if( _advisoryConsumer )
-        {
-            // un-register the message listener since we dont need it anymore
-            _advisoryConsumer->setMessageListener(NULL);
-        }
-    }
+//    /* YUK-15137: 
+//     * If _closed is set, skip everything and don't attempt to get _advisoryMux.
+//     */
+//    if( _closed )
+//    {
+//        return;
+//    }
+//
+//    if( message->getCMSType() != "Advisory" )
+//    {
+//        CTILOG_ERROR(dout, who() << " - received unexpected message: \"" << message->getCMSType() << "\" is not \"Advisory\".");
+//    }
+//
+//    triggerReconnect();
+//
+//    {
+//        CtiLockGuard<CtiCriticalSection> guard(_advisoryMux);
+//        if( _advisoryConsumer )
+//        {
+//            // un-register the message listener since we dont need it anymore
+//            _advisoryConsumer->setMessageListener(NULL);
+//        }
+//    }
 }
 
 /**

@@ -1,13 +1,12 @@
 #include "precompiled.h"
+
 #include "CtiTime.h"
 #include "IVVCAnalysisMessage.h"
+#include "proton_encoder_proxy.h"
 
-#include <cms/StreamMessage.h>
 
-
-namespace Cti           {
-namespace Messaging     {
-namespace CapControl    {
+namespace Cti::Messaging::CapControl
+{
 
 
 IVVCAnalysisMessage::IVVCAnalysisMessage( const int       subbusId,
@@ -118,7 +117,7 @@ IVVCAnalysisMessage * IVVCAnalysisMessage::createSubbusEnabledMessage( const int
     return message;
 }
 
-void IVVCAnalysisMessage::streamInto( cms::StreamMessage & message ) const
+void IVVCAnalysisMessage::streamInto( Proton::EncoderProxy & message ) const
 {
     message.writeInt( _subbusId );
     message.writeLong( _timestamp );
@@ -138,7 +137,5 @@ void IVVCAnalysisMessage::streamInto( cms::StreamMessage & message ) const
 }
 
 
-}
-}
 }
 

@@ -17,6 +17,8 @@
 
 #include <atomic>
 
+#include <proton/message.hpp>
+
 namespace cms {
 class Connection;
 class Session;
@@ -34,7 +36,7 @@ struct Threading;
 struct ThreadHandle;
 }
 
-namespace Cti::Messaging::ActiveMQ {
+namespace Cti::Messaging::Qpid {
 class ManagedConnection;
 class DestinationProducer;
 class DestinationConsumer;
@@ -42,6 +44,7 @@ class QueueProducer;
 class QueueConsumer;
 class TopicConsumer;
 class TempQueueConsumer;
+class MessageListener;
 }
 
 class IM_EX_MSG CtiConnection : public Cti::Messaging::BaseConnection
@@ -139,20 +142,24 @@ protected:
     void triggerReconnect ();
     void resetPeer        ( const std::string &peerName );
 
-    boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
+    boost::shared_ptr<Cti::Messaging::Qpid::ManagedConnection> _connection;
 
     std::unique_ptr<cms::Session> _sessionIn;
     std::unique_ptr<cms::Session> _sessionOut;
 
-    std::unique_ptr<Cti::Messaging::ActiveMQ::DestinationProducer> _producer;
-    std::unique_ptr<Cti::Messaging::ActiveMQ::TempQueueConsumer>   _consumer;
-    std::unique_ptr<cms::MessageListener>                          _messageListener;
+    std::unique_ptr<Cti::Messaging::Qpid::DestinationProducer> _producer;
+    std::unique_ptr<Cti::Messaging::Qpid::TempQueueConsumer>   _consumer;
+//    std::unique_ptr<cms::MessageListener>                          _messageListener;
+    std::unique_ptr<Cti::Messaging::Qpid::MessageListener>                          _messageListener;
 
-    std::unique_ptr<Cti::Messaging::ActiveMQ::TopicConsumer> _advisoryConsumer;
-    std::unique_ptr<cms::MessageListener>                    _advisoryListener;
+    std::unique_ptr<Cti::Messaging::Qpid::TopicConsumer> _advisoryConsumer;
+//    std::unique_ptr<cms::MessageListener>                    _advisoryListener;
+    std::unique_ptr<Cti::Messaging::Qpid::MessageListener>                    _advisoryListener;
 
-    void onMessage         ( const cms::Message* message );
-    void onAdvisoryMessage ( const cms::Message* message );
+//    void onMessage         ( const cms::Message* message );
+  //  void onAdvisoryMessage ( const cms::Message* message );
+    void onMessage         ( proton::message& msg );
+    void onAdvisoryMessage ( proton::message& msg );
 
     void setupAdvisoryListener();
 

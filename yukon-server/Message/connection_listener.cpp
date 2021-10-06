@@ -32,7 +32,7 @@ using namespace std;
 
 #include <atomic>
 
-using namespace Cti::Messaging::ActiveMQ;
+using namespace Cti::Messaging::Qpid;
 
 
 static std::atomic<long> listenerConnectionCount = 0;
@@ -151,7 +151,7 @@ void CtiListenerConnection::start()
 
             return;
         }
-        catch( cms::CMSException& e )
+        catch( proton::error& e )
         {
             CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - Error while starting listener connection");
         }
@@ -256,7 +256,7 @@ bool CtiListenerConnection::acceptClient()
 
         return true;
     }
-    catch( cms::CMSException& e )
+    catch( proton::error& e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, who() << " - Error while accepting new client connection");
 

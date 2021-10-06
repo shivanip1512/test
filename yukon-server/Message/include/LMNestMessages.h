@@ -17,7 +17,7 @@ public:
                                  long long startTime,
                                  int       controlDuration );
 
-    void streamInto( cms::StreamMessage & message ) const;
+    void streamInto( Proton::EncoderProxy & message ) const;
 
 private:
 
@@ -35,7 +35,7 @@ public:
     LMNestRestoreMessage( int       groupId,
                           long long restoreTime );
 
-    void streamInto( cms::StreamMessage & message ) const;
+    void streamInto( Proton::EncoderProxy & message ) const;
 
 private:
 

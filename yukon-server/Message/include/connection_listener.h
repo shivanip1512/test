@@ -9,11 +9,11 @@ class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
 {
     const std::string _serverQueueName;
 
-    boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
+    boost::shared_ptr<Cti::Messaging::Qpid::ManagedConnection> _connection;
 
     std::unique_ptr<cms::Session>                            _session;
     std::unique_ptr<cms::Destination>                        _clientReplyDest;
-    std::unique_ptr<Cti::Messaging::ActiveMQ::QueueConsumer> _consumer;
+    std::unique_ptr<Cti::Messaging::Qpid::QueueConsumer> _consumer;
 
     typedef std::map<std::string, CtiTime> DestTimeMap;
     DestTimeMap requestTimeMap;
@@ -43,7 +43,7 @@ public:
     bool verifyConnection();
     bool acceptClient();
 
-    boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> getConnection() const;
+    boost::shared_ptr<Cti::Messaging::Qpid::ManagedConnection> getConnection() const;
 
     virtual std::unique_ptr<cms::Destination> getClientReplyDest() const;
 

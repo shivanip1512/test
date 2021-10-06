@@ -12,7 +12,7 @@
 #include <atomic>
 
 using namespace std;
-using namespace Cti::Messaging::ActiveMQ;
+using namespace Cti::Messaging::Qpid;
 
 namespace { // anonymous
 
@@ -168,7 +168,7 @@ bool CtiClientConnection::establishConnection()
                     outMessage->setCMSReplyTo( _consumer->getDestination() );
                     outMessage->setCMSType( MessageType::clientInit );
 
-                    handshakeProducer.send( outMessage.get() );
+//jmoc                    handshakeProducer.send( outMessage.get() );
 
                     CTILOG_DEBUG(dout, who() << " - waiting for server reply.");
 
@@ -208,11 +208,11 @@ bool CtiClientConnection::establishConnection()
                     }
                 }
             }
-            catch( cms::CMSException& e )
+            catch( proton::error& e )
             {
                 if( canReconnect() )
                 {
-                    CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - caught CMS exception while trying to establish connection");
+                    CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - caught Proton exception while trying to establish connection");
 
                     Sleep(1000); // Don't pound the system....
                 }
@@ -249,18 +249,18 @@ bool CtiClientConnection::establishConnection()
         ackMessage->setCMSReplyTo( _consumer->getDestination() );
         ackMessage->setCMSType( MessageType::clientAck );
 
-        _producer->send( ackMessage.get() );
+//jmoc        _producer->send( ackMessage.get() );
 
         // send client registration
         writeRegistration();
 
         return true;
     }
-    catch( cms::CMSException& e )
+    catch( proton::error& e )
     {
         _valid = false;
 
-        CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - caught CMS exception while trying to establish connection");
+        CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - caught Proton exception while trying to establish connection");
 
         return false;
     }
@@ -333,7 +333,7 @@ void CtiClientConnection::writeRegistration()
             CTILOG_DEBUG(dout, who() << " - indicating reconnection.");
         }
     }
-    catch( cms::CMSException& e )
+    catch( proton::error& e )
     {
         _valid = false; //sending data failed
 

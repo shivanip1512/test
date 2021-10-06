@@ -26,6 +26,8 @@
 #include "GlobalSettings.h"
 #include "CParms.h"
 
+#include "proton_encoder_proxy.h"
+
 #include <boost/optional.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/adaptor/adjacent_filtered.hpp>
@@ -154,7 +156,7 @@ void ActiveMQConnectionManager::run()
                 processTasks(std::move(tasks));
             }
         }
-        catch( ActiveMQ::ConnectionException &e )
+        catch( Qpid::ConnectionException &e )
         {
             releaseConnectionObjects();
             if (!isSet(SHUTDOWN))
@@ -162,7 +164,7 @@ void ActiveMQConnectionManager::run()
                 CTILOG_EXCEPTION_ERROR(dout, e, "Unable to connect to the broker");
             }
         }
-        catch( cms::CMSException &e )
+        catch( proton::error &e )
         {
             releaseConnectionObjects();
 
@@ -203,14 +205,14 @@ bool ActiveMQConnectionManager::verifyConnectionObjects()
                 return false; // prevent starting a new connection while closing
             }
 
-            const auto broker_host = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerHost, ActiveMQ::Broker::defaultHost);
-            const auto broker_port = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerPort, ActiveMQ::Broker::defaultPort);
+            const auto broker_host = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerHost, Qpid::Broker::defaultHost);
+            const auto broker_port = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerPort, Qpid::Broker::defaultPort);
 
             // MaxInactivityDuration controls how long AMQ keeps a socket open when it's not heard from it.
             const auto maxInactivityDuration = "wireFormat.MaxInactivityDuration=" +
                 std::to_string( GlobalSettings::getInteger( GlobalSettings::Integers::MaxInactivityDuration, 30 ) * 1000 );
 
-            _connection = std::make_unique<ActiveMQ::ManagedConnection>( ActiveMQ::Broker::protocol + broker_host + ":" + broker_port + "?" + maxInactivityDuration );
+            _connection = std::make_unique<Qpid::ManagedConnection>( Qpid::Broker::protocol + broker_host + ":" + broker_port + "?" + maxInactivityDuration );
         }
 
         _connection->start(); // start the connection outside the lock
@@ -240,7 +242,7 @@ bool ActiveMQConnectionManager::verifyConnectionObjects()
 
 void ActiveMQConnectionManager::createConsumersForCallbacks(const CallbacksPerQueue &callbacks)
 {
-    using ActiveMQ::Queues::InboundQueue;
+    using Qpid::Queues::InboundQueue;
 
     boost::for_each(
             callbacks
@@ -254,24 +256,26 @@ void ActiveMQConnectionManager::createConsumersForCallbacks(const CallbacksPerQu
 }
 
 
-void ActiveMQConnectionManager::createNamedConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue)
+void ActiveMQConnectionManager::createNamedConsumer(const Qpid::Queues::InboundQueue *inboundQueue)
 {
     auto consumer = std::make_unique<QueueConsumerWithListener>();
 
     consumer->managedConsumer = 
-            ActiveMQ::createQueueConsumer(
+            Qpid::createQueueConsumer(
                     *_consumerSession,
                     inboundQueue->name);
 
     consumer->listener =
-            std::make_unique<ActiveMQ::MessageListener>(
-                    [=](const cms::Message *msg)
+            std::make_unique<Qpid::MessageListener>(
+                    [=](proton::message & msg)
                     {
                         acceptNamedMessage(msg, inboundQueue);
                     });
 
-    consumer->managedConsumer->setMessageListener(
-            consumer->listener.get());
+    // jmoc
+
+//    consumer->managedConsumer->setMessageListener(
+//            consumer->listener.get());
 
     CTILOG_INFO(dout, "Listener registered for destination \"" << inboundQueue->name << "\" id " << reinterpret_cast<unsigned long>(inboundQueue));
 
@@ -283,11 +287,11 @@ auto ActiveMQConnectionManager::createSessionConsumer(const SessionCallback call
 {
     auto consumer = std::make_unique<TempQueueConsumerWithCallback>();
 
-    consumer->managedConsumer = ActiveMQ::createTempQueueConsumer(*_consumerSession);
+    consumer->managedConsumer = Qpid::createTempQueueConsumer(*_consumerSession);
 
     static const auto sessionListener = 
-        std::make_unique<ActiveMQ::MessageListener>(
-            [this](const cms::Message *msg)
+        std::make_unique<Qpid::MessageListener>(
+            [this](proton::message &msg)
             {
                 acceptSessionReply(msg);
             });
@@ -325,7 +329,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages(EnvelopeQueue messages)
 
         messages.pop();
 
-        auto message = e->extractMessage(*_producerSession);
+        auto message = e->message;
 
         if( debugActivityInfo() )
         {
@@ -341,12 +345,13 @@ void ActiveMQConnectionManager::sendOutgoingMessages(EnvelopeQueue messages)
                 CTILOG_DEBUG(dout, "Setting reply-to destination " << destination << " on message for queue " << e->queueName);
             }
 
-            message->setCMSReplyTo(destination);
+//jmoc            message->setCMSReplyTo(destination);
+            message.to( "this is TBD but definitely a std::string!!" );
         }
 
-        ActiveMQ::QueueProducer &queueProducer = getQueueProducer(*_producerSession, e->queueName);
+        Qpid::QueueProducer &queueProducer = getQueueProducer(*_producerSession, e->queueName);
 
-        queueProducer.send(message.get());
+        queueProducer.send( message );
     }
 }
 
@@ -357,7 +362,7 @@ void ActiveMQConnectionManager::sendOutgoingReplies(ReplyQueue replies)
     {
         const auto& reply = replies.front();
 
-        auto replyProducer = ActiveMQ::createDestinationProducer(*_producerSession, reply.dest.get());
+        auto replyProducer = Qpid::createDestinationProducer(*_producerSession, reply.dest.get());
 
         if( debugActivityInfo() )
         {
@@ -368,7 +373,7 @@ void ActiveMQConnectionManager::sendOutgoingReplies(ReplyQueue replies)
 
         bytesMessage->writeBytes(reply.message);
 
-        replyProducer->send(bytesMessage.get());
+//jmoc        replyProducer->send(bytesMessage.get());
 
         replies.pop();
     }
@@ -381,13 +386,13 @@ const cms::Destination* ActiveMQConnectionManager::makeDestinationForReturnAddre
     {
         auto tempConsumer = std::make_unique<TempQueueConsumerWithCallback>();
 
-        tempConsumer->managedConsumer = ActiveMQ::createTempQueueConsumer(*_consumerSession);
+        tempConsumer->managedConsumer = Qpid::createTempQueueConsumer(*_consumerSession);
 
         tempConsumer->callback = std::move(callback->callback);
 
         static const auto singleReplyListener = 
-            std::make_unique<ActiveMQ::MessageListener>(
-                [this](const cms::Message *msg)
+            std::make_unique<Qpid::MessageListener>(
+                [this](proton::message &msg)
         {
             acceptSingleReply(msg);
         });
@@ -573,12 +578,12 @@ void ActiveMQConnectionManager::dispatchSessionReplies(RepliesByDestination repl
 }
 
 
-void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message)
+void ActiveMQConnectionManager::enqueueMessage(const Qpid::Queues::OutboundQueue &queue, StreamableMessagePtr message)
 {
     gActiveMQConnection->enqueueOutgoingMessage(queue.name, std::move(message), nullptr);
 }
 
-void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message)
+void ActiveMQConnectionManager::enqueueMessage(const Qpid::Queues::OutboundQueue &queue, const SerializedMessage &message)
 {
     gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, nullptr);
 }
@@ -607,8 +612,8 @@ struct DeserializationHelper : ActiveMQConnectionManager::MessageCallback
 
 template<typename Msg>
 void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
-        const ActiveMQ::Queues::OutboundQueue &queue,
-        StreamableMessage::auto_type&& message,
+        const Qpid::Queues::OutboundQueue &queue,
+        StreamableMessagePtr message,
         typename CallbackFor<Msg>::type callback,
         std::chrono::seconds timeout,
         TimeoutCallback timedOut)
@@ -621,7 +626,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
 
 template<typename Msg>
 void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
-        const ActiveMQ::Queues::OutboundQueue &queue,
+        const Qpid::Queues::OutboundQueue &queue,
         const SerializedMessage &message,
         typename CallbackFor<Msg>::Ptr callback,
         std::chrono::seconds timeout,
@@ -635,7 +640,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
 
 template<typename Msg>
 void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
-        const ActiveMQ::Queues::OutboundQueue &queue, 
+        const Qpid::Queues::OutboundQueue &queue, 
         const SerializedMessage &message, 
         typename CallbackFor<Msg>::type callback, 
         std::chrono::seconds timeout, 
@@ -648,7 +653,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
 
 
 void ActiveMQConnectionManager::enqueueMessageWithCallback(
-        const ActiveMQ::Queues::OutboundQueue &queue,
+        const Qpid::Queues::OutboundQueue &queue,
         const SerializedMessage &message,
         MessageCallback::type callback,
         std::chrono::seconds timeout,
@@ -659,7 +664,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallback(
 
 
 void ActiveMQConnectionManager::enqueueMessageWithSessionCallback(
-    const ActiveMQ::Queues::OutboundQueue &queue,
+    const Qpid::Queues::OutboundQueue &queue,
     const SerializedMessage &message,
     SessionCallback callback)
 {
@@ -710,7 +715,7 @@ void ActiveMQConnectionManager::kickstart()
 
 void ActiveMQConnectionManager::enqueueOutgoingMessage(
         const std::string &queueName,
-        StreamableMessage::auto_type&& message,
+        StreamableMessagePtr message,
         ReturnLabel returnAddress)
 {
     //  ensure the message is not null
@@ -719,24 +724,17 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
         return;
     }
 
-    struct StreamableEnvelope : Envelope
+    auto e = std::make_unique<Envelope>();
+
     {
-        std::unique_ptr<const StreamableMessage> message;
+        // The proxy destructor inserts the finish() token into the stream. the e->message isn't complete until the
+        // proxy object is destroyed, hence the convoluted code... looking for a better way - jmoc
 
-        std::unique_ptr<cms::Message> extractMessage(cms::Session &session) const
-        {
-            std::unique_ptr<cms::StreamMessage> streamMessage { session.createStreamMessage() };
-
-            message->streamInto(*streamMessage);
-
-            return std::move(streamMessage);  //  move to downcast to cms::Message
-        }
-    };
-
-    auto e = std::make_unique<StreamableEnvelope>();
+        Proton::EncoderProxy proxy( e->message );
+        message->streamInto( proxy );
+    }
 
     e->queueName = queueName;
-    e->message = std::move(message);
     e->returnAddress = std::move(returnAddress);
 
     emplaceTask(_newTasks.outgoingMessages, std::move(e));
@@ -750,25 +748,11 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
         const SerializedMessage &message,
         ReturnLabel returnAddress)
 {
-    struct BytesEnvelope : Envelope
-    {
-        SerializedMessage message;
-
-        std::unique_ptr<cms::Message> extractMessage(cms::Session &session) const
-        {
-            std::unique_ptr<cms::BytesMessage> bytesMessage { session.createBytesMessage() };
-
-            bytesMessage->writeBytes(message);
-
-            return std::move(bytesMessage);
-        }
-    };
-
-    auto e = std::make_unique<BytesEnvelope>();
+    auto e = std::make_unique<Envelope>();
 
     e->queueName = queueName;
-    e->message   = message;
     e->returnAddress = std::move(returnAddress);
+    e->message.body( proton::binary{ std::cbegin(message), std::cend(message) } );
 
     if( debugActivityInfo() )
     {
@@ -796,7 +780,7 @@ void ActiveMQConnectionManager::enqueueOutgoingReply(
 }
 
 
-ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Session &session, const std::string &queueName)
+Qpid::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Session &session, const std::string &queueName)
 {
     if( const auto existingProducer = mapFindRef(_producers, queueName) )
     {
@@ -804,7 +788,7 @@ ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Sessio
     }
 
     //  if it doesn't exist, try to make one
-    auto queueProducer = ActiveMQ::createQueueProducer(session, queueName);
+    auto queueProducer = Qpid::createQueueProducer(session, queueName);
 
     CTILOG_INFO(dout, "ActiveMQ CMS producer established (" << queueName << ")");
 
@@ -816,19 +800,19 @@ ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Sessio
 }
 
 
-void ActiveMQConnectionManager::registerHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::type callback)
+void ActiveMQConnectionManager::registerHandler(const Qpid::Queues::InboundQueue &queue, MessageCallback::type callback)
 {
     gActiveMQConnection->addNewCallback(queue, std::make_unique<SimpleMessageCallback>(callback));
 }
 
 
-void ActiveMQConnectionManager::registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback)
+void ActiveMQConnectionManager::registerReplyHandler(const Qpid::Queues::InboundQueue &queue, MessageCallbackWithReply callback)
 {
     gActiveMQConnection->addNewCallback(queue, callback);
 }
 
 
-void ActiveMQConnectionManager::registerReplyHandler(const ActiveMQ::Queues::InboundQueue& queue, MessageCallbackWithReplies callback)
+void ActiveMQConnectionManager::registerReplyHandler(const Qpid::Queues::InboundQueue& queue, MessageCallbackWithReplies callback)
 {
     gActiveMQConnection->addNewCallback(queue, callback);
 }
@@ -841,7 +825,7 @@ auto ActiveMQConnectionManager::registerSessionCallback(MessageCallback::type ca
 }
 
 
-void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr callback)
+void ActiveMQConnectionManager::addNewCallback(const Qpid::Queues::InboundQueue &queue, MessageCallback::Ptr callback)
 {
     emplaceTask(_newTasks.newCallbacks, &queue, std::move(callback));
 
@@ -849,13 +833,13 @@ void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQu
 }
 
 
-void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback)
+void ActiveMQConnectionManager::addNewCallback(const Qpid::Queues::InboundQueue &queue, MessageCallbackWithReply callback)
 {
     auto wrappedCallback = 
         std::make_unique<SimpleMessageCallback>(
             [=, &queue](const MessageDescriptor &md)
             {
-                auto tempQueueProducer = ActiveMQ::createDestinationProducer(*_producerSession, md.replyTo);
+                auto tempQueueProducer = Qpid::createDestinationProducer(*_producerSession, md.replyTo);
 
                 auto result = callback(md);
 
@@ -870,7 +854,7 @@ void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQu
 
                 bytesMessage->writeBytes(*result);
 
-                tempQueueProducer->send(bytesMessage.release());
+//jmoc                tempQueueProducer->send(bytesMessage.release());
         });
 
     emplaceTask(_newTasks.newCallbacks, &queue, std::move(wrappedCallback));
@@ -879,7 +863,7 @@ void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQu
 }
 
 
-void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue& queue, MessageCallbackWithReplies callback)
+void ActiveMQConnectionManager::addNewCallback(const Qpid::Queues::InboundQueue& queue, MessageCallbackWithReplies callback)
 {
     auto wrappedCallback =
         std::make_unique<SimpleMessageCallback>(
@@ -901,29 +885,31 @@ void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQu
 }
 
 
-void ActiveMQConnectionManager::acceptNamedMessage(const cms::Message *message, const ActiveMQ::Queues::InboundQueue *queue)
+void ActiveMQConnectionManager::acceptNamedMessage( proton::message & message, const Qpid::Queues::InboundQueue *queue)
 {
-    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
-    {
-        const auto replyTo = bytesMessage->getCMSReplyTo()
-                ? bytesMessage->getCMSReplyTo()->clone()
-                : nullptr;
+    // jmoc
 
-        std::vector<unsigned char> payload(bytesMessage->getBodyLength());
-
-        bytesMessage->readBytes(payload);
-
-        if( debugActivityInfo() )
-        {
-            CTILOG_DEBUG(dout, "Received inbound message for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
-                << reinterpret_cast<unsigned long>(queue) << ": " << payload);
-        }
-
-        emplaceNamedMessage(queue, bytesMessage->getCMSType(), payload, replyTo);
-    }
+//    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
+//    {
+//        const auto replyTo = bytesMessage->getCMSReplyTo()
+//                ? bytesMessage->getCMSReplyTo()->clone()
+//                : nullptr;
+//
+//        std::vector<unsigned char> payload(bytesMessage->getBodyLength());
+//
+//        bytesMessage->readBytes(payload);
+//
+//        if( debugActivityInfo() )
+//        {
+//            CTILOG_DEBUG(dout, "Received inbound message for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
+//                << reinterpret_cast<unsigned long>(queue) << ": " << payload);
+//        }
+//
+//        emplaceNamedMessage(queue, bytesMessage->getCMSType(), payload, replyTo);
+//    }
 }
 
-void ActiveMQConnectionManager::emplaceNamedMessage(const ActiveMQ::Queues::InboundQueue* queue, const std::string type, std::vector<unsigned char> payload, cms::Destination* replyTo)
+void ActiveMQConnectionManager::emplaceNamedMessage(const Qpid::Queues::InboundQueue* queue, const std::string type, std::vector<unsigned char> payload, cms::Destination* replyTo)
 {
     auto md = std::make_unique<MessageDescriptor>();
 
@@ -935,67 +921,71 @@ void ActiveMQConnectionManager::emplaceNamedMessage(const ActiveMQ::Queues::Inbo
 }
 
 
-void ActiveMQConnectionManager::acceptSingleReply(const cms::Message *message)
+void ActiveMQConnectionManager::acceptSingleReply( proton::message & msg )
 {
-    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
-    {
-        if( const cms::Destination *dest = message->getCMSDestination() )
-        {
-            auto md = std::make_unique<MessageDescriptor>();
+    // jmoc
 
-            md->type = bytesMessage->getCMSType();
-
-            md->msg.resize(bytesMessage->getBodyLength());
-
-            bytesMessage->readBytes(md->msg);
-
-            if( debugActivityInfo() )
-            {
-                CTILOG_DEBUG(dout, "Received temp queue reply for \"" << ActiveMQ::destPhysicalName(*dest) << "\"" << std::endl
-                    << ActiveMQ::destPhysicalName(*dest) << ": " << md->msg);
-            }
-
-            emplaceTask(_newTasks.tempQueueReplies, ActiveMQ::destPhysicalName(*dest), std::move(md));
-        }
-    }
+//    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
+//    {
+//        if( const cms::Destination *dest = message->getCMSDestination() )
+//        {
+//            auto md = std::make_unique<MessageDescriptor>();
+//
+//            md->type = bytesMessage->getCMSType();
+//
+//            md->msg.resize(bytesMessage->getBodyLength());
+//
+//            bytesMessage->readBytes(md->msg);
+//
+//            if( debugActivityInfo() )
+//            {
+//                CTILOG_DEBUG(dout, "Received temp queue reply for \"" << Qpid::destPhysicalName(*dest) << "\"" << std::endl
+//                    << Qpid::destPhysicalName(*dest) << ": " << md->msg);
+//            }
+//
+//            emplaceTask(_newTasks.tempQueueReplies, Qpid::destPhysicalName(*dest), std::move(md));
+//        }
+//    }
 }
 
 
-void ActiveMQConnectionManager::acceptSessionReply(const cms::Message *message)
+void ActiveMQConnectionManager::acceptSessionReply( proton::message & msg )
 {
-    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
-    {
-        if( const cms::Destination *dest = message->getCMSDestination() )
-        {
-            auto md = std::make_unique<MessageDescriptor>();
+    // jmoc
 
-            md->type = bytesMessage->getCMSType();
-
-            md->msg.resize(bytesMessage->getBodyLength());
-
-            bytesMessage->readBytes(md->msg);
-
-            if( debugActivityInfo() )
-            {
-                CTILOG_DEBUG(dout, "Received temp queue reply for \"" << ActiveMQ::destPhysicalName(*dest) << "\"" << std::endl
-                    << ActiveMQ::destPhysicalName(*dest) << ": " << md->msg);
-            }
-
-            emplaceTask(_newTasks.sessionReplies, ActiveMQ::destPhysicalName(*dest), std::move(md));
-        }
-    }
+//    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
+//    {
+//        if( const cms::Destination *dest = message->getCMSDestination() )
+//        {
+//            auto md = std::make_unique<MessageDescriptor>();
+//
+//            md->type = bytesMessage->getCMSType();
+//
+//            md->msg.resize(bytesMessage->getBodyLength());
+//
+//            bytesMessage->readBytes(md->msg);
+//
+//            if( debugActivityInfo() )
+//            {
+//                CTILOG_DEBUG(dout, "Received temp queue reply for \"" << Qpid::destPhysicalName(*dest) << "\"" << std::endl
+//                    << Qpid::destPhysicalName(*dest) << ": " << md->msg);
+//            }
+//
+//            emplaceTask(_newTasks.sessionReplies, Qpid::destPhysicalName(*dest), std::move(md));
+//        }
+//    }
 }
 
 
-template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const Qpid::Queues::OutboundQueue &queue, StreamableMessagePtr message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
-template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnSetChannelConfigReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::RfnSetChannelConfigReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnSetChannelConfigReplyMessage>(const Qpid::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::RfnSetChannelConfigReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
-template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnGetChannelConfigReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::RfnGetChannelConfigReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnGetChannelConfigReplyMessage>(const Qpid::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::RfnGetChannelConfigReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
-template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::DataStreamingUpdateReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::DataStreamingUpdateReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::DataStreamingUpdateReplyMessage>(const Qpid::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::DataStreamingUpdateReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
-template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnDeviceCreationReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<RfnDeviceCreationReplyMessage>::Ptr callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnDeviceCreationReplyMessage>(const Qpid::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<RfnDeviceCreationReplyMessage>::Ptr callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
 }
 

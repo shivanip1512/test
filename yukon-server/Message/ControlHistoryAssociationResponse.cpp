@@ -1,24 +1,24 @@
 #include "precompiled.h"
 
 #include "ControlHistoryAssociationResponse.h"
+#include "proton_encoder_proxy.h"
 
-#include <cms/StreamMessage.h>
 
-namespace Cti {
-namespace Messaging {
+namespace Cti::Messaging
+{
 
-ControlHistoryAssociationResponse::ControlHistoryAssociationResponse(int historyRowId, int associationId) :
-_historyRowId(historyRowId),
-_associationId(associationId)
+ControlHistoryAssociationResponse::ControlHistoryAssociationResponse(int historyRowId, int associationId)
+    :   _historyRowId(historyRowId),
+        _associationId(associationId)
 {
 }
 
-void ControlHistoryAssociationResponse::streamInto(cms::StreamMessage &message) const
+void ControlHistoryAssociationResponse::streamInto(Proton::EncoderProxy &message) const
 {
     message.writeInt(_historyRowId);
     message.writeInt(_associationId);
 }
 
 }
-}
+
 

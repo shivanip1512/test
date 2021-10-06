@@ -2,22 +2,39 @@
 
 #include "dlldefs.h"
 
-namespace cms {
-    class StreamMessage;
+// jmoc
+namespace cms
+{
+class Destination;
 }
 
-namespace Cti {
-namespace Messaging {
+
+
+namespace Cti::Messaging
+{
+
+namespace Proton
+{
+    class EncoderProxy;
+}
 
 struct IM_EX_MSG StreamableMessage
 {
-    typedef std::unique_ptr<const StreamableMessage> auto_type;
-
     virtual ~StreamableMessage() { };
 
-    virtual void streamInto(cms::StreamMessage &message) const = 0;
+    virtual void streamInto(Proton::EncoderProxy &message) const = 0;
+
+
+    ///  jmoc  -- stub this junk out until i can figure out where it
+    ///  is supposed to go.
+
+ //   void setCMSReplyTo( const cms::Destination * ) {    }
+
+
+
 };
 
-}
+using StreamableMessagePtr = std::unique_ptr<const StreamableMessage>;
+
 }
 

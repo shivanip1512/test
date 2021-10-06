@@ -13,7 +13,7 @@ template <class Outbound, class Inbound>
 class IM_EX_MSG StreamAmqConnection : public StreamConnection
 {
 public:
-    StreamAmqConnection(const Messaging::ActiveMQ::Queues::OutboundQueue &outbound, const Messaging::ActiveMQ::Queues::InboundQueue &inbound);
+    StreamAmqConnection(const Messaging::Qpid::Queues::OutboundQueue &outbound, const Messaging::Qpid::Queues::InboundQueue &inbound);
     ~StreamAmqConnection();
     
     bool write(const Outbound &out, const Chrono &timeout);
@@ -28,7 +28,7 @@ private:
 
     void onMessage(const Messaging::ActiveMQConnectionManager::SerializedMessage &);
 
-    const Messaging::ActiveMQ::Queues::OutboundQueue &_outbound;
+    const Messaging::Qpid::Queues::OutboundQueue &_outbound;
 
     using Inbounds = std::queue<Messaging::ActiveMQConnectionManager::SerializedMessage>;
     Inbounds   _inbound;

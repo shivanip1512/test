@@ -133,7 +133,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(ACTIVEMQ)\include;$(APR)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\common\include;..\message\Serialization;..\message\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(ACTIVEMQ)\include;$(QPID_PROTON)\include;$(APR)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\common\include;..\message\Serialization;..\message\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_DLL_MESSAGE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctimsg;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -154,7 +154,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib-debug\ctibase.lib;..\lib-debug\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(QPID_PROTON)\lib\qpid-protond.lib;$(QPID_PROTON)\lib\qpid-proton-cored.lib;$(QPID_PROTON)\lib\qpid-proton-cppd.lib;$(QPID_PROTON)\lib\qpid-proton-proactord.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib-debug\ctibase.lib;..\lib-debug\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
@@ -184,7 +184,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(ACTIVEMQ)\include;$(APR)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\common\include;..\message\Serialization;..\message\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(ACTIVEMQ)\include;$(QPID_PROTON)\include;$(APR)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\common\include;..\message\Serialization;..\message\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DLL_MESSAGE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctimsg;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -203,7 +203,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib\ctibase.lib;..\lib\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(QPID_PROTON)\lib\qpid-proton.lib;$(QPID_PROTON)\lib\qpid-proton-core.lib;$(QPID_PROTON)\lib\qpid-proton-cpp.lib;$(QPID_PROTON)\lib\qpid-proton-proactor.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib\ctibase.lib;..\lib\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -515,6 +515,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\PointDataRequest.h" />
     <ClInclude Include="include\PointDataRequestFactory.h" />
     <ClInclude Include="include\PorterResponseMessage.h" />
+    <ClInclude Include="include\proton_encoder_proxy.h" />
     <ClInclude Include="include\RfnDataStreamingUpdate.h" />
     <ClInclude Include="include\RfnMeterDisconnectMsg.h" />
     <ClInclude Include="include\RfnMeterReadMsg.h" />

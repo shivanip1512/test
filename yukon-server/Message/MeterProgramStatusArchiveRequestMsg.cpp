@@ -90,7 +90,7 @@ namespace Rfn {
     IM_EX_MSG void sendMeterProgramStatusUpdate(const MeterProgramStatusArchiveRequestMsg & msg)
     {
         using namespace Cti::Messaging::Serialization;
-        using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+        using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
         if( auto serializedMsg = MessageSerializer<MeterProgramStatusArchiveRequestMsg>::serialize(msg); 
             serializedMsg.empty() )

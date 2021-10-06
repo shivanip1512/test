@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string.h>
+#include <string>
 
 namespace Cti {
 namespace Messaging {
-namespace ActiveMQ {
+namespace Qpid {
 
 namespace Broker {
     const std::string protocol = "tcp://";

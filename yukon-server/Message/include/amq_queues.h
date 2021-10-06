@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace Cti::Messaging::ActiveMQ::Queues {
+namespace Cti::Messaging::Qpid::Queues {
 
 class IM_EX_MSG OutboundQueue
 {

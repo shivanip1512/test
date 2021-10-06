@@ -1,14 +1,11 @@
 #include "precompiled.h"
 
 #include "LMNestMessages.h"
-//#include "msg_pcreturn.h"
-
-#include <cms/StreamMessage.h>
+#include "proton_encoder_proxy.h"
 
 
-namespace Cti            {
-namespace Messaging      {
-namespace LoadManagement {
+namespace Cti::Messaging::LoadManagement
+{
 
 LMNestCyclingControlMessage::LMNestCyclingControlMessage( int       groupId,
                                                           long long startTime,
@@ -20,7 +17,7 @@ LMNestCyclingControlMessage::LMNestCyclingControlMessage( int       groupId,
     // empty
 }
 
-void LMNestCyclingControlMessage::streamInto( cms::StreamMessage & message ) const
+void LMNestCyclingControlMessage::streamInto( Proton::EncoderProxy & message ) const
 {
     message.writeInt( _groupId );
     message.writeLong( _startTime );
@@ -37,13 +34,11 @@ LMNestRestoreMessage::LMNestRestoreMessage( int       groupId,
     // empty
 }
 
-void LMNestRestoreMessage::streamInto( cms::StreamMessage & message ) const
+void LMNestRestoreMessage::streamInto( Proton::EncoderProxy & message ) const
 {
     message.writeInt( _groupId );
     message.writeLong( _restoreTime );
 }
 
-}
-}
 }
 

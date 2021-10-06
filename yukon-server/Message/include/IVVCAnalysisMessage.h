@@ -77,7 +77,7 @@ public:
     static IVVCAnalysisMessage * createSubbusEnabledMessage( const int       subbusId,
                                                              const CtiTime & timestamp);
 
-    virtual void streamInto( cms::StreamMessage & message ) const;
+    virtual void streamInto( Proton::EncoderProxy & message ) const;
 
 protected:
 

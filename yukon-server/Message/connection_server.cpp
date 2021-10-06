@@ -7,7 +7,7 @@
 #include <atomic>
 
 using namespace std;
-using namespace Cti::Messaging::ActiveMQ;
+using namespace Cti::Messaging::Qpid;
 
 static std::atomic<long> serverConnectionCount = 0;
 
@@ -94,7 +94,7 @@ bool CtiServerConnection::establishConnection()
         outMessage->setCMSType( MessageType::serverResp );
 
         // send the message back to the client (the payload is the reply destination)
-        _producer->send( outMessage.get() );
+//jmoc        _producer->send( outMessage.get() );
 
         // We should block here until the delay expires or until the connection is closed
         std::unique_ptr<cms::Message> ackMessage { _consumer->receive( receiveMillis ) };
@@ -125,7 +125,10 @@ bool CtiServerConnection::establishConnection()
             return false;
         }
 
-        _consumer->setMessageListener( _messageListener.get() );
+// jmoc
+
+   //     _consumer->setMessageListener( _messageListener.get() );
+
 
         CTILOG_INFO(dout, who() << " - successfully connected"
                 << "\ninbound  : " << _consumer->getDestPhysicalName()
@@ -134,7 +137,7 @@ bool CtiServerConnection::establishConnection()
 
         return true;
     }
-    catch( cms::CMSException& e )
+    catch( proton::error& e )
     {
         forceTermination();
 

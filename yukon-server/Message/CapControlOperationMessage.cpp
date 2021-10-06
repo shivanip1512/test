@@ -1,14 +1,12 @@
 #include "precompiled.h"
+
 #include "CtiTime.h"
 #include "CapControlOperationMessage.h"
+#include "proton_encoder_proxy.h"
 
-#include <cms/StreamMessage.h>
 
-
-namespace Cti           {
-namespace Messaging     {
-namespace CapControl    {
-
+namespace Cti::Messaging::CapControl
+{
 
 CapControlOperationMessage::CapControlOperationMessage( const int       deviceId,
                                                         const int       operationId,
@@ -69,7 +67,7 @@ CapControlOperationMessage * CapControlOperationMessage::createRefreshSystemMess
     return message;
 }
 
-void CapControlOperationMessage::streamInto( cms::StreamMessage & message ) const
+void CapControlOperationMessage::streamInto( Proton::EncoderProxy & message ) const
 {
     message.writeInt( _deviceId );
     message.writeInt( _operationId );
@@ -79,5 +77,4 @@ void CapControlOperationMessage::streamInto( cms::StreamMessage & message ) cons
 
 
 }
-}
-}
+

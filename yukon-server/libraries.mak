@@ -66,6 +66,19 @@ OPENSSL_BIN     = $(OPENSSL)\$(CONFIGURATION)\bin
 OPENSSL_DLL_1   = libcrypto-1_1.dll
 OPENSSL_DLL_2   = libssl-1_1.dll
 
+QPID_PROTON_BIN = $(QPID_PROTON)\bin
+!IF "$(CONFIGURATION)"=="DEBUG"
+QPID_PROTON_DLL_1 = qpid-protond.dll
+QPID_PROTON_DLL_2 = qpid-proton-cored.dll
+QPID_PROTON_DLL_3 = qpid-proton-cppd.dll
+QPID_PROTON_DLL_4 = qpid-proton-proactord.dll
+!ELSE
+QPID_PROTON_DLL_1 = qpid-proton.dll
+QPID_PROTON_DLL_2 = qpid-proton-core.dll
+QPID_PROTON_DLL_3 = qpid-proton-cpp.dll
+QPID_PROTON_DLL_4 = qpid-proton-proactor.dll
+!ENDIF
+
 RMP_CONVERTER_BIN = $(RMP_CONVERTER)\bin
 RMP_CONVERTER_DLL = dante.dll
 
@@ -102,6 +115,10 @@ ALL: $(BIN) $(LIB) $(PDB) \
   $(BIN)\$(MICROSOFT_VCP_DLL) \
   $(BIN)\$(OPENSSL_DLL_1) \
   $(BIN)\$(OPENSSL_DLL_2) \
+  $(BIN)\$(QPID_PROTON_DLL_1) \
+  $(BIN)\$(QPID_PROTON_DLL_2) \
+  $(BIN)\$(QPID_PROTON_DLL_3) \
+  $(BIN)\$(QPID_PROTON_DLL_4) \
   $(BIN)\$(RMP_CONVERTER_DLL) \
   $(BIN)\$(SQLAPI_DLL) \
   $(BIN)\$(TCL_DLL) \
@@ -135,6 +152,11 @@ $(BIN)\$(MICROSOFT_RT_DLL):$(MICROSOFT_VC)\$(MICROSOFT_RT_DLL);  copy $? $@
 
 $(BIN)\$(OPENSSL_DLL_1):$(OPENSSL_BIN)\$(OPENSSL_DLL_1); copy $? $@
 $(BIN)\$(OPENSSL_DLL_2):$(OPENSSL_BIN)\$(OPENSSL_DLL_2); copy $? $@
+
+$(BIN)\$(QPID_PROTON_DLL_1):$(QPID_PROTON_BIN)\$(QPID_PROTON_DLL_1); copy $? $@
+$(BIN)\$(QPID_PROTON_DLL_2):$(QPID_PROTON_BIN)\$(QPID_PROTON_DLL_2); copy $? $@
+$(BIN)\$(QPID_PROTON_DLL_3):$(QPID_PROTON_BIN)\$(QPID_PROTON_DLL_3); copy $? $@
+$(BIN)\$(QPID_PROTON_DLL_4):$(QPID_PROTON_BIN)\$(QPID_PROTON_DLL_4); copy $? $@
 
 $(BIN)\$(RMP_CONVERTER_DLL):$(RMP_CONVERTER_BIN)\$(RMP_CONVERTER_DLL); copy $? $@
 

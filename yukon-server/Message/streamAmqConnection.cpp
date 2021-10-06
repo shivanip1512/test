@@ -21,8 +21,8 @@ std::string getErrorMessage(int error)
 
 template <class Outbound, class Inbound>
 StreamAmqConnection<Outbound, Inbound>::StreamAmqConnection(
-        const Messaging::ActiveMQ::Queues::OutboundQueue &outbound,
-        const Messaging::ActiveMQ::Queues::InboundQueue  &inbound) :
+        const Messaging::Qpid::Queues::OutboundQueue &outbound,
+        const Messaging::Qpid::Queues::InboundQueue  &inbound) :
     _outbound(outbound)
 {
     // enable manual reset

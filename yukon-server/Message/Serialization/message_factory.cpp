@@ -31,7 +31,7 @@
 namespace Cti::Messaging::Serialization
 {
 
-IM_EX_MSG MessageFactory<::CtiMessage> g_messageFactory(::Cti::Messaging::ActiveMQ::MessageType::prefix);
+IM_EX_MSG MessageFactory<::CtiMessage> g_messageFactory(::Cti::Messaging::Qpid::MessageType::prefix);
 
 
 const std::map<Thrift::RfnExpressComBroadcastReplyType::type, const Rfn::BroadcastResult *> ReplyToResultMap = boost::assign::map_list_of

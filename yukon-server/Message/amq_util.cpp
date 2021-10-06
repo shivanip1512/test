@@ -7,55 +7,27 @@
 
 #include "logger.h"
 
-namespace Cti {
-namespace Messaging {
-namespace ActiveMQ {
+#include <proton/connection_options.hpp>
 
-namespace {
 
-struct ActiveMQIntializer
+namespace Cti::Messaging::Qpid
 {
-    ActiveMQIntializer()
-    {
-        activemq::library::ActiveMQCPP::initializeLibrary(); // can throw std::runtime_exception
-    }
 
-    ~ActiveMQIntializer()
-    {
-        activemq::library::ActiveMQCPP::shutdownLibrary(); // can throw std::runtime_exception
-    }
-};
-
-std::unique_ptr<ActiveMQIntializer> g_activeMQIntializer;
-
-}
-
-
-ConnectionFactory::ConnectionFactory() :
-    _isInitialized(false)
+ConnectionFactory::ConnectionFactory()
+    :   _handler{ },
+        _container( _handler )
 {
-    InitializeCriticalSection(&_cs);
+    _container_thread = std::thread( [ & ]() { _container.run(); } );
 }
 
 ConnectionFactory::~ConnectionFactory()
 {
+    _container_thread.join();
 }
 
-/*-----------------------------------------------------------------------------
-    Intialize activemq library
------------------------------------------------------------------------------*/
-void ConnectionFactory::initializeLib()
+proton::container & ConnectionFactory::getContainer()
 {
-    EnterCriticalSection(&_cs);
-
-    if( g_activeMQIntializer.get() == NULL )
-    {
-        g_activeMQIntializer = std::make_unique<ActiveMQIntializer>();
-    }
-
-    LeaveCriticalSection(&_cs);
-
-    _isInitialized = true;
+    return _container;
 }
 
 /*-----------------------------------------------------------------------------
@@ -66,15 +38,25 @@ void ConnectionFactory::initializeLib()
 -----------------------------------------------------------------------------*/
 std::unique_ptr<cms::Connection> ConnectionFactory::createConnection( const std::string &brokerUri )
 {
-    if( !_isInitialized )
-    {
-        initializeLib();
-    }
-
     std::unique_ptr<cms::ConnectionFactory> connectionFactory { cms::ConnectionFactory::createCMSConnectionFactory( brokerUri ) };
 
     return std::unique_ptr<cms::Connection> { connectionFactory->createConnection() };
 }
+
+std::unique_ptr<proton::connection> ConnectionFactory::createConnection_jmoc( const std::string &brokerUri )
+{
+    // do we need to set some specific options here - or maybe in the managed connection..?  jmoc
+
+    proton::connection_options  options;
+
+    auto connection = _container.connect( brokerUri, options );
+
+    // apparently we can't just use the connection object returned due to multithreading making it unreliable
+    //  we are supposed to get at it thru the messaging_handler stuff somehow.
+
+    return nullptr;
+}
+
 
 /*-----------------------------------------------------------------------------
     Singleton of connectionFactory
@@ -135,7 +117,7 @@ void ManagedConnection::closeConnection()
             // if close() does not throw there is no error
             return;
         }
-        catch( cms::CMSException& e )
+        catch( proton::error& e )
         {
             // re-check if the connection was closed
             if( conn->isClosed() )
@@ -144,7 +126,7 @@ void ManagedConnection::closeConnection()
             }
 
             // log an error if close() has failed
-            CTILOG_EXCEPTION_ERROR(dout, e, "Error closing ActiveMQ connection"<< ((attempt != maxAttempt) ? " (will retry)" : ""));
+            CTILOG_EXCEPTION_ERROR(dout, e, "Error closing Proton connection"<< ((attempt != maxAttempt) ? " (will retry)" : ""));
         }
 
         if( attempt == maxAttempt )
@@ -206,14 +188,14 @@ void ManagedConnection::start()
 
             return; // exit if connection succeeded
         }
-        catch( cms::CMSException& e )
+        catch( proton::error& e )
         {
             // print exception about every 5 min or if exception message changes
-            if( attempt % loggingFreq == 1 || e.getMessage() != prevMessage )
+            if( attempt % loggingFreq == 1 || e.what() != prevMessage )
             {
-                CTILOG_EXCEPTION_ERROR(dout, e, "Error starting ActiveMQ connection");
+                CTILOG_EXCEPTION_ERROR(dout, e, "Error starting Proton connection");
 
-                prevMessage = e.getMessage();
+                prevMessage = e.what();
             }
         }
 
@@ -317,9 +299,16 @@ void ManagedProducer::setTimeToLiveMillis( long long time )
    _producer->setTimeToLive( time );
 }
 
-void ManagedProducer::send( cms::Message *message )
+//void ManagedProducer::send( cms::Message *message )
+//{
+//   _producer->send( message );
+//}
+
+void ManagedProducer::send( const proton::message & message )
 {
-   _producer->send( message );
+// jmoc - TBD
+
+
 }
 
 void ManagedProducer::close()
@@ -339,9 +328,11 @@ ManagedConsumer::~ManagedConsumer()
 {
 }
 
-void ManagedConsumer::setMessageListener( cms::MessageListener *listener )
+void ManagedConsumer::setMessageListener( Qpid::MessageListener *listener )
 {
-    _consumer->setMessageListener( listener );
+    // jmoc
+
+    //_consumer->setMessageListener( listener );
 }
 
 cms::Message* ManagedConsumer::receive()
@@ -475,7 +466,5 @@ void TempQueueConsumer::close()
     static_cast<cms::TemporaryQueue&>(*_dest).destroy();
 }
 
-}
-}
 }
 

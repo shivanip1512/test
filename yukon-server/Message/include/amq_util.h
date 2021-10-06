@@ -12,26 +12,40 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 
-namespace Cti {
-namespace Messaging {
-namespace ActiveMQ {
+#include <proton/container.hpp>
+#include <proton/messaging_handler.hpp>
+#include <proton/message.hpp>
+
+namespace Cti::Messaging::Qpid
+{
 
 /*-----------------------------------------------------------------------------
   Initiliaze ActiveMQ Lib and create connection
 -----------------------------------------------------------------------------*/
+struct IM_EX_MSG ContainerMessagingHandler : proton::messaging_handler
+{
+    // creating the named type for any potential overloads...
+
+};
+
 class IM_EX_MSG ConnectionFactory
 {
-    bool _isInitialized;
+    ContainerMessagingHandler   _handler;
 
-    CRITICAL_SECTION _cs;
+    proton::container  _container;
 
-    void initializeLib();
+    std::thread  _container_thread;
 
 public:
+
     ConnectionFactory();
-    virtual ~ConnectionFactory();
+    ~ConnectionFactory();
+
+    proton::container & getContainer();
 
     std::unique_ptr<cms::Connection> createConnection( const std::string &brokerUri );
+
+    std::unique_ptr<proton::connection> createConnection_jmoc( const std::string &brokerUri );
 };
 
 
@@ -44,17 +58,18 @@ IM_EX_MSG extern ConnectionFactory g_connectionFactory;
 /*-----------------------------------------------------------------------------
   Message listener template
 -----------------------------------------------------------------------------*/
-class MessageListener : public cms::MessageListener
+class MessageListener : public proton::messaging_handler
 {
-    typedef std::function<void (const cms::Message*)> Callback;
+    typedef std::function<void (proton::message&)> Callback;
     Callback _callback;
 
 public:
-    MessageListener ( Callback c ) : _callback( c ) {}
-    virtual ~MessageListener () {}
-    virtual void onMessage ( const cms::Message* message )
+    MessageListener( Callback c ) : _callback( c ) {}
+    virtual ~MessageListener() {}
+
+    void on_message( proton::delivery & d, proton::message & msg ) override
     {
-        _callback( message );
+        _callback( msg );
     }
 };
 
@@ -185,7 +200,8 @@ public:
 
     void setTimeToLiveMillis ( long long time );
 
-    void send (cms::Message *message);
+//    void send (cms::Message *message);
+    void send( const proton::message & message );
 };
 
 
@@ -204,7 +220,7 @@ public:
 
     virtual void close();
 
-    void setMessageListener (cms::MessageListener * listener);
+    void setMessageListener (Qpid::MessageListener * listener);
 
     cms::Message* receive ();
 
@@ -333,5 +349,4 @@ inline std::unique_ptr<TempQueueConsumer> createTempQueueConsumer( cms::Session 
 
 
 }
-}
-}
+

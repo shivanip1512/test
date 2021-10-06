@@ -1,13 +1,11 @@
 #include "precompiled.h"
 
 #include "PorterResponseMessage.h"
-
 #include "msg_pcreturn.h"
+#include "proton_encoder_proxy.h"
 
-#include <cms/StreamMessage.h>
-
-namespace Cti {
-namespace Messaging {
+namespace Cti::Messaging
+{
 
 PorterResponseMessage::PorterResponseMessage(const CtiReturnMsg &msg, const ConnectionHandle connectionHandle) :
     _connectionId(connectionHandle.getConnectionId()),
@@ -18,7 +16,7 @@ PorterResponseMessage::PorterResponseMessage(const CtiReturnMsg &msg, const Conn
 {
 }
 
-void PorterResponseMessage::streamInto(cms::StreamMessage &message) const
+void PorterResponseMessage::streamInto(Proton::EncoderProxy &message) const
 {
     message.writeLong(_connectionId);
     message.writeInt(_deviceId);
@@ -27,6 +25,5 @@ void PorterResponseMessage::streamInto(cms::StreamMessage &message) const
     message.writeInt(_userMessageId);
 }
 
-}
 }
 

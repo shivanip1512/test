@@ -11,13 +11,13 @@ using std::string;
 using boost::shared_ptr;
 
 DispatchConnection::DispatchConnection() :
-        CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch )
+        CtiClientConnection( Cti::Messaging::Qpid::Queue::dispatch )
 {
 
 }
 
 DispatchConnection::DispatchConnection( const string& connectionName, Que_t *inQ, int tt) :
-        CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch, inQ, tt )
+        CtiClientConnection( Cti::Messaging::Qpid::Queue::dispatch, inQ, tt )
 {
     Inherited::setName(connectionName);
 }
