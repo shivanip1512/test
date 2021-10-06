@@ -42,7 +42,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraintResponse Schema'
+              $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint Response Schema'
             examples:
               Program Constraints:
                 $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint Response'

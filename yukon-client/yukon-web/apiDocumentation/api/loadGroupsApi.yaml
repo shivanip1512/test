@@ -189,7 +189,7 @@ get-update-delete-operation:
               Eaton Cloud Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group Response'
               Point Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group Response Response'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group Response'
   put:
     tags:
       - Load Group

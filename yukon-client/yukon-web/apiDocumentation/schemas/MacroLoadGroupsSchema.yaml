@@ -88,16 +88,13 @@ MacroLoadGroupCopy:
           maxLength: 60
           description: 'Name for the macro load group.'
  
-MacroLoadGroupCopy Response:
+MacroLoadGroupCopyResponse:
+  title: Macro Load Group Copy Response
   type: object
   properties:
     paoId:
       type: integer
       description: 'Unique identifier of the copied macro load group.' 
-    name:
-          type: string
-          maxLength: 60
-          description: 'Name for the macro load group.'
                        
 components:
   examples:
@@ -130,12 +127,11 @@ components:
       value:
         id: 11
         
-    MacroLoadGroupCopy Request:
+    MacroLoadGroupCopy:
       value:
         LOAD_GROUP_COPY:
           name: Macro Load Group copy
-    MacroLoadGroupCopy Response:
+    MacroLoadGroupCopyResponse:
       value:
         paoId: 21456
-        name: Macro Load Group copy
         

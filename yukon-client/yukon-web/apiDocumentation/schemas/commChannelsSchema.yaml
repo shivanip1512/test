@@ -219,6 +219,219 @@ LOCAL_SHARED:
     sharing:
       $ref: '#/sharing'
 
+TCPPORT Response Schema:
+  title: TCPPORT
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the CommChannel.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    type:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - TCPPORT
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    timing:
+      $ref: '#/timing'
+
+UDPPORT Response Schema:
+  title: UDPPORT
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the CommChannel.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    type:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - UDPPORT
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    portNumber:
+      type: number
+      minimum: 1
+      maximum: 65535
+      description: 'Port Number.'
+    keyInHex:
+      type: string
+      pattern: '[0-9a-fA-F]*'
+      maximum: 32
+      description: 'Key In Hex.'
+    protocolWrap:
+      type: string
+      description: 'Protocol Wrap.'
+      enum:
+        - IDLC
+        - None
+    carrierDetectWaitInMilliseconds:
+      type: number
+      minimum: 0
+      maximum: 999
+      description: 'Carrier Detect Wait In MiliSeconds.'
+    ipAddress:
+      type: string
+      description: 'IP Address(In case Of UDP Port ipAddress value is set to default UDP). User cannot change the IPAddress.'
+    timing:
+      $ref: '#/timing'
+    sharing:
+      $ref: '#/sharing'
+      
+TSERVER_SHARED Response Schema:
+  title: TSERVER_SHARED
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the CommChannel.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    type:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - TSERVER_SHARED
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    portNumber:
+      type: number
+      minimum: 1
+      maximum: 65535
+      description: 'Port Number.'
+    protocolWrap:
+      type: string
+      description: 'Protocol Wrap.'
+      enum:
+        - IDLC
+        - None
+    carrierDetectWaitInMilliseconds:
+      type: number
+      minimum: 0
+      maximum: 999
+      description: 'Carrier Detect Wait In MiliSeconds.'
+    ipAddress:
+      type: string
+      pattern: '^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$'
+      description: 'IP Address.'
+    timing:
+      $ref: '#/timing'
+    sharing:
+      $ref: '#/sharing'
+    
+LOCAL_SHARED Response Schema:
+  title: LOCAL_SHARED
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the CommChannel.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    type:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - LOCAL_SHARED
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    protocolWrap:
+      type: string
+      description: 'Protocol Wrap.'
+      enum:
+        - IDLC
+        - None
+    carrierDetectWaitInMilliseconds:
+      type: number
+      minimum: 0
+      maximum: 999
+      description: 'Carrier Detect Wait In MiliSeconds.'
+    physicalPort:
+      type: string
+      maximum: 8
+      description: 'Physical Port.'
+    timing:
+      $ref: '#/timing'
+    sharing:
+      $ref: '#/sharing'
+
 timing:
   type: object
   properties:
@@ -285,220 +498,6 @@ id:
     id:
       type: integer
       description: 'Unique identifier of the CommChannel.'
-
-TCPPORT Response Schema:
-  title: TCPPORT
-  type: object
-  properties:
-    id:
-      type: integer
-      description: 'Unique identifier of the CommChannel.'
-    name:
-      type: string
-      maxLength: 60
-      description: 'Name for the comm channel.'
-    type:
-      type: string
-      description: 'Type of channel.'
-      enum:
-        - TCPPORT
-    enable:
-      type: boolean
-      default: true
-      description: 'Flag to enable channel.'
-    baudRate:
-      type: string
-      description: 'Baud Rate.'
-      enum:
-        - BAUD_300
-        - BAUD_1200
-        - BAUD_2400
-        - BAUD_4800
-        - BAUD_9600
-        - BAUD_14400
-        - BAUD_28800
-        - BAUD_38400
-        - BAUD_57600
-        - BAUD_115200
-    timing:
-      $ref: '#/timing'
-
-UDPPORT Response Schema:
-  title: UDPPORT
-  type: object
-  properties:
-    id:
-      type: integer
-      description: 'Unique identifier of the UDPPORT.'
-    name:
-      type: string
-      maxLength: 60
-      description: 'Name for the comm channel.'
-    type:
-      type: string
-      description: 'Type of channel.'
-      enum:
-        - UDPPORT
-    enable:
-      type: boolean
-      default: true
-      description: 'Flag to enable channel.'
-    baudRate:
-      type: string
-      description: 'Baud Rate.'
-      enum:
-        - BAUD_300
-        - BAUD_1200
-        - BAUD_2400
-        - BAUD_4800
-        - BAUD_9600
-        - BAUD_14400
-        - BAUD_28800
-        - BAUD_38400
-        - BAUD_57600
-        - BAUD_115200
-    portNumber:
-      type: number
-      minimum: 1
-      maximum: 65535
-      description: 'Port Number.'
-    keyInHex:
-      type: string
-      pattern: '[0-9a-fA-F]*'
-      maximum: 32
-      description: 'Key In Hex.'
-    protocolWrap:
-      type: string
-      description: 'Protocol Wrap.'
-      enum:
-        - IDLC
-        - None
-    carrierDetectWaitInMilliseconds:
-      type: number
-      minimum: 0
-      maximum: 999
-      description: 'Carrier Detect Wait In MiliSeconds.'
-    ipAddress:
-      type: string
-      description: 'IP Address(In case Of UDP Port ipAddress value is set to default UDP). User cannot change the IPAddress.'
-    timing:
-      $ref: '#/timing'
-    sharing:
-      $ref: '#/sharing'
-      
-TSERVER_SHARED Response Schema:
-  title: TSERVER_SHARED
-  type: object
-  properties:
-    id:
-      type: integer
-      description: 'Unique identifier of the TserverShared Port.'
-    name:
-      type: string
-      maxLength: 60
-      description: 'Name for the comm channel.'
-    type:
-      type: string
-      description: 'Type of channel.'
-      enum:
-        - TSERVER_SHARED
-    enable:
-      type: boolean
-      default: true
-      description: 'Flag to enable channel.'
-    baudRate:
-      type: string
-      description: 'Baud Rate.'
-      enum:
-        - BAUD_300
-        - BAUD_1200
-        - BAUD_2400
-        - BAUD_4800
-        - BAUD_9600
-        - BAUD_14400
-        - BAUD_28800
-        - BAUD_38400
-        - BAUD_57600
-        - BAUD_115200
-    portNumber:
-      type: number
-      minimum: 1
-      maximum: 65535
-      description: 'Port Number.'
-    protocolWrap:
-      type: string
-      description: 'Protocol Wrap.'
-      enum:
-        - IDLC
-        - None
-    carrierDetectWaitInMilliseconds:
-      type: number
-      minimum: 0
-      maximum: 999
-      description: 'Carrier Detect Wait In MiliSeconds.'
-    ipAddress:
-      type: string
-      pattern: '^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$'
-      description: 'IP Address.'
-    timing:
-      $ref: '#/timing'
-    sharing:
-      $ref: '#/sharing'
-    
-LOCAL_SHARED Response Schema:
-  title: LOCAL_SHARED
-  type: object
-  properties:
-    id:
-      type: integer
-      description: 'Unique identifier of the LocalShared Port.'
-    name:
-      type: string
-      maxLength: 60
-      description: 'Name for the comm channel.'
-    type:
-      type: string
-      description: 'Type of channel.'
-      enum:
-        - LOCAL_SHARED
-    enable:
-      type: boolean
-      default: true
-      description: 'Flag to enable channel.'
-    baudRate:
-      type: string
-      description: 'Baud Rate.'
-      enum:
-        - BAUD_300
-        - BAUD_1200
-        - BAUD_2400
-        - BAUD_4800
-        - BAUD_9600
-        - BAUD_14400
-        - BAUD_28800
-        - BAUD_38400
-        - BAUD_57600
-        - BAUD_115200
-    protocolWrap:
-      type: string
-      description: 'Protocol Wrap.'
-      enum:
-        - IDLC
-        - None
-    carrierDetectWaitInMilliseconds:
-      type: number
-      minimum: 0
-      maximum: 999
-      description: 'Carrier Detect Wait In MiliSeconds.'
-    physicalPort:
-      type: string
-      maximum: 8
-      description: 'Physical Port.'
-    timing:
-      $ref: '#/timing'
-    sharing:
-      $ref: '#/sharing'
-
 
 components:
   examples:

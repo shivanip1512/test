@@ -1091,7 +1091,7 @@ LM_GROUP_VERSACOM Response Schema:
             - CLASS
             - DIVISION
 
-LM_GROUP_ITRON Respnse Schema:
+LM_GROUP_ITRON Response Schema:
       title: LM_GROUP_ITRON
       type: object
       properties:
