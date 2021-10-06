@@ -36,10 +36,10 @@ post-operation:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT Response Schema:'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT Response Schema:'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED Response Schema:'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED Response Schema:'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED Response Schema'
               examples:
                 TCP Port:
                   $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port Response' 
@@ -76,10 +76,10 @@ get-update-delete-operation:
           application/json:
             schema:
                 oneOf:
-                  - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT Response Schema:'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT Response Schema:'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED Response Schema:'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED Response Schema:'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED Response Schema'
             examples:
               TCP Port:
                 $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port Response' 
@@ -133,10 +133,10 @@ get-update-delete-operation:
           application/json:
             schema:
               oneOf:
-               - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT Response Schema:'
-               - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT Response Schema:'
-               - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED Response Schema:'
-               - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED Response Schema:'
+               - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT Response Schema'
+               - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT Response Schema'
+               - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED Response Schema'
+               - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED Response Schema'
             examples:
               TCP Port:
                 $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port Response' 

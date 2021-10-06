@@ -287,7 +287,7 @@ get-update-delete-operation:
              oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM Response Schema'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM Response Schema'
-              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM Response Schema '
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM Response Schema'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM Response Schema'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM Response Schema'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM Response Schema'
