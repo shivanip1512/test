@@ -45,12 +45,12 @@ public class SmartNotificationDailyDigestService implements MessageListener {
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private List<SmartNotificationDecider> deciders;
     @Autowired private SmartNotificationDeciderService deciderService;
-    private static Logger commsLogger = YukonLogManager.getCommsLogger();
+    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger();
    
     @PostConstruct
     private void scheduleDailyDigest() {
         int minutesToNextRun = 60 - DateTime.now().getMinuteOfHour();
-        deciderService.logInfo("Scheduling Daily Digest. Minutes to the next run:"+ minutesToNextRun, this);
+        snLogger.info("Scheduling Daily Digest. Minutes to the next run:{} ", minutesToNextRun);
         scheduledExecutor.scheduleWithFixedDelay(() -> doDailyDigest(DateTime.now()), minutesToNextRun, 60, TimeUnit.MINUTES);
     }
     
@@ -60,7 +60,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
             doDailyDigestGrouped(digestTime);
             doDailyDigestUngrouped(digestTime);
         } catch (Exception e) {
-            commsLogger.error("Unexpected exception occurred while processing Smart Notification Daily Digest.", e);
+            snLogger.error("Unexpected exception occurred while processing Smart Notification Daily Digest.", e);
         }
     }
     
@@ -96,7 +96,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
         
        messages.forEach((recipient, params) -> {
            //each monitor is its own type
-           commsLogger.info("Generating one DAILY email for recipient {} including {} notification types", recipient, params.size());
+           snLogger.info("Generating one DAILY email for recipient {} including {} notification types", recipient, params.size());
            deciderService.putMessagesOnAssemblerQueue(params, 0, true, digestTime);
        });
     }
@@ -171,7 +171,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
                 }
             }
         } catch (Exception e) {
-            commsLogger.error("Unable to process message", e);
+            snLogger.error("Unable to process message", e);
         }
     }
 }
