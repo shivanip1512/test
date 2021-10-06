@@ -106,19 +106,17 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     }
 
     @Override
-    public Integer getNullableInteger(GlobalSettingType type) {
-        return getConvertedValue(type, Integer.class);
+    public Optional<Integer> getOptionalInteger(GlobalSettingType type) {
+        return Optional.ofNullable(getConvertedValue(type, Integer.class));
     }
 
     @Override
     public int getInteger(GlobalSettingType type) {
-        Integer convertedValue = getNullableInteger(type);
-        if (convertedValue == null) {
-            log.debug("Null or empty setting found for  " + type + " using 0.");
-            return 0;
-        } else {
-            return convertedValue;
-        }
+        return getOptionalInteger(type)
+                .orElseGet(() -> {
+                    log.debug("Null or empty setting found for  " + type + " using 0.");
+                    return 0;
+                });
     }
 
     @Override
