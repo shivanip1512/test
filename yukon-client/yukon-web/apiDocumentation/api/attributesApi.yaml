@@ -42,7 +42,7 @@ post-get-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/attributesSchema.yaml#/Response Schema'
+              $ref: '../schemas/attributesSchema.yaml#/attributes Response Schema'
             
             examples:
               List Attributes:

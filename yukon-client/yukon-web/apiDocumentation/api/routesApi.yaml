@@ -36,7 +36,7 @@ post-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/routesSchema.yaml#/Response Schema'
+              $ref: '../schemas/routesSchema.yaml#/Route Response Schema'
             examples:
               List Routes:
                 $ref: '../schemas/routesSchema.yaml#/components/examples/List Routes'

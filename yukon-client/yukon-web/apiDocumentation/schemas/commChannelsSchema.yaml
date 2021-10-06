@@ -287,6 +287,7 @@ id:
       description: 'Unique identifier of the CommChannel.'
 
 TCPPORT Response Schema:
+  title: TCPPORT
   type: object
   properties:
     id:
@@ -323,6 +324,7 @@ TCPPORT Response Schema:
       $ref: '#/timing'
 
 UDPPORT Response Schema:
+  title: UDPPORT
   type: object
   properties:
     id:
@@ -385,6 +387,7 @@ UDPPORT Response Schema:
       $ref: '#/sharing'
       
 TSERVER_SHARED Response Schema:
+  title: TSERVER_SHARED
   type: object
   properties:
     id:
@@ -443,6 +446,7 @@ TSERVER_SHARED Response Schema:
       $ref: '#/sharing'
     
 LOCAL_SHARED Response Schema:
+  title: LOCAL_SHARED
   type: object
   properties:
     id:
@@ -514,8 +518,8 @@ components:
 
     TCP Port Response: 
       value:
-        type: TCPPORT
         id: 21
+        type: TCPPORT
         name: Test TCP Port 
         enable: true
         baudRate: BAUD_300
