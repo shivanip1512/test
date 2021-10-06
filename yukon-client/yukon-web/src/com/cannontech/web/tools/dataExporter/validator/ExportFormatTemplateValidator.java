@@ -41,8 +41,6 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
     private static final String field = "field";
     private static final String formatId = "formatId";
     private static final String attributeField = "attributeField";
-    private static final String readingPattern = "readingPattern";
-    private static final String timestampPattern = "timestampPattern";
     private static final String maxLength = "maxLength";
     private static final String padChar = "padChar";
     private static final String padSide = "padSide";
@@ -50,7 +48,6 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
     private static final String missingAttribute = "missingAttribute";
     private static final String missingAttributeValue = "missingAttributeValue";
     private static final String pattern = "pattern";
-    private static final String fieldValue = "fieldValue";
     private static final String attribute = "attribute";
     private static final String fieldAttribute = "field.attribute";
 
@@ -69,8 +66,6 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
         builder.add(formatId);
         ignoredFields = builder.build();
         builder = ImmutableList.builder();
-        builder.add(readingPattern);
-        builder.add(timestampPattern);
         builder.add(padSide);
         builder.add(maxLength);
         defaultedFieldNames = builder.build();
@@ -182,15 +177,15 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                         missingAttributeValue, attributeField);
             } else if (exportField.getAttributeField() == AttributeField.TIMESTAMP) {
                 checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                        missingAttributeValue, timestampPattern, attributeField);
+                        missingAttributeValue, attributeField);
             } else if (exportField.getAttributeField() == AttributeField.VALUE) {
                 checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                        missingAttributeValue, readingPattern, roundingMode, attributeField);
+                        missingAttributeValue, roundingMode, attributeField);
             }
             break;
         case ATTRIBUTE_NAME:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue, fieldValue);
+                    missingAttributeValue);
             break;
         case DEVICE_TYPE:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar);
@@ -200,14 +195,14 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
             break;
         case POINT_TIMESTAMP:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue, timestampPattern);
+                    missingAttributeValue);
             break;
         case POINT_VALUE:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue, readingPattern, roundingMode);
+                    missingAttributeValue, roundingMode);
             break;
         case RUNTIME:
-            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, timestampPattern);
+            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar);
             break;
         }
 
@@ -226,7 +221,7 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                     field.setAccessible(true);
                     Object fieldValue = field.get(exportField);
                     String fieldName = field.getName();
-                    if (applicableFieldList.contains(fieldName) && fieldName.equals(readingPattern)) {
+                    if (applicableFieldList.contains(fieldName) && type.equals(FieldType.POINT_VALUE)) {
                         if (exportField.isCustomPattern()
                                 && StringUtils.isEmpty(exportField.getPattern())) {
                             if (!errors.hasFieldErrors(pattern)) {

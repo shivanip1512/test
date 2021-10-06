@@ -45,8 +45,6 @@
         
         <tags:sectionContainer2 nameKey="defineLayout">
             
-             <%-- <tags:hidden id="pattern" path="pattern"/> --%>
-            
             <tags:nameValueContainer2 tableClass="with-form-controls">
                 <c:set var="classes" value="${exportField.value ? '' : 'dn'}"/>
                 <tags:nameValue2 rowId="rounding-mode" nameKey=".roundingMode" rowClass="${classes}">
@@ -67,7 +65,7 @@
 						<input type="hidden" id="isCustomSelected" value="true">
 					</c:if>
 					<tags:selectWithItems path="pattern" items="${readingPatterns}"
-						itemValue="pattern" inputClass="reading-pattern-select" />
+						itemValue="pattern" inputClass="reading-pattern-select" hideErrors= "${customSelected}"/>
 					<tags:input id="reading-pattern-input" size="10" maxlength="30"
 						inputClass="dn" path="pattern" />
 					<c:if test="${not empty readingPatternError}">
@@ -80,8 +78,7 @@
 				<tags:nameValue2 rowId="timestamp-pattern"
 					nameKey=".timestampPattern" rowClass="${classes}">
 					<tags:selectWithItems path="pattern" items="${timestampPatterns}"
-						itemValue="pattern" inputClass="timestamp-pattern-select" />
-					<%-- <tags:input id="name" path="name" maxlength="60" inputClass="w300 wrbw dib"/> --%>
+						itemValue="pattern" inputClass="timestamp-pattern-select" hideErrors= "${customSelected}" />
 					<tags:input id="timestamp-pattern-input" size="10" maxlength="30"
 						inputClass="dn" path="pattern" />
 					<c:if test="${not empty timestampPatternError}">
@@ -89,11 +86,6 @@
 					</c:if>
 					<cti:icon icon="icon-help" data-popup="#value-help" classes="cp fn" />
 				</tags:nameValue2>
-
-				<%-- <tags:nameValue2 nameKey=".timestampPattern" rowClass="${classes}">
-				</tags:nameValue2> --%>
-
-
 				<c:set var="classes" value="${exportField.field.attributeName ? '' : 'dn'}"/>
                 <tags:nameValue2 rowId="field-value" nameKey=".fieldValue" rowClass="${classes}">
                     <form:select id="field-value-pattern-select" path="pattern">
