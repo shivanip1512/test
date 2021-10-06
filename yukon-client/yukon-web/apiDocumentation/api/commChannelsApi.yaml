@@ -42,13 +42,13 @@ post-operation:
                   - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED Response Schema:'
               examples:
                 TCP Port:
-                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port' 
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port Response' 
                 UDP Terminal Server:
-                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server'
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server Response'
                 Terminal Server:
-                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server'
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server Response'
                 Local Shared Port:
-                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port'
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port Response'
 get-update-delete-operation:
   get:
     tags:
