@@ -141,7 +141,7 @@
                                     ${requestScope['com.cannontech.web.layout.part.headingSuffix']}</h1>
                             </c:if>
                             <div class="page-actions">
-                                <cm:dropdown id="b-page-actions" type="button" triggerClasses="fr dn">
+                                <cm:dropdown id="b-page-actions" type="button" triggerClasses="fr dn ML15">
                                     <cti:displayForPageEditModes modes="EDIT,VIEW">
                                         <c:if test="${!empty info.smartNotificationsEvent}">
                                             <cm:dropdownOption key="yukon.web.modules.smartNotifications.actionLink" icon="icon-email-open" data-popup="#subscriptionPopup"/>

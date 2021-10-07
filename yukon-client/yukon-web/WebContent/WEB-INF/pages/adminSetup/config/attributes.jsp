@@ -148,7 +148,7 @@
                         </select>
                     </span>
                                         
-                    <cti:button nameKey="filter" classes="js-filter-assignments action primary fn"/>
+                    <cti:button nameKey="filter" classes="js-filter-assignments action primary fn ML15"/>
                 </form:form>
             </div>
             <hr/>

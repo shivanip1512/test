@@ -20,7 +20,7 @@
             <c:if test="${!empty coordinates.latitude && displayInfrastructure}">
                 <span class="fr js-infrastructure">
                     <c:set var="labelWidth" value="${!empty infrastructureLabelWidth ? infrastructureLabelWidth : '150px'}"/>
-                    <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="${labelWidth}">
+                    <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="${labelWidth}" triggerButtonClasses="MR0">
                         <cm:criteriaOption classes="js-all-gateways" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways"/>
                         <cm:criteriaOption classes="js-all-relays" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays"/>
                         <cm:criteriaOption classes="js-all-routes js-all-routes-map-network" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/>
@@ -60,10 +60,10 @@
                         <cti:msg2 var="hybrid" key="yukon.web.components.button.hybrid.label"/>
                         <cti:button renderMode="buttonImage" title="${map}" data-layer="mqosm" icon="icon-map" classes="on"/>
                         <cti:button renderMode="buttonImage" title="${satellite}" data-layer="mqsat" icon="icon-map-sat"/>
-                        <cti:button renderMode="buttonImage" title="${hybrid}" data-layer="hybrid" icon="icon-map-hyb"/>
+                        <cti:button renderMode="buttonImage" title="${hybrid}" data-layer="hybrid" icon="icon-map-hyb" classes="MR0"/>
                     </div>
                     <cti:msg2 var="elevation" key="yukon.web.components.button.elevation.label"/>
-                    <cti:button renderMode="buttonImage" title="${elevation}" icon="icon-trend-up" classes="fr js-elevation-layer"/>
+                    <cti:button renderMode="buttonImage" title="${elevation}" icon="icon-trend-up" classes="fr js-elevation-layer MR5"/>
                 </div>
             </div>
             <div style="padding-top:40px">
