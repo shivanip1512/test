@@ -452,11 +452,12 @@ LM_EATON_CLOUD_PROGRAM:
       $ref: '#/memberControl'
 
 LM_METER_DISCONNECT_PROGRAM Response Schema:
+  title: LM_METER_DISCONNECT_PROGRAM
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the load program.'
+      description: 'Unique identifier of the Meter Disconnect load program.'
     name:
       type: string
       maxLength: 60
@@ -502,7 +503,6 @@ LM_METER_DISCONNECT_PROGRAM Response Schema:
       type: array
       items:
         $ref: '#/MeterDisconnect'
-      
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -513,11 +513,12 @@ LM_METER_DISCONNECT_PROGRAM Response Schema:
       $ref: '#/memberControl'
 
 LM_SEP_PROGRAM Response Schema:
+  title: LM_SEP_PROGRAM
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the load program.'
+      description: 'Unique identifier of the SEP load program.'
     name:
       type: string
       maxLength: 60
@@ -572,11 +573,12 @@ LM_SEP_PROGRAM Response Schema:
       $ref: '#/memberControl'
  
 LM_ECOBEE_PROGRAM Response Schema:
+  title: LM_ECOBEE_PROGRAM
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the load program.'
+      description: 'Unique identifier of the Ecobee load program.'
     name:
       type: string
       maxLength: 60
@@ -632,11 +634,12 @@ LM_ECOBEE_PROGRAM Response Schema:
       $ref: '#/memberControl'
       
 LM_HONEYWELL_PROGRAM Response Schema:
+  title: LM_HONEYWELL_PROGRAM
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the load program.'
+      description: 'Unique identifier of the Honeywell load program.'
     name:
       type: string
       maxLength: 60
@@ -691,11 +694,12 @@ LM_HONEYWELL_PROGRAM Response Schema:
       $ref: '#/memberControl'
       
 LM_ITRON_PROGRAM Response Schema:
+  title: LM_ITRON_PROGRAM
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the load program.'
+      description: 'Unique identifier of the Itron load program.'
     name:
       type: string
       maxLength: 60
@@ -750,11 +754,12 @@ LM_ITRON_PROGRAM Response Schema:
       $ref: '#/memberControl'
       
 LM_DIRECT_PROGRAM Response Schema:
+  title: LM_DIRECT_PROGRAM
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the load program.'
+      description: 'Unique identifier of the Direct load program.'
     name:
       type: string
       maxLength: 60
@@ -809,11 +814,12 @@ LM_DIRECT_PROGRAM Response Schema:
       $ref: '#/memberControl'
       
 LM_EATON_CLOUD_PROGRAM Response Schema:
+  title: LM_EATON_CLOUD_PROGRAM
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the load program.'
+      description: 'Unique identifier of the Eaton Cloud load program.'
     name:
       type: string
       maxLength: 60

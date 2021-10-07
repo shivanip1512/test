@@ -45,14 +45,13 @@ attributeAssignments:
 attributes Response Schema:
    type: object
    properties:
+    id:
+      type: integer
+      description: 'Unique identifier for the attribute'
     name:
       type: string
       maxLength: 60
       description: 'Name of the attribute.'
-    id:
-      type: integer
-      description: 'Unique identifier for the attribute'
-
 
 id:
   required:

@@ -436,11 +436,12 @@ CalcStatus:
       $ref: '#/pointStatusControl'
 
 Analog Response Schema:
+  title: Analog
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the point.'
+      description: 'Unique identifier of the Analog Point.'
     pointName:
       type: string
       maxLength: 60
@@ -516,11 +517,12 @@ Analog Response Schema:
       $ref: '#/pointAnalogControl'
 
 PulseAccumulator Response Schema:
+  title: PulseAccumulator
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the point.'
+      description: 'Unique identifier of the Pulse Accumulator Point.'
     pointName:
       type: string
       maxLength: 60
@@ -594,11 +596,12 @@ PulseAccumulator Response Schema:
       $ref: '#/accumulatorPoint'
 
 CalcAnalog Response Schema:
+  title: CalcAnalog
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the point.'
+      description: 'Unique identifier of the CalcAnalog Point.'
     pointName:
       type: string
       maxLength: 60
@@ -679,11 +682,12 @@ CalcAnalog Response Schema:
       $ref: '#/calcComponents'
       
 Status Response Schema:
+  title: Status
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the point.'
+      description: 'Unique identifier of the Status Point.'
     pointName:
       type: string
       maxLength: 60
@@ -757,11 +761,12 @@ Status Response Schema:
       $ref: '#/pointStatusControl'
       
 CalcStatus Response Schema:
+  title: CalcStatus
   type: object
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the point.'
+      description: 'Unique identifier of the Calc Status Point.'
     pointName:
       type: string
       maxLength: 60

@@ -843,7 +843,7 @@ LM_GROUP_DIGI_SEP Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the DigiSep load group.'
         name:
           type: string
           maxLength: 60
@@ -906,7 +906,7 @@ LM_GROUP_EMETCON Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the Emetcon load group.'
         name:
           type: string
           maxLength: 60
@@ -963,7 +963,7 @@ LM_GROUP_ECOBEE Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the Ecobee load group.'
         name:
           type: string
           maxLength: 60
@@ -993,7 +993,7 @@ LM_GROUP_METER_DISCONNECT Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the Meter Disconnect load group.'
         name:
           type: string
           maxLength: 60
@@ -1023,7 +1023,7 @@ LM_GROUP_VERSACOM Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the Versacomm load group.'
         name:
           type: string
           maxLength: 60
@@ -1097,7 +1097,7 @@ LM_GROUP_ITRON Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the Itron load group.'
         name:
           type: string
           maxLength: 60
@@ -1132,7 +1132,7 @@ LM_GROUP_HONEYWELL Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the Honeywell load group.'
         name:
           type: string
           maxLength: 60
@@ -1162,7 +1162,7 @@ LM_GROUP_NEST Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the Nest load group.'
         name:
           type: string
           maxLength: 60
@@ -1192,7 +1192,7 @@ LM_GROUP_MCT Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the MCT load group.'
         name:
           type: string
           maxLength: 60
@@ -1248,7 +1248,7 @@ LM_GROUP_EXPRESSCOMM Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the Expresscom load group.'
         name:
           type: string
           maxLength: 60
@@ -1359,7 +1359,7 @@ LM_GROUP_RFN_EXPRESSCOMM Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the RFN Expresscom load group.'
         name:
           type: string
           maxLength: 60
@@ -1467,7 +1467,7 @@ LM_GROUP_EATON_CLOUD Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the Eaton Cloud load group.'
         name:
           type: string
           maxLength: 60
@@ -1502,7 +1502,7 @@ LM_GROUP_POINT Response Schema:
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the load group.'
+          description: 'Unique identifier of the Point load group.'
         name:
           type: string
           maxLength: 60

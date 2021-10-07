@@ -21,7 +21,7 @@ post-operation:
             schema:
               $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario Response Schema'
             examples:
-              Program Constraints:
+              Control Scenario:
                 $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Response'
 get-update-delete-operation:
   get:
@@ -64,7 +64,7 @@ get-update-delete-operation:
           schema:
             $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario'
           examples:
-            Program Constraints:
+            Control Scenario:
               $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Request'
       required: true
     responses:
@@ -75,7 +75,7 @@ get-update-delete-operation:
             schema:
               $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario Response Schema'
             examples:
-              Program Constraints:
+              Control Scenario:
                 $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Response'
   delete:
     tags:

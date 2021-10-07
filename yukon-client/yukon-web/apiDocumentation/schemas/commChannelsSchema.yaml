@@ -225,7 +225,7 @@ TCPPORT Response Schema:
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the CommChannel.'
+      description: 'Unique identifier of the TCP Port.'
     name:
       type: string
       maxLength: 60
@@ -262,7 +262,7 @@ UDPPORT Response Schema:
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the CommChannel.'
+      description: 'Unique identifier of the UDP Terminal Server.'
     name:
       type: string
       maxLength: 60
@@ -325,7 +325,7 @@ TSERVER_SHARED Response Schema:
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the CommChannel.'
+      description: 'Unique identifier of the Terminal Server.'
     name:
       type: string
       maxLength: 60
@@ -384,7 +384,7 @@ LOCAL_SHARED Response Schema:
   properties:
     id:
       type: integer
-      description: 'Unique identifier of the CommChannel.'
+      description: 'Unique identifier of the Local Shared Port.'
     name:
       type: string
       maxLength: 60
