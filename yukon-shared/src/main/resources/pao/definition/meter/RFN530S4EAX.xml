@@ -35,7 +35,7 @@
         <pointInfo name="Current Phase B" attributes="CURRENT_PHASE_B"/>
         <pointInfo name="Current Phase C" attributes="CURRENT_PHASE_C"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
-        <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
+        <pointInfo name="Delivered kWh" init="true" attributes="DELIVERED_KWH"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
@@ -60,7 +60,7 @@
         <pointInfo name="RFN High Temperature Threshold Exceeded" attributes="RFN_TEMPERATURE_ALARM"/>
         <pointInfo name="Rom Error" attributes="ROM_ERROR"/>
         <pointInfo name="Sum kW Load Profile" attributes="SUM_KW_LOAD_PROFILE"/>
-        <pointInfo name="Sum kWh" init="true" attributes="SUM_KWH"/>
+        <pointInfo name="Sum kWh" init="true" attributes="USAGE,SUM_KWH"/>
         <pointInfo name="Sum kWh per Interval" init="true" attributes="SUM_KWH_PER_INTERVAL"/>
         <pointInfo name="Sum Peak kW" init="true" attributes="SUM_PEAK_DEMAND,PEAK_DEMAND"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
