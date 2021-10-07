@@ -31,25 +31,28 @@ public class ExportFieldValidator extends SimpleValidator<ExportField> {
         YukonValidationUtils.checkExceedsMaxLength(errors, "padChar", field.getPadChar(), 1);
         YukonValidationUtils.checkExceedsMaxLength(errors, "missingAttributeValue", field.getMissingAttributeValue(), 20);
         
-        if (field.isTimestamp()) {
+        if (field.isTimestamp() && field.getPattern() != null && !field.getPattern().isEmpty()) {
             {
                 YukonValidationUtils.checkExceedsMaxLength(errors, "pattern", field.getPattern(), 50);
-                YukonValidationUtils.checkIsBlank(errors, "pattern", field.getPattern(), "Pattern", false);
+                if (!errors.hasFieldErrors("pattern")) {
+                    try {
+                        new SimpleDateFormat(field.getPattern());
+
+                    } catch (Exception e) {
+                        errors.rejectValue("pattern", invalidPatternMsgKey);
+                    }
+                }
+            }
+        } else if (field.isValue() && field.getPattern() != null && !field.getPattern().isEmpty()) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "pattern", field.getPattern(), 50);
+            if (!errors.hasFieldErrors("pattern")) {
                 try {
-                    new SimpleDateFormat(field.getPattern());
+                    new DecimalFormat(field.getPattern());
                 } catch (Exception e) {
                     errors.rejectValue("pattern", invalidPatternMsgKey);
                 }
             }
-        } else if (field.isValue()) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "pattern", field.getPattern(), 50);
-            YukonValidationUtils.checkIsBlank(errors, "pattern", field.getPattern(), "Pattern", false);
-            try {
-                new DecimalFormat(field.getPattern());
-            } catch (Exception e) {
-                errors.rejectValue("pattern", invalidPatternMsgKey);
-            }
         }
     }
-    
+
 }

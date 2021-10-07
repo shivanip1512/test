@@ -177,15 +177,15 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                         missingAttributeValue, attributeField);
             } else if (exportField.getAttributeField() == AttributeField.TIMESTAMP) {
                 checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                        missingAttributeValue, attributeField);
+                        missingAttributeValue, attributeField, pattern);
             } else if (exportField.getAttributeField() == AttributeField.VALUE) {
                 checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                        missingAttributeValue, roundingMode, attributeField);
+                        missingAttributeValue, roundingMode, attributeField, pattern);
             }
             break;
         case ATTRIBUTE_NAME:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue);
+                    missingAttributeValue,pattern);
             break;
         case DEVICE_TYPE:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar);
@@ -195,14 +195,14 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
             break;
         case POINT_TIMESTAMP:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue);
+                    missingAttributeValue,pattern);
             break;
         case POINT_VALUE:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue, roundingMode);
+                    missingAttributeValue, roundingMode,pattern);
             break;
         case RUNTIME:
-            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar);
+            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar,pattern);
             break;
         }
 
@@ -221,7 +221,8 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                     field.setAccessible(true);
                     Object fieldValue = field.get(exportField);
                     String fieldName = field.getName();
-                    if (applicableFieldList.contains(fieldName) && type.equals(FieldType.POINT_VALUE)) {
+                    if ((applicableFieldList.contains(fieldName) && type.equals(FieldType.POINT_VALUE))
+                            || (type.equals(FieldType.ATTRIBUTE) && exportField.getAttributeField() == AttributeField.VALUE)) {
                         if (exportField.isCustomPattern()
                                 && StringUtils.isEmpty(exportField.getPattern())) {
                             if (!errors.hasFieldErrors(pattern)) {
@@ -273,38 +274,23 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
     }
 
     /**
-     * As of now pattern field get auto populated ReadingPattern, TimestampPattern and empty for PLAIN_TEXT(i.e if kept empty).
-     * So even if user not provided pattern field, it will be available in POJO. So added added this method to check whether
+     * As of now pattern field is empty for PLAIN_TEXT(i.e if kept empty).
+     * This method to check whether
      * pattern is auto populated or not.
      */
     private boolean isNotAutoPopulatedField(String fieldName, ExportField exportField) {
         if (fieldName.equals(pattern)) {
-            return !(exportField.getField().getType() == FieldType.POINT_TIMESTAMP
-                    || exportField.getField().getType() == FieldType.POINT_VALUE
-                    || exportField.getField().getType() == FieldType.RUNTIME
-                    || exportField.getField().getType() == FieldType.ATTRIBUTE_NAME
-                    || exportField.getField().getType() == FieldType.PLAIN_TEXT
-                    || (exportField.getField().getType() == FieldType.ATTRIBUTE
-                            && exportField.getAttributeField() == AttributeField.VALUE)
-                    || (exportField.getField().getType() == FieldType.ATTRIBUTE
-                            && exportField.getAttributeField() == AttributeField.TIMESTAMP));
+            return !(exportField.getField().getType() == FieldType.PLAIN_TEXT);
         }
         return true;
     }
 
     /**
-     * Method to check the default value. Few fields like ReadingPattern, TimestampPattern are initialized in pojo with default
-     * values.This method check the field value and returns true if the true if the value is not default.
+     * Method to check the default value. This method check the field value and returns true if the true if the value is not default.
      * Used when field is not applicable for a type but provided with default value in yaml / auto populated by the parser.
      */
     private boolean isNotDefaultValue(Object fieldValue, String fieldName) {
         if (defaultedFieldNames.contains(fieldName)) {
-            if (fieldValue instanceof ReadingPattern && (ReadingPattern) fieldValue == ReadingPattern.FIVE_ZERO) {
-                return false;
-            }
-            if (fieldValue instanceof TimestampPattern && (TimestampPattern) fieldValue == TimestampPattern.MONTH_DAY_YEAR) {
-                return false;
-            }
             if (fieldValue instanceof PadSide && (PadSide) fieldValue == PadSide.NONE) {
                 return false;
             }
