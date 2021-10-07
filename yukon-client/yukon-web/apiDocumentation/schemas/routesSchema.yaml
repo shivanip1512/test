@@ -89,7 +89,7 @@ Route Response Schema:
   title: Route
   type: object
   properties:
-    id:
+    routeId:
       type: integer
       description: 'Unique identifier for Route.'
     name:
@@ -126,7 +126,7 @@ components:
           repeaterOrder: 1
     Route Response:
       value:
-        id: 7
+        routeId: 7
         name: Test Route
         signalTransmitterId: 5
         defaultRoute: true
@@ -142,7 +142,7 @@ components:
           repeaterOrder: 1
     List Routes:
       value:
-        - id: 9
+        - routeId: 9
           name: Test Route
           signalTransmitterId: 5
           defaultRoute: true
@@ -156,7 +156,7 @@ components:
             repeaterId: 787
             variableBits: 5
             repeaterOrder: 1
-        - id: 11
+        - routeId: 11
           name: Test Route 1
           signalTransmitterId: 5
           defaultRoute: true

@@ -455,7 +455,7 @@ LM_METER_DISCONNECT_PROGRAM Response Schema:
   title: LM_METER_DISCONNECT_PROGRAM
   type: object
   properties:
-    id:
+    programId:
       type: integer
       description: 'Unique identifier of the Meter Disconnect load program.'
     name:
@@ -516,7 +516,7 @@ LM_SEP_PROGRAM Response Schema:
   title: LM_SEP_PROGRAM
   type: object
   properties:
-    id:
+    programId:
       type: integer
       description: 'Unique identifier of the SEP load program.'
     name:
@@ -576,7 +576,7 @@ LM_ECOBEE_PROGRAM Response Schema:
   title: LM_ECOBEE_PROGRAM
   type: object
   properties:
-    id:
+    programId:
       type: integer
       description: 'Unique identifier of the Ecobee load program.'
     name:
@@ -637,7 +637,7 @@ LM_HONEYWELL_PROGRAM Response Schema:
   title: LM_HONEYWELL_PROGRAM
   type: object
   properties:
-    id:
+    programId:
       type: integer
       description: 'Unique identifier of the Honeywell load program.'
     name:
@@ -697,7 +697,7 @@ LM_ITRON_PROGRAM Response Schema:
   title: LM_ITRON_PROGRAM
   type: object
   properties:
-    id:
+    programId:
       type: integer
       description: 'Unique identifier of the Itron load program.'
     name:
@@ -757,7 +757,7 @@ LM_DIRECT_PROGRAM Response Schema:
   title: LM_DIRECT_PROGRAM
   type: object
   properties:
-    id:
+    programId:
       type: integer
       description: 'Unique identifier of the Direct load program.'
     name:
@@ -817,7 +817,7 @@ LM_EATON_CLOUD_PROGRAM Response Schema:
   title: LM_EATON_CLOUD_PROGRAM
   type: object
   properties:
-    id:
+    programId:
       type: integer
       description: 'Unique identifier of the Eaton Cloud load program.'
     name:
@@ -2620,7 +2620,7 @@ components:
 
     SEP Program Response: 
       value:
-        id: 9
+        programId: 9
         name: Test SEP Program
         type: LM_SEP_PROGRAM
         operationalState: Automatic
@@ -2699,7 +2699,7 @@ components:
 
     ecobee Program Response:
       value:
-        id: 8
+        programId: 8
         name: TestEcobee
         type: LM_ECOBEE_PROGRAM
         operationalState: Automatic
@@ -2890,7 +2890,7 @@ components:
 
     Direct Program Response:
       value:  
-        id: 96
+        programId: 96
         name: LMDirectTest001
         type: LM_DIRECT_PROGRAM
         operationalState: Automatic
@@ -3065,7 +3065,7 @@ components:
 
     Meter Disconnect Program Response:
       value:   
-        id: 33 
+        programId: 33 
         name: Test Meter Disconnect
         type: LM_METER_DISCONNECT_PROGRAM
         operationalState: Automatic
@@ -3139,7 +3139,7 @@ components:
 
     Itron Program Response:
       value:      
-        id: 63 
+        programId: 63 
         name: ItronProgramTest
         type: LM_ITRON_PROGRAM
         operationalState: Automatic
@@ -3230,7 +3230,7 @@ components:
 
     Eaton Cloud Program Response:
       value:       
-        id: 99
+        programId: 99
         name: EatonCloudProgramTest
         type: LM_EATON_CLOUD_PROGRAM
         operationalState: Automatic
@@ -3326,7 +3326,7 @@ components:
 
     Honeywell Program Response:
       value:     
-        id: 95
+        programId: 95
         name: Honeywell Program001
         type: LM_HONEYWELL_PROGRAM
         operationalState: Timed

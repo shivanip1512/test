@@ -134,11 +134,11 @@ get-update-delete-operation:
                 - $ref: '../schemas/virtualDevicesSchema.yaml#/VIRTUAL_SYSTEM Response Schema'
                 - $ref: '../schemas/virtualDevicesSchema.yaml#/VIRTUAL_METER Response Schema'
                  
-              examples:
-                Virtual System:
-                  $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/Virtual System Response'
-                Virtual Meter:
-                  $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/Virtual Meter Response'
+            examples:
+              Virtual System:
+                $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/Virtual System Response' 
+              Virtual Meter:
+                $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/Virtual Meter Response'
   delete:
     tags:
       - Virtual Devices

@@ -50,6 +50,42 @@ allPrograms:
               type: string
               maxLength: 30
               description: Name of the gear.
+
+allPrograms Response Schema:
+  type: array
+  items:
+    type: object
+    properties:
+      programId:
+        type: integer
+        description: 'Unique identifier of the load program.'
+      startOffsetInMinutes:
+        type: integer
+        minimum: 0
+        maximum: 1439
+        description: 'Start Offset value in minutes.'
+      stopOffsetInMinutes:
+        type: integer
+        minimum: 0
+        maximum: 1439
+        description: 'Stop Offset value in minutes.'
+      gears:
+        type: array
+        items:
+          required:
+            - gearNumber
+          type: object
+          properties:
+            gearNumber:
+              type: integer
+              minimum: 0
+              maximum: 16
+              description: Number of the gear.
+            gearName:
+              type: string
+              maxLength: 30
+              description: Name of the gear.
+
 id:
   title: id
   required:
@@ -72,7 +108,7 @@ ControlScenario Response Schema:
       description: 'Name of the control scenario.'
     allPrograms:
       description: 'Collection of programs required to create control scenario.'
-      $ref: '#/allPrograms'
+      $ref: '#/allPrograms Response Schema'
 
 components:
   examples:

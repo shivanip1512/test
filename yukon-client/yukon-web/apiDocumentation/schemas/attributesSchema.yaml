@@ -45,9 +45,9 @@ attributeAssignments:
 attributes Response Schema:
    type: object
    properties:
-    id:
+    customAttributeId:
       type: integer
-      description: 'Unique identifier for the attribute'
+      description: 'Unique identifier for the attribute.'
     name:
       type: string
       maxLength: 60
@@ -71,7 +71,7 @@ components:
        
     Attributes Response:
       value:
-        id: 7
+        customAttributeId: 7
         name: Test API Attribute
        
     Attributes Assignment:   
