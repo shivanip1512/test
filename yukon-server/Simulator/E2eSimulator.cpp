@@ -39,7 +39,7 @@ extern "C" {
 #include <future>
 #include <map>
 
-using namespace Cti::Messaging::ActiveMQ;
+using namespace Cti::Messaging::Qpid;
 using namespace Cti::Messaging::Rfn;
 
 using Cti::Messaging::ActiveMQConnectionManager;
@@ -115,7 +115,7 @@ E2eSimulator::E2eSimulator()
     e2eRequestConsumer    = createQueueConsumer(*consumerSession, Queues::OutboundQueue::NetworkManagerE2eDataRequest.name);
     e2eConfirmProducer    = createQueueProducer(*producerSession, Queues::InboundQueue ::NetworkManagerE2eDataConfirm.name);
     e2eIndicationProducer = createQueueProducer(*producerSession, Queues::InboundQueue ::NetworkManagerE2eDataIndication.name);
-
+/*  jmoc
     e2eRequestListener = 
             std::make_unique<MessageListener>(
                     [this](const cms::Message* msg) 
@@ -124,17 +124,17 @@ E2eSimulator::E2eSimulator()
                     });
 
     e2eRequestConsumer->setMessageListener(e2eRequestListener.get());
-
+*/
     batteryNodeGetRequestConsumer = createQueueConsumer(*consumerSession, Queues::OutboundQueue::GetBatteryNodeChannelConfigRequest.name);
     batteryNodeSetRequestConsumer = createQueueConsumer(*consumerSession, Queues::OutboundQueue::SetBatteryNodeChannelConfigRequest.name);
-
+/* jmoc
     batteryNodeGetRequestListener = std::make_unique<MessageListener>([this](const cms::Message* msg) {
         handleBatteryNodeGetChannelConfigRequest(msg);
     });
     batteryNodeSetRequestListener = std::make_unique<MessageListener>([this](const cms::Message* msg){
         handleBatteryNodeSetChannelConfigRequest(msg);
     });
-
+*/
     Messaging::ActiveMQConnectionManager::registerReplyHandler(
         Queues::InboundQueue::FieldSimulatorStatusRequest,
         [this](const Messaging::ActiveMQConnectionManager::MessageDescriptor& md) {
@@ -216,7 +216,7 @@ void E2eSimulator::handleBatteryNodeGetChannelConfigRequest(const cms::Message* 
 
                 bytesMsg->writeBytes(serializedReply);
 
-                tempQueueProducer->send(bytesMsg.get());
+  // jmoc              tempQueueProducer->send(bytesMsg.get());
             }
         }
     }
@@ -252,7 +252,7 @@ void E2eSimulator::handleBatteryNodeSetChannelConfigRequest(const cms::Message* 
 
                 bytesMsg->writeBytes(serializedReply);
 
-                tempQueueProducer->send(bytesMsg.get());
+   // jmoc             tempQueueProducer->send(bytesMsg.get());
             }
         }
     }
@@ -460,7 +460,7 @@ void E2eSimulator::sendNetworkManagerRequestAck(const NetworkManagerRequestHeade
 
     bytesMsg->writeBytes(requestAckBytes);
 
-    tempQueueProducer->send(bytesMsg.get());
+// jmoc    tempQueueProducer->send(bytesMsg.get());
 }
 
 
@@ -482,7 +482,7 @@ void E2eSimulator::sendE2eDataConfirm(const E2eDataRequestMsg& requestMsg)
 
     bytesMsg->writeBytes(confirmBytes);
 
-    e2eConfirmProducer->send(bytesMsg.get());
+ // jmoc   e2eConfirmProducer->send(bytesMsg.get());
 }
 
 
@@ -645,7 +645,7 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
 
     bytesMsg->writeBytes(indicationBytes);
 
-    e2eIndicationProducer->send(bytesMsg.get());
+ // jmoc   e2eIndicationProducer->send(bytesMsg.get());
 }
 
 auto E2eSimulator::handleStatusRequest(const ActiveMQConnectionManager::MessageDescriptor& md)

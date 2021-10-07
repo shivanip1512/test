@@ -4386,7 +4386,7 @@ CtiVanGogh::CtiVanGogh(CtiPointClientManager* externalMgr)
                     : *_localPointClientMgr },
         _pendingOpThread{PointMgr},
         _notificationConnection(NULL),
-        _listenerConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ),
+        _listenerConnection( Cti::Messaging::Qpid::Queue::dispatch ),
         ShutdownOnThreadTimeout { true },
         _rphArchiver { ShutdownOnThreadTimeout, &CtiVanGogh::sendbGCtrlC }
 {
@@ -6049,7 +6049,7 @@ CtiConnection* CtiVanGogh::getNotificationConnection()
 
             if( _notificationConnection == NULL )
             {
-                _notificationConnection  = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::notification );
+                _notificationConnection  = new CtiClientConnection( Cti::Messaging::Qpid::Queue::notification );
                 _notificationConnection->setName("Dispatch to Notification");
                 _notificationConnection->start();
             }

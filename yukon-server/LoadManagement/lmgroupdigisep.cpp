@@ -75,7 +75,7 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     ActiveMQConnectionManager::enqueueMessage(
             OutboundQueue::SmartEnergyProfileControl, 
@@ -113,7 +113,7 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     unsigned char eventFlags = randomizeStart ? 1 : 0 + randomizeStop ? (1 << 1) : 0;
 
@@ -182,7 +182,7 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     ActiveMQConnectionManager::enqueueMessage(
             OutboundQueue::SmartEnergyProfileRestore, 
@@ -205,7 +205,7 @@ bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     ActiveMQConnectionManager::enqueueMessage(
             OutboundQueue::SmartEnergyProfileControl, 

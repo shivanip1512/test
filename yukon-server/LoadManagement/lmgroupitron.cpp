@@ -34,7 +34,7 @@ bool LMGroupItron::sendCycleControl( long controlDurationSeconds,
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
 
@@ -73,7 +73,7 @@ bool LMGroupItron::sendStopControl( bool stopImmediately )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
 
@@ -99,7 +99,7 @@ bool LMGroupItron::sendShedControl( long controlMinutes )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
 

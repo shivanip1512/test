@@ -33,7 +33,7 @@ bool LMGroupNest::sendCycleControl( long controlDurationSeconds )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
     ctitime_t localSeconds = now.getLocalTimeSeconds();
@@ -67,7 +67,7 @@ bool LMGroupNest::sendStopControl( bool stopImmediately )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
     ctitime_t localSeconds = now.getLocalTimeSeconds();

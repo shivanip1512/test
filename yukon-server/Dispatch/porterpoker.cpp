@@ -121,7 +121,7 @@ void main(int argc, char **argv)
             int dblvl = 0;
 
             // Create client cticonnection
-            CtiClientConnection Connect( Cti::Messaging::ActiveMQ::Queue::dispatch );
+            CtiClientConnection Connect( Cti::Messaging::Qpid::Queue::dispatch );
 
             // start the connection
             Connect.start();

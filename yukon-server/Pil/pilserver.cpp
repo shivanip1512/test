@@ -76,7 +76,7 @@ using boost::adaptors::indirected;
 
 extern IM_EX_CTIBASE std::string outMessageToString(const OUTMESS* Om);
 
-CtiClientConnection   VanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+CtiClientConnection   VanGoghConnection( Cti::Messaging::Qpid::Queue::dispatch );
 CtiPILExecutorFactory ExecFactory;
 
 /* Define the return nexus handle */
@@ -120,7 +120,7 @@ PilServer::PilServer(CtiDeviceManager& DM, CtiPointManager& PM, CtiRouteManager&
     bServerClosing(FALSE),
     _currentParse(""),
     _currentUserMessageId(0),
-    _listenerConnection( Cti::Messaging::ActiveMQ::Queue::porter ),
+    _listenerConnection( Cti::Messaging::Qpid::Queue::porter ),
     _rfnRequestId(0),
     _resultThread        (WorkerThread::Function([this]{ resultThread();         }).name("_resultThread")),
     _nexusThread         (WorkerThread::Function([this]{ nexusThread();          }).name("_nexusThread")),
@@ -155,7 +155,7 @@ int PilServer::execute()
 
     if(!bServerClosing)
     {
-        using in_q = Messaging::ActiveMQ::Queues::InboundQueue;
+        using in_q = Messaging::Qpid::Queues::InboundQueue;
 
         _mainThread = boost::thread(&PilServer::mainThread, this);
         _connThread = boost::thread(&PilServer::connectionThread, this);
@@ -474,7 +474,7 @@ void PilServer::validateConnections()
 void PilServer::copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, const ConnectionHandle connectionHandle)
 {
     using namespace Cti::Messaging;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     ActiveMQConnectionManager::enqueueMessage(
             OutboundQueue::PorterResponses, 
@@ -1016,7 +1016,7 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
         auto serialized = Serialization::serialize(dataStreamingUpdate);
 
         ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::DataStreamingUpdateReplyMessage>(
-            ActiveMQ::Queues::OutboundQueue::RfnDataStreamingUpdate,
+            Qpid::Queues::OutboundQueue::RfnDataStreamingUpdate,
             serialized,
             [paoId, json](const Rfn::DataStreamingUpdateReplyMessage& m) {
                 if( m.success )
@@ -1036,7 +1036,7 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
         
     if( ! rfnDevice )
     {
-        using ActiveMQ::Queues::OutboundQueue;
+        using Qpid::Queues::OutboundQueue;
 
         RfnDeviceCreationRequestMessage requestMessage(rfnId);
 
@@ -1095,7 +1095,7 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
         CTILOG_INFO(dout, "Making RFN device creation service call for RFN device " << report.rfnId);
         // send the device creation message to Java
         ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnDeviceCreationReplyMessage>(
-            ActiveMQ::Queues::OutboundQueue::DeviceCreationRequest,
+            Qpid::Queues::OutboundQueue::DeviceCreationRequest,
             serialized,
             std::make_unique<DeviceLookupCallback>(DeviceManager, rfnId, std::move(report.command), invokeCommand),
             std::chrono::seconds{ 5 },

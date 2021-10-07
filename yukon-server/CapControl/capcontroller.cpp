@@ -1394,7 +1394,7 @@ boost::shared_ptr<CtiClientConnection> CtiCapController::getPorterConnection()
                 CTILOG_WARN(dout, "Porter Connection Hiccup");
             }
 
-            _porterConnection.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::porter ));
+            _porterConnection.reset( new CtiClientConnection( Cti::Messaging::Qpid::Queue::porter ));
             _porterConnection->setName("CC to Porter");
             _porterConnection->start();
 

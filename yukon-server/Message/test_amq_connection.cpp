@@ -58,13 +58,13 @@ BOOST_AUTO_TEST_CASE(test_named_queue)
     std::string actual_type;
 
     ActiveMQConnectionManager::registerHandler(
-        Cti::Messaging::ActiveMQ::Queues::InboundQueue::PorterDynamicPaoInfoRequest, 
+        Cti::Messaging::Qpid::Queues::InboundQueue::PorterDynamicPaoInfoRequest, 
         [&](const ActiveMQConnectionManager::MessageDescriptor& md) {
             actual_message = md.msg;
             actual_type    = md.type;
         });
 
-    testManager.emplaceNamedMessage(&Cti::Messaging::ActiveMQ::Queues::InboundQueue::PorterDynamicPaoInfoRequest, expected_type, expected_message, nullptr);
+    testManager.emplaceNamedMessage(&Cti::Messaging::Qpid::Queues::InboundQueue::PorterDynamicPaoInfoRequest, expected_type, expected_message, nullptr);
 
     testManager.processTasks(testManager.getTasks());
 

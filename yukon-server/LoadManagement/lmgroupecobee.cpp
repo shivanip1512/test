@@ -40,7 +40,7 @@ bool LMGroupEcobee::sendCycleControl( long programId,
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
     ctitime_t localSeconds = now.getLocalTimeSeconds();  
@@ -103,7 +103,7 @@ bool LMGroupEcobee::sendSetpointControl( long programId,
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
     ctitime_t localSeconds = now.getLocalTimeSeconds();
@@ -166,7 +166,7 @@ bool LMGroupEcobee::sendEcobeePlusControl( long programId,
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
     ctitime_t localSeconds = now.getLocalTimeSeconds();
@@ -223,7 +223,7 @@ bool LMGroupEcobee::sendStopControl( bool stopImmediately /* unused */ )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
     ctitime_t localSeconds = now.getLocalTimeSeconds();
@@ -262,7 +262,7 @@ bool LMGroupEcobee::sendShedControl( long controlMinutes )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     // shed == cycle at 100% duty cycle with no ramp in/out
 

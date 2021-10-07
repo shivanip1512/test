@@ -37,7 +37,7 @@ CtiLMClientListener& CtiLMClientListener::getInstance()
 CtiLMClientListener::CtiLMClientListener() :
     _started(false),
     _doquit(false),
-    _listenerConnection( Cti::Messaging::ActiveMQ::Queue::loadmanagement )
+    _listenerConnection( Cti::Messaging::Qpid::Queue::loadmanagement )
 {
 }
 

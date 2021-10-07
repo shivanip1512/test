@@ -36,7 +36,7 @@ CtiCCClientListener& CtiCCClientListener::getInstance()
 CtiCCClientListener::CtiCCClientListener() :
     _started(false),
     _doquit(false),
-    _listenerConnection( Cti::Messaging::ActiveMQ::Queue::capcontrol )
+    _listenerConnection( Cti::Messaging::Qpid::Queue::capcontrol )
 {
 }
 

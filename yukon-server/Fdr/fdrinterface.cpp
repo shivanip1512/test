@@ -515,7 +515,7 @@ bool CtiFDRInterface::connectWithDispatch()
 
         CTILOG_INFO(dout, "Attempting to connect to dispatch for "<< getInterfaceName());
 
-        iDispatchConn.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch, &iDispatchInQueue ));
+        iDispatchConn.reset( new CtiClientConnection( Cti::Messaging::Qpid::Queue::dispatch, &iDispatchInQueue ));
         iDispatchConn->setName( "FDR to Dispatch: " + getInterfaceName() );
         iDispatchConn->start();
 

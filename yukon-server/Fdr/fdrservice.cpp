@@ -15,7 +15,7 @@
 #include <crtdbg.h>
 #include <conio.h>
 
-CtiClientConnection FdrVanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+CtiClientConnection FdrVanGoghConnection( Cti::Messaging::Qpid::Queue::dispatch );
 
 bool UserQuit = false;
 

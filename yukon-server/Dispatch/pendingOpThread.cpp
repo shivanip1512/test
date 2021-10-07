@@ -1030,7 +1030,7 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
                 if(pTblEntry->getAssociationId() != 0)
                 {
                     using namespace Cti::Messaging;
-                    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+                    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
                     ActiveMQConnectionManager::enqueueMessage(
                             OutboundQueue::HistoryRowAssociationResponse, 

@@ -226,7 +226,7 @@ void CtiCalcLogicService::Run( )
 
                 CTILOG_INFO(dout, "Creating a new connection to dispatch.");
 
-                dispatchConnection.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ));
+                dispatchConnection.reset( new CtiClientConnection( Cti::Messaging::Qpid::Queue::dispatch ));
                 dispatchConnection->start();
 
                 //  write the registration message (this is only done once, because if the database changes,

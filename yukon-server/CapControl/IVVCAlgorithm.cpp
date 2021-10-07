@@ -3436,7 +3436,7 @@ bool IVVCAlgorithm::hasTapOpsRemaining(const IVVCState::TapOperationZoneMap & ta
 void IVVCAlgorithm::sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAnalysisMessage * message )
 {
     using namespace Cti::Messaging;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     ActiveMQConnectionManager::enqueueMessage( 
             OutboundQueue::IvvcAnalysisMessage, 

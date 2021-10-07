@@ -18,7 +18,7 @@
 
 using namespace std;
 
-CtiClientConnection VanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+CtiClientConnection VanGoghConnection( Cti::Messaging::Qpid::Queue::dispatch );
 
 using namespace Cti;
 using namespace Porter;

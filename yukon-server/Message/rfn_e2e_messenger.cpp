@@ -118,21 +118,21 @@ void E2eMessenger::setE2eDtHandler(Indication::Callback callback)
     }
 
     ActiveMQConnectionManager::registerHandler(
-            ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataIndication,
+            Qpid::Queues::InboundQueue::NetworkManagerE2eDataIndication,
             [this](const ActiveMQConnectionManager::MessageDescriptor &md)
             {
                 handleRfnE2eDataIndicationMsg(md.msg);
             });
 
     ActiveMQConnectionManager::registerHandler(
-            ActiveMQ::Queues::InboundQueue::NetworkManagerE2eDataConfirm,
+            Qpid::Queues::InboundQueue::NetworkManagerE2eDataConfirm,
             [this](const ActiveMQConnectionManager::MessageDescriptor &md)
             {
                 handleRfnE2eDataConfirmMsg(md.msg);
             });
 
     ActiveMQConnectionManager::registerHandler(
-            ActiveMQ::Queues::InboundQueue::NetworkManagerResponse,
+            Qpid::Queues::InboundQueue::NetworkManagerResponse,
             [this](const ActiveMQConnectionManager::MessageDescriptor &md)
             {
                 handleNetworkManagerResponseMsg(md.msg, md.type);
@@ -423,7 +423,7 @@ void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServic
     }
 
     ActiveMQConnectionManager::enqueueMessageWithSessionCallback(
-            ActiveMQ::Queues::OutboundQueue::NetworkManagerE2eDataRequest,
+            Qpid::Queues::OutboundQueue::NetworkManagerE2eDataRequest,
             serialized,
             _ackProcessorHandle);
 }
@@ -441,7 +441,7 @@ void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServic
 
     //  Ignore the ack entirely
     ActiveMQConnectionManager::enqueueMessage(
-        ActiveMQ::Queues::OutboundQueue::NetworkManagerE2eDataRequest,
+        Qpid::Queues::OutboundQueue::NetworkManagerE2eDataRequest,
         serialized);
 }
 
@@ -476,7 +476,7 @@ void E2eMessenger::cancel(const long id, NetworkManagerCancelRequest::CancelType
     nmMessageFactory.serialize(msg, serialized);
 
     ActiveMQConnectionManager::enqueueMessageWithCallback(
-            ActiveMQ::Queues::OutboundQueue::NetworkManagerRequest,
+            Qpid::Queues::OutboundQueue::NetworkManagerRequest,
             serialized,
             [=](const ActiveMQConnectionManager::MessageDescriptor &md)
             {

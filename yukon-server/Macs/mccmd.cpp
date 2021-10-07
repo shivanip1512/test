@@ -358,7 +358,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, const cha
 
     CTILOG_INFO(dout, "MCCMD done loading cparms");
 
-    PorterConnection = std::make_unique<CtiClientConnection>( Cti::Messaging::ActiveMQ::Queue::porter );
+    PorterConnection = std::make_unique<CtiClientConnection>( Cti::Messaging::Qpid::Queue::porter );
     PorterConnection->setName("MCCMD to Porter");
     PorterConnection->start();
 
@@ -366,7 +366,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, const cha
     auto reg = std::make_unique<CtiRegistrationMsg>("MCCMD", 0, false);
     PorterConnection->WriteConnQue(std::move(reg), CALLSITE);
 
-    VanGoghConnection = std::make_unique<CtiClientConnection>( Cti::Messaging::ActiveMQ::Queue::dispatch );
+    VanGoghConnection = std::make_unique<CtiClientConnection>( Cti::Messaging::Qpid::Queue::dispatch );
     VanGoghConnection->setName("MCCMD to Dispatch");
     VanGoghConnection->start();
 
@@ -374,7 +374,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, const cha
     auto reg2 = std::make_unique<CtiRegistrationMsg>("MCCMD", 0, false);
     VanGoghConnection->WriteConnQue(std::move(reg2), CALLSITE);
 
-    NotificationConnection = std::make_unique<CtiClientConnection>( Cti::Messaging::ActiveMQ::Queue::notification );
+    NotificationConnection = std::make_unique<CtiClientConnection>( Cti::Messaging::Qpid::Queue::notification );
     NotificationConnection->setName("MCCMD to Notification");
     NotificationConnection->start();
 

@@ -94,7 +94,7 @@ boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> RfBatteryNodeDe
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     Rfn::RfnGetChannelConfigRequestMessage  request( rfnId );
 
@@ -241,7 +241,7 @@ YukonError_t RfBatteryNodeDevice::sendConfigurationToNM(const Messaging::Rfn::Rf
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     ActiveMQConnectionManager::SerializedMessage    serialized
         = Cti::Messaging::Serialization::MessageSerializer<Rfn::RfnSetChannelConfigRequestMessage>::serialize( request ); 
@@ -275,7 +275,7 @@ YukonError_t RfBatteryNodeDevice::executeGetConfigIntervals(CtiRequestMsg *pReq,
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     if ( auto configInfo = readConfigurationFromNM( _rfnId ) )
     {

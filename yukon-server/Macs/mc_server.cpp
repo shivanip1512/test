@@ -30,7 +30,7 @@ CtiMCServer::CtiMCServer()
   _file_interface(_schedule_manager),
   _interp_pool(Mccmd_Init, createEscapeCommandSet()),
   _dispatchThread(WorkerThread::Function(&CtiMCServer::dispatchThreadFunc, this).name("DispatchThread")),
-  _dispatchConnection(Cti::Messaging::ActiveMQ::Queue::dispatch)
+  _dispatchConnection(Cti::Messaging::Qpid::Queue::dispatch)
 {
 }
 

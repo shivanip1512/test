@@ -856,8 +856,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     boost::thread porterToPilConnection    (ConnectionThread, &PorterToPil);
 
     Cti::StreamAmqConnection<INMESS, CtiOutMessage> PorterToScanner(
-            Cti::Messaging::ActiveMQ::Queues::OutboundQueue::ScannerInMessages,
-            Cti::Messaging::ActiveMQ::Queues::InboundQueue ::ScannerOutMessages);
+            Cti::Messaging::Qpid::Queues::OutboundQueue::ScannerInMessages,
+            Cti::Messaging::Qpid::Queues::InboundQueue ::ScannerOutMessages);
 
     ScannerNexus = &PorterToScanner;
 
@@ -1021,7 +1021,7 @@ auto MeterProgramValidationService(const amq_cm::MessageDescriptor&) -> std::uni
 
 void registerServices()
 {
-    using Cti::Messaging::ActiveMQ::Queues::InboundQueue;
+    using Cti::Messaging::Qpid::Queues::InboundQueue;
 
     amq_cm::registerReplyHandler(
         InboundQueue::PorterDynamicPaoInfoRequest,

@@ -28,7 +28,7 @@ bool LMGroupMeterDisconnect::sendControl( long controlSeconds )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
 
@@ -61,7 +61,7 @@ bool LMGroupMeterDisconnect::sendStopControl( bool stopImmediately )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
 

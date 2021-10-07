@@ -677,7 +677,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getDispatchConnection()
         if( ! _dispatchConnection || ! _dispatchConnection->isConnectionUsable() )
         {
             //Connect to Dispatch
-            _dispatchConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ));
+            _dispatchConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::Qpid::Queue::dispatch ));
             _dispatchConnection->setName("LM to Dispatch");
             _dispatchConnection->start();
 
@@ -708,7 +708,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getPorterConnection()
         if( ! _porterConnection || ! _porterConnection->isConnectionUsable() )
         {
             //Connect to Porter
-            _porterConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::porter ));
+            _porterConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::Qpid::Queue::porter ));
             _porterConnection->setName("LM to Porter");
             _porterConnection->start();
 
@@ -739,7 +739,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getNotificationConnection
         if( ! _notificationConnection || ! _notificationConnection->isConnectionUsable() )
         {
             //Connect to Porter
-            _notificationConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::notification ));
+            _notificationConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::Qpid::Queue::notification ));
             _notificationConnection->setName("LM to Notification");
             _notificationConnection->start();
         }

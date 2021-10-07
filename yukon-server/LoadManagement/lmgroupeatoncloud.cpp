@@ -33,7 +33,7 @@ bool LMGroupEatonCloud::sendStopControl( bool stopImmediately )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     // Send the stop only if we are currently active, the idea being that if we get here via a no control gear
     //  then we don't need to send a message since we are already stopped.
@@ -87,7 +87,7 @@ bool LMGroupEatonCloud::sendShedControl( long controlMinutes )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     const long controlSeconds = 60 * controlMinutes;
 
@@ -138,7 +138,7 @@ bool LMGroupEatonCloud::sendCycleControl( CycleControlParameters parameters )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
     using Cti::LoadManagement::SmartGearCyclingOption;
 
     const static std::map<SmartGearCyclingOption, LMEatonCloudCycleRequest::CycleType>   supportedCycleTypes
@@ -213,7 +213,7 @@ bool LMGroupEatonCloud::sendNoControl( bool doRestore )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

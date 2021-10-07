@@ -80,7 +80,7 @@ DnpSlave::DnpSlave() :
         DefaultPriority_Other,
         DefaultPriority_Scan,
     },
-    _porterConnection(Cti::Messaging::ActiveMQ::Queue::porter)
+    _porterConnection(Cti::Messaging::Qpid::Queue::porter)
 {
     _porterConnection.setName("FDR DNP Slave to Porter");
 }

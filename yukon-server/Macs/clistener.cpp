@@ -17,7 +17,7 @@ using std::endl;
 CtiMCClientListener::CtiMCClientListener() :
     _doquit(false),
     _conn_in_queue(NULL),
-    _listenerConnection( Cti::Messaging::ActiveMQ::Queue::macs )
+    _listenerConnection( Cti::Messaging::Qpid::Queue::macs )
 {
 }
 

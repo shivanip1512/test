@@ -202,7 +202,7 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     auto rfnBroadcastMessage =
             RfnBroadcastMessage::createMessage(

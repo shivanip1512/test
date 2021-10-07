@@ -99,7 +99,7 @@ CtiPointManager             ScannerPointManager;
 
 extern BOOL ScannerQuit;
 
-CtiClientConnection VanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+CtiClientConnection VanGoghConnection( Cti::Messaging::Qpid::Queue::dispatch );
 
 ULONG ScannerDebugLevel = 0;
 
@@ -397,8 +397,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     }
 
     Cti::StreamAmqConnection<CtiOutMessage, INMESS> PorterNexus(
-        Cti::Messaging::ActiveMQ::Queues::OutboundQueue::ScannerOutMessages,
-        Cti::Messaging::ActiveMQ::Queues::InboundQueue::ScannerInMessages);
+        Cti::Messaging::Qpid::Queues::OutboundQueue::ScannerOutMessages,
+        Cti::Messaging::Qpid::Queues::InboundQueue::ScannerInMessages);
 
     long pointID = ThreadMonitor.getProcessPointID();
     Cti::ServiceMetrics::MetricReporter metricReporter {

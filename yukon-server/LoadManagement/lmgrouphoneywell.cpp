@@ -34,7 +34,7 @@ bool LMGroupHoneywell::sendCycleControl( const long programID,
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
 
@@ -79,7 +79,7 @@ bool LMGroupHoneywell::sendSetpointControl( const long programID,
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
 
@@ -122,7 +122,7 @@ bool LMGroupHoneywell::sendStopControl(bool stopImmediately /* unused */)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     CtiTime now;
 
@@ -147,7 +147,7 @@ bool LMGroupHoneywell::sendShedControl(long controlMinutes)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    using Cti::Messaging::Qpid::Queues::OutboundQueue;
 
     // shed == mandatory cycle at 100% duty cycle with no ramp in/out
 
