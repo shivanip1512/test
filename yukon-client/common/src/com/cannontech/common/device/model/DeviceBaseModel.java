@@ -8,23 +8,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DeviceBaseModel implements YukonDevice {
 
-    private Integer id;
-    private PaoType type;
-    private String name;
+    private Integer deviceId;
+    private PaoType deviceType;
+    private String deviceName;
     private Boolean enable;
 
     public DeviceBaseModel of(LiteYukonPAObject pao) {
-        id = pao.getPaoIdentifier().getPaoId();
-        type = pao.getPaoType();
-        name = pao.getPaoName();
+        deviceId = pao.getPaoIdentifier().getPaoId();
+        deviceType = pao.getPaoType();
+        deviceName = pao.getPaoName();
         enable = (pao.getDisableFlag().equals("N") ? true : false);
         return this;
     }
 
     public DeviceBaseModel(Integer id, PaoType type, String name, Boolean enable) {
-        this.id = id;
-        this.type = type;
-        this.name = name;
+        this.deviceId = id;
+        this.deviceType = type;
+        this.deviceName = name;
         this.enable = enable;
     }
 
@@ -33,27 +33,27 @@ public class DeviceBaseModel implements YukonDevice {
     }
 
     public Integer getId() {
-        return id;
+        return deviceId;
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.deviceId = id;
     }
 
     public PaoType getType() {
-        return type;
+        return deviceType;
     }
 
     public void setType(PaoType type) {
-        this.type = type;
+        this.deviceType = type;
     }
 
     public String getName() {
-        return name;
+        return deviceName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.deviceName = name;
     }
 
     public Boolean getEnable() {
@@ -67,6 +67,6 @@ public class DeviceBaseModel implements YukonDevice {
     @Override
     @JsonIgnore
     public PaoIdentifier getPaoIdentifier() {
-        return new PaoIdentifier(id, type);
+        return new PaoIdentifier(deviceId, deviceType);
     }
 }
