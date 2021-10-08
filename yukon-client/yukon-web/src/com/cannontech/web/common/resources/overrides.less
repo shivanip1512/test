@@ -656,26 +656,24 @@ span.fancytree-node {
     .ui-datepicker-next,
     .ui-datepicker-prev,
     .ui-datepicker-buttonpane button {
-        background: #F3F3F3;
-        border: solid 1px #bbb;
-        border-radius: @border-radius;
-        box-shadow: inset 0px 0px 0px #fff,0 1px 0 rgba(0,0,0,0.07);
-        color: #444;
-        font: bold 12px Helvetica, Arial, sans-serif;
-        font-smoothing: antialiased;
-        height: 26px;
-        line-height: 16px;
-        margin: 0 5px;
-        padding: 4px 8px;
-        transition: border-color .20s;
+        background: #fff;
+        border: solid 1px @primary-button-color;
+        border-radius: 4px;
+        color: @primary-button-color;
+        font-size: 0.875rem !important;
+        font-weight: 600 !important;
+        line-height: 1.75;
+        margin: 0;
+        margin-right: 16px;
+        margin-bottom: 12px;
+        padding: 5px 15px;
+        box-sizing: border-box;
+        transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
         cursor: pointer;
         &:focus {outline: none;}
         
         &.ui-state-hover {
-            background-color: #F4F4F4;
-            border-color: #aaa;
-            box-shadow:0 0 10px #D4D4D4;
-            color: #333;
+            background-color: #f2f8fc;
         }
     }
     

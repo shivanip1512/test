@@ -12,7 +12,7 @@
                 class="fl search-field" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>">
                <input type="hidden" name="itemsPerPage" value="${itemsPerPage}">
             <cti:msg2 key="yukon.common.search" var="searchLabel"/>
-            <cti:button classes="primary action" type="submit" label="${searchLabel}"/>
+            <cti:button classes="primary action ML15" type="submit" label="${searchLabel}"/>
         </form>
     </div>
     
