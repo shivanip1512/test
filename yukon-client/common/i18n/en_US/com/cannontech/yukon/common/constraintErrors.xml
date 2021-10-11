@@ -52,5 +52,7 @@
 <entry key="yukon.common.constrainterror.LOAD_GROUP_CANNOT_CONTROL_IN_WINDOW_NO_ADJUST">CA start: {areaStart|BOTH} CA stop: {areaStop|BOTH} duration {duration} adjust: N</entry>
 <entry key="yukon.common.constrainterror.LOAD_GROUP_NOT_IN_PROGRAM_CONTROL_WINDOW">Load group: {paoName} not in program control window.</entry>
 <entry key="yukon.common.constrainterror.LOAD_GROUP_NOT_ENOUGH_TIME_LEFT_IN_WINDOW">Load group: {paoName} not enough control time left in program control window.</entry>
+<entry key="yukon.common.constrainterror.ECOBEE_CONTROLLED_LESS_THAN_MINIMUM">Ecobee Load groups might be controlled less than the minimum activate time, which is 5 minutes.</entry>
+<entry key="yukon.common.constrainterror.ECOBEE_CONTROL_WINDOW_EXCEEDS_MIDNIGHT">Ecobee Program Control Windows should lie on the same day and should not cross midnight.</entry>
 
 </properties>

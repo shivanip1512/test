@@ -291,7 +291,17 @@ public enum ConstraintError {
 		Map<String, Object> getViolationParameters(ConstraintViolation constraintViolation) {
 			return map("paoName", constraintViolation.getStringParams().get(0));
 		}
-	};
+	},
+	ECOBEE_CONTROLLED_LESS_THAN_MINIMUM(150) {
+            Map<String, Object> getViolationParameters(ConstraintViolation constraintViolation) {
+                    return map();
+        }
+    },
+	ECOBEE_CONTROL_WINDOW_EXCEEDS_MIDNIGHT(151) {
+            Map<String, Object> getViolationParameters(ConstraintViolation constraintViolation) {
+                    return map();
+        }
+    };
 	
 	private final int errorCode;
 	

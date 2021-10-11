@@ -391,6 +391,19 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursAnnually(ULONG proposed_gear, C
  */
 bool CtiLMProgramConstraintChecker::checkMinActivateTime(CtiTime proposed_start, CtiTime proposed_stop)
 {
+    //Ecobee Programs must be controlled for atleast 5 minutes
+    if (_lm_program.getPAOTypeString() == "ECOBEE PROGRAM")
+    {
+        if (300 >= _lm_program.getMinActivateTime()) //5 Minutes
+        {
+            string results = "Ecobee Load groups might be controlled less than their minimum activate time, which is 5 Minutes.";
+            _results.push_back(results);
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_D_EcobeeControlledLessThanMinimum));
+
+            return false;
+        }
+    }
+
     if( _lm_program.getMinActivateTime() == 0 )
     {
         return true;
@@ -405,7 +418,7 @@ bool CtiLMProgramConstraintChecker::checkMinActivateTime(CtiTime proposed_start,
         _results.push_back(result);
 
         _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_D_ControlledLessThanMinimum,
-                                                            numHours));
+            numHours));
 
         return false;
     }
@@ -520,7 +533,7 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(CtiTime proposed_start, 
     {
         proposed_stop = proposed_start;
     }
-
+    
     CtiTime proposedStartTime(proposed_start),
             proposedStopTime(proposed_stop);
 
@@ -548,6 +561,20 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(CtiTime proposed_start, 
             {
                 stop_ctrl_window = window;
             }
+        }
+    }
+
+    //Ecobee DR Events must start and end on the same calendar day
+    if (_lm_program.getPAOTypeString() == "ECOBEE PROGRAM")
+    {
+        if (!(proposedStartTime.date() == proposedStopTime.date()))
+        {
+            string result = "Ecobee Program Control Windows should lie on the same day and should not cross midnight.";
+            _results.push_back(result);
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_D_EcobeeControlWindowExceedsMidnight));
+
+            return false;
         }
     }
 
@@ -749,7 +776,7 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
             return false;
         }
     }
-
+    
     return true;
 }
 

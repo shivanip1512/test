@@ -141,18 +141,9 @@ $( function () {
                             </label><br>
                         </td></tr>
                         <tr>
-                        <c:choose>
-                            <c:when test="${program.paoIdentifier.paoType == 'LM_ECOBEE_PROGRAM'}">
-                            <td>
-                                <dt:dateTime id="stopDate" path="stopDate" maxDate="${now}" value="${backingBean.stopDate}"/>
-                            </td>
-                            </c:when>
-                            <c:otherwise>
                             <td>
                                 <dt:dateTime id="stopDate" path="stopDate" value="${backingBean.stopDate}"/>
                             </td>
-                            </c:otherwise>
-                        </c:choose>
                         </tr>
                     </table>
                 </td>
