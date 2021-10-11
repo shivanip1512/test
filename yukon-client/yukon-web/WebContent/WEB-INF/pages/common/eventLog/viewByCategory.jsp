@@ -96,7 +96,7 @@ $(function () {
 								<tr>
 									<td>${fn:escapeXml(event.eventType)}</td>
 									<td><cti:formatDate type="BOTH" value="${event.dateTime}" /></td>
-									<td><i:inline key="${event.messageSourceResolvable}" htmlEscape="true" /></td>
+									<td class="wbba"><i:inline key="${event.messageSourceResolvable}" htmlEscape="true" /></td>
 								</tr>
 							</c:forEach>
 						</tbody>

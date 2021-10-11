@@ -32,7 +32,7 @@ public class SmartNotificationMessageParameters implements Serializable {
     
     public SmartNotificationMessageParameters(SmartNotificationEventType type, SmartNotificationMedia media, 
                                               SmartNotificationVerbosity verbosity, Collection<String> recipients, 
-                                              Collection<SmartNotificationEvent> events, int eventPeriodMinutes, ProcessingType processingType) {
+                                              Collection<SmartNotificationEvent> events, ProcessingType processingType) {
         this.type = type;
         this.media = media;
         this.verbosity = verbosity;

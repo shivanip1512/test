@@ -32,7 +32,6 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
-import com.google.common.collect.Sets;
 
 public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
     private static final Logger log = YukonLogManager.getLogger(EcobeeCommandStrategy.class);
@@ -91,25 +90,14 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                 case TEMP_OUT_OF_SERVICE:
 
                     groupIds = getGroupId(command.getDevice().getInventoryID());
-                    // Cancel the demand response for the thermostat and then Remove the thermostat from the groups if event API call is successful.
-                    boolean cancelledAnyDREvents = ecobeeZeusCommunicationService.cancelDemandResponse(groupIds, serialNumber);
-                    if(cancelledAnyDREvents) {
-                        // Do not remove Device to Zeus group mapping. So pass updateDeviceMapping as false.
-                        ecobeeZeusCommunicationService.unEnroll(Sets.newHashSet(groupIds), serialNumber, device.getInventoryID(),
-                            false);
-                    }
+                    // Cancel the demand response events for the thermostat.
+                    ecobeeZeusCommunicationService.cancelDemandResponse(groupIds, serialNumber);
+                    // Opt out the device. Remove the device from zeus groups.
+                    ecobeeZeusCommunicationService.optOut(serialNumber, device.getInventoryID());
                     break;
                 case CANCEL_TEMP_OUT_OF_SERVICE:
-
-                    // Add the thermostat to the group when user cancel the opt out.
-                    // Do not remove Device to Zeus group mapping. So pass updateDeviceMapping as false.
-                    groupIds = getGroupId(inventoryId);
-                    groupIds.stream().forEach(tempGroupId -> {
-                    int tempProgramId = ecobeeZeusGroupService.getProgramIdToEnroll(inventoryId, tempGroupId);
-                    ecobeeZeusCommunicationService.enroll(tempGroupId, serialNumber, device.getInventoryID(), tempProgramId,
-                            false);
-                    });
-
+                    // Cancel opt out for the device. Add the device to the zeus groups.
+                    ecobeeZeusCommunicationService.cancelOptOut(serialNumber, device.getInventoryID());
                     break;
                 case PERFORMANCE_VERIFICATION:
                 case READ_NOW:
