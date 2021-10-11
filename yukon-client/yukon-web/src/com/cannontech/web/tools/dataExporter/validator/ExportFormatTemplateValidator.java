@@ -257,7 +257,7 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                         continue;
                     }
                     if (applicableFieldList.contains(fieldName)) {
-                        if (fieldValue == null || fieldValue.toString().isBlank()) {
+                        if (fieldValue == null || fieldValue.toString().isBlank() && !errors.hasFieldErrors("pattern")) {
                             errors.rejectValue(fieldName, requiredKey, new Object[] { fieldName, type }, "");
                         }
                     } else {

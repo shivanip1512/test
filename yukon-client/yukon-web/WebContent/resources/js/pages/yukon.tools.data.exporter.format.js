@@ -81,79 +81,43 @@ yukon.tools.dataExporterFormat = (function () {
         readingPatternCustom = popup.find('#reading-pattern-input'),
 				readingPattern= popup.find('.reading-pattern-select'),
         timestampPatternCustom = popup.find('#timestamp-pattern-input'),
-				timestampPattern = popup.find('.timestamp-pattern-select'),
-				attributeNamePattern= popup.find('#field-value-pattern-select'),
+		timestampPattern = popup.find('.timestamp-pattern-select'),
+	    attributeNamePattern= popup.find('#field-value-pattern-select'),
         field = JSON.parse(popup.find('#field-select').val()).type,
         attributeField = popup.find('#attribute-field').val(),
-		timestampPatternCustomHasDn= timestampPatternCustom.hasClass('dn'),
+		timestampPatternCustomIsVisible= !timestampPatternCustom.hasClass('dn'),
 		timestampPatternCustomHasError=timestampPatternCustom.hasClass('error'),
-		readingPatternCustomHasDn= readingPatternCustom.hasClass('dn'),
-		readingPatternCustomHasError= readingPatternCustom.hasClass('error');
+		readingPatternCustomIsVisible= !readingPatternCustom.hasClass('dn'),
+		readingPatternCustomHasError= readingPatternCustom.hasClass('error'),
+	    fieldIsAttribute = field === 'ATTRIBUTE';
 
-        if (field === 'ATTRIBUTE') {
-        if ((!timestampPatternCustomHasDn || timestampPatternCustomHasError) && (attributeField === 'TIMESTAMP')) {
-            timestampPattern.prop('disabled', true);
-            readingPatternCustom.prop('disabled', true);
-            readingPattern.prop('disabled', true);
-            attributeNamePattern.prop('disabled', true);
+		if ((fieldIsAttribute && attributeField === 'TIMESTAMP') ||
+				(!fieldIsAttribute && (field === 'POINT_TIMESTAMP' || field === 'RUNTIME'))) {
+				timestampPattern.prop('disabled', timestampPatternCustomIsVisible || timestampPatternCustomHasError);
+				timestampPatternCustom.prop('disabled', !(timestampPatternCustomIsVisible || timestampPatternCustomHasError));
+				readingPatternCustom.prop('disabled', true);
+				readingPattern.prop('disabled', true);
+				attributeNamePattern.prop('disabled', true);
 
-        }
-        else if (timestampPatternCustomHasDn && (attributeField === 'TIMESTAMP')) {
-            timestampPatternCustom.prop('disabled', true);
-            readingPatternCustom.prop('disabled', true);
-            readingPattern.prop('disabled', true),
-            attributeNamePattern.prop('disabled', true);
-        }
-        if ((!readingPatternCustomHasDn || readingPatternCustomHasError) && attributeField === 'VALUE') {
-            readingPattern.prop('disabled', true);
-            timestampPatternCustom.prop('disabled', true);
-            timestampPattern.prop('disabled', true);
-            attributeNamePattern.prop('disabled', true);
+			}
 
-        }
-        else if (readingPatternCustomHasDn && attributeField === 'VALUE') {
-            readingPatternCustom.prop('disabled', true);
-            timestampPatternCustom.prop('disabled', true);
-            timestampPattern.prop('disabled', true);
-            attributeNamePattern.prop('disabled', true);
-        }
+		else if ((fieldIsAttribute && attributeField === 'VALUE') ||
+				(!fieldIsAttribute && field === 'POINT_VALUE')) {
+				readingPattern.prop('disabled', readingPatternCustomIsVisible || readingPatternCustomHasError);
+				readingPatternCustom.prop('disabled', !(readingPatternCustomIsVisible || readingPatternCustomHasError));
+				timestampPatternCustom.prop('disabled', true);
+				timestampPattern.prop('disabled', true);
+				attributeNamePattern.prop('disabled', true);
 
-        }
-        else {
-        if ((!timestampPatternCustomHasDn || timestampPatternCustomHasError) && (field === 'POINT_TIMESTAMP' || field === 'RUNTIME')) {
-            timestampPattern.prop('disabled', true);
-            readingPatternCustom.prop('disabled', true);
-            readingPattern.prop('disabled', true);
-            attributeNamePattern.prop('disabled', true);
-        }
-        else if (timestampPatternCustomHasDn && (field === 'POINT_TIMESTAMP' || field === 'RUNTIME')) {
-            timestampPatternCustom.prop('disabled', true);
-            readingPatternCustom.prop('disabled', true);
-            attributeNamePattern.prop('disabled', true);
-            readingPattern.prop('disabled', true);
-        }
-        if ((!readingPatternCustomHasDn || readingPatternCustomHasError) && field === 'POINT_VALUE') {
-            readingPattern.prop('disabled', true);
-            timestampPatternCustom.prop('disabled', true);
-            timestampPattern.prop('disabled', true);
-            attributeNamePattern.prop('disabled', true);
-        }
-        else if (readingPatternCustomHasDn && field === 'POINT_VALUE') {
-            readingPatternCustom.prop('disabled', true);
-            timestampPatternCustom.prop('disabled', true);
-            timestampPattern.prop('disabled', true);
-            attributeNamePattern.prop('disabled', true);
-        }
-        else if (field === 'ATTRIBUTE_NAME') {
-            timestampPatternCustom.prop('disabled', true);
-            readingPatternCustom.prop('disabled', true);
-            timestampPattern.prop('disabled', true);
-            readingPattern.prop('disabled', true);
+			}
+		else if (!fieldIsAttribute && field === 'ATTRIBUTE_NAME') {
+				readingPatternCustom.prop('disabled', true);
+				timestampPatternCustom.prop('disabled', true);
+				timestampPattern.prop('disabled', true);
+				readingPattern.prop('disabled', true);
+			}
 
-        }
-        }
-
-    },
+		},
 
     /*For Attribute/Field Setup  : This function removes binding of pattern errror to both textbox and  timestamp pattern/reading pattern and shows only one of them*/
     removePatternDoubleError = function() {
@@ -161,64 +125,33 @@ yukon.tools.dataExporterFormat = (function () {
         timestampPattern = popup.find('.timestamp-pattern-select'),
         readingPattern = popup.find('.reading-pattern-select'),
         field = JSON.parse($('#format-popup').find('#field-select').val()).type,
-        attributeField = popup.find('#attribute-field').val();
+        attributeField = popup.find('#attribute-field').val(),
+	    fieldIsAttribute = field == 'ATTRIBUTE';
 
-        if (field === 'ATTRIBUTE') {
-        if (attributeField === 'TIMESTAMP') {
-        var timestampPatternError = popup.find('#timestampPatternErrors').val();
-        if (timestampPatternError) {
-        var timestampPatternRow = popup.find('#timestamp-pattern'),
-                firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
-            firstTimestampPatternError.prev('br').remove();
-            timestampPattern.removeClass("error");
-            //default value of respnse text is mm/dd/yy , setting it to custom
-            popup.find('.timestamp-pattern-select').val('CUSTOM');
-            $('#timestamp-pattern-input').show();
-            timestampPatternRow.find("span[id='pattern.errors']");
-            }
-        }
-        else if (attributeField === 'VALUE') {
-            var readingPatternError = popup.find('#readingPatternErrors').val();
-            if (readingPatternError) {
-            var readingPatternRow = popup.find('#reading-pattern'),
-                firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
-            firstReadingPatternError.prev('br').remove();
-            readingPattern.removeClass("error");
-            popup.find('.reading-pattern-select').val('CUSTOM');
-            $('#reading-pattern-input').show();
-            readingPatternRow.find("span[id='pattern.errors']");
-            }
-        }
-        }
-        else {
-        if (field === 'POINT_TIMESTAMP' || field === 'RUNTIME') {
-            var timestampPatternError = popup.find('#timestampPatternErrors').val();
-            if (timestampPatternError) {
-            var timestampPatternRow = popup.find('#timestamp-pattern'),
-                firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
-            firstTimestampPatternError.prev('br').remove();
-            timestampPattern.removeClass("error");
-            //default value of respnse text is mm/dd/yy , setting it to custom
-            $('#format-popup').find('.timestamp-pattern-select').val('CUSTOM');
-            $('#timestamp-pattern-input').show();
-            timestampPatternRow.find("span[id='pattern.errors']");
-            }
-        }
-        else if (field === 'POINT_VALUE') {
-            var readingPatternError = popup.find('#readingPatternErrors').val();
-            if (readingPatternError) {
-            var readingPatternRow = popup.find('#reading-pattern'),
-                firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
-            firstReadingPatternError.prev('br').remove();
-            readingPattern.removeClass("error");
-            popup.find('.reading-pattern-select').val('CUSTOM');
-            $('#reading-pattern-input').show();
-            readingPatternRow.find("span[id='pattern.errors']");
-            }
-        }
-        }
-
-
+		if ((fieldIsAttribute && attributeField === 'TIMESTAMP') || (!fieldIsAttribute && (field === 'POINT_TIMESTAMP' || field === 'RUNTIME'))) {
+			var timestampPatternError = popup.find('#timestampPatternErrors').val();
+			if (timestampPatternError) {
+				var timestampPatternRow = popup.find('#timestamp-pattern'),
+					firstTimestampPatternError = timestampPatternRow.find("span[id='pattern.errors']").first();
+				firstTimestampPatternError.prev('br').remove();
+				timestampPattern.removeClass("error");
+				//default value of respnse text is mm/dd/yy , setting it to custom
+				popup.find('.timestamp-pattern-select').val('CUSTOM');
+				$('#timestamp-pattern-input').show();
+			}
+		}
+		else if ((fieldIsAttribute && attributeField === 'VALUE') || (!fieldIsAttribute && field === 'POINT_VALUE')) {
+			var readingPatternError = popup.find('#readingPatternErrors').val();
+			if (readingPatternError) {
+				var readingPatternRow = popup.find('#reading-pattern'),
+					firstReadingPatternError = readingPatternRow.find("span[id='pattern.errors']").first();
+				firstReadingPatternError.prev('br').remove();
+				readingPattern.removeClass("error");
+				popup.find('.reading-pattern-select').val('CUSTOM');
+				$('#reading-pattern-input').show();
+			}
+		}
+        
     },
 
     mod = {
@@ -684,14 +617,19 @@ yukon.tools.dataExporterFormat = (function () {
         $(document).on('change', '.timestamp-pattern-select, .reading-pattern-select', function(ev) {
             var val = $(this).val(),
             customField = $(this).next(),
-            pattern = $('#pattern');
-
+            pattern = $('#pattern'),
+            timestampPatternRow = $('#format-popup').find('#timestamp-pattern'),
+			readingPatternRow=  $('#format-popup').find('#reading-pattern');
             if (val === 'CUSTOM') {
             customField.val('');
             customField.show();
             customField.removeClass('dn');
             pattern.val(customField.val());
             } else {
+			timestampPatternRow.find("span[id='pattern.errors']").remove();
+			readingPatternRow.find("span[id='pattern.errors']").remove();
+			$('#timestamp-pattern-input').removeClass('error');
+			$('#reading-pattern-input').removeClass('error');
             customField.addClass('dn');
             customField.hide();
             pattern.val($(this).find('option:selected').data('pattern'));
