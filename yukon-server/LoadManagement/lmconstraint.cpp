@@ -418,7 +418,7 @@ bool CtiLMProgramConstraintChecker::checkMinActivateTime(CtiTime proposed_start,
         _results.push_back(result);
 
         _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_D_ControlledLessThanMinimum,
-            numHours));
+                                                            numHours));
 
         return false;
     }
@@ -533,7 +533,7 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(CtiTime proposed_start, 
     {
         proposed_stop = proposed_start;
     }
-    
+
     CtiTime proposedStartTime(proposed_start),
             proposedStopTime(proposed_stop);
 
@@ -776,7 +776,7 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
             return false;
         }
     }
-    
+
     return true;
 }
 
