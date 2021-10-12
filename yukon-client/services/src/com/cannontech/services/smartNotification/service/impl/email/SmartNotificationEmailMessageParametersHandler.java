@@ -78,8 +78,7 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
                                                  return emailBuilders.get(parameters.getType())
                                                                      .buildEmail(parameters, intervalMinutes);
                                              } catch (MessagingException e) {
-                                                 snLogger.error("Error building message for notification parameters: " 
-                                                           + parameters, e);
+                                                 snLogger.error("Error building message for notification parameters:{}", parameters, e);
                                                  return null;
                                              }
                                          })
