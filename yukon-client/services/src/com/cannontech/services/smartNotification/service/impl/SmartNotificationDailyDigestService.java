@@ -74,7 +74,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
                 .getDailyDigestDeviceDataMonitorGrouped(digestTime);
         
         
-        List<List<SmartNotificationMessageParameters>> allMessages = getAllMassages(digestTime, subscriptions, ddmSubscriptions);
+        List<List<SmartNotificationMessageParameters>> allMessages = getAllMassages(digestTime, subscriptions, ddmSubscriptions, "One email per person");
        
         //group by recipient
         Map<String, List<SmartNotificationMessageParameters>> messages = new HashMap<>();
@@ -109,13 +109,13 @@ public class SmartNotificationDailyDigestService implements MessageListener {
                 .getDailyDigestUngrouped(digestTime);
         SetMultimap<Integer, SmartNotificationSubscription> ddmSubscriptions = subscriptionDao
                 .getDailyDigestDeviceDataMonitorUngrouped(digestTime);
-        List<List<SmartNotificationMessageParameters>> messages = getAllMassages(digestTime, subscriptions, ddmSubscriptions); 
+        List<List<SmartNotificationMessageParameters>> messages = getAllMassages(digestTime, subscriptions, ddmSubscriptions, "One email per type");
         messages.forEach(messageParameters -> deciderService.putMessagesOnAssemblerQueue(messageParameters, 0, false, digestTime));
     }
 
     private List<List<SmartNotificationMessageParameters>> getAllMassages(String digestTime,
             SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> subscriptions,
-            SetMultimap<Integer, SmartNotificationSubscription> ddmSubscriptions) {
+            SetMultimap<Integer, SmartNotificationSubscription> ddmSubscriptions, String debugString) {
 
         Range<Instant> range = getDailyRange();
         List<List<SmartNotificationMessageParameters>> allMessages = new ArrayList<>();
@@ -124,6 +124,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
             List<SmartNotificationEvent> events = getDecider(type).validate(eventDao.getEventsByTypeAndDate(type, range));
             List<SmartNotificationMessageParameters> messageParameters = getMessageParameters(type, subscriptions.get(type),
                     events);
+            snLogger.info("DigestTime:{} ({}) Type:{} MessageParameters:{}", digestTime, debugString, type, messageParameters.size());
             allMessages.add(messageParameters);
         }
 
@@ -133,6 +134,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
                     .validate(eventDao.getEventsByMonitorIdAndDate(monitorId, range));
             List<SmartNotificationMessageParameters> messageParameters = getMessageParameters(DEVICE_DATA_MONITOR,
                     ddmSubscriptions.get(monitorId), events);
+            snLogger.info("DigestTime:{} ({}) MonitorId:{} MessageParameters:{}", digestTime, debugString, monitorId, messageParameters.size());
             allMessages.add(messageParameters);
         }
         return allMessages;

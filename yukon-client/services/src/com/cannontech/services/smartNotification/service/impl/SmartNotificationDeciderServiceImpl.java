@@ -43,7 +43,7 @@ import com.google.common.collect.Multimap;
 public class SmartNotificationDeciderServiceImpl implements SmartNotificationDeciderService, MessageListener {
         
     private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger();
-
+    
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired protected SmartNotificationEventDao eventDao;
@@ -129,7 +129,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             int interval = result.getInterval();
             List<SmartNotificationMessageParameters> messages = result.getMessageParameters();
             SmartNotificationMessageParametersMulti msg = new SmartNotificationMessageParametersMulti(messages, interval, false);
-            snLogger.info("Put on assembler queue:{}" + msg.loggingString(snLogger.getLevel()));
+            snLogger.info("Put on assembler queue:{}", msg.loggingString(snLogger.getLevel()));
             jmsTemplate.convertAndSend(msg);
         }
     }

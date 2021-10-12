@@ -67,7 +67,7 @@ public class SmartNotificationMessageAssembler implements MessageListener {
                 if (builder == null) {
                     throw new NotFoundException("Unable to send notification - unsupported media type: " + parametersMulti.getMedia());
                 }
-                snLogger.info("Sending individual messages for interval:{}. Message parameters{}: ",  parametersMulti.loggingString(snLogger.getLevel()), intervalMinutes, parametersMulti.loggingString(snLogger.getLevel()));
+                snLogger.info("Sending individual messages for interval:{}. Message parameters:{}", intervalMinutes, parametersMulti.loggingString(snLogger.getLevel()));
                 builder.buildAndSend(parameters, intervalMinutes);
             }
         }
