@@ -391,19 +391,6 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursAnnually(ULONG proposed_gear, C
  */
 bool CtiLMProgramConstraintChecker::checkMinActivateTime(CtiTime proposed_start, CtiTime proposed_stop)
 {
-    //Ecobee Programs must be controlled for atleast 5 minutes
-    if (_lm_program.getPAOTypeString() == "ECOBEE PROGRAM")
-    {
-        if (300 >= _lm_program.getMinActivateTime()) //5 Minutes
-        {
-            string results = "Ecobee Load groups might be controlled less than their minimum activate time, which is 5 Minutes.";
-            _results.push_back(results);
-            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_D_EcobeeControlledLessThanMinimum));
-
-            return false;
-        }
-    }
-
     if( _lm_program.getMinActivateTime() == 0 )
     {
         return true;
@@ -412,13 +399,13 @@ bool CtiLMProgramConstraintChecker::checkMinActivateTime(CtiTime proposed_start,
     ULONG run_time = proposed_stop.seconds() - proposed_start.seconds();
     if( !(run_time >= _lm_program.getMinActivateTime()) )
     {
-        double numHours = (double)_lm_program.getMinActivateTime()/60.0/60.0;
+        double numSeconds = (double)_lm_program.getMinActivateTime();
 
-        string result = "Load groups might be controlled less than their minimum activate time, which is " + CtiNumStr(numHours) + " hours.";
+        string result = "Load groups might be controlled less than their minimum activate time, which is " + CtiNumStr(numSeconds) + " seconds.";
         _results.push_back(result);
 
         _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_D_ControlledLessThanMinimum,
-                                                            numHours));
+                                                            numSeconds));
 
         return false;
     }
@@ -565,14 +552,14 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(CtiTime proposed_start, 
     }
 
     //Ecobee DR Events must start and end on the same calendar day
-    if (_lm_program.getPAOTypeString() == "ECOBEE PROGRAM")
+    if ( _lm_program.controlNotAllowedToSpanMidnight() )
     {
-        if (!(proposedStartTime.date() == proposedStopTime.date()))
+        if (! (proposedStartTime.date() == proposedStopTime.date()) )
         {
-            string result = "Ecobee Program Control Windows should lie on the same day and should not cross midnight.";
+            string result = "Program control window should not span midnight.";
             _results.push_back(result);
 
-            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_D_EcobeeControlWindowExceedsMidnight));
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_NP_ControlWindowSpansMidnight));
 
             return false;
         }

@@ -49,7 +49,7 @@ public enum ConstraintError {
 	},
 	CONTROLLED_LESS_THAN_MINIMUM(107) {
 		Map<String, Object> getViolationParameters(ConstraintViolation constraintViolation) {
-			return map("numHours", constraintViolation.getDoubleParams().get(0));
+			return map("numSeconds", constraintViolation.getDoubleParams().get(0));
 		}
 	},
 	CONTROLLED_MORE_THAN_MAXIMUM(108) {
@@ -292,12 +292,7 @@ public enum ConstraintError {
 			return map("paoName", constraintViolation.getStringParams().get(0));
 		}
 	},
-	ECOBEE_CONTROLLED_LESS_THAN_MINIMUM(150) {
-            Map<String, Object> getViolationParameters(ConstraintViolation constraintViolation) {
-                    return map();
-        }
-    },
-	ECOBEE_CONTROL_WINDOW_EXCEEDS_MIDNIGHT(151) {
+	PROGRAM_CONTROL_WINDOW_EXCEEDS_MIDNIGHT(150) {
             Map<String, Object> getViolationParameters(ConstraintViolation constraintViolation) {
                     return map();
         }
