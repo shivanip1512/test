@@ -185,7 +185,7 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
             break;
         case ATTRIBUTE_NAME:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue,pattern);
+                    missingAttributeValue, pattern);
             break;
         case DEVICE_TYPE:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar);
@@ -195,14 +195,14 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
             break;
         case POINT_TIMESTAMP:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue,pattern);
+                    missingAttributeValue, pattern);
             break;
         case POINT_VALUE:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue, roundingMode,pattern);
+                    missingAttributeValue, roundingMode, pattern);
             break;
         case RUNTIME:
-            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar,pattern);
+            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, pattern);
             break;
         }
 
@@ -257,7 +257,7 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                         continue;
                     }
                     if (applicableFieldList.contains(fieldName)) {
-                        if (fieldValue == null || fieldValue.toString().isBlank() && !errors.hasFieldErrors("pattern")) {
+                        if (fieldValue == null || fieldValue.toString().isBlank() && !errors.hasFieldErrors(pattern)) {
                             errors.rejectValue(fieldName, requiredKey, new Object[] { fieldName, type }, "");
                         }
                     } else {

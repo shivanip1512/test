@@ -355,12 +355,9 @@ public class DataExporterFormatController {
             FieldError patternError = result.getFieldError("pattern");
             if (patternError != null && exportField.isTimestamp()) {
                 model.addAttribute("timestampPatternError", accessor.getMessage(patternError));
-               // result.getFieldErrors();
             }
-            patternError = result.getFieldError("pattern");
             if (patternError != null && exportField.isValue()) {
                 model.addAttribute("readingPatternError", accessor.getMessage(patternError));
-               // result.getFieldErrors().remove(patternError);
             }
             
             return "data-exporter/format/field.jsp";
