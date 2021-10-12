@@ -164,29 +164,29 @@ select,
 textarea {
     background: #f7f8f8;
     border: 1px solid #f7f8f8;
-    border-bottom-color: #ccc;
-    
+    border-bottom-color: #d8dbdc;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-    font-size: 16px;
-    
     margin: 0;
-    padding: 23px 12px 6px;
-    
+    padding: 21px 12px 6px;
     box-sizing: content-box;
     transition: border .1s ease-in-out,background-color .1s ease-in-out;
-    
+    font-weight: 400;
+	line-height: 1.1876rem;
+	font-size: 1rem;
+	color: #424e54;
     
     &:not([readonly]):hover {
         border: 1px solid #f1f2f2;
         background: #f1f2f2;
-        border-bottom-color : #858585;
+        border-bottom-color : #424e54;
     }
     
     &:not([readonly]):focus {
         border: 1px solid #f7f8f8;
         outline: none;
-        border-bottom-color : @primary-color;
+    	padding: 20px 12px 6px;
+		border-bottom: 2px solid @primary-color;
     }
     
     &.left, &.middle {
@@ -585,6 +585,11 @@ table.matrix{
     td, th { 
         line-height: 18px;
     }
+
+	td input {
+		font-size: 13px;
+		padding-top: 12px !important;
+	}
     
     tr.focused, 
     tr.focused:nth-child(2n) { 
@@ -882,7 +887,6 @@ ul.selectable li.selected {
 .action-area:before, .action-area:after {content: " ";display: table;}
 .action-area:after {clear: both;}
 .action-area, .page-action-area, .button-stack li {line-height: @form-control-height;}
-.action-area select:not([multiple]), .page-action-area select:not([multiple]) {height: @form-control-height;} 
 .action-area input[type=text], .page-action-area input[type=text] {line-height: 22px;}
 .action-area button, .action-area .button, .action-area select:not([multiple]), .action-area .chosen-container-single {float: right;}
 .ui-dialog .action-area {padding: 0 10px;}
@@ -1113,7 +1117,7 @@ ol.error{ list-style-type: none; }
 input.error,
 select.error {
     background-color: #f7f8f8;
-    border-bottom-color: @red;
+    border-bottom-color: @red !important;
 }
 
 textarea.error {
