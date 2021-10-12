@@ -24,10 +24,10 @@ public class DeviceBaseModel implements YukonDevice {
         return this;
     }
 
-    public DeviceBaseModel(Integer id, PaoType type, String name, Boolean enable) {
-        this.deviceId = id;
-        this.deviceType = type;
-        this.deviceName = name;
+    public DeviceBaseModel(Integer deviceId, PaoType deviceType, String deviceName, Boolean enable) {
+        this.deviceId = deviceId;
+        this.deviceType = deviceType;
+        this.deviceName = deviceName;
         this.enable = enable;
     }
 
@@ -35,28 +35,27 @@ public class DeviceBaseModel implements YukonDevice {
         super();
     }
 
-    public Integer getId() {
+    public Integer getDeviceId() {
         return deviceId;
     }
 
-    public void setId(Integer id) {
-        this.deviceId = id;
+    public void setDeviceId(Integer deviceId) {
+        this.deviceId = deviceId;
     }
 
-    public PaoType getType() {
+    public PaoType getDeviceType() {
         return deviceType;
     }
-
-    public void setType(PaoType type) {
-        this.deviceType = type;
+    public void setDeviceType(PaoType deviceType) {
+        this.deviceType = deviceType;
     }
 
-    public String getName() {
+    public String getDeviceName() {
         return deviceName;
     }
 
-    public void setName(String name) {
-        this.deviceName = name;
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 
     public Boolean getEnable() {
