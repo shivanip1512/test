@@ -234,4 +234,36 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         return jdbcTemplate.query(sql, TypeRowMapper.STRING);
 
     }
+
+    @Override
+    public List<String> getZeusGroupIdsForInventoryId(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EcobeeGroupId FROM ZeusGroupInventoryMapping");
+        sql.append("WHERE InventoryID").eq(inventoryId);
+        return jdbcTemplate.query(sql, TypeRowMapper.STRING);
+    }
+
+    @Override
+    public void deleteZeusGroupMapping(String zeusGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM LMGroupZeusMapping WHERE EcobeeGroupId").eq(zeusGroupId);
+        jdbcTemplate.update(sql);
+    }
+
+    @Override
+    public void updateZeusGroupId(String oldZeusGroupId, String newZeusGroupId) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        updateSql.append("SET EcobeeGroupId").eq(newZeusGroupId);
+        updateSql.append("WHERE EcobeeGroupId").eq(oldZeusGroupId);
+
+        SqlStatementBuilder lMGroupZeusMappingSql = new SqlStatementBuilder();
+        lMGroupZeusMappingSql.append("UPDATE LMGroupZeusMapping");
+        lMGroupZeusMappingSql.append(updateSql);
+        jdbcTemplate.update(lMGroupZeusMappingSql);
+
+        SqlStatementBuilder zeusGroupInventoryMappingSql = new SqlStatementBuilder();
+        zeusGroupInventoryMappingSql.append("UPDATE ZeusGroupInventoryMapping");
+        zeusGroupInventoryMappingSql.append(updateSql);
+        jdbcTemplate.update(zeusGroupInventoryMappingSql);
+    }
 }

@@ -77,4 +77,8 @@ public interface SmartNotificationSubscriptionDao {
      * Returns list of subscribed users for a smart notification event type
      */
     List<String> getSubscribedEmails(SmartNotificationEventType type);
+
+    SetMultimap<Integer, SmartNotificationSubscription> getDailyDigestDeviceDataMonitorGrouped(String runTimeInMinutes);
+
+    SetMultimap<Integer, SmartNotificationSubscription> getDailyDigestDeviceDataMonitorUngrouped(String runTimeInMinutes);
 }

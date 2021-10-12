@@ -33,7 +33,7 @@
                 <cti:param name="date" value="${backingBean.date}"/>
                 <cti:param name="alarmFilter" value="${backingBean.alarmFilter}"/>
             </cti:url>               
-            <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel"/>
+            <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel" classes="ML15"/>
         </c:if>
     </div>
     <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
