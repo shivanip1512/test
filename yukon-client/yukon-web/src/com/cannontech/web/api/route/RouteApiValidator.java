@@ -27,8 +27,8 @@ public class RouteApiValidator<T extends RouteBaseModel<?>> extends SimpleValida
         String strRouteId = ServletUtils.getPathVariable("id");
         Integer id = strRouteId == null ? null : Integer.valueOf(strRouteId);
 
-        if (route.getName() != null) {
-            routeApiValidatorHelper.validateRouteName(errors, route.getName(), id);
+        if (route.getDeviceName() != null) {
+            routeApiValidatorHelper.validateRouteName(errors, route.getDeviceName(), id);
         }
 
         if (route.getSignalTransmitterId() != null) {
