@@ -132,7 +132,7 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
             hardware.setGuid(deviceDao.getGuid(hardware.getDeviceId()));
             hardware.setFirmwareVersion(paoDao.findPaoInfoValue(hardware.getDeviceId(), InfoKey.FIRMWARE_VERSION));
         } catch (NotFoundException nfe) {
-            log.error("GUID is not found device id:" + hardware.getDeviceId(), nfe);
+            log.debug("GUID is not found device id:" + hardware.getDeviceId());
             hardware.setGuid("");
         }
     }
