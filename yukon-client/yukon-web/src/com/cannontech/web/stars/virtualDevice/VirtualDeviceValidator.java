@@ -22,11 +22,11 @@ public class VirtualDeviceValidator extends SimpleValidator<VirtualDeviceBaseMod
     @Override
     protected void doValidation(VirtualDeviceBaseModel virtualDevice, Errors errors) {
         String paoId = null;
-        if (virtualDevice.getId() != null) {
-            paoId = Integer.toString(virtualDevice.getId());
+        if (virtualDevice.getDeviceId() != null) {
+            paoId = Integer.toString(virtualDevice.getDeviceId());
         }
         String nameLabel = accessor.getMessage("yukon.common.name");
-        yukonValidationHelper.validatePaoName(virtualDevice.getName(), virtualDevice.getType(), errors, nameLabel, paoId);
+        yukonValidationHelper.validatePaoName(virtualDevice.getDeviceName(), virtualDevice.getDeviceType(), errors, nameLabel, paoId);
         if (virtualDevice instanceof VirtualMeterModel) {
             VirtualMeterModel meter = (VirtualMeterModel) virtualDevice;
             String meterNumberLabel = accessor.getMessage("yukon.common.meterNumber");
