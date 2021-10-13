@@ -14,7 +14,7 @@ post-get-operation:
             
           examples:
             Attributes:
-              $ref: '../schemas/attributesSchema.yaml#/components/examples/Attributes' 
+              $ref: '../schemas/attributesSchema.yaml#/components/examples/Attributes Request' 
            
       required: true
     responses:
@@ -23,11 +23,11 @@ post-get-operation:
           content:
             application/json:
               schema:
-                $ref: '../schemas/attributesSchema.yaml#/attributes'
+                $ref: '../schemas/attributesSchema.yaml#/attributes Response Schema'
                  
               examples:
                 Attributes:
-                  $ref: '../schemas/attributesSchema.yaml#/components/examples/Attributes' 
+                  $ref: '../schemas/attributesSchema.yaml#/components/examples/Attributes Response' 
                
   get:
     tags:
@@ -42,7 +42,7 @@ post-get-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/attributesSchema.yaml#/attributes'
+              $ref: '../schemas/attributesSchema.yaml#/attributes Response Schema'
             
             examples:
               List Attributes:
@@ -71,11 +71,11 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/attributesSchema.yaml#/attributes'
+              $ref: '../schemas/attributesSchema.yaml#/attributes Response Schema'
               
             examples:
               Attributes:
-                $ref: '../schemas/attributesSchema.yaml#/components/examples/Attributes' 
+                $ref: '../schemas/attributesSchema.yaml#/components/examples/Attributes Response' 
           
   patch:
     tags:
@@ -99,7 +99,7 @@ get-update-delete-operation:
            
           examples:
             Attributes:
-              $ref: '../schemas/attributesSchema.yaml#/components/examples/Attributes' 
+              $ref: '../schemas/attributesSchema.yaml#/components/examples/Attributes Request' 
            
       required: true
     responses:
@@ -108,11 +108,11 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/attributesSchema.yaml#/attributes'
+              $ref: '../schemas/attributesSchema.yaml#/attributes Response Schema'
             
             examples:
               Attributes:
-                $ref: '../schemas/attributesSchema.yaml#/components/examples/Attributes' 
+                $ref: '../schemas/attributesSchema.yaml#/components/examples/Attributes Response' 
           
   delete:
     tags:
