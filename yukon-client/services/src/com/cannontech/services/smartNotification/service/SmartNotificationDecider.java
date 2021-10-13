@@ -48,7 +48,7 @@ public abstract class SmartNotificationDecider {
     private static final String DEFAULT_INTERVALS = "0,1,3,5,15,30";
     private static Intervals intervals;
 
-    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger();
+    private static Logger snLogger = YukonLogManager.getCommsLogger();
 
     // cache key/ wait time
     /*

@@ -21,7 +21,7 @@ import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.google.common.collect.Lists;
 
 public class SmartNotificationEventCreationServiceImpl implements SmartNotificationEventCreationService {
-    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger();
+    private static Logger snLogger = YukonLogManager.getCommsLogger();
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private YukonJmsTemplate template;
 

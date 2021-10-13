@@ -45,7 +45,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private List<SmartNotificationDecider> deciders;
     @Autowired private SmartNotificationDeciderService deciderService;
-    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger();
+    private static Logger snLogger = YukonLogManager.getCommsLogger();
    
     @PostConstruct
     private void scheduleDailyDigest() {
@@ -107,7 +107,6 @@ public class SmartNotificationDailyDigestService implements MessageListener {
 
     /**
      * Sends 1 email for each subscription type and 1 email per monitor
-     * @param range 
      */
     private void doDailyDigestUngrouped(String digestTime, Range<Instant> range) {
         SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> subscriptions = subscriptionDao

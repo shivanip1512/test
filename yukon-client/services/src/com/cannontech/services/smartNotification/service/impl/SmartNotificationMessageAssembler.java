@@ -21,7 +21,7 @@ import com.cannontech.services.smartNotification.service.SmartNotificationMessag
 
 public class SmartNotificationMessageAssembler implements MessageListener {
     private Map<SmartNotificationMedia, SmartNotificationMessageParametersHandler> mediaHandlers;
-    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger();
+    private static Logger snLogger = YukonLogManager.getCommsLogger();
     
     @Autowired
     public SmartNotificationMessageAssembler(List<SmartNotificationMessageParametersHandler> messageParametersHandlers) {
