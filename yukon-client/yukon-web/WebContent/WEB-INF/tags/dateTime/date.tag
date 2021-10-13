@@ -105,6 +105,7 @@
                 <input id="${id}"
                     <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                     value="${dateValue}"
+                    type="text"
                     class="js-datePicker js-datePickerUI datePicker ${cssClass}"
                     <c:if test="${disabled}">disabled="disabled"</c:if>
                     data-max-date="${maxFormattedDate}"

@@ -168,7 +168,7 @@ textarea {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     margin: 0;
-    padding: 21px 12px 6px;
+    padding: 10px 6px 6px;
     box-sizing: content-box;
     transition: border .1s ease-in-out,background-color .1s ease-in-out;
     font-weight: 400;
@@ -185,7 +185,7 @@ textarea {
     &:not([readonly]):focus {
         border: 1px solid #f7f8f8;
         outline: none;
-    	padding: 20px 12px 6px;
+    	padding: 9px 6px 6px;
 		border-bottom: 2px solid @primary-color;
     }
     
@@ -365,6 +365,7 @@ input[type=radio] {
     vertical-align: top;
     margin: 0;
     border: solid 1px #ccc;
+	padding-top: 9px;
 }
 
 .stepper button.stepper-prev,
@@ -588,7 +589,6 @@ table.matrix{
 
 	td input {
 		font-size: 13px;
-		padding-top: 12px !important;
 	}
     
     tr.focused, 
@@ -1481,23 +1481,22 @@ hr.dashed,
     float: left;
     margin-right: 5px;
     border: 1px solid #aaa;
-    height: 26px;
 }
-.datetimeEntry_wrap.date { width: 152px; }
+.datetimeEntry_wrap.date { width: 162px; }
 .datetimeEntry_wrap.dateTime { min-width: 185px; }
-.datetimeEntry_wrap.time { width: 112px; }
-.datetimeEntry_wrap.timeOffset { width: 90px; }
+.datetimeEntry_wrap.time { width: 122px; }
+.datetimeEntry_wrap.timeOffset { width: 110px; }
 .datetimeEntry_wrap input {
-    padding: 2px;
     float: left;
-    height: 24px;
     border: solid 1px white;
     font-size: 14px !important; /* jquery ui is messing up the font-size */
 }
-.datetimeEntry_wrap img { margin: 5px; }
+.datetimeEntry_wrap img { 
+	margin: 5px;
+	padding-top: 5px; 
+}
 .timeOffsetWrap img {
-    margin-top: 4px;
-    margin-left: 6px;
+    margin-left: 8px;
 }
 .datetimeEntry_wrap .datetimeEntry_control { display: none !important; }
 
@@ -1509,12 +1508,12 @@ hr.dashed,
     display: none;
 }
 .datetimeEntry_wrap .timezone_container {
-    line-height: 24px;
     margin-left: -31px;
     float: left;
     color: #999;
     font-size: 13px;
     padding-right: 5px;
+	padding-top: 10px;
 }
 input.datePicker, 
 input.timePicker,

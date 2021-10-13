@@ -78,6 +78,7 @@
                     <form:input type="hidden" path="${path}"/>
                     <input id="${id}" 
                         name="${path}_inputField"
+                        type="text"
                         value="${displayValue}"
                         class="js-timeOffsetPicker js-timeOffsetPickerUI timeOffsetPicker ${cssClass} ${errorCssClass}"
                         <c:if test="${disabled}">disabled="true"</c:if>
@@ -114,6 +115,7 @@
                 <input id="${id}" 
                     <c:if test="${!empty pageScope.name}">name="${pageScope.name}_inputField"</c:if>
                     value="${displayValue}"
+                    type="text"
                     class="js-timeOffsetPicker js-timeOffsetPickerUI timeOffsetPicker ${cssClass}"
                     <c:if test="${disabled}">disabled="true"</c:if>
                     data-step-hour="${pageScope.stepHour}"
