@@ -53,7 +53,53 @@ id:
     id:
       type: integer
       description: 'Unique identifier for the virtual devices.'
-      
+
+VIRTUAL_SYSTEM Response Schema:
+  title: VIRTUAL_SYSTEM
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for the virtual system.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the virtual device.'
+    type:
+      type: string
+      description: 'Type of the virtual device.'
+      enum:
+        - VIRTUAL_SYSTEM
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable virtual device.'
+
+VIRTUAL_METER Response Schema:
+  title: VIRTUAL_METER
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for the virtual meter.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the virtual device.'
+    type:
+      type: string
+      description: 'Type of the virtual device.'
+      enum:
+        - VIRTUAL_METER
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable virtual device.'
+    meterNumber:
+      type: string
+      maxLength: 50
+      description: 'Name of the meter Number for virtual meter type.'      
+
 Virtual Devices List:
   type: object
   properties:
@@ -84,14 +130,29 @@ Virtual Devices List:
  
 components:
   examples:
-    Virtual System: 
+    Virtual System Request: 
       value:
         type: VIRTUAL_SYSTEM
         name: virtual system
         enable: true
-            
-    Virtual Meter:   
+
+    Virtual Meter Request:
       value:
+        type: VIRTUAL_METER
+        name: Virtual meter
+        enable: true
+        meterNumber: '123312321321'
+
+    Virtual System Response: 
+      value:
+        id: 7
+        type: VIRTUAL_SYSTEM
+        name: virtual system
+        enable: true
+            
+    Virtual Meter Response:
+      value:
+        id: 8
         type: VIRTUAL_METER
         name: Virtual meter
         enable: true
