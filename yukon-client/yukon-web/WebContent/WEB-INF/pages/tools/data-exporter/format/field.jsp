@@ -123,9 +123,8 @@
                 </tags:nameValue2>
                 
                 <c:set var="classes" value="${exportField.field.plainTextType ? '' : 'dn'}"/>
-                <c:set var="patternValue" value="${exportField.field.plainTextType ? exportField.pattern : ''}"/>
                 <tags:nameValue2 rowId="plain-text" nameKey=".plainTextInput" rowClass="${classes}">
-                    <input id="plain-text-input" type="text" size="25" maxlength="50" value="${patternValue}">
+                <tags:input id="plain-text-input" size="25" maxlength="50" path="pattern" />
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>

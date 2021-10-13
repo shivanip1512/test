@@ -83,6 +83,7 @@ yukon.tools.dataExporterFormat = (function () {
         timestampPatternCustom = popup.find('#timestamp-pattern-input'),
 		timestampPattern = popup.find('.timestamp-pattern-select'),
 	    attributeNamePattern= popup.find('#field-value-pattern-select'),
+		plaintextPattern = popup.find('#plain-text-input');
         field = JSON.parse(popup.find('#field-select').val()).type,
         attributeField = popup.find('#attribute-field').val(),
 		timestampPatternCustomIsVisible= !timestampPatternCustom.hasClass('dn'),
@@ -98,6 +99,7 @@ yukon.tools.dataExporterFormat = (function () {
 				readingPatternCustom.prop('disabled', true);
 				readingPattern.prop('disabled', true);
 				attributeNamePattern.prop('disabled', true);
+				plaintextPattern.prop('disabled', true);
 
 			}
 
@@ -108,6 +110,7 @@ yukon.tools.dataExporterFormat = (function () {
 				timestampPatternCustom.prop('disabled', true);
 				timestampPattern.prop('disabled', true);
 				attributeNamePattern.prop('disabled', true);
+				plaintextPattern.prop('disabled', true);
 
 			}
 		else if (!fieldIsAttribute && field === 'ATTRIBUTE_NAME') {
@@ -115,8 +118,15 @@ yukon.tools.dataExporterFormat = (function () {
 				timestampPatternCustom.prop('disabled', true);
 				timestampPattern.prop('disabled', true);
 				readingPattern.prop('disabled', true);
+				plaintextPattern.prop('disabled', true);
 			}
-
+		else if(field==='PLAIN_TEXT'){
+				readingPatternCustom.prop('disabled', true);
+				timestampPatternCustom.prop('disabled', true);
+				timestampPattern.prop('disabled', true);
+				readingPattern.prop('disabled', true);
+				attributeNamePattern.prop('disabled', true);
+			}
 		},
 
     /*For Attribute/Field Setup  : This function removes binding of pattern errror to both textbox and  timestamp pattern/reading pattern and shows only one of them*/
@@ -555,12 +565,15 @@ yukon.tools.dataExporterFormat = (function () {
             fieldVal.hide();
 
             if (type === 'PLAIN_TEXT') {
+				//clearing plain text text box binded to pattern when on change happens
+ 				$('#plain-text-input').val('');
                 plainText.show();
                 otherOptions.hide();
                 fieldSize.hide();
                 fieldVal.hide();
                 padding.hide();
                 pattern.val(plainText.find('input').val());
+           
             }
             if (type === 'ATTRIBUTE_NAME') {
                 //disable timestamp pattern and reading pattern
