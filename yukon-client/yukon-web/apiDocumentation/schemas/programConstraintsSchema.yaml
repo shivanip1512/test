@@ -146,10 +146,121 @@ program-constraint-dto:
         type: integer
         description: 'Unique identifier of program constraint.'
 
+ProgramConstraint Response Schema:
+  type: object
+  properties:
+    id:
+        type: integer
+        description: 'Unique identifier of program constraint.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the program constraint.'
+    seasonSchedule:
+      description: 'Schedule that defines the load control seasons.'
+      required:
+        - id
+      type: object
+      properties: 
+        name:
+          type: string
+          description: 'Name of the season season schedule. name is optional to pass with season schedule.'
+        id:
+          type: integer
+          description: 'Unique identifier of the season schedule. id is mandatory to pass with season schedule.'
+    maxActivateSeconds:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Maximum number of seconds that a load group can be active during a control session.'
+    maxDailyOps:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Maximum number of times a load group can be active in one day. This constraint is reset at the end of the day.'
+    minRestartSeconds:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Minimum number of seconds to wait after a load group stops before the load group can run again.'
+    daySelection:
+      type: string
+      default: NULL
+      description: 'Days of the week when the load program is available.'
+      enum:
+        - SUNDAY
+        - MONDAY
+        - TUESDAY 
+        - WEDNESDAY
+        - THURSDAY
+        - FRIDAY
+        - SATURDAY
+    holidaySchedule:
+      required:
+        -id
+      type: object
+      properties:
+        name:
+          type: string
+          description: 'Name of the holiday schedule. name is optional to pass with holidaySchedule.'
+        id:
+          type: integer
+          description: 'Unique identifier of the holiday schedule. id is mandatory to pass with holidaySchedule'
+    holidayUsage:
+      type: string
+      default: NONE
+      description: 'How to control holiday schedule. Exclude - Control cannot occur on the days defined in the holiday schedule. Force – Control can occur on the days defined in the holiday schedule, even if the day is not selected in the Day Selection area.'
+      enum:
+        - EXCLUDE
+        - FORCE
+        - NONE
+    maxHoursDaily:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Maximum number of hours that a load group can be controlled for each time daily.'
+    maxHoursMonthly:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Maximum number of hours that a load group can be controlled for each time monthly.'
+    maxHoursAnnually:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Maximum number of hours that a load group can be controlled for each time anually.'
+    maxHoursSeasonal:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Maximum number of hours that a load group can be controlled for each time in season.'
+
+
 components:
   examples:
-    ProgramConstraint:
+    ProgramConstraint Request:
       value:
+        name: LM Constraint
+        seasonSchedule:
+          name: Test Season Schedule
+          id: 1
+        maxActivateSeconds: 12
+        maxDailyOps: 13
+        minActivateSeconds: 14
+        minRestartSeconds: 15
+        daySelection:
+          - SUNDAY
+        holidaySchedule:
+          name: Test Holiday Schedule
+          id: 1
+        holidayUsage: EXCLUDE
+        maxHoursDaily: 1
+        maxHoursMonthly: 2
+        maxHoursAnnually: 4
+        maxHoursSeasonal: 3
+    ProgramConstraint Response:
+      value:
+        id: 9
         name: LM Constraint
         seasonSchedule:
           name: Test Season Schedule

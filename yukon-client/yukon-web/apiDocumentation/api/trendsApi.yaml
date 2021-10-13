@@ -11,7 +11,7 @@ post-operation:
             $ref: '../schemas/trendsSchema.yaml#/Trend'
           examples:
             Trend:
-              $ref: '../schemas/trendsSchema.yaml#/components/examples/Trend'
+              $ref: '../schemas/trendsSchema.yaml#/components/examples/Trend Request'
       required: true
     responses:
       '201':
@@ -19,10 +19,10 @@ post-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/trendsSchema.yaml#/Trend'
+              $ref: '../schemas/trendsSchema.yaml#/Trend Response Schema'
             examples:
               Trend:
-                $ref: '../schemas/trendsSchema.yaml#/components/examples/Trend'
+                $ref: '../schemas/trendsSchema.yaml#/components/examples/Trend Response'
 get-update-delete-operation:
   get:
     tags:
@@ -42,10 +42,10 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/trendsSchema.yaml#/Trend'
+              $ref: '../schemas/trendsSchema.yaml#/Trend Response Schema'
             examples:
               Trend:
-                $ref: '../schemas/trendsSchema.yaml#/components/examples/Trend'
+                $ref: '../schemas/trendsSchema.yaml#/components/examples/Trend Response'
   put:
     tags:
      - Trend
@@ -65,7 +65,7 @@ get-update-delete-operation:
             $ref: '../schemas/trendsSchema.yaml#/Trend'
           examples:
             Trend:
-              $ref: '../schemas/trendsSchema.yaml#/components/examples/Trend'
+              $ref: '../schemas/trendsSchema.yaml#/components/examples/Trend Request'
       required: true
     responses:
       '200':
@@ -73,10 +73,10 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/trendsSchema.yaml#/Trend'
+              $ref: '../schemas/trendsSchema.yaml#/Trend Response Schema'
             examples:
               Trend:
-                $ref: '../schemas/trendsSchema.yaml#/components/examples/Trend'
+                $ref: '../schemas/trendsSchema.yaml#/components/examples/Trend Response'
   delete:
     tags:
      - Trend
