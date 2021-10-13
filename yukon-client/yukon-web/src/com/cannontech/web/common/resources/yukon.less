@@ -170,7 +170,7 @@ textarea {
     margin: 0;
     padding: 10px 6px 6px;
     box-sizing: content-box;
-    transition: border .1s ease-in-out,background-color .1s ease-in-out;
+    transition: background-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
     font-weight: 400;
 	line-height: 1.1876rem;
 	font-size: 1rem;
@@ -221,6 +221,9 @@ input[type=url],
 select:not([multiple]):not([size]) {
     height: 1.1876em;
     line-height: normal !important;
+}
+select:not([disabled]) {
+	cursor: pointer;
 }
 
 input[type=checkbox], 
