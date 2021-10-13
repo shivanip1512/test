@@ -28,11 +28,11 @@ import com.google.common.collect.ImmutableMap;
  * Handler for emails. Builds an email and sends it via the notification service.
  */
 public class SmartNotificationEmailMessageParametersHandler implements SmartNotificationMessageParametersHandler {
-    private static final Logger commsLogger = YukonLogManager.getCommsLogger();
     private Map<SmartNotificationEventType, SmartNotificationEmailBuilder> emailBuilders;
     private INotifConnection notifClientConnection;
     private MessageSourceAccessor messageSourceAccessor;
     private GlobalSettingDao globalSettingDao;
+    private static Logger snLogger = YukonLogManager.getCommsLogger();
     
     @Autowired
     public SmartNotificationEmailMessageParametersHandler(List<SmartNotificationEmailBuilder> emailBuilderList,
@@ -63,7 +63,7 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
                                                 .buildEmail(parameters, intervalMinutes);
             notifClientConnection.sendEmail(message);
         } catch (Exception e) {
-            commsLogger.error("Unable to send Smart Notification email.", e);
+            snLogger.error("Unable to send Smart Notification email.", e);
         }
     }
     
@@ -78,8 +78,7 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
                                                  return emailBuilders.get(parameters.getType())
                                                                      .buildEmail(parameters, intervalMinutes);
                                              } catch (MessagingException e) {
-                                                 commsLogger.error("Error building message for notification parameters: " 
-                                                           + parameters, e);
+                                                 snLogger.error("Error building message for notification parameters:{}", parameters, e);
                                                  return null;
                                              }
                                          })
@@ -97,7 +96,7 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
 
             notifClientConnection.sendEmail(message);
         } catch (Exception e) {
-            commsLogger.error("Unable to send Smart Notification email.", e);
+            snLogger.error("Unable to send Smart Notification email.", e);
         }
     }
 }

@@ -10,6 +10,7 @@ public enum SystemLogger {
     API_LOGGER("apiLogger", LoggerLevel.INFO),
     COMMS_LOGGER("commsLogger", LoggerLevel.INFO),
     RFN_COMMS_LOGGER("rfnCommsLogger", LoggerLevel.INFO),
+    SMART_NOTIFICATION_LOGGER("smartNotifLogger", LoggerLevel.INFO),
 
     // Package level loggers
     YUKON_CORE_LOGGER("com.cannontech", LoggerLevel.INFO),
@@ -27,7 +28,7 @@ public enum SystemLogger {
             nameBuilder.put(logger.loggerName, logger);
         }
         lookupByLoggerName = nameBuilder.build();
-        customAppenderLoggers = ImmutableSet.of(API_LOGGER, COMMS_LOGGER, RFN_COMMS_LOGGER);
+        customAppenderLoggers = ImmutableSet.of(API_LOGGER, COMMS_LOGGER, RFN_COMMS_LOGGER, SMART_NOTIFICATION_LOGGER);
     }
 
     private LoggerLevel level;
