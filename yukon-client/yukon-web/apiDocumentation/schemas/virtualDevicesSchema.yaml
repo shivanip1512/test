@@ -55,6 +55,7 @@ id:
       description: 'Unique identifier for the virtual devices.'
 
 VIRTUAL_SYSTEM Response Schema:
+  title: VIRTUAL_SYSTEM
   type: object
   properties:
     id:
@@ -75,6 +76,7 @@ VIRTUAL_SYSTEM Response Schema:
       description: 'Flag to enable virtual device.'
 
 VIRTUAL_METER Response Schema:
+  title: VIRTUAL_METER
   type: object
   properties:
     id:
