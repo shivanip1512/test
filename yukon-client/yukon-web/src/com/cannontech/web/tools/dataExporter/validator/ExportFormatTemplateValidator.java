@@ -21,8 +21,6 @@ import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
-import com.cannontech.amr.archivedValueExporter.model.ReadingPattern;
-import com.cannontech.amr.archivedValueExporter.model.TimestampPattern;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.validator.SimpleValidator;
 import com.google.common.collect.ImmutableList;
@@ -257,7 +255,7 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                         continue;
                     }
                     if (applicableFieldList.contains(fieldName)) {
-                        if (fieldValue == null || fieldValue.toString().isBlank() && !errors.hasFieldErrors(pattern)) {
+                        if ((fieldValue == null || fieldValue.toString().isBlank()) && !errors.hasFieldErrors(pattern)) {
                             errors.rejectValue(fieldName, requiredKey, new Object[] { fieldName, type }, "");
                         }
                     } else {
