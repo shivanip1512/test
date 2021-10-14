@@ -18,6 +18,54 @@ AND PaobjectId IN (
 INSERT INTO DBUpdates VALUES ('YUK-24891', '9.2.0', SYSDATE);
 /* @end YUK-24891 */
 
+/* @start YUK-25103 */
+UPDATE Theme
+SET Name = 'Default'
+WHERE ThemeId = -1;
+
+UPDATE ThemeProperty
+SET Value = '#007bc1'
+WHERE ThemeId = -1
+AND Property = 'BUTTON_COLOR';
+
+UPDATE ThemeProperty
+SET Value = '#007bc1'
+WHERE ThemeId = -1
+AND Property = 'BUTTON_COLOR_BORDER';
+
+UPDATE ThemeProperty
+SET Value = '#4da3d4'
+WHERE ThemeId = -1
+AND Property = 'BUTTON_COLOR_HOVER';
+
+UPDATE ThemeProperty
+SET Value = '#007bc1'
+WHERE ThemeId = -1
+AND Property = 'PRIMARY_COLOR';
+
+UPDATE ThemeProperty
+SET Value = '#007bc1'
+WHERE ThemeId = -1
+AND Property = 'VISITED_COLOR';
+
+UPDATE ThemeProperty
+SET Value = '#727e84'
+WHERE ThemeId = -1
+AND Property = 'PAGE_BACKGROUND';
+
+UPDATE ThemeProperty
+SET Value = '#727e84'
+WHERE ThemeId = -1
+AND Property = 'PAGE_BACKGROUND_SHADOW';
+
+UPDATE ThemeProperty
+SET Value = '#727e84'
+WHERE ThemeId = -1
+AND Property = 'LOGIN_FONT_SHADOW';
+
+INSERT INTO DBUpdates VALUES ('YUK-25103', '9.2.0', SYSDATE);
+/* @end YUK-25103 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
