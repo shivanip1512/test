@@ -71,9 +71,9 @@ const Dashboard = () => {
                     <Grid item xs>
                         <Card variant="outlined" color="primary">
                             <CardHeader title="Meter Search" titleTypographyProps={{variant: 'h6', color: 'primary'}} 
-                                style={{borderBottom: '1px solid rgba(0, 0, 0, 0.12)'}}
+                                style={{borderBottom: '1px solid #0000001f'}}
                                 action={[
-                                    <IconButton><HelpIcon/></IconButton>, <IconButton><ExpandLessIcon/></IconButton>
+                                    <IconButton key="helpIcon"><HelpIcon/></IconButton>, <IconButton key="expandButton"><ExpandLessIcon/></IconButton>
                                 ]}/>
                             <CardContent>
                                 <Input label="Quick Search" name="quickSearch" style={{width: '90%'}}/>
@@ -93,7 +93,7 @@ const Dashboard = () => {
                             actionItems={[
                                 <HelpIcon/>, <ExpandLessIcon/>
                             ]}
-                            actionRow={[
+                            actionRow={
                                 <List>
                                     <ListItem button dense={true}>
                                         <ListItemText primary="View Details" primaryTypographyProps={{color: 'primary'}}/>
@@ -108,7 +108,7 @@ const Dashboard = () => {
                                         </ListItemSecondaryAction>
                                     </ListItem>
                                 </List>
-                            ]}>
+                            }>
                             <div style={{margin: theme.spacing(4)}}>
                                 <Grid container spacing={2} align="center">
                                     <Grid item xs>
@@ -142,7 +142,7 @@ const Dashboard = () => {
                             actionItems={[
                                 <EmailIcon/>, <HelpIcon/>, <ExpandLessIcon/>
                             ]}
-                            actionRow={[
+                            actionRow={
                                 <List>
                                     <ListItem button dense={true}>
                                         <ListItemText primary="View Details" primaryTypographyProps={{color: 'primary'}}/>
@@ -157,7 +157,7 @@ const Dashboard = () => {
                                         </ListItemSecondaryAction>
                                     </ListItem>
                                 </List>
-                            ]}>
+                            }>
                             <div style={{margin: theme.spacing(4)}}>
                                 <Grid container spacing={4} align="center" alignItems="stretch" direction="row">
                                     <Grid item xs style={{height: '100%'}}>

@@ -21,9 +21,9 @@ const Table = (props) => {
         <MuiTable size="small">
             <TableHead>
                 <TableRow>
-                    {headers.map(header => {
+                    {headers.map((header, index) => {
                         return (
-                            <TableCell key={header.label}>
+                            <TableCell key={index}>
                                 <TableSortLabel 
                                             active={header.active} 
                                             direction={header.direction} 
