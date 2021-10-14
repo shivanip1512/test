@@ -595,7 +595,7 @@ span.fancytree-node {
     border-bottom-color: #d8dbdc;
 	border-radius: 4px 4px 0px 0px;
     margin: 0;
-    padding: 8px 6px 2px;
+    padding: 6px 6px 2px;
     box-sizing: content-box;
 	font: inherit;
     font-weight: 400;
@@ -614,7 +614,7 @@ span.fancytree-node {
 }
 .chosen-container .chosen-drop {
     border: 0px solid #fff;
-    border-radius: 4px;
+    border-radius: 0px 0px 4px 4px;
     width: 105%;
     box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
@@ -633,7 +633,7 @@ span.fancytree-node {
 .chosen-container-active.chosen-with-drop .chosen-single {
     border: 1px solid #f7f8f8;
     outline: none;
-    padding: 6px 6px 2px;
+    padding: 4px 6px 2px;
 	border-bottom: 2px solid @primary-color !important;
 }
 .chosen-container-multi .chosen-choices {
@@ -642,7 +642,7 @@ span.fancytree-node {
 .chosen-container-multi .chosen-choices li.search-choice {
 	color: #424e54;
 	border-radius: 16px;
-	background: red;
+	background: #fff;
 	font: inherit;
 	padding-left: 12px;
 	padding-right: 20px;
@@ -654,13 +654,13 @@ span.fancytree-node {
 	right: 6px;
 }
 .chosen-container-multi .chosen-choices li.search-field {
-    line-height: 26px;
 	cursor: pointer;
 }
 .chosen-container-multi .chosen-choices li.search-field input[type=text] {
-    height: 26px;
     padding: 2px 5px;
 	cursor: pointer;
+	color: #72828f;
+	font: inherit;
 }
 .chosen-container-single .chosen-single div b {
     background: url('../Icons/bullet_arrow_down.png') no-repeat 1px 8px;
@@ -668,6 +668,10 @@ span.fancytree-node {
 .chosen-container-single .chosen-search input[type=text] {
 	width: 90%;
 	padding-right: 5px;
+}
+.chosen-container-single .chosen-default {
+	color: #72828f !important;
+	font: inherit;
 }
 .chosen-container .chosen-results li.highlighted {
     background-color: #ebebeb !important;

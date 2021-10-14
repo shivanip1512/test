@@ -53,7 +53,7 @@
                         <tags:selectWithItems items="${hopCountOptions}" path="hopCount" inputClass="js-selected-hop-count" dataPlaceholder="${allPlaceholder}"/>&nbsp;&nbsp;
                     
                         <i:inline key=".colorCodeBy"/>&nbsp;
-                        <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy"/>
+                        <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy" inputClass="vam"/>
                         
                         <cti:button nameKey="filter" classes="js-filter-map primary action fr vab MB5" disabled="true"/>
                     </div>
