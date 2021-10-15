@@ -6104,18 +6104,6 @@ JavaScript :
     jira : YUK-22999
     updated : 2020-10-06
     notes : This library is used to display the text as a placeholder in input fields for e.g. search text is displayed in global search.
-    
-  - project : react
-    version : 17.0.2
-    project URL : "https://reactjs.org/"
-    license : MIT
-    license URLs : "https://github.com/facebook/react/blob/master/LICENSE"
-    npm URL : "https://www.npmjs.com/package/react"
-    md5 : 7d6155f06a2386cb24a7690cef48e521
-    sha1 : 94e3bc11e6e5b0b3658a76b47ec8cde73cacc4c9
-    jira : YUK-24825
-    updated : 2021-08-02
-    notes : Used for rendering the React Navigation menu
 
   - project : scroll.to
     version : 2.1.3
