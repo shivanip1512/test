@@ -97,9 +97,6 @@
         <include name="lucene-queryparser-8.8.2.jar"/>
         <include name="netty-all-4.1.53.Final.jar"/>
         <include name="netty-transport-native-kqueue-4.1.65.Final-osx-x86_64.jar"/>
-        <include name="smtp-2.0.1.jar"/>
-        <include name="imap-2.0.1.jar"/>
-        <include name="pop3-2.0.1.jar"/>
         <include name="notification.jar"/>
         <include name="org.osgi.core-4.1.0.jar"/>
         <include name="quartz-2.3.2.jar"/>

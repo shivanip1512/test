@@ -986,20 +986,6 @@ Java :
     jira : none
     notes : Discontinued in 2012, should no longer to be used for legal reasons
     
-  - filename : imap-2.0.1.jar
-    yukon group : JakartaMail
-    project : Jakarta Mail API
-    version : 2.0.1
-    project URL : "https://eclipse-ee4j.github.io/mail/IMAP-Store"
-    license : Eclipse Public License v2.0, GPLv2 with classpath exception
-    license URLs : "https://eclipse-ee4j.github.io/mail/JakartaMail-License"
-    maven URL : "https://mvnrepository.com/artifact/com.sun.mail/imap/2.0.1"
-    md5 : 92b51c7cb745dbbb610abd033c319de2
-    sha1 : a6f61f8a1bceb6bc3e22780a23f7aa7a048a8097
-    updated : 2021-10-02
-    jira : YUK-24667
-    notes : Jakarta Mail
-  
   - filename : jackson-annotations-2.12.3.jar
     yukon group : Jackson
     project : Jackson
@@ -2275,21 +2261,7 @@ Java :
     updated : 2005-05-09
     jira : none
     notes : 
-  
-  - filename : pop3-2.0.1.jar
-    yukon group : JakartaMail
-    project : Jakarta Mail API
-    version : 2.0.1
-    project URL : "https://eclipse-ee4j.github.io/mail/POP3-Store"
-    license : Eclipse Public License v2.0, GPLv2 with classpath exception
-    license URLs : "https://eclipse-ee4j.github.io/mail/JakartaMail-License"
-    maven URL : "https://mvnrepository.com/artifact/com.sun.mail/pop3/2.0.1"
-    md5 : 7982aa2b778e57480c5b29bfeb05b00c
-    sha1 : 9880cfc0087515d5191d3d17978c2311b14fd152
-    updated : 2021-10-02
-    jira : YUK-24667
-    notes : Jakarta Mail
-
+    
   - filename : protobuf-java-3.15.8.jar
     yukon group : Protobuf
     project : Protobuf
@@ -2556,20 +2528,6 @@ Java :
     updated : 2019-12-04
     jira : YUK-20994
     notes : 
-  
-  - filename : smtp-2.0.1.jar
-    yukon group : JakartaMail
-    project : Jakarta Mail API
-    version : 2.0.1
-    project URL : "https://eclipse-ee4j.github.io/mail/"
-    license : Eclipse Public License v2.0, GPLv2 with classpath exception
-    license URLs : "https://eclipse-ee4j.github.io/mail/JakartaMail-License"
-    maven URL : "https://mvnrepository.com/artifact/com.sun.mail/smtp/2.0.1"
-    md5 : 96126657e6216d81090ba67259f195fc
-    sha1 : aadb085c98bb3f3c43c14ba3d3a82c863f9a9745
-    updated : 2021-10-02
-    jira : YUK-24667
-    notes : Jakarta Mail API
   
   - filename : snakeyaml-1.18.2.jar
     yukon group : Jackson

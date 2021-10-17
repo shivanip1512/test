@@ -106,12 +106,6 @@
                     
         </dependent-module>
                 
-        <dependent-module archiveName="smtp-2.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/smtp-2.0.1.jar">
-                        
-            <dependency-type>uses</dependency-type>
-                    
-        </dependent-module>
-                
         <dependent-module archiveName="jdom-2.0.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jdom-2.0.2.jar">
                         
             <dependency-type>uses</dependency-type>
