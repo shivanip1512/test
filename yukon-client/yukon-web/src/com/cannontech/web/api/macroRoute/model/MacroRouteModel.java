@@ -62,7 +62,7 @@ public class MacroRouteModel<T extends MacroRoute> extends DeviceBaseModel imple
                 }
                 macroRouteVector.add(macroRoutes);
             }
+            macroRoute.setMacroRouteVector(macroRouteVector);
         }
-        macroRoute.setMacroRouteVector(macroRouteVector);
     }
 }
