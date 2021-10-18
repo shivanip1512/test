@@ -3,7 +3,7 @@ import React, { useCallback }  from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { useSecurityActions } from '@pxblue/react-auth-shared';
+//import { useSecurityActions } from '@pxblue/react-auth-shared';
 import { LocalStorage } from '../../store/local-storage';
 
 import { UserMenu, Spacer } from '@pxblue/react-components';
@@ -71,12 +71,13 @@ const NavigationMenu = (props) => {
     const history = useHistory();
     const yukonTheme = useSelector(store => store.app.theme);
     const renderDrawer = useSelector(store => store.app.renderDrawer);
-    const securityHelper = useSecurityActions();
+    //const securityHelper = useSecurityActions();
 
     const logOut = () => {
         LocalStorage.clearAuthCredentials();
         //onNavItemClick("/servlet/LoginController/logout")
-        securityHelper.onUserNotAuthenticated();
+        //securityHelper.onUserNotAuthenticated();
+        window.location.href = props.reactPath + "/yukon-ui/dashboard";
     };
 
     const onNavItemClick = useCallback(

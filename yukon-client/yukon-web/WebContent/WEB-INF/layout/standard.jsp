@@ -85,7 +85,9 @@
             <!-- Needed to render React Navigation menu -->
             <c:set var="path" value='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}'/>
             <c:set var="reactPath" value='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}'/>
-            <div id="navigation" style="position:sticky;top:0;z-index:1200;min-height:60px" data-path="${path}" data-react-path="${reactPath}"></div>
+            <!-- Needed to help react menu render more smoothly -->
+            <div id="navigation-temp" style="min-height:60px"></div>
+            <div id="navigation" style="position:sticky;top:0;z-index:1200" data-path="${path}" data-react-path="${reactPath}"></div>
             
             <header class="yukon-header">
 <%--                 <div class="toolbar-outer">
@@ -167,7 +169,6 @@
             <section class="yukon-content" role="main" <c:if test="${widePage}">class="wide"</c:if>>
             
                 <!-- Renders React Navigation Menu - Needs to be after yukon-content so the menu pushes the page contents -->
-                <script src="<c:url value="/resources/js/lib/react/react.production.min.js"/>"></script>
 				<script src="<c:url value="/resources/js/common/react/yukon.react.navigationContainer.js"/>"></script>
                             
                 <c:set var="layout" value="${showContextualNavigation ? 'column-4-20' : 'column-24'}"/>

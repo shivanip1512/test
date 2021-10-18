@@ -44,4 +44,6 @@ import(/* webpackChunkName: "react-dom" */'react-dom').then((ReactDom) => {
     const drawerLayout = document.getElementById('page-contents');
     drawerLayout.appendChild(header);
     drawerLayout.appendChild(pageContent);
+    //remove temporary navigation that is used to make menu render more smoothly
+    document.getElementById('navigation-temp').remove();
 });

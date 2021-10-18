@@ -49,7 +49,11 @@ const NavigationDrawer = (props) => {
 
     useEffect(() => {
         if (!renderDrawer) {
-            axios.get('/api/theme')
+            dispatch(actions.renderDrawer());
+        }
+            //this will need to be moved to after login - and stored in browser local storage
+            //storing in react store gets cleared after every old yukon page since it's counted as a refresh
+/*             axios.get('/api/theme')
             .then(themeJson => {
                 if (themeJson) {
                     //don't change theme if default theme is used
@@ -68,7 +72,7 @@ const NavigationDrawer = (props) => {
                     }
                 }
             });
-        }
+        }*/
     }, [renderDrawer]);
     
     const onNavItemClick = useCallback(
