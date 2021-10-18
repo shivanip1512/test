@@ -1,29 +1,19 @@
 MacroRoute:
   title: MacroRoute
   required:
-    - routeName
+    - name
     - routeList
 
   type: object
   properties:
-    type:
-      type: string
-      description: 'Type of the Route.'
     name:
       type: string
       maxLength: 60
       description: 'Name for the macroRoute.'
-    enable:
-      type: boolean
-      description: 'DisableFlag.'
     routeList:
       $ref: '#/routeList'
 
 MacroRouteResponseSchema:
-  required:
-    - routeName
-    - routeList
-
   type: array
   properties:
     id:
@@ -45,8 +35,6 @@ MacroRouteResponseSchema:
 routeListResponseSchema:
   type: array
   items:
-    required:
-    - routeId
     type: object
     properties:
       routeId:
@@ -78,16 +66,13 @@ id:
       description: 'Unique identifier for Macro Route.'
       
 macroRouteId :
-  title: macroRouteId
-  required:
-    - macroRouteId
+  title: id
   type: object
   properties:
-    macroRouteId:
+    id:
       type: integer
-      description: 'Unique identifier for Macro Route.'      
-      
-      
+      description: 'Unique identifier for Macro Route.'
+
 components:
   examples:
     MacroRoute:
@@ -103,9 +88,7 @@ components:
             routeName: 'Route2'
     MacroRouteRequest:
       value:
-        type: ROUTE_MACRO
         name: Test MacroRoute
-        enable: false
         routeList:
           - routeId: 1
           - routeId: 2
@@ -128,9 +111,8 @@ components:
             - routeId: 3
               routeName: 'Route3'
             - routeId: 4
-              routeName: 'Route4'       
+              routeName: 'Route4'
              
-
     macroRouteId:
       value:
-        macroRouteId: 10
+        id: 10
