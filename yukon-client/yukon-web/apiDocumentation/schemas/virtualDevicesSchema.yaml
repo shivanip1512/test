@@ -120,9 +120,9 @@ Virtual Devices List:
         type: object
         properties:
           VIRTUAL_SYSTEM:
-            $ref: '#/VIRTUAL_SYSTEM'
+            $ref: '#/VIRTUAL_SYSTEM Response Schema'
           VIRTUAL_METER:
-            $ref: '#/VIRTUAL_METER'
+            $ref: '#/VIRTUAL_METER Response Schema'
         
  
 components:
