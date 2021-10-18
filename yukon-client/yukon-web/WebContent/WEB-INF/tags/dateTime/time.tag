@@ -104,6 +104,7 @@
                     <input id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${timeValue}"
+                        type="text"
                         class="js-timePicker js-timePickerUI timePicker ${cssClass}"
                         <c:if test="${disabled}">disabled="true"</c:if>
                         data-max-date="${maxFormattedDate}"

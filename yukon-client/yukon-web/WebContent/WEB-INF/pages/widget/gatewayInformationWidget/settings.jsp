@@ -33,7 +33,7 @@
     <tags:nameValueContainer2 tableClass="with-form-controls">
         
         <tags:nameValue2 nameKey=".name">
-            <tags:input path="name" inputClass="js-focus full-width" tabindex="1" maxlength="60"/>
+            <tags:input path="name" inputClass="js-focus" tabindex="1" maxlength="60" size="40"/>
         </tags:nameValue2>
         
         <tags:nameValue2 nameKey=".ipaddress">
