@@ -115,7 +115,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/macroRoutesSchema.yaml#/id'
+              $ref: '../schemas/macroRoutesSchema.yaml#/macroRouteId'
             examples:
               MacroRoute:
                 $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/macroRouteId'
