@@ -1,7 +1,7 @@
 Route:
   title: Route
   required:
-    - routeName
+    - name
     - signalTransmitterId
   type: object
   properties:
@@ -31,8 +31,6 @@ id:
       description: 'Unique identifier for Route.'
 routeId:
   title: routeId
-  required:
-    - routeId
   type: object
   properties:
     routeId:
@@ -172,4 +170,4 @@ components:
             repeaterOrder: 1
     routeId:
       value:
-      routeId: 10
+        routeId: 10

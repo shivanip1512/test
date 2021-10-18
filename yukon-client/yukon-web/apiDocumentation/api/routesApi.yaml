@@ -82,7 +82,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/routesSchema.yaml#/id'
+              $ref: '../schemas/routesSchema.yaml#/routeId'
             examples:
               RouteId:
                 $ref: '../schemas/routesSchema.yaml#/components/examples/routeId'
