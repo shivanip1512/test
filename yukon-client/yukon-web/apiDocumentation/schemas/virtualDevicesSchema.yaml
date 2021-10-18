@@ -103,9 +103,6 @@ VIRTUAL_METER Response Schema:
 Virtual Devices List:
   type: object
   properties:
-    id:
-      type: integer
-      description: 'Unique identifier for the virtual devices.'
     pageNumber:
       type: integer
       default: 1
