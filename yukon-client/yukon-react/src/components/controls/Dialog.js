@@ -32,7 +32,7 @@ const Dialog = (props) => {
             <DialogContent dividers>{content}</DialogContent>
             <DialogActions>
                 {buttons.map(function (button, index) {
-                    return <Button label={button.label} onClick={button.onClick} style={button.style}/>
+                    return <Button key={index} label={button.label} onClick={button.onClick} style={button.style}/>
                 })}
             </DialogActions>
         </MuiDialog>

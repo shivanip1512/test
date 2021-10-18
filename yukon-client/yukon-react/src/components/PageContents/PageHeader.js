@@ -46,7 +46,7 @@ const PageHeader = (props) => {
         actionButtonContent = 
         <div style={{float: 'right'}}>
             {actionButtons.map((button) => 
-                <Button label={button.label} onClick={button.clickEvent} 
+                <Button key={button.label} label={button.label} onClick={button.clickEvent} 
                     variant="outlined" color="primary" 
                     icon={button.icon} style={{marginRight: theme.spacing(2)}}/>
             )}
