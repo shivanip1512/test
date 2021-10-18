@@ -28,7 +28,7 @@ public enum LibraryGroup {
     JACKSON("Jackson"),
     JASPERSOFT("Jaspersoft"),
     JAVA_API_FOR_XML_MESSAGING("Java API for XML Messaging"),
-    JAVAMAIL("JavaMail"),
+    JAKARTAMAIL("JakartaMail"),
     JAVASCRIPT("JavaScript"),
     JAVASSIST("Javassist"),
     JAXB("JAXB"),

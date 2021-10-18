@@ -194,10 +194,62 @@ id:
       type: integer  
       description: 'Unique identifier of the control area.'
 
+ControlArea Response Schema:
+  type: object
+  properties:
+    controlAreaId:
+      type: integer  
+      description: 'Unique identifier of the control area.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the control area.'
+      
+    controlInterval:
+      type: integer  
+      minimum: 0
+      maximum: 1800
+      description: 'How often the system checks to see if control is needed.
+                    Valid values are (in min)- 0, 1, 2, 3, 4, 5, 10, 15, 30.'
+                    
+    minResponseTime:
+      type: integer  
+      minimum: 0
+      maximum: 1800
+      description: 'Number of minutes to wait after control starts before re-evaluating control.
+                    After re-evaluation more or less programs may be controlled depending on configuration 
+                    and the trigger values.
+                    Valid values are (in min)- 0, 1, 2, 3, 4, 5, 10, 15, 30.'
+    dailyStartTimeInMinutes:
+      type: integer  
+      minimum: 0
+      maximum: 1439
+      description: 'Daily start time in minutes.'
+    dailyStopTimeInMinutes:
+      type: integer  
+      minimum: 0
+      maximum: 1439
+      description: 'Daily stop time in minutes.'
+    allTriggersActiveFlag:
+      type: boolean
+      description: 'Flag to set all trigger active to perform control.'
+    dailyDefaultState: 
+      type: string
+      enum: 
+        - None 
+        - Enabled
+        - Disabled
+      description: 'The control area reverts to this state each day at midnight.'
+     
+    trigger:
+      $ref: '#/trigger'
+    programAssignment:
+      $ref: '#/programAssignment'
+
 components:
   examples:
     
-    Control Area with Threshold Point Trigger:
+    Control Area with Threshold Point Trigger Request:
       value:
         name: Threshold_point_controlarea_test
         controlInterval: 0
@@ -217,11 +269,32 @@ components:
             startPriority: 1
             stopPriority: 2
     
-    Control Area with Threshold Trigger:
+    Control Area with Threshold Point Trigger Response:
+      value:
+        controlAreaId: 10
+        name: Threshold_point_controlarea_test
+        controlInterval: 0
+        minResponseTime: 0
+        dailyDefaultState: None
+        dailyStartTimeInMinutes: 120
+        dailyStopTimeInMinutes: 180
+        allTriggersActiveFlag: false
+        triggers:
+          - triggerType: THRESHOLD_POINT
+            triggerPointId: -110
+            minRestoreOffset: 0
+            peakPointId: -110
+            thresholdPointId: -110
+        programAssignment:
+          - programId: 81367
+            startPriority: 1
+            stopPriority: 2
+    
+    Control Area with Threshold Trigger Request:
       value:  
         name: Threshold_controlarea_test
         controlInterval: 0
-        minResponseTime: 0
+        minResponseTime: 0 
         dailyDefaultState: None
         dailyStartTimeInMinutes: 120
         dailyStopTimeInMinutes: 180
@@ -243,8 +316,54 @@ components:
             startPriority: 1
             stopPriority: 2
     
-    Control Area with Status Trigger:
+    Control Area with Threshold Trigger Response:
+      value:  
+        controlAreaId: 9
+        name: Threshold_controlarea_test
+        controlInterval: 0
+        minResponseTime: 0 
+        dailyDefaultState: None
+        dailyStartTimeInMinutes: 120
+        dailyStopTimeInMinutes: 180
+        allTriggersActiveFlag: false
+        triggers:
+          - triggerType: THRESHOLD
+            triggerPointId: -110
+            threshold: 33.33
+            controlAreaProjection:
+              projectionType: LSF
+              projectionPoint: 8
+              projectAheadDuration: 2100
+            atku: 2
+            minRestoreOffset: 0
+            peakPointId: -110
+            thresholdPointId: -110
+        programAssignment:
+          - programId: 81367
+            startPriority: 1
+            stopPriority: 2
+    
+    Control Area with Status Trigger Request:
       value: 
+        name: Status_controlarea_test
+        controlInterval: 0
+        minResponseTime: 0
+        dailyDefaultState: None
+        dailyStartTimeInMinutes: 120
+        dailyStopTimeInMinutes: 180
+        allTriggersActiveFlag: false
+        triggers:
+          - triggerType: STATUS
+            triggerPointId: -110
+            normalState: 0
+        programAssignment:
+          - programId: 81367
+            startPriority: 1
+            stopPriority: 2
+            
+    Control Area with Status Trigger Response:
+      value: 
+        controlAreaId: 8
         name: Status_controlarea_test
         controlInterval: 0
         minResponseTime: 0

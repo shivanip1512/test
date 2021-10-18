@@ -79,15 +79,15 @@
     <div id="page-buttons" class="dn">
         <tags:dynamicChoose updaterString="TDC/ALARM" suffix="${display.displayId}">
             <tags:dynamicChooseOption optionId="MULT_ALARMS">
-                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="js-ack-all" />
+                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="js-ack-all ML15" />
             </tags:dynamicChooseOption>
             <tags:dynamicChooseOption optionId="NONE">
-                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="js-ack-all dn" />
+                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="js-ack-all dn ML15" />
             </tags:dynamicChooseOption>
         </tags:dynamicChoose>
    
-        <cti:button id="tdc-mute-btn" nameKey="mute" icon="icon-sound" renderMode="buttonImage"/>
-        <cti:button id="tdc-unmute-btn" nameKey="unmute" icon="icon-sound-mute" renderMode="buttonImage" classes="dn"/>
+        <cti:button id="tdc-mute-btn" nameKey="mute" icon="icon-sound" renderMode="buttonImage" classes="ML15"/>
+        <cti:button id="tdc-unmute-btn" nameKey="unmute" icon="icon-sound-mute" renderMode="buttonImage" classes="dn ML15"/>
       
         <cti:dataUpdaterCallback function="yukon.tools.tdc.toggleAlarm" initialize="true"  value="TDC/ALARM/${display.displayId}"/>
     </div>

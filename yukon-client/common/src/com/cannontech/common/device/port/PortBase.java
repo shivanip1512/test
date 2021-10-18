@@ -27,24 +27,24 @@ public class PortBase<T extends DirectPort> extends DeviceBaseModel implements D
 
     @Override
     public void buildModel(T port) {
-        setId(port.getPAObjectID());
-        setName(port.getPortName());
+        setDeviceId(port.getPAObjectID());
+        setDeviceName(port.getPortName());
         setEnable(port.getPAODisableFlag() == 'N' ? true : false );
         setBaudRate(BaudRate.getForRate(port.getPortSettings().getBaudRate()));
-        setType(port.getPaoType());
+        setDeviceType(port.getPaoType());
     }
 
     @Override
     public void buildDBPersistent(T port) {
         // will be null during creation
-        if (getId() != null) {
-            port.setPortID(getId());
+        if (getDeviceId() != null) {
+            port.setPortID(getDeviceId());
         }
         if (getBaudRate() != null) {
             port.getPortSettings().setBaudRate(getBaudRate().getBaudRateValue());
         }
-        if (getName() != null) {
-            port.setPAOName(getName());
+        if (getDeviceName() != null) {
+            port.setPAOName(getDeviceName());
         }
         if (getEnable() != null) {
         port.setDisableFlag(BooleanUtils.isFalse(getEnable()) ? 'Y' : 'N');
@@ -53,9 +53,9 @@ public class PortBase<T extends DirectPort> extends DeviceBaseModel implements D
 
     @Override
     public void buildModel(LiteYukonPAObject liteYukonPAObject) {
-        setId(liteYukonPAObject.getLiteID());
-        setName(liteYukonPAObject.getPaoName());
+        setDeviceId(liteYukonPAObject.getLiteID());
+        setDeviceName(liteYukonPAObject.getPaoName());
         setEnable(liteYukonPAObject.getDisableFlag().equals("N") ? true : false);
-        setType(liteYukonPAObject.getPaoType());
+        setDeviceType(liteYukonPAObject.getPaoType());
     }
 }

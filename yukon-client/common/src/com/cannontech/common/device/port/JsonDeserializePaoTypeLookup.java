@@ -58,7 +58,7 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
 
         YukonPao yukonPao = (YukonPao) parser.getCodec().treeToValue(node, getYukonPaoFromModelFactory(paoType, id).getClass());
         if (yukonPao != null) {
-            ((DeviceBaseModel) yukonPao).setId(id);
+            ((DeviceBaseModel) yukonPao).setDeviceId(id);
         }
         return yukonPao;
     }
@@ -105,7 +105,7 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
     private YukonPao getYukonPaoFromModelFactory(PaoType paoType, Integer id) {
         YukonPao pao = PaoModelFactory.getModel(paoType);
         if (pao != null) {
-            ((DeviceBaseModel) pao).setId(id);
+            ((DeviceBaseModel) pao).setDeviceId(id);
             return pao;
         } else {
             // throw exception for not supported paoType

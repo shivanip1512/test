@@ -61,6 +61,7 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
+import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.tree.Node;
@@ -113,6 +114,7 @@ public class ComprehensiveMapController {
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
+    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     private Instant networkTreeUpdateTime = null;
 
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
@@ -318,7 +320,7 @@ public class ComprehensiveMapController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         List<RfnDevice> devices = metaData.keySet().stream()
-                .map(rfnIdentifier -> rfnDeviceCreationService.findOrCreate(rfnIdentifier))
+                .map(rfnIdentifier -> rfnDeviceLookupService.findRfnDevices(rfnIdentifier))
                 // remove devices not created or found
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

@@ -23,6 +23,7 @@
 <%@ attribute name="dataPlaceholder" %>
 <%@ attribute name="useKeyLabel" type="java.lang.Boolean" %>
 <%@ attribute name="allKeyLabel"%>
+<%@ attribute name="hideErrors" type="java.lang.Boolean" description="Default: false. If true, will not display validation error messages." %>
 
 <cti:default var="disabled" value="false"/>
 
@@ -157,7 +158,7 @@
     </c:choose>    
 </form:select>
 
-<c:if test="${status.error}">
+<c:if test="${status.error and hideErrors == false}">
     <br>
     <form:errors path="${path}" cssClass="error"/>
 </c:if>

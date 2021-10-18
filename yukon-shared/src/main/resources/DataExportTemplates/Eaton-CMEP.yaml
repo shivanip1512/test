@@ -40,7 +40,7 @@ fields:
     pattern: 'E'
   - field:
       type: ATTRIBUTE_NAME
-    fieldValue: CMEP
+    pattern: CMEP
     missingAttribute: LEAVE_BLANK
   - field:
       type: PLAIN_TEXT

@@ -18,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.Range;
-import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -414,22 +412,14 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     }
     
     @Override
-    public Set<Integer> getDeviceIdsByStatus(Set<Integer> deviceIds, ControlEventDeviceStatus status, Range<Instant> range) {
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        SqlFragmentGenerator<Integer> sqlGenerator = (subList) -> {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT DeviceId");
-            sql.append("FROM ControlEventDevice");
-            sql.append("WHERE DeviceId").in(subList);
-            sql.append("AND Result").eq(status);
-            sql.append("AND DeviceReceivedTime").gte(range.getMin());
-            sql.append("AND DeviceReceivedTime").lte(range.getMax());
-            return sql;
-        };
-
-        return template.query(sqlGenerator, deviceIds, TypeRowMapper.INTEGER)
+    public Set<Integer> getDeviceIdsByExternalEventIdAndStatuses(Integer externalEventId, List<ControlEventDeviceStatus> statuses) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM ControlEventDevice ced");
+        sql.append("  JOIN ControlEvent ce ON ced.ControlEventId = ce.ControlEventId");
+        sql.append("WHERE Result").in_k(statuses);
+        sql.append("AND ce.ExternalEventId").eq(externalEventId);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER)
                 .stream().distinct().collect(Collectors.toSet());
-
     }
-
 }

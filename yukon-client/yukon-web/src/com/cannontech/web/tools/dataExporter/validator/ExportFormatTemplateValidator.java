@@ -21,8 +21,6 @@ import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
-import com.cannontech.amr.archivedValueExporter.model.ReadingPattern;
-import com.cannontech.amr.archivedValueExporter.model.TimestampPattern;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.validator.SimpleValidator;
 import com.google.common.collect.ImmutableList;
@@ -41,8 +39,6 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
     private static final String field = "field";
     private static final String formatId = "formatId";
     private static final String attributeField = "attributeField";
-    private static final String readingPattern = "readingPattern";
-    private static final String timestampPattern = "timestampPattern";
     private static final String maxLength = "maxLength";
     private static final String padChar = "padChar";
     private static final String padSide = "padSide";
@@ -50,7 +46,6 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
     private static final String missingAttribute = "missingAttribute";
     private static final String missingAttributeValue = "missingAttributeValue";
     private static final String pattern = "pattern";
-    private static final String fieldValue = "fieldValue";
     private static final String attribute = "attribute";
     private static final String fieldAttribute = "field.attribute";
 
@@ -69,8 +64,6 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
         builder.add(formatId);
         ignoredFields = builder.build();
         builder = ImmutableList.builder();
-        builder.add(readingPattern);
-        builder.add(timestampPattern);
         builder.add(padSide);
         builder.add(maxLength);
         defaultedFieldNames = builder.build();
@@ -182,15 +175,15 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                         missingAttributeValue, attributeField);
             } else if (exportField.getAttributeField() == AttributeField.TIMESTAMP) {
                 checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                        missingAttributeValue, timestampPattern, attributeField);
+                        missingAttributeValue, attributeField, pattern);
             } else if (exportField.getAttributeField() == AttributeField.VALUE) {
                 checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                        missingAttributeValue, readingPattern, roundingMode, attributeField);
+                        missingAttributeValue, roundingMode, attributeField, pattern);
             }
             break;
         case ATTRIBUTE_NAME:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue, fieldValue);
+                    missingAttributeValue, pattern);
             break;
         case DEVICE_TYPE:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar);
@@ -200,14 +193,14 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
             break;
         case POINT_TIMESTAMP:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue, timestampPattern);
+                    missingAttributeValue, pattern);
             break;
         case POINT_VALUE:
             checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, missingAttribute,
-                    missingAttributeValue, readingPattern, roundingMode);
+                    missingAttributeValue, roundingMode, pattern);
             break;
         case RUNTIME:
-            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, timestampPattern);
+            checkIfFieldApplicable(exportField, errors, field, maxLength, padSide, padChar, pattern);
             break;
         }
 
@@ -226,8 +219,9 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                     field.setAccessible(true);
                     Object fieldValue = field.get(exportField);
                     String fieldName = field.getName();
-                    if (applicableFieldList.contains(fieldName) && fieldName.equals(readingPattern)) {
-                        if (exportField.getReadingPattern() == ReadingPattern.CUSTOM
+                    if ((applicableFieldList.contains(fieldName) && type.equals(FieldType.POINT_VALUE))
+                            || (type.equals(FieldType.ATTRIBUTE) && exportField.getAttributeField() == AttributeField.VALUE)) {
+                        if (exportField.isCustomPattern()
                                 && StringUtils.isEmpty(exportField.getPattern())) {
                             if (!errors.hasFieldErrors(pattern)) {
                                 errors.rejectValue(pattern, requiredKey, new Object[] { pattern, type }, "");
@@ -261,7 +255,7 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
                         continue;
                     }
                     if (applicableFieldList.contains(fieldName)) {
-                        if (fieldValue == null || fieldValue.toString().isBlank()) {
+                        if ((fieldValue == null || fieldValue.toString().isBlank()) && !errors.hasFieldErrors(pattern)) {
                             errors.rejectValue(fieldName, requiredKey, new Object[] { fieldName, type }, "");
                         }
                     } else {
@@ -278,38 +272,23 @@ public class ExportFormatTemplateValidator extends SimpleValidator<ExportFormat>
     }
 
     /**
-     * As of now pattern field get auto populated ReadingPattern, TimestampPattern and empty for PLAIN_TEXT(i.e if kept empty).
-     * So even if user not provided pattern field, it will be available in POJO. So added added this method to check whether
+     * As of now pattern field is empty for PLAIN_TEXT(i.e if kept empty).
+     * This method to check whether
      * pattern is auto populated or not.
      */
     private boolean isNotAutoPopulatedField(String fieldName, ExportField exportField) {
         if (fieldName.equals(pattern)) {
-            return !(exportField.getField().getType() == FieldType.POINT_TIMESTAMP
-                    || exportField.getField().getType() == FieldType.POINT_VALUE
-                    || exportField.getField().getType() == FieldType.RUNTIME
-                    || exportField.getField().getType() == FieldType.ATTRIBUTE_NAME
-                    || exportField.getField().getType() == FieldType.PLAIN_TEXT
-                    || (exportField.getField().getType() == FieldType.ATTRIBUTE
-                            && exportField.getAttributeField() == AttributeField.VALUE)
-                    || (exportField.getField().getType() == FieldType.ATTRIBUTE
-                            && exportField.getAttributeField() == AttributeField.TIMESTAMP));
+            return !(exportField.getField().getType() == FieldType.PLAIN_TEXT);
         }
         return true;
     }
 
     /**
-     * Method to check the default value. Few fields like ReadingPattern, TimestampPattern are initialized in pojo with default
-     * values.This method check the field value and returns true if the true if the value is not default.
+     * Method to check the default value. This method check the field value and returns true if the true if the value is not default.
      * Used when field is not applicable for a type but provided with default value in yaml / auto populated by the parser.
      */
     private boolean isNotDefaultValue(Object fieldValue, String fieldName) {
         if (defaultedFieldNames.contains(fieldName)) {
-            if (fieldValue instanceof ReadingPattern && (ReadingPattern) fieldValue == ReadingPattern.FIVE_ZERO) {
-                return false;
-            }
-            if (fieldValue instanceof TimestampPattern && (TimestampPattern) fieldValue == TimestampPattern.MONTH_DAY_YEAR) {
-                return false;
-            }
             if (fieldValue instanceof PadSide && (PadSide) fieldValue == PadSide.NONE) {
                 return false;
             }

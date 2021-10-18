@@ -237,6 +237,11 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             if (programId != EcobeeZeusGroupService.DEFAULT_PROGRAM_ID) {
                 String zeusGroupId = ecobeeZeusGroupService.getZeusGroupId(lmGroupId, inventoryId, programId);
                 removeThermostatFromGroup(zeusGroupId, serialNumber, inventoryId, updateDeviceMapping);
+                List<Integer> inventories = ecobeeZeusGroupService.getInventoryIdsForZeusGrouID(zeusGroupId);
+                if (CollectionUtils.isEmpty(inventories)) {
+                    ecobeeZeusGroupService.deleteZeusGroupMapping(zeusGroupId);
+                    deleteGroup(zeusGroupId);
+                }
             }
         }
     }
@@ -259,7 +264,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                         ecobeeZeusGroupService.deleteZeusGroupMappingForInventory(inventoryId, zeusGroupId);
                     }
                 } else {
-                    throw new EnrollmentException("Error occurred while unenrolling thermostat " + serialNumber
+                    throw new EnrollmentException("Error occurred while unenrolling/opting out thermostat " + serialNumber
                             + " from the zeus group ID " + zeusGroupId);
                 }
             }
@@ -287,18 +292,27 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @Override
-    public void createThermostatGroup(String zeusGroupId, List<String> thermostatIds) {
+    public void createThermostatGroup(String oldZeusGroupId, List<Integer> inventoryIds) {
 
+        List<String> thermostatIds = new ArrayList<String>();
+        for (int id : inventoryIds) {
+            thermostatIds.add(lmHardwareBaseDao.getSerialNumberForInventoryId(id));
+        }
         String createThermostatURL = getUrlBase() + "tstatgroups";
 
-        String groupName = ecobeeZeusGroupService.zeusGroupName(zeusGroupId);
+        String groupName = ecobeeZeusGroupService.zeusGroupName(oldZeusGroupId);
         CriteriaSelector criteriaSelector = new CriteriaSelector(Selector.IDENTIFIER.getType(), thermostatIds);
         ZeusGroup group = new ZeusGroup(groupName, getZeusProgramId());
         ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
         try {
-            requestHelper.callEcobeeAPIForObject(createThermostatURL, HttpMethod.POST, Object.class,
-                    zeusThermostatGroup);
+            ResponseEntity<Map> responseEntity = requestHelper.callEcobeeAPIForObject(createThermostatURL, HttpMethod.POST,
+                    Map.class, zeusThermostatGroup);
+            if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
+                Map<String, String> responseFields = (Map<String, String>) responseEntity.getBody().get("group");
+                String newZeusGroupId = responseFields.get("id");
+                ecobeeZeusGroupService.updateZeusGroupId(oldZeusGroupId, newZeusGroupId);
+            }
 
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
@@ -583,12 +597,16 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @Override
-    public boolean cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException {
-        boolean cancelledAnyDREvents = false;
+    public void cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException {
         for (int yukonGroupId : groupIds) {
             boolean isNotEmptyThermostats = ArrayUtils.isNotEmpty(serialNumbers);
 
             List<String> zeusEventIds = ecobeeZeusGroupService.getEventIds(yukonGroupId);
+            if (CollectionUtils.isEmpty(zeusEventIds)) {
+                log.debug("There are no events for the group: {}. No DR Event cancellation request sent to Ecobee.",
+                        yukonGroupId);
+                return;
+            }
             for (String zeusEventId : zeusEventIds) {
                 String cancelDrUrl = getUrlBase() + "events/dr/" + zeusEventId;
                 if (isNotEmptyThermostats) {
@@ -608,19 +626,12 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                             // group ID.
                             ecobeeZeusGroupService.removeEventId(zeusEventId);
                         }
-                        cancelledAnyDREvents = true;
                     }
                 } catch (RestClientException | EcobeeAuthenticationException e) {
                     throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
                 }
             }
         }
-        if (!cancelledAnyDREvents) {
-            log.info("There are no events for the provided groups/ serial numbers. No DR Event cancellation request"
-                    + " sent to Ecobee.");
-            throw new CommandCompletionException("No DR Event cancellation request sent to Ecobee.");
-        }
-        return cancelledAnyDREvents;
     }
 
     private String getUrlBase() {
@@ -634,6 +645,24 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             throw new EcobeeCommunicationException("Ecobee Zeus program id is empty.");
         }
         return programId;
+    }
+
+    @Override
+    public void optOut(String serialNumber, int inventoryId) {
+        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForInventoryId(inventoryId);
+        zeusGroupIds.stream().forEach(zeusGroupId -> {
+            // Do not remove the mapping from ZeusGroupInventoryMapping table.
+            removeThermostatFromGroup(zeusGroupId, serialNumber, inventoryId, false);
+        });
+    }
+
+    @Override
+    public void cancelOptOut(String serialNumber, int inventoryId) {
+        List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForInventoryId(inventoryId);
+        zeusGroupIds.stream().forEach(zeusGroupId -> {
+            // Do not remove the mapping from ZeusGroupInventoryMapping table.
+            addThermostatToGroup(zeusGroupId, serialNumber, inventoryId, false);
+        });
     }
 
 }

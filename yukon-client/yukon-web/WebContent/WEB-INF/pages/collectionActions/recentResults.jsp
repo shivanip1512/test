@@ -20,7 +20,7 @@
                 <tags:selectWithItems items="${actionsList}" path="actions" itemLabel="${formatKey}" dataPlaceholder="${actionLabel}" inputClass="js-chosen"/>
             </div>
             <div class="fl MR10">
-                <dt:dateRange toText="to" toStyle="margin-right:4px;margin-top:1%;" wrapperClasses="fl" startPath="startDate" endPath="endDate" 
+                <dt:dateRange toText="to" toStyle="margin-right:4px;margin-top:2%;" wrapperClasses="fl" startPath="startDate" endPath="endDate" 
                     startValue="${filter.startDate}" endValue="${filter.endDate}" displayValidationToRight="true"/>
             </div>
             <div class="button-group fl MR10">

@@ -11,7 +11,7 @@ post-operation:
             $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint'
           examples:
             Program Constraints:
-              $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
+              $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint Request'
       required: true
     responses:
       '201':
@@ -19,10 +19,10 @@ post-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint'
+              $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint Response Schema'
             examples:
               Program Constraints:
-                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
+                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint Response'
 get-update-delete-operation:
   get:
     tags:
@@ -42,10 +42,10 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint'
+              $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint Response Schema'
             examples:
               Program Constraints:
-                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
+                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint Response'
   put:
     tags:
      - Program Constraints
@@ -65,7 +65,7 @@ get-update-delete-operation:
             $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint'
           examples:
             Program Constraints:
-              $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
+              $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint Request'
       required: true
     responses:
       '200':
@@ -73,10 +73,10 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint'
+              $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint Response Schema'
             examples:
               Program Constraints:
-                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
+                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint Response'
   delete:
     tags:
      - Program Constraints

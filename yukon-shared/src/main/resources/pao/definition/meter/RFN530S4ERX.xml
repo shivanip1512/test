@@ -26,7 +26,7 @@
         <pointInfo name="Average Power Factor" attributes="AVERAGE_POWER_FACTOR"/>
         <pointInfo name="Average Power Factor Frozen" attributes="AVERAGE_POWER_FACTOR_FROZEN"/>
         <pointInfo name="Minimum Power Factor" attributes="MINIMUM_POWER_FACTOR"></pointInfo>
-        <pointInfo name="Previous Minimum Power Factor" attributes="PREVIOUS_MINIMUM_POWER_FACTOR"></pointInfo>
+        <pointInfo name="Minimum Power Factor Frozen" attributes="MINIMUM_POWER_FACTOR_FROZEN"></pointInfo>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
@@ -38,7 +38,7 @@
         <pointInfo name="Current Phase B" attributes="CURRENT_PHASE_B"/>
         <pointInfo name="Current Phase C" attributes="CURRENT_PHASE_C"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
-        <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
+        <pointInfo name="Delivered kWh" init="true" attributes="DELIVERED_KWH"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
@@ -70,7 +70,7 @@
         <pointInfo name="Sum kVArh" attributes="SUM_KVARH"/>
         <pointInfo name="Sum kVArh per Interval" attributes="SUM_KVARH_PER_INTERVAL"/>
         <pointInfo name="Sum kW Load Profile" attributes="SUM_KW_LOAD_PROFILE"/>
-        <pointInfo name="Sum kWh" init="true" attributes="SUM_KWH"/>
+        <pointInfo name="Sum kWh" init="true" attributes="USAGE,SUM_KWH"/>
         <pointInfo name="Sum kWh per Interval" init="true" attributes="SUM_KWH_PER_INTERVAL"/>
         <pointInfo name="Sum Peak kVA" attributes="SUM_PEAK_KVA"/>
         <pointInfo name="Sum Peak kVAr" attributes="SUM_PEAK_KVAR"/>

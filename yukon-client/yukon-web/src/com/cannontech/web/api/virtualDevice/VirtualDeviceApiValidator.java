@@ -23,8 +23,8 @@ public class VirtualDeviceApiValidator <T extends VirtualDeviceBaseModel> extend
     @Override
     protected void doValidation(VirtualDeviceBaseModel virtualDevice, Errors errors) {
         String virtualDeviceId = ServletUtils.getPathVariable("id");
-        if (virtualDevice.getName() != null) {
-            yukonApiValidationHelper.validatePaoName(virtualDevice.getName(), virtualDevice.getType(), errors, "Name", virtualDeviceId);
+        if (virtualDevice.getDeviceName() != null) {
+            yukonApiValidationHelper.validatePaoName(virtualDevice.getDeviceName(), virtualDevice.getDeviceType(), errors, "Name", virtualDeviceId);
         }
         if (virtualDevice instanceof VirtualMeterModel)
         {

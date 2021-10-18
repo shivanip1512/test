@@ -53,16 +53,16 @@
                         <tags:selectWithItems items="${hopCountOptions}" path="hopCount" inputClass="js-selected-hop-count" dataPlaceholder="${allPlaceholder}"/>&nbsp;&nbsp;
                     
                         <i:inline key=".colorCodeBy"/>&nbsp;
-                        <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy"/>
+                        <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy" inputClass="vam"/>
                         
-                        <cti:button nameKey="filter" classes="js-filter-map primary action fr vab" disabled="true"/>
+                        <cti:button nameKey="filter" classes="js-filter-map primary action fr vab MB5" disabled="true"/>
                     </div>
                     
                 </form:form>
                 <hr>
             </div>
             
-            <div id="filtered-devices" class="dn PB10">
+            <div id="filtered-devices" class="dn PB20">
                 <span class="fwn"><i:inline key="yukon.common.filteredResults"/></span>
                 <span class="badge js-number-devices"></span>&nbsp;<i:inline key="yukon.common.devices"/>
                 <input type="hidden" id="collection-group"/>

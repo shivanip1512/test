@@ -36,9 +36,9 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
 
     @Override
     protected void doValidation(T commChannel, Errors errors) {
-        String paoId = commChannel.getId() != null ? commChannel.getId().toString() : null;
+        String paoId = commChannel.getDeviceId() != null ? commChannel.getDeviceId().toString() : null;
 
-        yukonValidationHelper.validatePaoName(commChannel.getName(), commChannel.getType(), errors, yukonValidationHelper.getMessage("yukon.common.name"), paoId);
+        yukonValidationHelper.validatePaoName(commChannel.getDeviceName(), commChannel.getDeviceType(), errors, yukonValidationHelper.getMessage("yukon.common.name"), paoId);
         if (commChannel instanceof TcpPortDetail) {
             if (StringUtils.isNotEmpty(paoId)) {
                 validateTimingField(errors, ((TcpPortDetail) commChannel).getTiming());
@@ -61,12 +61,12 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
                 PortValidatorHelper.validateIPAddress(errors, ((TcpSharedPortDetail) commChannel).getIpAddress(),
                         yukonValidationHelper.getMessage("yukon.common.ipaddress"), true);
                 validatePort(errors, terminalServerPortDetail.getPortNumber(), ((TcpSharedPortDetail) commChannel).getIpAddress(),
-                        paoId, commChannel.getType());
+                        paoId, commChannel.getDeviceType());
             }
 
             if (commChannel instanceof UdpPortDetail) {
                 validatePort(errors, terminalServerPortDetail.getPortNumber(), ((UdpPortDetail) commChannel).getIpAddress(),
-                        paoId, commChannel.getType());
+                        paoId, commChannel.getDeviceType());
                 PortValidatorHelper.validateEncryptionKey(errors, ((UdpPortDetail) commChannel).getKeyInHex());
             }
         }

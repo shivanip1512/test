@@ -985,7 +985,7 @@ Java :
     updated : 2005-05-09
     jira : none
     notes : Discontinued in 2012, should no longer to be used for legal reasons
-  
+    
   - filename : jackson-annotations-2.12.3.jar
     yukon group : Jackson
     project : Jackson
@@ -1113,6 +1113,34 @@ Java :
     updated : 2021-06-23
     jira : YUK-24554
     notes :       
+    
+  - filename : jakarta.activation-api-2.0.1.jar
+    yukon group : JakartaMail
+    project : Jakarta Activation
+    version : 2.0.1
+    project URL : "https://eclipse-ee4j.github.io/jaf/"
+    license : Eclipse Public License v2.0, GPLv2 with classpath exception
+    license URLs : "https://projects.eclipse.org/projects/ee4j.jaf"
+    maven URL : "https://mvnrepository.com/artifact/jakarta.activation/jakarta.activation-api/2.0.1"
+    md5 : bf677dc9a839f6de5229c5013c4b6a8b
+    sha1 : 7622742cb76548abd0c6633fb5c11cb919805ff2
+    updated : 2021-10-02
+    jira : YUK-24667
+    notes : Jakarta Mail
+    
+  - filename : jakarta.mail-2.0.1.jar
+    yukon group : JakartaMail
+    project : Jakarta Mail
+    version : 2.0.1
+    project URL : "https://eclipse-ee4j.github.io/mail/"
+    license : Eclipse Public License v2.0, GPLv2 with classpath exception
+    license URLs : "https://eclipse-ee4j.github.io/mail/JakartaMail-License"
+    maven URL : "https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail/2.0.1"
+    md5 : 8885560796641719f1cc0c9ea17b8bee
+    sha1 : 96d3645f02a92bcc5e7ae1ff037151e44179f230
+    updated : 2021-10-02
+    jira : YUK-24667
+    notes : Jakarta Mail
     
   - filename : jakarta.xml.bind-api-2.3.2.jar
     yukon group : Azure
@@ -1800,6 +1828,20 @@ Java :
     jira : YUK-23078
     notes : Apache Log4j 2 SLF4J Binding
   
+  - filename : logging-mailhandler-2.0.1.jar
+    yukon group : JakartaMail
+    project : Jakarta Mail API
+    version : 2.0.1
+    project URL : "https://eclipse-ee4j.github.io/mail/"
+    license : Eclipse Public License v2.0, GPLv2 with classpath exception
+    license URLs : "https://eclipse-ee4j.github.io/mail/JakartaMail-License"
+    maven URL : "https://mvnrepository.com/artifact/com.sun.mail/logging-mailhandler/2.0.1"
+    md5 : c50a0052136c8bec4515cbb75e3e80c5
+    sha1 : ab21b597fd9910dd4a35532a779805cb6e4d068e
+    updated : 2021-10-02
+    jira : YUK-24667
+    notes : Jakarta Mail
+    
   - filename : lucene-analyzers-common-8.8.2.jar
     yukon group : Lucene
     project : Apache Lucene
@@ -2219,7 +2261,7 @@ Java :
     updated : 2005-05-09
     jira : none
     notes : 
-  
+    
   - filename : protobuf-java-3.15.8.jar
     yukon group : Protobuf
     project : Protobuf
@@ -2486,20 +2528,6 @@ Java :
     updated : 2019-12-04
     jira : YUK-20994
     notes : 
-  
-  - filename : smtp-1.5.1.jar
-    yukon group : JavaMail
-    project : JavaMail API
-    version : 1.5.1
-    project URL : "https://projects.eclipse.org/projects/ee4j.javamail"
-    license : CDDL, GPLv2 with classpath exception
-    license URLs : "http://www.sun.com/cddl, https://glassfish.dev.java.net/public/CDDL+GPL.html"
-    maven URL : "https://mvnrepository.com/artifact/com.sun.mail/smtp/1.5.1"
-    md5 : dff8e21194f0d4789a5eb1b8b3b093e9
-    sha1 : 5ee9f4e40e5835650b01dd6dc23ea2b69598bdb5
-    updated : 2014-04-07
-    jira : YUK-11706
-    notes : JavaMail API SMTP Provider
   
   - filename : snakeyaml-1.18.2.jar
     yukon group : Jackson

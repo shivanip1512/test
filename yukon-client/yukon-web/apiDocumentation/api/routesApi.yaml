@@ -11,7 +11,7 @@ post-operation:
             $ref: '../schemas/routesSchema.yaml#/Route'
           examples:
             Route:
-              $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
+              $ref: '../schemas/routesSchema.yaml#/components/examples/Route Request'
       required: true
     responses:
       '201':
@@ -19,10 +19,10 @@ post-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/routesSchema.yaml#/Route'
+              $ref: '../schemas/routesSchema.yaml#/Route Response Schema'
             examples:
               Route:
-                $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
+                $ref: '../schemas/routesSchema.yaml#/components/examples/Route Response'
   get:
     tags:
       - Route
@@ -36,7 +36,7 @@ post-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/routesSchema.yaml#/Route'
+              $ref: '../schemas/routesSchema.yaml#/Route Response Schema'
             examples:
               List Routes:
                 $ref: '../schemas/routesSchema.yaml#/components/examples/List Routes'
@@ -59,10 +59,10 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/routesSchema.yaml#/Route'
+              $ref: '../schemas/routesSchema.yaml#/Route Response Schema'
             examples:
               Route:
-                $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
+                $ref: '../schemas/routesSchema.yaml#/components/examples/Route Response'
 
   delete:
     tags:
@@ -82,7 +82,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/routesSchema.yaml#/id'
+              $ref: '../schemas/routesSchema.yaml#/routeId'
             examples:
               RouteId:
                 $ref: '../schemas/routesSchema.yaml#/components/examples/routeId'
@@ -106,7 +106,7 @@ get-update-delete-operation:
             $ref: '../schemas/routesSchema.yaml#/Route'
           examples:
             Route:
-              $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
+              $ref: '../schemas/routesSchema.yaml#/components/examples/Route Request'
       required: true
     responses:
       '200':
@@ -114,7 +114,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/routesSchema.yaml#/Route'
+              $ref: '../schemas/routesSchema.yaml#/Route Response Schema'
             examples:
               Route:
-                $ref: '../schemas/routesSchema.yaml#/components/examples/Route'
+                $ref: '../schemas/routesSchema.yaml#/components/examples/Route Response'

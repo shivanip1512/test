@@ -42,7 +42,7 @@ public class PortServiceImpl implements PortService {
     @Override
     @Transactional
     public PortBase<? extends DirectPort> create(PortBase port, LiteYukonUser liteYukonUser) {
-        DirectPort directPort = PortFactory.createPort(port.getType());
+        DirectPort directPort = PortFactory.createPort(port.getDeviceType());
         port.buildDBPersistent(directPort);
         dbPersistentDao.performDBChange(directPort, TransactionType.INSERT);
         SimpleDevice device = SimpleDevice.of(directPort.getPAObjectID(), directPort.getPaoType());
@@ -50,8 +50,8 @@ public class PortServiceImpl implements PortService {
         port.buildModel(directPort);
 
         //event log comm channel creation
-        commChannelEventLogService.commChannelCreated(port.getName(),
-                                                      port.getType(),
+        commChannelEventLogService.commChannelCreated(port.getDeviceName(),
+                                                      port.getDeviceType(),
                                                       port.getBaudRate(),
                                                       liteYukonUser);
 
@@ -90,8 +90,8 @@ public class PortServiceImpl implements PortService {
         port.buildModel(directPort);
 
       //event log comm channel update
-        commChannelEventLogService.commChannelUpdated(port.getName(),
-                                                      port.getType(),
+        commChannelEventLogService.commChannelUpdated(port.getDeviceName(),
+                                                      port.getDeviceType(),
                                                       port.getBaudRate(),
                                                       liteYukonUser);
 
