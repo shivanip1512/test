@@ -511,7 +511,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-validator-1.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/gson-1.7.2.jar">
 		<attributes>
@@ -604,7 +603,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/catalina.jar"/>
-	<classpathentry kind="lib" path="/third-party/tomcat-juli-9.0.41.jar"/>
+	<classpathentry kind="lib" path="/third-party/tomcat-juli-9.0.50.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/itronDeviceManagerTypes_v1_8.jar" sourcepath="/third-party/linked-sources/itronDeviceManagerTypes_v1_8_sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>

@@ -63,6 +63,13 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
 
             switch (command.getType()) {
                 case IN_SERVICE:
+                    // When user change the Yukon group, 1st unenroll the thermostat then enroll it to the correct
+                    // group.
+                    Set<Integer> removedEnrollmentGroupIds = (Set<Integer>) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
+                    if (CollectionUtils.isNotEmpty(removedEnrollmentGroupIds)) {
+                        ecobeeZeusCommunicationService.unEnroll(removedEnrollmentGroupIds, serialNumber, device.getInventoryID(),
+                                true);
+                    }
                     groupIds = getGroupId(inventoryId);
                     for (int tempGroupId : groupIds) {
                         programId = ecobeeZeusGroupService.getProgramIdToEnroll(inventoryId, tempGroupId);
@@ -91,24 +98,6 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                 case CANCEL_TEMP_OUT_OF_SERVICE:
                     // Cancel opt out for the device. Add the device to the zeus groups.
                     ecobeeZeusCommunicationService.cancelOptOut(serialNumber, device.getInventoryID());
-                    break;
-                case CONFIG:
-                    // When user change the Yukon group, 1st unenroll the thermostat then enroll it to the correct
-                    // group.
-                    Set<Integer> removedEnrollmentGroupIds = (Set<Integer>) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
-                    if (CollectionUtils.isNotEmpty(removedEnrollmentGroupIds)) {
-                        ecobeeZeusCommunicationService.unEnroll(removedEnrollmentGroupIds, serialNumber, device.getInventoryID(), true);
-                    }
-                    groupIds = getGroupId(inventoryId);
-                    for (int tempGroupId : groupIds) {
-                        programId = ecobeeZeusGroupService.getProgramIdToEnroll(inventoryId, tempGroupId);
-                        if (ecobeeZeusGroupService.shouldEnrollToGroup(inventoryId, programId)) {
-                            groupId = tempGroupId;
-                            break;
-                        }
-                    }
-                    ecobeeZeusCommunicationService.enroll(groupId, serialNumber, device.getInventoryID(), programId, true);
-
                     break;
                 case PERFORMANCE_VERIFICATION:
                 case READ_NOW:

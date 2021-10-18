@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +33,9 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.dr.gear.setup.OperationalState;
+import com.cannontech.common.dr.setup.LMSetupFilter;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -258,6 +263,12 @@ public class StyleGuideController {
         model.addAttribute("dc", dc);
         
         return "styleguide/device.collections.jsp";
+    }
+    
+    @RequestMapping("/styleguide/drop-down")
+    public String dropDown(ModelMap model) {
+        model.addAttribute("operationalStates", OperationalState.values());
+        return "styleguide/dropDown.jsp";
     }
     
     private void setupSprites(ModelMap model, HttpServletRequest request) throws IOException {

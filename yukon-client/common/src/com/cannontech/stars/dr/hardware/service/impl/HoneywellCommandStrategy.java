@@ -21,7 +21,6 @@ import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
@@ -40,8 +39,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
     @Autowired private HoneywellCommunicationService honeywellCommunicationService;
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
     @Autowired private HoneywellWifiThermostatDao honeywellWifiThermostatDao;
-    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
-    
+
     @Override
     public HardwareStrategyType getType() {
         return HardwareStrategyType.HONEYWELL;
@@ -73,7 +71,6 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
             }
             switch (command.getType()) {
             case IN_SERVICE:
-            case CONFIG:
                 // Cleanup the past enrollments
                 unEnrollDeviceFromPastEnrolledGroups(device.getLiteID(), honeywellThermostat, groupId);
                 addDevicesToHoneywellGroup(honeywellThermostat, honeywellGroupId, isDeviceConfigured);

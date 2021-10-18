@@ -20,7 +20,7 @@ public class ZeusEvent {
     @JsonProperty("random_time_seconds")
     private int randomTimeSeconds;
     @JsonProperty("is_mandatory")
-    private boolean isMandatory;
+    private boolean mandatory;
     @JsonProperty("duty_cycle")
     private Integer dutyCyclePercentage = null;
     @JsonProperty("send_email")
@@ -119,11 +119,11 @@ public class ZeusEvent {
     }
 
     public boolean isMandatory() {
-        return isMandatory;
+        return mandatory;
     }
 
-    public void setMandatory(boolean isMandatory) {
-        this.isMandatory = isMandatory;
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
     }
 
     public Integer getDutyCyclePercentage() {

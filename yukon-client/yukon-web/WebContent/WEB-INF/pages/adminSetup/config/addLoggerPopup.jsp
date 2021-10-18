@@ -21,11 +21,11 @@
         <tags:nameValue2 nameKey=".loggerName">
         <c:choose>
              <c:when test="${isEditMode}">
-                ${fn:escapeXml(logger.loggerName)}
-                 <input type="hidden" name="loggerName" value="${fn:escapeXml(logger.loggerName)}" maxlength="200"/>
+                 <span class="wbba">${fn:escapeXml(logger.loggerName)}</span>
+                 <input type="hidden" name="loggerName" value="${fn:escapeXml(logger.loggerName)}"/>
             </c:when>
             <c:otherwise>
-                <tags:input path="loggerName" size="60"/>
+                <tags:input path="loggerName" size="60" maxlength="200"/>
              </c:otherwise>
        </c:choose>
 

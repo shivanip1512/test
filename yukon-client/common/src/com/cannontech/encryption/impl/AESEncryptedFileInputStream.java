@@ -28,28 +28,28 @@ public class AESEncryptedFileInputStream extends ByteArrayInputStream {
 
     // Gets a decrypted byte array buffer to send the underlying ByteArrayInputStream
     private static byte[] getBuffer(File file, char[] password) throws IOException, CryptoException {
-        InputStream is = new FileInputStream(file);
-        long length = file.length();
+        try (InputStream is = new FileInputStream(file)) {
+            long length = file.length();
 
-        if (length > Integer.MAX_VALUE) {
-            is.close();
-            throw new IOException("File is too large.");
+            if (length > Integer.MAX_VALUE) {
+                throw new IOException("File is too large.");
+            }
+
+            byte[] bytes = new byte[(int) length];
+            int offset = 0;
+            int numRead = 0;
+            while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+                offset += numRead;
+            }
+
+            // Ensure all the bytes have been read in
+            if (offset < bytes.length) {
+                throw new IOException("Could not completely read file " + file.getName());
+            }
+
+            return new AESPasswordBasedCrypto(password).decrypt(bytes);
+        } catch (IOException ex) {
+            throw ex;
         }
-
-        byte[] bytes = new byte[(int)length];
-        int offset = 0;
-        int numRead = 0;
-        while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-            offset += numRead;
-        }
-
-        // Ensure all the bytes have been read in
-        if (offset < bytes.length) {
-            is.close();
-            throw new IOException("Could not completely read file "+file.getName());
-        }
-        is.close();
-
-        return new AESPasswordBasedCrypto(password).decrypt(bytes);
     }
 }

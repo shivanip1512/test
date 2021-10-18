@@ -1853,6 +1853,7 @@
               <page name="groupPickers" type="BASIC"/>
               <page name="deviceCollections" type="BASIC"/>
               <page name="charts" type="BASIC"/>
+              <page name="dropDown" type="BASIC"/>
             </pages>
           </page>
         </pages>

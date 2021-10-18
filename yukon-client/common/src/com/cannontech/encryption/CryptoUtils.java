@@ -125,7 +125,7 @@ public class CryptoUtils {
         if (sharedCryptoFile.exists()) {
             passkey = CryptoUtils.getPasskeyFromCryptoFile(sharedCryptoFile);
         } else {
-        	log.info(sharedCryptoFile.getName() + " doesn't exist. Creating new SharedCryptoFile.");
+                log.info(sharedCryptoFile.getName() + " doesn't exist. Creating new SharedCryptoFile.");
             CryptoUtils.createNewCryptoFile(sharedCryptoFile);
             passkey = CryptoUtils.getPasskeyFromCryptoFile(sharedCryptoFile);
         }
@@ -170,6 +170,9 @@ public class CryptoUtils {
      * The passkey generated is placed in <pk></pk> tag.
      */
     public static char[] createNewCryptoFile(File file) {
+        if (file == null) { 
+            return null; 
+        }
         char[] passkey = null;
         try {
             passkey = generateRandomPasskey(passKeyLength);
@@ -186,7 +189,7 @@ public class CryptoUtils {
             xmlFile.createNewElementWithContent("pk", passkey);
             xmlFile.writeAndClose();
         } catch (IOException e) {
-        	log.error("Unable to save new passkey to file. Returning null passkey.");
+                log.error("Unable to save new passkey to file. Returning null passkey.");
             passkey = null;
         }
 
@@ -205,11 +208,11 @@ public class CryptoUtils {
      */
     public static char[] getPasskeyFromCryptoFile(File cryptoFile) throws IOException, CryptoException, JDOMException {
         char [] passkey = null;
-        
-        AESEncryptedFileInputStream inputStream = new AESEncryptedFileInputStream(cryptoFile, yukonPasskey.toCharArray());
-        SimpleXmlReader xmlFile = new SimpleXmlReader(inputStream);
-        passkey = xmlFile.getElementValue("pk").toCharArray();
-
+        if (cryptoFile != null) {
+            AESEncryptedFileInputStream inputStream = new AESEncryptedFileInputStream(cryptoFile, yukonPasskey.toCharArray());
+            SimpleXmlReader xmlFile = new SimpleXmlReader(inputStream);
+            passkey = xmlFile.getElementValue("pk").toCharArray();
+        }
         return passkey;
     }
 }

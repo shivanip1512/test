@@ -726,8 +726,8 @@
     <entry key="yukon.common.events.system.configuration.sensitiveGlobalSettingChanged">Global Setting {2} changed by {1}.</entry>
     
     <!-- Yukon Loggers -->
-    <entry key="yukon.common.events.system.configuration.loggerAdded">Logger {1} added by {3}. Logger level: {2}, Expiration date: {11}.</entry>
-    <entry key="yukon.common.events.system.configuration.loggerUpdated">Logger {1} updated by {3}. Logger level: {2}, Expiration date: {11}.</entry>
+    <entry key="yukon.common.events.system.configuration.loggerAdded">Logger {1} added by {3}. Logger level: {2}, Expiration : {11}.</entry>
+    <entry key="yukon.common.events.system.configuration.loggerUpdated">Logger {1} updated by {3}. Logger level: {2}, Expiration : {11}.</entry>
     <entry key="yukon.common.events.system.configuration.loggerDeleted">Logger {1} deleted by {2}.</entry>
     
     <!-- Honeywell Key Configuration -->
@@ -1109,4 +1109,3 @@
      <entry key="yukon.common.events.system.configuration.decryptionFailed">Decryption failed for Yukon Service {1} with Server Identifier {2} and for value {3} at {11}.</entry>
 
 </properties>
-

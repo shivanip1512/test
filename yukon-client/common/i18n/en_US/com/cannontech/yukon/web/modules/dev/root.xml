@@ -591,6 +591,7 @@
     <entry key="yukon.web.modules.dev.sliders.pageName">Sliders</entry>
     <entry key="yukon.web.modules.dev.steppers.pageName">Steppers</entry>
     <entry key="yukon.web.modules.dev.blocking.pageName">Blocking</entry>
+    <entry key="yukon.web.modules.dev.dropDown.pageName">Dropdowns</entry>
     
     <entry key="yukon.web.modules.dev.dialogs.pageName">Dialogs</entry>
     
