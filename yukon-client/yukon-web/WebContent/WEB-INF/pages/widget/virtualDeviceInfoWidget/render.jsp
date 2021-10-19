@@ -20,14 +20,14 @@
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".type">
                 <cti:displayForPageEditModes modes="CREATE">
-                    <tags:selectWithItems path="type" items="${types}" inputClass="js-type"/>
+                    <tags:selectWithItems path="deviceType" items="${types}" inputClass="js-type"/>
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="VIEW">
                     <tags:paoType yukonPao="${virtualDevice}"/>
                     <tags:hidden path="deviceType"/>
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="EDIT">
-                    <i:inline key="${virtualDevice.type.formatKey}"/>
+                    <i:inline key="${virtualDevice.deviceType.formatKey}"/>
                     <tags:hidden path="deviceType"/>
                 </cti:displayForPageEditModes>
             </tags:nameValue2>
