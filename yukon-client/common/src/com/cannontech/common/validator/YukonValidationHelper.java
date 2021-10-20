@@ -31,7 +31,7 @@ public class YukonValidationHelper {
                 errors.rejectValue("name", key + "nameConflict", new Object[] { fieldName }, "");
             }
         } else {
-            errors.rejectValue("name", key + "fieldrequired", new Object[] { "Name" }, "");
+            errors.rejectValue("deviceName", key + "fieldrequired", new Object[] { "Name" }, "");
         }
     }
 
