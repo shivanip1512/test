@@ -1,6 +1,5 @@
 package com.cannontech.dr.eatonCloud;
 
-import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -33,6 +32,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.events.loggers.EatonCloudEventLogService;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.smartNotification.model.EatonCloudDrEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
@@ -55,13 +55,14 @@ import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
 import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.math.IntMath;
+import com.google.common.collect.Multimap;
 
 public class EatonCloudMessageListener {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudMessageListener.class);
@@ -117,13 +118,14 @@ public class EatonCloudMessageListener {
                             List.of(ControlEventDeviceStatus.SUCCESS_RECEIVED));
                     executor.execute(() -> {
                         if (!devicesToRead.isEmpty()) {
-                            log.info("Reading devices: {} event id: {} for date range:{}-{} [original command sent at {}] ", 
+                            Multimap<PaoIdentifier, PointData> result = eatonCloudDataReadService.collectDataForRead(devicesToRead, range);
+                            log.info("Reading devices: {} Read succeeded for {} devices event id: {} for date range:{}-{} [original command sent at {}] ", 
                                     devicesToRead.size(),
+                                    result.asMap().keySet().size(),
                                     eventId,
                                     range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
                                     range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
                                     sendTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
-                            eatonCloudDataReadService.collectDataForRead(devicesToRead, range);
                         } else {
                             log.info("Can't find find devices to read. Devices with status SUCCESS_RECEIVED not found for event id: {} for date range:{}-{} [original command sent at {}] ", 
                                     eventId,
@@ -230,6 +232,14 @@ public class EatonCloudMessageListener {
                     totalSucceeded.incrementAndGet();
                     log.trace("Success sending shed command to device id:{} guid:{} name:{} eventId:{} relay:{}", deviceId,
                             guid, deviceName, eventId, command.getVirtualRelayId(), params);
+                    
+                    eatonCloudEventLogService.sendShed(deviceName,
+                            guid,
+                            command.getDutyCyclePercentage(),
+                            command.getDutyCyclePeriod(),
+                            command.getCriticality(),
+                            command.getVirtualRelayId());
+                    
                 } else {
                     throw new EatonCloudException(response.getMessage());
                 }
@@ -237,20 +247,13 @@ public class EatonCloudMessageListener {
                 totalFailed.getAndIncrement();
                 log.error("Error sending shed command device id:{} guid:{} name:{} eventId:{} relay:{}", deviceId, guid,
                         deviceName, eventId, command.getVirtualRelayId(), e);
-                processError(eventId, params, deviceId, e.getErrorMessage().getMessage());
+                processError(eventId, deviceName, deviceId, guid, command, e.getErrorMessage().getMessage());
             } catch (EatonCloudException e) {
                 totalFailed.getAndIncrement();
                 log.error("Error sending shed command device id:{} guid:{} name:{} eventId:{} relay:{}", deviceId, guid,
                         deviceName, eventId, command.getVirtualRelayId(), e);
-                processError(eventId, params, deviceId, e.getMessage());
+                processError(eventId, deviceName, deviceId, guid, command, e.getMessage());
             }
-
-            eatonCloudEventLogService.sendShed(deviceName,
-                    guid,
-                    command.getDutyCyclePercentage(),
-                    command.getDutyCyclePeriod(),
-                    command.getCriticality(),
-                    command.getVirtualRelayId());
         });
 
         stopwatch.stop();
@@ -259,8 +262,7 @@ public class EatonCloudMessageListener {
             log.debug("Commands timer - devices: {}, total time: {}", guids.size(), duration);
         }
 
-        int readTimeFromNowInMinutes = command.getDutyCyclePeriod() == null ? 5 : IntMath.divide(command.getDutyCyclePeriod() / 60,
-                2, RoundingMode.CEILING);
+        int readTimeFromNowInMinutes = 1;
         Instant nextReadTime = DateTime.now().plusMinutes(readTimeFromNowInMinutes).toInstant();
         nextRead.put(eventId, Pair.of(nextReadTime, sendTime));
 
@@ -293,7 +295,17 @@ public class EatonCloudMessageListener {
         }
     }
 
-    private void processError(Integer eventId, Map<String, Object> params, Integer deviceId, String message) {
+    private void processError(Integer eventId, String deviceName, Integer deviceId, String guid,
+            LMEatonCloudScheduledCycleCommand command, String message) {
+
+        eatonCloudEventLogService.sendShedFailed(deviceName,
+                guid,
+                command.getDutyCyclePercentage(),
+                command.getDutyCyclePeriod(),
+                command.getCriticality(),
+                command.getVirtualRelayId(),
+                truncateErrorForEventLog(message));
+
         recentEventParticipationDao.updateDeviceControlEvent(eventId.toString(),
                 deviceId,
                 ControlEventDeviceStatus.FAILED,
@@ -301,7 +313,7 @@ public class EatonCloudMessageListener {
                 StringUtils.isEmpty(message) ? null : message.length() > 100 ? message.substring(0, 100) : message,
                 null);
     }
-    
+
     private void sendRestoreCommands(Set<Integer> devices, LMEatonCloudStopCommand command, Integer eventId) {
         Map<String, Object> params = getRestoreParams(command, eventId);
         Map<Integer, String> guids = deviceDao.getGuids(devices);
@@ -326,10 +338,17 @@ public class EatonCloudMessageListener {
             try {
                 eatonCloudCommunicationService.sendCommand(guid, new EatonCloudCommandRequestV1("LCR_Control", params));
                 eatonCloudEventLogService.sendRestore(deviceName, guid, command.getVirtualRelayId());
-            } catch (Exception e) {
-                totalFailed.incrementAndGet();
-                log.error("Error sending restore command to device id:{} eventId:{} name:{} relay:{}", deviceId,
-                        eventId, deviceName, command.getVirtualRelayId());
+            } catch (EatonCloudCommunicationExceptionV1 e) {
+                totalFailed.getAndIncrement();
+                eatonCloudEventLogService.sendRestoreFailed(deviceName, guid, command.getVirtualRelayId(),
+                        truncateErrorForEventLog(e.getErrorMessage().getMessage()));
+                log.error("Error sending restore command device id:{} guid:{} name:{} eventId:{} relay:{}", deviceId, guid,
+                        deviceName, eventId, command.getVirtualRelayId(), e);
+            } catch (EatonCloudException e) {
+                eatonCloudEventLogService.sendRestoreFailed(deviceName, guid, command.getVirtualRelayId(), truncateErrorForEventLog(e.getMessage()));
+                totalFailed.getAndIncrement();
+                log.error("Error sending restore command device id:{} guid:{} name:{} eventId:{} relay:{}", deviceId, guid,
+                        deviceName, eventId, command.getVirtualRelayId(), e);
             }
         });
         stopwatch.stop();
@@ -339,6 +358,11 @@ public class EatonCloudMessageListener {
         }
         log.info("Finished sending LM Eaton Cloud Restore Command:{} devices:{} event id:{} relay:{} failed:{}", command,
                 devices.size(), eventId, command.getVirtualRelayId(), totalFailed.intValue());
+    }
+
+    private String truncateErrorForEventLog(String message) {
+        return StringUtils
+                .isEmpty(message) ? "See log for details" : message.length() > 2000 ? message.substring(0, 2000) : message;
     }
 
     /**
