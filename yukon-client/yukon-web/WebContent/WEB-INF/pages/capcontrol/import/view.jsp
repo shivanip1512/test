@@ -20,7 +20,8 @@
                         <option value="${importType}"><cti:msg2 key="${importType}"/></option>
                     </c:forEach>
                 </select>
-                <tags:file buttonKey="yukon.common.file"/>
+                </br>
+                <tags:file buttonKey="yukon.common.file" classes="MT5"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>
         
