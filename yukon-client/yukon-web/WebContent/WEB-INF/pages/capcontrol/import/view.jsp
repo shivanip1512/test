@@ -21,7 +21,9 @@
                     </c:forEach>
                 </select>
                 </br>
-                <tags:file buttonKey="yukon.common.file" classes="MT5"/>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".importFile">
+                <tags:file buttonKey="yukon.common.file"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>
         
