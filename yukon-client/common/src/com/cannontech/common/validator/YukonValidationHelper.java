@@ -24,11 +24,11 @@ public class YukonValidationHelper {
             String paoNameWithoutSpace = paoName.trim();
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoNameWithoutSpace, 60);
             if (!PaoUtils.isValidPaoName(paoNameWithoutSpace)) {
-                errors.rejectValue("name", key + "paoName.containsIllegalChars");
+                errors.rejectValue("deviceName", key + "paoName.containsIllegalChars");
             }
 
-            if (!errors.hasFieldErrors("name") && yukonValidationHelperCommon.isPaoNameConflict(paoName, type, errors, paoId)) {
-                errors.rejectValue("name", key + "nameConflict", new Object[] { fieldName }, "");
+            if (!errors.hasFieldErrors("deviceName") && yukonValidationHelperCommon.isPaoNameConflict(paoName, type, errors, paoId)) {
+                errors.rejectValue("deviceName", key + "nameConflict", new Object[] { fieldName }, "");
             }
         } else {
             errors.rejectValue("deviceName", key + "fieldrequired", new Object[] { "Name" }, "");

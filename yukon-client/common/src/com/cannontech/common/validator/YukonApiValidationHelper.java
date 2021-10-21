@@ -20,14 +20,14 @@ public class YukonApiValidationHelper {
             String paoNameWithoutSpace = paoName.trim();
             YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", paoNameWithoutSpace, 60);
             if (!PaoUtils.isValidPaoName(paoNameWithoutSpace)) {
-                errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { "Name" }, "");
+                errors.rejectValue("deviceName", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { "Name" }, "");
             }
-            if (!errors.hasFieldErrors("name") && yukonValidationHelperCommon.isPaoNameConflict(paoName, type, errors, paoId)) {
-                errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { paoName },
+            if (!errors.hasFieldErrors("deviceName") && yukonValidationHelperCommon.isPaoNameConflict(paoName, type, errors, paoId)) {
+                errors.rejectValue("deviceName", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { paoName },
                         "");
             }
         } else {
-            errors.rejectValue("name", ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Name" }, "");
+            errors.rejectValue("deviceName", ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Name" }, "");
         }
     }
 
