@@ -1025,7 +1025,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 SUM_PEAK_KVAR_RATE_A,
                 SUM_PEAK_KVAR_RATE_B,
                 SUM_PEAK_KVAR_RATE_C,
-                SUM_PEAK_KVAR_RATE_D);
+                SUM_PEAK_KVAR_RATE_D,
+                MINIMUM_POWER_FACTOR,
+                MINIMUM_POWER_FACTOR_FROZEN);
 
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         builder.addAll(lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
