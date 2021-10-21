@@ -18,7 +18,7 @@ public class YukonApiValidationHelper {
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoId) {
         if (StringUtils.hasText(paoName)) {
             String paoNameWithoutSpace = paoName.trim();
-            YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", paoNameWithoutSpace, 60);
+            YukonApiValidationUtils.checkExceedsMaxLength(errors, "deviceName", paoNameWithoutSpace, 60);
             if (!PaoUtils.isValidPaoName(paoNameWithoutSpace)) {
                 errors.rejectValue("deviceName", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { "Name" }, "");
             }
@@ -37,7 +37,7 @@ public class YukonApiValidationHelper {
     public void checkIfPaoTypeChanged(Errors errors, PaoType paoType, int paoId) {
         LiteYukonPAObject litePao = serverDatabaseCache.getAllPaosMap().get(paoId);
         if (yukonValidationHelperCommon.checkIfPaoTypeChanged(paoType, paoId)) {
-            errors.rejectValue("type", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
+            errors.rejectValue("deviceType", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
                     new Object[] { paoType, litePao.getPaoType() }, "");
         }
     }
