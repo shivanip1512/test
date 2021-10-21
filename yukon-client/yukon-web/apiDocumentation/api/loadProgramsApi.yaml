@@ -410,4 +410,4 @@ copy-operation:
               $ref: '../schemas/loadProgramsSchema.yaml#/CopyResponse'
             examples:
               Load Program Copy:
-                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/programId' 
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/LoadProgramCopyResponse' 

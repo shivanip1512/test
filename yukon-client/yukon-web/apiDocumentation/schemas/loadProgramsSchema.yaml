@@ -2575,7 +2575,60 @@ CopyResponse:
     programId:
       type: integer
       description: 'Unique identifier of the copied load program.'
-      
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the load program.'
+    type:
+      type: string
+      enum: 
+        - LM_METER_DISCONNECT_PROGRAM
+      description: 'Type of load program.'
+    operationalState:
+      type: string
+      enum: 
+        - Automatic
+        - ManualOnly
+        - Timed
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
+    triggerOffset:
+      type: number
+      minimum: 0.0
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the trigger offset is added to the control area 
+                    trigger threshold. The trigger point defined in the control area must exceed the control area trigger 
+                    threshold plus the trigger offset before the load program can start control.'
+    restoreOffset:
+      type: number
+      minimum: -9999.9999
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the restore offset is subtracted from the control
+                    area trigger threshold. The trigger point defined in the control area must go below the control area
+                    trigger threshold minus the trigger offset before the load program can stop control. 
+                    A restore offset with a positive value causes the trigger threshold to be lowered; 
+                    a restore offset with a negative value causes the trigger threshold to be raised.'
+    constraint:
+      $ref: '#/constraint'
+    
+    gears:
+      type: array
+      items:
+        $ref: '#/MeterDisconnect'
+    controlWindow:
+      $ref: '#/controlWindow'
+    assignedGroups:
+      $ref: '#/assignedGroups'
+    notification:
+      $ref: '#/notification'
+    memberControl:
+      $ref: '#/memberControl'
+
 id:
   title: id
   type: object
@@ -3374,15 +3427,30 @@ components:
 
     LoadProgramCopy:
       value:
-        name: EcobeeProgramTestCopy
+        name: Meter-Disconnect Test Prgm Copy
         constraint:
-          constraintId: 8
+          constraintId: 59
         copyMemberControl: true
-        operationalState: Automatic
+        operationalState: Timed
 
-    programId: 
+    LoadProgramCopyResponse: 
       value:
-        programId: 20977
+        programId: 224562
+        name: Meter-Disconnect Test Prgm Copy
+        type: LM_METER_DISCONNECT_PROGRAM
+        operationalState: Timed
+        constraint:
+          constraintId: 59
+          constraintName: Program Constraint abc
+        triggerOffset: 11
+        restoreOffset: 0
+        gears:
+          - gearId: 4370
+        gearName: gear001
+        gearNumber: 1
+        controlMethod: MeterDisconnect
+        controlWindow: {}
+        assignedGroups: []
 
     id:
       value:
