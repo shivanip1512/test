@@ -57,7 +57,7 @@ yukon.dev.simulators.eatonCloudSimulator = ( function() {
                 $(item).val(JSON.stringify(_json[endpoint], undefined, 4));
             });
             
-            $(document).on('change', '.js-selected-status', function () {
+            $(document).on('change', '.js-selected-status, .js-success-percentage', function () {
                 //submit all settings
                 $('#eatonCloudForm').submit();
             });
