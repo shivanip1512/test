@@ -58,6 +58,8 @@ public class CCURouteModel<T extends CCURoute> extends RouteBaseModel<T> {
             getCarrierRoute().buildDBPersistent(route.getCarrierRoute());
             route.setCarrierRoute(route.getCarrierRoute());
 
+        }else {
+            route.setCarrierRoute(null);
         }
 
         super.buildDBPersistent(route);
@@ -75,6 +77,8 @@ public class CCURouteModel<T extends CCURoute> extends RouteBaseModel<T> {
                 getRepeaters().add(repeaterRouteModel);
             }
             getCarrierRoute().buildModel(route.getCarrierRoute());
+        }else {
+            setCarrierRoute(null);
         }
         super.buildModel(route);
 
