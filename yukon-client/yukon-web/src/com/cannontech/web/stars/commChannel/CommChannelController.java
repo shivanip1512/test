@@ -89,7 +89,7 @@ public class CommChannelController {
             CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
             Direction dir = sorting.getDirection();
             Comparator<DeviceBaseModel> comparator = (o1, o2) -> {
-                return o1.getName().compareToIgnoreCase(o2.getName());
+                return o1.getDeviceName().compareToIgnoreCase(o2.getDeviceName());
             };
             if (sortBy == CommChannelSortBy.type) {
                 MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -168,12 +168,12 @@ public class CommChannelController {
         PortBase commChannel = new PortBase();
         if (model.containsAttribute("commChannel")) {
             commChannel = (PortBase) model.get("commChannel");
-            if (commChannel.getType() != null) {
+            if (commChannel.getDeviceType() != null) {
                 commChanelSetupHelper.setupCommChannelFields(commChannel, model);
             }
         }
         model.addAttribute("baudRateList", BaudRate.values());
-        commChannel.setType(PaoType.TCPPORT);
+        commChannel.setDeviceType(PaoType.TCPPORT);
         setupDefaultFieldValue(commChannel, model);
         return "/commChannel/create.jsp";
     }
@@ -200,8 +200,8 @@ public class CommChannelController {
             if (model.containsAttribute("commChannel")) {
                 commChannel = (PortBase) model.get("commChannel");
             } else {
-                commChannel.setName(name);
-                commChannel.setType(PaoType.valueOf(type));
+                commChannel.setDeviceName(name);
+                commChannel.setDeviceType(PaoType.valueOf(type));
             }
             commChanelSetupHelper.setupCommChannelFields(commChannel, model);
             setupDefaultFieldValue(commChannel, model);
@@ -238,7 +238,7 @@ public class CommChannelController {
                 json.put("id", savedCommChannel.get("id"));
                 resp.setContentType("application/json");
                 JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", commChannel.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", commChannel.getDeviceName()));
                 return null;
             }
         } catch (ApiCommunicationException e) {
@@ -246,8 +246,8 @@ public class CommChannelController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return null;
         } catch (RestClientException ex) {
-            log.error("Error creating comm channel: {}. Error: {}", commChannel.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", commChannel.getName(), ex.getMessage()));
+            log.error("Error creating comm channel: {}. Error: {}", commChannel.getDeviceName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", commChannel.getDeviceName(), ex.getMessage()));
             return null;
         }
         return null;
@@ -281,7 +281,7 @@ public class CommChannelController {
             }
             if (!devicesList.isEmpty()) {
                 return devicesList.stream()
-                                  .map(device -> device.getName())
+                                  .map(device -> device.getDeviceName())
                                   .collect(Collectors.joining(", "));
             }
         } catch (ApiCommunicationException ex) {
@@ -297,7 +297,7 @@ public class CommChannelController {
         resp.setStatus(HttpStatus.BAD_REQUEST.value());
         commChanelSetupHelper.setupCommChannelFields(commChannel, model);
         commChanelSetupHelper.setupPhysicalPort(commChannel, model);
-        commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
+        commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getDeviceType());
         model.addAttribute("commChannel", commChannel);
         model.addAttribute("webSupportedCommChannelTypes", commChanelSetupHelper.getWebSupportedCommChannelTypes());
     }

@@ -1,7 +1,5 @@
 package com.cannontech.stars.dr.eatonCloud;
 
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -81,7 +79,11 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
             DateTime start = new DateTime();
             DateTime end = start.minusDays(1);
             Range<Instant> range =  new Range<Instant>(end.toInstant(), false, start.toInstant(), true);
-            readService.collectDataForRead(Set.of(pao.getDeviceId()), range);
+            try {
+                readService.collectDataForRead(pao.getDeviceId(), range);
+            } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
+                log.error("Unable to read device:{}", pao, e);
+            }
         } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
             log.error("Unable to create device.", e);
             throw new DeviceCreationException(e.getMessage(), "invalidDeviceCreation", e);
@@ -132,7 +134,7 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
             hardware.setGuid(deviceDao.getGuid(hardware.getDeviceId()));
             hardware.setFirmwareVersion(paoDao.findPaoInfoValue(hardware.getDeviceId(), InfoKey.FIRMWARE_VERSION));
         } catch (NotFoundException nfe) {
-            log.error("GUID is not found device id:" + hardware.getDeviceId(), nfe);
+            log.debug("GUID is not found device id:" + hardware.getDeviceId());
             hardware.setGuid("");
         }
     }

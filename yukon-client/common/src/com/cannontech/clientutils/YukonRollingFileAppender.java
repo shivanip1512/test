@@ -436,6 +436,8 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 applicationName = "ApiLog";
             } else if (appender instanceof CommsRollingFileAppender) {
                 applicationName = BootstrapUtils.getApplicationName() + "_" + "Comms";
+            } else if (appender instanceof SmartNotifRollingFileAppender) {
+                applicationName = BootstrapUtils.getApplicationName() + "_" + "SmartNotifications";
             } else {
                 applicationName = BootstrapUtils.getApplicationName();
             }

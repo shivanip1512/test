@@ -9,7 +9,7 @@
         <table class="full-width">
             <tr>
                 <td>
-            		<select name="searchBy" class="full-width">
+            		<select name="searchBy" class="short-width">
             			<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}">
             				<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
             					<i:inline key="${operatorAccountSearchBy.formatKey}"/>

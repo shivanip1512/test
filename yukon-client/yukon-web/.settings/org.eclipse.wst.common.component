@@ -106,12 +106,6 @@
                     
         </dependent-module>
                 
-        <dependent-module archiveName="smtp-1.5.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/smtp-1.5.1.jar">
-                        
-            <dependency-type>uses</dependency-type>
-                    
-        </dependent-module>
-                
         <dependent-module archiveName="jdom-2.0.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jdom-2.0.2.jar">
                         
             <dependency-type>uses</dependency-type>
@@ -161,6 +155,11 @@
         </dependent-module>
                 
         <dependent-module archiveName="activation.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/activation.jar">
+                        
+            <dependency-type>uses</dependency-type>
+                    
+        </dependent-module>
+                <dependent-module archiveName="jakarta.activation-api-2.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jakarta.activation-api-2.0.1.jar">
                         
             <dependency-type>uses</dependency-type>
                     
@@ -358,6 +357,9 @@
                     
         </dependent-module>
         <dependent-module archiveName="javax.mail-1.6.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/javax.mail-1.6.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jakarta.mail-2.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jakarta.mail-2.0.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
                 

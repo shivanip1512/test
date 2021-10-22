@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/13/2021 10:31:39 AM                        */
+/* Created on:     10/11/2021 11:00:26 AM                       */
 /*==============================================================*/
 
 
@@ -9395,7 +9395,7 @@ create table Theme  (
    constraint PK_Theme primary key (ThemeId)
 );
 
-INSERT INTO Theme VALUES (-1, 'Yukon Gray', 1);
+INSERT INTO Theme VALUES (-1, 'Default', 1);
 
 /*==============================================================*/
 /* Table: ThemeProperty                                         */
@@ -9407,22 +9407,22 @@ create table ThemeProperty  (
    constraint PK_ThemeProperty primary key (ThemeId, Property)
 );
 
-INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND', '#6e6d71');
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND', '#727e84');
 INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_FONT_COLOR', '#ffffff');
-INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_SHADOW', '#5a595d');
-INSERT INTO ThemeProperty VALUES (-1, 'PRIMARY_COLOR', '#0066cc');
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_SHADOW', '#727e84');
+INSERT INTO ThemeProperty VALUES (-1, 'PRIMARY_COLOR', '#007bc1');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_BACKGROUND', '-2');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_COLOR', '#ffffff');
-INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_SHADOW', 'rgba(0,0,0,0.5)');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_SHADOW', '#727e84');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_TAGLINE_MARGIN', '35');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO', '-1');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_LEFT', '0');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_TOP', '17');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_WIDTH', '163');
-INSERT INTO ThemeProperty VALUES (-1, 'VISITED_COLOR', '#1c49a6');
-INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR', '#777');
-INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_BORDER', '#666');
-INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_HOVER', '#888');
+INSERT INTO ThemeProperty VALUES (-1, 'VISITED_COLOR', '#007bc1');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR', '#007bc1');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_BORDER', '#007bc1');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_HOVER', '#4da3d4');
 
 /*==============================================================*/
 /* Table: ThermostatEventHistory                                */

@@ -113,6 +113,7 @@
                     <input id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${dateTimeValue}"
+                        type="text"
                         class="js-dateTimePicker js-dateTimePickerUI dateTimePicker ${cssClass}"
                         <c:if test="${disabled}">disabled="true"</c:if>
                         data-max-date="${pageScope.maxFormattedDate}"

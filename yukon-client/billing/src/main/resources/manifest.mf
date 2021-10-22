@@ -6,6 +6,7 @@ Class-Path: ./
  yukonappserver.jar 
  sqljdbc42.jar 
  activation.jar 
+ jakarta.activation-api-2.0.1.jar 
  ojdbc10.jar 
  jaxm-api.jar 
  jcfield401K.jar 

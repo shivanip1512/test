@@ -104,7 +104,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/smtp-1.5.1.jar" sourcepath="/third-party/linked-sources/smtp-1.5.1-sources.jar">
+    <classpathentry kind="lib" path="/third-party/jakarta.activation-api-2.0.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -533,6 +533,12 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/jakarta.mail-2.0.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/logging-mailhandler-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/javax.mail-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/netty-buffer-4.1.65.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-4.1.65.Final.jar"/>

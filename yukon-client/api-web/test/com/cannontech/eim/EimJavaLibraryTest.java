@@ -66,7 +66,7 @@ public class EimJavaLibraryTest {
         "jasper.jar",
         "jaspic-api.jar",
         "javassist-3.26.0-GA.jar",
-        "javax.mail-1.6.1.jar",
+        "jakarta.mail-2.0.1.jar",
         "jaxb-xjc.jar",
         "jaxb2-basics-ant-0.6.3.jar",
         "jaxb2-default-value-1.1.jar",

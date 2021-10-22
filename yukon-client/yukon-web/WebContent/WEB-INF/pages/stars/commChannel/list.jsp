@@ -37,9 +37,9 @@
                             </c:if>
                             <tr>
                                 <td width="50%">
-                                    <cti:paoDetailUrl paoId="${commChannel.id}">${fn:escapeXml(commChannel.name)}</cti:paoDetailUrl>
+                                    <cti:paoDetailUrl paoId="${commChannel.deviceId}">${fn:escapeXml(commChannel.deviceName)}</cti:paoDetailUrl>
                                 </td>
-                                <td><i:inline key="${commChannel.type}"/></td>
+                                <td><i:inline key="${commChannel.deviceType}"/></td>
                                 <td class="${cssClass}">${commChannelStatus}</td>
                             </tr>
                         </c:forEach>
