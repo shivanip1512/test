@@ -59,7 +59,11 @@
             </table>
         </div>
         <div class="action-area">
-            <a href="<cti:url value="/dr/recenteventparticipation/details"/>"><i:inline key=".details" /></a>
+                <cti:url var="detailUrl" value="/dr/recenteventparticipation/details">
+                    <cti:param name="from" value="02/20/2019"/>
+                    <cti:param name="to" value="09/25/2021"/>
+                </cti:url>
+            <a href="${detailUrl}"><i:inline key=".details"/></a>
         </div>
     </c:if>
     </tags:sectionContainer2>
