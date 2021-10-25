@@ -47,7 +47,7 @@ public enum SystemLogger {
         return loggerName;
     }
 
-    public SystemLogger getForLoggerName(String loggerName) {
+    public static SystemLogger getForLoggerName(String loggerName) {
         SystemLogger logger = lookupByLoggerName.get(loggerName);
         checkArgument(logger != null, loggerName);
         return logger;

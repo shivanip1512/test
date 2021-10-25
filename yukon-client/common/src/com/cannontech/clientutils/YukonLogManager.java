@@ -5,13 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.builder.api.ComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
@@ -19,6 +24,7 @@ import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import com.cannontech.common.config.RemoteLoginSession;
+import com.cannontech.common.log.model.CustomizedSystemLogger;
 import com.cannontech.common.log.model.LoggerLevel;
 import com.cannontech.common.log.model.SystemLogger;
 import com.cannontech.common.util.ApplicationIdUnknownException;
@@ -61,9 +67,10 @@ public class YukonLogManager {
      * Load the loggers from YukonLogging table. Called once at the creation of YukonLogManager
      */
     public static synchronized void initialize() {
+        List<SystemLogger> dbSystemLoggers = getDbSystemLoggers();
         // Add the system loggers with default value if there are no entries in YukonLogging table.
-        if (shouldPopulateSystemLoggers()) {
-            populateSystemLoggers();
+        if (shouldPopulateSystemLoggers(dbSystemLoggers)) {
+            populateSystemLoggers(dbSystemLoggers);
         }
         //Prevent loading of expired loggers on start up.
         deleteExpiredLoggers();
@@ -130,12 +137,26 @@ public class YukonLogManager {
         // Load the other loggers which are there in DB table.User can add any class and corresponding logging level to the DB.
         // As of now I have created a dummy database and tested this.I am not committing the DB changes as it will fail in VM.
         getLoggers().forEach((loggerName, level) -> {
-            if (SystemLogger.isCustomAppenderLogger(loggerName)) {
+            if (CustomizedSystemLogger.isCustomizedAppenderLogger(loggerName)) {
                 builder.add(builder.newLogger(loggerName, level)
-                                   .add(builder.newAppenderRef(getAppenderRef(loggerName)))
-                                   .addAttribute("additivity", false));
+                        .add(builder.newAppenderRef(getCustomizedAppenderRef(loggerName)))
+                        .addAttribute("additivity", false));
+            } else if (SystemLogger.isCustomAppenderLogger(loggerName)) {
+                builder.add(builder.newLogger(loggerName, level)
+                        .add(builder.newAppenderRef(getAppenderRef(loggerName)))
+                        .addAttribute("additivity", false));
             } else {
                 builder.add(builder.newLogger(loggerName, level));
+            }
+        });
+
+        //Add package level loggers for customizable loggers.
+        Arrays.asList(CustomizedSystemLogger.values()).forEach(customLogger -> {
+            String packageNames[] = customLogger.getPackageNames();
+            for (String packageName : packageNames) {
+                builder.add(builder.newLogger(packageName, getLevel(getLoggers(), packageName))
+                        .add(builder.newAppenderRef(getCustomizedAppenderRef(packageName)))
+                        .addAttribute("additivity", false));
             }
         });
 
@@ -198,19 +219,63 @@ public class YukonLogManager {
     }
 
     /**
-     * This method will verify YukonLogging table and return true if it is empty. 
+     * Return the appender for the customized loggerName
      */
-    private static boolean shouldPopulateSystemLoggers() {
+    public static String getCustomizedAppenderRef(String loggerName) {
+        switch (CustomizedSystemLogger.getForLoggerName(loggerName)) {
+        case CUSTOM_API_LOGGER:
+            return "yukonApiRollingFile";
+        case CUSTOM_COMMS_LOGGER:
+            return "commsRollingFile";
+        case CUSTOM_RFN_COMMS_LOGGER:
+            return "yukonRfnRollingFile";
+        case CUSTOM_SMART_NOTIFICATION_LOGGER:
+            return "smartNotifRollingFile";
+        default:
+            return "yukonRollingFileAppender";
+        }
+    }
+
+    /**
+     * Return logging level for customized logger package name
+     */
+    private static Level getLevel(Map<String, Level> loggers, String packageName) {
+        switch (CustomizedSystemLogger.getForLoggerName(packageName)) {
+        case CUSTOM_API_LOGGER:
+            return loggers.get("apiLogger");
+        case CUSTOM_COMMS_LOGGER:
+            return loggers.get("commsLogger");
+        case CUSTOM_RFN_COMMS_LOGGER:
+            return loggers.get("rfnCommsLogger");
+        case CUSTOM_SMART_NOTIFICATION_LOGGER:
+            return loggers.get("smartNotifLogger");
+        }
+        return Level.INFO;
+    }
+
+    /**
+     * This method will verify YukonLogging table and return true if it is empty.
+     */
+    private static boolean shouldPopulateSystemLoggers(List<SystemLogger> dbSystemLoggers) {
+        return Arrays.stream(SystemLogger.values()).filter(systemlogger -> !dbSystemLoggers.contains(systemlogger)).findFirst()
+                .isPresent();
+    }
+
+    private static List<SystemLogger> getDbSystemLoggers() {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        List<SystemLogger> loggers = new ArrayList<SystemLogger>();
         try {
-            String sql = "SELECT COUNT(*) FROM YukonLogging";
+            String sql = "SELECT LoggerName FROM YukonLogging";
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                return rs.getInt(1) == 0;
+                String loggerName = rs.getString("LoggerName");
+                if (SystemLogger.isSystemLogger(loggerName)) {
+                    loggers.add(SystemLogger.getForLoggerName(loggerName));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -234,25 +299,25 @@ public class YukonLogManager {
                 }
             }
         }
-        return false;
+        return loggers;
     }
 
     /**
      * This method will insert System Loggers(Default loggers) in YukonLogging table. Only execute once i.e for the 1st time with
      * Log4j2 migration.
      */
-    private static void populateSystemLoggers() {
+    private static void populateSystemLoggers(List<SystemLogger> dbLoggers) {
         Connection conn = null;
         PreparedStatement ps = null;
         try {
             String sql = "INSERT INTO YukonLogging(LoggerId, LoggerName, LoggerLevel, ExpirationDate, Notes) VALUES (?,?,?,?,?)";
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             ps = conn.prepareStatement(sql);
-            SystemLogger[] loggers = SystemLogger.values();
-            for (int i = 0; i < loggers.length; i++) {
-                ps.setInt(1, i);
-                ps.setString(2, loggers[i].getLoggerName());
-                ps.setString(3, loggers[i].getLevel().name());
+            List<SystemLogger> newSystemLoggers = getNewSystemLoggers(dbLoggers);
+            for (SystemLogger systemLogger : newSystemLoggers) {
+                ps.setInt(1, getNextLoggerId());
+                ps.setString(2, systemLogger.getLoggerName());
+                ps.setString(3, systemLogger.getLevel().name());
                 ps.setDate(4, null);
                 ps.setString(5, null);
                 ps.execute();
@@ -273,6 +338,52 @@ public class YukonLogManager {
             }
 
         }
+    }
+
+    /**
+     * Return next logger ID.
+     */
+    private static int getNextLoggerId() {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT MAX(LoggerId) FROM YukonLogging";
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getInt(1) + 1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                }
+            }
+
+        }
+        return 0;
+    }
+
+    private static List<SystemLogger> getNewSystemLoggers(List<SystemLogger> dbLoggers) {
+        return Arrays.stream(SystemLogger.values()).filter(systemLogger -> !dbLoggers.contains(systemLogger))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -400,10 +511,48 @@ public class YukonLogManager {
     }
 
     /**
+     * Returns rfnCommsLogger for the specified class name, used for logging communications to and from Network Manager.
+     */
+    public static Logger getRfnLogger(Class<?> c) {
+        Map<String, LoggerConfig> loggers = getMyLogger().getContext().getConfiguration().getLoggers();
+        if (loggers.containsKey(c.getCanonicalName())) {
+            return (Logger) LogManager.getLogger(c);
+        } else {
+            // For specifying a package structure for a custom logger
+            for (String s : CustomizedSystemLogger.CUSTOM_RFN_COMMS_LOGGER.getPackageNames()) {
+                if (loggers.containsKey(s)) {
+                    return (Logger) LogManager.getLogger(s);
+                }
+            }
+            // If class is not following package structure then return default logger.
+            return getRfnLogger();
+        }
+    }
+
+    /**
      * Returns commsLogger, used for logging communications to and from Yukon Services.
      */
     public static Logger getCommsLogger() {
         return getLogger("commsLogger");
+    }
+
+    /**
+     * Returns commsLogger for the specified class name, used for logging communications to and from Yukon Services.
+     */
+    public static Logger getCommsLogger(Class<?> c) {
+        Map<String, LoggerConfig> loggers = getMyLogger().getContext().getConfiguration().getLoggers();
+        if (loggers.containsKey(c.getCanonicalName())) {
+            return (Logger) LogManager.getLogger(c);
+        } else {
+            // For specifying a package structure for a custom logger
+            for (String s : CustomizedSystemLogger.CUSTOM_COMMS_LOGGER.getPackageNames()) {
+                if (loggers.containsKey(s)) {
+                    return (Logger) LogManager.getLogger(s);
+                }
+            }
+            // If class is not following package structure then return default logger.
+            return getCommsLogger();
+        }
     }
 
     /**
@@ -412,8 +561,49 @@ public class YukonLogManager {
     public static Logger getApiLogger() {
         return getLogger("apiLogger");
     }
-    
+
+    /**
+     * Returns apiLogger for the specified class name, used for logging Rest Api calls.
+     */
+    public static Logger getApiLogger(Class<?> c) {
+        Map<String, LoggerConfig> loggers = getMyLogger().getContext().getConfiguration().getLoggers();
+        if (loggers.containsKey(c.getCanonicalName())) {
+            return (Logger) LogManager.getLogger(c);
+        } else {
+            // For specifying a package structure for a custom logger
+            for (String s : CustomizedSystemLogger.CUSTOM_SMART_NOTIFICATION_LOGGER.getPackageNames()) {
+                if (loggers.containsKey(s)) {
+                    return (Logger) LogManager.getLogger(s);
+                }
+            }
+            // If class is not following package structure then return default logger.
+            return getApiLogger();
+        }
+    }
+
+    /**
+     * Return smartNotifLogger
+     */
     public static Logger getSmartNotificationsLogger() {
         return getLogger("smartNotifLogger");
+    }
+
+    /**
+     * Return smartNotifLogger for the specified class name
+     */
+    public static Logger getSmartNotificationsLogger(Class<?> c) {
+        Map<String, LoggerConfig> loggers = getMyLogger().getContext().getConfiguration().getLoggers();
+        if (loggers.containsKey(c.getCanonicalName())) {
+            return (Logger) LogManager.getLogger(c);
+        } else {
+            // For specifying a package structure for a custom logger
+            for (String s : CustomizedSystemLogger.CUSTOM_SMART_NOTIFICATION_LOGGER.getPackageNames()) {
+                if (loggers.containsKey(s)) {
+                    return (Logger) LogManager.getLogger(s);
+                }
+            }
+            // If class is not following package structure then return default logger.
+            return getSmartNotificationsLogger();
+        }
     }
 }
