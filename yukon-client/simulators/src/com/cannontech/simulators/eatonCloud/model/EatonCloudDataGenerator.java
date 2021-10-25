@@ -12,6 +12,7 @@ import com.cannontech.simulators.message.request.EatonCloudSimulatorDeviceCreate
 public abstract class EatonCloudDataGenerator {
 
     protected int status = HttpStatus.OK.value();
+    protected int successPercentage = 100;
     protected EatonCloudSimulatorDeviceCreateRequest createRequest;
     protected NextValueHelper nextValueHelper;
     protected Map<PaoType, HardwareType> paoTypeToHardware = Map.of(PaoType.LCR6600C, HardwareType.LCR_6600C, PaoType.LCR6200C,
@@ -27,5 +28,9 @@ public abstract class EatonCloudDataGenerator {
 
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
+    }
+
+    public void setSuccessPercentage(int successPercentage) {
+        this.successPercentage = successPercentage;
     }
 }

@@ -162,6 +162,15 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
             return new EatonCloudSimulatorResponse(error, status);
         }
         
+        if(successPercentage != 100) {
+            int randomPercentage = (int) (Math.random() * 100);
+            if (randomPercentage > successPercentage) { 
+                EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("ClientId"),  "The field \u0027ClientId\u0027 is not a valid uuid.",
+                        "4aeacd2f-9424-4e6d-a218-c0b621d0f4c9", status, "2021-02-25T13:45:10.4807211+00:00", 10022);
+                return new EatonCloudSimulatorResponse(error,  HttpStatus.BAD_REQUEST.value());
+            }
+        }
+        
         //load bad data to test the parser
         boolean randomBadData = false;
 
@@ -220,6 +229,16 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         if (status == HttpStatus.NOT_FOUND.value()) {
             return new EatonCloudSimulatorResponse(new EatonCloudCommandResponseV1(status, "Resource not found"), HttpStatus.OK.value());
         }
+        
+        if(successPercentage != 100) {
+            int randomPercentage = (int) (Math.random() * 100);
+            if (randomPercentage > successPercentage) { 
+                EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("id"), "Invalid device command payload, id=123.",
+                        "f5f61b63-68aa-42be-b8a1-a84a171ca38e", status, "2021-02-24T08:23:35.7124876+00:00", null);
+                return new EatonCloudSimulatorResponse(error,  HttpStatus.BAD_REQUEST.value());
+            }
+        }
+        
         return new EatonCloudSimulatorResponse(
                     new EatonCloudCommandResponseV1(status, "Success sending command for device guid:" + id + " command guid:" + command_instance_id),
                     status);
