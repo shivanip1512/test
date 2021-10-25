@@ -55,10 +55,13 @@
 	                        <td>
 	                            <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}" inputClass="js-selected-status w100"/>
 	                            <c:if test="${endpoint.displaySuccessPercentage()}">
-	                            	<tags:input path="successPercentages[${endpoint}]" size="3" inputClass="js-success-percentage" units="%"/>
-	                            	<cti:icon icon="icon-help" classes="fn cp ML0 MR0" data-popup="#successPercentageHelp"/>
-                                	<div id="successPercentageHelp" data-title="Success Percentage" data-width="500" class="dn">
-                                		The percentage of responses that should return a success.
+	                            	<c:set var="dnClass" value="${settings.selectedStatuses[endpoint] != 'OK' ? 'dn' : ''}"/>
+	                            	<div class="js-success-percentage-fields ${dnClass}">
+		                            	<tags:input path="successPercentages[${endpoint}]" size="3" inputClass="js-success-percentage" units="%"/>
+		                            	<cti:icon icon="icon-help" classes="fn cp ML0 MR0" data-popup="#successPercentageHelp"/>
+	                                	<div id="successPercentageHelp" data-title="Success Percentage" data-width="500" class="dn">
+	                                		The percentage of responses that should return a success.
+	                                	</div>
                                 	</div>
 	                            </c:if>
 	                        </td>
