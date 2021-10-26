@@ -72,7 +72,7 @@ get-update-delete-operation:
       - Virtual System
       - Virtual Meter
     parameters:
-      - name: id
+      - name: deviceId
         in: path
         schema:
           type: integer
@@ -104,7 +104,7 @@ get-update-delete-operation:
       - Virtual System
       - Virtual Meter
     parameters:
-      - name: id
+      - name: deviceId
         in: path
         schema:
           type: integer
@@ -149,7 +149,7 @@ get-update-delete-operation:
       - Virtual System
       - Virtual Meter
     parameters:
-      - name: id
+      - name: deviceId
         in: path
         schema:
           type: integer

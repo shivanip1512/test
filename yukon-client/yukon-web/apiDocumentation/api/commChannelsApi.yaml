@@ -62,7 +62,7 @@ get-update-delete-operation:
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: id
+      - name: deviceId
         in: path
         schema:
           type: integer
@@ -101,7 +101,7 @@ get-update-delete-operation:
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: id
+      - name: deviceId
         in: path
         schema:
           type: integer
@@ -158,7 +158,7 @@ get-update-delete-operation:
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: id
+      - name: deviceId
         in: path
         schema:
           type: integer

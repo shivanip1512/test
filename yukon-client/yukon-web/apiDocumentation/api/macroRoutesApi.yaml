@@ -48,7 +48,7 @@ get-update-delete-operation:
     summary: 'Retrieve Macro Route'
     description: 'API to retrieve Macro Route based on passed id.'
     parameters:
-      - name: id
+      - name: deviceId
         in: path
         schema:
           type: integer
@@ -71,7 +71,7 @@ get-update-delete-operation:
     summary: 'Update Macro Route'
     description: 'API to update Macro Route based on passed id.'
     parameters:
-      - name: id
+      - name: deviceId
         in: path
         schema:
           type: integer
@@ -103,7 +103,7 @@ get-update-delete-operation:
     summary: 'Delete Macro Route'
     description: 'API to delete Macro Route based on passed id.'
     parameters:
-      - name: id
+      - name: deviceId
         in: path
         schema:
           type: integer
