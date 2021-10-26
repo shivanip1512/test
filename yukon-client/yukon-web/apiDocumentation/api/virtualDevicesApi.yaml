@@ -161,7 +161,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/virtualDevicesSchema.yaml#/id'
+              $ref: '../schemas/virtualDevicesSchema.yaml#/deviceId'
             examples:
               Virtual Devices id:
-                $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/id'
+                $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/deviceId'

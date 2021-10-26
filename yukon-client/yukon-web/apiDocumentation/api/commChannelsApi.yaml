@@ -170,7 +170,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/commChannelsSchema.yaml#/id'
+              $ref: '../schemas/commChannelsSchema.yaml#/deviceId'
             examples:
               CommChannel Id:
-                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/id'
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/deviceId'
