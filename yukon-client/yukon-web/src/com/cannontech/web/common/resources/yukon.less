@@ -162,24 +162,31 @@ input[type=text],
 input[type=url], 
 select, 
 textarea {
-    background: #fff;
-    border: 1px solid #d9d9d9;
-    border-top: 1px solid #c0c0c0;
-    border-radius: @border-radius;
+    background: #f7f8f8;
+    border: 1px solid #f7f8f8;
+    border-bottom-color: #d8dbdc;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
     margin: 0;
-    padding: 2px 5px;
-    transition: border .1s ease-in-out,background-color .1s ease-in-out;
+    padding: 10px 6px 6px;
+    box-sizing: content-box;
+    transition: background-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+    font-weight: 400;
+	line-height: 1.1876rem;
+	font-size: 1rem;
+	color: #424e54;
     
     &:not([readonly]):hover {
-        border: 1px solid #b9b9b9;
-        border-top: 1px solid #a0a0a0;
-        box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        border: 1px solid #f1f2f2;
+        background: #f1f2f2;
+        border-bottom-color : #424e54;
     }
     
     &:not([readonly]):focus {
-        border: 1px solid @primary-color;
-        box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+        border: 1px solid #f7f8f8;
         outline: none;
+    	padding: 9px 6px 6px;
+		border-bottom: 2px solid @primary-color;
     }
     
     &.left, &.middle {
@@ -201,6 +208,9 @@ textarea[disabled] {
     border: 1px solid #e5e5e5;
 }
 
+select option {
+	background-color: #fff;
+}
 select.with-option-hiding option[disabled] {
     display: none;
 }
@@ -212,8 +222,11 @@ input[type=tel],
 input[type=text], 
 input[type=url], 
 select:not([multiple]):not([size]) {
-    height: @form-control-height;
+    height: 1.1876em;
     line-height: normal !important;
+}
+select:not([disabled]) {
+	cursor: pointer;
 }
 
 input[type=checkbox], 
@@ -236,7 +249,7 @@ input[type=radio] {
     }
 }
 
-.placeholder { color: #aaa; }
+.placeholder { color: #72828f; }
 
 /** Styles for a 'toggle switch' checkbox **/
 .checkbox .checkbox-input {
@@ -358,6 +371,7 @@ input[type=radio] {
     vertical-align: top;
     margin: 0;
     border: solid 1px #ccc;
+	padding-top: 9px;
 }
 
 .stepper button.stepper-prev,
@@ -367,12 +381,15 @@ input[type=radio] {
 
 .stepper select.stepper-select {
     background-image: none;
-    padding-right: 5px;
+    padding: 10px 6px 6px !important;
     letter-spacing: 0;
+    height: 18px !important;
+    
 }
 
 .stepper select.stepper-select::-ms-expand {
     display: none;
+    padding: 7px 12px 8px !important;
 }
 
 /* VERTICAL MENUS */
@@ -576,6 +593,10 @@ table.matrix{
     td, th { 
         line-height: 18px;
     }
+
+	td input, td select, td textarea {
+		font-size: 13px;
+	}
     
     tr.focused, 
     tr.focused:nth-child(2n) { 
@@ -873,7 +894,6 @@ ul.selectable li.selected {
 .action-area:before, .action-area:after {content: " ";display: table;}
 .action-area:after {clear: both;}
 .action-area, .page-action-area, .button-stack li {line-height: @form-control-height;}
-.action-area select:not([multiple]), .page-action-area select:not([multiple]) {height: @form-control-height;} 
 .action-area input[type=text], .page-action-area input[type=text] {line-height: 22px;}
 .action-area button, .action-area .button, .action-area select:not([multiple]), .action-area .chosen-container-single {float: right;}
 .ui-dialog .action-area {padding: 0 10px;}
@@ -1103,13 +1123,13 @@ ol.error{ list-style-type: none; }
 
 input.error,
 select.error {
-    background-color: #ffeeee;
-    border-color: @red;
+    background-color: #f7f8f8;
+    border-bottom-color: @red !important;
 }
 
 textarea.error {
-    background-color: #ffeeee;
-    border-color: @red;
+    background-color: #f7f8f8;
+    border-bottom-color: @red;
 }
 
 .state-box {
@@ -1468,23 +1488,22 @@ hr.dashed,
     float: left;
     margin-right: 5px;
     border: 1px solid #aaa;
-    height: 26px;
 }
-.datetimeEntry_wrap.date { width: 147px; }
+.datetimeEntry_wrap.date { width: 162px; }
 .datetimeEntry_wrap.dateTime { min-width: 185px; }
-.datetimeEntry_wrap.time { width: 107px; }
-.datetimeEntry_wrap.timeOffset { width: 90px; }
+.datetimeEntry_wrap.time { width: 122px; }
+.datetimeEntry_wrap.timeOffset { width: 110px; }
 .datetimeEntry_wrap input {
-    padding: 2px;
     float: left;
-    height: 24px;
     border: solid 1px white;
     font-size: 14px !important; /* jquery ui is messing up the font-size */
 }
-.datetimeEntry_wrap img { margin: 5px; }
+.datetimeEntry_wrap img { 
+	margin: 5px;
+	padding-top: 5px; 
+}
 .timeOffsetWrap img {
-    margin-top: 4px;
-    margin-left: 6px;
+    margin-left: 8px;
 }
 .datetimeEntry_wrap .datetimeEntry_control { display: none !important; }
 
@@ -1496,12 +1515,12 @@ hr.dashed,
     display: none;
 }
 .datetimeEntry_wrap .timezone_container {
-    line-height: 24px;
     margin-left: -31px;
     float: left;
     color: #999;
     font-size: 13px;
     padding-right: 5px;
+	padding-top: 12px;
 }
 input.datePicker, 
 input.timePicker,
@@ -1963,7 +1982,7 @@ li:hover .show-on-hover {
     pointer-events:none;
 }
 
-.filter-section input:not(.datePicker), select {
+.filter-section input:not(.datePicker), select, .chosen-container {
     margin-right:10px;
 }
 

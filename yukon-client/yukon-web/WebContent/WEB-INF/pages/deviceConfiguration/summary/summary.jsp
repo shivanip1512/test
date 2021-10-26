@@ -12,19 +12,21 @@
     <div id="summary-help" class="dn" data-dialog data-cancel-omit="true" data-title="${helpTitle}"><cti:msg2 key=".helpText"/></div>
             
     <hr/>
-    <div class="filter-section stacked-md">
+    <div class="filter-section">
         <form:form id="filter-form" action="filter" method="get" modelAttribute="filter">
             <span class="fl">
                 <span class="vat"><i:inline key="yukon.common.filterBy"/>&nbsp;</span>
                 <cti:msg2 var="selectConfigPlaceholder" key=".selectConfigurations"/>
-                <form:select id="selectedConfigurations" path="configurationIds" size="1" cssClass="w300" data-placeholder="${selectConfigPlaceholder}">
-                    <form:option value="-999"><i:inline key=".configurations.unassigned"/></form:option>
-                    <form:option value="-998"><i:inline key=".configurations.all"/></form:option>
-                    <c:forEach var="configuration" items="${configurations}">
-                        <form:option value="${configuration.configurationId}">${fn:escapeXml(configuration.name)}</form:option>
-                    </c:forEach>
-                </form:select>
-                <tags:selectWithItems path="stateSelection" items="${states}"/>
+                <span style="margin-right:20px;">
+                    <form:select id="selectedConfigurations" path="configurationIds" size="1" cssClass="w300" data-placeholder="${selectConfigPlaceholder}">
+	                    <form:option value="-999"><i:inline key=".configurations.unassigned"/></form:option>
+	                    <form:option value="-998"><i:inline key=".configurations.all"/></form:option>
+	                    <c:forEach var="configuration" items="${configurations}">
+	                        <form:option value="${configuration.configurationId}">${fn:escapeXml(configuration.name)}</form:option>
+	                    </c:forEach>
+	                </form:select>
+                </span>
+                <tags:selectWithItems path="stateSelection" items="${states}" inputClass="vam"/>
             </span>
                 
             <cti:list var="groups">
@@ -34,7 +36,7 @@
             </cti:list>
             <tags:deviceGroupPicker inputName="deviceSubGroups" multi="true" inputValue="${groups}" classes="fl"/>
             
-            <cti:button nameKey="filter" classes="js-filter-configs primary action fl" busy="true"/>
+            <cti:button nameKey="filter" classes="js-filter-configs primary action fl MB5" busy="true"/>
         
         </form:form>
     </div><br/>

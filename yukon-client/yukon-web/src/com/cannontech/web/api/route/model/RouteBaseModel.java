@@ -47,19 +47,19 @@ public class RouteBaseModel<T extends RouteBase> extends DeviceBaseModel impleme
     @Override
     public void buildModel(T routeBase) {
         setRouteId(routeBase.getRouteID());
-        setId(routeBase.getRouteID());
-        setName(routeBase.getRouteName());
+        setDeviceId(routeBase.getRouteID());
+        setDeviceName(routeBase.getRouteName());
         setDefaultRoute(routeBase.getDefaultRoute() == "N" ? true : false);
         setSignalTransmitterId(routeBase.getDeviceID());
     }
 
     @Override
     public void buildDBPersistent(T routeBase) {
-        if (getId() != null) {
-            routeBase.setRouteID(getId());
+        if (getDeviceId() != null) {
+            routeBase.setRouteID(getDeviceId());
         }
-        if (getName() != null) {
-            routeBase.setRouteName(getName());
+        if (getDeviceName() != null) {
+            routeBase.setRouteName(getDeviceName());
         }
         if (getSignalTransmitterId() != null) {
             routeBase.setDeviceID(getSignalTransmitterId());

@@ -12,11 +12,11 @@ post-operation:
             
           examples:
             Control Area with Threshold Point Trigger:
-              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger' 
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger Request' 
             Control Area with Threshold Trigger:
-              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger' 
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger Request' 
             Control Area with Status Trigger:
-              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger'
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger Request'
            
       required: true
     responses:
@@ -25,15 +25,15 @@ post-operation:
           content:
             application/json:
               schema:
-                $ref: '../schemas/controlAreasSchema.yaml#/ControlArea'
+                $ref: '../schemas/controlAreasSchema.yaml#/ControlArea Response Schema'
             
               examples:
                 Control Area with Threshold Point Trigger:
-                  $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger' 
+                  $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger Response' 
                 Control Area with Threshold Trigger:
-                  $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger' 
+                  $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger Response' 
                 Control Area with Status Trigger:
-                  $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger'
+                  $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger Response'
               
 get-update-delete-operation:
   get:
@@ -56,15 +56,15 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/controlAreasSchema.yaml#/ControlArea'
+              $ref: '../schemas/controlAreasSchema.yaml#/ControlArea Response Schema'
             
             examples:
               Control Area with Threshold Point Trigger:
-                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger' 
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger Response' 
               Control Area with Threshold Trigger:
-                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger' 
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger Response' 
               Control Area with Status Trigger:
-                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger'
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger Response'
              
   put:
     tags:
@@ -88,11 +88,11 @@ get-update-delete-operation:
             
           examples:
             Control Area with Threshold Point Trigger:
-              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger' 
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger Request' 
             Control Area with Threshold Trigger:
-              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger' 
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger Request' 
             Control Area with Status Trigger:
-              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger'
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger Request'
 
       required: true
     responses:
@@ -101,15 +101,15 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/controlAreasSchema.yaml#/ControlArea'
+              $ref: '../schemas/controlAreasSchema.yaml#/ControlArea Response Schema'
             
             examples:
               Control Area with Threshold Point Trigger:
-                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger' 
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger Response' 
               Control Area with Threshold Trigger:
-                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger' 
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger Response' 
               Control Area with Status Trigger:
-                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger'
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger Response'
              
   delete:
     tags:

@@ -5,11 +5,11 @@ package com.cannontech.tools.email;
  * @author: 
  */
 
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Address;
+import jakarta.mail.Message;
+import jakarta.mail.Session;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
@@ -426,7 +426,7 @@ private boolean executeCheckProcess()
  * Creation date: (11/15/2001 10:40:12 PM)
  * @return javax.mail.Address
  */
-public javax.mail.Address getFromAddress() {
+public jakarta.mail.Address getFromAddress() {
 	return fromAddress;
 }
 
@@ -646,7 +646,7 @@ private void setEmailSent(boolean newEmailSent) {
  * Creation date: (11/15/2001 10:40:12 PM)
  * @param newFromAddress javax.mail.Address
  */
-public void setFromAddress(javax.mail.Address newFromAddress) {
+public void setFromAddress(jakarta.mail.Address newFromAddress) {
 	fromAddress = newFromAddress;
 }
 
@@ -685,7 +685,7 @@ public void setProcessNames(java.util.ArrayList newProcessNames) {
  * Creation date: (11/15/2001 10:40:12 PM)
  * @return newToAddresses[] javax.mail.Address
  */
-public javax.mail.Address[] getToAddresses() {
+public jakarta.mail.Address[] getToAddresses() {
    return toAddresses;
 }
 
@@ -695,7 +695,7 @@ public javax.mail.Address[] getToAddresses() {
  * Creation date: (11/15/2001 10:40:12 PM)
  * @param newToAddress[] javax.mail.Address
  */
-public void setToAddresses(javax.mail.Address[] newToAddresses) {
+public void setToAddresses(jakarta.mail.Address[] newToAddresses) {
    toAddresses = newToAddresses;
 }
 

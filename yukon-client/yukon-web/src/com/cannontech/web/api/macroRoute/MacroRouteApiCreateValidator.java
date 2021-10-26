@@ -15,7 +15,7 @@ public class MacroRouteApiCreateValidator extends SimpleValidator<MacroRouteMode
     @Override
     protected void doValidation(MacroRouteModel macroRoute, Errors errors) {
         // Check if name is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("name", errors, macroRoute.getName(), "Name");
+        YukonApiValidationUtils.checkIfFieldRequired("deviceName", errors, macroRoute.getDeviceName(), "Name");
       
         // Check if RouteIds is NULL
         YukonApiValidationUtils.checkIfFieldRequired("routeList", errors, macroRoute.getRouteList(),

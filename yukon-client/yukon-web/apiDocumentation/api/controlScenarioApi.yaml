@@ -11,7 +11,7 @@ post-operation:
             $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario'
           examples:
             Control Scenario:
-              $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario'
+              $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Request'
       required: true
     responses:
       '201':
@@ -19,10 +19,10 @@ post-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario'
+              $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario Response Schema'
             examples:
-              Program Constraints:
-                $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario'
+              Control Scenario:
+                $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Response'
 get-update-delete-operation:
   get:
     tags:
@@ -42,10 +42,10 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario'
+              $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario Response Schema'
             examples:
               Control Scenario:
-                $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario'
+                $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Response'
   put:
     tags:
      - Control Scenario
@@ -64,8 +64,8 @@ get-update-delete-operation:
           schema:
             $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario'
           examples:
-            Program Constraints:
-              $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario'
+            Control Scenario:
+              $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Request'
       required: true
     responses:
       '200':
@@ -73,10 +73,10 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario'
+              $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario Response Schema'
             examples:
-              Program Constraints:
-                $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario'
+              Control Scenario:
+                $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Response'
   delete:
     tags:
      - Control Scenario

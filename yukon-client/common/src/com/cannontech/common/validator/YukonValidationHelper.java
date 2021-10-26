@@ -22,16 +22,16 @@ public class YukonValidationHelper {
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoId) {
         if (StringUtils.hasText(paoName)) {
             String paoNameWithoutSpace = paoName.trim();
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoNameWithoutSpace, 60);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "deviceName", paoNameWithoutSpace, 60);
             if (!PaoUtils.isValidPaoName(paoNameWithoutSpace)) {
-                errors.rejectValue("name", key + "paoName.containsIllegalChars");
+                errors.rejectValue("deviceName", key + "paoName.containsIllegalChars");
             }
 
-            if (!errors.hasFieldErrors("name") && yukonValidationHelperCommon.isPaoNameConflict(paoName, type, errors, paoId)) {
-                errors.rejectValue("name", key + "nameConflict", new Object[] { fieldName }, "");
+            if (!errors.hasFieldErrors("deviceName") && yukonValidationHelperCommon.isPaoNameConflict(paoName, type, errors, paoId)) {
+                errors.rejectValue("deviceName", key + "nameConflict", new Object[] { fieldName }, "");
             }
         } else {
-            errors.rejectValue("name", key + "fieldrequired", new Object[] { "Name" }, "");
+            errors.rejectValue("deviceName", key + "fieldrequired", new Object[] { "Name" }, "");
         }
     }
 
@@ -41,7 +41,7 @@ public class YukonValidationHelper {
     public void checkIfPaoTypeChanged(Errors errors, PaoType paoType, int paoId) {
         LiteYukonPAObject litePao = serverDatabaseCache.getAllPaosMap().get(paoId);
         if (yukonValidationHelperCommon.checkIfPaoTypeChanged(paoType, paoId)) {
-            errors.rejectValue("type", key + "paoTypeMismatch",
+            errors.rejectValue("deviceType", key + "paoTypeMismatch",
                     new Object[] { paoType, litePao.getPaoType(), String.valueOf(paoId) }, "");
         }
     }

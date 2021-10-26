@@ -1,7 +1,7 @@
 Route:
   title: Route
   required:
-    - routeName
+    - name
     - signalTransmitterId
   type: object
   properties:
@@ -31,8 +31,6 @@ id:
       description: 'Unique identifier for Route.'
 routeId:
   title: routeId
-  required:
-    - routeId
   type: object
   properties:
     routeId:
@@ -85,10 +83,48 @@ repeaters:
         range : 0-7
         description: 'Order of the Repeater Route'
 
+Route Response Schema:
+  title: Route
+  type: object
+  properties:
+    routeId:
+      type: integer
+      description: 'Unique identifier for Route.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the route.'
+    signalTransmitterId:
+      type: integer
+      description: 'Id for the signal transmitter.'
+    defaultRoute:
+      type: boolean
+      description: 'Setting up default Route.'
+    carrierRoute:
+      $ref: '#/carrierRoute'
+    repeaters:
+        $ref: '#/repeaters'
+
 components:
   examples:
-    Route:
+    Route Request:
       value:
+        name: Test Route
+        signalTransmitterId: 5
+        defaultRoute: true
+        carrierRoute:
+          busNumber: 1
+          ccuFixBits: 5
+          ccuVariableBits: 1
+          userLocked: false
+          resetRptSettings: true
+        repeaters:
+          repeaterId: 787
+          variableBits: 5
+          repeaterOrder: 1
+    Route Response:
+      value:
+        routeId: 7
         name: Test Route
         signalTransmitterId: 5
         defaultRoute: true
@@ -104,7 +140,8 @@ components:
           repeaterOrder: 1
     List Routes:
       value:
-        - name: Test Route
+        - routeId: 9
+          name: Test Route
           signalTransmitterId: 5
           defaultRoute: true
           carrierRoute:
@@ -117,7 +154,8 @@ components:
             repeaterId: 787
             variableBits: 5
             repeaterOrder: 1
-        - name: Test Route 1
+        - routeId: 11
+          name: Test Route 1
           signalTransmitterId: 5
           defaultRoute: true
           carrierRoute:
@@ -132,4 +170,4 @@ components:
             repeaterOrder: 1
     routeId:
       value:
-      routeId: 10
+        routeId: 10

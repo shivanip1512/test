@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;

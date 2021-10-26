@@ -29,7 +29,7 @@
             <cti:url value="/admin/config/attribute/create" var="createAttributeUrl" />
             <form:form modelAttribute="createAttribute" action="${createAttributeUrl}" method="POST">
                 <cti:csrfToken />
-                <div class="column-10-14 clearfix">
+                <div class="column-12-12 clearfix">
                     <div class="column one">
                         <cti:msg2 var="attributePlaceholder" key=".attributeName"/>
                         <tags:input path="name" placeholder="${attributePlaceholder}" maxlength="60" size="50"/>

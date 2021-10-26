@@ -15,7 +15,7 @@ public class RouteApiCreateValidator extends SimpleValidator<RouteBaseModel> {
     @Override
     protected void doValidation(RouteBaseModel route, Errors errors) {
         // Check if name is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("name", errors, route.getName(), "Name");
+        YukonApiValidationUtils.checkIfFieldRequired("deviceName", errors, route.getDeviceName(), "Name");
         // Check if signalTransmitterID is NULL
         YukonApiValidationUtils.checkIfFieldRequired("signalTransmitterId", errors, route.getSignalTransmitterId(),
                 "SignalTransmitterId");

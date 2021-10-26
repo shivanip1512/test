@@ -108,6 +108,12 @@ public class YukonLogManager {
                            .add(customPatternLayout)
                            .addComponent(triggeringPolicy)
                            .addComponent(strategyBuilder));
+        
+        // Create commsRollingFile and add it to the builder.
+        builder.add(builder.newAppender("smartNotifRollingFile", "SmartNotifRollingFile")
+                           .add(customPatternLayout)
+                           .addComponent(triggeringPolicy)
+                           .addComponent(strategyBuilder));
 
         // Create yukonRfnRollingFile and add it to the builder.
         builder.add(builder.newAppender("yukonRfnRollingFile", "YukonRfnRollingFile")
@@ -185,6 +191,8 @@ public class YukonLogManager {
             return "commsRollingFile";
         case "rfnCommsLogger":
             return "yukonRfnRollingFile";
+        case "smartNotifLogger":
+            return "smartNotifRollingFile";
         }
         return "yukonRollingFileAppender";
     }
@@ -403,5 +411,9 @@ public class YukonLogManager {
      */
     public static Logger getApiLogger() {
         return getLogger("apiLogger");
+    }
+    
+    public static Logger getSmartNotificationsLogger() {
+        return getLogger("smartNotifLogger");
     }
 }

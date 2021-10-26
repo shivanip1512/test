@@ -17,7 +17,7 @@ public class VirtualDeviceCreateApiValidator <T extends VirtualDeviceBaseModel<?
 
     @Override
     protected void doValidation(VirtualDeviceBaseModel virtualDevice, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("name", errors, virtualDevice.getName(), "Name");
+        YukonApiValidationUtils.checkIfFieldRequired("deviceName", errors, virtualDevice.getDeviceName(), "Name");
         if (virtualDevice instanceof VirtualMeterModel)
         {
             VirtualMeterModel model = (VirtualMeterModel) virtualDevice;

@@ -35,7 +35,7 @@
                     </c:forEach>
                 </select>
                 
-                <div class="button-group ML15">
+                <div class="button-group ML15 MB5">
                     <c:forEach var="status" items="${statusList}">
                         <tags:check path="statuses" key="${status.formatKey}" classes="M0" value="${status}"></tags:check>
                     </c:forEach>

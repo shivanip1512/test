@@ -98,12 +98,17 @@ public class EatonCloudSimulatorController {
     }
 
     @PostMapping("/updateSettings")
-    public String updateSettings(@ModelAttribute("settings") SimulatedEatonCloudSettings settings, FlashScope flashScope, ModelMap model) {
-        try {
-            SimulatorResponse response = simulatorsCommunicationService
-                    .sendRequest(new EatonCloudSimulatorSettingsUpdateRequest(getStatuses(settings)), SimulatorResponseBase.class);
+    public String updateSettings(@ModelAttribute("settings") SimulatedEatonCloudSettings newSettings, FlashScope flashScope, ModelMap model) {
+        try {   
+            EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest();
+            request.setStatuses(getStatuses(newSettings));
+            request.setSuccessPercentages(newSettings.getSuccessPercentages());
+            
+            SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            
             if (response.isSuccessful()) {
-                this.settings = settings;
+                settings.setSelectedStatuses(newSettings.getSelectedStatuses());
+                settings.setSuccessPercentages(newSettings.getSuccessPercentages());
                 flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Updated simulator settings"));
                 return "redirect:home";
             }
