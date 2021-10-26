@@ -80,7 +80,7 @@
                 
             <div class="column-12-12">
                 <div class="column one">
-                    <div class="box" style="background-color:#CDCDCD;padding:10px;">
+                    <div class="box import-container">
                         <div class="fl"></div>
                         <div class="fl" style="margin-left:20px;">
                             <h2><i:inline key=".importAccountTableHeader"/></h2>
@@ -104,7 +104,7 @@
                             </c:forEach>
                         </tbody>
                     </table>
-                    <div class="box detail" style="background-color:#CDCDCD;padding:10px;">
+                    <div class="box detail box-container-footer">
                         <table>
                             <tr>
                                 <td><i:inline key=".accountFieldLegend.a.label"/></td>
@@ -124,7 +124,7 @@
                 </div>
                 
                 <div class="column two nogutter">
-                    <div class="box" style="background-color:#CDCDCD;padding:10px;">
+                    <div class="box import-container">
                         <div class="fl"></div>
                         <div class="fl" style="margin-left:20px;">
                             <h2><i:inline key=".importHardwareTableHeader"/></h2>
@@ -148,7 +148,7 @@
                         </c:forEach>
                         </tbody>
                     </table>
-                    <div class="box detail" style="background-color:#CDCDCD;padding:10px;">
+                    <div class="box detail box-container-footer">
                         <table>
                             <tr>
                                 <td><i:inline key=".hardwareFieldLegend.a.label"/></td>
