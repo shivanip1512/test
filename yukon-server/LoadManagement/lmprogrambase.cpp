@@ -264,7 +264,7 @@ LONG CtiLMProgramBase::getMaxHoursAnnually() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getMinActivateTime() const
 {
-    if (getPAOTypeString() == "ECOBEE PROGRAM")
+    if (isEcobeeProgram())
     {
         return std::max<LONG>(_minactivatetime, 300);    // Ecobee Program must run at least 5 minutes
     }
@@ -415,6 +415,11 @@ BOOL CtiLMProgramBase::getManualControlReceivedFlag() const
    Checking for Ecobee Programs afn
 ---------------------------------------------------------------------------*/
 bool CtiLMProgramBase::controlNotAllowedToSpanMidnight() const
+{
+    return (isEcobeeProgram());
+}
+
+bool CtiLMProgramBase::isEcobeeProgram() const
 {
     return (getPAOTypeString() == "ECOBEE PROGRAM");
 }
