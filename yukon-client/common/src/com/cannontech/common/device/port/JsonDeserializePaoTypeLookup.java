@@ -41,7 +41,7 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
             }
         }
         Integer id = null;
-        TreeNode type = node.get("type");
+        TreeNode type = node.get("deviceType");
         PaoType paoType;
 
         if (idStr == null) {
