@@ -459,23 +459,59 @@ input[type=radio] {
 
 /* TABLES */
 table {
-    width: auto;
+    display: table;
+    width: 100%;
     border-collapse: collapse;
+    border-spacing: 0;
+    border-color: grey;
+    color: rgba(0, 0, 0, 0.87);
+    border-radius: 10px;
+    box-sizing : border-box;
+    font-family: "Open Sans", Helvetica, Roboto, sans-serif;
 }
 
 table td, 
 table th {
-    padding: 3px 5px;
+    padding: 6px 24px 6px 16px;
     vertical-align: top;
 }
 
 table th, 
 .title-header, 
 .column-header {
-    background: white;
+    background-color: transparent;
+    cursor: pointer;
+    align-items: center;
+    flex-direction: inherit;
+    justify-content: flex-start;
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    letter-spacing: 0.01071em;
+    display: table-cell;
+    vertical-align: inherit;
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
     text-align: left;
-    font-weight: bold;
-    border-bottom: solid 1px #ccc;
+    color: #424e54;
+}
+
+table td {
+    padding: 6px 24px 6px 16px;
+    color: #424e54;
+    display: table-cell;
+    font-size: 0.875rem;
+    text-align: left;
+    font-weight: 400;
+    line-height: 1.43;
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
+    vertical-align: inherit;
+    letter-spacing: 0.01071em;
+}
+table tr {
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
+    &:not([readonly]):hover {
+        background-color: rgb(244, 245, 245);
+    }
 }
 table.dashed th, 
 .title-header.dashed, 
@@ -546,7 +582,7 @@ table.matrix th {
 }
 
 table.matrix tr:nth-child(even){
-    background-color: #f6f6f6;
+    background-color: #fbfbfb;
 }
 
 table.matrix{
@@ -584,7 +620,7 @@ table.matrix{
 .striped-list > li:nth-child(even), 
 .striped tr:nth-child(even), 
 .alt-row { 
-    background-color: #f6f6f6;
+    background-color: #fbfbfb;
 }
 
 .compact-results-table {
@@ -640,7 +676,7 @@ table.matrix{
 .row-highlighting tr:hover, 
 .highlighted, 
 .undo-row {
-    background-color: #dedede !important;
+    background-color: #f4f5f5 !important;
 }
 .undo-row {
     text-align: center;
