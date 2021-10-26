@@ -3446,9 +3446,17 @@ components:
         restoreOffset: 0
         gears:
           - gearId: 4370
-        gearName: gear001
-        gearNumber: 1
-        controlMethod: MeterDisconnect
+            gearName: gear001
+            gearNumber: 1
+            controlMethod: MeterDisconnect
+            fields:
+              mandatory: true
+              setpointOffset: 3
+              mode: COOL
+              howToStopControl: Restore
+              capacityReduction: 100
+              whenToChangeFields:
+                whenToChange: None
         controlWindow: {}
         assignedGroups: []
 
