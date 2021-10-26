@@ -13,7 +13,7 @@ package com.cannontech.analysis.jfreereport;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class ItemColumnQuotientExpression extends org.jfree.report.function.ItemColumnQuotientExpression
+public class ItemColumnQuotientExpression extends org.pentaho.reporting.engine.classic.core.function.ItemColumnQuotientExpression
 {
 
     /* (non-Javadoc)

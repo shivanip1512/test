@@ -15,24 +15,24 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
-import org.jfree.report.ElementAlignment;
-import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.ReportFooter;
-import org.jfree.report.elementfactory.DateFieldElementFactory;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.NumberFieldElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.Expression;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.ui.FloatDimension;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.ReportFooter;
+import org.pentaho.reporting.engine.classic.core.elementfactory.DateFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.NumberFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.function.Expression;
+import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
+import org.pentaho.reporting.libraries.base.util.FloatDimension;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFactory;
@@ -93,7 +93,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
     }
     
     @Override
-    public JFreeReport createReport() throws FunctionInitializeException {
+    public JFreeReport createReport() throws FunctionProcessingException {
         initialize();
         return super.createReport();
     }
@@ -281,7 +281,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
     }
     
     @Override
-    protected ExpressionCollection getExpressions() throws FunctionInitializeException {
+    protected ExpressionCollection getExpressions() throws FunctionProcessingException {
         ExpressionCollection expressionCollection = super.getExpressions();
 
         List<? extends ExpressionFieldFactory> bodyExpressions = getBodyExpressions();

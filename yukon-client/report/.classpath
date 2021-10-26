@@ -7,6 +7,12 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/web-common"/>
 	<classpathentry kind="src" path="/resource"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -52,11 +58,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="/third-party/linked-sources/jfreereport-0.8.6-4.zip">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/bsf-2.3.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -72,9 +73,19 @@
 			<attribute name="owner.project.facets" value="jst.utility"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+	<classpathentry kind="lib" path="/third-party/pentaho-reporting-engine-classic-core-5.0.1-stable.jar" sourcepath="C:/Dev/pre-classic-sdk-5.0.1-stable/PentahoReportingEngineSDK/samples/lib/pentaho-reporting-engine-classic-core-5.0.1-stable.jar">
 		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/libloader-1.2.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/libbase-5.0.1-stable.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>

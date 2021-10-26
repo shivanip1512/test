@@ -2,17 +2,18 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 
-import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.CarrierDBModel;
@@ -51,7 +52,7 @@ public class CarrierDBReport extends YukonReportBase
 	*/
 	public static void main(final String[] args) throws Exception {
 		// initialize JFreeReport
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 	
 		CarrierDBModel reportModel = new CarrierDBModel();
@@ -94,7 +95,7 @@ public class CarrierDBReport extends YukonReportBase
 			header.addElement(factory.createElement());
 		}
 	
-		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 22));
+		header.addElement(HorizontalLineElementFactory.createHorizontalLine(22,  null, new BasicStroke(0.5f)));
 		collHdgGroup.setHeader(header);
 	
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -121,13 +122,12 @@ public class CarrierDBReport extends YukonReportBase
 		ItemBand items = ReportFactory.createItemBandDefault();
 	
 		if( showBackgroundColor ) {
-			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
-					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
+			items.addElement(RectangleElementFactory.createFilledRectangle
+				(0, 0, -100, -100, java.awt.Color.decode("#DFDFDF")));
+			items.addElement(HorizontalLineElementFactory.createHorizontalLine
+				(0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+			items.addElement(HorizontalLineElementFactory.createHorizontalLine
+				(10, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 		}
 			
 		TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), 0);

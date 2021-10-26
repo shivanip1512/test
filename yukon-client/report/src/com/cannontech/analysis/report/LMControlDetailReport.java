@@ -4,7 +4,7 @@ import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jfree.report.JFreeReportBoot;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.tablemodel.BareReportModel;
@@ -47,7 +47,7 @@ public class LMControlDetailReport extends SingleGroupYukonReportBase {
      */
     public static void main(final String[] args) throws Exception {
         // initialize JFreeReport
-        JFreeReportBoot.getInstance().start();
+        ClassicEngineBoot.getInstance().start();
         javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
         YukonSpringHook.setDefaultContext(YukonSpringHook.WEB_BEAN_FACTORY_KEY);
         

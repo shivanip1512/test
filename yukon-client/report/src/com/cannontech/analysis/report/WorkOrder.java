@@ -8,24 +8,23 @@ import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
 import java.util.Date;
 
-import org.jfree.report.ElementAlignment;
-import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.PageHeader;
-import org.jfree.report.ReportHeader;
-import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.report.style.ElementStyleSheet;
-import org.jfree.report.style.FontDefinition;
-import org.jfree.ui.FloatDimension;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.PageHeader;
+import org.pentaho.reporting.engine.classic.core.ReportHeader;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
+import org.pentaho.reporting.engine.classic.core.style.ElementStyleKeys;
+import org.pentaho.reporting.engine.classic.core.style.FontDefinition;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFactory;
@@ -79,7 +78,7 @@ public class WorkOrder extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Define start and stop parameters for a default 90 day report.
@@ -171,7 +170,7 @@ public class WorkOrder extends YukonReportBase
 		acctGroup.addField(WorkOrderModel.ORDER_NO_STRING);
 		
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, ReportFactory.ITEM_BAND_STYLE_DIMENSION);
+		header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, ReportFactory.ITEM_BAND_STYLE_DIMENSION);
 		header.getStyle().setFontDefinitionProperty(ReportFactory.ITEM_BAND_FONT);
 
 		int colHeight = 14;	//USE 14 because we know that's what will fit?  SN...ick, ick
@@ -217,7 +216,7 @@ public class WorkOrder extends YukonReportBase
 		acctGroup.setHeader(header);
 		
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, ReportFactory.ITEM_BAND_STYLE_DIMENSION);
+		footer.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, ReportFactory.ITEM_BAND_STYLE_DIMENSION);
 		footer.getStyle().setFontDefinitionProperty(ReportFactory.ITEM_BAND_FONT);
 
 		for (int i = WorkOrderModel.FOOTER_START_INDEX; i <= WorkOrderModel.FOOTER_END_INDEX; i++)
@@ -257,7 +256,7 @@ public class WorkOrder extends YukonReportBase
 	{
 		super.createPageHeader();
 		final PageHeader header = new PageHeader();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
+		header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 18);
 		header.getStyle().setFontDefinitionProperty(new FontDefinition("Serif", 14));
 		header.setDisplayOnFirstPage(!isShowReportHeader());
 		header.setDisplayOnLastPage(false);

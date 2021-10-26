@@ -5,22 +5,22 @@ import java.awt.geom.Point2D;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.jfree.report.ElementAlignment;
-import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.PageFooter;
-import org.jfree.report.PageHeader;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.report.style.ElementStyleSheet;
-import org.jfree.ui.FloatDimension;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.PageFooter;
+import org.pentaho.reporting.engine.classic.core.PageHeader;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
+import org.pentaho.reporting.engine.classic.core.style.ElementStyleKeys;
+import org.pentaho.reporting.libraries.base.util.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.HECO_CustomerMonthlyBillingSettlementModel;
@@ -61,7 +61,7 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		HECO_CustomerMonthlyBillingSettlementModel model = new HECO_CustomerMonthlyBillingSettlementModel();
@@ -133,8 +133,8 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
 		
 			if( i < HECO_CustomerMonthlyBillingSettlementModel.EVENT_TYPE_HEADING_DATA)
 			{
-				header.addElement(StaticShapeElementFactory.createHorizontalLine
-						("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), getModel().getColumnProperties(i+1).getPositionY()));
+				header.addElement(HorizontalLineElementFactory.createHorizontalLine
+						(getModel().getColumnProperties(i+1).getPositionY(), java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 
 				tfactory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 				tfactory.setHorizontalAlignment(ElementAlignment.RIGHT);
@@ -174,8 +174,8 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
 	protected ItemBand createItemBand()
 	{
 		ItemBand items = ReportFactory.createItemBandDefault();
-		items.addElement(StaticShapeElementFactory.createHorizontalLine
-			("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+		items.addElement(HorizontalLineElementFactory.createHorizontalLine
+			(0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 
 		
 		for (int i = HECO_CustomerMonthlyBillingSettlementModel.EVENT_TYPE_HEADING_DATA; i <= HECO_CustomerMonthlyBillingSettlementModel.EVENT_DURATION_HEADING_DATA; i++)
@@ -195,7 +195,7 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
 	protected PageHeader createPageHeader()
 	{
 		final PageHeader header = super.createPageHeader();
-		header.getStyle().setStyleProperty( ElementStyleSheet.MINIMUMSIZE, ReportFactory.REPORT_STYLE_DIMENSION);
+		header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, ReportFactory.REPORT_STYLE_DIMENSION);
 		header.getStyle().setFontDefinitionProperty(ReportFactory.REPORT_HEADER_BAND_FONT);
 
 		LabelElementFactory factory = new LabelElementFactory();

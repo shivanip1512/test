@@ -15,7 +15,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.jfree.report.modules.output.csv.CSVQuoter;
+import org.pentaho.reporting.engine.classic.core.modules.output.csv.CSVQuoter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;

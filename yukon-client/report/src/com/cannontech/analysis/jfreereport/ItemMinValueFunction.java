@@ -9,10 +9,10 @@ package com.cannontech.analysis.jfreereport;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import org.jfree.report.Group;
-import org.jfree.report.event.ReportEvent;
-import org.jfree.report.function.AbstractFunction;
-import org.jfree.report.function.Expression;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.event.ReportEvent ;
+import org.pentaho.reporting.engine.classic.core.function.AbstractFunction;
+import org.pentaho.reporting.engine.classic.core.function.Expression;
 import org.jfree.util.Log;
 
 /**

@@ -7,7 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.function.FunctionInitializeException;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -197,7 +197,7 @@ public class OperatorWorkOrderController {
     public void generateWorkOrderReport(int workOrderId,
                                           HttpServletResponse response,
                                           AccountInfoFragment accountInfoFragment,
-                                          YukonUserContext userContext) throws IOException, FunctionInitializeException {
+                                          YukonUserContext userContext) throws IOException, FunctionProcessingException {
         
         WorkOrderModel workOrderModel = new WorkOrderModel();
         workOrderModel.setEnergyCompanyID(accountInfoFragment.getEnergyCompanyId());

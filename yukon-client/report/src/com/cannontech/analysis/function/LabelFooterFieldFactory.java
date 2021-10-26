@@ -1,8 +1,8 @@
 package com.cannontech.analysis.function;
 
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.TextElementFactory;
-import org.jfree.report.function.Expression;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextElementFactory;
+import org.pentaho.reporting.engine.classic.core.function.Expression;
 
 import com.cannontech.analysis.report.ColumnLayoutData;
 

@@ -1,25 +1,24 @@
 package com.cannontech.analysis.report;
 
-import java.awt.BasicStroke;
 import java.awt.print.PageFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.jfree.report.ElementAlignment;
-import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.SimplePageDefinition;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.SimplePageDefinition;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFactory;
@@ -62,7 +61,7 @@ public class HECO_LMEventSummaryReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		HECO_LMEventSummaryModel model = new HECO_LMEventSummaryModel();
@@ -121,7 +120,7 @@ public class HECO_LMEventSummaryReport extends YukonReportBase
 			header.addElement(factory.createElement());
 		}
 	
-		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 22));
+		header.addElement(HorizontalLineElementFactory.createHorizontalLine(22));
 		collHdgGroup.setHeader(header);
 	
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -149,8 +148,8 @@ public class HECO_LMEventSummaryReport extends YukonReportBase
 	protected ItemBand createItemBand()
 	{
 		ItemBand items = ReportFactory.createItemBandDefault();
-		items.addElement(StaticShapeElementFactory.createHorizontalLine
-			("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+		items.addElement(HorizontalLineElementFactory.createHorizontalLine
+			(0));
 
 		
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
@@ -169,7 +168,7 @@ public class HECO_LMEventSummaryReport extends YukonReportBase
 	 * @return the functions.
 	 * @throws FunctionInitializeException if there is a problem initialising the functions.
 	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
+	protected ExpressionCollection getExpressions() throws FunctionProcessingException
 	{
 		super.getExpressions();
 		

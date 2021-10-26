@@ -3,24 +3,24 @@ package com.cannontech.analysis.report;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Date;
 
-import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemHideFunction;
-import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.ui.FloatDimension;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
+import org.pentaho.reporting.engine.classic.core.function.ItemHideFunction;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
+import org.pentaho.reporting.libraries.base.util.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
@@ -59,7 +59,7 @@ public class CapControlNewActivityReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 		
 		//Define default start and stop parameters for a default year to date report.
@@ -99,7 +99,7 @@ public class CapControlNewActivityReport extends YukonReportBase
 		dialog.setVisible(true);
 	}
 
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
+	protected ExpressionCollection getExpressions() throws FunctionProcessingException
 	{
 		super.getExpressions();
 		
@@ -182,13 +182,12 @@ public class CapControlNewActivityReport extends YukonReportBase
 	
 		if( showBackgroundColor )
 		{
-			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-				("background", Color.decode("#DFDFDF"), new BasicStroke(0),
-					new Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("top", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("bottom", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
+			items.addElement(RectangleElementFactory.createFilledRectangle
+				(0, 0, -100, -100, Color.decode("#DFDFDF")));
+			items.addElement(HorizontalLineElementFactory.createHorizontalLine
+				(0, Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+			items.addElement(HorizontalLineElementFactory.createHorizontalLine
+				(10, Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 		}
 		
 		for (int i = CapControlNewActivityModel.DATE_TIME_COLUMN; i < getModel().getColumnNames().length; i++)

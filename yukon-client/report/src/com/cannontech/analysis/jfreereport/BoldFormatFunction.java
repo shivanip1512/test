@@ -6,12 +6,13 @@
  */
 package com.cannontech.analysis.jfreereport;
 
-import org.jfree.report.Band;
-import org.jfree.report.Element;
-import org.jfree.report.ItemBand;
-import org.jfree.report.function.AbstractElementFormatFunction;
-import org.jfree.report.function.FunctionUtilities;
-import org.jfree.report.style.ElementStyleSheet;
+import org.pentaho.reporting.engine.classic.core.Band;
+import org.pentaho.reporting.engine.classic.core.Element;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.ReportElement;
+import org.pentaho.reporting.engine.classic.core.function.AbstractElementFormatFunction;
+import org.pentaho.reporting.engine.classic.core.function.FunctionUtilities;
+import org.pentaho.reporting.engine.classic.core.style.TextStyleKeys;
 
 import com.cannontech.analysis.tablemodel.HECO_LMEventSummaryModel;
 
@@ -37,7 +38,7 @@ public class BoldFormatFunction extends AbstractElementFormatFunction
 		Element e = FunctionUtilities.findElement(band, getElement()); 
 		if (e == null) return; 
       
-		String originalValue = (String)getDataRow().get(col); 
+		String originalValue = getDataRow().get(col); 
 		if (originalValue == null) return; 
 
 		Boolean bold = Boolean.FALSE; 
@@ -51,9 +52,9 @@ public class BoldFormatFunction extends AbstractElementFormatFunction
 		{ 
 			bold = Boolean.FALSE; 
 		}
-		e.getStyle().setStyleProperty(ElementStyleSheet.BOLD, bold); 
-		e.getStyle().setStyleProperty(ElementStyleSheet.ITALIC, bold);
-		e.getStyle().setStyleProperty(ElementStyleSheet.UNDERLINED, bold);
+		e.getStyle().setStyleProperty(TextStyleKeys.BOLD, bold); 
+		e.getStyle().setStyleProperty(TextStyleKeys.ITALIC, bold);
+		e.getStyle().setStyleProperty(TextStyleKeys.UNDERLINED, bold);
 	} 
 	/* (non-Javadoc)
 	 * @see org.jfree.report.function.Expression#getValue()
@@ -63,5 +64,10 @@ public class BoldFormatFunction extends AbstractElementFormatFunction
 		// TODO Auto-generated method stub
 		return null;
 	}
+    @Override
+    protected boolean evaluateElement(ReportElement arg0) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
 }

@@ -8,8 +8,8 @@ package com.cannontech.analysis.jfreereport;
 
 import java.io.Serializable;
 
-import org.jfree.report.function.AbstractExpression;
-import org.jfree.report.function.Expression;
+import org.pentaho.reporting.engine.classic.core.function.AbstractExpression;
+import org.pentaho.reporting.engine.classic.core.function.Expression;
 
 import com.cannontech.clientutils.CTILogger;
 

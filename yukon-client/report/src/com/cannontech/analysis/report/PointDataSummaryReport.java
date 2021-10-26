@@ -7,31 +7,30 @@ import java.awt.print.PageFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.jfree.report.ElementAlignment;
-import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.PageFooter;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemAvgFunction;
-import org.jfree.report.function.ItemCountFunction;
-import org.jfree.report.function.ItemMaxFunction;
-import org.jfree.report.function.ItemMinFunction;
-import org.jfree.report.function.ItemSumFunction;
-import org.jfree.report.function.TotalGroupSumFunction;
-import org.jfree.report.layout.DefaultSizeCalculator;
-import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.report.style.ElementStyleSheet;
-import org.jfree.report.style.FontDefinition;
-import org.jfree.ui.FloatDimension;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.PageFooter;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
+import org.pentaho.reporting.engine.classic.core.function.ItemAvgFunction;
+import org.pentaho.reporting.engine.classic.core.function.ItemCountFunction;
+import org.pentaho.reporting.engine.classic.core.function.ItemMaxFunction;
+import org.pentaho.reporting.engine.classic.core.function.ItemMinFunction;
+import org.pentaho.reporting.engine.classic.core.function.ItemSumFunction;
+import org.pentaho.reporting.engine.classic.core.function.TotalGroupSumFunction;
+import org.pentaho.reporting.engine.classic.core.layout.DefaultSizeCalculator;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
+import org.pentaho.reporting.engine.classic.core.style.ElementStyleKeys;
+import org.pentaho.reporting.engine.classic.core.style.FontDefinition;
+import org.pentaho.reporting.libraries.base.util.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.jfreereport.ItemColumnQuotientExpression;
@@ -77,7 +76,7 @@ public class PointDataSummaryReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 	
 		//Define start and stop parameters for a default 90 day report.
@@ -128,7 +127,7 @@ public class PointDataSummaryReport extends YukonReportBase
 		devGroup.addField(PointDataSummaryModel.PAO_NAME_STRING);
 	
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
+		header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 18);
 		
 		for (int i = PointDataSummaryModel.PAO_NAME_COLUMN; i <= PointDataSummaryModel.PAO_TYPE_COLUMN; i++)
 		{
@@ -283,7 +282,7 @@ public class PointDataSummaryReport extends YukonReportBase
 			GroupHeader header = ReportFactory.createGroupHeaderDefault();
 	//		startDateGroup.setHeader(header);
 			GroupFooter footer = ReportFactory.createGroupFooterDefault();
-			footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
+			footer.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 10);
 			footer.getStyle().setFontDefinitionProperty(new FontDefinition(ReportFactory.DEFAULT_FONT, 10, false, false, false, false));
 	
 			TextFieldElementFactory tfactory = ReportFactory.createTextFieldElementDefault(getModel(), PointDataSummaryModel.START_DATE_COLUMN);
@@ -361,7 +360,7 @@ public class PointDataSummaryReport extends YukonReportBase
 	 * @return the functions.
 	 * @throws FunctionInitializeException if there is a problem initialising the functions.
 	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
+	protected ExpressionCollection getExpressions() throws FunctionProcessingException
 	{ 
 		super.getExpressions();
 	

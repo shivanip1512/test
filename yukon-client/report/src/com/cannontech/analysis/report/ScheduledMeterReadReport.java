@@ -8,20 +8,22 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.jfree.report.ElementAlignment;
-import org.jfree.report.Group;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.ReportFooter;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.report.style.ElementStyleSheet;
-import org.jfree.ui.FloatDimension;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.ReportFooter;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
+import org.pentaho.reporting.engine.classic.core.style.ElementStyleKeys;
+import org.pentaho.reporting.engine.classic.core.style.ElementStyleSheet;
+import org.pentaho.reporting.libraries.base.util.FloatDimension;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -67,7 +69,7 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Get a default start date of 90 days previous.
@@ -154,11 +156,11 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	    header.addElement(tfactory.createElement());
 	    
 	    
-	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20));
+	    header.addElement(HorizontalLineElementFactory.createHorizontalLine(20, null, new BasicStroke(0.5f)));
         
         
         if ( ((ScheduledMeterReadModel)getModel()).getGroupBy() != ScheduledMeterReadModel.GroupBy.GROUP_BY_SCHEDULE_REQUESTS){
-            header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", Color.LIGHT_GRAY, new BasicStroke(0.5f), 18));
+            header.addElement(HorizontalLineElementFactory.createHorizontalLine(18, Color.LIGHT_GRAY, new BasicStroke(0.5f)));
             for (int i = ScheduledMeterReadModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
             {
                 factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
@@ -217,7 +219,7 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	    header.addElement(tfactory.createElement());
 	    
 	    
-	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", Color.LIGHT_GRAY, new BasicStroke(0.5f), 12));
+	    header.addElement(HorizontalLineElementFactory.createHorizontalLine(12, Color.LIGHT_GRAY, new BasicStroke(0.5f)));
 		for (int i = ScheduledMeterReadModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
 		{
 		    factory = ReportFactory.createLabelElementDefault(getModel(), i);
@@ -226,7 +228,7 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		    header.addElement(factory.createElement());
 		}
 
-		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", Color.LIGHT_GRAY, new BasicStroke(0.5f), 26));
+		header.addElement(HorizontalLineElementFactory.createHorizontalLine(26, Color.LIGHT_GRAY, new BasicStroke(0.5f)));
 		header.setRepeat(true);
 		header.getStyle().setStyleProperty(ElementStyleSheet.VALIGNMENT, ElementAlignment.TOP);
 	    requestGroup.setHeader(header);
@@ -247,9 +249,9 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		collGrpGroup.addField(ScheduledMeterReadModel.DEVICE_NAME_STRING);
 		  
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 2));
+		header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 2);
 
-	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", Color.LIGHT_GRAY, new BasicStroke(0.5f), 1));
+	    header.addElement(HorizontalLineElementFactory.createHorizontalLine(1, Color.LIGHT_GRAY, new BasicStroke(0.5f)));
 		collGrpGroup.setHeader(header);		
 		return collGrpGroup;
 	}
@@ -281,13 +283,12 @@ public class ScheduledMeterReadReport extends YukonReportBase
 
 		if(showBackgroundColor)
 		{
-			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
-				new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
+			items.addElement(RectangleElementFactory.createFilledRectangle
+				(0, 0, -100, -100, java.awt.Color.decode("#DFDFDF")));
+			items.addElement(HorizontalLineElementFactory.createHorizontalLine
+				(0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+			items.addElement(HorizontalLineElementFactory.createHorizontalLine
+				(10, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 		}
 
 		TextFieldElementFactory factory;

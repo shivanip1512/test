@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.function.FunctionInitializeException;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.report.ColumnLayoutData;
@@ -87,7 +87,7 @@ public class SimpleReportOutputterImpl implements SimpleReportOutputter {
             JFreeReport jfreeReport = report.createReport();
             jfreeReport.setData(report.getModel());
             ReportFuncs.outputYukonReport( jfreeReport, "pdf", outputStream);
-        } catch (FunctionInitializeException e) {
+        } catch (FunctionProcessingException e) {
             throw new RuntimeException("Unable to output report", e);
         }
     }

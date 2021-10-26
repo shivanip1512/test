@@ -3,30 +3,31 @@ package com.cannontech.analysis.report;
 import java.awt.geom.Point2D;
 import java.awt.print.PageFormat;
 
-import org.jfree.report.ElementAlignment;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
-import org.jfree.report.JFreeReport;
-import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.PageFooter;
-import org.jfree.report.PageHeader;
-import org.jfree.report.ReportFooter;
-import org.jfree.report.ReportHeader;
-import org.jfree.report.SimplePageDefinition;
-import org.jfree.report.elementfactory.DateFieldElementFactory;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ElementVisibilitySwitchFunction;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.PageFunction;
-import org.jfree.report.function.PageTotalFunction;
-import org.jfree.report.function.TextFormatExpression;
-import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.report.modules.gui.base.PreviewInternalFrame;
-import org.jfree.report.style.ElementStyleSheet;
-import org.jfree.report.style.FontDefinition;
-import org.jfree.ui.FloatDimension;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.MasterReport;
+import org.pentaho.reporting.engine.classic.core.PageFooter;
+import org.pentaho.reporting.engine.classic.core.PageHeader;
+import org.pentaho.reporting.engine.classic.core.ReportFooter;
+import org.pentaho.reporting.engine.classic.core.ReportHeader;
+import org.pentaho.reporting.engine.classic.core.SimplePageDefinition;
+import org.pentaho.reporting.engine.classic.core.elementfactory.DateFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.function.ElementVisibilitySwitchFunction;
+import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
+import org.pentaho.reporting.engine.classic.core.function.PageFunction;
+import org.pentaho.reporting.engine.classic.core.function.PageTotalFunction;
+import org.pentaho.reporting.engine.classic.core.function.TextFormatExpression;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewInternalFrame;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
+import org.pentaho.reporting.engine.classic.core.modules.parser.simple.readhandlers.JFreeReportReadHandler;
+import org.pentaho.reporting.engine.classic.core.style.ElementStyleKeys;
+import org.pentaho.reporting.engine.classic.core.style.FontDefinition;
+import org.pentaho.reporting.libraries.base.util.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
@@ -75,12 +76,13 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	public void showPreviewFrame(ReportModelBase model_) throws Exception
 	{
 		// initialize JFreeReport
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		
 		model = model_;
 		model.collectData();
 
-		JFreeReport report = createReport();
+		//JFreeReportReadHandler report = createReport();
+		MasterReport report = new MasterReport();
 		report.setData(model);
 		
 		
@@ -92,20 +94,20 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	
 	public PreviewInternalFrame getPreviewFrame(ReportModelBase model_) throws Exception
 	{
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		model = model_;
 		model.collectData();
-		JFreeReport report = createReport();
+		JFreeReportReadHandler report = createReport();
 		report.setData(model);
 		final PreviewInternalFrame pFrame = new PreviewInternalFrame(report);
 		return pFrame;
 	}	
 	public PreviewDialog getPreviewDialog(ReportModelBase model_) throws Exception
 	{
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		model = model_;
 		model.collectData();
-		JFreeReport report = createReport();
+		JFreeReportReadHandler report = createReport();
 		report.setData(model);
 		final PreviewDialog pDialog = new PreviewDialog(report);
 		
@@ -117,9 +119,9 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	 * @return the constructed report.
 	 * @throws FunctionInitializeException if there was a problem initialising any of the functions.
 	 */
-	public JFreeReport createReport() throws org.jfree.report.function.FunctionInitializeException
+	public JFreeReportReadHandler createReport() throws org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException
 	{
-		final JFreeReport report = new JFreeReport();
+		final JFreeReportReadHandler report = new JFreeReportReadHandler();
 		report.setName(getModel().getTitleString());
 		if(isShowReportFooter())
 			report.setReportFooter(createReportFooter());
@@ -158,7 +160,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	 * @return ExpressionCollection expressions
 	 * @throws FunctionInitializeException
 	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
+	protected ExpressionCollection getExpressions() throws FunctionProcessingException
 	{
 		expressions = new ExpressionCollection();
 		expressions.add(getPageXofYExpression());
@@ -222,7 +224,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected PageFooter createPageFooter()
 	{
 		final PageFooter pageFooter = new PageFooter();
-		pageFooter.getStyle().setStyleProperty (ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
+		pageFooter.getStyle().setStyleProperty (ElementStyleKeys.MIN_HEIGHT, 18);
 		pageFooter.getStyle().setFontDefinitionProperty(new FontDefinition("Serif", 10));
 
 		/** A rectangle around the page footer */
@@ -268,7 +270,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected PageHeader createPageHeader()
 	{
 		final PageHeader header = new PageHeader();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
+		header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 18);
 		header.getStyle().setFontDefinitionProperty(new FontDefinition("Serif", 10));
 		header.setDisplayOnFirstPage(true);
 		header.setDisplayOnLastPage(false);

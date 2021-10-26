@@ -1450,20 +1450,6 @@ Java :
     jira : none
     notes : Commit comment says rc1, but md5 does not match
   
-  - filename : jfreereport.jar
-    yukon group : jfreereport
-    project : jfreereport
-    version : 0.8.6-4
-    project URL : "https://sourceforge.net/projects/jfreereport/"
-    license : LGPL 2.1
-    license URLs : "https://web.archive.org/web/20060113041116/http://www.jfree.org:80/lgpl.php"
-    maven URL : n/a
-    md5 : a2fc9309c44a79f715a06bf8cbf05ba5
-    sha1 : a558f19926765f504ab796d86f25fac915953188
-    updated : 2006-02-02
-    jira : none
-    notes : 
-
   - filename : jjwt-impl-0.11.2.jar
     yukon group : Spring Rest Services
     project : JSON Web Token

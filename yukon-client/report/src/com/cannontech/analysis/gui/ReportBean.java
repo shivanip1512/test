@@ -14,7 +14,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.function.FunctionInitializeException;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
 
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.ReportGroup;
@@ -245,7 +245,7 @@ public class ReportBean
             jfreeReport.setData(getModel());
             
             return jfreeReport;
-        } catch (FunctionInitializeException e) {
+        } catch (FunctionProcessingException e) {
             throw new RuntimeException("Unable to create report for " + reportController, e);
         }
     }

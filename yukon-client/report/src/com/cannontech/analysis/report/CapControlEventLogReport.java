@@ -3,20 +3,20 @@ package com.cannontech.analysis.report;
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
 
-import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemHideFunction;
-import org.jfree.report.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
+import org.pentaho.reporting.engine.classic.core.function.ItemHideFunction;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.CapControlEventLogModel;
@@ -58,7 +58,7 @@ public class CapControlEventLogReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 	
 		CapControlEventLogModel reportModel = new CapControlEventLogModel();
@@ -109,7 +109,7 @@ public class CapControlEventLogReport extends YukonReportBase
 	    tfactory.setAbsolutePosition(new Point2D.Float(110, 1));	//override the posX location
 	    header.addElement(tfactory.createElement());
 
-	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20));
+	    header.addElement(HorizontalLineElementFactory.createHorizontalLine(20, null, new BasicStroke(0.5f)));
 
 	    for (int i = CapControlEventLogModel.FEEDER_NAME_COLUMN; i < getModel().getColumnCount(); i++)
 	    {
@@ -117,7 +117,7 @@ public class CapControlEventLogReport extends YukonReportBase
 			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
 		    header.addElement(factory.createElement());
 		}
-	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", null, new BasicStroke(0.5f), 38));
+	    header.addElement(HorizontalLineElementFactory.createHorizontalLine(38, null, new BasicStroke(0.5f)));
 	    subBusGroup.setHeader(header);
 
 
@@ -145,8 +145,8 @@ public class CapControlEventLogReport extends YukonReportBase
 	{
 		ItemBand items = ReportFactory.createItemBandDefault();
 	
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 12));
+			items.addElement(HorizontalLineElementFactory.createHorizontalLine
+				(12, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 			
 		TextFieldElementFactory factory;
 		for (int i = CapControlEventLogModel.FEEDER_NAME_COLUMN; i < getModel().getColumnNames().length; i++)
@@ -160,7 +160,7 @@ public class CapControlEventLogReport extends YukonReportBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.report.YukonReportBase#getExpressions()
 	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
+	protected ExpressionCollection getExpressions() throws FunctionProcessingException
 	{
 		super.getExpressions();
 		ItemHideFunction hideItem = new ItemHideFunction();

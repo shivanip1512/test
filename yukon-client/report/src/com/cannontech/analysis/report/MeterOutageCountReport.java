@@ -1,31 +1,30 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.print.PageFormat;
 import java.util.Calendar;
 
-import org.jfree.report.ElementAlignment;
-import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.ReportFooter;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemHideFunction;
-import org.jfree.report.function.ItemSumFunction;
-import org.jfree.report.function.TotalGroupSumFunction;
-import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.report.style.ElementStyleSheet;
-import org.jfree.ui.FloatDimension;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.ReportFooter;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
+import org.pentaho.reporting.engine.classic.core.function.ItemHideFunction;
+import org.pentaho.reporting.engine.classic.core.function.ItemSumFunction;
+import org.pentaho.reporting.engine.classic.core.function.TotalGroupSumFunction;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
+import org.pentaho.reporting.engine.classic.core.style.ElementStyleKeys;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.MeterOutageCountModel;
@@ -68,7 +67,7 @@ public class MeterOutageCountReport extends YukonReportBase
     public static void main(final String[] args) throws Exception
     {
         // initialize JFreeReport
-        JFreeReportBoot.getInstance().start();
+        ClassicEngineBoot.getInstance().start();
         javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
         MeterOutageCountModel model = new MeterOutageCountModel();
@@ -121,9 +120,9 @@ public class MeterOutageCountReport extends YukonReportBase
         }
           
         GroupHeader header = ReportFactory.createGroupHeaderDefault();
-        header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 2));
+        header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 2);
 
-        header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20)); 
+        header.addElement(HorizontalLineElementFactory.createHorizontalLine(20, null, new BasicStroke(0.5f))); 
 		for (int i = MeterOutageCountModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
         {
 		    LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
@@ -133,11 +132,11 @@ public class MeterOutageCountReport extends YukonReportBase
             header.addElement(factory.createElement());
         }
         
-        devGroup.setHeader(header);     
+        devGroup.setHeader(header);
         
         if (! ((MeterOutageCountModel)getModel()).isIncompleteDataReport()) {
             GroupFooter footer = ReportFactory.createGroupFooterDefault();
-            footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 20));
+            footer.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 20);
 
         	LabelElementFactory lfactory = ReportFactory.createLabelElementDefault(getModel(), MeterOutageCountModel.VALUE_COLUMN);
     		lfactory.setText("Total:");
@@ -159,7 +158,7 @@ public class MeterOutageCountReport extends YukonReportBase
      * @return the functions.
      * @throws FunctionInitializeException if there is a problem initialising the functions.
      */
-    protected ExpressionCollection getExpressions() throws FunctionInitializeException
+    protected ExpressionCollection getExpressions() throws FunctionProcessingException
     {
         super.getExpressions();
         
@@ -214,13 +213,12 @@ public class MeterOutageCountReport extends YukonReportBase
 
         if(showBackgroundColor)
         {
-            items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-                ("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
-                new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-            items.addElement(StaticShapeElementFactory.createHorizontalLine
-                ("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
-            items.addElement(StaticShapeElementFactory.createHorizontalLine
-                ("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
+            items.addElement(RectangleElementFactory.createFilledRectangle
+                (0, 0, -100, -100, java.awt.Color.decode("#DFDFDF"))); 
+            items.addElement(HorizontalLineElementFactory.createHorizontalLine
+                (0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+            items.addElement(HorizontalLineElementFactory.createHorizontalLine
+                (10, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
         }
 
         for (int i = MeterOutageCountModel.DEVICE_NAME_COLUMN; i <= MeterOutageCountModel.OUTAGE_COUNT_CALC_COLUMN; i++)

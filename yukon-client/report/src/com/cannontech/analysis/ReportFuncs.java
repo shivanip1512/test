@@ -5,15 +5,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.PageDefinition;
-import org.jfree.report.ReportProcessingException;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.report.modules.output.pageable.pdf.PDFReportUtil;
+import org.pentaho.reporting.engine.classic.core.PageDefinition;
+import org.pentaho.reporting.engine.classic.core.ReportProcessingException;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfReportUtil;
 
 import com.cannontech.analysis.report.CapBankRecentMaxDailyOpsReport;
 import com.cannontech.analysis.report.CapBankReport;
@@ -85,7 +84,6 @@ import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.capcontrol.dao.StrategyDao;
-import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
@@ -96,7 +94,6 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
@@ -194,7 +191,7 @@ public class ReportFuncs {
     public static void outputYukonReport(JFreeReport report, String ext, OutputStream out) throws IOException
     {
         if (ext.equalsIgnoreCase("pdf"))
-            PDFReportUtil.createPDF(report, out);
+            PdfReportUtil.createPDF(report, out);
 
         else if (ext.equalsIgnoreCase("csv"))
             ((ReportModelBase<?>)report.getData()).buildByteStream(out);
@@ -222,7 +219,7 @@ public class ReportFuncs {
         out.write(data);
     }
 
-    public static void generatePreview(YukonReportBase rmReport) throws FunctionInitializeException, ReportProcessingException {
+    public static void generatePreview(YukonReportBase rmReport) throws FunctionProcessingException, ReportProcessingException {
         rmReport.getModel().collectData();
     
         //Create the report
@@ -330,7 +327,7 @@ public class ReportFuncs {
             
             if( allPaos != null) {
                 for (LiteYukonPAObject lPao : allPaos) {
-                    if(lPao.getPaoType() == PaoType.CAPBANK) {                        
+                    if(lPao.getPaoType() == PaoType.CAPBANK) {
                         caps.add(lPao);
                     }
                 }
@@ -356,7 +353,7 @@ public class ReportFuncs {
 
             if( allPaos != null) {
                 for (LiteYukonPAObject lPao : allPaos) {
-                    if(lPao.getPaoType() == PaoType.SCRIPT )                     
+                    if(lPao.getPaoType() == PaoType.SCRIPT )
                         schedules.add(lPao);
                 }
             }

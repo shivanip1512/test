@@ -4,17 +4,17 @@ import java.awt.geom.Point2D;
 import java.util.Date;
 import java.util.List;
 
-import org.jfree.report.ElementAlignment;
-import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.elementfactory.DateFieldElementFactory;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.NumberFieldElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.style.ElementStyleSheet;
-import org.jfree.ui.FloatDimension;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.elementfactory.DateFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.NumberFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
+import org.pentaho.reporting.engine.classic.core.style.ElementStyleKeys;
+import org.pentaho.reporting.libraries.base.util.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
@@ -53,7 +53,7 @@ public abstract class GroupYukonReportBase extends SimpleYukonReportBase {
         singleGroup.addField(columnLayoutData.getFieldName());
         GroupHeader header = new GroupHeader();
         		
-        header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, ReportFactory.GROUP_HEADER_STYLE_DIMENSION);
+        header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, ReportFactory.GROUP_HEADER_STYLE_DIMENSION);
         header.getStyle().setFontDefinitionProperty(ReportFactory.GROUP_HEADER_BAND_FONT);
         header.setRepeat(true);
 

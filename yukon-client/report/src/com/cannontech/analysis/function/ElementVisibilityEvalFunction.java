@@ -6,8 +6,8 @@
  */
 package com.cannontech.analysis.function;
 
-import org.jfree.report.event.ReportEvent;
-import org.jfree.report.function.ElementVisibilitySwitchFunction;
+import org.pentaho.reporting.engine.classic.core.event.ReportEvent;
+import org.pentaho.reporting.engine.classic.core.function.ElementVisibilitySwitchFunction;
 
 /**
  * @author stacey

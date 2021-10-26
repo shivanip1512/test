@@ -10,21 +10,21 @@ import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
 import java.util.Date;
 
-import org.jfree.report.ElementAlignment;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.ItemBand;
-import org.jfree.report.ReportFooter;
-import org.jfree.report.ReportHeader;
 import org.jfree.report.ShapeElement;
-import org.jfree.report.elementfactory.DateFieldElementFactory;
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.NumberFieldElementFactory;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.style.ElementStyleSheet;
-import org.jfree.report.style.FontDefinition;
-import org.jfree.ui.FloatDimension;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.ReportFooter;
+import org.pentaho.reporting.engine.classic.core.ReportHeader;
+import org.pentaho.reporting.engine.classic.core.elementfactory.DateFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.NumberFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.style.ElementStyleKeys;
+import org.pentaho.reporting.engine.classic.core.style.FontDefinition;
+import org.pentaho.reporting.libraries.base.util.FloatDimension;
 
 import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
@@ -60,7 +60,7 @@ public class ReportFactory
 	{
 		GroupHeader header = new GroupHeader();
 		
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, GROUP_HEADER_STYLE_DIMENSION);
+		header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, GROUP_HEADER_STYLE_DIMENSION);
 		header.getStyle().setFontDefinitionProperty(GROUP_HEADER_BAND_FONT);
 		header.setRepeat(true);
 //If it cannot be guaranteed that the dynamic content will not consume all space of the page, dynamic elements should not be used in the page header or any repeating group header. 
@@ -72,7 +72,7 @@ public class ReportFactory
 	public static GroupFooter createGroupFooterDefault()
 	{
 		GroupFooter footer = new GroupFooter();
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, GROUP_HEADER_STYLE_DIMENSION);
+		footer.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, GROUP_HEADER_STYLE_DIMENSION);
 		footer.getStyle().setFontDefinitionProperty(GROUP_HEADER_BAND_FONT);
 //...But as the effects when using dynamic elements in the page footer is unpredictable I usually recommend to avoid dynamic elements in that band. 
 //		footer.setDynamicContent(true);
@@ -82,7 +82,7 @@ public class ReportFactory
 	public static ReportFooter createReportFooterDefault()
 	{
 		ReportFooter footer = new ReportFooter();
-		footer.getStyle().setStyleProperty( ElementStyleSheet.MINIMUMSIZE, REPORT_STYLE_DIMENSION);
+		footer.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, REPORT_STYLE_DIMENSION);
 		footer.getStyle().setFontDefinitionProperty(REPORT_FOOTER_BAND_FONT);
 		return footer;
 	}
@@ -90,20 +90,21 @@ public class ReportFactory
 	public static ReportHeader createReportHeaderDefault()
 	{
 		ReportHeader header = new ReportHeader();
-		header.getStyle().setStyleProperty( ElementStyleSheet.MINIMUMSIZE, REPORT_STYLE_DIMENSION);
+		header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, REPORT_STYLE_DIMENSION);
 		header.getStyle().setFontDefinitionProperty(REPORT_HEADER_BAND_FONT);
 		return header;
 	}
 	
-	public static ShapeElement createBasicLine(String name, float strokeWidth, float posY)
+	public static ShapeElement createBasicLine(float strokeWidth, float posY)
 	{
-		return StaticShapeElementFactory.createHorizontalLine(name, null, new BasicStroke(strokeWidth), posY);
+		return HorizontalLineElementFactory.createHorizontalLine(posY, null, new BasicStroke(strokeWidth));
 	}
+	//name, null, new BasicStroke(strokeWidth), posY
 	
 	public static ItemBand createItemBandDefault()
 	{
 		ItemBand items = new ItemBand();
-		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, ITEM_BAND_STYLE_DIMENSION);
+		items.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, ITEM_BAND_STYLE_DIMENSION);
 		items.getStyle().setFontDefinitionProperty(ITEM_BAND_FONT);
 		items.setDynamicContent(true);
 		return items;

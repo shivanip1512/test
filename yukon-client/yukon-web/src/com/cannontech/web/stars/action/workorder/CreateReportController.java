@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.function.FunctionInitializeException;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.analysis.ReportFuncs;
@@ -86,7 +86,7 @@ public class CreateReportController extends StarsWorkorderActionController {
             YukonReportBase reportBase = ReportFuncs.createYukonReport(reportBean.getModel());
             report = reportBase.createReport();
             report.setData(reportBase.getModel());
-        } catch (FunctionInitializeException e) {
+        } catch (FunctionProcessingException e) {
             e.printStackTrace();
         }
         return report;

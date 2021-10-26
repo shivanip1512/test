@@ -9,24 +9,26 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.jfree.report.ElementAlignment;
-import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
-import org.jfree.report.GroupHeader;
-import org.jfree.report.GroupList;
-import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemHideFunction;
-import org.jfree.report.function.TextFormatExpression;
-import org.jfree.report.layout.DefaultSizeCalculator;
-import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.ui.FloatDimension;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.Group;
+import org.pentaho.reporting.engine.classic.core.GroupFooter;
+import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
+import org.pentaho.reporting.engine.classic.core.function.ItemHideFunction;
+import org.pentaho.reporting.engine.classic.core.function.TextFormatExpression;
+import org.pentaho.reporting.engine.classic.core.layout.DefaultSizeCalculator;
+import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
+import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
+import org.pentaho.reporting.libraries.base.util.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
@@ -68,7 +70,7 @@ public class ECActivityDetailReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		JFreeReportBoot.getInstance().start();
+		ClassicEngineBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Define default start and stop parameters for a default year to date report.
@@ -144,7 +146,7 @@ public class ECActivityDetailReport extends YukonReportBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.report.YukonReportBase#getExpressions()
 	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
+	protected ExpressionCollection getExpressions() throws FunctionProcessingException
 	{
 		if(expressions == null)
 		{
@@ -249,7 +251,7 @@ public class ECActivityDetailReport extends YukonReportBase
 		
 		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), ActivityDetailModel.ENERGY_COMPANY_COLUMN);
 		header.addElement(tfactory.createElement());
-		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 20f), 20));
+		header.addElement(HorizontalLineElementFactory.createHorizontalLine(20, null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 20f)));
 		ecGroup.setHeader(header);
 		
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -334,16 +336,15 @@ public class ECActivityDetailReport extends YukonReportBase
 		ItemBand items = ReportFactory.createItemBandDefault();
 		if( ((ActivityDetailModel)getModel()).isShowDetail())
 		{		
-			if( showBackgroundColor )
-			{
-				items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-					("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
-						new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-				items.addElement(StaticShapeElementFactory.createHorizontalLine
-					("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
-				items.addElement(StaticShapeElementFactory.createHorizontalLine
-					("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
-			}
+		    if( showBackgroundColor )
+	                {
+	                        items.addElement(RectangleElementFactory.createFilledRectangle
+	                                (0, 0, -100, -100, java.awt.Color.decode("#DFDFDF")));
+	                        items.addElement(HorizontalLineElementFactory.createHorizontalLine
+	                            (0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+	                        items.addElement(HorizontalLineElementFactory.createHorizontalLine
+	                                (0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+	                }
 			TextFieldElementFactory factory = null;
 			//Start at 1, we don't want to include the Date column, Date is our group by column.
 			for (int i = ActivityDetailModel.TIME_COLUMN; i < getModel().getColumnNames().length; i++)
