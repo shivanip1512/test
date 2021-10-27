@@ -72,6 +72,7 @@ public class EatonCloudDataRetrievalService {
 
     private final Runnable autoCreateCloudLCRThread = this::autoCreateCloudLCRs;
     private final Runnable readCloudLCRThread = this::readCloudLCRs;
+    private int readInterval;
 
     /**
      * Schedule the calculation and data read threads to run periodically.
@@ -86,9 +87,8 @@ public class EatonCloudDataRetrievalService {
         executor.scheduleAtFixedRate(autoCreateCloudLCRThread, 5 / 60, creationInterval, TimeUnit.HOURS);
 
         //minutes
-        int readInterval = settingDao.getInteger(GlobalSettingType.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES);
-        log.info("Auto read of Eaton cloud LCRs will run every {} minutes",
-                readInterval);
+        readInterval = settingDao.getInteger(GlobalSettingType.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES);
+        log.info("Auto read of Eaton cloud LCRs will run every {} minutes", readInterval);
         executor.scheduleAtFixedRate(readCloudLCRThread, 5, readInterval, TimeUnit.MINUTES);
     }
     
@@ -116,8 +116,8 @@ public class EatonCloudDataRetrievalService {
         List<Integer> deviceIds = deviceDao.getDeviceIdsWithGuids();
         try {
             Multimap<PaoIdentifier, PointData> data = eatonCloudDataReadService.collectDataForRead(new HashSet<>(deviceIds),
-                    getIntervalReadRange());
-            log.info("Eaton Cloud read all LCRs task completed, devices attempted read:{} Read succeeded for {} devices.", deviceIds.size(),
+                    getIntervalReadRange(), "READ ON INTERVAL-"+ readInterval);
+            log.info("Eaton Cloud read (READ ON INTERVAL {}) all LCRs task completed, devices attempted read:{} Read succeeded for {} devices.", readInterval, deviceIds.size(),
                     data.asMap().keySet().size());
         } catch (Exception e) {
             log.info("Eaton Cloud read LCRs task failed", e);

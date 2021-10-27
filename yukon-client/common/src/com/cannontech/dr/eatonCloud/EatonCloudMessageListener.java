@@ -120,8 +120,8 @@ public class EatonCloudMessageListener {
                             List.of(ControlEventDeviceStatus.SUCCESS_RECEIVED));
                     executor.execute(() -> {
                         if (!devicesToRead.isEmpty()) {
-                            Multimap<PaoIdentifier, PointData> result = eatonCloudDataReadService.collectDataForRead(devicesToRead, range);
-                            log.info("Reading devices: {} Read succeeded for {} devices event id: {} for date range:{}-{} [original command sent at {}] ", 
+                            Multimap<PaoIdentifier, PointData> result = eatonCloudDataReadService.collectDataForRead(devicesToRead, range, "READ AFTER SHED");
+                            log.info("Reading (READ AFTER SHED) devices: {} Read succeeded for {} devices event id: {} for date range:{}-{} [original command sent at {}] ", 
                                     devicesToRead.size(),
                                     result.asMap().keySet().size(),
                                     eventId,
@@ -129,7 +129,7 @@ public class EatonCloudMessageListener {
                                     range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
                                     sendTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
                         } else {
-                            log.info("Can't find find devices to read. Devices with status SUCCESS_RECEIVED not found for event id: {} for date range:{}-{} [original command sent at {}] ", 
+                            log.info("Can't find find devices to read (READ AFTER SHED). Devices with status SUCCESS_RECEIVED not found for event id: {} for date range:{}-{} [original command sent at {}] ", 
                                     eventId,
                                     range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
                                     range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
