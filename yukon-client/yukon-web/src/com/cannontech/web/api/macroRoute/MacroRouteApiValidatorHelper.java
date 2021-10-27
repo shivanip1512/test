@@ -34,18 +34,18 @@ public class MacroRouteApiValidatorHelper {
     public void validateMacroRouteName(Errors errors, String routeName, Integer id) {
 
         String nameI18nText = accessor.getMessage(commonkey + "name");
-        YukonApiValidationUtils.checkIsBlank(errors, "name", routeName, nameI18nText, false);
+        YukonApiValidationUtils.checkIsBlank(errors, "deviceName", routeName, nameI18nText, false);
 
-        if (!errors.hasFieldErrors("name")) {
-            YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", routeName, 60);
-            YukonApiValidationUtils.checkIllegalCharacter(errors, "name", routeName, nameI18nText);
+        if (!errors.hasFieldErrors("deviceName")) {
+            YukonApiValidationUtils.checkExceedsMaxLength(errors, "deviceName", routeName, 60);
+            YukonApiValidationUtils.checkIllegalCharacter(errors, "deviceName", routeName, nameI18nText);
             serverDatabaseCache.getAllRoutes()
                     .stream()
                     .filter(liteRoute -> liteRoute.getPaoName().equalsIgnoreCase(routeName.trim()))
                     .findAny()
                     .ifPresent(liteYukonPAObject -> {
                         if (id == null || liteYukonPAObject.getLiteID() != id) {
-                            errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { routeName },
+                            errors.rejectValue("deviceName", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { routeName },
                                     "");
                         }
                     });
