@@ -490,12 +490,12 @@ sharing:
       maximum: 65535
       description: 'Shared Socket Number.When Shared Port type is NONE then Socket Number is 1025.'  
 
-deviceId:
+id:
   required:
-    - deviceId
+    - id
   type: object
   properties:
-    deviceId:
+    id:
       type: integer
       description: 'Unique identifier of the CommChannel.'
 
@@ -656,7 +656,7 @@ components:
           sharedPortType: ACS
           sharedSocketNumber: 100
         physicalPort: com2
-    deviceId:
+    id:
       value:
-        deviceId: 39223
+        id: 39223
   

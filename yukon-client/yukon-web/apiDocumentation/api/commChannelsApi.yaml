@@ -62,7 +62,7 @@ get-update-delete-operation:
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: deviceId
+      - name: id
         in: path
         schema:
           type: integer
@@ -101,7 +101,7 @@ get-update-delete-operation:
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: deviceId
+      - name: id
         in: path
         schema:
           type: integer
@@ -158,7 +158,7 @@ get-update-delete-operation:
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: deviceId
+      - name: id
         in: path
         schema:
           type: integer
@@ -170,7 +170,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/commChannelsSchema.yaml#/deviceId'
+              $ref: '../schemas/commChannelsSchema.yaml#/id'
             examples:
               CommChannel Id:
-                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/deviceId'
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/id'

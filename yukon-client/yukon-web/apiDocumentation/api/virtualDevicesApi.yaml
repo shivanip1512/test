@@ -72,7 +72,7 @@ get-update-delete-operation:
       - Virtual System
       - Virtual Meter
     parameters:
-      - name: deviceId
+      - name: id
         in: path
         schema:
           type: integer
@@ -104,7 +104,7 @@ get-update-delete-operation:
       - Virtual System
       - Virtual Meter
     parameters:
-      - name: deviceId
+      - name: id
         in: path
         schema:
           type: integer
@@ -149,7 +149,7 @@ get-update-delete-operation:
       - Virtual System
       - Virtual Meter
     parameters:
-      - name: deviceId
+      - name: id
         in: path
         schema:
           type: integer
@@ -161,7 +161,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/virtualDevicesSchema.yaml#/deviceId'
+              $ref: '../schemas/virtualDevicesSchema.yaml#/id'
             examples:
               Virtual Devices id:
-                $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/deviceId'
+                $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/id'

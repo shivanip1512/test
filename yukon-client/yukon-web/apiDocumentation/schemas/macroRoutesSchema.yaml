@@ -55,13 +55,13 @@ routeList:
         type: integer
         description: 'Id of the selected route.'
 
-deviceId:
-  title: deviceId
+id:
+  title: id
   required:
-    - deviceId
+    - id
   type: object
   properties:
-    deviceId:
+    id:
       type: integer
       description: 'Unique identifier for Macro Route.'
       

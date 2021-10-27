@@ -45,12 +45,12 @@ VIRTUAL_METER:
       maxLength: 50
       description: 'Name of the meter Number for virtual meter type.'
 
-deviceId:
+id:
   required:
-    - deviceId
+    - id
   type: object
   properties:
-    deviceId:
+    id:
       type: integer
       description: 'Unique identifier for the virtual devices.'
 
@@ -155,9 +155,9 @@ components:
         enable: true
         meterNumber: '123312321321'
 
-    deviceId:
+    id:
       value:
-        deviceId: 9223
+        id: 9223
     
     List of Virtual Devices:
       value:
