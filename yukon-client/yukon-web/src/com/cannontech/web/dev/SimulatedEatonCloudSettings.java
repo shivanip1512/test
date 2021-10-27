@@ -17,6 +17,11 @@ public class SimulatedEatonCloudSettings {
         for (EatonCloudRetrievalUrl url : EatonCloudRetrievalUrl.values()) {
             selectedStatuses.put(url, HttpStatus.OK);
         }
+        for (EatonCloudRetrievalUrl url : EatonCloudRetrievalUrl.values()) {
+        	if (url.displaySuccessPercentage()) {
+        		successPercentages.put(url, 100);
+        	}
+        }
     }
 
     public Map<EatonCloudRetrievalUrl, HttpStatus> getSelectedStatuses() {
