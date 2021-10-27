@@ -139,9 +139,9 @@
          <div class="column two nogutter"> <tags:nameValueContainer2></tags:nameValueContainer2>
          </div>
          <div class="column three nogutter">
-             <tags:nameValueContainer2><br>
-                 <textarea cols="53" rows="${resultsCount * 2 + 1}" name="Results" id="results" readonly 
-                           style='color:<c:out value="${resultColor}"/>;width: 400px;word-wrap:normal;overflow-x: scroll;'>
+             <tags:nameValueContainer2><br><br>
+                 <textarea cols="53" rows="${resultsCount * 2.5 + 1}" name="Results" id="results" readonly 
+                           style='color:<c:out value="${resultColor}"/>;width: 440px;word-wrap:normal;overflow-x: scroll;'>
                      ${MSP_RESULT_MSG}
                  </textarea>
              </tags:nameValueContainer2>
