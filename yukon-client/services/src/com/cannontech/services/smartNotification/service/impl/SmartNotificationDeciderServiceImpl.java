@@ -148,7 +148,6 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
     
     @Override
     public void onMessage(Message message) {
-        Logger customLogger = YukonLogManager.getSmartNotificationsLogger(SmartNotificationDeciderServiceImpl.class);
         ObjectMessage objMessage = (ObjectMessage) message;
         Serializable object;
         try {
@@ -169,9 +168,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
                         ProcessorResult grouped = decider.processGroupedSubscriptions(event.getEvents());
                         //Log event and processing result
                         
-                        customLogger.info("Received event:{} Immediate result:{}  Grouped result:{}", event, immediate.loggingString(snLogger.getLevel()), grouped.loggingString(snLogger.getLevel()));
-                        //TODO: Delete it before merging. For testing purpose only.
-                        customLogger.debug("DEBUG Level Message : Received event:{} Immediate result:{}  Grouped result:{}", event, immediate.loggingString(snLogger.getLevel()), grouped.loggingString(snLogger.getLevel()));
+                        snLogger.info("Received event:{} Immediate result:{}  Grouped result:{}", event, immediate.loggingString(snLogger.getLevel()), grouped.loggingString(snLogger.getLevel()));
                         
                         //Send results for immediate subscriptions
                         send(immediate);

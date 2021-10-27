@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
@@ -205,52 +206,27 @@ public class YukonLogManager {
      * Return custom appender name for the specified loggerName.
      */
     public static String getAppenderRef(String loggerName) {
-        switch (loggerName) {
-        case "apiLogger":
-            return "yukonApiRollingFile";
-        case "commsLogger":
-            return "commsRollingFile";
-        case "rfnCommsLogger":
-            return "yukonRfnRollingFile";
-        case "smartNotifLogger":
-            return "smartNotifRollingFile";
-        }
-        return "yukonRollingFileAppender";
+        String appenderRef = SystemLogger.getAppenderRef(loggerName);
+        return StringUtils.isNotBlank(appenderRef) ? appenderRef : "yukonRollingFileAppender";
     }
 
     /**
      * Return the appender for the customized loggerName
      */
     public static String getCustomizedAppenderRef(String loggerName) {
-        switch (CustomizedSystemLogger.getForLoggerName(loggerName)) {
-        case CUSTOM_API_LOGGER:
-            return "yukonApiRollingFile";
-        case CUSTOM_COMMS_LOGGER:
-            return "commsRollingFile";
-        case CUSTOM_RFN_COMMS_LOGGER:
-            return "yukonRfnRollingFile";
-        case CUSTOM_SMART_NOTIFICATION_LOGGER:
-            return "smartNotifRollingFile";
-        default:
-            return "yukonRollingFileAppender";
-        }
+        CustomizedSystemLogger customizedSystemLogger = CustomizedSystemLogger.getForLoggerName(loggerName);
+        String appenderRef = SystemLogger.getAppenderRef(SystemLogger.getLoggerNameForCustomizedLogger(customizedSystemLogger));
+        return StringUtils.isNotBlank(appenderRef) ? appenderRef : "yukonRollingFileAppender";
     }
 
     /**
      * Return logging level for customized logger package name
      */
-    private static Level getLevel(Map<String, Level> loggers, String packageName) {
-        switch (CustomizedSystemLogger.getForLoggerName(packageName)) {
-        case CUSTOM_API_LOGGER:
-            return loggers.get("apiLogger");
-        case CUSTOM_COMMS_LOGGER:
-            return loggers.get("commsLogger");
-        case CUSTOM_RFN_COMMS_LOGGER:
-            return loggers.get("rfnCommsLogger");
-        case CUSTOM_SMART_NOTIFICATION_LOGGER:
-            return loggers.get("smartNotifLogger");
-        }
-        return Level.INFO;
+    private static Level getLevel(Map<String, Level> loggersMap, String packageName) {
+        CustomizedSystemLogger customizedSystemLogger = CustomizedSystemLogger.getForLoggerName(packageName);
+        SystemLogger.getLoggerNameForCustomizedLogger(customizedSystemLogger);
+        Level level = loggersMap.get(SystemLogger.getLoggerNameForCustomizedLogger(customizedSystemLogger));
+        return level != null ? level : Level.INFO;
     }
 
     /**

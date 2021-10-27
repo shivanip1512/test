@@ -97,29 +97,10 @@ public abstract class YukonLoggingReloaderHelper {
                 updateLogger(loggerName, level, refs, config, appender, consoleAppender);
                 // Update dependent package level loggers for customizable loggers
                 if (SystemLogger.isCustomAppenderLogger(loggerName)) {
-                    switch (SystemLogger.getForLoggerName(loggerName)) {
-                    case API_LOGGER:
-                        for (String packageName : CustomizedSystemLogger.CUSTOM_API_LOGGER.getPackageNames()) {
-                            updateLogger(packageName, level, refs, config, appender, consoleAppender);
-                        }
-                        break;
-                    case COMMS_LOGGER:
-                        for (String packageName : CustomizedSystemLogger.CUSTOM_COMMS_LOGGER.getPackageNames()) {
-                            updateLogger(packageName, level, refs, config, appender, consoleAppender);
-                        }
-                        break;
-                    case RFN_COMMS_LOGGER:
-                        for (String packageName : CustomizedSystemLogger.CUSTOM_RFN_COMMS_LOGGER.getPackageNames()) {
-                            updateLogger(packageName, level, refs, config, appender, consoleAppender);
-                        }
-                        break;
-                    case SMART_NOTIFICATION_LOGGER:
-                        for (String packageName : CustomizedSystemLogger.CUSTOM_SMART_NOTIFICATION_LOGGER.getPackageNames()) {
-                            updateLogger(packageName, level, refs, config, appender, consoleAppender);
-                        }
-                        break;
-                    default:
-                        break;
+                    CustomizedSystemLogger customLogger = SystemLogger.getForLoggerName(loggerName)
+                                                                      .getCustomizedSystemLogger();
+                    for (String packageName : customLogger.getPackageNames()) {
+                        updateLogger(packageName, level, refs, config, appender, consoleAppender);
                     }
                 }
             } else {
