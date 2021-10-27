@@ -25,9 +25,10 @@ public class PortCreateApiValidator <T extends PortBase<?>> extends SimpleValida
     @Override
     protected void doValidation(T port, Errors errors) {
         // Check if type is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("deviceType", errors, port.getDeviceType(), "Type");
+        YukonApiValidationUtils.checkIfFieldRequired("type", errors, port.getDeviceType(), "Type");
         // Check if name is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("deviceName", errors, port.getDeviceName(), "Name");
+        YukonApiValidationUtils.checkIfFieldRequired("name", errors, port.getDeviceName(), "Name");
+
         // Check if baudRate is NULL
         YukonApiValidationUtils.checkIfFieldRequired("baudRate", errors, port.getBaudRate(), "Baud Rate");
 

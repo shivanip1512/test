@@ -99,7 +99,10 @@ public class EatonCloudSimulatorController {
 
     @PostMapping("/updateSettings")
     public String updateSettings(@ModelAttribute("settings") SimulatedEatonCloudSettings newSettings, FlashScope flashScope, ModelMap model) {
-        try {   
+        try {
+            newSettings.getSuccessPercentages().put(EatonCloudRetrievalUrl.TREND_DATA_RETRIEVAL, 100);
+            newSettings.getSuccessPercentages().put(EatonCloudRetrievalUrl.COMMANDS, 100);
+            
             EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest();
             request.setStatuses(getStatuses(newSettings));
             request.setSuccessPercentages(newSettings.getSuccessPercentages());
