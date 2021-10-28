@@ -16,8 +16,10 @@ public interface EatonCloudDataReadService {
      * Retrieves point data for the specified devices from the Eaton Cloud. Attempts to retrieve data for all attributes on each
      * device. Non Cellular-LCR devices will be ignored. This method doesn't throw an exception and will return nothing for the
      * device that had an error.
+     * 
+     * debugReadType - example collection actions, hourly read etc
      */
-    Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range);
+    Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range, String debugReadType);
 
     /**
      * Retrieves point data for the specified device from the Eaton Cloud.
