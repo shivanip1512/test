@@ -36,7 +36,7 @@
     <cti:url var="updateSettingsUrl" value="updateSettings"/>
 	<form:form id="eatonCloudForm" action="${updateSettingsUrl}" modelAttribute="settings" method="post">
         <cti:csrfToken/>
-        <table class="compact-results-table">
+        <table class="compact-results-table no-stripes">
             <thead>
                 <tr>
                     <th>Endpoint</th>

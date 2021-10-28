@@ -84,7 +84,7 @@
             <li><a href="#tools">Tools</a></li>
         </ul>
         <div id="simulators" class="clearfix">
-            <table class="compact-results-table">
+            <table class="compact-results-table no-stripes">
                 <thead>
                     <tr>
                         <th>Data Type</th>
