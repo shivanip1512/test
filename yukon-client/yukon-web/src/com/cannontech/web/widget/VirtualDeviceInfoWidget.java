@@ -162,11 +162,11 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
             if (virtualDevice.getDeviceId() != null) {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + "/" + virtualDevice.getDeviceId());
                 model.addAttribute("mode", PageEditMode.EDIT);
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, Object.class, virtualDevice);
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, VirtualDeviceBaseModel.class, virtualDevice);
             } else {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl);
                 model.addAttribute("mode", PageEditMode.CREATE);
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, virtualDevice);
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, VirtualDeviceBaseModel.class, virtualDevice);
             }
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
@@ -183,8 +183,8 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
                 Map<String, Object> json = new HashMap<>();
                 if (virtualDevice.getDeviceId() == null) {
                     //device was created so we need to get id from response
-                    HashMap<String, Integer> savedVirtualDevice = (HashMap<String, Integer>) response.getBody();
-                    json.put("id", savedVirtualDevice.get("id"));
+                    VirtualDeviceBaseModel savedVirtualDevice = (VirtualDeviceBaseModel) response.getBody();
+                    json.put("id", savedVirtualDevice.getDeviceId());
                 } else {
                     json.put("id", virtualDevice.getDeviceId());
                 }

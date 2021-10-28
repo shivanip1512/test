@@ -5,14 +5,10 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DeviceBaseModel implements YukonDevice {
-    @JsonProperty("id")
     private Integer deviceId;
-    @JsonProperty("type")
     private PaoType deviceType;
-    @JsonProperty("name")
     private String deviceName;
     private Boolean enable;
 
