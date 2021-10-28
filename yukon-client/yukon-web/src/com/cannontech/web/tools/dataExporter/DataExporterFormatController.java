@@ -390,7 +390,7 @@ public class DataExporterFormatController {
             text.put("missingAttribute", missingText);
         }
         
-        text.put("roundingMode", isAttribute && isValue ? accessor.getMessage(exportField.getRoundingMode()) : "");
+        text.put("roundingMode", isValue ? accessor.getMessage(exportField.getRoundingMode()) : "");
         
         if (isPlainText || isTimestamp || isValue) {
             text.put("pattern", exportField.getPattern());
