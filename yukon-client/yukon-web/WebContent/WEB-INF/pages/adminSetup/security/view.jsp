@@ -139,7 +139,7 @@
                                             <form:input path="encryptionKeyId" type="hidden" value="${route.encryptionKeyId}" />
                                             <form:input path="encryptionKeyName" type="hidden" value="${route.encryptionKeyName}" />
                                             <d:confirm on="#remove_EncryptionBtn_${route.paobjectId}" nameKey="confirmRemove" argument="${fn:escapeXml(route.paoName)}" />
-                                            <select disabled="disabled" style="width: 100%">
+                                            <select disabled="disabled" style="width: 85%">
                                                 <option>${fn:escapeXml(route.encryptionKeyName)}</option>
                                             <select>
                                         </c:if> 
@@ -251,7 +251,7 @@
                           <c:set var="isPublicKeyGenerated" value="true" />
                           <div id="honeywellPublicKeyText">
             		          <p><i:inline key=".currentPublicKey" /></p>
-            		                 <textarea id="honeywellPublicKeyTextArea" rows="6" cols="60" 
+            		                 <textarea id="honeywellPublicKeyTextArea" rows="6" cols="54" 
                 		              readonly="readonly">${honeywellPublicKey}</textarea>
         		          </div>
                       </c:otherwise>
