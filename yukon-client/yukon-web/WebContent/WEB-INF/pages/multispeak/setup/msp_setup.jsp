@@ -100,7 +100,7 @@
         <tags:sectionContainer2 nameKey="mspInterfaces">
          <div class="column-12-1-11 clearfix">
                 <div class="column one">
-            <table class="compact-results-table row-highlighting">
+            <table class="compact-results-table no-stripes">
                 <tbody>
                     <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version3"/></b></td></tr>
                     <c:forEach var="multispeakInterface" items="${multispeak.mspInterfaceList}" varStatus="i">

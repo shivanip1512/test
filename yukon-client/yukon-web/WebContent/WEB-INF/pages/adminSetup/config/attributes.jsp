@@ -42,7 +42,7 @@
             
             <div style="width:60%;" class="PT10">
                 <c:set var="tableClass" value="${attributes.size() > 10 ? 'js-attributes-table' : ''}"/>
-                <table class="compact-results-table row-highlighting has-actions ${tableClass}">
+                <table class="compact-results-table no-stripes has-actions ${tableClass}">
                     <thead>
                         <tr>
                             <th><i:inline key=".attributeName"></i:inline></th>
