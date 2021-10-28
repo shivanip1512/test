@@ -67,16 +67,16 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
  
     @Override
     public Multimap<PaoIdentifier, PointData> collectDataForRead(Integer deviceId, Range<Instant> range) {
-        return collectDataForRead(Set.of(deviceId), range, true);
+        return collectDataForRead(Set.of(deviceId), range, true, "SINGLE DEVICE");
     }
 
     @Override
-    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range) {
-        return collectDataForRead(deviceIds, range, false);
+    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range, String debugReadType) {
+        return collectDataForRead(deviceIds, range, false, debugReadType);
     }
 
     private Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range,
-            boolean throwErrorIfFailed) {
+            boolean throwErrorIfFailed, String debugReadType) {
         Map<PaoType, Set<LiteYukonPAObject>> paos = paoDao.getLiteYukonPaos(deviceIds).stream()
                 .filter(pao -> pao.getPaoType().isCloudLcr())
                 .collect(Collectors.groupingBy(pao -> pao.getPaoType(), Collectors.toSet()));
@@ -84,11 +84,13 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         Multimap<PaoIdentifier, PointData> receivedPoints = HashMultimap.create();
         for (PaoType type : paos.keySet()) {
             Set<BuiltInAttribute> attr = getAttributesForPaoType(type);
-            log.info("Initiating read for type:{} devices: {} on attributes:{}", type, paos.get(type).size(), attr.size());
+            log.info("Initiating read ({}) for type:{} devices: {} on attributes:{}", debugReadType, type, paos.get(type).size(),
+                    attr.size());
             receivedPoints.putAll(retrievePointData(paos.get(type), attr, range, throwErrorIfFailed));
         }
 
-        log.debug("Retrieved point data:{} for devices:{}", receivedPoints.values().size(), receivedPoints.keySet().size());
+        log.debug("({}) Retrieved point data:{} for devices:{}", debugReadType, receivedPoints.values().size(),
+                receivedPoints.keySet().size());
         if (!receivedPoints.isEmpty()) {
             dispatchData.putValues(receivedPoints.values());
             updateAssetAvailability(receivedPoints);
