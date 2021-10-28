@@ -112,7 +112,7 @@
     <div class="column-12-12">
         <div class="column one">
             <tags:boxContainer2 nameKey="routesBox" styleClass="largeContainer">
-                <table id="routesBoxTable" class="compact-results-table row-highlighting">
+                <table id="routesBoxTable" class="compact-results-table no-stripes">
                     <thead>
                         <tr>
                             <th><i:inline key=".paoName" /></th>
