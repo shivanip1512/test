@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.logger.dao.YukonLoggerDao;
 import com.cannontech.clientutils.logger.service.YukonLoggerService.SortBy;
+import com.cannontech.common.log.model.CustomizedSystemLogger;
 import com.cannontech.common.log.model.LoggerLevel;
+import com.cannontech.common.log.model.SystemLogger;
 import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.util.BootstrapUtils;
@@ -80,7 +82,10 @@ public abstract class YukonLoggingReloaderHelper {
                 YukonLogger logger = yukonLoggerDao.getLogger(loggerId);
                 // All the loggers should log the details in the log file and console. So retrieve these 2 appenders from
                 // configuration.
-                Appender appender = config.getAppender(YukonLogManager.getAppenderRef(logger.getLoggerName()));
+                String loggerName = logger.getLoggerName();
+                String appenderRef = CustomizedSystemLogger.isCustomizedAppenderLogger(loggerName) ? YukonLogManager
+                        .getCustomizedAppenderRef(loggerName) : YukonLogManager.getAppenderRef(loggerName);
+                Appender appender = config.getAppender(appenderRef);
                 Appender consoleAppender = config.getAppender("console");
 
                 // Create the AppenderRef[] which will be used to create LoggerConfig
@@ -89,14 +94,15 @@ public abstract class YukonLoggingReloaderHelper {
                 AppenderRef[] refs = new AppenderRef[] { ref, consoleRef };
 
                 Level level = YukonLogManager.getApacheLevel(logger.getLevel());
-                LoggerConfig loggerConfig = LoggerConfig.createLogger(false, level, logger.getLoggerName(), "true", refs, null,
-                        config, null);
-                loggerConfig.addAppender(appender, null, config.getFilter());
-                loggerConfig.addAppender(consoleAppender, null, config.getFilter());
-                // addLogger() does not add the logger if its already there.So first remove the logger and then add back to
-                // config
-                config.removeLogger(logger.getLoggerName());
-                config.addLogger(logger.getLoggerName(), loggerConfig);
+                updateLogger(loggerName, level, refs, config, appender, consoleAppender);
+                // Update dependent package level loggers for customizable loggers
+                if (SystemLogger.isCustomAppenderLogger(loggerName)) {
+                    CustomizedSystemLogger customLogger = SystemLogger.getForLoggerName(loggerName)
+                                                                      .getCustomizedSystemLogger();
+                    for (String packageName : customLogger.getPackageNames()) {
+                        updateLogger(packageName, level, refs, config, appender, consoleAppender);
+                    }
+                }
             } else {
                 // Retrieve the all the loggers from DB table.
                 List<YukonLogger> currentDbloggers = yukonLoggerDao.getLoggers(StringUtils.EMPTY, SortBy.NAME, Direction.asc,
@@ -121,5 +127,20 @@ public abstract class YukonLoggingReloaderHelper {
             }
             ctx.updateLoggers(config);
         }
+    }
+
+    /**
+     * Update/add the logger specified by the loggerName.
+     */
+    private void updateLogger(String packageName, Level level, AppenderRef[] refs, Configuration config,
+            Appender appender, Appender consoleAppender) {
+        LoggerConfig loggerConfig = LoggerConfig.createLogger(false, level, packageName, "true", refs, null,
+                config, null);
+        loggerConfig.addAppender(appender, null, config.getFilter());
+        loggerConfig.addAppender(consoleAppender, null, config.getFilter());
+        // addLogger() does not add the logger if its already there.So first remove the logger and then add back to
+        // config
+        config.removeLogger(packageName);
+        config.addLogger(packageName, loggerConfig);
     }
 }
