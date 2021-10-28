@@ -416,12 +416,12 @@ BOOL CtiLMProgramBase::getManualControlReceivedFlag() const
 ---------------------------------------------------------------------------*/
 bool CtiLMProgramBase::controlNotAllowedToSpanMidnight() const
 {
-    return (isEcobeeProgram());
+    return isEcobeeProgram();
 }
 
 bool CtiLMProgramBase::isEcobeeProgram() const
 {
-    return (getPAOTypeString() == "ECOBEE PROGRAM");
+    return getPAOTypeString() == "ECOBEE PROGRAM";
 }
 
 /*---------------------------------------------------------------------------
