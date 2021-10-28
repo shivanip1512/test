@@ -61,7 +61,7 @@ carrierRoute:
         description: 'Carrier Route User Lock'
       resetRptSettings: 
         type: boolean
-        default: true
+        default: false
         description: 'Carrier Route ResetRtrSettings'
 
 repeaters:
