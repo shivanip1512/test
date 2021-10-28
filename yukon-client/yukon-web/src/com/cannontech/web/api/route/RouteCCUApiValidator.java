@@ -24,7 +24,8 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
             for (RepeaterRouteModel repeaterRouteModel : route.getRepeaters()) {
                 validateRepeater(repeaterRouteModel, errors, repeaterArrSize, count);
             }
-
+        }
+        if(route.getCarrierRoute()!= null) {
             if (route.getCarrierRoute().getBusNumber() != null) {
                 validateBusNumber(route.getCarrierRoute().getBusNumber(), errors);
             }
@@ -35,7 +36,7 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
 
             if (route.getCarrierRoute().getCcuVariableBits() != null) {
                 validateCcuVariableBits(route.getCarrierRoute().getCcuVariableBits(), errors);
-            }
+            } 
         }
 
     }
