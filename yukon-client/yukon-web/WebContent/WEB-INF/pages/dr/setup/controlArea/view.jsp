@@ -206,7 +206,7 @@
                         <div class="column two nogutter" style="height:560px;">
                             <h3 class="dib"><i:inline key="yukon.common.assigned"/></h3>
                             <div class="bordered-div oa" style="height:96%">
-                                <table id="program-assignments" class="compact-results-table">
+                                <table id="program-assignments" class="compact-results-table no-stripes">
                                     <thead>
                                         <th width="10%"></th>
                                         <th width="50%"><i:inline key=".name"/></th>

@@ -121,7 +121,7 @@
             <cti:msg2 var="stateActionsTableTitleTxt" key=".stateActionsTable.title" />
             <cti:msg2 var="stateActionsHelpTxt" key=".stateActionsTable.helpText" />
             <tags:sectionContainer id="actionsBox" title="${stateActionsTableTitleTxt}" helpText="${stateActionsHelpTxt}">
-                <table id="processors-table" class="compact-results-table dashed">
+                <table id="processors-table" class="compact-results-table no-stripes dashed">
                     <thead>
                         <tr>
                             <th><i:inline key=".stateActionsTable.prevState" /></th>
