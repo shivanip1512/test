@@ -205,7 +205,7 @@ void CtiConnection::outThreadFunc()
 
                 // we need to close the producer before receiving all messaging.
                 // this will tell the peer connection that we are closing, but still listening
-                _producer->close();
+//                _producer->close();
 
                 // we should try to read all pending messages from the temporary inbound queue
                 receiveAllMessages();
@@ -413,10 +413,10 @@ void CtiConnection::setupAdvisoryListener()
     CtiLockGuard<CtiCriticalSection> guard(_advisoryMux);
 
     // create advisory topic consumer to monitor if the outbound destination has only 1 message consumer
-    _advisoryConsumer = createTopicConsumer(
-            *_sessionOut,
-            "ActiveMQ.Advisory.Producer.Queue." + _consumer->getDestPhysicalName(),
-            "producerCount <> 1" );
+//    _advisoryConsumer = createTopicConsumer(
+ //           *_sessionOut,
+ //           "ActiveMQ.Advisory.Producer.Queue." + _consumer->getDestination(),
+ //           "producerCount <> 1" );
 
     _advisoryConsumer->setMessageListener(_advisoryListener.get());
 }

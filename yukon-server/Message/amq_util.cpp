@@ -8,14 +8,16 @@
 #include "logger.h"
 
 #include <proton/connection_options.hpp>
+#include <proton/sender_options.hpp>
+#include <proton/receiver_options.hpp>
+#include <proton/work_queue.hpp>
 
 
 namespace Cti::Messaging::Qpid
 {
 
 ConnectionFactory::ConnectionFactory()
-    :   _handler{ },
-        _container( _handler )
+    :   _container()
 {
     _container_thread = std::thread( [ & ]() { _container.run(); } );
 }
@@ -30,45 +32,24 @@ proton::container & ConnectionFactory::getContainer()
     return _container;
 }
 
-/*-----------------------------------------------------------------------------
-    Intialize activemq library and create a new connection
-
-    returns:
-    pointer to the new connection that the caller owns
------------------------------------------------------------------------------*/
-std::unique_ptr<cms::Connection> ConnectionFactory::createConnection( const std::string &brokerUri )
+void ConnectionFactory::createConnection( const std::string &brokerUri, proton::connection_options & connOpt )
 {
-    std::unique_ptr<cms::ConnectionFactory> connectionFactory { cms::ConnectionFactory::createCMSConnectionFactory( brokerUri ) };
-
-    return std::unique_ptr<cms::Connection> { connectionFactory->createConnection() };
-}
-
-std::unique_ptr<proton::connection> ConnectionFactory::createConnection_jmoc( const std::string &brokerUri )
-{
-    // do we need to set some specific options here - or maybe in the managed connection..?  jmoc
-
-    proton::connection_options  options;
-
-    auto connection = _container.connect( brokerUri, options );
-
-    // apparently we can't just use the connection object returned due to multithreading making it unreliable
-    //  we are supposed to get at it thru the messaging_handler stuff somehow.
-
-    return nullptr;
+    auto connection = _container.connect( brokerUri, connOpt );
 }
 
 
 /*-----------------------------------------------------------------------------
     Singleton of connectionFactory
 -----------------------------------------------------------------------------*/
-IM_EX_MSG ConnectionFactory g_connectionFactory;
+//IM_EX_MSG ConnectionFactory g_connectionFactory;
 
 
 /*-----------------------------------------------------------------------------
   Managed connection
 -----------------------------------------------------------------------------*/
-ManagedConnection::ManagedConnection( const std::string &brokerUri ) :
+ManagedConnection::ManagedConnection( const std::string &brokerUri, proton::connection_options & connOpt ) :
     _brokerUri( brokerUri ),
+    _conn_options( connOpt ),
     _closed( false )
 {
 }
@@ -160,6 +141,7 @@ void ManagedConnection::waitCloseEvent( unsigned millis )
 
 void ManagedConnection::start()
 {
+    // this reconnect stuff is now in the connection_options that are passed in the constructor...
     const unsigned initialReconnectMillis = 1000;       // 1 sec
     const unsigned maxReconnectMillis     = 1000 * 30;  // 30 sec
     const unsigned maxReconnectAttempts   = 120;        // 120 attempts (about 1 hour, considering 30 sec/attempt)
@@ -183,8 +165,7 @@ void ManagedConnection::start()
             // make sure the connection is closed before destroying it
             closeConnection();
 
-            _connection = g_connectionFactory.createConnection( _brokerUri );
-            _connection->start();
+//            g_connectionFactory.createConnection( _brokerUri, _conn_options );
 
             return; // exit if connection succeeded
         }
@@ -272,56 +253,71 @@ const std::string& ManagedConnection::getBrokerUri() const
 /*-----------------------------------------------------------------------------
   Managed destination
 -----------------------------------------------------------------------------*/
+ManagedDestination::ManagedDestination( const std::string & dest )
+    :   _dest( dest )
+{
+}
+
 ManagedDestination::~ManagedDestination()
 {
 }
 
-std::string ManagedDestination::getDestPhysicalName() const
+std::string ManagedDestination::getDestination() const
 {
-    return destPhysicalName( *(this->getDestination()) );
+    return _dest;
 }
 
 /*-----------------------------------------------------------------------------
   Managed message producer
 -----------------------------------------------------------------------------*/
-ManagedProducer::ManagedProducer( cms::MessageProducer* producer ) :
-    _producer( producer )
+ManagedProducer::ManagedProducer( proton::session & sess, const std::string & dest )
+    :   ManagedDestination( dest ),
+        _expiryDuration{ 60 * proton::duration::MINUTE }
 {
-    _producer->setDeliveryMode( cms::DeliveryMode::NON_PERSISTENT ); // set to NON_PERSISTENT
+    proton::sender_options options;     // temp queue has flag in options   dynamic(true) with empty address ""
+
+    if ( dest.empty() )
+    {
+
+    }
+
+    _producer = sess.open_sender( dest, options );
 }
 
 ManagedProducer::~ManagedProducer()
 {
 }
 
-void ManagedProducer::setTimeToLiveMillis( long long time )
+void ManagedProducer::setTimeToLiveMillis( std::chrono::milliseconds time )
 {
-   _producer->setTimeToLive( time );
+    _expiryDuration = time.count() * proton::duration::MILLISECOND;
 }
 
-//void ManagedProducer::send( cms::Message *message )
-//{
-//   _producer->send( message );
-//}
-
-void ManagedProducer::send( const proton::message & message )
+void ManagedProducer::send( proton::message & msg )
 {
-// jmoc - TBD
+    auto now = proton::timestamp::now();
 
+    msg.durable( false );                       // non-persistent
+    msg.expiry_time( now + _expiryDuration );
 
-}
-
-void ManagedProducer::close()
-{
-    return _producer->close();
+    _producer
+        .session()              // <-- do we need the session?  the sender has a work_queue too which may or may not be the same one...?
+        .work_queue()
+        .add(   [=]()
+                {
+                    _producer.send( msg );
+                } );                                       
 }
 
 /*-----------------------------------------------------------------------------
   Managed message consumer
 -----------------------------------------------------------------------------*/
-ManagedConsumer::ManagedConsumer( cms::MessageConsumer* consumer ) :
-    _consumer( consumer )
+ManagedConsumer::ManagedConsumer( proton::session & sess, const std::string & dest )
+    :   ManagedDestination( dest )
 {
+    proton::receiver_options    options;
+
+    _consumer = sess.open_receiver( dest, options );
 }
 
 ManagedConsumer::~ManagedConsumer()
@@ -337,37 +333,43 @@ void ManagedConsumer::setMessageListener( Qpid::MessageListener *listener )
 
 cms::Message* ManagedConsumer::receive()
 {
-    return _consumer->receive();
+    return nullptr;
+  //  return _consumer->receive();
 }
 
 cms::Message* ManagedConsumer::receive( int millisecs )
 {
-    return _consumer->receive( millisecs );
+    // wait on mux with condition var + notify_one()1
+
+    return nullptr;
+ //   return _consumer->receive( millisecs );
 }
 
 cms::Message* ManagedConsumer::receiveNoWait()
 {
-    return _consumer->receiveNoWait();
+ //   if (d!empty getit) else null
+    {
+    }
+
+    return nullptr;
+  //  return _consumer->receiveNoWait();
 }
 
-void ManagedConsumer::close()
+void ManagedConsumer::on_message( proton::delivery & d, proton::message & msg )
 {
-    return _consumer->close();
+   // deque<pro::mg> d;
+  //  d.stuffit(msg)
+    // magic!
+
 }
+
 
 /*-----------------------------------------------------------------------------
   Managed destination message producer
------------------------------------------------------------------------------*/
+-----------------------------------------------------------------------------*/  // this is the temp queue producer as well as named queue prod
 
-DestinationProducer::DestinationProducer( cms::MessageProducer *producer, cms::Destination *dest ) :
-    ManagedProducer( producer ),
-    _dest( dest )
-{
-}
-
-DestinationProducer::DestinationProducer( cms::Session &session, cms::Destination *dest ) :
-    ManagedProducer( session.createProducer( dest )),
-    _dest( dest )
+DestinationProducer::DestinationProducer( proton::session & sess, const std::string & dest ) :
+    ManagedProducer( sess, dest )
 {
 }
 
@@ -375,17 +377,11 @@ DestinationProducer::~DestinationProducer()
 {
 }
 
-const cms::Destination* DestinationProducer::getDestination() const
-{
-    return _dest.get();
-}
-
 /*-----------------------------------------------------------------------------
   Managed destination message consumer
 -----------------------------------------------------------------------------*/
-DestinationConsumer::DestinationConsumer( cms::MessageConsumer *consumer, cms::Destination *dest ) :
-    ManagedConsumer( consumer ),
-    _dest( dest )
+DestinationConsumer::DestinationConsumer( proton::session & sess, const std::string & dest ) :
+    ManagedConsumer( sess, dest )
 {
 }
 
@@ -393,16 +389,11 @@ DestinationConsumer::~DestinationConsumer()
 {
 }
 
-const cms::Destination* DestinationConsumer::getDestination() const
-{
-    return _dest.get();
-}
-
 /*-----------------------------------------------------------------------------
   Managed Queue message producer
 -----------------------------------------------------------------------------*/
-QueueProducer::QueueProducer( cms::Session &session, cms::Queue* dest ) :
-    DestinationProducer( session.createProducer( dest ), dest )
+QueueProducer::QueueProducer( proton::session & sess, const std::string & dest ) :
+    DestinationProducer( sess, dest )
 {
 }
 
@@ -413,8 +404,8 @@ QueueProducer::~QueueProducer()
 /*-----------------------------------------------------------------------------
   Managed Queue message consumer
 -----------------------------------------------------------------------------*/
-QueueConsumer::QueueConsumer( cms::Session &session, cms::Queue* dest ) :
-    DestinationConsumer( session.createConsumer( dest ), dest )
+QueueConsumer::QueueConsumer( proton::session & sess, const std::string & dest ) :
+    DestinationConsumer( sess, dest )
 {
 }
 
@@ -425,13 +416,9 @@ QueueConsumer::~QueueConsumer()
 /*-----------------------------------------------------------------------------
   Managed topic message consumer
 -----------------------------------------------------------------------------*/
-TopicConsumer::TopicConsumer( cms::Session &session, cms::Topic* dest ) :
-     DestinationConsumer( session.createConsumer( dest ), dest )
-{
-}
-
-TopicConsumer::TopicConsumer( cms::Session &session, cms::Topic* dest, const std::string &selector ) :
-     DestinationConsumer( session.createConsumer( dest, selector ), dest )
+TopicConsumer::TopicConsumer( proton::session & sess, const std::string & dest, const std::string & selector ) :
+     DestinationConsumer( sess, dest ),
+     _selector( selector )
 {
 }
 
@@ -442,28 +429,13 @@ TopicConsumer::~TopicConsumer()
 /*-----------------------------------------------------------------------------
   Managed temporary queue message consumer
 -----------------------------------------------------------------------------*/
-TempQueueConsumer::TempQueueConsumer( cms::Session &session, cms::TemporaryQueue* dest ) :
-    QueueConsumer( session, dest )
+TempQueueConsumer::TempQueueConsumer( proton::session & sess ) :
+    QueueConsumer( sess, "" )     // replyTo
 {
 }
 
 TempQueueConsumer::~TempQueueConsumer()
 {
-    try
-    {
-        close();
-    }
-    catch(...)
-    {
-        // catch all, do not throw
-    }
-}
-
-void TempQueueConsumer::close()
-{
-    ManagedConsumer::close(); // close the message consumer, before closing the destination
-
-    static_cast<cms::TemporaryQueue&>(*_dest).destroy();
 }
 
 }

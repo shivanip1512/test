@@ -15,6 +15,10 @@
 #include <proton/container.hpp>
 #include <proton/messaging_handler.hpp>
 #include <proton/message.hpp>
+#include <proton/connection_options.hpp>
+#include <proton/sender.hpp>
+#include <proton/receiver.hpp>
+#include <proton/session.hpp>
 
 namespace Cti::Messaging::Qpid
 {
@@ -22,16 +26,8 @@ namespace Cti::Messaging::Qpid
 /*-----------------------------------------------------------------------------
   Initiliaze ActiveMQ Lib and create connection
 -----------------------------------------------------------------------------*/
-struct IM_EX_MSG ContainerMessagingHandler : proton::messaging_handler
-{
-    // creating the named type for any potential overloads...
-
-};
-
 class IM_EX_MSG ConnectionFactory
 {
-    ContainerMessagingHandler   _handler;
-
     proton::container  _container;
 
     std::thread  _container_thread;
@@ -43,22 +39,20 @@ public:
 
     proton::container & getContainer();
 
-    std::unique_ptr<cms::Connection> createConnection( const std::string &brokerUri );
-
-    std::unique_ptr<proton::connection> createConnection_jmoc( const std::string &brokerUri );
+    void createConnection( const std::string &brokerUri, proton::connection_options & connOpt );
 };
 
 
 /*-----------------------------------------------------------------------------
   Connection factory singleton
 -----------------------------------------------------------------------------*/
-IM_EX_MSG extern ConnectionFactory g_connectionFactory;
+//IM_EX_MSG extern ConnectionFactory g_connectionFactory;
 
 
 /*-----------------------------------------------------------------------------
   Message listener template
 -----------------------------------------------------------------------------*/
-class MessageListener : public proton::messaging_handler
+class MessageListener 
 {
     typedef std::function<void (proton::message&)> Callback;
     Callback _callback;
@@ -67,10 +61,6 @@ public:
     MessageListener( Callback c ) : _callback( c ) {}
     virtual ~MessageListener() {}
 
-    void on_message( proton::delivery & d, proton::message & msg ) override
-    {
-        _callback( msg );
-    }
 };
 
 
@@ -120,6 +110,7 @@ public:
 class IM_EX_MSG ManagedConnection
 {
     const std::string _brokerUri;
+    proton::connection_options  _conn_options;
 
     bool                      _closed;
     boost::condition_variable _closeCond;
@@ -137,7 +128,7 @@ class IM_EX_MSG ManagedConnection
     void waitCloseEvent( unsigned millis );
 
 public:
-    ManagedConnection( const std::string& brokerUri );
+    ManagedConnection( const std::string& brokerUri, proton::connection_options & connOpt );
 
     virtual ~ManagedConnection();
 
@@ -158,15 +149,15 @@ public:
 /*-----------------------------------------------------------------------------
   Retrieve physical name from cms destination
 -----------------------------------------------------------------------------*/
-inline std::string destPhysicalName( const cms::Destination& dest )
-{
-    if( const activemq::commands::ActiveMQDestination* amqDest = dynamic_cast<const activemq::commands::ActiveMQDestination*>( &dest ))
-    {
-        return amqDest->getPhysicalName();
-    }
-
-    return std::string();
-}
+//inline std::string destPhysicalName( const cms::Destination& dest )
+//{
+//    if( const activemq::commands::ActiveMQDestination* amqDest = dynamic_cast<const activemq::commands::ActiveMQDestination*>( &dest ))
+//    {
+//        return amqDest->getPhysicalName();
+//    }
+//
+//    return std::string();
+//}
 
 
 /*-----------------------------------------------------------------------------
@@ -174,12 +165,17 @@ inline std::string destPhysicalName( const cms::Destination& dest )
 -----------------------------------------------------------------------------*/
 class IM_EX_MSG ManagedDestination
 {
+protected:
+
+    std::string _dest;
+
 public:
-    virtual ~ManagedDestination ();
 
-    std::string getDestPhysicalName () const;
+    ManagedDestination( const std::string & dest );
 
-    virtual const cms::Destination* getDestination () const = 0;
+    ~ManagedDestination();
+
+    std::string getDestination() const;
 };
 
 
@@ -189,44 +185,53 @@ public:
 class IM_EX_MSG ManagedProducer : public ManagedDestination
 {
 protected:
-    const std::unique_ptr<cms::MessageProducer> _producer;
 
-    ManagedProducer ( cms::MessageProducer* producer );
+    proton::duration    _expiryDuration;
+
+    proton::sender  _producer;
+
+    ManagedProducer( proton::session & sess, const std::string & dest );
 
 public:
-    virtual ~ManagedProducer ();
 
-    virtual void close();
+    ~ManagedProducer();
 
-    void setTimeToLiveMillis ( long long time );
+    void setTimeToLiveMillis( std::chrono::milliseconds time );
 
-//    void send (cms::Message *message);
-    void send( const proton::message & message );
+    void send( proton::message & message );
 };
 
 
 /*-----------------------------------------------------------------------------
   Managed message consumer
 -----------------------------------------------------------------------------*/
-class IM_EX_MSG ManagedConsumer : public ManagedDestination
+class IM_EX_MSG ManagedConsumer : public ManagedDestination, public proton::messaging_handler
 {
-protected:
-    const std::unique_ptr<cms::MessageConsumer> _consumer;
+public:
 
-    ManagedConsumer ( cms::MessageConsumer* consumer );
+    typedef std::function<void (proton::message&)> Callback;
+
+protected:
+
+    Callback _callback;
+
+    proton::receiver    _consumer;
+
+    ManagedConsumer( proton::session & sess, const std::string & dest );
 
 public:
-    virtual ~ManagedConsumer ();
 
-    virtual void close();
+    ~ManagedConsumer();
 
-    void setMessageListener (Qpid::MessageListener * listener);
+    void setMessageListener(Qpid::MessageListener * listener);  // ctor - 
 
-    cms::Message* receive ();
+    cms::Message* receive();
 
-    cms::Message* receive ( int millisecs );
+    cms::Message* receive( int millisecs );
 
-    cms::Message* receiveNoWait ();
+    cms::Message* receiveNoWait();
+
+    void on_message( proton::delivery & d, proton::message & msg ) override;
 };
 
 
@@ -235,18 +240,11 @@ public:
 -----------------------------------------------------------------------------*/
 class IM_EX_MSG DestinationProducer : public ManagedProducer
 {
-protected:
-    const std::unique_ptr<cms::Destination> _dest;
-
-    DestinationProducer ( cms::MessageProducer* producer, cms::Destination *dest );
-
 public:
     // allow the creation of destination producer for responding to replyTo destinations
-    DestinationProducer ( cms::Session &session, cms::Destination *dest );
+    DestinationProducer( proton::session & sess, const std::string & dest );
 
-    virtual ~DestinationProducer ();
-
-    const cms::Destination* getDestination () const;
+    ~DestinationProducer();
 };
 
 /*-----------------------------------------------------------------------------
@@ -254,15 +252,11 @@ public:
 -----------------------------------------------------------------------------*/
 class IM_EX_MSG DestinationConsumer : public ManagedConsumer
 {
-protected:
-    const std::unique_ptr<cms::Destination> _dest;
-
-    DestinationConsumer ( cms::MessageConsumer* consumer, cms::Destination *dest );
 public:
 
-    virtual ~DestinationConsumer ();
+    DestinationConsumer( proton::session & sess, const std::string & dest );
 
-    const cms::Destination* getDestination () const;
+    ~DestinationConsumer();
 };
 
 /*-----------------------------------------------------------------------------
@@ -271,9 +265,10 @@ public:
 class IM_EX_MSG QueueProducer : public DestinationProducer
 {
 public:
-    QueueProducer ( cms::Session &session, cms::Queue* dest );
 
-    virtual ~QueueProducer ();
+    QueueProducer( proton::session & sess, const std::string & dest );
+
+    ~QueueProducer();
 };
 
 /*-----------------------------------------------------------------------------
@@ -282,9 +277,10 @@ public:
 class IM_EX_MSG QueueConsumer : public DestinationConsumer
 {
 public:
-    QueueConsumer ( cms::Session &session, cms::Queue* dest );
 
-    virtual ~QueueConsumer ();
+    QueueConsumer( proton::session & sess, const std::string & dest );
+
+    ~QueueConsumer();
 };
 
 /*-----------------------------------------------------------------------------
@@ -292,12 +288,15 @@ public:
 -----------------------------------------------------------------------------*/
 class IM_EX_MSG TopicConsumer : public DestinationConsumer
 {
+protected:
+
+    std::string _selector;
+
 public:
-    TopicConsumer ( cms::Session &session, cms::Topic* dest );
 
-    TopicConsumer ( cms::Session &session, cms::Topic* dest, const std::string &selector );
+    TopicConsumer( proton::session & sess, const std::string & dest, const std::string & selector = "" );
 
-    virtual ~TopicConsumer ();
+    ~TopicConsumer();
 };
 
 /*-----------------------------------------------------------------------------
@@ -306,45 +305,44 @@ public:
 class IM_EX_MSG TempQueueConsumer : public QueueConsumer
 {
 public:
-    TempQueueConsumer ( cms::Session &session, cms::TemporaryQueue* dest );
 
-    virtual ~TempQueueConsumer ();
+    TempQueueConsumer( proton::session & sess );
 
-    virtual void close (); // override close to delete the destination
+    ~TempQueueConsumer();
 };
 
 /*-----------------------------------------------------------------------------
   creator functions for Managed destinations message consumer / producer
 -----------------------------------------------------------------------------*/
 
-inline std::unique_ptr<DestinationProducer> createDestinationProducer( cms::Session &session, const cms::Destination *dest )
+inline std::unique_ptr<DestinationProducer> createDestinationProducer( proton::session & sess, const std::string & dest )
 {
-    return std::make_unique<DestinationProducer>( session, dest->clone() );
+    return std::make_unique<DestinationProducer>( sess, dest );
 }
 
-inline std::unique_ptr<QueueProducer> createQueueProducer( cms::Session &session, const std::string &queueName )
+inline std::unique_ptr<QueueProducer> createQueueProducer( proton::session & sess, const std::string &queueName )
 {
-    return std::make_unique<QueueProducer>( session, session.createQueue( queueName ));
+    return std::make_unique<QueueProducer>( sess, queueName );
 }
 
-inline std::unique_ptr<QueueConsumer> createQueueConsumer( cms::Session &session, const std::string &queueName )
+inline std::unique_ptr<QueueConsumer> createQueueConsumer( proton::session & sess, const std::string &queueName )
 {
-    return std::make_unique<QueueConsumer>( session, session.createQueue( queueName ));
+    return std::make_unique<QueueConsumer>( sess, queueName );
 }
 
-inline std::unique_ptr<TopicConsumer> createTopicConsumer( cms::Session &session, const std::string &topicName )
+inline std::unique_ptr<TopicConsumer> createTopicConsumer( proton::session & sess, const std::string &topicName )
 {
-    return std::make_unique<TopicConsumer>( session, session.createTopic( topicName ));
+    return std::make_unique<TopicConsumer>( sess, topicName );
 }
 
-inline std::unique_ptr<TopicConsumer> createTopicConsumer( cms::Session &session, const std::string &topicName, const std::string &selector )
+inline std::unique_ptr<TopicConsumer> createTopicConsumer( proton::session & sess, const std::string &topicName, const std::string &selector )
 {
-    return std::make_unique<TopicConsumer>( session, session.createTopic( topicName ) , selector );
+    return std::make_unique<TopicConsumer>( sess, topicName, selector );
 }
 
-inline std::unique_ptr<TempQueueConsumer> createTempQueueConsumer( cms::Session &session )
+inline std::unique_ptr<TempQueueConsumer> createTempQueueConsumer( proton::session & sess )
 {
-    return std::make_unique<TempQueueConsumer>( session, session.createTemporaryQueue());
+    return std::make_unique<TempQueueConsumer>( sess );
 }
 
 

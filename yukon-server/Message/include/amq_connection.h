@@ -5,9 +5,11 @@
 #include "StreamableMessage.h"
 #include "connection_base.h"
 
+#include <proton/messaging_handler.hpp>
 #include <proton/message.hpp>
+#include <proton/session.hpp>
 
-#include <boost/optional.hpp>
+//#include <boost/optional.hpp>
 
 #include <chrono>
 #include <queue>
@@ -40,8 +42,9 @@ class InboundQueue;
 }
 
 class IM_EX_MSG ActiveMQConnectionManager :
-    private CtiThread,
-    public BaseConnection
+//    private CtiThread,
+    public BaseConnection,
+    public proton::messaging_handler
 {
 public:
 
@@ -118,7 +121,8 @@ public:
     ActiveMQConnectionManager();
     virtual ~ActiveMQConnectionManager();
 
-    static void start();
+    // static
+    void start();
 
     static void enqueueMessage(const Qpid::Queues::OutboundQueue &queue, StreamableMessagePtr message);
     static void enqueueMessage(const Qpid::Queues::OutboundQueue &queue, const SerializedMessage &message);
@@ -148,6 +152,12 @@ public:
     static auto registerSessionCallback(const MessageCallback::type callback) -> SessionCallback;
 
     virtual void close();
+
+    void on_connection_open( proton::connection & c ) override;
+    void on_connection_close( proton::connection & c ) override;
+    	
+  //  proton::session sessionA;
+
 
 protected:
 
@@ -224,7 +234,7 @@ protected:
         
     virtual void emplaceNamedMessage(const Qpid::Queues::InboundQueue* queue, const std::string type, std::vector<unsigned char> payload, cms::Destination* replyTo);
 
-    virtual void kickstart();
+//jmoc     virtual void kickstart();
     virtual void createConsumersForCallbacks(const CallbacksPerQueue &callbacks);
 
 private:
@@ -237,9 +247,10 @@ private:
     std::condition_variable _newTask;
 
     //  Connection/session objects
-    std::unique_ptr<Qpid::ManagedConnection> _connection;
-    std::unique_ptr<cms::Session> _producerSession;
-    std::unique_ptr<cms::Session> _consumerSession;
+//    std::unique_ptr<Qpid::ManagedConnection> _connection;
+//    std::unique_ptr<cms::Session> _producerSession;
+//    std::unique_ptr<cms::Session> _consumerSession;
+    proton::session _brokerSession;
 
     MessagingTasks _newTasks;
 
@@ -254,6 +265,8 @@ private:
     //  Consumer and listener - binds to acceptNamedMessage
     struct QueueConsumerWithListener
     {
+        // receiver
+
         std::unique_ptr<Qpid::QueueConsumer> managedConsumer;
 //        std::unique_ptr<cms::MessageListener> listener;
         std::unique_ptr<Qpid::MessageListener> listener;
@@ -296,7 +309,7 @@ private:
         DefaultTimeToLiveMillis = 3600 * 1000  //  1 hour
     };
 
-    bool verifyConnectionObjects();
+//    bool verifyConnectionObjects();
     void releaseConnectionObjects();
 
     void updateCallbacks(CallbacksPerQueue newCallbacks);

@@ -21,7 +21,7 @@ struct test_AmqConnectionManmager : ActiveMQConnectionManager
     using ActiveMQConnectionManager::processTasks;
     using ActiveMQConnectionManager::emplaceNamedMessage;
     
-    void kickstart() override {}  //  no-op, don't start the thread
+//    void kickstart() override {}  //  no-op, don't start the thread
     void createConsumersForCallbacks(const CallbacksPerQueue &callbacks) override {};  //  don't create AMQ consumers
 };
 

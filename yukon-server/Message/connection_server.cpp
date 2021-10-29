@@ -36,7 +36,7 @@ CtiServerConnection::CtiServerConnection( const CtiListenerConnection &listenerC
     // set the outbound destination physical name
     if( _replyDest.get())
     {
-        _peerName = destPhysicalName( *_replyDest );
+ //       _peerName = destPhysicalName( *_replyDest );
     }
 
     setName(listenerConnection.getServerQueueName()+_peerName);
@@ -79,10 +79,10 @@ bool CtiServerConnection::establishConnection()
         _sessionOut = _connection->createSession();
 
         // Create consumer for inbound traffic
-        _consumer = createTempQueueConsumer( *_sessionIn );
+ //       _consumer = createTempQueueConsumer( *_sessionIn );
 
         // Create producer for outbound traffic
-        _producer = createDestinationProducer( *_sessionOut, _replyDest.get() );
+ //       _producer = createDestinationProducer( *_sessionOut, _replyDest.get() );
 
         // Create advisory topic consumer
         setupAdvisoryListener();
@@ -90,7 +90,7 @@ bool CtiServerConnection::establishConnection()
         // create a new handshake reply message
         std::unique_ptr<cms::Message> outMessage { _sessionOut->createMessage() };
 
-        outMessage->setCMSReplyTo( _consumer->getDestination() );
+//        outMessage->setCMSReplyTo( _consumer->getDestination() );
         outMessage->setCMSType( MessageType::serverResp );
 
         // send the message back to the client (the payload is the reply destination)
@@ -113,17 +113,17 @@ bool CtiServerConnection::establishConnection()
 
         if( ! ackMessage->getCMSReplyTo() )
         {
-            CTILOG_ERROR(dout, who() << " - received null ReplyTo destination, expected: " << _producer->getDestPhysicalName() );
+            CTILOG_ERROR(dout, who() << " - received null ReplyTo destination, expected: " << _producer->getDestination() );
             return false;
         }
 
-        if( destPhysicalName(*ackMessage->getCMSReplyTo()) != _producer->getDestPhysicalName() )
-        {
-            CTILOG_ERROR(dout, who() << " - received invalid ReplyTo destination: " << destPhysicalName(*ackMessage->getCMSReplyTo())
-                    << ", expected: " << _producer->getDestPhysicalName() );
-
-            return false;
-        }
+//        if( destPhysicalName(*ackMessage->getCMSReplyTo()) != _producer->getDestination() )
+//        {
+//            CTILOG_ERROR(dout, who() << " - received invalid ReplyTo destination: " << destPhysicalName(*ackMessage->getCMSReplyTo())
+//                    << ", expected: " << _producer->getDestination() );
+//
+//            return false;
+//        }
 
 // jmoc
 
@@ -131,8 +131,8 @@ bool CtiServerConnection::establishConnection()
 
 
         CTILOG_INFO(dout, who() << " - successfully connected"
-                << "\ninbound  : " << _consumer->getDestPhysicalName()
-                << "\noutbound : " << _producer->getDestPhysicalName()
+                << "\ninbound  : " << _consumer->getDestination()
+                << "\noutbound : " << _producer->getDestination()
                 );
 
         return true;

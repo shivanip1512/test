@@ -139,7 +139,7 @@ bool CtiClientConnection::establishConnection()
                     const string maxInactivityDuration = "wireFormat.MaxInactivityDuration=" +
                         to_string( GlobalSettings::getInteger( GlobalSettings::Integers::MaxInactivityDuration, 30 ) * 1000 );
 
-                    _connection.reset( new ManagedConnection( Broker::protocol + broker_host + ":" + broker_port + "?" + producerWindowSize + "&" + maxInactivityDuration ) );
+                    _connection.reset( new ManagedConnection( Broker::protocol + broker_host + ":" + broker_port + "?" + producerWindowSize + "&" + maxInactivityDuration, proton::connection_options() ) );
                 }
 
                 CTILOG_INFO(dout, who() << " - connecting to \"" << _serverQueueName << "\"\n"
@@ -154,18 +154,18 @@ bool CtiClientConnection::establishConnection()
                 _sessionOut = _connection->createSession();
 
                 // create a temporary producer to initiate talk with the server`s listener connection
-                QueueProducer handshakeProducer(*_sessionOut, _sessionOut->createQueue( _serverQueueName ));
-                handshakeProducer.setTimeToLiveMillis( timeToLiveMillis );
+   //             QueueProducer handshakeProducer(*_sessionOut, _sessionOut->createQueue( _serverQueueName ));
+           //     handshakeProducer.setTimeToLiveMillis( timeToLiveMillis );
 
                 // Create consumer for inbound traffic
-                _consumer = createTempQueueConsumer( *_sessionIn );
+  //              _consumer = createTempQueueConsumer( *_sessionIn );
 
                 while( !_valid && canReconnect() && _connection->verifyConnection() )
                 {
                     // create an empty message for handshake
                     unique_ptr<cms::Message> outMessage( _sessionOut->createMessage() );
 
-                    outMessage->setCMSReplyTo( _consumer->getDestination() );
+//                    outMessage->setCMSReplyTo( _consumer->getDestination() );
                     outMessage->setCMSType( MessageType::clientInit );
 
 //jmoc                    handshakeProducer.send( outMessage.get() );
@@ -189,15 +189,15 @@ bool CtiClientConnection::establishConnection()
                             break; // something went wrong? - retry connecting from scratch
                         }
 
-                        _producer = createDestinationProducer( *_sessionOut, inMessage->getCMSReplyTo() );
+            //            _producer = createDestinationProducer( *_sessionOut, inMessage->getCMSReplyTo() );
 
-                        resetPeer( _producer->getDestPhysicalName() );
+                        resetPeer( _producer->getDestination() );
 
                         _valid = true;
 
                         CTILOG_INFO(dout, who() << " - successfully connected.\n"
-                                << "inbound: "    << _consumer->getDestPhysicalName()
-                                << ", outbound: " << _producer->getDestPhysicalName());
+                                << "inbound: "    << _consumer->getDestination()
+                                << ", outbound: " << _producer->getDestination());
                     }
                     else
                     {
@@ -246,7 +246,7 @@ bool CtiClientConnection::establishConnection()
 
         // create and send client acknowledge message
         unique_ptr<cms::Message> ackMessage( _sessionOut->createMessage() );
-        ackMessage->setCMSReplyTo( _consumer->getDestination() );
+//        ackMessage->setCMSReplyTo( _consumer->getDestination() );
         ackMessage->setCMSType( MessageType::clientAck );
 
 //jmoc        _producer->send( ackMessage.get() );

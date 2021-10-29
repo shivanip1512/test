@@ -106,7 +106,7 @@ void CtiListenerConnection::start()
                 const string maxInactivityDuration = "wireFormat.MaxInactivityDuration=" +
                     to_string( GlobalSettings::getInteger( GlobalSettings::Integers::MaxInactivityDuration, 30 ) * 1000 );
 
-                _connection.reset( new ManagedConnection( Broker::protocol + broker_host + ":" + broker_port + "?" + producerWindowSize + "&" + maxInactivityDuration ) );
+                _connection.reset( new ManagedConnection( Broker::protocol + broker_host + ":" + broker_port + "?" + producerWindowSize + "&" + maxInactivityDuration, proton::connection_options() ) );
             }
 
             if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
@@ -142,7 +142,7 @@ void CtiListenerConnection::start()
                 _session = _connection->createSession();
 
                 // Create managed queue consumer
-                _consumer = createQueueConsumer( *_session, _serverQueueName );
+        //        _consumer = createQueueConsumer( *_session, _serverQueueName );
 
                 _valid = true;
             }
@@ -186,7 +186,7 @@ void CtiListenerConnection::close()
         if( _consumer )
         {
             // if the consumer exist, we are currently connected, close the consumer and release resources
-            _consumer->close();
+ //           _consumer->close();
         }
         else if( _connection )
         {
@@ -246,10 +246,10 @@ bool CtiListenerConnection::acceptClient()
         }
 
         // validate the request : check for a duplicate request in the recent past
-        if( ! validateRequest( destPhysicalName( *message->getCMSReplyTo() )))
-        {
-            return false;
-        }
+ //       if( ! validateRequest( destPhysicalName( *message->getCMSReplyTo() )))
+ //       {
+ //           return false;
+ //       }
 
         // update the client reply destination when there's no error
         _clientReplyDest.reset( message->getCMSReplyTo()->clone() );
