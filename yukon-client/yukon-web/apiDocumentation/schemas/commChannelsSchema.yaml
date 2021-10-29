@@ -1,16 +1,16 @@
 TCPPORT:
   title: TCPPORT
   required:
-    - type
-    - name
+    - deviceType
+    - deviceName
     - baudRate
   type: object
   properties:
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the comm channel.'
-    type:
+    deviceType:
       type: string
       description: 'Type of channel.'
       enum:
@@ -39,17 +39,17 @@ TCPPORT:
 UDPPORT:
   title: UDPPORT
   required:
-    - type
-    - name
+    - deviceType
+    - deviceName
     - portNumber
     - baudRate
   type: object
   properties:
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the comm channel.'
-    type:
+    deviceType:
       type: string
       description: 'Type of channel.'
       enum:
@@ -104,18 +104,18 @@ UDPPORT:
 TSERVER_SHARED:
   title: TSERVER_SHARED
   required:
-    - type
-    - name
+    - deviceType
+    - deviceName
     - portNumber
     - baudRate
     - ipAddress
   type: object
   properties:
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the comm channel.'
-    type:
+    deviceType:
       type: string
       description: 'Type of channel.'
       enum:
@@ -166,17 +166,17 @@ TSERVER_SHARED:
 LOCAL_SHARED:
   title: LOCAL_SHARED
   required:
-    - type
-    - name
+    - deviceType
+    - deviceName
     - physicalPort
     - baudRate
   type: object
   properties:
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the comm channel.'
-    type:
+    deviceType:
       type: string
       description: 'Type of channel.'
       enum:
@@ -223,14 +223,14 @@ TCPPORT Response Schema:
   title: TCPPORT
   type: object
   properties:
-    id:
+    deviceId:
       type: integer
       description: 'Unique identifier of the TCP Port.'
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the comm channel.'
-    type:
+    deviceType:
       type: string
       description: 'Type of channel.'
       enum:
@@ -260,14 +260,14 @@ UDPPORT Response Schema:
   title: UDPPORT
   type: object
   properties:
-    id:
+    deviceId:
       type: integer
       description: 'Unique identifier of the UDP Terminal Server.'
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the comm channel.'
-    type:
+    deviceType:
       type: string
       description: 'Type of channel.'
       enum:
@@ -323,14 +323,14 @@ TSERVER_SHARED Response Schema:
   title: TSERVER_SHARED
   type: object
   properties:
-    id:
+    deviceId:
       type: integer
       description: 'Unique identifier of the Terminal Server.'
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the comm channel.'
-    type:
+    deviceType:
       type: string
       description: 'Type of channel.'
       enum:
@@ -382,14 +382,14 @@ LOCAL_SHARED Response Schema:
   title: LOCAL_SHARED
   type: object
   properties:
-    id:
+    deviceId:
       type: integer
       description: 'Unique identifier of the Local Shared Port.'
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the comm channel.'
-    type:
+    deviceType:
       type: string
       description: 'Type of channel.'
       enum:
@@ -503,8 +503,8 @@ components:
   examples:
     TCP Port Request: 
       value:
-        type: TCPPORT
-        name: Test TCP Port 
+        deviceType: TCPPORT
+        deviceName: Test TCP Port 
         enable: true
         baudRate: BAUD_300
         timing:
@@ -517,9 +517,9 @@ components:
 
     TCP Port Response: 
       value:
-        id: 21
-        type: TCPPORT
-        name: Test TCP Port 
+        deviceId: 21
+        deviceType: TCPPORT
+        deviceName: Test TCP Port 
         enable: true
         baudRate: BAUD_300
         timing:
@@ -532,10 +532,10 @@ components:
             
     UDP Terminal Server Request:
       value:
-        name: Test Udpport
+        deviceName: Test Udpport
         enable: true
         baudRate: BAUD_2400
-        type: UDPPORT
+        deviceType: UDPPORT
         portNumber: 5534
         carrierDetectWaitInMilliseconds: 544
         protocolWrap: IDLC
@@ -553,11 +553,11 @@ components:
         
     UDP Terminal Server Response:
       value:
-        id: 45
-        name: Test Udpport
+        deviceId: 45
+        deviceName: Test Udpport
         enable: true
         baudRate: BAUD_2400
-        type: UDPPORT
+        deviceType: UDPPORT
         portNumber: 5534
         carrierDetectWaitInMilliseconds: 544
         protocolWrap: IDLC
@@ -575,10 +575,10 @@ components:
 
     Terminal Server Request:
       value:
-        name: Test TserverShared Port
+        deviceName: Test TserverShared Port
         enable: true
         baudRate: BAUD_2400
-        type: TSERVER_SHARED
+        deviceType: TSERVER_SHARED
         portNumber: 1234
         ipAddress: 127.0.0.1
         carrierDetectWaitInMilliseconds: 123
@@ -596,11 +596,11 @@ components:
 
     Terminal Server Response:
       value:
-        id: 45
-        name: Test TserverShared Port
+        deviceId: 45
+        deviceName: Test TserverShared Port
         enable: true
         baudRate: BAUD_2400
-        type: TSERVER_SHARED
+        deviceType: TSERVER_SHARED
         portNumber: 1234
         ipAddress: 127.0.0.1
         carrierDetectWaitInMilliseconds: 123
@@ -618,10 +618,10 @@ components:
 
     Local Shared Port Request:
       value:
-        name: Test LocalShared Port
+        deviceName: Test LocalShared Port
         enable: true
         baudRate: BAUD_2400
-        type: LOCAL_SHARED
+        deviceType: LOCAL_SHARED
         carrierDetectWaitInMilliseconds: 544
         protocolWrap: IDLC
         timing:
@@ -638,11 +638,11 @@ components:
  
     Local Shared Port Response:
       value:
-        id: 87
-        name: Test LocalShared Port
+        deviceId: 87
+        deviceName: Test LocalShared Port
         enable: true
         baudRate: BAUD_2400
-        type: LOCAL_SHARED
+        deviceType: LOCAL_SHARED
         carrierDetectWaitInMilliseconds: 544
         protocolWrap: IDLC
         timing:

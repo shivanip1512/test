@@ -35,13 +35,13 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
         }
         String idStr = ServletUtils.getPathVariable("id");
         if (idStr == null) {
-            TreeNode id = node.get("id");
+            TreeNode id = node.get("deviceId");
             if (id != null) {
                 idStr = id.toString();
             }
         }
         Integer id = null;
-        TreeNode type = node.get("type");
+        TreeNode type = node.get("deviceType");
         PaoType paoType;
 
         if (idStr == null) {
