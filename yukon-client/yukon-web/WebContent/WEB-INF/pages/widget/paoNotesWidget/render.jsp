@@ -34,7 +34,7 @@
         </c:when>
         <c:otherwise>
             <c:set var="borderClass" value="${hideTableBorders ? '' : 'bordered-div'}"/>
-            <table class="row-highlighting ${borderClass} striped wrbw" style="width:100%; table-layout:fixed;">
+            <table class="compact-results-table no-stripes ${borderClass} wrbw" style="width:100%; table-layout:fixed;">
                 <c:forEach var="recentNote" items="${recentNotes}" varStatus="status">
                     <c:set var="noteId" value="${recentNote.paoNote.noteId}"/>
                     <tr>
