@@ -46,6 +46,10 @@
 @border-radius: 2px;
 @form-control-height: 26px;
 
+@table-border-color: rgba(224, 224, 224, 1);
+@table-hover-color: rgb(244, 245, 245);
+@table-alternate-row-color: #fbfbfb;
+
 /* HEADINGS */
 .page-heading {
     display: inline-block;
@@ -459,28 +463,39 @@ input[type=radio] {
 
 /* TABLES */
 table {
-    width: auto;
+    display: table;
+	width: auto;
     border-collapse: collapse;
 }
 
 table td, 
 table th {
-    padding: 3px 5px;
-    vertical-align: top;
+	padding: 3px 5px;
+    vertical-align: middle;
 }
 
 table th, 
 .title-header, 
 .column-header {
-    background: white;
+    align-items: center;
+    flex-direction: inherit;
+    justify-content: flex-start;
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    display: table-cell;
+    vertical-align: bottom !important;
+    border-bottom: 1px solid @table-border-color;
     text-align: left;
-    font-weight: bold;
-    border-bottom: solid 1px #ccc;
+    color: #424e54;
+	background: white;
 }
+
 table.dashed th, 
+table.dashed thead tr,
 .title-header.dashed, 
 .column-header.dashed { 
-    border-bottom-style: dashed;
+    border-bottom-style: dashed !important;
 }
 
 table.natural-width { width: auto; }
@@ -510,7 +525,7 @@ table.matrix th.rtate30 div {
     left: 64px;
     top: 3px;
     overflow: hidden;
-    border-right: 1px solid #908e8e;
+    border-right: 1px solid @table-border-color;
 }
 
 table.matrix th.rtate30 div span {
@@ -535,22 +550,22 @@ table.matrix .firstCol {
 }
 
 table.matrix td {
-    border-right: 1px solid #908e8e;
-    border-bottom: 1px solid #908e8e;
+    border-right: 1px solid @table-border-color;
+    border-bottom: 1px solid @table-border-color;
     text-align: center;
     vertical-align: middle;
 }
 
 table.matrix th {
-    border-bottom: 1px solid #908e8e;
+    border-bottom: 1px solid @table-border-color;
 }
 
 table.matrix tr:nth-child(even){
-    background-color: #f6f6f6;
+    background-color: @table-alternate-row-color;
 }
 
 table.matrix{
-    border-bottom: 1px solid #908e8e;
+    border-bottom: 1px solid @table-border-color;
 }
 
 .div-align-to-table{
@@ -578,30 +593,75 @@ table.matrix{
     
     td { border: none; }
 }
+
 .compact-results-table:not(.manual-striping):not(.no-stripes) tr:nth-child(even), 
 .results-table:not(.manual-striping):not(.no-stripes) tr:nth-child(even), 
 .striped-list > div:nth-child(even), 
 .striped-list > li:nth-child(even), 
 .striped tr:nth-child(even), 
 .alt-row { 
-    background-color: #f6f6f6;
+    background-color: @table-alternate-row-color;
+}
+
+.compact-results-table:not(.manual-striping):not(.no-stripes) tr, 
+.results-table:not(.manual-striping):not(.no-stripes) tr, 
+.striped-list > div, 
+.striped-list > li, 
+.striped:not(.name-value-table) tr, 
+.alt-row {
+	border-bottom: 1px solid @table-border-color;
+
+    &:not([readonly]):hover {
+        background-color: @table-hover-color;
+    }
+}
+
+.picker-results-table td {
+	padding: 3px 5px !important;
 }
 
 .compact-results-table {
-    font-size: 13px;
+    font-size: 13px !important;
     
     td, th { 
         line-height: 18px;
+		padding: 6px 5px;
+		font-size: 13px;
     }
 
-	td input {
-		font-size: 13px;
+	td input, td select, td textarea, td .chosen-single {
+		font-size: 13px !important;
 	}
-    
-    tr.focused, 
-    tr.focused:nth-child(2n) { 
-        background-color: #dae2ff;
-    }
+	
+	td {
+	    color: #424e54;
+	    display: table-cell;
+	    vertical-align: inherit;
+	    letter-spacing: 0.01071em;
+	}
+	
+	th {
+	    cursor: default;
+	    align-items: center;
+	    flex-direction: inherit;
+	    justify-content: flex-start;
+	    font-weight: 600;
+	    letter-spacing: 0.01071em;
+	    display: table-cell;
+	    vertical-align: inherit;
+	    border-bottom: 1px solid @table-border-color;
+	    color: #424e54;
+	}
+	
+	thead tr {
+		&:hover {
+			background-color: transparent !important;
+		}
+	}
+	
+	 tr {
+	    border-bottom: 1px solid @table-border-color;
+	}
     
     &.separated tr:not(:last-child) {
         border-bottom: 1px dashed #ccc;
@@ -633,15 +693,21 @@ table.matrix{
     }
     &.name-collapse .name { min-width: inherit; }
     
-    .value { color: #333; }
+    .value { 
+		color: #333;
+	}
 }
 .name { color: #777; }
 
 .row-highlighting tr:hover, 
-.highlighted, 
 .undo-row {
-    background-color: #dedede !important;
+	background-color: rgb(244, 245, 245) !important;
 }
+
+.highlighted {
+	background-color: rgba(25, 118, 210, 0.08) !important;
+}
+
 .undo-row {
     text-align: center;
     
@@ -703,7 +769,7 @@ table.matrix{
     color: @font-color !important;
     
     &:hover {
-        color: @primary-color !important;
+        color: rgba(0, 0, 0, 0.6) !important;
         cursor: pointer;
         text-decoration: none;
     }
@@ -1354,7 +1420,7 @@ hr.dashed,
     }
     .focus-indicator {
         width: 4px;
-        padding: 0;
+        padding: 0 !important;
     }
 }
 
@@ -1491,7 +1557,7 @@ hr.dashed,
 }
 .datetimeEntry_wrap.date { width: 162px; }
 .datetimeEntry_wrap.dateTime { min-width: 185px; }
-.datetimeEntry_wrap.time { width: 122px; }
+.datetimeEntry_wrap.time { width: 123px; }
 .datetimeEntry_wrap.timeOffset { width: 110px; }
 .datetimeEntry_wrap input {
     float: left;

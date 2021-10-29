@@ -6,7 +6,7 @@
 <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
     <cti:url var="submitUrl" value="/stars/operator/account/search"/>
     <form action="${submitUrl}" method="get">
-        <table class="full-width">
+        <table>
             <tr>
                 <td>
             		<select name="searchBy" class="short-width">

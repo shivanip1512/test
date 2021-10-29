@@ -1,11 +1,11 @@
 Route:
   title: Route
   required:
-    - name
+    - deviceName
     - signalTransmitterId
   type: object
   properties:
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the route.'
@@ -61,7 +61,7 @@ carrierRoute:
         description: 'Carrier Route User Lock'
       resetRptSettings: 
         type: boolean
-        default: true
+        default: false
         description: 'Carrier Route ResetRtrSettings'
 
 repeaters:
@@ -90,7 +90,7 @@ Route Response Schema:
     routeId:
       type: integer
       description: 'Unique identifier for Route.'
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the route.'
@@ -109,7 +109,7 @@ components:
   examples:
     Route Request:
       value:
-        name: Test Route
+        deviceName: Test Route
         signalTransmitterId: 5
         defaultRoute: true
         carrierRoute:
@@ -125,7 +125,7 @@ components:
     Route Response:
       value:
         id: 7
-        name: Test Route
+        deviceName: Test Route
         signalTransmitterId: 5
         defaultRoute: true
         carrierRoute:
@@ -140,8 +140,9 @@ components:
             repeaterOrder: 1
     List Routes:
       value:
+
         - id: 9
-          name: Test Route
+          deviceName: Test Route
           signalTransmitterId: 5
           defaultRoute: true
           carrierRoute:
@@ -155,7 +156,7 @@ components:
               variableBits: 5
               repeaterOrder: 1
         - id: 11
-          name: Test Route 1
+          deviceName: Test Route 1
           signalTransmitterId: 5
           defaultRoute: true
           carrierRoute:
@@ -165,7 +166,7 @@ components:
             userLocked: false
             resetRptSettings: true
           repeaters:
-            - repeaterId: 787x`
+            - repeaterId: 787
               variableBits: 5
               repeaterOrder: 1
     routeId:

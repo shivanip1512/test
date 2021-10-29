@@ -159,7 +159,7 @@
                 </tags:nameValueContainer>
             </div>
         
-            <table class="compact-results-table">
+            <table class="compact-results-table no-stripes">
                 <thead>
                     <tr>
                         <th>Data Type</th>

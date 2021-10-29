@@ -10,6 +10,9 @@
 .w100 {
     width:100px;
 }
+.PL5 {
+	padding-left:5px;
+}
 </style>
 
 <c:if test="${not empty userMessage}">
@@ -33,15 +36,15 @@
     <cti:url var="updateSettingsUrl" value="updateSettings"/>
 	<form:form id="eatonCloudForm" action="${updateSettingsUrl}" modelAttribute="settings" method="post">
         <cti:csrfToken/>
-        <table class="compact-results-table">
+        <table class="compact-results-table no-stripes">
             <thead>
                 <tr>
                     <th>Endpoint</th>
                      <c:if test="${isLocalHost}">
-                        <th>Simulated Status</th>
+                        <th style="width:100px;">Simulated Status</th>
                     </c:if>
                     <th>Parameters</th>
-                    <th></th>
+                    <th width="15%"></th>
                 </tr>
             </thead>
             <tbody>
@@ -51,6 +54,16 @@
                         <c:if test="${isLocalHost}">
 	                        <td>
 	                            <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}" inputClass="js-selected-status w100"/>
+	                            <c:if test="${endpoint.displaySuccessPercentage()}">
+	                            	<c:set var="dnClass" value="${settings.selectedStatuses[endpoint] != 'OK' ? 'dn' : ''}"/>
+	                            	<div class="js-success-percentage-fields ${dnClass}">
+		                            	<tags:input path="successPercentages[${endpoint}]" size="3" inputClass="js-success-percentage" units="%"/>
+		                            	<cti:icon icon="icon-help" classes="fn cp ML0 MR0" data-popup="#successPercentageHelp"/>
+	                                	<div id="successPercentageHelp" data-title="Success Percentage" data-width="500" class="dn">
+	                                		The percentage of responses that should return a success.
+	                                	</div>
+                                	</div>
+	                            </c:if>
 	                        </td>
 	                    </c:if>
                         <td>
@@ -61,7 +74,7 @@
                                 </c:forEach>
                                 <input type="text" id="${endpoint}_parameters" size="40" value="${params}"/>
                                 <cti:uniqueIdentifier var="uid" prefix="parameter-help-"/>
-                                <cti:icon icon="icon-help" classes="fn" data-popup="#${uid}"/>
+                                <cti:icon icon="icon-help" classes="fn cp ML0 MR0" data-popup="#${uid}"/>
                                 <div id="${uid}" data-title="Parameters Help" data-width="500" class="dn">
                                     <c:set var="containsOptionalParams" value="false"/>
                                     <b>Parameters must be a comma separated string.</b><br/>
@@ -87,14 +100,14 @@
                                 </div>
                             </c:if>
                             <c:if test="${endpoint.hasJsonParam()}">
-                                <cti:button label="Show/Hide JSON" classes="js-enter-json fn ML0" data-endpoint="${endpoint}"/>
+                                <cti:button label="Show/Hide JSON" classes="js-enter-json fn ML0 MR0 PR5 PL5" data-endpoint="${endpoint}"/>
                                 <div><textarea id="${endpoint}_json" cols="60" rows="10" class="dn js-json-text" data-endpoint="${endpoint}"></textarea></div>
                             </c:if>
                         </td>
                         <td>
-                            <cti:button label="Test" classes="js-test-endpoint" data-endpoint="${endpoint}" data-params="${params}"/>
+                            <cti:button label="Test" classes="js-test-endpoint MR0" data-endpoint="${endpoint}" data-params="${params}"/>
                             <c:if test="${endpoint == 'SECURITY_TOKEN'}">
-                                <cti:button label="Clear Cache" classes="js-clear-cache"/>
+                                <cti:button label="Clear" classes="js-clear-cache MR0"/>
                             </c:if>
                         </td>
                     </tr>
