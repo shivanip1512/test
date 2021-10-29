@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import NavigationMenu from './NavigationMenu';
 import NavigationDrawer from './NavigationDrawer';
@@ -7,9 +7,17 @@ import * as PXBThemes from '@pxblue/react-themes';
 import { DrawerLayout} from '@pxblue/react-components';
 import { Provider } from 'react-redux';
 
+import { I18nextProvider } from 'react-i18next';
+import { SecurityContextProvider, AuthNavigationContainer } from '@pxblue/react-auth-workflow';
+import AuthUIConfiguration from '../security/AuthUIConfiguration';
+import { routes } from '../../constants/routing';
+import yukoni18n from '../I18n/i18nConfig';
+
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { store } from '../../redux/store';
+
+import i18n from 'i18next';
 
 const useStyles = makeStyles(theme => ({
     drawer: {
@@ -23,27 +31,40 @@ const NavigationContainer = (props) => {
 
     return (
         <Provider store={store}>
-            <ThemeProvider theme={createTheme(PXBThemes.blue)}>
-                <DrawerLayout drawer={<NavigationDrawer yukonPath={props.path} reactPath={props.reactPath}/>} classes={{drawer: classes.drawer}}>
-                    <NavigationMenu yukonPath={props.path} reactPath={props.reactPath}/>
-                    <div id="page-contents"></div>
-                </DrawerLayout>
-            </ThemeProvider>
+            <I18nextProvider i18n={i18n}>
+                <ThemeProvider theme={createTheme(PXBThemes.blue)}>
+                    <Suspense fallback={<div></div>}>
+                        <SecurityContextProvider>
+                            <AuthUIConfiguration>
+                                <AuthNavigationContainer routeConfig={routes}>
+                                    <I18nextProvider i18n={yukoni18n}>
+                                        <DrawerLayout drawer={<NavigationDrawer yukonPath={props.path} reactPath={props.reactPath}/>} classes={{drawer: classes.drawer}}>
+                                            <NavigationMenu yukonPath={props.path} reactPath={props.reactPath}/>
+                                            <div id="page-contents"></div>
+                                        </DrawerLayout>
+                                    </I18nextProvider>
+                                </AuthNavigationContainer>
+                            </AuthUIConfiguration>
+                        </SecurityContextProvider>
+                    </Suspense>
+                </ThemeProvider>
+            </I18nextProvider>
         </Provider>
     );
 }
 
-import(/* webpackChunkName: "react-dom" */'react-dom').then((ReactDom) => {
-    const navigationElement = document.getElementById('navigation');
-    const path = navigationElement.getAttribute('data-path');
-    const reactPath = navigationElement.getAttribute('data-react-path');
-    ReactDom.render(<NavigationContainer path={path} reactPath={reactPath}/>, navigationElement);
+$(document).ready(function() {
     //move contents from yukon page to inside drawer
     const header = document.getElementsByClassName('yukon-header')[0];
     const pageContent = document.getElementsByClassName('yukon-content')[0];
     const drawerLayout = document.getElementById('page-contents');
     drawerLayout.appendChild(header);
     drawerLayout.appendChild(pageContent);
-    //remove temporary navigation that is used to make menu render more smoothly
-    document.getElementById('navigation-temp').remove();
+});
+
+import(/* webpackChunkName: "react-dom" */'react-dom').then((ReactDom) => {
+    const navigationElement = document.getElementById('navigation');
+    const path = navigationElement.getAttribute('data-path');
+    const reactPath = navigationElement.getAttribute('data-react-path');
+    ReactDom.render(<NavigationContainer path={path} reactPath={reactPath}/>, navigationElement);
 });

@@ -3,7 +3,7 @@ import React, { useCallback }  from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-//import { useSecurityActions } from '@pxblue/react-auth-shared';
+import { useSecurityActions } from '@pxblue/react-auth-shared';
 import { LocalStorage } from '../../store/local-storage';
 
 import { UserMenu, Spacer } from '@pxblue/react-components';
@@ -21,6 +21,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import PhoneIcon from '@material-ui/icons/Phone';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import PersonIcon from '@material-ui/icons/Person';
+import KeyIcon from '@material-ui/icons/VpnKey';
 
 import Avatar from '@material-ui/core/Avatar';
 
@@ -71,20 +72,25 @@ const NavigationMenu = (props) => {
     const history = useHistory();
     const yukonTheme = useSelector(store => store.app.theme);
     const renderDrawer = useSelector(store => store.app.renderDrawer);
-    //const securityHelper = useSecurityActions();
+    const securityHelper = useSecurityActions();
 
     const logOut = () => {
         LocalStorage.clearAuthCredentials();
         //onNavItemClick("/servlet/LoginController/logout")
-        //securityHelper.onUserNotAuthenticated();
-        window.location.href = props.reactPath + "/yukon-ui/dashboard";
+        securityHelper.onUserNotAuthenticated();
+        //window.location.href = props.reactPath + "/yukon-ui/dashboard";
+    };
+
+    const changePassword = () => {
+        securityHelper.showChangePassword();
     };
 
     const onNavItemClick = useCallback(
         (url) => {
             const reactPage = url.startsWith("/yukon-ui");
+            const currentUrlReact = window.location.href.includes('/yukon-ui');
             if (reactPage) {
-                if (history) {
+                if (history && currentUrlReact) {
                     history.push(url);
                 } else {
                     window.location.href = props.reactPath + url;
@@ -142,6 +148,11 @@ const NavigationMenu = (props) => {
                                         icon: <PersonIcon />,
                                         onClick: () => {onNavItemClick("/user/profile")},
                                         divider: true,
+                                    },
+                                    {
+                                        title: 'Change Password',
+                                        icon: <KeyIcon />,
+                                        onClick: () => {changePassword()},
                                     },
                                     {
                                         title: 'Log Out',

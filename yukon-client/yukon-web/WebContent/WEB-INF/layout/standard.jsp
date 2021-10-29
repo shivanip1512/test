@@ -85,9 +85,7 @@
             <!-- Needed to render React Navigation menu -->
             <c:set var="path" value='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}'/>
             <c:set var="reactPath" value='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}'/>
-            <!-- Needed to help react menu render more smoothly -->
-            <div id="navigation-temp" style="min-height:60px"></div>
-            <div id="navigation" style="position:sticky;top:0;z-index:1200" data-path="${path}" data-react-path="${reactPath}"></div>
+            <div id="navigation" style="position:sticky;top:0;z-index:1200;height:100%;" data-path="${path}" data-react-path="${reactPath}"></div>
             
             <header class="yukon-header">
 <%--                 <div class="toolbar-outer">
@@ -282,7 +280,7 @@
                     </div>
                 </div>
             </footer> --%>
-            
+                        
         </div>
     </cti:msgScope>
     <c:if test="${!empty info.smartNotificationsEvent}">
