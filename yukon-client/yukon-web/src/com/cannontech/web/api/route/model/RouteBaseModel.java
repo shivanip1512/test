@@ -18,17 +18,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(using = JsonDeserializeRouteTypeLookup.class)
 public class RouteBaseModel<T extends RouteBase> extends DeviceBaseModel implements DBPersistentConverter<T> {
 
-    private Integer routeId;
     private Integer signalTransmitterId;
     private Boolean defaultRoute;
-
-    public Integer getRouteId() {
-        return routeId;
-    }
-
-    public void setRouteId(Integer routeId) {
-        this.routeId = routeId;
-    }
 
     public Integer getSignalTransmitterId() {
         return signalTransmitterId;
