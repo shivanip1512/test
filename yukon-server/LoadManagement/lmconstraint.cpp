@@ -47,6 +47,7 @@ bool CtiLMProgramConstraintChecker::checkManualProgramConstraints(CtiTime propos
     ret_val = (checkWeekDays(proposed_start, proposed_stop) && ret_val);
     ret_val = (checkMasterActive() && ret_val);
     ret_val = (checkControlWindows(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkProgramControlWindows(proposed_start, proposed_stop) && ret_val);
     ret_val = (checkNotifyActiveOffset(proposed_start) && ret_val);
 
     return ret_val;
@@ -551,20 +552,6 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(CtiTime proposed_start, 
         }
     }
 
-    //Ecobee DR Events must start and end on the same calendar day
-    if ( _lm_program.controlNotAllowedToSpanMidnight() )
-    {
-        if (! (proposedStartTime.date() == proposedStopTime.date()) )
-        {
-            string result = "Program control window should not span midnight.";
-            _results.push_back(result);
-
-            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_NP_ControlWindowSpansMidnight));
-
-            return false;
-        }
-    }
-
     if( start_ctrl_window != 0 && stop_ctrl_window != 0 )
     {
         if( start_ctrl_window->getWindowNumber() == stop_ctrl_window->getWindowNumber() ) //good
@@ -765,6 +752,26 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
     }
 
     return true;
+}
+
+bool CtiLMProgramConstraintChecker::checkProgramControlWindows(CtiTime proposed_start, CtiTime proposed_stop)
+{
+    CtiTime proposedStartTime(proposed_start),
+            proposedStopTime(proposed_stop);
+
+    //Ecobee DR Events must start and end on the same calendar day
+    if (_lm_program.controlNotAllowedToSpanMidnight())
+    {
+        if (!(proposedStartTime.date() == proposedStopTime.date()))
+        {
+            string result = "Program control window should not span midnight.";
+            _results.push_back(result);
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_NP_ControlWindowSpansMidnight));
+
+            return false;
+        }
+    }
 }
 
 /*
