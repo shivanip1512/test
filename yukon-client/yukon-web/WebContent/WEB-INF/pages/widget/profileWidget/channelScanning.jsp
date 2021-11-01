@@ -49,7 +49,7 @@
                     
                     <c:choose>
                     <c:when test="${empty c.jobInfos}">
-                        <tr>
+                        <tr style="border:none">
                             <c:if test="${c.channelProfilingOn}">
                                 <td><strong class="success"><i:inline key="yukon.common.on"/></strong></td>
                                 <td><i:inline key=".scanning.neverStops"/></td>

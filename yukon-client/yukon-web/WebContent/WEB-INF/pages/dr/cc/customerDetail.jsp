@@ -29,7 +29,7 @@
                 </div>
                 
                 <h3><i:inline key=".attachedPoints"/></h3>
-                <table class="compact-results-table">
+                <table class="compact-results-table no-stripes">
                     <c:forEach var="pointType" items="${customerModel.pointTypes}">
                         <c:set var="pointValue" value="${customerModel.pointValues[pointType]}"/>
                         <c:choose>
