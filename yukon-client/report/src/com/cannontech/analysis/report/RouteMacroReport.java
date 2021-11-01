@@ -1,20 +1,19 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
 import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
@@ -89,9 +88,9 @@ public class RouteMacroReport extends YukonReportBase
 		dialog.setVisible(true);
 	}
 
-	private Group createRouteMacroGroup()
+	private RelationalGroup createRouteMacroGroup()
 	{
-		final Group routeMacroGroup = new Group();
+		final RelationalGroup routeMacroGroup = new RelationalGroup();
 		routeMacroGroup.setName(RouteMacroModel.MACRO_ROUTE_NAME_STRING + ReportFactory.NAME_GROUP);
 		routeMacroGroup.addField(RouteMacroModel.MACRO_ROUTE_NAME_STRING);
 		
@@ -105,7 +104,7 @@ public class RouteMacroReport extends YukonReportBase
 		factory.setMinimumSize(new FloatDimension( 300, 18));
 		header.addElement(tfactory.createElement());
 		
-		header.addElement(ReportFactory.createBasicLine("rmGroupLine", 0.5f, 20));
+		header.addElement(ReportFactory.createBasicLine(0.5f, 20));
 		
 		for (int i = 1; i < getModel().getColumnNames().length; i++)
 		{
@@ -142,13 +141,12 @@ public class RouteMacroReport extends YukonReportBase
 	
 		if( showBackgroundColor )
 		{
-			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-				("background", Color.decode("#DFDFDF"), new BasicStroke(0),
-					new Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("top", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("bottom", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
+		    items.addElement(RectangleElementFactory.createFilledRectangle
+		                (0, 0, -100, -100, java.awt.Color.decode("#DFDFDF"))); 
+		            items.addElement(HorizontalLineElementFactory.createHorizontalLine
+		                (0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+		            items.addElement(HorizontalLineElementFactory.createHorizontalLine
+		                (10, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 		}
 		
 		for (int i = 1; i < getModel().getColumnNames().length; i++)

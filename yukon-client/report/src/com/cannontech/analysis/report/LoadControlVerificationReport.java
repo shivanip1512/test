@@ -6,13 +6,13 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
@@ -103,9 +103,9 @@ public class LoadControlVerificationReport extends YukonReportBase
 	 * Create a Group for SystemLog.date column.  
 	 * @return
 	 */
-	private Group createDateGroup()
+	private RelationalGroup createDateGroup()
 	{
-		final Group dateGroup = new Group();
+		final RelationalGroup dateGroup = new RelationalGroup();
 		dateGroup.setName(LoadControlVerificationModel.DATE_STRING + ReportFactory.NAME_GROUP);
 		dateGroup.addField(LoadControlVerificationModel.DATE_STRING);
 
@@ -114,7 +114,7 @@ public class LoadControlVerificationReport extends YukonReportBase
 		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), LoadControlVerificationModel.DATE_COLUMN);
 		header.addElement(tfactory.createElement());
 		
-		header.addElement(ReportFactory.createBasicLine("dGroupLine", 0.5f, 20));
+		header.addElement(ReportFactory.createBasicLine(0.5f, 20));
 
 		LabelElementFactory factory;
 		//Add all columns (excluding Date) to the table model.
@@ -152,8 +152,8 @@ public class LoadControlVerificationReport extends YukonReportBase
 	{
 		ItemBand items = ReportFactory.createItemBandDefault();
 
-		items.addElement(StaticShapeElementFactory.createHorizontalLine
-			("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+		items.addElement(HorizontalLineElementFactory.createHorizontalLine
+			(0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 			
 		TextFieldElementFactory factory = null;
 	

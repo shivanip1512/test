@@ -2,24 +2,23 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
 import java.util.Date;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.function.FunctionInitializeException;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
 import org.pentaho.reporting.engine.classic.core.PageHeader;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.ReportHeader;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
 import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
@@ -146,9 +145,8 @@ public class WorkOrder extends YukonReportBase
 	{
 		ItemBand items = ReportFactory.createItemBandDefault();
 		
-		items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-			("box", Color.decode("#DFDFDF"), new BasicStroke(0),
-				new Rectangle2D.Float(0, 0, -100, -100), true, false));
+		items.addElement(RectangleElementFactory.createFilledRectangle
+			(0, 0, -100, -100, Color.decode("#DFDFDF")));
 	
 		TextFieldElementFactory factory;
 		for (int i = WorkOrderModel.ITEM_BAND_START_INDEX; i <= WorkOrderModel.ITEM_BAND_END_INDEX; i++)
@@ -160,12 +158,12 @@ public class WorkOrder extends YukonReportBase
 		return items;
 	}
 	
-	private Group createWorkOrderGroup()
+	private RelationalGroup createWorkOrderGroup()
 	{
 		//This group is treated like an item band as it holds all of the display information about the work order,
 		// the item band only contains the (multiple) listing of installed hardware.
 		// Therefore, alot of the settings are overridden to make them feel like an item band verses a group.
-		final Group acctGroup = new Group();
+		final RelationalGroup acctGroup = new RelationalGroup();
 		acctGroup.setName(WorkOrderModel.ORDER_NO_STRING + ReportFactory.NAME_GROUP);
 		acctGroup.addField(WorkOrderModel.ORDER_NO_STRING);
 		
@@ -175,7 +173,7 @@ public class WorkOrder extends YukonReportBase
 
 		int colHeight = 14;	//USE 14 because we know that's what will fit?  SN...ick, ick
 		int yLine = colHeight * 3;
-		header.addElement(ReportFactory.createBasicLine("woGroupLine", 0.5f, yLine));
+		header.addElement(ReportFactory.createBasicLine(0.5f, yLine));
 		
 		//Use reportFactory's regular elements, not the group ones.
 		LabelElementFactory factory;
@@ -236,12 +234,13 @@ public class WorkOrder extends YukonReportBase
 		//Signature label
 		factory = ReportFactory.createLabelElementDefault("Signature", 0, posY + colHeight, 50);
 		footer.addElement(factory.createElement());
-		footer.addElement(StaticShapeElementFactory.createShapeElement("sigLine", null, new BasicStroke(0.5f), new Line2D.Float(50, posY + colHeight*2, 300, posY+ colHeight*2), true, false));
+		//footer.addElement(StaticShapeElementFactory.createShapeElement("sigLine", null, new BasicStroke(0.5f), new Line2D.Float(50, posY + colHeight*2, 300, posY+ colHeight*2), true, false));
+		footer.addElement(HorizontalLineElementFactory.createHorizontalLine(250, null, new BasicStroke(0.5f)));
 		
 		//Date label
 		factory = ReportFactory.createLabelElementDefault("Date", 330, posY + colHeight, 30);
 		footer.addElement(factory.createElement());
-		footer.addElement(StaticShapeElementFactory.createShapeElement("dateLine", null, new BasicStroke(0.5f), new Line2D.Float(360, posY + colHeight *2, 500, posY+ colHeight*2), true, false));
+		footer.addElement(HorizontalLineElementFactory.createHorizontalLine(140, null, new BasicStroke(0.5f)));
 
 		footer.setPagebreakAfterPrint(true);
 		acctGroup.setFooter(footer);

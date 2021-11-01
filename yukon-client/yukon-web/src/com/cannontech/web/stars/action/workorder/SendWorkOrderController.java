@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
 
-import jakarta.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -36,6 +35,8 @@ import com.cannontech.tools.email.EmailAttachmentMessage;
 import com.cannontech.tools.email.EmailFileDataSource;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
+
+import jakarta.mail.internet.InternetAddress;
 
 public class SendWorkOrderController extends StarsWorkorderActionController {
     @Autowired private EmailService emailService;
@@ -81,7 +82,7 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
             reportBean.getModel().setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
             ((WorkOrderModel)reportBean.getModel()).setOrderID( new Integer(orderID) );
             
-            JFreeReport report = reportBean.createReport();;
+            JFreeReport report = reportBean.createReport();
             
             File tempDir = new File( StarsUtils.getStarsTempDir(), "/WorkOrder" );
             if (!tempDir.exists()) {

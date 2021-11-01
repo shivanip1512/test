@@ -6,13 +6,14 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
 import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
@@ -95,9 +96,9 @@ public class StarsAMRDetailReport extends YukonReportBase
 	 * Create a Group for Column Headings only.  
 	 * @return Group
 	 */
-	private Group createSortByGroup()
+	private RelationalGroup createSortByGroup()
 	{
-	    final Group sortByGroup = new Group();
+	    final RelationalGroup sortByGroup = new RelationalGroup();
 	    if ( getModel().getFilterModelType().equals(ReportFilter.ROUTE))
 	    {
 		    sortByGroup.setName(StarsAMRDetailModel.ROUTE_NAME_STRING + ReportFactory.NAME_GROUP);
@@ -114,7 +115,7 @@ public class StarsAMRDetailReport extends YukonReportBase
 		tfactory.setAbsolutePosition(new Point2D.Float(80, 1));	//override posX		
 		header.addElement(tfactory.createElement());
 		
-		header.addElement(ReportFactory.createBasicLine("lmGroupLine", 0.5f, 20));
+		header.addElement(ReportFactory.createBasicLine(0.5f, 20));
 		
 		for (int i = StarsAMRDetailModel.ACCOUNT_NUMBER_COLUMN; i < getModel().getColumnNames().length; i++)
 		{
@@ -151,13 +152,12 @@ public class StarsAMRDetailReport extends YukonReportBase
 		ItemBand items = ReportFactory.createItemBandDefault();
 		if(showBackgroundColor)
 		{
-			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
-				new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),0));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
+		    items.addElement(RectangleElementFactory.createFilledRectangle
+		                (0, 0, -100, -100, java.awt.Color.decode("#DFDFDF"))); 
+		            items.addElement(HorizontalLineElementFactory.createHorizontalLine
+		                (0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+		            items.addElement(HorizontalLineElementFactory.createHorizontalLine
+		                (10, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 		}
 		
 		for (int i = StarsAMRDetailModel.ACCOUNT_NUMBER_COLUMN; i < getModel().getColumnNames().length; i++)

@@ -10,7 +10,7 @@ import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
 import java.util.Date;
 
-import org.jfree.report.ShapeElement;
+import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
@@ -95,7 +95,7 @@ public class ReportFactory
 		return header;
 	}
 	
-	public static ShapeElement createBasicLine(float strokeWidth, float posY)
+	public static Element createBasicLine(float strokeWidth, float posY)
 	{
 		return HorizontalLineElementFactory.createHorizontalLine(posY, null, new BasicStroke(strokeWidth));
 	}

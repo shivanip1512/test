@@ -11,9 +11,9 @@ import java.util.Map;
 import org.jfree.report.JFreeReport;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.ReportFooter;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
@@ -118,9 +118,9 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	 * Create a Group for ScheduleName  
 	 * @return Group
 	 */
-	private Group createScheduleGroup()
+	private RelationalGroup createScheduleGroup()
 	{
-	    final Group scheduleGroup = new Group();
+	    final RelationalGroup scheduleGroup = new RelationalGroup();
 	    scheduleGroup.setName( ScheduledMeterReadModel.SCHEDULE_NAME_STRING + ReportFactory.NAME_GROUP);
 	    scheduleGroup.addField( ScheduledMeterReadModel.SCHEDULE_NAME_STRING);
 	    scheduleGroup.addField( ScheduledMeterReadModel.SCHEDULE_START_TIME_STRING);
@@ -178,9 +178,9 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	 * Create a Group for ScheduleName  
 	 * @return Group
 	 */
-	private Group createRequestGroup()
+	private RelationalGroup createRequestGroup()
 	{
-	    final Group requestGroup = new Group();
+	    final RelationalGroup requestGroup = new RelationalGroup();
 	    requestGroup.setName( ScheduledMeterReadModel.REQUEST_COMMAND_STRING + ReportFactory.NAME_GROUP);
 	    requestGroup.addField(ScheduledMeterReadModel.SCHEDULE_NAME_STRING);
 		requestGroup.addField(ScheduledMeterReadModel.SCHEDULE_START_TIME_STRING);
@@ -239,9 +239,9 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	 * Create a Group for DeviceName, (by scheduleName, collGorup).  
 	 * @return Group
 	 */
-	private Group createDeviceGroup()
+	private RelationalGroup createDeviceGroup()
 	{
-		final Group collGrpGroup = new Group();
+		final RelationalGroup collGrpGroup = new RelationalGroup();
 		collGrpGroup.setName(ScheduledMeterReadModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
 		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_NAME_STRING);
 		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_START_TIME_STRING);
@@ -352,7 +352,7 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		}
 		offset += 20;
 
-		footer.addElement(ReportFactory.createBasicLine("rfLine",0.5f, 20));
+		footer.addElement(ReportFactory.createBasicLine(0.5f, 20));
 		
 		factory = new LabelElementFactory();
 		factory.setAbsolutePosition(new Point2D.Float(0, offset));

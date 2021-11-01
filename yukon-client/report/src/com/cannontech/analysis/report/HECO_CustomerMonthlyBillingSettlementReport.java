@@ -8,12 +8,12 @@ import java.util.GregorianCalendar;
 import org.jfree.report.JFreeReport;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
 import org.pentaho.reporting.engine.classic.core.PageFooter;
 import org.pentaho.reporting.engine.classic.core.PageHeader;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
@@ -111,9 +111,9 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
 	 * Create a Group for Column Headings only.  
 	 * @return Group
 	 */
-	private Group createCustomerHeadingGroup()
+	private RelationalGroup createCustomerHeadingGroup()
 	{
-		final Group custHdgGroup = new Group();
+		final RelationalGroup custHdgGroup = new RelationalGroup();
 		custHdgGroup.setName( ((HECO_CustomerMonthlyBillingSettlementModel)getModel()).getColumnName(HECO_CustomerMonthlyBillingSettlementModel.CUSTOMER_NAME_DATA) + ReportFactory.NAME_GROUP);
 		custHdgGroup.addField( ((HECO_CustomerMonthlyBillingSettlementModel)getModel()).getColumnName(HECO_CustomerMonthlyBillingSettlementModel.CUSTOMER_NAME_DATA));
 	

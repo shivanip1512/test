@@ -7,10 +7,10 @@ import java.util.Date;
 
 import org.jfree.report.JFreeReport;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
@@ -118,9 +118,9 @@ public class CapControlNewActivityReport extends YukonReportBase
 		return expressions;
 	}	
 
-	private Group createSubFeederGroup()
+	private RelationalGroup createSubFeederGroup()
 	{
-		final Group subFeederGroup = new Group();
+		final RelationalGroup subFeederGroup = new RelationalGroup();
 		subFeederGroup.setName(CapControlNewActivityModel.SUB_NAME_STRING + ReportFactory.NAME_GROUP);
 		subFeederGroup.addField(CapControlNewActivityModel.SUB_NAME_STRING);
 		subFeederGroup.addField(CapControlNewActivityModel.FEEDER_NAME_STRING);
@@ -145,7 +145,7 @@ public class CapControlNewActivityReport extends YukonReportBase
 		tfactory.setAbsolutePosition(new Point2D.Float(80, 18));	//override posX
 		header.addElement(tfactory.createElement());		
 
-		header.addElement(ReportFactory.createBasicLine("rmGroupLine", 0.5f, 38));
+		header.addElement(ReportFactory.createBasicLine(0.5f, 38));
 		
 		for (int i = CapControlNewActivityModel.DATE_TIME_COLUMN; i < getModel().getColumnNames().length; i++)
 		{

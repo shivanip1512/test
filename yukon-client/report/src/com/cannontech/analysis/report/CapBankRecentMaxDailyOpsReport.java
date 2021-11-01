@@ -2,10 +2,10 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
@@ -35,9 +35,9 @@ public class CapBankRecentMaxDailyOpsReport extends YukonReportBase
      * Create a Group for Column Headings only.  
      * @return Group
      */
-    private Group createColumnHeadingGroup()
+    private RelationalGroup createColumnHeadingGroup()
     {
-        final Group collHdgGroup = new Group();
+        final RelationalGroup collHdgGroup = new RelationalGroup();
         collHdgGroup.setName("Column Heading");
     
         GroupHeader header = ReportFactory.createGroupHeaderDefault();

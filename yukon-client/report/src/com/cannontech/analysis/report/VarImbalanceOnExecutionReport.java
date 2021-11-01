@@ -1,20 +1,19 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
-import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
 import org.pentaho.reporting.libraries.base.util.FloatDimension;
@@ -43,9 +42,9 @@ public class VarImbalanceOnExecutionReport extends SimpleYukonReportBase {
         new ColumnLayoutData("C Var", "cvar", 45)
     };
     
-    private Group createHeaderGroup()
+    private RelationalGroup createHeaderGroup()
     {
-        final Group headerGroup = new Group();
+        final RelationalGroup headerGroup = new RelationalGroup();
         headerGroup.setName("header"+ ReportFactory.NAME_GROUP);
         headerGroup.addField("area");
         headerGroup.addField("substation");
@@ -89,7 +88,7 @@ public class VarImbalanceOnExecutionReport extends SimpleYukonReportBase {
         tfactory.setAbsolutePosition(new Point2D.Float(80, 28));    //override posX
         header.addElement(tfactory.createElement());
 
-        header.addElement(ReportFactory.createBasicLine("rmGroupLine", 0.5f, 44));
+        header.addElement(ReportFactory.createBasicLine(0.5f, 44));
         
         for (int i = VarImbalanceOnExecutionModel.FEEDER_NAME_COLUMN; i < bodyColumns.length; i++) {
             ColumnLayoutData columnLayoutData = getBodyColumns().get(i);
@@ -114,13 +113,12 @@ public class VarImbalanceOnExecutionReport extends SimpleYukonReportBase {
         ItemBand items = ReportFactory.createItemBandDefault();
     
         if( showBackgroundColor ) {
-            items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-                ("background", Color.decode("#DFDFDF"), new BasicStroke(0),
-                    new Rectangle2D.Float(0, 0, -100, -100), false, true));
-            items.addElement(StaticShapeElementFactory.createHorizontalLine
-                ("top", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
-            items.addElement(StaticShapeElementFactory.createHorizontalLine
-                ("bottom", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
+            items.addElement(RectangleElementFactory.createFilledRectangle
+                    (0, 0, -100, -100, java.awt.Color.decode("#DFDFDF"))); 
+                items.addElement(HorizontalLineElementFactory.createHorizontalLine
+                    (0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+                items.addElement(HorizontalLineElementFactory.createHorizontalLine
+                    (10, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
         }
         
         for (int i = VarImbalanceOnExecutionModel.FEEDER_NAME_COLUMN; i < bodyColumns.length; i++) {

@@ -3,10 +3,10 @@ package com.cannontech.analysis.report;
 import java.awt.BasicStroke;
 
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
@@ -64,7 +64,8 @@ public class CapBankReport extends YukonReportBase
 	
 		//Create the report
 		JFreeReportReadHandler report = dbReport.createReport();
-		report.setData(dbReport.getModel());
+		//PageableReportProcessor report = new PageableReportProcessor();
+		report.setDataFactory(dbReport.getModel());
 	
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
@@ -87,9 +88,9 @@ public class CapBankReport extends YukonReportBase
 	 * Create a Group for Column Headings only.  
 	 * @return Group
 	 */
-	private Group createColumnHeadingGroup()
+	private RelationalGroup createColumnHeadingGroup()
 	{
-		final Group collHdgGroup = new Group();
+		final RelationalGroup collHdgGroup = new RelationalGroup();
 		collHdgGroup.setName("Column Heading");
 	
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
@@ -101,7 +102,7 @@ public class CapBankReport extends YukonReportBase
 			header.addElement(factory.createElement());
 		}
 	
-		header.addElement(ReportFactory.createBasicLine("chGroupLine", 0.5f, 22));
+		header.addElement(ReportFactory.createBasicLine(0.5f, 22));
 		collHdgGroup.setHeader(header);
 	
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();

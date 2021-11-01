@@ -5,9 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.elementfactory.DateFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.NumberFieldElementFactory;
@@ -40,8 +40,8 @@ public abstract class GroupYukonReportBase extends SimpleYukonReportBase {
         return list;
     }
 
-    private Group createGroup(ColumnLayoutData columnLayoutData) {
-        final Group singleGroup = new Group();
+    private RelationalGroup createGroup(ColumnLayoutData columnLayoutData) {
+        final RelationalGroup singleGroup = new RelationalGroup();
         int groupFieldIndex = columIndexLookup.get(columnLayoutData.getFieldName());
         singleGroup.setName(getGroupName(columnLayoutData));
         
@@ -75,7 +75,7 @@ public abstract class GroupYukonReportBase extends SimpleYukonReportBase {
         groupFieldFactory.setMinimumSize(new FloatDimension( 300, 18));
         header.addElement(groupFieldFactory.createElement());
         
-        header.addElement(ReportFactory.createBasicLine("rmGroupLine", 0.5f, 18));
+        header.addElement(ReportFactory.createBasicLine(0.5f, 18));
 
         // Only add the detail band column headers on the inner most group
         ColumnLayoutData innerMostGroup = groupFieldData.get(groupFieldData.size()-1);
@@ -92,7 +92,7 @@ public abstract class GroupYukonReportBase extends SimpleYukonReportBase {
         if (outerGroup) {
             GroupFooter footer = ReportFactory.createGroupFooterDefault();
             createFooterFields(footer);
-            footer.addElement(ReportFactory.createBasicLine("footerGroupLine", 0.5f, 0));
+            footer.addElement(ReportFactory.createBasicLine(0.5f, 0));
             singleGroup.setFooter(footer);
         }
         

@@ -1,10 +1,8 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
-import java.awt.geom.Rectangle2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -16,16 +14,17 @@ import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.ReportFooter;
 import org.pentaho.reporting.engine.classic.core.elementfactory.DateFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.NumberFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.function.Expression;
@@ -199,24 +198,23 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
     
     private void applyBackgroundColor(ItemBand items) {
         if ( showBackgroundColor ) {
-            items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-                ("background", Color.decode("#DFDFDF"), new BasicStroke(0),
-                    new Rectangle2D.Float(0, 0, -100, -100), false, true));
-            items.addElement(StaticShapeElementFactory.createHorizontalLine
-                ("top", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
-            items.addElement(StaticShapeElementFactory.createHorizontalLine
-                ("bottom", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
+            items.addElement(RectangleElementFactory.createFilledRectangle
+                    (0, 0, -100, -100, java.awt.Color.decode("#DFDFDF"))); 
+                items.addElement(HorizontalLineElementFactory.createHorizontalLine
+                    (0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+                items.addElement(HorizontalLineElementFactory.createHorizontalLine
+                    (10, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
         }
     }
     
 
-    private Group createSingleGroup() {
-        final Group collHdgGroup = new Group();
+    private RelationalGroup createSingleGroup() {
+        final RelationalGroup collHdgGroup = new RelationalGroup();
         collHdgGroup.setName(getSingleGroupName());
     
         GroupHeader header = ReportFactory.createGroupHeaderDefault();
         createGroupLabels(header);
-        header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 22));
+        header.addElement(HorizontalLineElementFactory.createHorizontalLine(22, null, new BasicStroke(0.5f)));
         collHdgGroup.setHeader(header);
     
         GroupFooter footer = ReportFactory.createGroupFooterDefault();

@@ -7,13 +7,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
 import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
@@ -108,9 +109,9 @@ public class PointDataIntervalReport extends YukonReportBase
 	 * Create a Group for Point Name.  
 	 * @return Group
 	 */
-	private Group createPointGroup()
+	private RelationalGroup createPointGroup()
 	{
-		final Group pointGroup = new Group();
+		final RelationalGroup pointGroup = new RelationalGroup();
 		pointGroup.setName(PointDataIntervalModel.POINT_NAME_STRING + ReportFactory.NAME_GROUP);
 		pointGroup.addField(PointDataIntervalModel.PAO_NAME_STRING);
 		pointGroup.addField(PointDataIntervalModel.POINT_NAME_STRING);
@@ -141,7 +142,7 @@ public class PointDataIntervalReport extends YukonReportBase
 			header.addElement(factory.createElement());
 		}
 	
-		header.addElement(ReportFactory.createBasicLine("pointGrpLine", 0.5f, 20));
+		header.addElement(ReportFactory.createBasicLine(0.5f, 20));
 		pointGroup.setHeader(header);
 	
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -172,13 +173,12 @@ public class PointDataIntervalReport extends YukonReportBase
 	
 		if( showBackgroundColor )
 		{
-			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
-					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
+		    items.addElement(RectangleElementFactory.createFilledRectangle
+                            (0, 0, -100, -100, java.awt.Color.decode("#DFDFDF")));
+                    items.addElement(HorizontalLineElementFactory.createHorizontalLine
+                            (0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+                    items.addElement(HorizontalLineElementFactory.createHorizontalLine
+                            (10, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 		}
 			
 		TextFieldElementFactory factory;	

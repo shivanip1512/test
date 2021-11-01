@@ -10,11 +10,11 @@ import java.util.Date;
 import org.jfree.report.JFreeReport;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
 import org.pentaho.reporting.engine.classic.core.PageFooter;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
@@ -120,9 +120,9 @@ public class PointDataSummaryReport extends YukonReportBase
 	 * Create a Group for Column Headings only.  
 	 * @return Group
 	 */
-	private Group createDeviceGroup()
+	private RelationalGroup createDeviceGroup()
 	{
-		final Group devGroup = new Group();
+		final RelationalGroup devGroup = new RelationalGroup();
 		devGroup.setName(PointDataSummaryModel.PAO_NAME_STRING + ReportFactory.NAME_GROUP);
 		devGroup.addField(PointDataSummaryModel.PAO_NAME_STRING);
 	
@@ -141,7 +141,7 @@ public class PointDataSummaryReport extends YukonReportBase
 			tfactory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX() + (stringWidth+5), getModel().getColumnProperties(i).getPositionY()));	//override the posX location
 			header.addElement(tfactory.createElement());
 		}
-		header.addElement(ReportFactory.createBasicLine("paoGrpLine", 0.5f, 20));
+		header.addElement(ReportFactory.createBasicLine(0.5f, 20));
 		devGroup.setHeader(header);
 	
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -153,9 +153,9 @@ public class PointDataSummaryReport extends YukonReportBase
 	 * Create a Group for Device  
 	 * @return Group
 	 */
-	private Group createPointGroup()
+	private RelationalGroup createPointGroup()
 	{
-		final Group devGrpGroup = new Group();
+		final RelationalGroup devGrpGroup = new RelationalGroup();
 		devGrpGroup.setName(PointDataSummaryModel.POINT_NAME_STRING + ReportFactory.NAME_GROUP);
 		devGrpGroup.addField(PointDataSummaryModel.PAO_NAME_STRING);
 		devGrpGroup.addField(PointDataSummaryModel.POINT_NAME_STRING);
@@ -231,7 +231,7 @@ public class PointDataSummaryReport extends YukonReportBase
 
 		}
 	
-		header.addElement(ReportFactory.createBasicLine("pointGrpLine", 0.5f, 20));		
+		header.addElement(ReportFactory.createBasicLine(0.5f, 20));
 		devGrpGroup.setHeader(header);
 	
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -269,16 +269,15 @@ public class PointDataSummaryReport extends YukonReportBase
 		return devGrpGroup;
 	}
 	
-	private Group createStartDateGroup()
+	private RelationalGroup createStartDateGroup()
 	{
 	    if( ((PointDataSummaryModel)getModel()).isShowDetails())
 	    {
-			final Group startDateGroup = new Group();
+			final RelationalGroup startDateGroup = new RelationalGroup();
 			startDateGroup.setName(PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
 			startDateGroup.addField(PointDataSummaryModel.PAO_NAME_STRING);
 			startDateGroup.addField(PointDataSummaryModel.POINT_NAME_STRING);
 			startDateGroup.addField(PointDataSummaryModel.START_DATE_STRING);
-			  
 			GroupHeader header = ReportFactory.createGroupHeaderDefault();
 	//		startDateGroup.setHeader(header);
 			GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -337,7 +336,7 @@ public class PointDataSummaryReport extends YukonReportBase
 	  final GroupList list = new GroupList();
 	  list.add(createDeviceGroup());
 	  list.add(createPointGroup());
-	  Group g = createStartDateGroup();
+	  RelationalGroup g = createStartDateGroup();
 	  if (g != null)
       	  list.add(g);
 	  return list;

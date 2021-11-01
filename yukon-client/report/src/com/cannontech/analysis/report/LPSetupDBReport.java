@@ -3,13 +3,14 @@ package com.cannontech.analysis.report;
 import java.awt.BasicStroke;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
+import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
 import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
@@ -86,9 +87,9 @@ public class LPSetupDBReport extends YukonReportBase
 	 * Create a Group for Column Headings only.  
 	 * @return Group
 	 */
-	private Group createColumnHeadingGroup()
+	private RelationalGroup createColumnHeadingGroup()
 	{
-		final Group collHdgGroup = new Group();
+		final RelationalGroup collHdgGroup = new RelationalGroup();
 		collHdgGroup.setName("Column Heading");
 	
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
@@ -99,7 +100,7 @@ public class LPSetupDBReport extends YukonReportBase
 			header.addElement(factory.createElement());
 		}
 	
-		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 22));
+		header.addElement(HorizontalLineElementFactory.createHorizontalLine(22, null, new BasicStroke(0.5f)));
 		collHdgGroup.setHeader(header);
 	
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -129,13 +130,12 @@ public class LPSetupDBReport extends YukonReportBase
 	
 		if( showBackgroundColor )
 		{
-			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
-					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
-			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
+			items.addElement(RectangleElementFactory.createFilledRectangle
+				(0, 0, -100, -100, java.awt.Color.decode("#DFDFDF")));
+			items.addElement(HorizontalLineElementFactory.createHorizontalLine
+				(0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
+			items.addElement(HorizontalLineElementFactory.createHorizontalLine
+                                (10, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 		}
 			
 		TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), 0);

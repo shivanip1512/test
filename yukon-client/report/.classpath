@@ -73,7 +73,7 @@
 			<attribute name="owner.project.facets" value="jst.utility"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/pentaho-reporting-engine-classic-core-5.0.1-stable.jar" sourcepath="C:/Dev/pre-classic-sdk-5.0.1-stable/PentahoReportingEngineSDK/samples/lib/pentaho-reporting-engine-classic-core-5.0.1-stable.jar">
+	<classpathentry kind="lib" path="/third-party/pentaho-reporting-engine-classic-core-5.0.1-stable.jar" sourcepath="/third-party/pentaho-reporting-engine-classic-core-5.0.1-stable.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

@@ -7,10 +7,10 @@ import java.util.Date;
 import org.jfree.report.JFreeReport;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
@@ -100,9 +100,9 @@ public class DailyPeaksReport extends YukonReportBase
 	 * Create a Group for Column Headings only.  
 	 * @return Group
 	 */
-	private Group createControlAreaGroup()
+	private RelationalGroup createControlAreaGroup()
 	{
-		final Group collHdgGroup = new Group();
+		final RelationalGroup collHdgGroup = new RelationalGroup();
 		collHdgGroup.setName(DailyPeaksModel.CONTROL_AREA_STRING + ReportFactory.NAME_GROUP);
         collHdgGroup.addField(DailyPeaksModel.CONTROL_AREA_STRING);
         
@@ -134,7 +134,7 @@ public class DailyPeaksReport extends YukonReportBase
 			header.addElement(factory.createElement());
 		}
 	
-		header.addElement(ReportFactory.createBasicLine("caGroupLine", 0.5f, 36));
+		header.addElement(ReportFactory.createBasicLine(0.5f, 36));
 		collHdgGroup.setHeader(header);
 	
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();

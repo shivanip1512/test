@@ -2,7 +2,6 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.geom.Line2D;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,25 +9,26 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
 import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
+//import org.pentaho.reporting.engine.classic.core.layout.LayoutSupport;
 import org.pentaho.reporting.engine.classic.core.function.ItemHideFunction;
 import org.pentaho.reporting.engine.classic.core.function.TextFormatExpression;
 import org.pentaho.reporting.engine.classic.core.layout.DefaultSizeCalculator;
 import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
 import org.pentaho.reporting.engine.classic.core.modules.parser.base.GroupList;
 import org.pentaho.reporting.libraries.base.util.FloatDimension;
+//import org.pentaho.reporting.engine.classic.core.layout.style.
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
@@ -241,9 +241,9 @@ public class ECActivityDetailReport extends YukonReportBase
 	 * Create a Group for EnergyCompany column.  
 	 * @return
 	 */
-	private Group createECGroup()
+	private RelationalGroup createECGroup()
 	{
-		final Group ecGroup = new Group();
+		final RelationalGroup ecGroup = new RelationalGroup();
 		ecGroup.setName(ActivityDetailModel.ENERGY_COMPANY_STRING + ReportFactory.NAME_GROUP);
 		ecGroup.addField(getModel().getColumnName(ActivityDetailModel.ENERGY_COMPANY_COLUMN));
 
@@ -264,11 +264,11 @@ public class ECActivityDetailReport extends YukonReportBase
 	 * Create a Group for ActivityLog.Date column.  
 	 * @return
 	 */
-	private Group createTimestampGroup()
+	private RelationalGroup createTimestampGroup()
 	{
 		int colIndex = ActivityDetailModel.DATE_COLUMN;
 		
-		final Group tsGroup = new Group();
+		final RelationalGroup tsGroup = new RelationalGroup();
 		tsGroup.setName(ActivityDetailModel.DATE_TIME_STRING +" Group");
 		tsGroup.addField(getModel().getColumnName(ActivityDetailModel.ENERGY_COMPANY_COLUMN));
 		tsGroup.addField(getModel().getColumnName(colIndex));
@@ -276,9 +276,10 @@ public class ECActivityDetailReport extends YukonReportBase
 		if( ((ActivityDetailModel)getModel()).isShowDetail())
 		{
 			GroupHeader header = ReportFactory.createGroupHeaderDefault();
-			header.addElement(StaticShapeElementFactory.createShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 28, 60, 28), true, false));
-			header.addElement(StaticShapeElementFactory.createShapeElement("line2", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(75, 28, 800, 28), true, false));
-			
+			//header.addElement(HorizontalLineElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 28, 60, 28), true, false));
+			header.addElement(HorizontalLineElementFactory.createHorizontalLine(60, null, new BasicStroke(0.5f)));
+			//header.addElement(StaticShapeElementFactory.createShapeElement("line2", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(75, 28, 800, 28), true, false));
+			header.addElement(HorizontalLineElementFactory.createHorizontalLine(725, null, new BasicStroke(0.5f)));
 			TextFieldElementFactory tFactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), ActivityDetailModel.DATE_COLUMN);
 			header.addElement(tFactory.createElement());
 
@@ -295,7 +296,7 @@ public class ECActivityDetailReport extends YukonReportBase
 		}	//end is showDetail
 				
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
-		footer.addElement(StaticShapeElementFactory.createShapeElement("line3", null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, new float[] { 12, 12 }, 0) , new Line2D.Float(0, 0, 800, 0), true, false));
+		footer.addElement(HorizontalLineElementFactory.createHorizontalLine(800, null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, new float[] { 12, 12 }, 0)));
 		
 		//Can't use ReportFactory as that is only good when using a tablemodel 
 		TextFieldElementFactory tfactory = new TextFieldElementFactory();

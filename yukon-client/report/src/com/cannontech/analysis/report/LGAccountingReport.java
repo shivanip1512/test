@@ -6,10 +6,10 @@ import java.util.Date;
 
 import org.jfree.report.JFreeReport;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
@@ -99,9 +99,9 @@ public class LGAccountingReport extends YukonReportBase
 	 * Create a Group for Load Group column.  
 	 * @return
 	 */
-	private Group createLoadGrpGroup()
+	private RelationalGroup createLoadGrpGroup()
 	{
-		final Group collGrpGroup = new Group();
+		final RelationalGroup collGrpGroup = new RelationalGroup();
 		collGrpGroup.setName("Load Group");
 		collGrpGroup.addField(LoadGroupModel.PAO_NAME_STRING);
 

@@ -9,10 +9,10 @@ import java.util.Map;
 
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.ReportFooter;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
@@ -165,9 +165,9 @@ public class ECActivityLogReport extends YukonReportBase
 	 * Create a Group for EnergyCompany column.  
 	 * @return
 	 */
-	private Group createECGroup()
+	private RelationalGroup createECGroup()
 	{
-		final Group ecGroup = new Group();
+		final RelationalGroup ecGroup = new RelationalGroup();
 		ecGroup.setName(ActivityModel.ENERGY_COMPANY_STRING + ReportFactory.NAME_GROUP);
 		ecGroup.addField(getModel().getColumnName(ActivityModel.ENERGY_COMPANY_COLUMN));
 
@@ -184,7 +184,7 @@ public class ECActivityLogReport extends YukonReportBase
 			lFactory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));	//override the position
 			header.addElement(lFactory.createElement());
 		}
-		header.addElement(ReportFactory.createBasicLine("ecHeaderLine", 0.5f, 36));		//36 position, group pos(18) + 18 from labelElements
+		header.addElement(ReportFactory.createBasicLine(0.5f, 36));		//36 position, group pos(18) + 18 from labelElements
 		ecGroup.setHeader(header);
 
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -198,9 +198,9 @@ public class ECActivityLogReport extends YukonReportBase
 	 * Create a Group for Contact column.  
 	 * @return
 	 */
-	private Group createContactGroup()
+	private RelationalGroup createContactGroup()
 	{
-		final Group contGroup = new Group();
+		final RelationalGroup contGroup = new RelationalGroup();
 		contGroup.setName(ActivityModel.CONTACT_STRING + ReportFactory.NAME_GROUP);
 		contGroup.addField(getModel().getColumnName(ActivityModel.ENERGY_COMPANY_COLUMN));
 		contGroup.addField(getModel().getColumnName(ActivityModel.CONTACT_COLUMN));
@@ -298,7 +298,7 @@ public class ECActivityLogReport extends YukonReportBase
 		}
 		offset += 20;
 
-		footer.addElement(ReportFactory.createBasicLine("rfLine",0.5f, 20));
+		footer.addElement(ReportFactory.createBasicLine(0.5f, 20));
 		
 		factory = new LabelElementFactory();
 		factory.setAbsolutePosition(new Point2D.Float(0, offset));

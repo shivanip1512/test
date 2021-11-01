@@ -6,10 +6,10 @@ import java.util.Date;
 
 import org.jfree.report.JFreeReport;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
@@ -179,9 +179,9 @@ public class ProgramDetailReport extends YukonReportBase
 	 * Create a Group for EnergyCompany column.  
 	 * @return
 	 */
-	private Group createECGroup()
+	private RelationalGroup createECGroup()
 	{
-		final Group ecGroup = new Group();
+		final RelationalGroup ecGroup = new RelationalGroup();
 		ecGroup.setName(ProgramDetailModel.ENERGY_COMPANY_STRING + ReportFactory.NAME_GROUP);
 		ecGroup.addField(getModel().getColumnName(ProgramDetailModel.ENERGY_COMPANY_COLUMN));
 
@@ -190,7 +190,7 @@ public class ProgramDetailReport extends YukonReportBase
 		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), ProgramDetailModel.ENERGY_COMPANY_COLUMN);
 	  	header.addElement(tfactory.createElement());
 		
-		header.addElement(ReportFactory.createBasicLine("ecGroupLine", 0.5f, 20));
+		header.addElement(ReportFactory.createBasicLine(0.5f, 20));
 
 		//Add all columns (excluding Date) to the table model.
 		for (int i = 1; i < getModel().getColumnNames().length; i++)
@@ -212,9 +212,9 @@ public class ProgramDetailReport extends YukonReportBase
 	 * Create a Group for Program column.  
 	 * @return
 	 */
-	private Group createProgramGroup()
+	private RelationalGroup createProgramGroup()
 	{
-		final Group progGroup = new Group();
+		final RelationalGroup progGroup = new RelationalGroup();
 		progGroup.setName(ProgramDetailModel.PROGRAM_NAME_STRING + ReportFactory.NAME_GROUP);
 		progGroup.addField(getModel().getColumnName(ProgramDetailModel.ENERGY_COMPANY_COLUMN));
 		progGroup.addField(getModel().getColumnName(ProgramDetailModel.PROGRAM_NAME_COLUMN ));

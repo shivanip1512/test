@@ -5,10 +5,10 @@ import java.awt.geom.Point2D;
 
 import org.jfree.report.JFreeReport;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
@@ -93,9 +93,9 @@ public class CapControlEventLogReport extends YukonReportBase
 	 * Create a Group for Substation Bus  
 	 * @return Group
 	 */
-	private Group createSubBusGroup()
+	private RelationalGroup createSubBusGroup()
 	{
-	    final Group subBusGroup = new Group();
+	    final RelationalGroup subBusGroup = new RelationalGroup();
 	    subBusGroup.setName( ((CapControlEventLogModel)getModel()).getColumnName(CapControlEventLogModel.SUB_BUS_NAME_COLUMN) + ReportFactory.NAME_GROUP);
 	    subBusGroup.addField( ((CapControlEventLogModel)getModel()).getColumnName(CapControlEventLogModel.SUB_BUS_NAME_COLUMN));
 

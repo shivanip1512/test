@@ -8,10 +8,10 @@ import java.util.Calendar;
 import org.jfree.report.JFreeReport;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.Group;
 import org.pentaho.reporting.engine.classic.core.GroupFooter;
 import org.pentaho.reporting.engine.classic.core.GroupHeader;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
+import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.ReportFooter;
 import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
@@ -111,9 +111,9 @@ public class MeterOutageCountReport extends YukonReportBase
      * Create a Group for DeviceName  
      * @return Group
      */
-    private Group createDeviceGroup()
+    private RelationalGroup createDeviceGroup()
     {
-        final Group devGroup = new Group();
+        final RelationalGroup devGroup = new RelationalGroup();
         devGroup.setName(MeterOutageCountModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
         if (! ((MeterOutageCountModel)getModel()).isIncompleteDataReport()) {
             devGroup.addField(MeterOutageCountModel.DEVICE_NAME_STRING);

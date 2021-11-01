@@ -228,7 +228,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		pageFooter.getStyle().setFontDefinitionProperty(new FontDefinition("Serif", 10));
 
 		/** A rectangle around the page footer */
-		pageFooter.addElement(ReportFactory.createBasicLine("pfLine", 0.5f, 6));
+		pageFooter.addElement(ReportFactory.createBasicLine(0.5f, 6));
 		/** A label for Cannon Technologies in the footer object */
 		/*
 		final LabelElementFactory lfactory = new LabelElementFactory();
