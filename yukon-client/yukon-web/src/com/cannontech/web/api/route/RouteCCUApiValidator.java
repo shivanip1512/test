@@ -24,7 +24,8 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
             for (RepeaterRouteModel repeaterRouteModel : route.getRepeaters()) {
                 validateRepeater(repeaterRouteModel, errors, repeaterArrSize, count);
             }
-
+        }
+        if(route.getCarrierRoute()!= null) {
             if (route.getCarrierRoute().getBusNumber() != null) {
                 validateBusNumber(route.getCarrierRoute().getBusNumber(), errors);
             }
@@ -35,7 +36,7 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
 
             if (route.getCarrierRoute().getCcuVariableBits() != null) {
                 validateCcuVariableBits(route.getCarrierRoute().getCcuVariableBits(), errors);
-            }
+            } 
         }
 
     }
@@ -44,14 +45,19 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
 
     private void validateRepeater(RepeaterRouteModel repeaterRouteModel, Errors errors, Integer repeaterArrSize, Integer count) {
         int repeaterId = repeaterRouteModel.getRepeaterId();
-        int variableBits = repeaterRouteModel.getVariableBits();
+        int variableBits;
+        try {
+            variableBits = repeaterRouteModel.getVariableBits();
+        } catch (Exception e) {
+            YukonApiValidationUtils.checkIfFieldRequired("repeaters[" + 0 + "].repeaterId",errors, repeaterRouteModel.getVariableBits(), "VariableBits");
+        }
 
         /**
          * Checking repaterId belongs to device Repeater or not
          * if repeater array size is equal to last repeater then variable bit is 7 or else ranges between 0 to 6.
          * If Repeater_850 exists in the input then it should be last repeater.
          */
-
+        variableBits=0;
         if (dbCache.getAllPaosMap().get(repeaterId) != null) {
             if (dbCache.getAllPaosMap().get(repeaterId).getPaoType().isRepeater()) {
                 if (repeaterArrSize != count) {

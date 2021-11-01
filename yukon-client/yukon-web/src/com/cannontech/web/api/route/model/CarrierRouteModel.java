@@ -60,8 +60,8 @@ public class CarrierRouteModel implements DBPersistentConverter<CarrierRoute> {
         setBusNumber(carrierRoute.getBusNumber());
         setCcuFixBits(carrierRoute.getCcuFixBits());
         setCcuVariableBits(carrierRoute.getCcuVariableBits());
-        setResetRptSettings((carrierRoute.getResetRptSettings() == "N") ? false : true);
-        setUserLocked((carrierRoute.getUserLocked() == "N") ? false : true);
+        setResetRptSettings((carrierRoute.getResetRptSettings().equals("N")) ? false : true);
+        setUserLocked((carrierRoute.getUserLocked().equals("N")) ? false : true);
     }
 
     @Override
