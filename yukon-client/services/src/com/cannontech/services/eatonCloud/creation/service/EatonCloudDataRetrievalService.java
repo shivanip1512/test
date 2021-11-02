@@ -22,6 +22,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
@@ -36,6 +37,7 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorDeviceCreateRequest;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -47,6 +49,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 public class EatonCloudDataRetrievalService {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudDataRetrievalService.class);
@@ -69,6 +72,7 @@ public class EatonCloudDataRetrievalService {
 
     private final Runnable autoCreateCloudLCRThread = this::autoCreateCloudLCRs;
     private final Runnable readCloudLCRThread = this::readCloudLCRs;
+    private int readInterval;
 
     /**
      * Schedule the calculation and data read threads to run periodically.
@@ -83,9 +87,8 @@ public class EatonCloudDataRetrievalService {
         executor.scheduleAtFixedRate(autoCreateCloudLCRThread, 5 / 60, creationInterval, TimeUnit.HOURS);
 
         //minutes
-        int readInterval = settingDao.getInteger(GlobalSettingType.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES);
-        log.info("Auto read of Eaton cloud LCRs will run every {} minutes",
-                readInterval);
+        readInterval = settingDao.getInteger(GlobalSettingType.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES);
+        log.info("Auto read of Eaton cloud LCRs will run every {} minutes", readInterval);
         executor.scheduleAtFixedRate(readCloudLCRThread, 5, readInterval, TimeUnit.MINUTES);
     }
     
@@ -111,9 +114,15 @@ public class EatonCloudDataRetrievalService {
         isRunningDeviceRead.set(true);
         log.info("Eaton Cloud read all LCRs task started.");
         List<Integer> deviceIds = deviceDao.getDeviceIdsWithGuids();
-        eatonCloudDataReadService.collectDataForRead(new HashSet<>(deviceIds), getIntervalReadRange());
+        try {
+            Multimap<PaoIdentifier, PointData> data = eatonCloudDataReadService.collectDataForRead(new HashSet<>(deviceIds),
+                    getIntervalReadRange(), "READ ON INTERVAL-"+ readInterval);
+            log.info("Eaton Cloud read (READ ON INTERVAL {}) all LCRs task completed, devices attempted read:{} Read succeeded for {} devices.", readInterval, deviceIds.size(),
+                    data.asMap().keySet().size());
+        } catch (Exception e) {
+            log.info("Eaton Cloud read LCRs task failed", e);
+        }
         isRunningDeviceRead.set(false);
-        log.info("Eaton Cloud read all LCRs task completed - {} devices read", deviceIds.size());
     }
     
     /**

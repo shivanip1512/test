@@ -139,8 +139,9 @@ public class EatonCloudFakeTimeseriesDataV1 {
     
     private String getEventStateValue(List<String> externalEventIds) {
         //"123,2;124,2"
-        /* Received: 1, Started: 2 , Complete: 3. Canceled: 4 */
-        return StringUtils.join(externalEventIds.stream().map(id -> id+",1;"+id+",2;"+id+",3;").collect(Collectors.toList()), ";");
+        /* Received: 1, Started: 2 , Complete: 3, Canceled: 6 */
+        final int result = 3; //replace with 6 for canceled
+        return StringUtils.join(externalEventIds.stream().map(id -> id+",1;"+id+",2;"+id+","+result+";").collect(Collectors.toList()), ";");
     }
 
     public List<String> getExternalEventIds(String deviceGuid, boolean isCreateRequest) {

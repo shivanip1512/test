@@ -8,7 +8,7 @@
 <cti:msgScope paths="yukon.web.modules.dr.setup.controlScenario">
     <h3 class="dib"><i:inline key=".assignedPrograms.title"/></h3>
     <div class="bordered-div oa" style="height:90%">
-        <table id="js-assigned-programs-table" class="compact-results-table dashed">
+        <table id="js-assigned-programs-table" class="compact-results-table dashed no-stripes">
             <thead>
                 <tr>
                     <th width="5%"/>

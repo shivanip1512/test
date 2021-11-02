@@ -79,7 +79,7 @@ public class DeviceAttributeReadEatonCloudServiceImpl implements DeviceAttribute
             Range<Instant> range =  new Range<Instant>(end.toInstant(), false, start.toInstant(), true);
 
             // All devices succeeded.
-            Multimap<PaoIdentifier, PointData> devicesToPointValues = readService.collectDataForRead(deviceIds, range);
+            Multimap<PaoIdentifier, PointData> devicesToPointValues = readService.collectDataForRead(deviceIds, range, "COLLECTION ACTION");
           
             for (PaoIdentifier pao : devicesToPointValues.keySet()) {
                 Map<Integer, Set<PointData>> data = devicesToPointValues.get(pao).stream()

@@ -2,8 +2,8 @@ package com.cannontech.simulators.handler;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -53,6 +53,8 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
     
     private Map<EatonCloudRetrievalUrl, Integer> statuses = Arrays.stream(EatonCloudRetrievalUrl.values())
             .collect(Collectors.toMap(v -> v, v -> HttpStatus.OK.value()));
+    
+    private Map<EatonCloudRetrievalUrl, Integer> successPercentages= new HashMap<>();
    
     @Override
     public SimulatorResponse handle(SimulatorRequest simulatorRequest) {
@@ -66,6 +68,9 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
                         int status = statuses.get(request.getUrl());
                         EatonCloudDataGenerator generator = data.get(request.getUrl().getVersion());
                         generator.setStatus(status);
+                        generator.setSuccessPercentage(HttpStatus.OK.value() == status && successPercentages
+                                .get(request.getUrl()) != null ? successPercentages.get(request.getUrl()) : 100);
+                        
                         generator.setNextValueHelper(nextValueHelper);
                         Method method = generator.getClass().getMethod(request.getMethod(), request.getParamClasses());
                         return (EatonCloudSimulatorResponse) method.invoke(generator, request.getParamValues());
@@ -77,6 +82,7 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
             } else if (simulatorRequest instanceof EatonCloudSimulatorSettingsUpdateRequest) {
                 EatonCloudSimulatorSettingsUpdateRequest request = (EatonCloudSimulatorSettingsUpdateRequest) simulatorRequest;
                 statuses = request.getStatuses();
+                successPercentages = request.getSuccessPercentages();
                 return new SimulatorResponseBase(true);
             } else if (simulatorRequest instanceof EatonCloudSimulatorDeviceCreateRequest) {
                 EatonCloudSimulatorDeviceCreateRequest request = (EatonCloudSimulatorDeviceCreateRequest) simulatorRequest;

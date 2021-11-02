@@ -70,7 +70,8 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
 
     public EatonCloudSimulatorResponse devicesV1(String id, Boolean recursive, Boolean includeDetail) {
         if (status == HttpStatus.BAD_REQUEST.value()) {
-            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Invalid UUID-f28b0", "616ff40f-63b2-4d3c-87e2-16b3c40614ed", status, "2021-02-26T10:52:16.0799958+00:00", 10022);
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Invalid UUID " + id + ".",
+                    "616ff40f-63b2-4d3c-87e2-16b3c40614ed", status, "2021-02-26T10:52:16.0799958+00:00", 10022);
             return new EatonCloudSimulatorResponse(error, status);
 
         }
@@ -112,7 +113,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     
     public EatonCloudSimulatorResponse sitesV1(String userId) {
         if (status == HttpStatus.BAD_REQUEST.value()) {
-            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Invalid UUID-f28b0", "616ff40f-63b2-4d3c-87e2-16b3c40614ed", status, "2021-02-26T10:52:16.0799958+00:00", 10022);
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Invalid UUID "+userId, "616ff40f-63b2-4d3c-87e2-16b3c40614ed", status, "2021-02-26T10:52:16.0799958+00:00", 10022);
             return new EatonCloudSimulatorResponse(error, status);
 
         }
@@ -160,6 +161,15 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
                     "User is not authorized to access devices: 76f93adc-4e9e-4aae-9701-e4ca684e7af5.",
                     "763a1051-e142-4cdb-893c-46afa4f9af31", status, "2021-02-25T13:45:10.4807211+00:00", null);
             return new EatonCloudSimulatorResponse(error, status);
+        }
+        
+        if(successPercentage != 100) {
+            int randomPercentage = (int) (Math.random() * 100);
+            if (randomPercentage > successPercentage) { 
+                EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("ClientId"),  "The field \u0027ClientId\u0027 is not a valid uuid.",
+                        "4aeacd2f-9424-4e6d-a218-c0b621d0f4c9", status, "2021-02-25T13:45:10.4807211+00:00", 10022);
+                return new EatonCloudSimulatorResponse(error,  HttpStatus.BAD_REQUEST.value());
+            }
         }
         
         //load bad data to test the parser
@@ -220,6 +230,16 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         if (status == HttpStatus.NOT_FOUND.value()) {
             return new EatonCloudSimulatorResponse(new EatonCloudCommandResponseV1(status, "Resource not found"), HttpStatus.OK.value());
         }
+        
+        if(successPercentage != 100) {
+            int randomPercentage = (int) (Math.random() * 100);
+            if (randomPercentage > successPercentage) { 
+                EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("id"), "Invalid device command payload, id=123.",
+                        "f5f61b63-68aa-42be-b8a1-a84a171ca38e", status, "2021-02-24T08:23:35.7124876+00:00", null);
+                return new EatonCloudSimulatorResponse(error,  HttpStatus.BAD_REQUEST.value());
+            }
+        }
+        
         return new EatonCloudSimulatorResponse(
                     new EatonCloudCommandResponseV1(status, "Success sending command for device guid:" + id + " command guid:" + command_instance_id),
                     status);
@@ -228,7 +248,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     
     public EatonCloudSimulatorResponse detailsV1(String deviceId, Boolean recursive) {
         if (status == HttpStatus.BAD_REQUEST.value()) {
-            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Invalid UUID-f28b0", "616ff40f-63b2-4d3c-87e2-16b3c40614ed", status, "2021-02-26T10:52:16.0799958+00:00", 10022);
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Invalid UUID "+ deviceId, "616ff40f-63b2-4d3c-87e2-16b3c40614ed", status, "2021-02-26T10:52:16.0799958+00:00", 10022);
             return new EatonCloudSimulatorResponse(error, status);
 
         }

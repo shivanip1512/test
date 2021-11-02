@@ -26,6 +26,7 @@
 <%@ attribute name="hideErrors" type="java.lang.Boolean" description="Default: false. If true, will not display validation error messages." %>
 
 <cti:default var="disabled" value="false"/>
+<cti:default var="hideErrors" value="false"/>
 
 <%-- VIEW MODE --%>
 <cti:displayForPageEditModes modes="VIEW">

@@ -399,13 +399,13 @@ bool CtiLMProgramConstraintChecker::checkMinActivateTime(CtiTime proposed_start,
     ULONG run_time = proposed_stop.seconds() - proposed_start.seconds();
     if( !(run_time >= _lm_program.getMinActivateTime()) )
     {
-        double numHours = (double)_lm_program.getMinActivateTime()/60.0/60.0;
+        double numSeconds = (double)_lm_program.getMinActivateTime();
 
-        string result = "Load groups might be controlled less than their minimum activate time, which is " + CtiNumStr(numHours) + " hours.";
+        string result = "Load groups might be controlled less than their minimum activate time, which is " + CtiNumStr(numSeconds) + " seconds.";
         _results.push_back(result);
 
         _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_D_ControlledLessThanMinimum,
-                                                            numHours));
+                                                            numSeconds));
 
         return false;
     }
@@ -548,6 +548,20 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(CtiTime proposed_start, 
             {
                 stop_ctrl_window = window;
             }
+        }
+    }
+
+    //Ecobee DR Events must start and end on the same calendar day
+    if ( _lm_program.controlNotAllowedToSpanMidnight() )
+    {
+        if (! (proposedStartTime.date() == proposedStopTime.date()) )
+        {
+            string result = "Program control window should not span midnight.";
+            _results.push_back(result);
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_NP_ControlWindowSpansMidnight));
+
+            return false;
         }
     }
 

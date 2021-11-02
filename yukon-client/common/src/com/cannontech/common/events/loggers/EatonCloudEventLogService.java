@@ -15,7 +15,20 @@ public interface EatonCloudEventLogService {
             int relay);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.eatoncloud")
+    public void sendShedFailed(@Arg(ArgEnum.deviceLabel) String deviceLabel,
+            String deviceGuid,
+            int dutyCyclePercent,
+            int dutyCyclePeriod,
+            int criticality,
+            int relay,
+            String error);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.eatoncloud")
     public void sendRestore(@Arg(ArgEnum.deviceLabel) String deviceLabel,
             String deviceGuid, int relay);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.eatoncloud")
+    public void sendRestoreFailed(@Arg(ArgEnum.deviceLabel) String deviceLabel,
+            String deviceGuid, int relay, String error);
 
 }

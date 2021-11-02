@@ -66,20 +66,31 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
  
     @Override
-    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> queryRange) {
+    public Multimap<PaoIdentifier, PointData> collectDataForRead(Integer deviceId, Range<Instant> range) {
+        return collectDataForRead(Set.of(deviceId), range, true, "SINGLE DEVICE");
+    }
 
+    @Override
+    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range, String debugReadType) {
+        return collectDataForRead(deviceIds, range, false, debugReadType);
+    }
+
+    private Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range,
+            boolean throwErrorIfFailed, String debugReadType) {
         Map<PaoType, Set<LiteYukonPAObject>> paos = paoDao.getLiteYukonPaos(deviceIds).stream()
                 .filter(pao -> pao.getPaoType().isCloudLcr())
                 .collect(Collectors.groupingBy(pao -> pao.getPaoType(), Collectors.toSet()));
-          
+
         Multimap<PaoIdentifier, PointData> receivedPoints = HashMultimap.create();
         for (PaoType type : paos.keySet()) {
             Set<BuiltInAttribute> attr = getAttributesForPaoType(type);
-            log.info("Initiating read for type:{} devices: {} on attributes:{}", type, paos.get(type).size(), attr.size());
-            receivedPoints.putAll(retrievePointData(paos.get(type), attr, queryRange));
+            log.info("Initiating read ({}) for type:{} devices: {} on attributes:{}", debugReadType, type, paos.get(type).size(),
+                    attr.size());
+            receivedPoints.putAll(retrievePointData(paos.get(type), attr, range, throwErrorIfFailed));
         }
 
-        log.debug("Retrieved point data:{} for devices:{}", receivedPoints.values().size(), receivedPoints.keySet().size());
+        log.debug("({}) Retrieved point data:{} for devices:{}", debugReadType, receivedPoints.values().size(),
+                receivedPoints.keySet().size());
         if (!receivedPoints.isEmpty()) {
             dispatchData.putValues(receivedPoints.values());
             updateAssetAvailability(receivedPoints);
@@ -88,7 +99,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     }
 
     private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<LiteYukonPAObject> paos,
-            Set<BuiltInAttribute> attribtues, Range<Instant> queryRange) {
+            Set<BuiltInAttribute> attribtues, Range<Instant> queryRange, boolean throwErrorIfFailed) {
 
         Map<Integer, LiteYukonPAObject> deviceIdToPao = StreamSupport.stream(paos.spliterator(), false)
                 .collect(Collectors.toMap(LiteYukonPAObject::getYukonID, liteYukonPao -> liteYukonPao));
@@ -99,10 +110,18 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         Set<String> tags = EatonCloudChannel.getTagsForAttributes(attribtues);
         List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
         for (EatonCloudTimeSeriesDeviceV1 request : chunkedRequests) {
-            List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService.getTimeSeriesValues(List.of(request), queryRange);
-            timeSeriesResults.addAll(result);
+            try {
+                List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService
+                        .getTimeSeriesValues(List.of(request), queryRange);
+                timeSeriesResults.addAll(result);
+            } catch (Exception e) {
+                log.error("Guid:" + request.getDeviceGuid() + " Read Failed:" + e.getMessage(), e);
+                if(throwErrorIfFailed) {
+                    throw e;
+                }
+            }
         }
-        
+
         Multimap<PaoIdentifier, PointData> pointMap = HashMultimap.create();
 
         for (EatonCloudTimeSeriesDeviceResultV1 deviceResult : timeSeriesResults) {
