@@ -494,7 +494,7 @@ table.dashed th,
 table.dashed thead tr,
 .title-header.dashed, 
 .column-header.dashed { 
-    border-bottom-style: dashed !important;
+    border-bottom: 1px dashed @table-border-color !important;
 }
 
 table.natural-width { width: auto; }
@@ -711,7 +711,7 @@ table.matrix{
 }
 
 .no-borders tr {
-    border: none;
+    border: none !important;
 }
 
 /* Use the class when there will be elements before the first icon in a row */
