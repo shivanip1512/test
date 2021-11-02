@@ -10,7 +10,7 @@
             <div class="js-program-widget">
                  <cti:toJson object="${widgetUpdateDate}" id="js-widget-json-data"/>
                  <c:forEach var="entry" varStatus="loop" items="${programsData}">
-                     <table class="compact-results-table dashed">
+                     <table class="compact-results-table dashed no-borders no-stripes">
                          <thead>
                              <tr>
                                  <th>${entry.key}</th>
@@ -20,7 +20,7 @@
                         <tbody>
                             <c:forEach var="program" varStatus="loop" items="${entry.value}">
                                 <c:set var="programId" value="${program.programId}"/>
-                                    <tr>
+                                    <tr class="bn">
                                         <c:url var="programURL" value="/dr/program/detail">
                                             <c:param name="programId" value="${programId}"/>
                                         </c:url>

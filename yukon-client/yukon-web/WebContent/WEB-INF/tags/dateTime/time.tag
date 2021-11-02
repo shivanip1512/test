@@ -90,7 +90,7 @@
                 </span>
             </cti:displayForPageEditModes>
             <c:if test="${status.error}">
-                <br>
+                <br><br>
                 <form:errors path="${path}" cssClass="error" />
             </c:if>
         </spring:bind>
