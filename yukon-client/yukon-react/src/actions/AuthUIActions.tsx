@@ -84,7 +84,6 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
      * @returns Resolve if code is credentials are valid, otherwise reject.
      */
     logIn: async (email: string, password: string, rememberMe: boolean): Promise<void> => {
-        await sleep(1000);
 
         if (isRandomFailure()) {
             // reject(new Error('LOGIN.GENERIC_ERROR'));
@@ -95,6 +94,8 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
         LocalStorage.saveRememberMeData(email, rememberMe);
 
         securityHelper.onUserAuthenticated({ email: email, userId: email, rememberMe: rememberMe });
+
+        //it looks like we'll need to reload the page if it's not a react page - I could not figure out how to get the URL it should go to after log in
     },
     /**
      * The user has forgotten their password and wants help.

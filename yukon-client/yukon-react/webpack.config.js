@@ -24,13 +24,23 @@ module.exports = {
                 loader: 'babel-loader',
                 options: {
                     presets: [
-                        ['@babel/preset-env'], 
+                        ['@babel/preset-env',
+                            { 
+                                targets: {
+                                    esmodules: true,
+                                }
+                            }
+                        ], 
                         ['@babel/preset-react'],
                         ['@babel/preset-typescript']
                     ]
                 }
             }
           },
+          {
+            test: /\.(jpe?g|png|gif|svg)$/i, 
+            loader: 'url-loader',
+          }
         ],
     },
 }

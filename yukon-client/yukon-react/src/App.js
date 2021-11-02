@@ -1,23 +1,14 @@
 import React, { useEffect } from 'react';
 import { Route, Redirect, Switch, useLocation } from 'react-router-dom'
 import { I18nextProvider } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import { initReactI18next } from 'react-i18next';
-import Backend from 'i18next-http-backend';
+
+import yukoni18n from './components/I18n/i18nConfig';
 
 import { DrawerLayout} from '@pxblue/react-components';
 
-import {
-    SecurityContextProvider,
-    AuthNavigationContainer,
-    AuthUIContextProvider,
-    useSecurityActions,
-} from '@pxblue/react-auth-workflow';
-import { ProjectAuthUIActions } from './actions/AuthUIActions';
-import { ProjectRegistrationUIActions } from './actions/RegistrationUIActions';
+import { SecurityContextProvider, AuthNavigationContainer } from '@pxblue/react-auth-workflow';
+import AuthUIConfiguration from './components/security/AuthUIConfiguration';
 import { routes } from './constants/routing';
-
-import productLogo from './assets/images/eaton_yukon_logo.png';
 
 import NavigationMenu from './components/Navigation/NavigationMenu';
 import NavigationDrawer from './components/Navigation/NavigationDrawer';
@@ -25,8 +16,6 @@ import DRSetupFilterPage from './components/YukonPage/DemandResponse/DRSetupFilt
 import DRTestPage from './components/YukonPage/DemandResponse/DRTestPage';
 import CommChannelCreatePage from './components/YukonPage/Assets/CommChannelCreate';
 import DashboardPage from './components/YukonPage/Dashboards/Dashboard';
-
-import i18n from 'i18next';
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -37,58 +26,6 @@ const ScrollToTop = () => {
 
     return null;
 };
-
-const yukoni18n = i18n.createInstance();
-
-yukoni18n
-    .use(Backend)
-    .use(LanguageDetector)
-    .use(initReactI18next)
-    .init({
-    fallbackLng: 'en',
-    ns: ['translation', 'common', 'validation', 'custom'],
-    defaultNS: 'custom',
-    fallbackNS: ['translation', 'common', 'validation'],
-    backend: {
-      loadPath: '/yukon-ui/locales/{{lng}}/{{ns}}.json'
-    },
-    react: {
-        wait: true,
-        useSuspense: true
-    },
-    interpolation: {
-      escapeValue: false, // not needed for react as it escapes by default
-    },
-    debug: true
-  });
-
-export const AuthUIConfiguration = (props) => {
-    const securityContextActions = useSecurityActions();
-
-    const backgroundProps = {
-        backgroundImage: 'url(/yukon-ui/yukon_background.png)',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover'
-    }
-
-    return (
-        <AuthUIContextProvider
-            authActions={ProjectAuthUIActions(securityContextActions)}
-            registrationActions={ProjectRegistrationUIActions}
-            showSelfRegistration={false}
-            showContactSupport={false}
-            htmlEula={false}
-            loginType="username"
-            background={backgroundProps}
-            contactEmail={'something@email.com'}
-            contactPhone={'1-800-123-4567'}
-            projectImage={productLogo}
-        >
-            {props.children}
-        </AuthUIContextProvider>
-    );
-};
-
 
 export const App = () => {
     return (

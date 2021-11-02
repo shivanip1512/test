@@ -78,8 +78,9 @@ const NavigationDrawer = (props) => {
     const onNavItemClick = useCallback(
         (url) => {
             const reactPage = url.startsWith("/yukon-ui");
+            const currentUrlReact = window.location.href.includes('/yukon-ui');
             if (reactPage) {
-                if (history) {
+                if (history && currentUrlReact) {
                     history.push(url);
                 } else {
                     window.location.href = props.reactPath + url;
@@ -94,7 +95,7 @@ const NavigationDrawer = (props) => {
     return (
         renderDrawer ? 
             <Drawer open={open}>
-                <DrawerHeader icon={<MenuIcon classes={{root: classes.root}}></MenuIcon>} 
+                <DrawerHeader icon={<MenuIcon classes={{root: classes.root}}></MenuIcon>}
                     onIconClick={onToggleMenu} title="Yukon" subtitle="Powered by Brightlayer"
                     style={{backgroundColor: yukonTheme ? yukonTheme.properties.PAGE_BACKGROUND : ""}}>
                 </DrawerHeader>
