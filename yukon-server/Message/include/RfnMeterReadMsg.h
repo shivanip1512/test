@@ -9,7 +9,7 @@ struct RfnMeterReadRequestMsg
 {
     RfnIdentifier rfnIdentifier;
 };
-// Looks like I need to updaate this
+
 enum class RfnMeterReadingReplyType 
 {
     OK,
@@ -23,7 +23,7 @@ struct RfnMeterReadReplyMsg
 {
     RfnMeterReadingReplyType replyType;
 };
-// And this
+
 enum class RfnMeterReadingDataReplyType
 {
     OK,
@@ -34,10 +34,18 @@ enum class RfnMeterReadingDataReplyType
 
 enum class ChannelDataStatus
 {
-    OK,
-    TIMEOUT,
-    FAILURE,
-    LONG,
+    OK, //Used by partial and full reads
+    PARTIAL_READ_TIMEOUT,
+    PARTIAL_READ_FAILURE,
+    PARTIAL_READ_LONG,
+    FULL_READ_PASSWORD_ERROR,
+    FULL_READ_BUSY_ERROR,
+    FULL_READ_TIMEOUT_ERROR,
+    FULL_READ_PROTOCOL_ERROR,
+    FULL_READ_NO_SUCH_CHANNEL_ERROR,
+    FULL_READ_READ_RESPONSE_ERROR_UNKNOWN,
+    FULL_READ_UNKNOWN,
+    FAILURE
 };
 
 struct ChannelData
