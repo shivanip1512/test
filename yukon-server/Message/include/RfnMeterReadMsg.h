@@ -9,7 +9,7 @@ struct RfnMeterReadRequestMsg
 {
     RfnIdentifier rfnIdentifier;
 };
-
+// Looks like I need to updaate this
 enum class RfnMeterReadingReplyType 
 {
     OK,
@@ -23,7 +23,7 @@ struct RfnMeterReadReplyMsg
 {
     RfnMeterReadingReplyType replyType;
 };
-
+// And this
 enum class RfnMeterReadingDataReplyType
 {
     OK,

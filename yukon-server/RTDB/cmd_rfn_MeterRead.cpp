@@ -286,6 +286,7 @@ using namespace Cti;
 using namespace Cti::Messaging::Rfn;
     
 std::map<std::uint8_t, ChannelDataStatus> StatusLookup {
+	// This might be ok?
     { 0, ChannelDataStatus::OK },
     { 1, ChannelDataStatus::LONG }}; //  Replicating NM behavior
 

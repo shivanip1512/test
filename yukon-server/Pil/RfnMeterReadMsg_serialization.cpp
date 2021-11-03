@@ -35,6 +35,7 @@ template<>
 ActiveMQConnectionManager::SerializedMessage MessageSerializer<RmrRepMsg>::serialize(const RmrRepMsg& msg)
 {
     static const std::map<Rfn::RfnMeterReadingReplyType, Thrift::RfnMeterReadingReplyType::type> initialReplyTypes {
+    	// I guess change this
         { Rfn::RfnMeterReadingReplyType::FAILURE,
             Thrift::RfnMeterReadingReplyType::FAILURE },
         { Rfn::RfnMeterReadingReplyType::NO_GATEWAY,
@@ -77,6 +78,7 @@ Thrift::RfnMeterReadingData toThrift(const Rfn::RfnMeterReadingData& data)
 
     static const auto channelDataToThrift = [](const Rfn::ChannelData& cd) {
         static const std::map<Rfn::ChannelDataStatus, Thrift::ChannelDataStatus::type> statuses {
+        	// I guess change this
             { Rfn::ChannelDataStatus::FAILURE, 
                 Thrift::ChannelDataStatus::FAILURE },
             { Rfn::ChannelDataStatus::LONG,
@@ -134,6 +136,7 @@ template<>
 ActiveMQConnectionManager::SerializedMessage MessageSerializer<RmrDatMsg>::serialize(const RmrDatMsg& msg)
 {
     static const std::map<Rfn::RfnMeterReadingDataReplyType, Thrift::RfnMeterReadingDataReplyType::type> replyTypes {
+    	// I guess change this
         { Rfn::RfnMeterReadingDataReplyType::FAILURE,
             Thrift::RfnMeterReadingDataReplyType::FAILURE },
         { Rfn::RfnMeterReadingDataReplyType::NETWORK_TIMEOUT,

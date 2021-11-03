@@ -8,7 +8,7 @@ namespace java com.cannontech.messaging.serialization.thrift.generated
 struct RfnMeterReadRequest {
     1: required     RfnAddressing.RfnIdentifier  rfnIdentifier;
 }
-
+// This needs changes
 enum RfnMeterReadingReplyType {
     OK,
     NO_NODE,

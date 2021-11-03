@@ -399,6 +399,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
     BOOST_REQUIRE_EQUAL(channelDataList.size(), 3);
 
     using cds = Cti::Messaging::Rfn::ChannelDataStatus;
+    // Does it make sense to add a non status OK case for this?
     {
         const auto& channelData = channelDataList[0];
         BOOST_CHECK_EQUAL(channelData.channelNumber, 23);
