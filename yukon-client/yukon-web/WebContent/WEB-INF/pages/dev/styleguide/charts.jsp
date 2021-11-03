@@ -186,7 +186,7 @@
                     }
                 }],
                 seriesDetails: [{
-                    color: '#2ca618',
+                    color: '#5d9c53',
                     borderColor: 'GREEN',
                     fillOpacity: '0.45',
                     marker: {enabled: true},
@@ -259,7 +259,7 @@
                     }
                 }],
                 seriesDetails: [{
-                    color: '#2ca618',
+                    color: '#5d9c53',
                     borderColor: 'GREEN',
                     fillOpacity: '0.45',
                     marker: {enabled: true},
