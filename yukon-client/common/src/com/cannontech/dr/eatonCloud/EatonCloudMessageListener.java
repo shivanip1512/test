@@ -385,7 +385,7 @@ public class EatonCloudMessageListener {
          * https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=137056391
          * 
          *                RampIN - TRUE | RampIN - FALSE
-         * randomization|        1      |        0
+         * randomization|        2      |        0
          * 
          *               RampOUT - TRUE | RampOUT - FALSE
          * stop flag    |        1      |         0
@@ -398,7 +398,7 @@ public class EatonCloudMessageListener {
         params.put(CommandParam.START_TIME.getParamName(), startTimeSeconds);
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
         params.put(CommandParam.CRITICALITY.getParamName(), command.getCriticality());
-        params.put(CommandParam.RANDOMIZATION.getParamName(), command.getIsRampIn() ? 1 : 0);
+        params.put(CommandParam.RANDOMIZATION.getParamName(), command.getIsRampIn() ? 2 : 0);
         params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
         params.put(CommandParam.STOP_TIME.getParamName(), stopTimeSeconds);
         params.put(CommandParam.STOP_FLAGS.getParamName(), command.getIsRampOut() ? 1 : 0);
