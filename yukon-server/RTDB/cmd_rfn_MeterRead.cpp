@@ -297,7 +297,7 @@ std::map<std::uint8_t, ChannelDataStatus> CmrStatusLookup {
 	{ 8, ChannelDataStatus::FULL_READ_NO_SUCH_CHANNEL_ERROR },
 	{ 9, ChannelDataStatus::FULL_READ_READ_RESPONSE_ERROR_UNKNOWN },
 	{ 10, ChannelDataStatus::FULL_READ_UNKNOWN },
-	{ 11, ChannelDataStatus::FAILURE }}; //  Replicating NM behavior
+	{ 11, ChannelDataStatus::FAILURE }};
 
 //  Helper methods for creating the messaging objects
 ChannelData makeChannelData(const RawChannel& rawChannel)

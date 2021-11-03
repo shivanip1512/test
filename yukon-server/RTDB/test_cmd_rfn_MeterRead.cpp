@@ -439,7 +439,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
     {
         const auto& channelData = channelDataList[3];
         BOOST_CHECK_EQUAL(channelData.channelNumber, 27);
-        BOOST_CHECK_EQUAL(channelData.status, cds::FAILURE);
+        BOOST_CHECK_EQUAL(channelData.status, cds::PARTIAL_READ_FAILURE);
         BOOST_CHECK_EQUAL(channelData.unitOfMeasure, "VA");
         const ModifierSet expectedModifiers{ "Max" };
         BOOST_CHECK_EQUAL(channelData.unitOfMeasureModifiers, expectedModifiers);
