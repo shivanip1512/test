@@ -129,29 +129,16 @@ public enum ItronEndpointManager {
             TransportContext context = TransportContextHolder.getTransportContext();
             String userCredentials = username + ":" + password;
             String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
-            //TODO: java.lang.ClassCastException: 
-            //TODO: class org.springframework.ws.transport.http.HttpComponentsConnection 
-            //TODO: cannot be cast to 
-            //TODO: class org.springframework.ws.transport.http.HttpUrlConnection
-            HttpComponentsConnection connection = (HttpComponentsConnection) context.getConnection(); //WebServiceConnection interface
+            HttpComponentsConnection connection = (HttpComponentsConnection) context.getConnection();
             try {
                 connection.addRequestHeader("authorization", basicAuth);
                 //Soap 1.1 uses "text/xml". Soap 1.2 uses "application/soap+xml"
                 //Itron uses 1.1 as indicated by namespace http://schemas.xmlsoap.org/wsdl/soap/ in WSDLs
                 connection.addRequestHeader("Content-Type", "text/xml; charset=UTF-8");
-                //TODO: make sure the authorization and content-type headers come through in simulator
                 return true;
             } catch (IOException e) {
                 throw new WebServiceIOException("Failed to add request headers to connection.", e);
             }
-            
-              //OLD VERSION BELOW - DELETE EVENTUALLY
-            //HttpUrlConnection conn = (HttpUrlConnection) context.getConnection();
-            //conn.getConnection().setRequestProperty("authorization", basicAuth);
-              //Soap 1.1 uses "text/xml". Soap 1.2 uses "application/soap+xml"
-              //Itron uses 1.1 as indicated by namespace http://schemas.xmlsoap.org/wsdl/soap/ in WSDLs
-            //conn.getConnection().addRequestProperty("Content-Type", "text/xml; charset=UTF-8");
-            //return true;
         }
 
         @Override
