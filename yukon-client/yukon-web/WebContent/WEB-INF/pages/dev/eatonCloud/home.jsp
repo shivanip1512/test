@@ -146,5 +146,20 @@
         </tags:nameValueContainer>
     </form:form>
     
+        <div class="notes">
+        <br/>Force Runtime Calculation
+     </div>
+    <br/>
+    <cti:url var="forceRuntimeCalcUrl" value="forceRuntimeCalc"/>
+    <form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}" method="post">
+        <tags:nameValueContainer>
+            <tags:nameValue name="" nameColumnWidth="250px">
+                <cti:button label="Submit" type="submit" classes="fn vam"/>
+                <form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}" method="post"/>
+                <cti:csrfToken/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+    </form:form>
+    
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.eatonCloudSimulator.js" />
 </cti:standardPage>
