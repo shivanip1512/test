@@ -11,27 +11,11 @@ import Dropdown from '../../controls/Dropdown';
 
 import axios from '../../../axiosConfig';
 
-import { i18n, getPagei18nValues } from '../../../utils/Helpers';
-
 import yup from '../../../validationConfig';
 
 const DRSetupFilter = () => {
 
     const theme = useTheme();
-
-    const [pageKeysReceived, setPageKeysReceived] = useState(false);
-
-    useEffect(() => {
-        const pageKeys = [
-           { nameKey: 'yukon.web.menu.home' },
-           { nameKey: 'yukon.web.menu.dr' },
-           { nameKey: 'yukon.common.name' },
-           { nameKey: 'yukon.common.type' },
-           { nameKey: 'yukon.web.menu.dr.setup' }
-        ];
-        getPagei18nValues(pageKeys, setPageKeysReceived);
-    }, []);
-
     const [list, setList] = useState([]);
     const [drType, setDrType] = useState('CONTROL_AREA');
     const [name, setName] = useState('');
@@ -46,8 +30,8 @@ const DRSetupFilter = () => {
     };
 
     const breadcrumbs = [
-        { link: '/', title: i18n('yukon.web.menu.home') },
-        { link: '/dr/home', title: i18n('yukon.web.menu.dr') }
+        { link: '/', title: 'Home' },
+        { link: '/dr/home', title: 'Demand Response' }
     ];
 
     const actionButtons = [
@@ -145,8 +129,8 @@ const DRSetupFilter = () => {
     let drFilterTable = <div></div>;
 
     const tableHeaders = [
-        { label: i18n('yukon.common.name'), active: sortBy === 'PAONAME', direction: direction, onClick: () => handleSortClick('PAONAME') },
-        { label: i18n('yukon.common.type'), active: sortBy === 'TYPE', direction: direction, onClick: () => handleSortClick('TYPE') }
+        { label: 'Name', active: sortBy === 'PAONAME', direction: direction, onClick: () => handleSortClick('PAONAME') },
+        { label: 'Type', active: sortBy === 'TYPE', direction: direction, onClick: () => handleSortClick('TYPE') }
     ]
 
     const tableRows = [];
@@ -168,26 +152,23 @@ const DRSetupFilter = () => {
     }
 
     return (
-        pageKeysReceived ?
-            <div>
-                <PageHeader breadcrumbs={breadcrumbs} pageTitle={i18n('yukon.web.menu.dr.setup')} actionButtons={actionButtons}/>
-                <PageContents>
-                    <Paper style={{padding: theme.spacing(4)}}>
-                        <Divider/>
-                        <InputLabel style={{display: 'inline-block', paddingTop: theme.spacing(1)}}>Filter By:</InputLabel>
-                        <Dropdown value={drType} style={{marginLeft: theme.spacing(2), marginBottom: theme.spacing(1)}} 
-                            wrapperStyle={{display: 'inline-block', marginBottom: theme.spacing(0)}} 
-                            onChange={handleChangeType} items={drTypes}/>
-                        <Input label={i18n('yukon.common.name')} value={name} style={{margin: theme.spacing(1), width: '20%'}} 
-                            onChange={handleChangeName} validationSchema={validationSchema.name}/>
-                        <Divider/>
+        <div>
+            <PageHeader breadcrumbs={breadcrumbs} pageTitle='Setup' actionButtons={actionButtons}/>
+            <PageContents>
+                <Paper style={{padding: theme.spacing(4)}}>
+                    <Divider/>
+                    <InputLabel style={{display: 'inline-block', paddingTop: theme.spacing(1)}}>Filter By:</InputLabel>
+                    <Dropdown value={drType} style={{marginLeft: theme.spacing(2), marginBottom: theme.spacing(1)}} 
+                        wrapperStyle={{display: 'inline-block', marginBottom: theme.spacing(0)}} 
+                        onChange={handleChangeType} items={drTypes}/>
+                    <Input label='Name' value={name} style={{margin: theme.spacing(1), width: '20%'}} 
+                        onChange={handleChangeName} validationSchema={validationSchema.name}/>
+                    <Divider/>
 
-                        {drFilterTable}
-                    </Paper>
-                </PageContents>
-            </div>
-        : null
-        
+                    {drFilterTable}
+                </Paper>
+            </PageContents>
+        </div>
     )
 
 }

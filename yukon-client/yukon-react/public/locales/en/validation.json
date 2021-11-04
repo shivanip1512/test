@@ -1,6 +1,6 @@
 {
     "validation": {
         "required": "Required",
-        "min": "Min"
+        "min": "Must be greater than {{min}}"
     }
 }

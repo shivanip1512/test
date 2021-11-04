@@ -11,7 +11,5 @@ export {
     setValidationErrors,
     clearValidationErrors,
     clearAllAlerts,
-    addI18nKeyValue,
-    getI18nKeyValue,
     setTheme
 } from './app'

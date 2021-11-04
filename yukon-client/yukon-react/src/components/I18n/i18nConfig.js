@@ -1,5 +1,3 @@
-import React from 'react';
-
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
@@ -17,7 +15,10 @@ yukoni18n
         defaultNS: 'custom',
         fallbackNS: ['translation', 'common', 'validation'],
         backend: {
-            loadPath: '/yukon-ui/locales/{{lng}}/{{ns}}.json'
+            loadPath: '/yukon-ui/locales/{{lng}}/{{ns}}.json',
+            addPath: 'http://localhost:3000/yukon-ui/locales/{{lng}}/{{ns}}.json',
+            crossDomain: true,
+            withCredentials: false
         },
         react: {
             wait: true,

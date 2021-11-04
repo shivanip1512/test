@@ -11,7 +11,6 @@ import {
     SET_VALIDATION_ERRORS,
     CLEAR_VALIDATION_ERRORS,
     CLEAR_ALL_ALERTS,
-    ADD_I18N_KEY_VALUE,
     SET_THEME
 } from '../actions/actionTypes';
 
@@ -24,7 +23,6 @@ const initialAppState = {
     flashErrors: null,
     flashSuccess: null,
     validationErrors: null,
-    i18nKeyValues: [],
     theme: null
 };
 
@@ -54,14 +52,6 @@ export const AppReducer = (state = initialAppState, action) => {
             return {...state, validationErrors: null};
         case CLEAR_ALL_ALERTS:
             return {...state, validationErrors: null, flashSuccess: null, flashErrors: null};
-        case ADD_I18N_KEY_VALUE:
-            let updatedI18nKeyValues = {...state.i18nKeyValues};
-            if (updatedI18nKeyValues[action.key] != null) {
-                updatedI18nKeyValues[action.key] = action.value;
-            } else {
-                updatedI18nKeyValues = {...state.i18nKeyValues, [action.key]: [action.value]}
-            }
-            return {...state, i18nKeyValues: updatedI18nKeyValues};
         case SET_THEME:
             return {...state, theme: action.theme};
         default:

@@ -1,14 +1,12 @@
 import * as yup from 'yup';
-
-import { i18n } from './utils/Helpers';
-
+import I18n from './components/I18n/I18n';
 
 yup.setLocale({
     mixed: {
-        required: i18n('yukon.web.error.required')
+        required: <I18n i18nKey='validation.required'/>
     },
     number: {
-        min: ({min}) => i18n('yukon.web.error.101110', min)
+        min: ({min}) => <I18n i18nKey='validation.min' args={{min: min}}/>
     }
 });
 

@@ -76,22 +76,6 @@ export const setFlashErrors = (flashErrors) => {
     };
   };
 
-  export const addI18nKeyValue = (key, value) => {
-    return {
-      type: actionTypes.ADD_I18N_KEY_VALUE,
-      key: key,
-      value: value
-    }
-  };
-
-  export const getI18nKeyValue = (key, args) => {
-    return {
-      type: actionTypes.GET_I18N_KEY_VALUE,
-      key: key,
-      args: args
-    }
-  }
-
   export const setTheme = (theme) => {
     return {
       type: actionTypes.SET_THEME,

@@ -93,6 +93,29 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
         LocalStorage.saveAuthCredentials(email, email);
         LocalStorage.saveRememberMeData(email, rememberMe);
 
+        //get the theme and store in browser local storage
+        //storing in react store gets cleared after every old yukon page since it's counted as a refresh
+/*      axios.get('/api/theme')
+            .then(themeJson => {
+                if (themeJson) {
+                    //don't change theme if default theme is used
+                    if (themeJson.data.themeId > 0) {
+                        //get theme image
+                        axios.get('/api/theme/image/' + themeJson.data.properties.LOGO)
+                        .then(themeImage => {
+                            themeJson.data.properties.LOGO_IMAGE = themeImage.data;
+                            dispatch(actions.setTheme(themeJson.data));
+                            dispatch(actions.renderDrawer());
+                            //Example if we want to change an entire piece of the pxblue theme
+                            //theme.palette.primary.main = themeJson.data.properties.PRIMARY_COLOR;
+                        });
+                    } else {
+                        dispatch(actions.renderDrawer());
+                    }
+                }
+            });
+        }*/
+
         securityHelper.onUserAuthenticated({ email: email, userId: email, rememberMe: rememberMe });
 
         //it looks like we'll need to reload the page if it's not a react page - I could not figure out how to get the URL it should go to after log in
