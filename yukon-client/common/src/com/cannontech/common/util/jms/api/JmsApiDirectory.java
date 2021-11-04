@@ -1480,8 +1480,10 @@ public final class JmsApiDirectory {
                          OPTOUTIN_NOTIFICATION,
                          PROGRAM_STATUS_NOTIFICATION);
         
-        addApis(jmsApis, SIMULATOR, 
-                EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
+        addApis(jmsApis, 
+                SIMULATOR, 
+                EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST, 
+                EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST);
 
         return jmsApis;
     }
