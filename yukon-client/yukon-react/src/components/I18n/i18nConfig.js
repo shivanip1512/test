@@ -16,9 +16,6 @@ yukoni18n
         fallbackNS: ['translation', 'common', 'validation'],
         backend: {
             loadPath: '/yukon-ui/locales/{{lng}}/{{ns}}.json',
-            addPath: 'http://localhost:3000/yukon-ui/locales/{{lng}}/{{ns}}.json',
-            crossDomain: true,
-            withCredentials: false
         },
         react: {
             wait: true,
