@@ -145,6 +145,7 @@ import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigura
 import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
+import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.FieldSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.ModifyFieldSimulatorResponse;
@@ -1325,6 +1326,17 @@ public final class JmsApiDirectory {
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.simulator.EatonCloudDataRetrievalSimulatonRequest"))
                   .requestMessage(EatonCloudDataRetrievalSimulatonRequest.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
+    public static final JmsApi<EatonCloudRuntimeCalcSimulatonRequest,?,?> EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST = 
+            JmsApi.builder(EatonCloudRuntimeCalcSimulatonRequest.class)
+                  .name("Eaton Cloud Runtime Calculation Simulation Request")
+                  .description("WS sends request to SM start runtime calculation")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.simulator.EatonCloudRuntimeCalcSimulatonRequest"))
+                  .requestMessage(EatonCloudRuntimeCalcSimulatonRequest.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
