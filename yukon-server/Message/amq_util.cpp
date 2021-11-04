@@ -274,12 +274,7 @@ ManagedProducer::ManagedProducer( proton::session & sess, const std::string & de
     :   ManagedDestination( dest ),
         _expiryDuration{ 60 * proton::duration::MINUTE }
 {
-    proton::sender_options options;     // temp queue has flag in options   dynamic(true) with empty address ""
-
-    if ( dest.empty() )
-    {
-
-    }
+    proton::sender_options options;
 
     _producer = sess.open_sender( dest, options );
 }
@@ -301,7 +296,6 @@ void ManagedProducer::send( proton::message & msg )
     msg.expiry_time( now + _expiryDuration );
 
     _producer
-        .session()              // <-- do we need the session?  the sender has a work_queue too which may or may not be the same one...?
         .work_queue()
         .add(   [=]()
                 {
@@ -429,8 +423,8 @@ TopicConsumer::~TopicConsumer()
 /*-----------------------------------------------------------------------------
   Managed temporary queue message consumer
 -----------------------------------------------------------------------------*/
-TempQueueConsumer::TempQueueConsumer( proton::session & sess ) :
-    QueueConsumer( sess, "" )     // replyTo
+TempQueueConsumer::TempQueueConsumer( proton::session & sess, const std::string & replyTo ) :
+    QueueConsumer( sess, replyTo )
 {
 }
 

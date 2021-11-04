@@ -28,9 +28,12 @@
 
 #include "proton_encoder_proxy.h"
 
+
+#include <proton/types.hpp>
 #include <proton/connection_options.hpp>
 #include <proton/reconnect_options.hpp>
 #include <proton/session_options.hpp>
+#include <proton/work_queue.hpp>
 
 
 //#include <boost/optional.hpp>
@@ -50,10 +53,6 @@ Qpid::ConnectionFactory g_connectionFactory;
 extern IM_EX_MSG std::unique_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
 std::atomic_size_t ActiveMQConnectionManager::SessionCallback::globalId;
-
-ActiveMQConnectionManager::MessageDescriptor::~MessageDescriptor() {
-    delete replyTo;
-}
 
 ActiveMQConnectionManager::ActiveMQConnectionManager() = default;
 
@@ -248,9 +247,9 @@ void ActiveMQConnectionManager::processTasks(MessagingTasks tasks)
     updateCallbacks         (std::move(tasks.newCallbacks));    // not a thing - done on connection::open along w/ session
     sendOutgoingMessages    (std::move(tasks.outgoingMessages));// lambdas thrown on work_queue for outbound
     sendOutgoingReplies     (std::move(tasks.outgoingReplies));// ditto this guy
-    dispatchTempQueueReplies(std::move(tasks.tempQueueReplies));// messages we get in the on_message for the session - lookup and call the callbacks maybe?? or put on a inqueue-then new thread to do the magic
-    dispatchSessionReplies  (std::move(tasks.sessionReplies));//ditto
-    dispatchIncomingMessages(std::move(tasks.incomingMessages));//ditto
+//    dispatchTempQueueReplies(std::move(tasks.tempQueueReplies));// messages we get in the on_message for the session - lookup and call the callbacks maybe?? or put on a inqueue-then new thread to do the magic
+//    dispatchSessionReplies  (std::move(tasks.sessionReplies));//ditto
+//    dispatchIncomingMessages(std::move(tasks.incomingMessages));//ditto
 }
 
 #if 0
@@ -364,7 +363,7 @@ auto ActiveMQConnectionManager::createSessionConsumer(const SessionCallback call
 {
     auto consumer = std::make_unique<TempQueueConsumerWithCallback>();
 
-//    consumer->managedConsumer = Qpid::createTempQueueConsumer(*_consumerSession);
+//    consumer->managedConsumer = Qpid::createTempQueueConsumer( _brokerSession );
 
     static const auto sessionListener = 
         std::make_unique<Qpid::MessageListener>(
@@ -416,7 +415,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages(EnvelopeQueue messages)
 
         if( e->returnAddress )
         {
-            auto destination = makeDestinationForReturnAddress(std::move(*e->returnAddress));
+            auto destination = makeDestinationForReturnAddress(std::move(*e->returnAddress));   // string
 
             if( debugActivityInfo() )
             {
@@ -427,7 +426,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages(EnvelopeQueue messages)
             message.to( "this is TBD but definitely a std::string!!" );
         }
 
-//        Qpid::QueueProducer &queueProducer = getQueueProducer(*_producerSession, e->queueName);
+//        Qpid::QueueProducer &queueProducer = getQueueProducer(*_producerSession, e->queueName);  lookup and send  work_quwueue()
 
 //        queueProducer.send( message );
     }
@@ -543,117 +542,6 @@ auto ActiveMQConnectionManager::makeReturnLabel(MessageCallback::Ptr callback, s
 auto ActiveMQConnectionManager::makeReturnLabel(SessionCallback& sessionCallback) -> ReturnLabel
 {
     return std::make_unique<ReturnAddress>(sessionCallback);
-}
-
-
-void ActiveMQConnectionManager::dispatchIncomingMessages(IncomingPerQueue incomingMessages)
-{
-    for( auto& [queue, descriptors] : incomingMessages )
-    {
-        if( debugActivityInfo() )
-        {
-            CTILOG_DEBUG(dout, "Received incoming message(s) for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue));
-        }
-
-        const auto callbackRange = _namedCallbacks.equal_range(queue);
-        const auto callbacks     = boost::make_iterator_range(callbackRange.first, callbackRange.second) | boost::adaptors::map_values;
-
-        while( ! descriptors.empty() )
-        {
-            auto md = std::move(descriptors.front());
-            descriptors.pop();
-
-            if( debugActivityInfo() )
-            {
-                CTILOG_DEBUG(dout, "Dispatching message to callbacks from queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
-                        << reinterpret_cast<unsigned long>(queue) << ": " << md->msg);
-            }
-
-            for( auto& callback : callbacks )
-            {
-                if( debugActivityInfo() )
-                {
-                    CTILOG_DEBUG(dout, "Calling callback " << reinterpret_cast<unsigned long>(callback.get()) << " for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue));
-                }
-
-                (*callback)(*md);
-            }
-        }
-    }
-}
-
-
-void ActiveMQConnectionManager::dispatchTempQueueReplies(RepliesByDestination replies)
-{
-    for( const auto& [destination, descriptor] : replies )
-    {
-        //  need the iterator so we can delete later
-        auto itr = _replyConsumers.find(destination);
-
-        if( itr == _replyConsumers.end() )
-        {
-            CTILOG_ERROR(dout, "Message received with no consumer; destination [" << destination << "]");
-            continue;
-        }
-
-        const auto &consumer = itr->second;
-
-        if( debugActivityInfo() )
-        {
-            CTILOG_DEBUG(dout, "Calling temp queue callback " << reinterpret_cast<unsigned long>(consumer->callback.get()) << " for temp queue \"" << destination << "\"" << std::endl
-                    << reinterpret_cast<unsigned long>(consumer->callback.get()) << ": " << descriptor->msg);
-        }
-
-        (*consumer->callback)(*descriptor);
-
-        _replyConsumers.erase(itr);
-    }
-
-    const auto end = _replyExpirations.upper_bound(CtiTime::now());
-
-    if( _replyExpirations.begin() != end )
-    {
-        for( auto itr = _replyExpirations.begin(); itr != end; ++itr )
-        {
-            const auto &expirationHandler = itr->second;
-
-            const auto consumer_itr = _replyConsumers.find(expirationHandler.queueName);
-
-            //  if the queue consumer still exists, we never got a response
-            if( consumer_itr != _replyConsumers.end() )
-            {
-                _replyConsumers.erase(consumer_itr);
-
-                expirationHandler.callback();
-            }
-        }
-
-        _replyExpirations.erase(_replyExpirations.begin(), end);
-    }
-}
-
-
-void ActiveMQConnectionManager::dispatchSessionReplies(RepliesByDestination replies)
-{
-    for( auto& [destination, descriptor] : replies )
-    {
-        if( auto consumer = mapFindRef(_sessionConsumers, destination) )
-        {
-            const auto& callback = (*consumer)->callback;
-
-            if( debugActivityInfo() )
-            {
-                CTILOG_DEBUG(dout, "Calling session callback " << reinterpret_cast<unsigned long>(callback.get()) << " for temp queue \"" << destination << "\"" << std::endl
-                    << reinterpret_cast<unsigned long>(callback.get()) << ": " << descriptor->msg);
-            }
-
-            (*callback)(*descriptor);
-        }
-        else
-        {
-            CTILOG_ERROR(dout, "Message received with no consumer; destination [" << destination << "]");
-        }
-    }
 }
 
 
@@ -845,7 +733,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
 
 
 void ActiveMQConnectionManager::enqueueOutgoingReply(
-    std::shared_ptr<cms::Destination> dest,
+    std::string dest,
     const SerializedMessage& message)
 {
     if( debugActivityInfo() )
@@ -853,7 +741,7 @@ void ActiveMQConnectionManager::enqueueOutgoingReply(
         CTILOG_DEBUG(dout, "Enqueuing outbound reply" << std::endl << message);
     }
 
-    emplaceTask(_newTasks.outgoingReplies, Reply { message, std::move(dest) });
+    emplaceTask(_newTasks.outgoingReplies, Reply { message, dest });
 
     //kickstart();  //  Unnecessary, since this is a reply.  We were already running in order to receive the request message.
 }
@@ -949,10 +837,7 @@ void ActiveMQConnectionManager::addNewCallback(const Qpid::Queues::InboundQueue&
     auto wrappedCallback =
         std::make_unique<SimpleMessageCallback>(
             [this, callback, &queue](const MessageDescriptor& md) {
-                std::shared_ptr<cms::Destination> replyTo { 
-                    md.replyTo 
-                        ? md.replyTo->clone()
-                        : nullptr };
+                std::string replyTo { md.replyTo };
                 callback(
                     md,
                     [this, replyTo](SerializedMessage message) {
@@ -966,95 +851,162 @@ void ActiveMQConnectionManager::addNewCallback(const Qpid::Queues::InboundQueue&
 }
 
 
+// jmoc - what if it is empty or doesn;t exist?
+std::string ActiveMQConnectionManager::getJMSType( proton::message & msg ) const
+{
+    std::string jms_type;
+
+    if ( msg.message_annotations().exists( "x-opt-jms-type") )
+    {
+        jms_type = proton::get<std::string>( msg.message_annotations().get( "x-opt-jms-type") );
+    }
+
+    return jms_type;
+}
+
+
 void ActiveMQConnectionManager::acceptNamedMessage( proton::message & message, const Qpid::Queues::InboundQueue *queue)
 {
-    // jmoc
+    MessageDescriptor   descriptor
+    {
+        getJMSType( message ),
+        proton::get<proton::binary>( message.body() ),
+        message.reply_to()
+    };
 
-//    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
-//    {
-//        const auto replyTo = bytesMessage->getCMSReplyTo()
-//                ? bytesMessage->getCMSReplyTo()->clone()
-//                : nullptr;
-//
-//        std::vector<unsigned char> payload(bytesMessage->getBodyLength());
-//
-//        bytesMessage->readBytes(payload);
-//
-//        if( debugActivityInfo() )
-//        {
-//            CTILOG_DEBUG(dout, "Received inbound message for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
-//                << reinterpret_cast<unsigned long>(queue) << ": " << payload);
-//        }
-//
-//        emplaceNamedMessage(queue, bytesMessage->getCMSType(), payload, replyTo);
-//    }
+    if ( debugActivityInfo() )
+    {
+        CTILOG_DEBUG(dout, "Received inbound message for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
+                        << reinterpret_cast<unsigned long>(queue) << ": " << descriptor.msg);
+    }
+
+    _brokerSession
+        .work_queue()
+        .add(   [ this, queue, descriptor ]()
+                {
+                    const auto callbackRange = _namedCallbacks.equal_range(queue);
+                    const auto callbacks     = boost::make_iterator_range(callbackRange.first, callbackRange.second) | boost::adaptors::map_values;
+
+                    if( debugActivityInfo() )
+                    {
+                        CTILOG_DEBUG(dout, "Dispatching message to callbacks from queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
+                                        << reinterpret_cast<unsigned long>(queue) << ": " << descriptor.msg);
+                    }
+
+                    for( auto& callback : callbacks )
+                    {
+                        if( debugActivityInfo() )
+                        {
+                            CTILOG_DEBUG(dout, "Calling callback " << reinterpret_cast<unsigned long>(callback.get()) << " for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue));
+                        }
+
+                        (*callback)(descriptor);
+                    }
+                } );
 }
-
-void ActiveMQConnectionManager::emplaceNamedMessage(const Qpid::Queues::InboundQueue* queue, const std::string type, std::vector<unsigned char> payload, cms::Destination* replyTo)
-{
-    auto md = std::make_unique<MessageDescriptor>();
-
-    md->type = type;
-    md->msg = payload;
-    md->replyTo = replyTo;
-
-    emplaceTask(_newTasks.incomingMessages, queue, std::move(md));
-}
-
 
 void ActiveMQConnectionManager::acceptSingleReply( proton::message & msg )
 {
-    // jmoc
+    MessageDescriptor   descriptor
+    {
+        getJMSType( msg ),
+        proton::get<proton::binary>( msg.body() ),
+        msg.to()
+    };
 
-//    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
-//    {
-//        if( const cms::Destination *dest = message->getCMSDestination() )
-//        {
-//            auto md = std::make_unique<MessageDescriptor>();
-//
-//            md->type = bytesMessage->getCMSType();
-//
-//            md->msg.resize(bytesMessage->getBodyLength());
-//
-//            bytesMessage->readBytes(md->msg);
-//
-//            if( debugActivityInfo() )
-//            {
-//                CTILOG_DEBUG(dout, "Received temp queue reply for \"" << Qpid::destPhysicalName(*dest) << "\"" << std::endl
-//                    << Qpid::destPhysicalName(*dest) << ": " << md->msg);
-//            }
-//
-//            emplaceTask(_newTasks.tempQueueReplies, Qpid::destPhysicalName(*dest), std::move(md));
-//        }
-//    }
+    if( debugActivityInfo() )
+    {
+        CTILOG_DEBUG(dout, "Received temp queue reply for \"" << descriptor.replyTo << "\"" << std::endl
+                        << descriptor.replyTo << ": " << descriptor.msg);
+    }
+
+    _brokerSession
+        .work_queue()
+        .add(   [ this, descriptor ]()
+                {
+                    //  need the iterator so we can delete later
+                    auto itr = _replyConsumers.find( descriptor.replyTo );
+
+                    if( itr == _replyConsumers.end() )
+                    {
+                        CTILOG_ERROR(dout, "Message received with no consumer; destination [" << descriptor.replyTo << "]");
+                    }
+                    else
+                    {
+                        const auto &consumer = itr->second;
+
+                        if( debugActivityInfo() )
+                        {
+                            CTILOG_DEBUG(dout, "Calling temp queue callback " << reinterpret_cast<unsigned long>(consumer->callback.get()) << " for temp queue \"" << descriptor.replyTo << "\"" << std::endl
+                                    << reinterpret_cast<unsigned long>(consumer->callback.get()) << ": " << descriptor.msg);
+                        }
+
+                        (*consumer->callback)(descriptor);
+
+                        _replyConsumers.erase(itr);
+                    }
+
+                    const auto end = _replyExpirations.upper_bound(CtiTime::now());
+
+                    if( _replyExpirations.begin() != end )
+                    {
+                        for( auto itr = _replyExpirations.begin(); itr != end; ++itr )
+                        {
+                            const auto &expirationHandler = itr->second;
+
+                            const auto consumer_itr = _replyConsumers.find(expirationHandler.queueName);
+
+                            //  if the queue consumer still exists, we never got a response
+                            if( consumer_itr != _replyConsumers.end() )
+                            {
+                                _replyConsumers.erase(consumer_itr);
+
+                                expirationHandler.callback();
+                            }
+                        }
+
+                        _replyExpirations.erase(_replyExpirations.begin(), end);
+                    }
+                } );
 }
 
 
 void ActiveMQConnectionManager::acceptSessionReply( proton::message & msg )
 {
-    // jmoc
+    MessageDescriptor   descriptor
+    {
+        getJMSType( msg ),
+        proton::get<proton::binary>( msg.body() ),
+        msg.to()
+    };
 
-//    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
-//    {
-//        if( const cms::Destination *dest = message->getCMSDestination() )
-//        {
-//            auto md = std::make_unique<MessageDescriptor>();
-//
-//            md->type = bytesMessage->getCMSType();
-//
-//            md->msg.resize(bytesMessage->getBodyLength());
-//
-//            bytesMessage->readBytes(md->msg);
-//
-//            if( debugActivityInfo() )
-//            {
-//                CTILOG_DEBUG(dout, "Received temp queue reply for \"" << Qpid::destPhysicalName(*dest) << "\"" << std::endl
-//                    << Qpid::destPhysicalName(*dest) << ": " << md->msg);
-//            }
-//
-//            emplaceTask(_newTasks.sessionReplies, Qpid::destPhysicalName(*dest), std::move(md));
-//        }
-//    }
+    if( debugActivityInfo() )
+    {
+        CTILOG_DEBUG(dout, "Received temp queue reply for \"" << descriptor.replyTo << "\"" << std::endl
+                        << descriptor.replyTo << ": " << descriptor.msg);
+    }
+
+    _brokerSession
+        .work_queue()
+        .add(   [ this, descriptor ]()
+                {
+                    if ( auto consumer = mapFindRef( _sessionConsumers, descriptor.replyTo ) )
+                    {
+                        const auto& callback = (*consumer)->callback;
+
+                        if( debugActivityInfo() )
+                        {
+                            CTILOG_DEBUG(dout, "Calling session callback " << reinterpret_cast<unsigned long>(callback.get()) << " for temp queue \"" << descriptor.replyTo << "\"" << std::endl
+                                << reinterpret_cast<unsigned long>(callback.get()) << ": " << descriptor.msg);
+                        }
+
+                        (*callback)(descriptor);
+                    }
+                    else
+                    {
+                        CTILOG_ERROR(dout, "Message received with no consumer; destination [" << descriptor.replyTo << "]");
+                    }
+                } );
 }
 
 

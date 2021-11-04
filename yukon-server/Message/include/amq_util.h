@@ -218,6 +218,7 @@ protected:
     proton::receiver    _consumer;
 
     ManagedConsumer( proton::session & sess, const std::string & dest );
+//    ManagedConsumer( proton::session & sess, const std::string & dest, Callback c );
 
 public:
 
@@ -306,7 +307,7 @@ class IM_EX_MSG TempQueueConsumer : public QueueConsumer
 {
 public:
 
-    TempQueueConsumer( proton::session & sess );
+    TempQueueConsumer( proton::session & sess, const std::string & dest );
 
     ~TempQueueConsumer();
 };
@@ -340,9 +341,9 @@ inline std::unique_ptr<TopicConsumer> createTopicConsumer( proton::session & ses
     return std::make_unique<TopicConsumer>( sess, topicName, selector );
 }
 
-inline std::unique_ptr<TempQueueConsumer> createTempQueueConsumer( proton::session & sess )
+inline std::unique_ptr<TempQueueConsumer> createTempQueueConsumer( proton::session & sess, const std::string & replyTo )
 {
-    return std::make_unique<TempQueueConsumer>( sess );
+    return std::make_unique<TempQueueConsumer>( sess, replyTo );
 }
 
 

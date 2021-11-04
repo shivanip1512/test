@@ -54,9 +54,7 @@ public:
     {
         std::string type;
         SerializedMessage msg;
-        const cms::Destination* replyTo = nullptr;
-
-        ~MessageDescriptor();
+        std::string replyTo;
     };
 
     struct MessageCallback
@@ -156,9 +154,6 @@ public:
     void on_connection_open( proton::connection & c ) override;
     void on_connection_close( proton::connection & c ) override;
     	
-  //  proton::session sessionA;
-
-
 protected:
 
     struct TimedCallback
@@ -185,7 +180,7 @@ protected:
     struct Reply
     {
         SerializedMessage message;
-        std::shared_ptr<cms::Destination> dest;
+        std::string dest;
     };
 
     using EnvelopeQueue        = std::queue<std::unique_ptr<Envelope>>;
@@ -225,15 +220,13 @@ protected:
             const SerializedMessage &message,
             ReturnLabel returnAddress);
     virtual void enqueueOutgoingReply(
-            std::shared_ptr<cms::Destination> dest,
+            std::string dest,
             const SerializedMessage& message);
 
     void addNewCallback(const Qpid::Queues::InboundQueue &queue, MessageCallback::Ptr callback);
     void addNewCallback(const Qpid::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
     void addNewCallback(const Qpid::Queues::InboundQueue& queue, MessageCallbackWithReplies callback);
         
-    virtual void emplaceNamedMessage(const Qpid::Queues::InboundQueue* queue, const std::string type, std::vector<unsigned char> payload, cms::Destination* replyTo);
-
 //jmoc     virtual void kickstart();
     virtual void createConsumersForCallbacks(const CallbacksPerQueue &callbacks);
 
@@ -321,13 +314,8 @@ private:
     void sendOutgoingReplies (ReplyQueue replies);
     Qpid::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
 
-    void dispatchIncomingMessages(IncomingPerQueue incomingMessages);
-    void dispatchTempQueueReplies(RepliesByDestination tempQueueReplies);
-    void dispatchSessionReplies  (RepliesByDestination sessionReplies);
+    std::string getJMSType( proton::message & msg ) const;
 
-//    void acceptNamedMessage(const cms::Message *message, const Qpid::Queues::InboundQueue *queue);
-//    void acceptSingleReply (const cms::Message *message);
-//    void acceptSessionReply(const cms::Message *message);
     void acceptNamedMessage( proton::message & msg, const Qpid::Queues::InboundQueue *queue );
     void acceptSingleReply ( proton::message & msg );
     void acceptSessionReply( proton::message & msg );

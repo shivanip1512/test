@@ -19,7 +19,7 @@ struct test_AmqConnectionManmager : ActiveMQConnectionManager
 {
     using ActiveMQConnectionManager::getTasks;
     using ActiveMQConnectionManager::processTasks;
-    using ActiveMQConnectionManager::emplaceNamedMessage;
+//    using ActiveMQConnectionManager::emplaceNamedMessage;
     
 //    void kickstart() override {}  //  no-op, don't start the thread
     void createConsumersForCallbacks(const CallbacksPerQueue &callbacks) override {};  //  don't create AMQ consumers
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(test_named_queue)
             actual_type    = md.type;
         });
 
-    testManager.emplaceNamedMessage(&Cti::Messaging::Qpid::Queues::InboundQueue::PorterDynamicPaoInfoRequest, expected_type, expected_message, nullptr);
+//    testManager.emplaceNamedMessage(&Cti::Messaging::Qpid::Queues::InboundQueue::PorterDynamicPaoInfoRequest, expected_type, expected_message, "");
 
     testManager.processTasks(testManager.getTasks());
 
