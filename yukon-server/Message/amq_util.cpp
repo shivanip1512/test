@@ -9,6 +9,8 @@
 
 #include <proton/connection_options.hpp>
 #include <proton/sender_options.hpp>
+#include <proton/source_options.hpp>
+#include <proton/target_options.hpp>
 #include <proton/receiver_options.hpp>
 #include <proton/work_queue.hpp>
 
@@ -272,7 +274,8 @@ std::string ManagedDestination::getDestination() const
 -----------------------------------------------------------------------------*/
 ManagedProducer::ManagedProducer( proton::session & sess, const std::string & dest )
     :   ManagedDestination( dest ),
-        _expiryDuration{ 60 * proton::duration::MINUTE }
+        _expiryDuration{ 60 * proton::duration::MINUTE },
+        _readyToSend{ false }
 {
     proton::sender_options options;
 
@@ -297,19 +300,45 @@ void ManagedProducer::send( proton::message & msg )
 
     _producer
         .work_queue()
-        .add(   [=]()
+        .add(
+            [ = ]()
+            {
+                if ( _readyToSend )
                 {
                     _producer.send( msg );
-                } );                                       
+                }
+                else
+                {
+                    _deferredMessages.push( msg );
+                }
+            } );                                       
+}
+
+void ManagedProducer::on_sender_open( proton::sender & s )
+{
+    _readyToSend = true;
+
+    while ( ! _deferredMessages.empty() )
+    {
+        _producer.send( _deferredMessages.front() );
+        _deferredMessages.pop();
+    }
 }
 
 /*-----------------------------------------------------------------------------
   Managed message consumer
 -----------------------------------------------------------------------------*/
-ManagedConsumer::ManagedConsumer( proton::session & sess, const std::string & dest )
-    :   ManagedDestination( dest )
+ManagedConsumer::ManagedConsumer( proton::session & sess, const std::string & dest, Callback c )
+    :   ManagedDestination( dest ),
+        _callback( c )
 {
     proton::receiver_options    options;
+
+    if ( dest.empty() )     // this is a temp queue consumer
+    {
+        options.source( proton::source_options().dynamic( true ) );     // which one of these???  source or target?
+        options.target( proton::target_options().dynamic( true ) );
+    }
 
     _consumer = sess.open_receiver( dest, options );
 }
@@ -351,10 +380,7 @@ cms::Message* ManagedConsumer::receiveNoWait()
 
 void ManagedConsumer::on_message( proton::delivery & d, proton::message & msg )
 {
-   // deque<pro::mg> d;
-  //  d.stuffit(msg)
-    // magic!
-
+    _callback( msg );   // magic!!!!!!!!!!!!!!!!!!!!!
 }
 
 
@@ -374,8 +400,8 @@ DestinationProducer::~DestinationProducer()
 /*-----------------------------------------------------------------------------
   Managed destination message consumer
 -----------------------------------------------------------------------------*/
-DestinationConsumer::DestinationConsumer( proton::session & sess, const std::string & dest ) :
-    ManagedConsumer( sess, dest )
+DestinationConsumer::DestinationConsumer( proton::session & sess, const std::string & dest, Callback c ) :
+    ManagedConsumer( sess, dest, c )
 {
 }
 
@@ -398,8 +424,8 @@ QueueProducer::~QueueProducer()
 /*-----------------------------------------------------------------------------
   Managed Queue message consumer
 -----------------------------------------------------------------------------*/
-QueueConsumer::QueueConsumer( proton::session & sess, const std::string & dest ) :
-    DestinationConsumer( sess, dest )
+QueueConsumer::QueueConsumer( proton::session & sess, const std::string & dest, Callback c ) :
+    DestinationConsumer( sess, dest, c )
 {
 }
 
@@ -410,8 +436,8 @@ QueueConsumer::~QueueConsumer()
 /*-----------------------------------------------------------------------------
   Managed topic message consumer
 -----------------------------------------------------------------------------*/
-TopicConsumer::TopicConsumer( proton::session & sess, const std::string & dest, const std::string & selector ) :
-     DestinationConsumer( sess, dest ),
+TopicConsumer::TopicConsumer( proton::session & sess, const std::string & dest, Callback c, const std::string & selector ) :
+     DestinationConsumer( sess, dest, c ),
      _selector( selector )
 {
 }
@@ -423,8 +449,8 @@ TopicConsumer::~TopicConsumer()
 /*-----------------------------------------------------------------------------
   Managed temporary queue message consumer
 -----------------------------------------------------------------------------*/
-TempQueueConsumer::TempQueueConsumer( proton::session & sess, const std::string & replyTo ) :
-    QueueConsumer( sess, replyTo )
+TempQueueConsumer::TempQueueConsumer( proton::session & sess, Callback c ) :
+    QueueConsumer( sess, "", c )
 {
 }
 

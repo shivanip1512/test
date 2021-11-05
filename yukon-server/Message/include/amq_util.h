@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <queue>
 #include "dlldefs.h"
 #include "readers_writer_lock.h"
 #include "cms/Connection.h"
@@ -163,7 +164,7 @@ public:
 /*-----------------------------------------------------------------------------
   Managed destination
 -----------------------------------------------------------------------------*/
-class IM_EX_MSG ManagedDestination
+class IM_EX_MSG ManagedDestination : public proton::messaging_handler
 {
 protected:
 
@@ -190,6 +191,10 @@ protected:
 
     proton::sender  _producer;
 
+    bool _readyToSend;
+
+    std::queue<proton::message> _deferredMessages;
+
     ManagedProducer( proton::session & sess, const std::string & dest );
 
 public:
@@ -199,13 +204,15 @@ public:
     void setTimeToLiveMillis( std::chrono::milliseconds time );
 
     void send( proton::message & message );
+
+    void on_sender_open( proton::sender & s ) override;
 };
 
 
 /*-----------------------------------------------------------------------------
   Managed message consumer
 -----------------------------------------------------------------------------*/
-class IM_EX_MSG ManagedConsumer : public ManagedDestination, public proton::messaging_handler
+class IM_EX_MSG ManagedConsumer : public ManagedDestination
 {
 public:
 
@@ -217,8 +224,8 @@ protected:
 
     proton::receiver    _consumer;
 
-    ManagedConsumer( proton::session & sess, const std::string & dest );
-//    ManagedConsumer( proton::session & sess, const std::string & dest, Callback c );
+//    ManagedConsumer( proton::session & sess, const std::string & dest );
+    ManagedConsumer( proton::session & sess, const std::string & dest, Callback c );
 
 public:
 
@@ -255,7 +262,7 @@ class IM_EX_MSG DestinationConsumer : public ManagedConsumer
 {
 public:
 
-    DestinationConsumer( proton::session & sess, const std::string & dest );
+    DestinationConsumer( proton::session & sess, const std::string & dest, Callback c );
 
     ~DestinationConsumer();
 };
@@ -279,7 +286,7 @@ class IM_EX_MSG QueueConsumer : public DestinationConsumer
 {
 public:
 
-    QueueConsumer( proton::session & sess, const std::string & dest );
+    QueueConsumer( proton::session & sess, const std::string & dest, Callback c );
 
     ~QueueConsumer();
 };
@@ -295,7 +302,7 @@ protected:
 
 public:
 
-    TopicConsumer( proton::session & sess, const std::string & dest, const std::string & selector = "" );
+    TopicConsumer( proton::session & sess, const std::string & dest, Callback c , const std::string & selector = "" );
 
     ~TopicConsumer();
 };
@@ -307,7 +314,7 @@ class IM_EX_MSG TempQueueConsumer : public QueueConsumer
 {
 public:
 
-    TempQueueConsumer( proton::session & sess, const std::string & dest );
+    TempQueueConsumer( proton::session & sess, Callback c );
 
     ~TempQueueConsumer();
 };
@@ -326,26 +333,25 @@ inline std::unique_ptr<QueueProducer> createQueueProducer( proton::session & ses
     return std::make_unique<QueueProducer>( sess, queueName );
 }
 
-inline std::unique_ptr<QueueConsumer> createQueueConsumer( proton::session & sess, const std::string &queueName )
+inline std::unique_ptr<QueueConsumer> createQueueConsumer( proton::session & sess, const std::string &queueName, ManagedConsumer::Callback c )
 {
-    return std::make_unique<QueueConsumer>( sess, queueName );
+    return std::make_unique<QueueConsumer>( sess, queueName, c );
 }
 
-inline std::unique_ptr<TopicConsumer> createTopicConsumer( proton::session & sess, const std::string &topicName )
+inline std::unique_ptr<TopicConsumer> createTopicConsumer( proton::session & sess, const std::string &topicName, ManagedConsumer::Callback c )
 {
-    return std::make_unique<TopicConsumer>( sess, topicName );
+    return std::make_unique<TopicConsumer>( sess, topicName, c );
 }
 
-inline std::unique_ptr<TopicConsumer> createTopicConsumer( proton::session & sess, const std::string &topicName, const std::string &selector )
+inline std::unique_ptr<TopicConsumer> createTopicConsumer( proton::session & sess, const std::string &topicName, ManagedConsumer::Callback c, const std::string &selector )
 {
-    return std::make_unique<TopicConsumer>( sess, topicName, selector );
+    return std::make_unique<TopicConsumer>( sess, topicName, c, selector );
 }
 
-inline std::unique_ptr<TempQueueConsumer> createTempQueueConsumer( proton::session & sess, const std::string & replyTo )
+inline std::unique_ptr<TempQueueConsumer> createTempQueueConsumer( proton::session & sess, ManagedConsumer::Callback c )
 {
-    return std::make_unique<TempQueueConsumer>( sess, replyTo );
+    return std::make_unique<TempQueueConsumer>( sess, c );
 }
 
 
 }
-

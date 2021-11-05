@@ -209,7 +209,7 @@ protected:
 
     void processTasks(MessagingTasks tasks);
 
-    const cms::Destination* makeDestinationForReturnAddress(ReturnAddress returnAddress);
+    std::string makeDestinationForReturnAddress(ReturnAddress returnAddress);
 
     virtual void enqueueOutgoingMessage(
             const std::string &queueName,
@@ -255,17 +255,7 @@ private:
 
     CallbacksPerQueue  _namedCallbacks;
 
-    //  Consumer and listener - binds to acceptNamedMessage
-    struct QueueConsumerWithListener
-    {
-        // receiver
-
-        std::unique_ptr<Qpid::QueueConsumer> managedConsumer;
-//        std::unique_ptr<cms::MessageListener> listener;
-        std::unique_ptr<Qpid::MessageListener> listener;
-    };
-
-    using NamedConsumerMap = std::map<const Qpid::Queues::InboundQueue *, std::unique_ptr<QueueConsumerWithListener>>;
+    using NamedConsumerMap = std::map<const Qpid::Queues::InboundQueue *, std::unique_ptr<Qpid::QueueConsumer>>;
     NamedConsumerMap _namedConsumers;
 
     //  Temp consumer and client callback
@@ -280,7 +270,7 @@ private:
     //  temp consumer that only lasts as long as the first reply - binds to acceptSingleReply
     TemporaryConsumersByDestination _replyConsumers;
 
-    using DestinationsBySessionCallback = std::map<SessionCallback, const cms::Destination*>;
+    using DestinationsBySessionCallback = std::map<SessionCallback, std::string>;
 
     //  temp queues that last the lifetime of the session - binds to acceptSessionReply, no timeouts
     TemporaryConsumersByDestination _sessionConsumers;
@@ -308,17 +298,13 @@ private:
     void updateCallbacks(CallbacksPerQueue newCallbacks);
 
     void createNamedConsumer(const Qpid::Queues::InboundQueue *inboundQueue);
-    auto createSessionConsumer(const SessionCallback callback) -> const cms::Destination*;
+    std::string createSessionConsumer(const SessionCallback callback);
 
     void sendOutgoingMessages(EnvelopeQueue messages);
     void sendOutgoingReplies (ReplyQueue replies);
-    Qpid::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
+    Qpid::QueueProducer &getQueueProducer( proton::session & session, const std::string & queue );
 
     std::string getJMSType( proton::message & msg ) const;
-
-    void acceptNamedMessage( proton::message & msg, const Qpid::Queues::InboundQueue *queue );
-    void acceptSingleReply ( proton::message & msg );
-    void acceptSessionReply( proton::message & msg );
 };
 
 }
