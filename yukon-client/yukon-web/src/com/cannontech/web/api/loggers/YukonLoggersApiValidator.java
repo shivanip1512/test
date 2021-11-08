@@ -51,7 +51,15 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
             if (id != null && !loggers.stream().filter(log -> log.getLoggerId() == Integer.valueOf(id)).findAny().isPresent()) {
                 throw new NotFoundException("Logger Id not found");
             }
-
+            // Update loggerName and type for update request.
+            if (id != null) {
+                YukonLogger existingLogger = loggers.stream()
+                                                    .filter(log -> log.getLoggerId() == Integer.valueOf(id))
+                                                    .findFirst()
+                                                    .get();
+                logger.setLoggerName(existingLogger.getLoggerName());
+                logger.setLoggerType(existingLogger.getLoggerType());
+            }
             Integer loggerId = id == null ? -1 : Integer.valueOf(id);
             validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"), loggerId, loggers);
             if (!errors.hasFieldErrors("loggerName")) {
