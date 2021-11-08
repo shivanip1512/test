@@ -471,7 +471,7 @@ table {
 table td, 
 table th {
 	padding: 3px 5px;
-    vertical-align: middle;
+    vertical-align: top;
 }
 
 table th, 
@@ -483,7 +483,6 @@ table th,
     font-weight: 600;
     font-size: 0.875rem;
     line-height: 1.5rem;
-    display: table-cell;
     vertical-align: bottom !important;
     border-bottom: 1px solid @table-border-color;
     text-align: left;
@@ -495,7 +494,7 @@ table.dashed th,
 table.dashed thead tr,
 .title-header.dashed, 
 .column-header.dashed { 
-    border-bottom-style: dashed !important;
+    border-bottom: 1px dashed @table-border-color !important;
 }
 
 table.natural-width { width: auto; }
@@ -635,9 +634,7 @@ table.matrix{
 	
 	td {
 	    color: #424e54;
-	    display: table-cell;
 	    vertical-align: inherit;
-	    letter-spacing: 0.01071em;
 	}
 	
 	th {
@@ -646,8 +643,6 @@ table.matrix{
 	    flex-direction: inherit;
 	    justify-content: flex-start;
 	    font-weight: 600;
-	    letter-spacing: 0.01071em;
-	    display: table-cell;
 	    vertical-align: inherit;
 	    border-bottom: 1px solid @table-border-color;
 	    color: #424e54;
@@ -690,6 +685,7 @@ table.matrix{
     .name {
         min-width: 140px;
         color: #777;
+        vertical-align: middle;
     }
     &.name-collapse .name { min-width: inherit; }
     
@@ -712,6 +708,10 @@ table.matrix{
     text-align: center;
     
     .undo { float: right; }
+}
+
+.no-borders tr {
+    border: none !important;
 }
 
 /* Use the class when there will be elements before the first icon in a row */
@@ -1424,6 +1424,9 @@ hr.dashed,
 
 /* YUKON PICKER */
 .picker-results-table tbody tr {
+    
+    border-bottom: none !important;
+   
     &:focus, &:hover {
         outline: none;
         .focus-indicator { background-color: #ccc; }
