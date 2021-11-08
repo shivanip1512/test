@@ -218,7 +218,7 @@ public class InventoryManagerUtil {
 
         InventoryBase inventory = (InventoryBase) StarsLiteFactory.createDBPersistent(liteInv);
         dbPersistentDao.performDBChange(inventory, TransactionType.DELETE);
-
+        log.debug("Deleted inventory:{} EC:{}", liteInv, yukonEnergyCompany.getName());
         if (liteInv.getDeviceID() > 0 && deleteFromYukon) {
 
             DBDeleteResult delRes = new DBDeleteResult(liteInv.getDeviceID(), DBDeletionDao.DEVICE_TYPE);
@@ -231,6 +231,7 @@ public class InventoryManagerUtil {
             LiteYukonPAObject litePao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(liteInv.getDeviceID());
             DBPersistent dbPer = LiteFactory.convertLiteToDBPers(litePao);
             dbPersistentDao.performDBChange(dbPer, TransactionType.DELETE);
+            log.debug("Deleted device:{} EC:{}", litePao, yukonEnergyCompany.getName());
         }
     }
 
