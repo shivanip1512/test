@@ -35,20 +35,20 @@ bool CtiLMProgramConstraintChecker::checkConstraints(ULONG proposed_gear,
                                                      CtiTime proposed_stop)
 {
     bool ret_val = true;
-    ret_val = (checkManualProgramConstraints(proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkGroupConstraints(proposed_gear, proposed_start, proposed_stop) && ret_val);
+    ret_val &= checkManualProgramConstraints(proposed_start, proposed_stop);
+    ret_val &= checkGroupConstraints(proposed_gear, proposed_start, proposed_stop);
     return ret_val;
 }
 
 bool CtiLMProgramConstraintChecker::checkManualProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop)
 {
     bool ret_val = true;
-    ret_val = (checkSeason(proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkWeekDays(proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkMasterActive() && ret_val);
-    ret_val = (checkControlWindows(proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkProgramControlWindows(proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkNotifyActiveOffset(proposed_start) && ret_val);
+    ret_val &= checkSeason(proposed_start, proposed_stop);
+    ret_val &= checkWeekDays(proposed_start, proposed_stop);
+    ret_val &= checkMasterActive();
+    ret_val &= checkControlWindows(proposed_start, proposed_stop);
+    ret_val &= checkProgramControlWindows(proposed_start, proposed_stop);
+    ret_val &= checkNotifyActiveOffset(proposed_start);
 
     return ret_val;
 }
@@ -56,10 +56,10 @@ bool CtiLMProgramConstraintChecker::checkManualProgramConstraints(CtiTime propos
 bool CtiLMProgramConstraintChecker::checkAutomaticProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop)
 {
     bool ret_val = true;
-    ret_val = (checkSeason(proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkWeekDays(proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkMasterActive() && ret_val);
-    ret_val = (checkControlWindows(proposed_start, proposed_stop) && ret_val);
+    ret_val &= checkSeason(proposed_start, proposed_stop);
+    ret_val &= checkWeekDays(proposed_start, proposed_stop);
+    ret_val &= checkMasterActive();
+    ret_val &= checkControlWindows(proposed_start, proposed_stop);
 
     return ret_val;
 }
@@ -67,14 +67,14 @@ bool CtiLMProgramConstraintChecker::checkAutomaticProgramConstraints(CtiTime pro
 bool CtiLMProgramConstraintChecker::checkGroupConstraints(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop)
 {
     bool ret_val = true;
-    ret_val = (checkMaxHoursDaily(proposed_gear, proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkMaxHoursMonthly(proposed_gear, proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkMaxHoursSeasonal(proposed_gear, proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkMaxHoursAnnually(proposed_gear, proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkMinActivateTime(proposed_start, proposed_stop) && ret_val);
-    ret_val = (checkMinRestartTime(proposed_start) && ret_val);
-    ret_val = (checkMaxDailyOps() && ret_val);
-    ret_val = (checkMaxActivateTime(proposed_start, proposed_stop) && ret_val);
+    ret_val &= checkMaxHoursDaily(proposed_gear, proposed_start, proposed_stop);
+    ret_val &= checkMaxHoursMonthly(proposed_gear, proposed_start, proposed_stop);
+    ret_val &= checkMaxHoursSeasonal(proposed_gear, proposed_start, proposed_stop);
+    ret_val &= checkMaxHoursAnnually(proposed_gear, proposed_start, proposed_stop);
+    ret_val &= checkMinActivateTime(proposed_start, proposed_stop);
+    ret_val &= checkMinRestartTime(proposed_start);
+    ret_val &= checkMaxDailyOps();
+    ret_val &= checkMaxActivateTime(proposed_start, proposed_stop);
     return ret_val;
 }
 
@@ -756,13 +756,10 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
 
 bool CtiLMProgramConstraintChecker::checkProgramControlWindows(CtiTime proposed_start, CtiTime proposed_stop)
 {
-    CtiTime proposedStartTime(proposed_start),
-            proposedStopTime(proposed_stop);
-
     //Ecobee DR Events must start and end on the same calendar day
     if (_lm_program.controlNotAllowedToSpanMidnight())
     {
-        if (!(proposedStartTime.date() == proposedStopTime.date()))
+        if (!(proposed_start.date() == proposed_stop.date()))
         {
             string result = "Program control window should not span midnight.";
             _results.push_back(result);
@@ -771,7 +768,8 @@ bool CtiLMProgramConstraintChecker::checkProgramControlWindows(CtiTime proposed_
 
             return false;
         }
-    }
+    }   
+    return true;
 }
 
 /*
