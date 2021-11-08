@@ -224,7 +224,6 @@ public class YukonLogManager {
      */
     private static Level getLevel(Map<String, Level> loggersMap, String packageName) {
         CustomizedSystemLogger customizedSystemLogger = CustomizedSystemLogger.getForLoggerName(packageName);
-        SystemLogger.getLoggerNameForCustomizedLogger(customizedSystemLogger);
         Level level = loggersMap.get(SystemLogger.getLoggerNameForCustomizedLogger(customizedSystemLogger));
         return level != null ? level : Level.INFO;
     }
