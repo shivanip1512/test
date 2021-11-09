@@ -265,14 +265,15 @@ private:
         MessageCallback::Ptr callback;
     };
 
-    using TemporaryConsumersByDestination = std::map<std::string, std::unique_ptr<TempQueueConsumerWithCallback>>;
+    using TemporaryCallbacksByDestination = std::map<std::string, TempQueueConsumerWithCallback>;
 
-    //  temp consumer that only lasts as long as the first reply - binds to acceptSingleReply
-    TemporaryConsumersByDestination _replyConsumers;
+    //  temp consumers that only last as long as their first reply
+    TemporaryCallbacksByDestination _replyConsumers;
 
+    using TemporaryConsumersByDestination = std::map<std::string, std::unique_ptr<Qpid::TempQueueConsumer>>;
     using DestinationsBySessionCallback = std::map<SessionCallback, std::string>;
 
-    //  temp queues that last the lifetime of the session - binds to acceptSessionReply, no timeouts
+    //  temp queues that last the lifetime of the session - no timeouts
     TemporaryConsumersByDestination _sessionConsumers;
     DestinationsBySessionCallback _sessionConsumerDestinations;
 

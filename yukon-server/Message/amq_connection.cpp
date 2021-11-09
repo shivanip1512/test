@@ -385,7 +385,7 @@ std::string ActiveMQConnectionManager::createSessionConsumer(const SessionCallba
                 {
                     getJMSType( msg ),
                     proton::get<proton::binary>( msg.body() ),
-                    msg.to()
+                    msg.reply_to()
                 };
 
                 if ( debugActivityInfo() )
@@ -493,16 +493,26 @@ std::string ActiveMQConnectionManager::makeDestinationForReturnAddress(ReturnAdd
         auto tempConsumer = 
             Qpid::createTempQueueConsumer(
                 _brokerSession,    
-                [ this, callback = std::move(timedCallback->callback) ]( proton::message & msg )
+                [ this ]( proton::message & msg )
                 {
                     MessageDescriptor   descriptor
                     {
                         getJMSType( msg ),
                         proton::get<proton::binary>( msg.body() ),
-                        msg.to()
+                        msg.reply_to()
                     };
 
-                    if (debugActivityInfo())
+                    auto itr = _replyConsumers.find( msg.to() );
+
+                    if( itr == _replyConsumers.end() )
+                    {
+                        CTILOG_ERROR(dout, "Message received with no consumer; destination [" << msg.to() << "]");
+                        return;
+                    }
+
+                    auto& callback = itr->second.callback;
+
+                    if( debugActivityInfo() )
                     {
                         CTILOG_DEBUG(dout, "Calling temp queue callback " << reinterpret_cast<unsigned long>(callback.get())
                                             << " for temp queue \"" << descriptor.replyTo << "\"" << std::endl
@@ -511,10 +521,7 @@ std::string ActiveMQConnectionManager::makeDestinationForReturnAddress(ReturnAdd
 
                     (*callback)(descriptor);
 
-                    if( ! _replyConsumers.erase( descriptor.replyTo ) )
-                    {
-                        CTILOG_ERROR(dout, "Message received with no consumer; destination [" << descriptor.replyTo << "]");
-                    }
+                    _replyConsumers.erase(itr);
                 } );
 
         const std::string destination = tempConsumer->getDestination();
@@ -526,7 +533,9 @@ std::string ActiveMQConnectionManager::makeDestinationForReturnAddress(ReturnAdd
 
         _replyConsumers.emplace(
             destination,
-            std::move(tempConsumer));
+            TempQueueConsumerWithCallback {
+                std::move(tempConsumer),
+                std::move(timedCallback->callback) });
 
         _replyExpirations.emplace(
             CtiTime::now().addSeconds(timedCallback->timeout.count()),  //  extract raw seconds out of the timeout duration
