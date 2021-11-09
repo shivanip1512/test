@@ -206,6 +206,14 @@ public abstract class RuntimeCalcSchedulerService {
     private void calculateDeviceDataLogs(YukonPao device, Set<PaoPointIdentifier> relayStatusPoints,
             Set<PaoPointIdentifier> dataLogPoints, int historyLimitDays) {
         Map<PaoPointIdentifier, PointValueQualityHolder> recentData = getRecentData(device);
+        
+        if(log.isDebugEnabled()) {  
+            Map<PaoPointIdentifier, String> identToTemplateName = dataLogPoints.stream().collect(Collectors.toMap(dl -> dl, dl -> paoDefinitionDao
+                    .getPointTemplateByTypeAndOffset(device.getPaoIdentifier().getPaoType(), dl.getPointIdentifier()).getName()));
+            identToTemplateName.forEach((ident, templateName) -> {
+                log.debug("Device Id:{} Point Name:{} Point: {} Recent Data:{}", device.getPaoIdentifier().getPaoId(), templateName, ident, recentData.get(ident));
+            });
+        }
 
         // Get the most recent timestamp from all initialized point data on the device.
         Instant endOfRange = 
