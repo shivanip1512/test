@@ -236,6 +236,13 @@ select:not([disabled]) {
 input[type=checkbox], 
 input[type=radio] {
     margin: 3px;
+    height: 16px; 
+    width: 16px;
+    box-sizing: border-box;
+    vertical-align: middle;
+    font-size: 1rem; 
+    font-weight: 400;
+    cursor: pointer;
 }
 
 @supports (-webkit-appearance: none) or
@@ -259,12 +266,12 @@ input[type=radio] {
 .checkbox .checkbox-input {
     border: 0;
     clip: rect(0 0 0 0);
-    height: 1px;
+    height: 16px;
     margin: -1px;
     overflow: hidden;
     padding: 0;
     position: absolute;
-    width: 1px;
+    width: 16px;
 }
 .checkbox-value {
     background-color: #ddd;
@@ -331,12 +338,12 @@ input[type=radio] {
 .check-btn input[type=checkbox] {
     border: 0;
     clip: rect(0 0 0 0);
-    height: 1px;
+    height: 16px;
     margin: -1px;
     overflow: hidden;
     padding: 0;
     position: absolute;
-    width: 1px;
+    width: 16px;
 }
 
 .switch-btn:not(.inverse) .switch-btn-checkbox:checked ~ .yes,
