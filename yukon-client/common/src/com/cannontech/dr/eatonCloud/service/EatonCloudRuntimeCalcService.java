@@ -28,9 +28,9 @@ public class EatonCloudRuntimeCalcService extends RuntimeCalcSchedulerService {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudRuntimeCalcService.class);
 
     public void startSimulation(EatonCloudRuntimeCalcSimulatonRequest request) {
-        log.info("Runtime Calculation Started");
+        log.info("Simulated Runtime Calculation Started");
         calculateDataLogs();
-        log.info("Runtime Calculation Completed");
+        log.info("Simulated Runtime Calculation Completed");
     }
 
     /*
