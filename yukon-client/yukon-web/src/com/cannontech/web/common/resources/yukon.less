@@ -673,7 +673,7 @@ table.matrix{
     
     .paging-area {
         float: right;
-        margin: 0 50px 0 0;
+        margin: 0;
         padding: 5px 10px;
         background-color: white;
         
@@ -681,7 +681,11 @@ table.matrix{
     }
     
     span { line-height: 16px; }
-    .page-num-text { margin: 0 10px; }
+    .page-num-text { 
+        margin: 0 10px; 
+        padding-top: 5px;    
+    }
+    .previous-page, .next-page { padding-top: 2px; }
 }
 
 .name-value-table, 
