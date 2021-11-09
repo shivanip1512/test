@@ -147,7 +147,7 @@ public abstract class RuntimeCalcSchedulerService {
         return globalSettingDao.getInteger(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS);
     }
 
-    private void calculateDataLogs() {
+    protected void calculateDataLogs() {
         try {
             List<YukonPao> devices = getAllDevices();
             if (devices.isEmpty()) {
@@ -315,7 +315,8 @@ public abstract class RuntimeCalcSchedulerService {
                         .map(pointId -> Pair.of(pointId, e.getValue()))
                         .stream())
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
+        
+        log.debug("Device:{} dataLogIntervals:{}", device, dataLogIntervals);
         // Look up the relay state attribute...
         paoDefinitionDao.findAttributeLookup(device.getPaoIdentifier().getPaoType(), relayStatusAttribute)
                 // get the PaoPointIdentifier...
@@ -332,11 +333,17 @@ public abstract class RuntimeCalcSchedulerService {
                         // Transform the raw relay state data into runtime status
                         Iterable<? extends DatedStatus> statuses = IterableUtils.toList(relayStatuses).stream()
                                 .map(status -> getRuntimeStatusFromPoint(status)).collect(Collectors.toList());
+                        log.debug(
+                                "Device:{} Relay Number:{} Point id:{} Runtime:{} Relay Statuses (rph boundry values):{} Range:{}",
+                                device, relayNumber, relayStatusPointId, isRuntime, statuses, logRange, dataLogIntervals);
                         insertRelayRuntime(device, dataLogIntervals, statuses, logRange, relayNumber);
                     } else {
                         // Transform the raw relay state data into shedtime status
                         Iterable<? extends DatedStatus> statuses = IterableUtils.toList(relayStatuses).stream()
                                 .map(status -> getShedtimeStatusFromPoint(status)).collect(Collectors.toList());
+                        log.debug(
+                                "Device:{} Relay Number:{} Point id:{} Runtime:{} Relay Statuses (rph boundry values):{} Range:{}",
+                                device, relayNumber, relayStatusPointId, isRuntime, statuses, logRange, dataLogIntervals);
                         insertRelayShedtime(device, dataLogIntervals, statuses, logRange);
                     }
                 });
@@ -444,6 +451,7 @@ public abstract class RuntimeCalcSchedulerService {
                 .ifPresent(lastRuntime -> {
                     var newTimes = new AssetAvailabilityPointDataTimes(device.getPaoIdentifier().getPaoId());
                     newTimes.setRelayRuntime(relayNumber, lastRuntime);
+                    log.debug("Device:{} Asset Avaiability:{}", newTimes);
                     dynamicLcrCommunicationsDao.insertData(newTimes);
                 });
     }

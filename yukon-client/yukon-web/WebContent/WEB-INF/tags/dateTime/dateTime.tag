@@ -97,10 +97,12 @@
                         data-toggle-group="${pageScope.toggleGroup}" 
                         autocomplete="off"/>
                 </span>
+                <br>
             </cti:displayForPageEditModes>
             <c:if test="${status.error}">
-                <br/><br/>
-                <form:errors path="${pageScope.path}" cssClass="${cssErrorClass} error" />
+                <div style="padding-top:20px">
+                    <form:errors path="${pageScope.path}" cssClass="${cssErrorClass} error"/>
+                </div>
             </c:if>
         </spring:bind>
     </c:when>

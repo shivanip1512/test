@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt1_channel_error)
 
     RfnCommandResult result = command.decodeCommand(decode_time, response);
 
-    BOOST_CHECK_EQUAL(result.description, 
+    BOOST_CHECK_EQUAL(result.description,
         "User message ID : 11235"
         "\nReply type      : 0"
         "\nTimestamp       : 02/17/2010 16:00:00"
@@ -267,7 +267,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels)
             0x00, 0x00, //  Modifier 2, no extension bit
             0x00, 0x00, 0x00, 0x2a, //  Data
             0x00, //  Status (OK)
-                
+
             0x18, //  Channel number
             0x02, //  Unit of measure (Varh)
             0x80, 0x00, //  Modifier 1, has extension bit set
@@ -310,7 +310,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
     const std::vector< unsigned char > response{
         0x03, //  Response type 3, contains one or more modifiers
         0x00, //  Response status (OK)
-        0x05, //  Number of channels in response
+        0x06, //  Number of channels in response
             0x17, //  Channel number
             0x01, //  Unit of measure (Wh)
             0x80, 0x00, //  Modifier 1, has extension bit set
@@ -345,6 +345,13 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
             0x00, 0x00, //  Modifier 2, no extension bit
             0x00, 0x00, 0x00, 0x2a, //  Data
             0x00, //  Status (OK)
+
+            0x1b, //  Channel number
+            0x44, //  Unit of measure (VA)
+            0xc0, 0x00, //  Modifier 1, has extension bit set, Max
+            0x00, 0x00, //  Modifier 2, no extension bit
+            0x00, 0x00, 0x01, 0x54, //  Data
+            0x02, //  Status (FAILURE)
     };
 
     RfnCommandResult result = command.decodeCommand(decode_time, response);
@@ -353,7 +360,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
         "User message ID : 11235"
         "\nReply type      : 0"
         "\nTimestamp       : 02/17/2010 16:00:00"
-        "\n# Channel data  : 3"
+        "\n# Channel data  : 4"
         "\nChannel data 0  : Channel number : 23"
         "\n                  Status         : 0"
         "\n                  UOM            : Wh"
@@ -369,6 +376,11 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
         "\n                  UOM            : PF"
         "\n                  Modifiers      : {Max}"
         "\n                  Value          : 42"
+        "\nChannel data 3  : Channel number : 27"
+        "\n                  Status         : 2"
+        "\n                  UOM            : VA"
+        "\n                  Modifiers      : {Max}"
+        "\n                  Value          : 340"
         "\n# Dated data    : 1"
         "\nDated data 0    : Channel number : 25"
         "\n                  Status         : 0"
@@ -396,7 +408,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
 
     const auto& channelDataList = data.channelDataList;
 
-    BOOST_REQUIRE_EQUAL(channelDataList.size(), 3);
+    BOOST_REQUIRE_EQUAL(channelDataList.size(), 4);
 
     using cds = Cti::Messaging::Rfn::ChannelDataStatus;
     {
@@ -423,6 +435,15 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_time)
         const ModifierSet expectedModifiers { "Max" };
         BOOST_CHECK_EQUAL(channelData.unitOfMeasureModifiers, expectedModifiers);
         BOOST_CHECK_EQUAL(channelData.value, 42);
+    }
+    {
+        const auto& channelData = channelDataList[3];
+        BOOST_CHECK_EQUAL(channelData.channelNumber, 27);
+        BOOST_CHECK_EQUAL(channelData.status, cds::PARTIAL_READ_FAILURE);
+        BOOST_CHECK_EQUAL(channelData.unitOfMeasure, "VA");
+        const ModifierSet expectedModifiers{ "Max" };
+        BOOST_CHECK_EQUAL(channelData.unitOfMeasureModifiers, expectedModifiers);
+        BOOST_CHECK_EQUAL(channelData.value, 340);
     }
 
     const auto& datedChannelDataList = data.datedChannelDataList;
@@ -481,7 +502,7 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_coincident)
     };
 
     RfnCommandResult result = command.decodeCommand(decode_time, response);
-    
+
     BOOST_CHECK_EQUAL(result.description,
         "User message ID : 11235"
         "\nReply type      : 0"
@@ -516,13 +537,13 @@ BOOST_AUTO_TEST_CASE(test_read_fmt23_multiple_channels_with_coincident)
     using rt = Cti::Messaging::Rfn::RfnMeterReadingDataReplyType;
 
     BOOST_CHECK_EQUAL(responseMsg->replyType, rt::OK);
-    
+
     const auto& data = responseMsg->data;
 
     BOOST_CHECK_EQUAL(data.timeStamp, decode_time);
     BOOST_CHECK_EQUAL(data.rfnIdentifier, Cti::RfnIdentifier());
     BOOST_CHECK_EQUAL(data.recordInterval, 0);
-    
+
     const auto& channelDataList = data.channelDataList;
 
     BOOST_CHECK_EQUAL(channelDataList.size(), 0);

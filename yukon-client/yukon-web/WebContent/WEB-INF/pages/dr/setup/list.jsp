@@ -57,7 +57,7 @@
     <!-- Filter Inputs -->
     <hr>
         <div class="filter-section">
-            <span class="vat"><i:inline key="yukon.common.filterBy"/>&nbsp;</span>
+            <div class="vat"><i:inline key="yukon.common.filterBy"/></div>
             <div class="dib">
                 <cti:url value="/dr/setup/filter" var="filterUrl"/>
                 <form:form id="setupFilter" method="get" modelAttribute="lmSetupFilter" action="${filterUrl}">
@@ -101,7 +101,7 @@
                                                             endEvent="yukon:gear:filter:programSelected"
                                                             allowEmptySelection="true"/>
                     </div>
-                    <cti:button label="${filterLbl}" classes="primary action fr" type="submit"/>
+                    <cti:button label="${filterLbl}" classes="primary action fr MR0 ML5" type="submit"/>
                 </form:form>
             </div>
         </div>

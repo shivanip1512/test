@@ -1,7 +1,6 @@
 Logger:
   title: Logger
   required:
-    - type
     - level
     - loggerName
     - loggerType
@@ -17,6 +16,30 @@ Logger:
         enum:
           - SYSTEM_LOGGER
           - USER_LOGGER
+    level:
+        type: string
+        description: 'Logging level of the logger.'
+        enum:
+           - OFF
+           - FATAL
+           - ERROR
+           - WARN
+           - INFO
+           - DEBUG
+           - TRACE
+    expirationDate:
+        type: Date
+        description: 'Expiration date of the logger in MM/dd/yyyy format. Only applicable to USER_LOGGER.'
+    notes:
+        type: string
+        maxLength: 255
+        description: 'Notes for the logger.'
+Update Logger:
+  title: Logger
+  required:
+    - level
+  type: object
+  properties:
     level:
         type: string
         description: 'Logging level of the logger.'
@@ -84,6 +107,11 @@ components:
       value:
         loggerName: com.cannontech.test
         loggerType: USER_LOGGER
+        level: ERROR
+        expirationDate: 08/27/2021
+        notes: Sample notes
+    Update Logger Request:
+      value:
         level: ERROR
         expirationDate: 08/27/2021
         notes: Sample notes

@@ -231,11 +231,3 @@ bool LMGroupEatonCloud::sendNoControl( bool doRestore )
 
     return false;
 }
-
-bool LMGroupEatonCloud::doesStopRequireCommandAt( const CtiTime & currentTime ) const
-{
-    // Always send the stop at the end of control.
-
-    return true;
-}
-

@@ -23,8 +23,6 @@ public:
     bool sendCycleControl( CycleControlParameters parameters ) override;
     bool sendNoControl( bool doRestore ) override;
 
-    bool doesStopRequireCommandAt( const CtiTime & currentTime ) const override;
-
     std::size_t getFixedSize() const override   { return sizeof( *this ); }
 
 private:
