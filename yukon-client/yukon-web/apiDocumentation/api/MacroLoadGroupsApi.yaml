@@ -131,7 +131,7 @@ copy-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroupCopyResponse'
+              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroup Response Schema'
             examples:
               Macro Load Group Copy:
                 $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroupCopyResponse' 
