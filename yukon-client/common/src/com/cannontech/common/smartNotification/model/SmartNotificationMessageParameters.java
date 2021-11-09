@@ -3,6 +3,7 @@ package com.cannontech.common.smartNotification.model;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -29,6 +30,7 @@ public class SmartNotificationMessageParameters implements Serializable {
     private final List<String> recipients;
     private final List<SmartNotificationEvent> events;
     private final ProcessingType processingType;
+    private String duplicateRemovalDebugString;
     
     public SmartNotificationMessageParameters(SmartNotificationEventType type, SmartNotificationMedia media, 
                                               SmartNotificationVerbosity verbosity, Collection<String> recipients, 
@@ -36,7 +38,13 @@ public class SmartNotificationMessageParameters implements Serializable {
         this.type = type;
         this.media = media;
         this.verbosity = verbosity;
-        this.recipients = ImmutableList.copyOf(recipients);
+        //remove duplicates, 2 identical subscriptions
+        this.recipients = ImmutableList.copyOf(recipients.stream()
+                .distinct()
+                .collect(Collectors.toList()));
+        if(this.recipients.size() != recipients.size()) {
+            duplicateRemovalDebugString = "before:"+recipients+" after:"+ this.getRecipients();
+        }
         this.events = ImmutableList.copyOf(events);
         this.processingType = processingType;
     }
@@ -90,7 +98,7 @@ public class SmartNotificationMessageParameters implements Serializable {
         }
     }
     
-    private ToStringBuilder getLogMsg() {        
+    private ToStringBuilder getLogMsg() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
         tsb.appendSuper(super.toString());
         tsb.append("type", type);
@@ -99,6 +107,9 @@ public class SmartNotificationMessageParameters implements Serializable {
         tsb.append("recipients", recipients);
         tsb.append("events total", events.size());
         tsb.append("processing type", processingType);
+        if (duplicateRemovalDebugString != null) {
+            tsb.append("duplicate email removal", duplicateRemovalDebugString);
+        }
         return tsb;
     }
     

@@ -9,24 +9,17 @@ import com.cannontech.web.api.route.JsonDeserializeRouteTypeLookup;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+@JsonPropertyOrder({ "id", "name", "type", "signalTransmitterId", "defaultRoute", "carrierRoute", "repeaters" })
 @JsonIgnoreProperties(value = { "id" }, allowGetters = true, ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
 @JsonDeserialize(using = JsonDeserializeRouteTypeLookup.class)
 public class RouteBaseModel<T extends RouteBase> extends DeviceBaseModel implements DBPersistentConverter<T> {
 
-    private Integer routeId;
     private Integer signalTransmitterId;
     private Boolean defaultRoute;
-
-    public Integer getRouteId() {
-        return routeId;
-    }
-
-    public void setRouteId(Integer routeId) {
-        this.routeId = routeId;
-    }
 
     public Integer getSignalTransmitterId() {
         return signalTransmitterId;
@@ -46,10 +39,9 @@ public class RouteBaseModel<T extends RouteBase> extends DeviceBaseModel impleme
 
     @Override
     public void buildModel(T routeBase) {
-        setRouteId(routeBase.getRouteID());
         setDeviceId(routeBase.getRouteID());
         setDeviceName(routeBase.getRouteName());
-        setDefaultRoute(routeBase.getDefaultRoute() == "N" ? true : false);
+        setDefaultRoute(routeBase.getDefaultRoute().equals("N") ? false : true );
         setSignalTransmitterId(routeBase.getDeviceID());
     }
 
@@ -64,7 +56,7 @@ public class RouteBaseModel<T extends RouteBase> extends DeviceBaseModel impleme
         if (getSignalTransmitterId() != null) {
             routeBase.setDeviceID(getSignalTransmitterId());
         }
-        routeBase.setDefaultRoute(BooleanUtils.isFalse(getDefaultRoute()) ? "Y" : "N");
+        routeBase.setDefaultRoute(BooleanUtils.isFalse(getDefaultRoute()) ? "N" : "Y");
     }
 
 }

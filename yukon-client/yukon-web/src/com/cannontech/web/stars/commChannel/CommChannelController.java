@@ -221,7 +221,7 @@ public class CommChannelController {
             }
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl);
             ResponseEntity<? extends Object> response =
-                    apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, commChannel);
+                    apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, PortBase.class, commChannel);
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(commChannel, "commChannel");
@@ -233,9 +233,9 @@ public class CommChannelController {
             }
 
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
-                HashMap<String, Integer> savedCommChannel = (HashMap<String, Integer>) response.getBody();
+                PortBase savedCommChannel = (PortBase) response.getBody();
                 Map<String, Object> json = new HashMap<>();
-                json.put("id", savedCommChannel.get("id"));
+                json.put("id", savedCommChannel.getDeviceId());
                 resp.setContentType("application/json");
                 JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", commChannel.getDeviceName()));

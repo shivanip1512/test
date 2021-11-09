@@ -120,8 +120,8 @@ public class EatonCloudMessageListener {
                             List.of(ControlEventDeviceStatus.SUCCESS_RECEIVED));
                     executor.execute(() -> {
                         if (!devicesToRead.isEmpty()) {
-                            Multimap<PaoIdentifier, PointData> result = eatonCloudDataReadService.collectDataForRead(devicesToRead, range);
-                            log.info("Reading devices: {} Read succeeded for {} devices event id: {} for date range:{}-{} [original command sent at {}] ", 
+                            Multimap<PaoIdentifier, PointData> result = eatonCloudDataReadService.collectDataForRead(devicesToRead, range, "READ AFTER SHED");
+                            log.info("Reading (READ AFTER SHED) devices: {} Read succeeded for {} devices event id: {} for date range:{}-{} [original command sent at {}] ", 
                                     devicesToRead.size(),
                                     result.asMap().keySet().size(),
                                     eventId,
@@ -129,7 +129,7 @@ public class EatonCloudMessageListener {
                                     range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
                                     sendTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
                         } else {
-                            log.info("Can't find find devices to read. Devices with status SUCCESS_RECEIVED not found for event id: {} for date range:{}-{} [original command sent at {}] ", 
+                            log.info("Can't find find devices to read (READ AFTER SHED). Devices with status SUCCESS_RECEIVED not found for event id: {} for date range:{}-{} [original command sent at {}] ", 
                                     eventId,
                                     range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
                                     range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
@@ -385,7 +385,7 @@ public class EatonCloudMessageListener {
          * https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=137056391
          * 
          *                RampIN - TRUE | RampIN - FALSE
-         * randomization|        1      |        0
+         * randomization|        2      |        0
          * 
          *               RampOUT - TRUE | RampOUT - FALSE
          * stop flag    |        1      |         0
@@ -398,7 +398,7 @@ public class EatonCloudMessageListener {
         params.put(CommandParam.START_TIME.getParamName(), startTimeSeconds);
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
         params.put(CommandParam.CRITICALITY.getParamName(), command.getCriticality());
-        params.put(CommandParam.RANDOMIZATION.getParamName(), command.getIsRampIn() ? 1 : 0);
+        params.put(CommandParam.RANDOMIZATION.getParamName(), command.getIsRampIn() ? 2 : 0);
         params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
         params.put(CommandParam.STOP_TIME.getParamName(), stopTimeSeconds);
         params.put(CommandParam.STOP_FLAGS.getParamName(), command.getIsRampOut() ? 1 : 0);

@@ -1,15 +1,15 @@
 VIRTUAL_SYSTEM:
   title: VIRTUAL_SYSTEM
   required:
-    - type
-    - name
+    - deviceType
+    - deviceName
   type: object
   properties:
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name of the virtual device.'
-    type:
+    deviceType:
       type: string
       description: 'Type of the virtual device.'
       enum:
@@ -22,16 +22,16 @@ VIRTUAL_SYSTEM:
 VIRTUAL_METER:
   title: VIRTUAL_METER
   required:
-    - type
-    - name
+    - deviceType
+    - deviceName
     - meterNumber
   type: object
   properties:
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name of the virtual device.'
-    type:
+    deviceType:
       type: string
       description: 'Type of the virtual device.'
       enum:
@@ -58,14 +58,14 @@ VIRTUAL_SYSTEM Response Schema:
   title: VIRTUAL_SYSTEM
   type: object
   properties:
-    id:
+    deviceId:
       type: integer
       description: 'Unique identifier for the virtual system.'
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name of the virtual device.'
-    type:
+    deviceType:
       type: string
       description: 'Type of the virtual device.'
       enum:
@@ -79,14 +79,14 @@ VIRTUAL_METER Response Schema:
   title: VIRTUAL_METER
   type: object
   properties:
-    id:
+    deviceId:
       type: integer
       description: 'Unique identifier for the virtual meter.'
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name of the virtual device.'
-    type:
+    deviceType:
       type: string
       description: 'Type of the virtual device.'
       enum:
@@ -129,29 +129,29 @@ components:
   examples:
     Virtual System Request: 
       value:
-        type: VIRTUAL_SYSTEM
-        name: virtual system
+        deviceType: VIRTUAL_SYSTEM
+        deviceName: virtual system
         enable: true
 
     Virtual Meter Request:
       value:
-        type: VIRTUAL_METER
-        name: Virtual meter
+        deviceType: VIRTUAL_METER
+        deviceName: Virtual meter
         enable: true
         meterNumber: '123312321321'
 
     Virtual System Response: 
       value:
-        id: 7
-        type: VIRTUAL_SYSTEM
-        name: virtual system
+        deviceId: 7
+        deviceType: VIRTUAL_SYSTEM
+        deviceName: virtual system
         enable: true
             
     Virtual Meter Response:
       value:
-        id: 8
-        type: VIRTUAL_METER
-        name: Virtual meter
+        deviceId: 8
+        deviceType: VIRTUAL_METER
+        deviceName: Virtual meter
         enable: true
         meterNumber: '123312321321'
 
@@ -165,28 +165,28 @@ components:
         itemsPerPage: 250
         totalItems: 6
         items:
-          - id: 2942
-            type: VIRTUAL_SYSTEM
-            name: Postman Virtual Device Test
+          - deviceId: 2942
+            deviceType: VIRTUAL_SYSTEM
+            deviceName: Postman Virtual Device Test
             enable: false
-          - id: 2013
-            type: VIRTUAL_SYSTEM
-            name: Postman Virtual DeviceTest
+          - deviceId: 2013
+            deviceType: VIRTUAL_SYSTEM
+            deviceName: Postman Virtual DeviceTest
             enable: false
-          - id: 2134
-            type: VIRTUAL_SYSTEM
-            name: Sim RTU 0_00
+          - deviceId: 2134
+            deviceType: VIRTUAL_SYSTEM
+            deviceName: Sim RTU 0_00
             enable: true
-          - id: 2522
-            type: VIRTUAL_METER
-            name: VMMeterTest
+          - deviceId: 2522
+            deviceType: VIRTUAL_METER
+            deviceName: VMMeterTest
             enable: true
             meterNumber: '123312321321'
-          - id: 2943
-            type: VIRTUAL_SYSTEM
-            name: Virtual Device Test
+          - deviceId: 2943
+            deviceType: VIRTUAL_SYSTEM
+            deviceName: Virtual Device Test
             enable: true
-          - id: 2012
-            type: VIRTUAL_SYSTEM
-            name: virtualD
+          - deviceId: 2012
+            deviceType: VIRTUAL_SYSTEM
+            deviceName: virtualD
             enable: true

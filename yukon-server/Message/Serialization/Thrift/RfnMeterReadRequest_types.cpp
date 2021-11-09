@@ -83,17 +83,33 @@ std::string to_string(const RfnMeterReadingDataReplyType::type& val) {
 
 int _kChannelDataStatusValues[] = {
   ChannelDataStatus::OK,
-  ChannelDataStatus::TIMEOUT,
-  ChannelDataStatus::FAILURE,
-  ChannelDataStatus::LONG
+  ChannelDataStatus::PARTIAL_READ_TIMEOUT,
+  ChannelDataStatus::PARTIAL_READ_FAILURE,
+  ChannelDataStatus::PARTIAL_READ_LONG,
+  ChannelDataStatus::FULL_READ_PASSWORD_ERROR,
+  ChannelDataStatus::FULL_READ_BUSY_ERROR,
+  ChannelDataStatus::FULL_READ_TIMEOUT_ERROR,
+  ChannelDataStatus::FULL_READ_PROTOCOL_ERROR,
+  ChannelDataStatus::FULL_READ_NO_SUCH_CHANNEL_ERROR,
+  ChannelDataStatus::FULL_READ_READ_RESPONSE_ERROR_UNKNOWN,
+  ChannelDataStatus::FULL_READ_UNKNOWN,
+  ChannelDataStatus::FAILURE
 };
 const char* _kChannelDataStatusNames[] = {
   "OK",
-  "TIMEOUT",
-  "FAILURE",
-  "LONG"
+  "PARTIAL_READ_TIMEOUT",
+  "PARTIAL_READ_FAILURE",
+  "PARTIAL_READ_LONG",
+  "FULL_READ_PASSWORD_ERROR",
+  "FULL_READ_BUSY_ERROR",
+  "FULL_READ_TIMEOUT_ERROR",
+  "FULL_READ_PROTOCOL_ERROR",
+  "FULL_READ_NO_SUCH_CHANNEL_ERROR",
+  "FULL_READ_READ_RESPONSE_ERROR_UNKNOWN",
+  "FULL_READ_UNKNOWN",
+  "FAILURE"
 };
-const std::map<int, const char*> _ChannelDataStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kChannelDataStatusValues, _kChannelDataStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _ChannelDataStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(12, _kChannelDataStatusValues, _kChannelDataStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 std::ostream& operator<<(std::ostream& out, const ChannelDataStatus::type& val) {
   std::map<int, const char*>::const_iterator it = _ChannelDataStatus_VALUES_TO_NAMES.find(val);

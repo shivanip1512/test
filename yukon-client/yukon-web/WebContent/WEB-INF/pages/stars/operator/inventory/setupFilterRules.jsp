@@ -31,7 +31,7 @@
                     <span class="empty-list"><i:inline key=".noRules"/></span>
                 </c:when>
                 <c:otherwise>
-                    <table class="compact-results-table with-form-controls">
+                    <table class="compact-results-table with-form-controls no-stripes">
                         <tbody>
                             <c:forEach items="${filterModel.filterRules}" var="rule" varStatus="row">
                                 <tr>

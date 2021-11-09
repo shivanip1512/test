@@ -36,7 +36,7 @@
     <cti:url var="updateSettingsUrl" value="updateSettings"/>
 	<form:form id="eatonCloudForm" action="${updateSettingsUrl}" modelAttribute="settings" method="post">
         <cti:csrfToken/>
-        <table class="compact-results-table">
+        <table class="compact-results-table no-stripes">
             <thead>
                 <tr>
                     <th>Endpoint</th>
@@ -154,6 +154,21 @@
             <tags:nameValue name="Read LCRs" nameColumnWidth="250px">
                 <cti:button label="Submit" type="submit" classes="fn vam"/>
                 <form:form id="autoReadForm" action="${autoReadUrl}" method="post"/>
+                <cti:csrfToken/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+    </form:form>
+    
+        <div class="notes">
+        <br/>Force Runtime Calculation
+     </div>
+    <br/>
+    <cti:url var="forceRuntimeCalcUrl" value="forceRuntimeCalc"/>
+    <form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}" method="post">
+        <tags:nameValueContainer>
+            <tags:nameValue name="" nameColumnWidth="250px">
+                <cti:button label="Submit" type="submit" classes="fn vam"/>
+                <form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}" method="post"/>
                 <cti:csrfToken/>
             </tags:nameValue>
         </tags:nameValueContainer>

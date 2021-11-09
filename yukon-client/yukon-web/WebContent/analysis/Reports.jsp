@@ -293,7 +293,7 @@ function makeFirstSelectedFilterValueVisible () {
                   </table>
                 </td>
                 <td class="main">&nbsp;</td>
-                <td valign="top" style="padding-left:5; padding-top:5">
+                <td class="vat" style="padding-left:5; padding-top:5">
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
                     <tr>
                       <td valign="bottom">
@@ -308,7 +308,7 @@ function makeFirstSelectedFilterValueVisible () {
                   </table>
                 </td>
                 <td class="main">&nbsp;</td>
-                <td valign="top" style="padding-left:5; padding-top:5">
+                <td class="vat" style="padding-left:5; padding-top:5">
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">                
                     <tr>
                       <td valign="bottom">        
@@ -323,7 +323,7 @@ function makeFirstSelectedFilterValueVisible () {
                   </table>
                 </td>
                 <td class="main">&nbsp;</td>
-                <td valign="top" class="main" style="padding-left:5; padding-top:5">
+                <td valign="top" class="main vat" style="padding-left:5; padding-top:5">
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
                     <tr>
                       <td class="main">
