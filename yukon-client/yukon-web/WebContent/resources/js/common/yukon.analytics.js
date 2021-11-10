@@ -36,6 +36,7 @@ yukon.analytics = (function() {
         '/picker/search': 1,
         '/amr/dataCollection/updateChart': 1,
         '/stars/infrastructureWarnings/updateWidget': 1,
+        '/widget/configWidget/getStatus': 1,
     },
     
     _gtag = function() {
