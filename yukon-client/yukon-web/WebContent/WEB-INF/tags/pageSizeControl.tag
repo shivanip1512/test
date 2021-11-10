@@ -8,18 +8,11 @@
 <%@ attribute name="hundreds" type="java.lang.Boolean" description="When 'true', the '100' items per page options will appear. Default: 'false'." %>
 <%@ attribute name="thousands" type="java.lang.Boolean" description="When 'true', the '1000' items per page options will appear and '25' and '50' will no longer appear. Default: 'false'." %>
 
-<c:choose>
-    <c:when test="${!thousands}">
-        <c:set var="pageSizeOptions" value="${!hundreds ? '10,25,50' : '10,25,50,100'}"/>
-    </c:when>
-    <c:otherwise>
-        <c:set var="pageSizeOptions" value="250,500,1000"/>
-    </c:otherwise>
-</c:choose>
+<c:set var="pageSizeOptions" value="10,25,50,100,250,500,1000"/>
 
 <span class="fl page-size">
     <i:inline key="yukon.common.paging.itemsPerPage"/>&nbsp;
-    <select class="js-items-per-page" data-page-size="${count}">
+    <select class="js-items-per-page paging-dropdown" data-page-size="${count}">
         <c:forTokens var="itemsPerPage" items="${pageSizeOptions}" delims=",">
             <c:set var="selectedText" value="${itemsPerPage == count ? 'selected=selected' : ''}"/>
             <option ${selectedText}>${itemsPerPage}</option>
