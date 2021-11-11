@@ -92,7 +92,7 @@ MacroLoadGroupCopyResponse:
   title: Macro Load Group Copy Response
   type: object
   properties:
-    paoId:
+    id:
       type: integer
       description: 'Unique identifier of the copied macro load group.' 
                        
@@ -123,6 +123,7 @@ components:
             name: Test Itron
             type: LM_GROUP_ITRON
 
+
     MacroLoadGroupId:
       value:
         id: 11
@@ -131,7 +132,17 @@ components:
       value:
         LOAD_GROUP_COPY:
           name: Macro Load Group copy
+
     MacroLoadGroupCopyResponse:
       value:
-        paoId: 21456
+        id: 21456
+        name: Macro Load Group copy
+        type: MACRO_GROUP
+        assignedLoadGroups:
+          - id: 1
+            name: Test MCT
+            type: LM_GROUP_MCT
+          - id: 2
+            name: Test Itron
+            type: LM_GROUP_ITRON
         
