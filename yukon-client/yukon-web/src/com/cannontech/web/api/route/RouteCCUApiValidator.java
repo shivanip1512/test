@@ -3,6 +3,7 @@ package com.cannontech.web.api.route;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -28,12 +29,6 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
             for (RepeaterRouteModel repeaterRouteModel : route.getRepeaters()) {
                 validateRepeater(repeaterRouteModel, errors, repeaterArrSize, count, count == repeaterArrSize - 1);
                 count++;
-            }
-            List<RepeaterRouteModel> types = route.getRepeaters().stream().filter(
-                    repeater -> dbCache.getAllPaosMap().get(repeater.getRepeaterId()).getPaoType() == PaoType.REPEATER_850)
-                    .collect(Collectors.toList());
-            if (types.size() > 1) {
-                // reject
             }
         }
         if (route.getCarrierRoute() != null) {

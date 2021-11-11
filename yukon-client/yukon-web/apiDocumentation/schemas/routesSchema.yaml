@@ -77,7 +77,7 @@ repeaters:
         description: 'Repeater Route Id.'
       variableBits:
         type: integer
-        range : 0-7
+        range : 1-7
         description: 'VariableBits for Repeater Route.Last Repeater bit is always 7, all other cases variable bit range b\w 1-6'
       repeaterOrder:
         type: integer
