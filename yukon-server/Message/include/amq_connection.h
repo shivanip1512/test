@@ -9,40 +9,28 @@
 #include <proton/message.hpp>
 #include <proton/session.hpp>
 
-//#include <boost/optional.hpp>
-
 #include <chrono>
 #include <queue>
-#include <condition_variable>
 #include <variant>
 
-namespace cms {
-class Connection;
-class Session;
-class Message;
-class MessageProducer;
-class Destination;
-class TemporaryQueue;
-}
-
-namespace Cti {
-namespace Messaging {
-namespace Qpid {
-
+namespace Cti::Messaging
+{
+namespace Qpid
+{
 class ManagedConnection;
 class QueueConsumer;
 class QueueProducer;
 class TempQueueConsumer;
 class MessageListener;
 
-namespace Queues {
+namespace Queues
+{
 class OutboundQueue;
 class InboundQueue;
-}
-}
+}   // Queues
+}   // Qpid
 
 class IM_EX_MSG ActiveMQConnectionManager :
-//    private CtiThread,
     public BaseConnection,
     public proton::messaging_handler
 {
@@ -153,6 +141,7 @@ public:
 
     void on_connection_open( proton::connection & c ) override;
     void on_connection_close( proton::connection & c ) override;
+    void on_session_open( proton::session & s ) override;
     	
 protected:
 
@@ -171,43 +160,11 @@ protected:
     struct Envelope
     {
         std::string queueName;
-
         ReturnLabel returnAddress;
-
         proton::message message;
     };
 
-    struct Reply
-    {
-        SerializedMessage message;
-        std::string dest;
-    };
-
-    using EnvelopeQueue        = std::queue<std::unique_ptr<Envelope>>;
-    using ReplyQueue           = std::queue<Reply>;
-    using IncomingPerQueue     = std::map<const Qpid::Queues::InboundQueue *, std::queue<std::unique_ptr<MessageDescriptor>>>;
-    using CallbacksPerQueue    = std::multimap<const Qpid::Queues::InboundQueue *, MessageCallback::Ptr>;
-    using RepliesByDestination = std::multimap<std::string, std::unique_ptr<MessageDescriptor>>;
-
-    struct MessagingTasks
-    {
-        EnvelopeQueue        outgoingMessages;
-        ReplyQueue           outgoingReplies;
-        IncomingPerQueue     incomingMessages;
-        CallbacksPerQueue    newCallbacks;
-        RepliesByDestination tempQueueReplies;
-        RepliesByDestination sessionReplies;
-
-        MessagingTasks() = default;
-        MessagingTasks(MessagingTasks&&) = default;
-        MessagingTasks& operator=(MessagingTasks&&) = default;
-
-        bool empty() const;
-    };
-
-    MessagingTasks getTasks();
-
-    void processTasks(MessagingTasks tasks);
+    using CallbacksPerQueue = std::multimap<const Qpid::Queues::InboundQueue *, MessageCallback::Ptr>;
 
     std::string makeDestinationForReturnAddress(ReturnAddress returnAddress);
 
@@ -227,28 +184,18 @@ protected:
     void addNewCallback(const Qpid::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
     void addNewCallback(const Qpid::Queues::InboundQueue& queue, MessageCallbackWithReplies callback);
         
-//jmoc     virtual void kickstart();
     virtual void createConsumersForCallbacks(const CallbacksPerQueue &callbacks);
 
 private:
 
-    void run();
-
     CtiCriticalSection _closeConnectionMux;
 
-    std::mutex _taskMux;
-    std::condition_variable _newTask;
+    std::mutex _callbackMux;
 
-    //  Connection/session objects
-//    std::unique_ptr<Qpid::ManagedConnection> _connection;
-//    std::unique_ptr<cms::Session> _producerSession;
-//    std::unique_ptr<cms::Session> _consumerSession;
     proton::session _brokerSession;
 
-    MessagingTasks _newTasks;
-
-    template<class Container, typename... Arguments>
-    void emplaceTask(Container& c, Arguments&&... args);
+    template<typename... Arguments>
+    void emplaceCallback(Arguments&&... args);
         
     using ProducersByQueueName = std::map<std::string, std::unique_ptr<Qpid::QueueProducer>>;
     ProducersByQueueName _producers;
@@ -288,25 +235,18 @@ private:
 
     std::multimap<CtiTime, ExpirationHandler> _replyExpirations;
 
-    enum
-    {
-        DefaultTimeToLiveMillis = 3600 * 1000  //  1 hour
-    };
-
-//    bool verifyConnectionObjects();
     void releaseConnectionObjects();
-
-    void updateCallbacks(CallbacksPerQueue newCallbacks);
 
     void createNamedConsumer(const Qpid::Queues::InboundQueue *inboundQueue);
     std::string createSessionConsumer(const SessionCallback callback);
 
-    void sendOutgoingMessages(EnvelopeQueue messages);
-    void sendOutgoingReplies (ReplyQueue replies);
+    void sendOutgoingMessage( Envelope & e );
     Qpid::QueueProducer &getQueueProducer( proton::session & session, const std::string & queue );
 
     std::string getJMSType( proton::message & msg ) const;
+
+    void expiry_periodic_task();
 };
 
 }
-}
+

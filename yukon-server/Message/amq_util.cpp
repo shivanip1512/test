@@ -284,6 +284,7 @@ ManagedProducer::ManagedProducer( proton::session & sess, const std::string & de
 
 ManagedProducer::~ManagedProducer()
 {
+   _producer.close();
 }
 
 void ManagedProducer::setTimeToLiveMillis( std::chrono::milliseconds time )
@@ -345,6 +346,7 @@ ManagedConsumer::ManagedConsumer( proton::session & sess, const std::string & de
 
 ManagedConsumer::~ManagedConsumer()
 {
+    _consumer.close();
 }
 
 void ManagedConsumer::setMessageListener( Qpid::MessageListener *listener )

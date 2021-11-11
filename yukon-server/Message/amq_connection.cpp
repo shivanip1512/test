@@ -12,8 +12,6 @@
 
 #include "utility.h"
 
-#include "cms/connectionfactory.h"
-
 #include "logger.h"
 #include "dllbase.h"  //  for getDebugLevel() and DEBUGLEVEL_ACTIVITY_INFO
 
@@ -28,15 +26,12 @@
 
 #include "proton_encoder_proxy.h"
 
-
 #include <proton/types.hpp>
 #include <proton/connection_options.hpp>
 #include <proton/reconnect_options.hpp>
 #include <proton/session_options.hpp>
 #include <proton/work_queue.hpp>
 
-
-//#include <boost/optional.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/adaptor/adjacent_filtered.hpp>
 #include <boost/range/adaptor/filtered.hpp>
@@ -64,9 +59,10 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
     }
     catch(...)
     {
-
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
+
 
 void ActiveMQConnectionManager::on_connection_open( proton::connection & c )
 {
@@ -74,35 +70,38 @@ void ActiveMQConnectionManager::on_connection_open( proton::connection & c )
 
     if ( ! c.reconnected() )
     {
-
         proton::session_options options;
         options.handler( *this );
 
         _brokerSession = c.open_session( options );
-
-
-    //    register callbacks
-
     }
-    else
-    {
-        //  ?
-    }
-
-
-
-
 
     CTILOG_INFO(dout, "Broker session established");
 }
 
+
 void ActiveMQConnectionManager::on_connection_close( proton::connection & c )
 {
-
     CTILOG_INFO(dout, "Broker connection closed");
-
-
 }
+
+
+void ActiveMQConnectionManager::on_session_open( proton::session & s )
+{
+    // register callbacks
+
+    createConsumersForCallbacks( _namedCallbacks );
+
+    // start the processing of the expirations
+
+    s.work_queue()
+        .schedule( 5 * proton::duration::SECOND,
+                   [ this ]()
+                   {
+                       this->expiry_periodic_task();
+                   } );
+}
+
 
 void ActiveMQConnectionManager::start()
 {
@@ -129,23 +128,20 @@ void ActiveMQConnectionManager::start()
 
 void ActiveMQConnectionManager::close()
 {
-//    if( isRunning() )
-    {
-  //      interrupt(CtiThread::SHUTDOWN);
-
-        {
-            CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
-
-      //      if( _connection )
-            {
-       //         _connection->close();
-            }
-        }
-
-    //    join(); // outside lock to avoid deadlock
-    }
+    // this closes all the producers and consumers - link is closed in their destructors
 
     releaseConnectionObjects();
+
+    // close the session and connection
+    {
+        CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
+
+        auto connection = _brokerSession.connection();
+
+        _brokerSession.close();
+
+        connection.close();
+    }
 }
 
 inline bool debugActivityInfo()
@@ -163,158 +159,8 @@ void ActiveMQConnectionManager::releaseConnectionObjects()
     _replyConsumers.clear();
     _sessionConsumers.clear();
     _sessionConsumerDestinations.clear();
-
-//    _producerSession.reset();
-//    _consumerSession.reset();
-
-//    _connection.reset();
 }
 
-
-bool ActiveMQConnectionManager::MessagingTasks::empty() const
-{
-    return newCallbacks    .empty()
-        && outgoingMessages.empty()
-        && outgoingReplies .empty()
-        && tempQueueReplies.empty()
-        && sessionReplies  .empty()
-        && incomingMessages.empty();
-}
-
-
-auto ActiveMQConnectionManager::getTasks() -> MessagingTasks
-{
-    MessagingTasks tasks;
-
-    std::swap(tasks, _newTasks);
-
-    return tasks;
-}
-
-// jmoc
-// this is a thread thing that isn't running anymore because we aren't deriving from CtiThread anymore...
-// 
-void ActiveMQConnectionManager::run()
-{
-    while( false ) //jmoc  ! isSet(SHUTDOWN) )
-    {
-        try
-        {
-//            if( verifyConnectionObjects() )
-            if( true )
-            {
-                MessagingTasks tasks;
-
-                {
-                    std::unique_lock taskLock(_taskMux);
-
-                    tasks = getTasks();
-
-                    while( tasks.empty() ) // jmoc  && ! isSet(SHUTDOWN)  )
-                    {
-                        _newTask.wait_for(taskLock, std::chrono::seconds(5));  //  only wait for 5 seconds to expedite shutdown
-
-                        tasks = getTasks();
-                    }
-                }
-
-                processTasks(std::move(tasks));
-            }
-        }
-        catch( Qpid::ConnectionException &e )
-        {
-            releaseConnectionObjects();
-//            if (!isSet(SHUTDOWN))
-//            {
-                CTILOG_EXCEPTION_ERROR(dout, e, "Unable to connect to the broker");
-//            }
-        }
-        catch( proton::error &e )
-        {
-            releaseConnectionObjects();
-
-//            if (!isSet(SHUTDOWN))
-//            {
-                CTILOG_EXCEPTION_ERROR(dout, e);
-//            }
-        }
-    }
-}
-
-
-void ActiveMQConnectionManager::processTasks(MessagingTasks tasks)
-{
-    updateCallbacks         (std::move(tasks.newCallbacks));    // not a thing - done on connection::open along w/ session
-    sendOutgoingMessages    (std::move(tasks.outgoingMessages));// lambdas thrown on work_queue for outbound
-    sendOutgoingReplies     (std::move(tasks.outgoingReplies));// ditto this guy
-//    dispatchTempQueueReplies(std::move(tasks.tempQueueReplies));// messages we get in the on_message for the session - lookup and call the callbacks maybe?? or put on a inqueue-then new thread to do the magic
-//    dispatchSessionReplies  (std::move(tasks.sessionReplies));//ditto
-//    dispatchIncomingMessages(std::move(tasks.incomingMessages));//ditto
-}
-
-#if 0
-bool ActiveMQConnectionManager::verifyConnectionObjects()
-{
-    if( ! _connection ||
-        ! _connection->verifyConnection() )
-    {
-        CTILOG_INFO(dout, "Connection invalid, creating connection");
-
-        releaseConnectionObjects();
-
-        {
-            CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
-
-// jmoc
-//            if( isSet(SHUTDOWN) )
-//            {
-//                return false; // prevent starting a new connection while closing
-//            }
-
-            const auto broker_host = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerHost, Qpid::Broker::defaultHost);
-            const auto broker_port = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerPort, Qpid::Broker::defaultPort);
-
-            // the idle timeout
-            const auto idle = GlobalSettings::getInteger( GlobalSettings::Integers::MaxInactivityDuration, 30 );    // seconds
-
-            proton::connection_options  options;
-
-            options
-                .handler( *this )
-                .idle_timeout( idle * proton::duration::SECOND )
-                .reconnect( proton::reconnect_options()
-                                .delay( 1 * proton::duration::SECOND )
-                                .max_delay( 30 * proton::duration::SECOND )
-                                .max_attempts( 120 )
-                            );
-
-            _connection = std::make_unique<Qpid::ManagedConnection>( Qpid::Broker::protocol + broker_host + ":" + broker_port, options );
-        }
-
-        _connection->start(); // start the connection outside the lock
-
-        CTILOG_INFO(dout, "ActiveMQ CMS connection established");
-    }
-/*
-    if( ! _producerSession.get() )
-    {
-        CTILOG_INFO(dout, "Producer session invalid, creating producer");
-
-        _producerSession = _connection->createSession();
-    }
-
-    if( ! _consumerSession.get() )
-    {
-        CTILOG_INFO(dout,  "Consumer session invalid, creating consumer");
-
-        _consumerSession = _connection->createSession();
-
-        createConsumersForCallbacks(_namedCallbacks);
-    }
-*/
-    return true;
-}
-#endif
 
 void ActiveMQConnectionManager::createConsumersForCallbacks(const CallbacksPerQueue &callbacks)
 {
@@ -415,74 +261,35 @@ std::string ActiveMQConnectionManager::createSessionConsumer(const SessionCallba
 }
 
 
-void ActiveMQConnectionManager::updateCallbacks(CallbacksPerQueue newCallbacks)
+void ActiveMQConnectionManager::sendOutgoingMessage( Envelope & e )
 {
-    createConsumersForCallbacks(newCallbacks);
-
-    std::move(newCallbacks.begin(),
-              newCallbacks.end(),
-              std::inserter(_namedCallbacks, _namedCallbacks.end()));
-}
-
-
-void ActiveMQConnectionManager::sendOutgoingMessages(EnvelopeQueue messages)
-{
-    while( ! messages.empty() )         // how unroll loops...?
+    if( debugActivityInfo() )
     {
-        auto e = std::move(messages.front());
+        CTILOG_DEBUG(dout, "Sending outgoing message for queue " << e.queueName);
+    }
 
-        messages.pop();
+    if( e.returnAddress )
+    {
+        auto destination = makeDestinationForReturnAddress(std::move(*e.returnAddress));
 
-        auto message = e->message;
+        if ( destination.empty() )
+        {
+            CTILOG_ERROR( dout, "No reply-to destination found for message for queue " << e.queueName << " - aborting send." );
+
+            return;
+        }
 
         if( debugActivityInfo() )
         {
-            CTILOG_DEBUG(dout, "Sending outgoing message for queue " << e->queueName);
+            CTILOG_DEBUG(dout, "Setting reply-to destination " << destination << " on message for queue " << e.queueName);
         }
 
-        if( e->returnAddress )
-        {
-            auto destination = makeDestinationForReturnAddress(std::move(*e->returnAddress));
-
-            // oh no - if i get empty string i be mad!!!
-
-
-            if( debugActivityInfo() )
-            {
-                CTILOG_DEBUG(dout, "Setting reply-to destination " << destination << " on message for queue " << e->queueName);
-            }
-
-            message.reply_to( destination );
-        }
-
-        Qpid::QueueProducer & queueProducer = getQueueProducer( _brokerSession, e->queueName );
-
-        queueProducer.send( message );
+        e.message.reply_to( destination );
     }
-}
 
+    Qpid::QueueProducer & queueProducer = getQueueProducer( _brokerSession, e.queueName );
 
-void ActiveMQConnectionManager::sendOutgoingReplies(ReplyQueue replies)
-{
-    while( ! replies.empty() )
-    {
-        const auto& reply = replies.front();
-
-        auto replyProducer = Qpid::createDestinationProducer( _brokerSession, reply.dest );
-
-        if( debugActivityInfo() )
-        {
-            CTILOG_DEBUG(dout, "Sending outgoing reply to destination " << replyProducer->getDestination());
-        }
-
-        proton::message m;      // this ok??  also unroll loops...?
-
-        m.body( proton::binary{ std::cbegin(reply.message), std::cend(reply.message) } );
-
-        replyProducer->send( m );
-
-        replies.pop();
-    }
+    queueProducer.send( e.message );
 }
 
 
@@ -600,6 +407,7 @@ void ActiveMQConnectionManager::enqueueMessage(const Qpid::Queues::OutboundQueue
     gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, nullptr);
 }
 
+
 template<typename Msg>
 struct DeserializationHelper : ActiveMQConnectionManager::MessageCallback
 {
@@ -684,13 +492,6 @@ void ActiveMQConnectionManager::enqueueMessageWithSessionCallback(
 }
 
 
-template<class T, class U>
-void emplaceHelper(std::queue<T>& q, U && value)
-{
-    q.emplace(std::move(value));
-}
-
-
 template<class T, class U, class V>
 void emplaceHelper(std::multimap<T, U>& mm, T key, V && value)
 {
@@ -698,21 +499,12 @@ void emplaceHelper(std::multimap<T, U>& mm, T key, V && value)
 }
 
 
-template<class T, class U>
-void emplaceHelper(std::map<T, std::queue<U>>& m, T key, U && value)
+template<typename... Arguments>
+void ActiveMQConnectionManager::emplaceCallback(Arguments&&... args)
 {
-    m[key].emplace(std::move(value));
-}
+    std::unique_lock lock(_callbackMux);
 
-
-template<class Container, typename... Arguments>
-void ActiveMQConnectionManager::emplaceTask(Container& c, Arguments&&... args)
-{
-    std::unique_lock taskLock(_taskMux);
-
-    emplaceHelper(c, std::move(args)...);
-
-    _newTask.notify_one();
+    emplaceHelper(_namedCallbacks, std::move(args)...);
 }
 
 
@@ -727,20 +519,20 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
         return;
     }
 
-    auto e = std::make_unique<Envelope>();
+    Envelope e;
 
     {
         // The proxy destructor inserts the finish() token into the stream. the e->message isn't complete until the
         // proxy object is destroyed, hence the convoluted code... looking for a better way - jmoc
 
-        Proton::EncoderProxy proxy( e->message );
+        Proton::EncoderProxy proxy( e.message );
         message->streamInto( proxy );
     }
 
-    e->queueName = queueName;
-    e->returnAddress = std::move(returnAddress);
+    e.queueName = queueName;
+    e.returnAddress = std::move(returnAddress);
 
-    emplaceTask(_newTasks.outgoingMessages, std::move(e));
+    sendOutgoingMessage( e );
 }
 
 
@@ -749,18 +541,18 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
         const SerializedMessage &message,
         ReturnLabel returnAddress)
 {
-    auto e = std::make_unique<Envelope>();
+    Envelope e;
 
-    e->queueName = queueName;
-    e->returnAddress = std::move(returnAddress);
-    e->message.body( proton::binary{ std::cbegin(message), std::cend(message) } );
+    e.queueName = queueName;
+    e.returnAddress = std::move(returnAddress);
+    e.message.body( proton::binary{ std::cbegin(message), std::cend(message) } );
 
     if( debugActivityInfo() )
     {
         CTILOG_DEBUG(dout,  "Enqueuing outbound message for queue \"" << queueName << "\"" << std::endl << message);
     }
 
-    emplaceTask(_newTasks.outgoingMessages, std::move(e));
+    sendOutgoingMessage( e );
 }
 
 
@@ -773,7 +565,18 @@ void ActiveMQConnectionManager::enqueueOutgoingReply(
         CTILOG_DEBUG(dout, "Enqueuing outbound reply" << std::endl << message);
     }
 
-    emplaceTask(_newTasks.outgoingReplies, Reply { message, dest });
+    auto replyProducer = Qpid::createDestinationProducer( _brokerSession, dest );
+
+    if( debugActivityInfo() )
+    {
+        CTILOG_DEBUG(dout, "Sending outgoing reply to destination " << replyProducer->getDestination());
+    }
+
+    proton::message m;      // this ok??  also unroll loops...?
+
+    m.body( proton::binary{ std::cbegin(message), std::cend(message) } );
+
+    replyProducer->send( m );
 }
 
 
@@ -825,7 +628,7 @@ auto ActiveMQConnectionManager::registerSessionCallback(MessageCallback::type ca
 
 void ActiveMQConnectionManager::addNewCallback(const Qpid::Queues::InboundQueue &queue, MessageCallback::Ptr callback)
 {
-    emplaceTask(_newTasks.newCallbacks, &queue, std::move(callback));
+    emplaceCallback( &queue, std::move(callback) );
 }
 
 
@@ -853,7 +656,7 @@ void ActiveMQConnectionManager::addNewCallback(const Qpid::Queues::InboundQueue 
                 tempQueueProducer->send( m );
         });
 
-    emplaceTask(_newTasks.newCallbacks, &queue, std::move(wrappedCallback));
+    emplaceCallback( &queue, std::move(wrappedCallback) );
 }
 
 
@@ -870,7 +673,7 @@ void ActiveMQConnectionManager::addNewCallback(const Qpid::Queues::InboundQueue&
                     });
             });
 
-    emplaceTask(_newTasks.newCallbacks, &queue, std::move(wrappedCallback));
+    emplaceCallback( &queue, std::move(wrappedCallback) );
 }
 
 
@@ -888,31 +691,42 @@ std::string ActiveMQConnectionManager::getJMSType( proton::message & msg ) const
 }
 
 
-#if 0
+void ActiveMQConnectionManager::expiry_periodic_task()
+{
+    // process expirations
 
-                    // this should be scheduled on the work_queue... in ctor - will need to reschedule itself  min (5s, selfish... )
-                    const auto end = _replyExpirations.upper_bound(CtiTime::now());
+    const auto end = _replyExpirations.upper_bound(CtiTime::now());
 
-                    if( _replyExpirations.begin() != end )
-                    {
-                        for( auto itr = _replyExpirations.begin(); itr != end; ++itr )
-                        {
-                            const auto &expirationHandler = itr->second;
+    if( _replyExpirations.begin() != end )
+    {
+        for( auto itr = _replyExpirations.begin(); itr != end; ++itr )
+        {
+            const auto &expirationHandler = itr->second;
 
-                            const auto consumer_itr = _replyConsumers.find(expirationHandler.queueName);
+            const auto consumer_itr = _replyConsumers.find(expirationHandler.queueName);
 
-                            //  if the queue consumer still exists, we never got a response
-                            if( consumer_itr != _replyConsumers.end() )
-                            {
-                                _replyConsumers.erase(consumer_itr);
+            //  if the queue consumer still exists, we never got a response
+            if( consumer_itr != _replyConsumers.end() )
+            {
+                _replyConsumers.erase(consumer_itr);
 
-                                expirationHandler.callback();
-                            }
-                        }
+                expirationHandler.callback();
+            }
+        }
 
-                        _replyExpirations.erase(_replyExpirations.begin(), end);
-                    }
-#endif
+        _replyExpirations.erase(_replyExpirations.begin(), end);
+    }
+
+    // re-schedule 
+
+    _brokerSession
+        .work_queue()
+        .schedule( 5 * proton::duration::SECOND,
+                   [ this ]()
+                   {
+                       this->expiry_periodic_task();
+                   } );
+}
 
 
 template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const Qpid::Queues::OutboundQueue &queue, StreamableMessagePtr message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
