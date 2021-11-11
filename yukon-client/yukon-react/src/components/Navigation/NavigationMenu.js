@@ -165,11 +165,11 @@ const NavigationMenu = (props) => {
                             title: t('menu.contactUs'),
                             items: [
                                 {
-                                    title: 'eatonhelp@eaton.com',
+                                    title: 'EAS-Support@Eaton.com',
                                     icon: <EmailIcon />,
                                 },
                                 {
-                                    title: '1-866-905-9988',
+                                    title: '1-800-815-2258',
                                     icon: <PhoneIcon />,
                                 },
                             ],
