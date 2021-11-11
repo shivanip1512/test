@@ -467,10 +467,6 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
                     + DrJmsMessageType.RELAYDATA + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
                 notClient.intervalDataNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, intervalDataNotification);
-                for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
-                    logEvent(serialNo, DrJmsMessageType.RELAYDATA.toString(), INTERVALDATA_METHOD, mspVendor, transactionId,
-                            endpointUrl);
-                }
             } catch (MultispeakWebServiceClientException e) {
                 log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, INTERVALDATA_METHOD,
                         DrJmsMessageType.RELAYDATA, mspVendor.getCompanyName());
@@ -503,11 +499,6 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
                     + DrJmsMessageType.VOLTAGEDATA + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
                 notClient.meterReadingsNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, meterReadingsNotification);
-
-                for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
-                    logEvent(serialNo, DrJmsMessageType.VOLTAGEDATA.toString(), VOLTAGEREADINGS_METHOD, mspVendor, transactionId,
-                            endpointUrl);
-                }
             } catch (MultispeakWebServiceClientException e) {
                 log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, VOLTAGEREADINGS_METHOD,
                         DrJmsMessageType.VOLTAGEDATA, mspVendor.getCompanyName());
@@ -542,9 +533,6 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             log.info("Sending " + ALARMANDEVENTDATA_METHOD + ", Serial Numbers : " + serialNumbers + " with Message Type : " + DrJmsMessageType.ALARMANDEVENT + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
                 notClient.alarmAndEventDataNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, endDeviceEventsNotification);
-                for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
-                logEvent(serialNo, DrJmsMessageType.ALARMANDEVENT.toString(), ALARMANDEVENTDATA_METHOD, mspVendor, transactionId, endpointUrl);
-                }
             } catch (MultispeakWebServiceClientException e) {
                 log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, ALARMANDEVENTDATA_METHOD, DrJmsMessageType.ALARMANDEVENT, mspVendor.getCompanyName());
                 log.error("Error sending alarmAndEventDataNotification.", e);

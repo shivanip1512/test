@@ -34,7 +34,7 @@ $(function () {
                          chartHeight="300"
                          chartWidth="470"/>
 
-        <table class="compact-results-table trend-settings no-stripes js-trend">
+        <table class="compact-results-table trend-settings no-stripes js-trend no-borders">
         
             <%-- ATTRIBUTES GRAPH TYPES --%>
             <tr>
