@@ -34,48 +34,50 @@ bool CtiLMProgramConstraintChecker::checkConstraints(ULONG proposed_gear,
                                                      CtiTime proposed_start,
                                                      CtiTime proposed_stop)
 {
-    bool ret_val = true;
-    ret_val &= checkManualProgramConstraints(proposed_start, proposed_stop);
-    ret_val &= checkGroupConstraints(proposed_gear, proposed_start, proposed_stop);
-    return ret_val;
+    bool constraints_violated = false;
+    constraints_violated |= !checkManualProgramConstraints(proposed_start, proposed_stop);
+    constraints_violated |= !checkGroupConstraints(proposed_gear, proposed_start, proposed_stop);
+
+    return !constraints_violated;
 }
 
 bool CtiLMProgramConstraintChecker::checkManualProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop)
 {
-    bool ret_val = true;
-    ret_val &= checkSeason(proposed_start, proposed_stop);
-    ret_val &= checkWeekDays(proposed_start, proposed_stop);
-    ret_val &= checkMasterActive();
-    ret_val &= checkControlWindows(proposed_start, proposed_stop);
-    ret_val &= checkProgramControlWindows(proposed_start, proposed_stop);
-    ret_val &= checkNotifyActiveOffset(proposed_start);
+    bool constraints_violated = false;
+    constraints_violated |= !checkSeason(proposed_start, proposed_stop);
+    constraints_violated |= !checkWeekDays(proposed_start, proposed_stop);
+    constraints_violated |= !checkMasterActive();
+    constraints_violated |= !checkControlWindows(proposed_start, proposed_stop);
+    constraints_violated |= !checkProgramControlWindows(proposed_start, proposed_stop);
+    constraints_violated |= !checkNotifyActiveOffset(proposed_start);
 
-    return ret_val;
+    return !constraints_violated;
 }
 
 bool CtiLMProgramConstraintChecker::checkAutomaticProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop)
 {
-    bool ret_val = true;
-    ret_val &= checkSeason(proposed_start, proposed_stop);
-    ret_val &= checkWeekDays(proposed_start, proposed_stop);
-    ret_val &= checkMasterActive();
-    ret_val &= checkControlWindows(proposed_start, proposed_stop);
+    bool constraints_violated = false;
+    constraints_violated |= !checkSeason(proposed_start, proposed_stop);
+    constraints_violated |= !checkWeekDays(proposed_start, proposed_stop);
+    constraints_violated |= !checkMasterActive();
+    constraints_violated |= !checkControlWindows(proposed_start, proposed_stop);
 
-    return ret_val;
+    return !constraints_violated;
 }
 
 bool CtiLMProgramConstraintChecker::checkGroupConstraints(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop)
 {
-    bool ret_val = true;
-    ret_val &= checkMaxHoursDaily(proposed_gear, proposed_start, proposed_stop);
-    ret_val &= checkMaxHoursMonthly(proposed_gear, proposed_start, proposed_stop);
-    ret_val &= checkMaxHoursSeasonal(proposed_gear, proposed_start, proposed_stop);
-    ret_val &= checkMaxHoursAnnually(proposed_gear, proposed_start, proposed_stop);
-    ret_val &= checkMinActivateTime(proposed_start, proposed_stop);
-    ret_val &= checkMinRestartTime(proposed_start);
-    ret_val &= checkMaxDailyOps();
-    ret_val &= checkMaxActivateTime(proposed_start, proposed_stop);
-    return ret_val;
+    bool constraints_violated = false;
+    constraints_violated |= !checkMaxHoursDaily(proposed_gear, proposed_start, proposed_stop);
+    constraints_violated |= !checkMaxHoursMonthly(proposed_gear, proposed_start, proposed_stop);
+    constraints_violated |= !checkMaxHoursSeasonal(proposed_gear, proposed_start, proposed_stop);
+    constraints_violated |= !checkMaxHoursAnnually(proposed_gear, proposed_start, proposed_stop);
+    constraints_violated |= !checkMinActivateTime(proposed_start, proposed_stop);
+    constraints_violated |= !checkMinRestartTime(proposed_start);
+    constraints_violated |= !checkMaxDailyOps();
+    constraints_violated |= !checkMaxActivateTime(proposed_start, proposed_stop);
+
+    return !constraints_violated;
 }
 
 /*
