@@ -44,7 +44,7 @@ public class TokenHelper {
         Date issueDate = Date.from(now.toInstant());
         Date expirationDate = Date.from(expirationDateTime.toInstant());
         String token = Jwts.builder()
-                .setIssuer("Yukon") // Energy company Name
+                .setIssuer("Yukon")
                 .setSubject(String.valueOf(userId))
                 .setAudience("Web")
                 .setIssuedAt(issueDate)
@@ -65,7 +65,7 @@ public class TokenHelper {
 
         String token = Jwts.builder()
                 .setId(UUID.randomUUID().toString())
-                .setIssuer("Yukon") // Energy company Name
+                .setIssuer("Yukon")
                 .setSubject(String.valueOf(userId))
                 .setAudience("Web")
                 .setIssuedAt(issueDate)
