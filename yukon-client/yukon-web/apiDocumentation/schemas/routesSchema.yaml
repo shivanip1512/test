@@ -78,11 +78,11 @@ repeaters:
       variableBits:
         type: integer
         range : 1-7
-        description: 'VariableBits for Repeater Route.Last Repeater bit is always 7, all other cases variable bit range b\w 1-6'
+        description: 'VariableBits for Repeater Route.Last Repeater bit is always 7, all other cases variable bit range between 1-6'
       repeaterOrder:
         type: integer
         range : 1-7
-        description: 'Order of the Repeater Route. Negative values are accepted, the order will be done automatically between 1-7'
+        description: 'Order of the Repeater Route. Order is not depends on user input, the order will be done automatically between 1-7'
 
 Route Response Schema:
   title: Route
