@@ -104,6 +104,6 @@ public class ItronSimulatorController {
         } catch (Exception e) {
             log.error("Error", e);
         }
-        return "redirect:home";
+        return "redirect:itronSimulator";
     }
 }
