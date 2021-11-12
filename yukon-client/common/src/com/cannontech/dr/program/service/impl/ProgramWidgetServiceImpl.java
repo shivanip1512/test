@@ -100,9 +100,12 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
      * if data (gear history) is associated with current running program we are updating that in the
      * programData records which are already there in todaysProgramsDataCache.
      */
+    
     private synchronized void loadTodaysProgramsDataCacheIfDirty() {
-        if (dirtyCache.get()==false) {
-            log.trace("Skipping cache update. Cache is not dirty");
+        //added this to make dirtyCache thread safe
+        boolean wasDirty = dirtyCache.compareAndExchange(true, false);
+        if (!wasDirty) {
+            log.trace("Skipping cache update. Cache is not dirty.");
             return;
         }
         log.trace("Updating scheduled program cache");
@@ -144,7 +147,6 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
                 todaysProgramsDataCache.add(program);
             }
         }
-        dirtyCache.set(false);
     }
 
     @Override
