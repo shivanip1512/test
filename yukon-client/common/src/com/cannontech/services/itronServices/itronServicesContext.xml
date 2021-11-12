@@ -32,5 +32,4 @@
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="yukon.notif.obj.simulator.ItronRuntimeCalcSimulatonRequest" ref="itronRuntimeCalcServiceListener" method="startSimulation"/>
     </jms:listener-container>
-
 </beans>
