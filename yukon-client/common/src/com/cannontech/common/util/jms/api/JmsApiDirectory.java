@@ -157,6 +157,7 @@ import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 import com.cannontech.support.rfn.message.RfnSupportBundleRequest;
 import com.cannontech.support.rfn.message.RfnSupportBundleResponse;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
+import com.cannontech.simulators.message.request.ItronRuntimeCalcSimulatonRequest;
 
 /**
  * This is intended to be the single repository for all JmsApi information in the Yukon Java code.<br><br>
@@ -1365,6 +1366,19 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .logger(YukonLogManager.getRfnLogger())
                   .build();
+    
+    
+    public static final JmsApi<ItronRuntimeCalcSimulatonRequest,?,?> ITRON_SIM_RUNTIME_CALC_START_REQUEST = 
+            JmsApi.builder(ItronRuntimeCalcSimulatonRequest.class)
+                  .name("Itron Calculation Simulation Request")
+                  .description("WS sends request to SM start runtime calculation")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.simulator.ItronRuntimeCalcSimulatonRequest"))
+                  .requestMessage(ItronRuntimeCalcSimulatonRequest.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+                  
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1483,7 +1497,8 @@ public final class JmsApiDirectory {
         addApis(jmsApis, 
                 SIMULATOR, 
                 EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST, 
-                EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST);
+                EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST,
+                ITRON_SIM_RUNTIME_CALC_START_REQUEST);
 
         return jmsApis;
     }
