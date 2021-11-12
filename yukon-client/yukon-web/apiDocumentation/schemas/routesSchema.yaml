@@ -82,7 +82,7 @@ repeaters:
       repeaterOrder:
         type: integer
         range : 1-7
-        description: 'Order of the Repeater Route. Order is not depends on user input, ordering will be done automatically between 1-7'
+        description: 'Order of the Repeater Route. Order is not dependent on user input, ordering will be done automatically between 1-7'
 
 Route Response Schema:
   title: Route
