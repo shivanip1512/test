@@ -1526,24 +1526,18 @@ LM_GROUP_POINT Response Schema:
           default: false
           description: 'Flag to disable control of the load group.'
         deviceUsage:
-          required:
-            - id
           type: object
           properties:
             id:
               type: integer
               description: 'Unique device id. Device on which the control point is attached.'
         pointUsage:
-          required:
-            - id
           type: object
           properties:
             id:
               type: integer
               description: 'Unique point id. Point on the device that performs the control.'
         startControlRawState:
-          required:
-            - id
           type: object
           properties:
             id:
@@ -1580,13 +1574,6 @@ id:
       type: integer
       description: 'Unique identifier of the load group.'
       
-CopyResponse:
-  title: CopyResponse
-  type: object
-  properties:
-    groupId:
-      type: integer
-      description: 'Unique identifier of the load group.'
 
 components:
   examples:
@@ -1618,6 +1605,22 @@ components:
             - BASEBOARD_HEAT
           rampInMinutes: 30
           rampOutMinutes: 30
+
+    Digi SEP Group Copy Response: 
+      value:
+        LM_GROUP_DIGI_SEP:
+          id: 93
+          name: TestLoadcopy
+          type: LM_GROUP_DIGI_SEP
+          kWCapacity: 23
+          disableGroup: false
+          disableControl: true
+          utilityEnrollmentGroup: 12
+          deviceClassSet:
+            - BASEBOARD_HEAT
+          rampInMinutes: 30
+          rampOutMinutes: 30
+
           
     ecobee Group Request:
       value:
@@ -1637,7 +1640,17 @@ components:
           kWCapacity: 23
           disableGroup: false
           disableControl: false
-    
+
+    ecobee Group Copy Response:
+      value:
+        LM_GROUP_ECOBEE:
+          id: 67
+          name: TestLoadcopy
+          type: LM_GROUP_ECOBEE
+          kWCapacity: 23
+          disableGroup: false
+          disableControl: false
+
     Emetcon Group Request:
       value:  
         LM_GROUP_EMETCON:
@@ -1666,7 +1679,22 @@ components:
           relayUsage: RELAY_C
           goldAddress: 4
           silverAddress: 4
-      
+
+    Emetcon Group Copy Response:
+      value:  
+        LM_GROUP_EMETCON:
+          id: 36
+          name: TestLoadcopy
+          type: LM_GROUP_EMETCON
+          kWCapacity: 4
+          disableGroup: false
+          disableControl: false
+          routeId: 1
+          addressUsage: GOLD
+          relayUsage: RELAY_C
+          goldAddress: 4
+          silverAddress: 4
+
     Meter Disconnect Group Request:
       value:    
         LM_GROUP_METER_DISCONNECT:
@@ -1685,7 +1713,17 @@ components:
           kWCapacity: 23
           disableGroup: false
           disableControl: false
-    
+
+    Meter Disconnect Group Copy Response:
+      value:    
+        LM_GROUP_METER_DISCONNECT:
+          id: 62
+          name: TestLoadcopy
+          type: LM_GROUP_METER_DISCONNECT
+          kWCapacity: 23
+          disableGroup: false
+          disableControl: false
+
     Itron Group Request:
       value:       
         LM_GROUP_ITRON:
@@ -1701,6 +1739,17 @@ components:
         LM_GROUP_ITRON:
           id: 93
           name: Itron LoadGroup Test
+          type: LM_GROUP_ITRON
+          kWCapacity: 23
+          disableGroup: false
+          disableControl: false
+          virtualRelayId: 5
+    
+    Itron Group Copy Response:
+      value:       
+        LM_GROUP_ITRON:
+          id: 93
+          name: TestLoadcopy
           type: LM_GROUP_ITRON
           kWCapacity: 23
           disableGroup: false
@@ -1726,6 +1775,16 @@ components:
           disableGroup: true
           disableControl: false
    
+    Honeywell Group Copy Response:
+      value:     
+        LM_GROUP_HONEYWELL:
+          id: 93
+          name: TestLoadcopy
+          type: LM_GROUP_HONEYWELL
+          kWCapacity: 78.26
+          disableGroup: true
+          disableControl: false
+
     Versacom Group Request:
       value:      
         LM_GROUP_VERSACOM:
@@ -1777,6 +1836,32 @@ components:
             - RELAY_3
             - RELAY_4
        
+    Versacom Group Copy Response:
+      value:      
+        LM_GROUP_VERSACOM:
+          id: 96
+          name: TestLoadcopy
+          type: LM_GROUP_VERSACOM
+          kWCapacity: 0
+          disableGroup: false
+          disableControl: false
+          routeId: 1
+          utilityAddress: 25
+          sectionAddress: 27
+          classAddress: '0000000000000001'
+          divisionAddress: '0000000000000001'
+          serialAddress: '0'
+          addressUsage:
+            - UTILITY
+            - SECTION
+            - CLASS
+            - DIVISION
+          relayUsage:
+            - RELAY_1
+            - RELAY_2
+            - RELAY_3
+            - RELAY_4
+
     MCT Group Request:
       value:     
         LM_GROUP_MCT:
@@ -1810,6 +1895,23 @@ components:
             - RELAY_1
             - RELAY_3
 
+    MCT Group Copy Response:
+      value:     
+        LM_GROUP_MCT:
+          id: 83
+          name: TestLoadcopy
+          type: LM_GROUP_MCT
+          kWCapacity: 78.32
+          disableGroup: true
+          disableControl: false
+          routeId: 1
+          level: BRONZE
+          address: 12536
+          mctDeviceId: 0
+          relayUsage:
+            - RELAY_1
+            - RELAY_3
+
     Nest Group Request:
       value:      
         LM_GROUP_NEST:
@@ -1824,6 +1926,16 @@ components:
         LM_GROUP_NEST:
           id: 45
           name: Nest LoadGroup Test
+          type: LM_GROUP_NEST
+          kWCapacity: 78.26
+          disableGroup: true
+          disableControl: false
+        
+    Nest Group Copy Response:
+      value:      
+        LM_GROUP_NEST:
+          id: 45
+          name: TestLoadcopy
           type: LM_GROUP_NEST
           kWCapacity: 78.26
           disableGroup: true
@@ -1892,6 +2004,38 @@ components:
             - Load_1
           protocolPriority: DEFAULT 
     
+    Expresscomm Group Copy Response:
+      value:  
+        LM_GROUP_EXPRESSCOMM:
+          id: 71
+          name: TestLoadcopy
+          type: LM_GROUP_EXPRESSCOMM
+          kWCapacity: 0
+          disableGroup: false
+          disableControl: false
+          routeId: 1
+          serviceProvider: 1
+          geo: 2
+          substation: 3
+          feeder: '1000000000100100'
+          zip: 5
+          user: 6
+          program: 12
+          splinter: 23
+          serialNumber: 1245
+          addressUsage:
+            - GEO
+            - SUBSTATION
+            - FEEDER
+            - ZIP
+            - USER
+            - LOAD
+            - PROGRAM
+            - SPLINTER
+          relayUsage:
+            - Load_1
+          protocolPriority: DEFAULT 
+
     RFN Expresscomm Group Request:
       value:  
         LM_GROUP_RFN_EXPRESSCOMM:
@@ -1953,6 +2097,38 @@ components:
             - Load_1
           protocolPriority: DEFAULT
     
+    RFN Expresscomm Group Copy Response:
+      value:  
+        LM_GROUP_RFN_EXPRESSCOMM:
+          id: 32
+          name: TestLoadcopy
+          type: LM_GROUP_RFN_EXPRESSCOMM
+          kWCapacity: 0
+          disableGroup: false
+          disableControl: false
+          serviceProvider: 1
+          geo: 2
+          substation: 3
+          feeder: '1000000000100100'
+          zip: 5
+          user: 6
+          program: 12
+          splinter: 23
+          serialNumber: 1245
+          addressUsage:
+            - GEO
+            - SUBSTATION
+            - FEEDER
+            - ZIP
+            - USER
+            - LOAD
+            - PROGRAM
+            - SPLINTER
+          relayUsage:
+            - Load_1
+          protocolPriority: DEFAULT
+
+
     Eaton Cloud Group Request:
       value:       
         LM_GROUP_EATON_CLOUD:
@@ -1974,6 +2150,18 @@ components:
           disableControl: false
           virtualRelayId: 3
     
+    Eaton Cloud Group Copy Response:
+      value:       
+        LM_GROUP_EATON_CLOUD:
+          id: 89
+          name: TestLoadcopy
+          type: LM_GROUP_EATON_CLOUD
+          kWCapacity: 23
+          disableGroup: false
+          disableControl: false
+          virtualRelayId: 3
+
+
     Point Group Request:
       value:
         LM_GROUP_POINT:
@@ -2008,6 +2196,26 @@ components:
             id: 1
             stateText: 'True'
 
+    Point Group Copy Response:
+      value:
+        LM_GROUP_POINT:
+          id: 1233
+          name: TestLoadcopy
+          type: LM_GROUP_POINT
+          kWCapacity: 0
+          disableGroup: false
+          disableControl: false
+          deviceUsage:
+            id: 1982
+            name: CBC 8000 RFN1200
+          pointUsage:
+            id: 42893
+            name: CVR Mode
+          startControlRawState:
+            id: 1
+            stateText: 'True'
+
+
     LoadGroupCopy:
       value:
         LOAD_GROUP_COPY:
@@ -2017,7 +2225,3 @@ components:
     id:
       value:
         id: 39223
-
-    groupId:
-      value: 
-        groupId: 20499

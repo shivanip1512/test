@@ -162,7 +162,7 @@ public class MacroLoadGroupSetupController {
 
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) responseEntity.getBody();
-                int copiedLoadGroupId = paoIdMap.get("paoId");
+                int copiedLoadGroupId = paoIdMap.get("id");
                 json.put("copiedLoadGroupId", String.valueOf(copiedLoadGroupId));
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "copy.success", lmCopy.getName()));
             }

@@ -42,7 +42,7 @@ paths:
     $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
   /dr/macroLoadGroups/{id}:
     $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
-  / dr/macroLoadGroups/{id}/copy:
+  /dr/macroLoadGroups/{id}/copy:
     $ref: 'api/MacroLoadGroupsApi.yaml#/copy-operation'
     
   /dr/loadPrograms:
