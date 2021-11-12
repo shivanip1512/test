@@ -21,13 +21,16 @@ import io.jsonwebtoken.security.SignatureException;;
 public class TokenHelper {
 
     private static Key secretKey ;
+    private static Key refreshSecretKey ;
     private static long tokenValidityInMilliSeconds = 900000; // 15 min
     private static long refreshTokenValidityInMilliSeconds = 86400000;  // 24 hour
     private static final String BEARER = "Bearer";
 
     @PostConstruct
     protected void init() {
+        //TODO: Replace with RSA signature
         secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+        refreshSecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     }
 
     /**
@@ -67,7 +70,7 @@ public class TokenHelper {
                 .setAudience("Web")
                 .setIssuedAt(issueDate)
                 .setExpiration(refreshExpirationDate)
-                .signWith(secretKey)
+                .signWith(refreshSecretKey)
                 .compact();
 
         return token;
