@@ -69,6 +69,7 @@ repeaters:
   items:
     required:
       - repeaterId
+      - variableBits
     type: object
     properties:
       repeaterId:
@@ -76,12 +77,12 @@ repeaters:
         description: 'Repeater Route Id.'
       variableBits:
         type: integer
-        range : 0-7
-        description: 'VariableBits for Repeater Route.'
+        range : 1-7
+        description: 'VariableBits for Repeater Route.Last Repeater bit is always 7, all other cases variable bit range between 1-6'
       repeaterOrder:
         type: integer
-        range : 0-7
-        description: 'Order of the Repeater Route'
+        range : 1-7
+        description: 'Order of the Repeater Route. Order is not dependent on user input, ordering will be done automatically between 1-7'
 
 Route Response Schema:
   title: Route
