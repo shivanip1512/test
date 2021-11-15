@@ -33,5 +33,5 @@ components:
       value:
         accessToken: eceyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJZdWtvbiIsInN1YiI6IjIxMiIsImF1ZCI6IldlYiIsImlhdCI6MTU5OTExMzg1NCwiZXhwIjoxNTk5MTE1NjU0fQ.du6SKHbnIKD6PXuam70DFeKA4qkTVHKQR6OqILL4kW8TsTnReBl_KrjK3w_LYhuaiwIXC4rTpPvzIPpxc9WJpw
         refreshToken: eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiIyYTdkZWE2Yi0xOTZkLTQwNWMtYjgwOC1hNmEwMTdhYjgwYzUiLCJpc3MiOiJZdWtvbiIsInN1YiI6Ii0yIiwiYXVkIjoiV2ViIiwiaWF0IjoxNjM2NjA3MzkxLCJleHAiOjE2MzY2OTM3OTF9.W-1-LsnBtEo6GFRQDnM4qj1CdC3bBK4-c0VckuF8xQZ-DrVY-lKKyudc0LIxyaJuR8dC94FRtr_vsiJxCFR5Mg
-        expiresIn: yukon
-        tokenType: yukon
+        expiresIn: 900000
+        tokenType: Bearer
