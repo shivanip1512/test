@@ -4,8 +4,7 @@ import com.cannontech.common.YukonColorPalette;
 
 public enum ChartColorsEnum {
 
-    GREEN(YukonColorPalette.GREEN),
-    GREEN_FILL(YukonColorPalette.GREEN_LIGHT),
+    EMERALD(YukonColorPalette.EMERALD),
     LIGHT_BLUE(YukonColorPalette.BLUE_LIGHT),
     LIGHT_RED(YukonColorPalette.RED_LIGHT),
     ;

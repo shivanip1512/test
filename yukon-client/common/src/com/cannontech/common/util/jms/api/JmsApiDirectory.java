@@ -145,6 +145,7 @@ import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigura
 import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
+import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.FieldSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.ModifyFieldSimulatorResponse;
@@ -1329,6 +1330,17 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
+    public static final JmsApi<EatonCloudRuntimeCalcSimulatonRequest,?,?> EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST = 
+            JmsApi.builder(EatonCloudRuntimeCalcSimulatonRequest.class)
+                  .name("Eaton Cloud Runtime Calculation Simulation Request")
+                  .description("WS sends request to SM start runtime calculation")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.simulator.EatonCloudRuntimeCalcSimulatonRequest"))
+                  .requestMessage(EatonCloudRuntimeCalcSimulatonRequest.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
     public static final JmsApi<DatabaseChangeEvent,?,?> DATABASE_CHANGE_EVENT_REQUEST = 
             JmsApi.builder(DatabaseChangeEvent.class)
                   .name("Database change event request")
@@ -1468,8 +1480,10 @@ public final class JmsApiDirectory {
                          OPTOUTIN_NOTIFICATION,
                          PROGRAM_STATUS_NOTIFICATION);
         
-        addApis(jmsApis, SIMULATOR, 
-                EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
+        addApis(jmsApis, 
+                SIMULATOR, 
+                EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST, 
+                EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST);
 
         return jmsApis;
     }

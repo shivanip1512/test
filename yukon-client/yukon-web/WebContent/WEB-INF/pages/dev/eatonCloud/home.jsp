@@ -27,7 +27,8 @@
         <br/>
         <br/>Configure the Brightlayer Utilities Suite Demand Response URL - Admin/Configuration/Demand Response
         <br/>Brightlayer Utilities Suite Demand Response URL:https://eas-dev.eastus.cloudapp.azure.com/api
-        <br/>Simulator URL: http://localhost:8080/yukon/dev/api
+        <br/>Simulator URL local: http://localhost:8080/yukon/dev/api
+        <br/>Simulator URL QA: http://localhost:8080/dev/api
         <br/>
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
      </div>
@@ -154,6 +155,21 @@
             <tags:nameValue name="Read LCRs" nameColumnWidth="250px">
                 <cti:button label="Submit" type="submit" classes="fn vam"/>
                 <form:form id="autoReadForm" action="${autoReadUrl}" method="post"/>
+                <cti:csrfToken/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+    </form:form>
+    
+        <div class="notes">
+        <br/>Force Runtime Calculation
+     </div>
+    <br/>
+    <cti:url var="forceRuntimeCalcUrl" value="forceRuntimeCalc"/>
+    <form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}" method="post">
+        <tags:nameValueContainer>
+            <tags:nameValue name="" nameColumnWidth="250px">
+                <cti:button label="Submit" type="submit" classes="fn vam"/>
+                <form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}" method="post"/>
                 <cti:csrfToken/>
             </tags:nameValue>
         </tags:nameValueContainer>

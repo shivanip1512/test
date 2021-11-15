@@ -58,9 +58,17 @@ std::string to_string(const RfnMeterReadingDataReplyType::type& val);
 struct ChannelDataStatus {
   enum type {
     OK = 0,
-    TIMEOUT = 1,
-    FAILURE = 2,
-    LONG = 3
+    PARTIAL_READ_TIMEOUT = 1,
+    PARTIAL_READ_FAILURE = 2,
+    PARTIAL_READ_LONG = 3,
+    FULL_READ_PASSWORD_ERROR = 4,
+    FULL_READ_BUSY_ERROR = 5,
+    FULL_READ_TIMEOUT_ERROR = 6,
+    FULL_READ_PROTOCOL_ERROR = 7,
+    FULL_READ_NO_SUCH_CHANNEL_ERROR = 8,
+    FULL_READ_READ_RESPONSE_ERROR_UNKNOWN = 9,
+    FULL_READ_UNKNOWN = 10,
+    FAILURE = 11
   };
 };
 

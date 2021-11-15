@@ -48,6 +48,7 @@ import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
+import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorDeviceCreateRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorSettingsUpdateRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
@@ -73,11 +74,13 @@ public class EatonCloudSimulatorController {
     private SimulatedEatonCloudSettings settings = new SimulatedEatonCloudSettings();
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private YukonJmsTemplate jmsTemplate;
+    private YukonJmsTemplate jmsTemplateCalc;
 
     
     @PostConstruct
     public void init() {
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
+        jmsTemplateCalc = jmsTemplateFactory.createTemplate(JmsApiDirectory.EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST);
     }
     @GetMapping("/home")
     public String home(ModelMap model) {
@@ -255,6 +258,17 @@ public class EatonCloudSimulatorController {
             log.error("Error", e);
         }
        
+        return "redirect:home";
+    }
+    
+    @PostMapping("/forceRuntimeCalc")
+    public String forceRuntimeCalc(FlashScope flashScope) {
+        try {
+            jmsTemplateCalc.convertAndSend(new EatonCloudRuntimeCalcSimulatonRequest());
+            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("Runtime calculation started. See SM log for details."));
+        } catch (Exception e) {
+            log.error("Error", e);
+        }
         return "redirect:home";
     }
 }

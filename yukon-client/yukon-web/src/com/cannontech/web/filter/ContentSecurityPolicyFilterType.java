@@ -32,9 +32,8 @@ public enum ContentSecurityPolicyFilterType {
         + "https://api-secure.recaptcha.net "   // Recaptcha
         + "https://www.google.com "             // Recaptcha
         + "http://www.google.com ; "),          // Recaptcha
-    STYLE_SRC("style-src 'self' 'unsafe-inline' " 
+    STYLE_SRC("style-src 'self' 'unsafe-inline' fonts.googleapis.com " 
         + "https://api.tiles.mapbox.com "
-        + "https://fonts.googleapis.com "       // Google Fonts - Open Sans
         + "https://www.google.com/recaptcha ;"),
     MEDIA_SRC("media-src 'self' "
         + "https://www.google.com "             // Recaptcha
@@ -43,8 +42,7 @@ public enum ContentSecurityPolicyFilterType {
     OBJECT_SRC("object-src 'self' "
         + "https://www.google.com "             // Recaptcha
         + "http://www.google.com ; "),          // Recaptcha
-    FONT_SRC("font-src 'self' "
-        + "https://fonts.gstatic.com ;"),       // Google Fonts - Open Sans
+    FONT_SRC("font-src 'self' fonts.gstatic.com ; "),
     FRAME_SRC("frame-src 'self' " 
         + "https://www.google.com "             // Recaptcha
         + "http://www.google.com ; "),          // Recaptcha
