@@ -590,7 +590,9 @@ yukon.ui = (function () {
         init: function () {
             if (!initialized) {
                 
-                _initSearch();
+                $(document).ready(function() {
+                    _initSearch();
+                });
                 
                 addEventListeners();
                 setupPageButtons();
@@ -1520,4 +1522,5 @@ $(function () {
 	yukon.ui.init();
     //turn off ajax caching application-wide by default
     $.ajaxSetup({cache: false});
+    
 });

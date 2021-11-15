@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useTheme } from '@material-ui/core/styles';
@@ -17,67 +17,44 @@ import * as actions from '../../../redux/actions/index';
 
 import yup from '../../../validationConfig';
 
-import { i18n, getPagei18nValues } from '../../../utils/Helpers';
-
 const CommChannelCreate = () => {
 
     const dispatch = useDispatch();
     const theme = useTheme();
-    const [pageKeysReceived, setPageKeysReceived] = useState(false);
-
-    useEffect(() => {
-        const pageKeys = [
-           { nameKey: 'yukon.web.menu.home' },
-           { nameKey: 'yukon.web.menu.assets' },
-           { nameKey: 'yukon.web.modules.operator.commChannel.pageName' },
-           { nameKey: 'yukon.common.disabled' },
-           { nameKey: 'yukon.common.enabled' },
-           { nameKey: 'yukon.common.name' },
-           { nameKey: 'yukon.common.type' },
-           { nameKey: 'yukon.common.pao.UDPPORT' },
-           { nameKey: 'yukon.web.modules.operator.commChannelInfoWidget.portNumber' },
-           { nameKey: 'yukon.web.modules.operator.commChannelInfoWidget.baudRate' },
-           { nameKey: 'yukon.web.modules.operator.commChannel.create' },
-           { nameKey: 'yukon.common.save' },
-           { nameKey: 'yukon.common.cancel' }
-        ];
-        getPagei18nValues(pageKeys, setPageKeysReceived);
-    }, []);
 
     const commChannelListUrl = window.configs.YUKON_API_URL + '/stars/device/commChannel/list';
 
     const breadcrumbs = [
-        { link: '/', title: i18n('yukon.web.menu.home') },
-        { link: '/stars/operator/inventory/home', title: i18n('yukon.web.menu.assets') },
-        { link: '/stars/device/commChannel/list', title: i18n('yukon.web.modules.operator.commChannel.pageName') }
+        { link: '/', title: 'Home' },
+        { link: '/stars/operator/inventory/home', title: 'Assets' },
+        { link: '/stars/device/commChannel/list', title: 'Comm Channels' }
     ];
 
     const statusButtons = [
-        { label: i18n('yukon.common.disabled'), value: false },
-        { label: i18n('yukon.common.enabled'), value: true }
+        { label: 'Disabled', value: false },
+        { label: 'Enabled', value: true }
     ];
 
     const types = [
-        { label: i18n('yukon.common.pao.UDPPORT'), value: 'UDPPORT' }
+        { label: 'UDP', value: 'UDPPORT' }
     ];
 
     const handleSaveClicked = () => {
         axios.post('/api/devices/commChannels', {
-            name: name,
-            type: type,
+            deviceName: name,
+            deviceType: type,
             portNumber: port,
             baudRate: baudRate,
             enabled: enabled
         }).then(response => {
-            const successMsg = i18n('yukon.common.save.success', name);
-            dispatch(actions.setFlashSuccess(successMsg));
+            dispatch(actions.setFlashSuccess(name + ' saved successfully.'));
             window.location.href = commChannelListUrl;
         });
     };
 
     const pageButtons = [
-        { label: i18n('yukon.common.save'), onClick: handleSaveClicked },
-        { label: i18n('yukon.common.cancel'), href: commChannelListUrl }
+        { label: 'Save', onClick: handleSaveClicked },
+        { label: 'Cancel', href: commChannelListUrl }
     ]
 
     const baudRates = [
@@ -98,7 +75,7 @@ const CommChannelCreate = () => {
     const [baudRate, setBaudRate] = useState("BAUD_1200");
     const [enabled, setEnabled] = useState(true);
 
-    const portValidationErrorMessage = i18n('yukon.web.error.invalidPort');
+    const portValidationErrorMessage = "Port must be between 5 and 65535";
 
     const validationSchema = {
         name: yup.string().trim().required(),
@@ -126,23 +103,21 @@ const CommChannelCreate = () => {
     };
 
     return (
-        pageKeysReceived ?
-            <div>
-                <PageHeader breadcrumbs={breadcrumbs} pageTitle={i18n('yukon.web.modules.operator.commChannel.create')}/>
-                <PageContents>
-                    <Paper style={{padding: theme.spacing(4)}}>
-                        <Input label={i18n("yukon.common.name")} name="name" value={name} maxLength={60} style={{width: '30%'}}
-                            onChange={handleNameChanged} validationSchema={validationSchema.name}/>
-                        <Dropdown value={type} name="type" label={i18n('yukon.common.type')} onChange={handleTypeChanged} items={types}/>
-                        <Input label={i18n("yukon.web.modules.operator.commChannelInfoWidget.portNumber")} name="portNumber" value={port} maxLength={5} 
-                            onChange={handlePortChanged} validationSchema={validationSchema.port}/>
-                        <Dropdown value={baudRate} name="baudRate" label={i18n('yukon.web.modules.operator.commChannelInfoWidget.baudRate')} onChange={handleBaudRateChanged} items={baudRates}/>
-                        <ToggleButtons value={enabled} name="enabled" label={i18n('yukon.common.status')} onChange={handleStatusChanged} buttons={statusButtons}/>
-                        <PageButtons buttons={pageButtons}/>
-                    </Paper>
-                </PageContents>
-            </div>
-        : null
+        <div>
+            <PageHeader breadcrumbs={breadcrumbs} pageTitle="Create Comm Channel"/>
+            <PageContents>
+                <Paper style={{padding: theme.spacing(4)}}>
+                    <Input label="Name" name="name" value={name} maxLength={60} style={{width: '30%'}}
+                        onChange={handleNameChanged} validationSchema={validationSchema.name}/>
+                    <Dropdown value={type} name="type" label="Type" onChange={handleTypeChanged} items={types}/>
+                    <Input label="Port Number" name="portNumber" value={port} maxLength={5} 
+                        onChange={handlePortChanged} validationSchema={validationSchema.port}/>
+                    <Dropdown value={baudRate} name="baudRate" label="Baud Rate" onChange={handleBaudRateChanged} items={baudRates}/>
+                    <ToggleButtons value={enabled} name="enabled" label="Status" onChange={handleStatusChanged} buttons={statusButtons}/>
+                    <PageButtons buttons={pageButtons}/>
+                </Paper>
+            </PageContents>
+        </div>
     )
 }
 

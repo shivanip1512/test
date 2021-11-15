@@ -1,10 +1,77 @@
 {
-    "button": {
-        "save": "save"
-    },
-    "deviceName": "Device Name",
-    "dashboard": "Dashboard",
-    "name": "Name",
-    "home": "Home",
-    "demandResponse": "Demand Response"
+    "menu": {
+        "yukon": "Yukon",
+        "brightlayer": "Brightlayer Utilities",
+        "search": "Search...",
+        "userProfile": "User Profile",
+        "changePassword": "Change Password",
+        "logOut": "Log Out",
+        "contactUs": "Contact Us",
+        "support": "Support",
+        "sitemap": "Site Map",
+        "dashboard": "Dashboard",
+        "AMI": "AMI",
+        "bulkUpdate": "Bulk Update",
+        "pointImport": "Point Import",
+        "reports": "Reports",
+        "ami": {
+            "billing": "Billing",
+            "meterProgramming": "Meter Programming",
+            "bulkImport": "Bulk Import",
+            "legacyImporter": "Legacy Importer"
+        },
+        "DR": "Demand Response",
+        "dr": {
+            "scenarios": "Scenarios",
+            "controlAreas": "Control Areas",
+            "programs": "Programs",
+            "loadGroups": "Load Groups",
+            "estimatedLoad": "Estimated Load",
+            "setup": "Setup",
+            "ciCurtailment": "C&I Curtailment"
+        },
+        "VOLTVAR": "Volt/Var",
+        "voltvar": {
+            "schedules": "Schedules",
+            "strategies": "Strategies",
+            "tempMoves": "Recent Temp Moves",
+            "orphans": "Orphans",
+            "regulatorSetup": "Regulator Setup",
+            "dmvTest": "DMV Test",
+            "import": "Import",
+            "manageFDRTranslations": "Manage FDR Translations"
+        },
+        "ASSETS": "Assets",
+        "assets": {
+            "gateways": "Gateways",
+            "relays": "Relays",
+            "rtus": "RTUs",
+            "virtualDevices": "Virtual Devices",
+            "optOutStatus": "Opt Out Status",
+            "workOrders": "Work Orders",
+            "import": "Import"
+        },
+        "TOOLS": "Tools",
+        "tools": {
+            "collectionActions": "Collection Actions",
+            "commander": "Commander",
+            "dataExport": "Data Export",
+            "dataStreaming": "Data Streaming",
+            "dataViewer": "Data Viewer",
+            "deviceConfiguration": "Device Configuration",
+            "deviceGroups": "Device Groups",
+            "schedules": "Schedules",
+            "scripts": "Scripts",
+            "trends": "Trends"
+        },
+        "ADMIN": "Admin",
+        "admin": {
+            "configuration": "Configuration",
+            "energyCompany": "Energy Company",
+            "maintenance": "Maintenance",
+            "multispeak": "MultiSpeak",
+            "substations": "Substations",
+            "usersAndGroups": "Users and Groups"
+        }
+    }
 }

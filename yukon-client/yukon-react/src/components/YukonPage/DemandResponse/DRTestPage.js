@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '@material-ui/core/styles';
 
@@ -13,13 +12,12 @@ import Dialog from '../../controls/Dialog';
 const DRTestPage = () => {
 
     const theme = useTheme();
-    const { t } = useTranslation();
 
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const breadcrumbs = [
-        { link: '/', title: t('home') },
-        { link: '/dr/home', title: t('demandResponse') }
+        { link: '/', title: 'Home' },
+        { link: '/dr/home', title: 'Demand Resonse' }
     ];
 
     const handleCloseDialog = () => {
@@ -45,7 +43,7 @@ const DRTestPage = () => {
         <div>
             <Dialog open={dialogOpen} closeEvent={handleCloseDialog} buttons={dialogButtons}
                 title="Delete test?" content="Are you sure you want to delete test? This cannot be undone"/>
-            <PageHeader breadcrumbs={breadcrumbs} pageTitle={t('title')}/>
+            <PageHeader breadcrumbs={breadcrumbs} pageTitle='Test Page'/>
             <PageContents>
                 <Paper style={{padding: theme.spacing(4)}}>
                     This is just a test page using React.
