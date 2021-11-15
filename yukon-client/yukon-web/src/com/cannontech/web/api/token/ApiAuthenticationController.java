@@ -31,10 +31,14 @@ public class ApiAuthenticationController {
         if (tokenRequest.getUsername() != null && tokenRequest.getPassword() != null) {
             try {
                 LiteYukonUser user = authenticationService.login(tokenRequest.getUsername(), tokenRequest.getPassword());
-                String token = TokenHelper.createToken(user.getUserID());
-                response.setToken(token);
+                response = TokenHelper.setTokenTypeAndExpiresIn();
+                String accessToken = TokenHelper.createToken(user.getUserID());
+                response.setAccessToken(accessToken);
+                String refreshToken = TokenHelper.createRefreshToken(user.getUserID());
+                response.setRefreshToken(refreshToken);
                 log.info("User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from "
-                    + request.getRemoteAddr());
+                        + request.getRemoteAddr());
+                return new ResponseEntity<TokenResponse>(response, HttpStatus.OK);
             } catch (BadAuthenticationException | PasswordExpiredException e) {
                 throw new AuthenticationException("Authentication Failed. Username or Password not valid." + e);
             }
@@ -42,8 +46,6 @@ public class ApiAuthenticationController {
         } else {
             throw new AuthenticationException("Username or Password not provided");
         }
-
-        return new ResponseEntity<TokenResponse>(response, HttpStatus.OK);
     }
 
 }

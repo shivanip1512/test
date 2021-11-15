@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -55,6 +56,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     public static final int MAX_PROGRAM_TO_DISPLAY_ON_WIDGET = 10;
     private static final int PROGRAM_EVENT_SAFEGAURD_WINDOW = 15000; // 15 Seconds
     private final static String todayKey = "yukon.web.widgets.programWidget.today";
+    private AtomicBoolean dirtyCache = new AtomicBoolean(true);
     private List<ProgramData> programsDataCache = new ArrayList<>();
     private List<ProgramData> todaysProgramsDataCache = new ArrayList<>();
     private long tomorrowStartInMillis = 0L;
@@ -64,7 +66,8 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     @PostConstruct
     public void initialize() {
         loadControlClientConnection.addMessageListener(this);
-        loadTodaysProgramsDataCache();
+        dirtyCache.set(true);
+        loadTodaysProgramsDataCacheIfDirty();
     }
     
     @Override
@@ -72,7 +75,10 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         Message obj = e.getMessage();
         // If any LMProgram change event happens, reload the today's program data cache. 
         if (obj instanceof LMProgramChanged || obj instanceof LMGroupChanged) {
-            loadTodaysProgramsDataCache();
+            if (dirtyCache.get()==false) {
+                log.debug("Recieved updates from LM. Marking the program widget cache as dirty.");
+            }
+            dirtyCache.set(true);
         }
     }
 
@@ -94,7 +100,15 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
      * if data (gear history) is associated with current running program we are updating that in the
      * programData records which are already there in todaysProgramsDataCache.
      */
-    private synchronized void loadTodaysProgramsDataCache() {
+    
+    private synchronized void loadTodaysProgramsDataCacheIfDirty() {
+        //added this to make dirtyCache thread safe
+        boolean wasDirty = dirtyCache.compareAndExchange(true, false);
+        if (!wasDirty) {
+            log.trace("Skipping cache update. Cache is not dirty.");
+            return;
+        }
+        log.trace("Updating scheduled program cache");
         todaysProgramsDataCache.clear();
         DateTime from = new DateTime().withTimeAtStartOfDay();
         DateTime to = from.plusHours(24);
@@ -566,9 +580,10 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
             long startofTomorrow = new DateTime().withTimeAtStartOfDay().plusDays(1).getMillis();
             Duration duration = new Duration(startOfToday, startofTomorrow);
             if (duration.getStandardDays() > 1) {
-                loadTodaysProgramsDataCache();
+                dirtyCache.set(true);
             }
         }
+        loadTodaysProgramsDataCacheIfDirty();
         return todaysProgramsDataCache;
     }
 
