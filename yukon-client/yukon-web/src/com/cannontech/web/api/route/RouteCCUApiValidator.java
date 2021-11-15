@@ -68,7 +68,7 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
                 int variableBits = repeaterRouteModel.getVariableBits();
                 if (!lastRepeater) {
                     // non last Repeater can have variable bits from 1 to 6
-                    YukonApiValidationUtils.checkRange(errors, "repeaters[" + 0 + "].variableBits", variableBits, 1, 6, false);
+                    YukonApiValidationUtils.checkRange(errors, "repeaters[" + count + "].variableBits", variableBits, 1, 6, false);
                     // 1st 6 cant be of type REPEATER_850
                     if (liteYukonPAObject.getPaoType() == PaoType.REPEATER_850) {
                         errors.rejectValue("repeaters[" + count + "].repeaterId", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
