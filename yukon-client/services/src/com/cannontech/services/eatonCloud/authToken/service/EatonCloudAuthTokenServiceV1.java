@@ -9,6 +9,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -89,8 +90,7 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
 
     private void sendResponse(Message message, EatonCloudTokenV1 cachedToken, EatonCloudCommunicationExceptionV1 error) throws JMSException {
         if (cachedToken != null) {
-            log.debug("Got Eaton Cloud token:{}",
-                    new GsonBuilder().setPrettyPrinting().create().toJson(cachedToken));
+            log.debug("Got Eaton Cloud token:{}", cachedToken);
         } else if (error != null) {
             log.error("Attempted to retrieve Eaton Cloud token but got error:{}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(error.getErrorMessage()));
