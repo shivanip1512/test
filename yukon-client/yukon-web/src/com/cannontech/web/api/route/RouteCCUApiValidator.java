@@ -71,8 +71,8 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
                     YukonApiValidationUtils.checkRange(errors, "repeaters[" + count + "].variableBits", variableBits, 1, 6, false);
                     // 1st 6 cant be of type REPEATER_850
                     if (liteYukonPAObject.getPaoType() == PaoType.REPEATER_850) {
-                        errors.rejectValue("repeaters[" + count + "].repeaterId", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
-                                new Object[] { repeaterId }, "");
+                        errors.rejectValue("repeaters[" + count + "].repeaterId", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                new Object[] { repeaterId + " is  Repeater 850 type. Repeater 850 must be last in repeater list." }, "");
                     }
                 } else if (variableBits != 7) {
                     errors.rejectValue("repeaters[" + count + "].variableBits", ApiErrorDetails.INVALID_VALUE.getCodeString(),
