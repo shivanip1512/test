@@ -424,7 +424,7 @@
             These settings only apply to RFN meters if Meter Bias mode is disabled.
         ]]>
     </entry>
-    <entry key="yukon.web.modules.tools.configs.category.tou.warning">These settings only apply to RFN meters if Meter Bias mode is disabled.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.warning">These settings only apply to RFN meters if Advanced Metrology Preferred is enabled.</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.enableTou">Enable TOU</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.enableTou.description">When true, the device also stores usage into its TOU rate registers based on the TOU schedule specified below.</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.schedule1">Schedule 1</entry>
