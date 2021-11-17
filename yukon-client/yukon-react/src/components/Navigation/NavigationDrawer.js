@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -39,8 +39,8 @@ const useStyles = makeStyles(theme => ({
 
 const NavigationDrawer = (props) => {
 
-    const yukonTheme = useSelector(store => store.app.theme);
     const open = useSelector(store => store.app.drawerOpen);
+    const yukonTheme = useSelector(store => store.app.theme);
 
     const theme = useTheme();
     const classes = useStyles();
