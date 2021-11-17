@@ -409,34 +409,35 @@ input[type=radio] {
 .vertical-menu {
     border-right: 1px solid;
     border-color: rgba(0, 0, 0, 0.12);
-    
     width: 100%;
     margin-left: auto;
     box-sizing: border-box;
     margin-right: auto;
     display: block;
     padding-left: 1px;
-    padding-right: 1px;
-    
-    font-family: Arial;
     max-width: 105ch;
     position: relative;
 }
 .vertical-menu ul {margin: 0;padding: 0; list-style-type: none;}
-.vertical-menu li {border: 0;border-style: none;margin-top: -1px;}
+.vertical-menu li {
+	border: 0;
+	border-style: none;
+	margin-top: -1px;
+}
+
+.vertical-menu li div {
+	width: 100%;
+}
 .vertical-menu li.selected, .vertical-menu li:focus {background: white;}
-.vertical-menu li.selected {border-right: solid 3px #1976d2;}
+.vertical-menu li.selected {border-right: solid 3px @primary-color}
 
 .vertical-menu a { 
     color: rgba(0, 0, 0, 0.6);
-    display: block; 
     text-shadow: 1px 1px 0 white;
-
     background: white;
     border-style:0;
     z-index: 100;
     border-radius: @border-radius 0 0 @border-radius;
-
     font-weight: 500;
     font-size: 0.875rem;
     line-height: 1.25;
@@ -449,7 +450,10 @@ input[type=radio] {
     text-align: center;
     cursor: pointer;
     vertical-align: middle !important;
-
+	justify-content: center;
+	display: flex;
+	align-items: center;
+	text-decoration: none;
 }
 
 .side-tabs {
