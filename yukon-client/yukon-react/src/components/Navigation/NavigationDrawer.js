@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -39,8 +39,9 @@ const useStyles = makeStyles(theme => ({
 
 const NavigationDrawer = (props) => {
 
-    const open = useSelector(store => store.app.drawerOpen);
     const yukonTheme = useSelector(store => store.app.theme);
+    const open = useSelector(store => store.app.drawerOpen);
+
     const theme = useTheme();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -52,7 +53,11 @@ const NavigationDrawer = (props) => {
     if (process.env.NODE_ENV !== 'development') {
         axios.defaults.baseURL = props.yukonPath;
     }
-    
+
+    // This code is needed to control switching between old vs new pages
+    // All old pages will need to do a complete reload
+    // Any React pages will also need to do a complete reload if the previous page was not in React
+    // If the selected item is a React page and the user is currently on a React page we can just push the new url to history so we don't do a full reload
     const onNavItemClick = useCallback(
         (url) => {
             const reactPage = url.startsWith("/yukon-ui");
@@ -72,17 +77,27 @@ const NavigationDrawer = (props) => {
 
     const renderMenuItems = (menuItems) => {
         let renderedMenu = [];
-        menuItems.map(menuItem => {
-            renderedMenu.push(
-                <DrawerNavItem 
-                    key={menuItem.titleKey}
-                    itemID={menuItem.titleKey}
-                    classes={menuItem.dividerBefore ? {root: classes.divider} : {}}
-                    title={t(menuItem.titleKey)} 
-                    onClick={() => {onNavItemClick(menuItem.link)}}/>);
-        })
+        if (menuItems) {
+            menuItems.forEach(menuItem => {
+                renderedMenu.push
+                    (renderMenuItem(menuItem.titleKey, t(menuItem.titleKey), menuItem.link, menuItem.dividerBefore, null, null));
+            })
+        }
         return renderedMenu;
     };
+
+    const renderMenuItem = (id, title, link, dividerBefore, icon, menuItems) => {
+        return <DrawerNavItem 
+                    key={id}
+                    itemID={id}
+                    InfoListItemProps={{'data-url': link}}
+                    classes={dividerBefore ? {root: classes.divider} : {}}
+                    icon={icon != null ? icon : null}
+                    onClick={() => link != null ? onNavItemClick(link) : null}
+                    title={title}>
+                    { menuItems != null ? renderMenuItems(menuItems) : null}
+                </DrawerNavItem>
+    }
 
     return (
         <Drawer open={open}>
@@ -92,51 +107,13 @@ const NavigationDrawer = (props) => {
             </DrawerHeader>
             <DrawerBody>
                 <DrawerNavGroup>
-                    <DrawerNavItem
-                        itemID="1"
-                        title={t('menu.dashboard')}
-                        onClick={() => {onNavItemClick("/dashboard")}}
-                        icon={<DashboardIcon/>} />
-                    <DrawerNavItem
-                        itemID="2"
-                        title={t('menu.AMI')}
-                        onClick={() => {onNavItemClick("/meter/start")}}
-                        icon={<PowerIcon/>}>
-                            {renderMenuItems(menuItems.AMI_MENU)};
-                    </DrawerNavItem>
-                    <DrawerNavItem 
-                        itemID="3" 
-                        title={t('menu.DR')}
-                        onClick={() => {onNavItemClick("/dr/home")}}
-                        icon={<RepeatIcon/>}>
-                            {renderMenuItems(menuItems.DR_MENU)};
-                    </DrawerNavItem>
-                    <DrawerNavItem 
-                        itemID="4" 
-                        title={t('menu.VOLTVAR')}
-                        onClick={() => {onNavItemClick("/capcontrol/tier/areas")}}
-                        icon={<UtilityIcon/>}>
-                            {renderMenuItems(menuItems.VOLT_VAR_MENU)};
-                    </DrawerNavItem>
-                    <DrawerNavItem 
-                        itemID="5" 
-                        title={t('menu.ASSETS')} 
-                        onClick={() => {onNavItemClick("/stars/operator/inventory/home")}}
-                        icon={<DeviceIcon/>}>
-                            {renderMenuItems(menuItems.ASSETS_MENU)};
-                    </DrawerNavItem>
-                    <DrawerNavItem 
-                        itemID="6" 
-                        title={t('menu.TOOLS')}
-                        icon={<BuildIcon/>}>
-                            {renderMenuItems(menuItems.TOOLS_MENU)};
-                    </DrawerNavItem>
-                    <DrawerNavItem 
-                        itemID="7" 
-                        title={t('menu.ADMIN')}
-                        icon={<VerifiedUserIcon/>}>
-                            {renderMenuItems(menuItems.ADMIN_MENU)};
-                    </DrawerNavItem>         
+                    {renderMenuItem("1", t('menu.dashboard'), '/dashboard', false, <DashboardIcon/>)};
+                    {renderMenuItem("2", t('menu.AMI'), '/meter/start', false, <PowerIcon/>, menuItems.AMI_MENU)};
+                    {renderMenuItem("3", t('menu.DR'), '/dr/home', false, <RepeatIcon/>, menuItems.DR_MENU)};
+                    {renderMenuItem("4", t('menu.VOLTVAR'), '/capcontrol/tier/areas', false, <UtilityIcon/>, menuItems.VOLT_VAR_MENU)};
+                    {renderMenuItem("5", t('menu.ASSETS'), '/stars/operator/home', false, <DeviceIcon/>, menuItems.ASSETS_MENU)};
+                    {renderMenuItem("6", t('menu.TOOLS'), null, false, <BuildIcon/>, menuItems.TOOLS_MENU)};
+                    {renderMenuItem("7", t('menu.ADMIN'), null, false, <VerifiedUserIcon/>, menuItems.ADMIN_MENU)};
                 </DrawerNavGroup>
                 <Divider/>
                 <DrawerNavGroup titleContent={
@@ -144,30 +121,18 @@ const NavigationDrawer = (props) => {
                         <div>{t('menu.yukon')}</div>
                         <div>v9.3.0</div>
                     </div>
-                }>                
-                    <DrawerNavItem 
-                        itemID="8" 
-                        title={t('menu.support')}
-                        onClick={() => {onNavItemClick("/support")}} 
-                        icon={<SupportIcon/>}/>                    
-                    <DrawerNavItem 
-                        itemID="9" 
-                        title={t('menu.sitemap')}
-                        onClick={() => {onNavItemClick("/sitemap")}}
-                        icon={<AccountTreeIcon/>}/>                    
-                    <DrawerNavItem 
-                        itemID="10" 
-                        title="Dev Pages"
-                        onClick={() => {onNavItemClick("/dev")}} 
-                        icon={<DevModeIcon/>}/>
+                }>
+                    {renderMenuItem("8", t('menu.support'), '/support', false, <SupportIcon/>)};
+                    {renderMenuItem("9", t('menu.sitemap'), '/sitemap', false, <AccountTreeIcon/>)};
+                    {renderMenuItem("10", 'Dev Pages', '/dev', false, <DevModeIcon/>)};
                     <DrawerNavItem 
                         itemID="11" 
                         title="React Test Pages"
                         icon={<NewIcon/>}>
-                        <DrawerNavItem itemID="1-1" title="Dashboard - React" onClick={() => {onNavItemClick("/yukon-ui/dashboard")}}/>
-                        <DrawerNavItem itemID="15-1" title="DR Setup - React" onClick={() => {onNavItemClick("/yukon-ui/dr/setup/list")}}/>
-                        <DrawerNavItem itemID="17-35" title="Comm Channel - React" onClick={() => {onNavItemClick("/yukon-ui/stars/device/commChannel/create")}}/>
-                        <DrawerNavItem itemID="15-22" title="Test Page - React" onClick={() => {onNavItemClick("/yukon-ui/dr/setup/test")}}/>
+                        {renderMenuItem("11-1", 'Dashboard - React', '/yukon-ui/dashboard')};
+                        {renderMenuItem("11-2", 'DR Setup - React', '/yukon-ui/dr/setup/list')};
+                        {renderMenuItem("11-3", 'Comm Channel - React', '/yukon-ui/stars/device/commChannel/create')};
+                        {renderMenuItem("11-4", 'Test Page - React', '/yukon-ui/dr/setup/test')};
                     </DrawerNavItem>
                 </DrawerNavGroup>
             </DrawerBody>

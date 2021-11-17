@@ -37,8 +37,8 @@ axiosInstance.interceptors.response.use(
                     username: state.app.username,
                     password: state.app.password
                 }).then(response => {
-                    dispatch(actions.setToken(response.data.token));
-                    error.config.headers['Authorization'] = 'Bearer ' + response.data.token;
+                    dispatch(actions.setToken(response.data.accessToken));
+                    error.config.headers['Authorization'] = 'Bearer ' + response.data.accessToken;
                     return axiosInstance.request(error.config);
                 });
             } else {
