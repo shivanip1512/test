@@ -43,6 +43,7 @@ trendSeries:
         description: 'Color.'
         enum:
         - BLACK
+        - SKY
         - BLUE
         - TEAL
         - GRAY
