@@ -61,6 +61,7 @@
     <entry key="yukon.web.error.nm.commsError">Unable to send request due to a communication error between Yukon and Network Manager.</entry>
     <entry key="yukon.web.error.nm.error">Received error from Network Manager.</entry>
     <entry key="yukon.web.error.resetPeak.notApplicable">Reset peaks cannot be performed on this trend. No peak trend types found.</entry>
+    <entry key="yukon.web.error.repeater850Message"> {0} is Repeater 850 type. Repeater 850 must be last in repeater list</entry>
     
     <!-- Api Error Detail Exception -->
     <entry key="yukon.web.error.100101">{0} must be unique.</entry>
