@@ -83,7 +83,7 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
                     YukonApiValidationUtils.checkRange(errors, "repeaters[" + count + "].variableBits", variableBits, 1, 6, false);
                     // 1st 6 cant be of type REPEATER_850
                     if (liteYukonPAObject.getPaoType() == PaoType.REPEATER_850) {
-                        String repeaterI18nText = accessor.getMessage(basekey, repeaterId);
+                        String repeaterI18nText = accessor.getMessage(basekey, String.valueOf(repeaterId));
                         errors.rejectValue("repeaters[" + count + "].repeaterId", ApiErrorDetails.INVALID_VALUE.getCodeString(),
                                 new Object[] { repeaterI18nText }, "");
                     }
