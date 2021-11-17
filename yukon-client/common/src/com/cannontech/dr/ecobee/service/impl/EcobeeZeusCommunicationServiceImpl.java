@@ -63,7 +63,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private static final int thresholdThermostatCount = 9900;
+    private static final int thresholdThermostatCount = 4900;
     private static final String YUKON_CYCLE_EVENT_NAME = "yukonCycle";
 
     @Override
