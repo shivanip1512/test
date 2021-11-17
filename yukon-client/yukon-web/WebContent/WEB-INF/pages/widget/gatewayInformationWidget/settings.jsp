@@ -50,6 +50,12 @@
         <tags:nameValue2 nameKey=".default.port" data-toggle-group="virtual-gateway">
             <tags:input path="port" maxlength="5" size="5" tabindex="3"/>
         </tags:nameValue2>
+        <tags:nameValue2 nameKey=".ipaddress">
+            <tags:input path="nmIpAddress" maxlength="15" size="15" tabindex="2"/>
+        </tags:nameValue2>
+        <tags:nameValue2 nameKey=".default.port">
+            <tags:input path="nmPort" maxlength="5" size="5" tabindex="3"/>
+        </tags:nameValue2>
         <tags:nameValue2 nameKey=".authentication" nameClass="fwb" excludeColon="true" valueClass="js-test-results">
         </tags:nameValue2>
         

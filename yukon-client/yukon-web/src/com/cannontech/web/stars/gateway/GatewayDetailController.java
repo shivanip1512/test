@@ -63,6 +63,8 @@ public class GatewayDetailController {
         
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
         model.addAttribute("gateway", gateway);
+        System.out.println(gateway.getData().getNmIpAddress() + " " + gateway.getData().getNmPort());
+        System.out.println(gateway.getData().getIpAddress() + " " + gateway.getData().getPort());
         Location location = new Location();
         location.setPaoId(id);
         PaoLocation paoLocation = paoLocationDao.getLocation(id);

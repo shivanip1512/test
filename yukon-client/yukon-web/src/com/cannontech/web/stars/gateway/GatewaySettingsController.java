@@ -2,6 +2,8 @@ package com.cannontech.web.stars.gateway;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,6 +72,27 @@ public class GatewaySettingsController {
         
         model.addAttribute("mode", PageEditMode.CREATE);
         GatewaySettings settings = new GatewaySettings();
+        
+        settings.setNmPort(RfnGatewayService.GATEWAY_DEFAULT_PORT);
+        Set<RfnGateway> allGateways = rfnGatewayService.getAllGateways();
+        // prefill with the most used nm ip address and port
+        String mostNmIpAddress = allGateways.stream()
+                .filter(g -> g.getData().getNmIpAddress() != null)
+                // summarize NmIpAddress
+                .collect(Collectors.groupingBy(g -> g.getData().getNmIpAddress(), Collectors.counting()))
+                // fetch the max entry
+                .entrySet().stream().max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey).orElse(null);
+
+        if (mostNmIpAddress != null) {
+            Integer nmPort = allGateways.stream()
+                    .filter(g -> g.getData().getNmIpAddress().equals(mostNmIpAddress))
+                    .findFirst().orElse(null)
+                    .getData()
+                    .getNmPort();
+            settings.setNmIpAddress(mostNmIpAddress);
+            settings.setNmPort(nmPort);
+        }
         
         settings.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER));
 
