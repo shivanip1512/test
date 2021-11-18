@@ -316,10 +316,22 @@ span.fancytree-node {
             transition: margin-top 0.25s ease-in-out;
     z-index: 1000;
     
+    .ui-widget-content {
+        border-bottom: 1px solid #ccc;
+        padding: 16px 24px;
+    }
+
     .ui-dialog-titlebar {
+    
+        background: #fff;
+        margin: 0px;
+        padding: 16px;  
     
         .ui-dialog-title {
             margin: 0;
+            font-size: 1.10rem;
+            font-weight: 600;
+            line-height: 1.6;
         }
     
         .ui-dialog-titlebar-close {
@@ -345,7 +357,7 @@ span.fancytree-node {
     .ui-dialog-buttonpane {
         border: none;
         margin-top: 0;
-        padding: 0;
+        padding: 8px;
         
         .ui-dialog-buttonset {
             
@@ -363,7 +375,8 @@ span.fancytree-node {
                 line-height: 1.75;
                 margin: 0;
                 margin-right: 16px;
-                margin-bottom: 12px;
+                margin-top: 10px;
+                margin-bottom: 10px;
                 padding: 5px 15px;
                 box-sizing: border-box;
                 text-decoration: none;
