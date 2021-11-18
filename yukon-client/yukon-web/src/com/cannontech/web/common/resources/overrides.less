@@ -395,15 +395,19 @@ span.fancytree-node {
                 padding: 4px 12px;
             }
             
-            button.delete:not([disabled]) {
-               color: @red;
-            }
-            
             button.primary {
                 background: @primary-button-color;
                 border: 1px solid @primary-button-color-border!important;
                 transition: border .20s;
                 color: #ffffff;
+            }
+            
+            button.delete:not([disabled]) {
+               color: #ffffff; 
+               background: @red;
+               border: 1px solid @red!important;
+               transition: border .20s;
+               &:hover { background-color: @red !important; }
             }
         }
     }

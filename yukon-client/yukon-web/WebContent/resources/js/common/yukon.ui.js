@@ -747,6 +747,10 @@ yukon.ui = (function () {
                 });
             }
             
+            if (options.okText === yg.text.deleteButton) {
+                options.okClass += ' delete';
+            }
+            
             // OK Button
             buttons.push({
                 text : options.okText,
