@@ -23,6 +23,7 @@ import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
@@ -30,6 +31,7 @@ import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.CriteriaSelector;
 import com.cannontech.dr.ecobee.message.EcoplusSelector;
 import com.cannontech.dr.ecobee.message.Selector;
+import com.cannontech.dr.ecobee.message.ZeusCreateDevice;
 import com.cannontech.dr.ecobee.message.ZeusCreatePushConfig;
 import com.cannontech.dr.ecobee.message.ZeusDemandResponseRequest;
 import com.cannontech.dr.ecobee.message.ZeusEvent;
@@ -67,16 +69,18 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     private static final String YUKON_CYCLE_EVENT_NAME = "yukonCycle";
 
     @Override
-    public boolean isDeviceRegistered(String serialNumber) {
+    public void createDevice(String serialNumber) {
         try {
             String thermostatGroupID = retrieveThermostatGroupID();
-            String listThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats?enrollment_state="
-                    + ZeusThermostatState.ENROLLED + "&thermostat_ids=" + serialNumber;
+            String listThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats";
+            ZeusCreateDevice device = new ZeusCreateDevice(ZeusThermostatState.NOT_YET_CONNECTED, List.of(serialNumber));
 
-            ResponseEntity<ZeusThermostatsResponse> responseEntity = (ResponseEntity<ZeusThermostatsResponse>) requestHelper
-                    .callEcobeeAPIForObject(listThermostatsURL, HttpMethod.GET, ZeusThermostatsResponse.class);
-            return responseEntity.getStatusCode() == HttpStatus.OK
-                    && CollectionUtils.isNotEmpty(responseEntity.getBody().getThermostats());
+            ResponseEntity<Map> responseEntity = requestHelper.callEcobeeAPIForObject(listThermostatsURL, HttpMethod.PUT,
+                    Map.class, device);
+            if (responseEntity.getStatusCode() != HttpStatus.OK || (int) responseEntity.getBody().get("added") != 1) {
+                log.error("Not creating the device as the provided thermostat serrial number is invalid.");
+                throw new DeviceCreationException("Invalid thermostat serial number.");
+            }
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
@@ -132,18 +136,40 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Override
     public void enroll(int lmGroupId, String serialNumber, int inventoryId, int programId, boolean updateDeviceMapping) {
         synchronized (this) {
-            String zeusGroupId = StringUtils.EMPTY;
-            List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(lmGroupId, programId);
-            // For new system and when there are no suitable Ecobee group available for enrollment, create a new Ecobee group.
-            if (CollectionUtils.isEmpty(zeusGroupIds) || getSuitableGroupForEnrolment(zeusGroupIds).isEmpty()) {
-                zeusGroupId = createEcobeeGroup(lmGroupId, serialNumber, programId);
+            if (isDeviceEnrolled(serialNumber)) {
+                String zeusGroupId = StringUtils.EMPTY;
+                List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(lmGroupId, programId);
+                // For new system and when there are no suitable Ecobee group available for enrollment, create a new Ecobee group.
+                if (CollectionUtils.isEmpty(zeusGroupIds) || getSuitableGroupForEnrolment(zeusGroupIds).isEmpty()) {
+                    zeusGroupId = createEcobeeGroup(lmGroupId, serialNumber, programId);
+                } else {
+                    zeusGroupId = getSuitableGroupForEnrolment(zeusGroupIds);
+                }
+                addThermostatToGroup(zeusGroupId, serialNumber, inventoryId, updateDeviceMapping);
+                if (ecobeeZeusGroupService.shouldUpdateProgramId(zeusGroupId)) {
+                    ecobeeZeusGroupService.updateProgramId(zeusGroupId, programId);
+                }
             } else {
-                zeusGroupId = getSuitableGroupForEnrolment(zeusGroupIds);
+                throw new EnrollmentException("Enrollment faild as serial number " + serialNumber + " is not in ENROLLED state.");
             }
-            addThermostatToGroup(zeusGroupId, serialNumber, inventoryId, updateDeviceMapping);
-            if (ecobeeZeusGroupService.shouldUpdateProgramId(zeusGroupId)) {
-                ecobeeZeusGroupService.updateProgramId(zeusGroupId, programId);
-            }
+        }
+    }
+
+    /**
+     * Check the thermostat status in root group. If status is ENROLLED, return true else return false.
+     */
+    private boolean isDeviceEnrolled(String serialNumber) {
+        try {
+            String thermostatGroupID = retrieveThermostatGroupID();
+            String listThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats?enrollment_state="
+                    + ZeusThermostatState.ENROLLED + "&thermostat_ids=" + serialNumber;
+
+            ResponseEntity<ZeusThermostatsResponse> responseEntity = (ResponseEntity<ZeusThermostatsResponse>) requestHelper
+                    .callEcobeeAPIForObject(listThermostatsURL, HttpMethod.GET, ZeusThermostatsResponse.class);
+            return responseEntity.getStatusCode() == HttpStatus.OK
+                    && CollectionUtils.isNotEmpty(responseEntity.getBody().getThermostats());
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
     }
 
