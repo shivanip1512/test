@@ -384,12 +384,25 @@ public class EatonCloudMessageListener {
          * See LCR Control Command Payloads reference:
          * https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=137056391
          * 
-         *                RampIN - TRUE | RampIN - FALSE
-         * randomization|        2      |        0
-         * 
-         *               RampOUT - TRUE | RampOUT - FALSE
-         * stop flag    |        1      |         0
+         *               randomization |    stop flag
+         * No Ramp     |        0      |        0
+         * Ramp In     |        2      |        0
+         * Ramp Out    |        1      |        0
+         * Ramp In/Out |        2      |        1
          */
+        
+        int randomization = 0;
+        int stopFlag = 0;
+
+        if (command.getIsRampIn()) {
+            randomization = 2;
+        }
+        if (command.getIsRampOut() && !command.getIsRampIn()) {
+            randomization = 1;
+        }
+        if (command.getIsRampIn() && command.getIsRampOut()) {
+            stopFlag = 1;
+        }
 
         params.put(CommandParam.VRELAY.getParamName(), command.getVirtualRelayId() - 1);
         params.put(CommandParam.CYCLE_PERCENT.getParamName(), command.getDutyCyclePercentage());
@@ -398,10 +411,10 @@ public class EatonCloudMessageListener {
         params.put(CommandParam.START_TIME.getParamName(), startTimeSeconds);
         params.put(CommandParam.EVENT_ID.getParamName(), eventId);
         params.put(CommandParam.CRITICALITY.getParamName(), command.getCriticality());
-        params.put(CommandParam.RANDOMIZATION.getParamName(), command.getIsRampIn() ? 2 : 0);
+        params.put(CommandParam.RANDOMIZATION.getParamName(), randomization);
         params.put(CommandParam.CONTROL_FLAGS.getParamName(), 0);
         params.put(CommandParam.STOP_TIME.getParamName(), stopTimeSeconds);
-        params.put(CommandParam.STOP_FLAGS.getParamName(), command.getIsRampOut() ? 1 : 0);
+        params.put(CommandParam.STOP_FLAGS.getParamName(), stopFlag);
         return params;
     }
 
