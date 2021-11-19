@@ -862,6 +862,10 @@ yukon.ui = (function () {
                     of: window
                 };
             
+            if (popup.is('[data-max-height]')) {
+                options.maxHeight = popup.data('maxHeight');
+            }
+            
             if (popup.is('[data-title]')) options.title = popup.data('title');
             if (popup.is('[title]')) options.title = popup.attr('title');
             
