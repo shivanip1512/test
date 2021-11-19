@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -26,6 +27,7 @@ import com.cannontech.common.device.commands.exception.CommandCompletionExceptio
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.CriteriaSelector;
@@ -65,21 +67,29 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    private ConcurrentHashMap<String, String> thermostatGroupIDCache = new ConcurrentHashMap<String, String>(1);
+    private static final String thermostatGroupIDCacheKey = "thermostatGroupIDCacheKey";
     private static final int thresholdThermostatCount = 4900;
     private static final String YUKON_CYCLE_EVENT_NAME = "yukonCycle";
 
     @Override
     public void createDevice(String serialNumber) {
         try {
-            String thermostatGroupID = retrieveThermostatGroupID();
-            String listThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats";
-            ZeusCreateDevice device = new ZeusCreateDevice(ZeusThermostatState.NOT_YET_CONNECTED, List.of(serialNumber));
+            if (!isDeviceEnrolled(serialNumber)) {
+                String thermostatGroupID = retrieveThermostatGroupID();
+                String listThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats";
+                ZeusCreateDevice device = new ZeusCreateDevice(ZeusThermostatState.NOT_YET_CONNECTED, List.of(serialNumber));
 
-            ResponseEntity<Map> responseEntity = requestHelper.callEcobeeAPIForObject(listThermostatsURL, HttpMethod.PUT,
-                    Map.class, device);
-            if (responseEntity.getStatusCode() != HttpStatus.OK || (int) responseEntity.getBody().get("added") != 1) {
-                log.error("Not creating the device as the provided thermostat serial number is invalid.");
-                throw new DeviceCreationException("Invalid thermostat serial number.");
+                ResponseEntity<Map> responseEntity = requestHelper.callEcobeeAPIForObject(listThermostatsURL, HttpMethod.PUT,
+                        Map.class, device);
+                if (responseEntity.getStatusCode() != HttpStatus.OK || (int) responseEntity.getBody().get("added") != 1) {
+                    log.error("Not creating the device as the provided thermostat serial number is invalid.");
+                    throw new DeviceCreationException("Invalid thermostat serial number.");
+                }
+            } else {
+                log.info("Not making Add Thermostat API call as thermostat {} is already in ENROLLED state in group {}.",
+                        serialNumber, thermostatGroupIDCache.get(thermostatGroupIDCacheKey));
             }
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
@@ -117,13 +127,33 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     /**
+     * Return root thermostat group ID for the configured programID.
+     */
+    private String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException {
+        if (StringUtils.isBlank(thermostatGroupIDCache.get(thermostatGroupIDCacheKey))) {
+            thermostatGroupIDCache.put(thermostatGroupIDCacheKey, retrieveRootTstatGroupID());
+            asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
+                if (settingDao.isDbChangeForSetting(event, GlobalSettingType.ECOBEE_PROGRAM_ID)) {
+                    try {
+                        thermostatGroupIDCache.put(thermostatGroupIDCacheKey, retrieveRootTstatGroupID());
+                    } catch (RestClientException | EcobeeAuthenticationException e) {
+                        throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+                    }
+                }
+            });
+        }
+        return thermostatGroupIDCache.get(thermostatGroupIDCacheKey);
+    }
+
+    /**
      * Retrieve root_tstatgroup_id from Ecobee by using programID.
      */
     @SuppressWarnings("unchecked")
-    private String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException {
+    private String retrieveRootTstatGroupID() throws RestClientException, EcobeeAuthenticationException {
         String showProgramURL = getUrlBase() + "programs/" + getZeusProgramId();
 
-        ResponseEntity<?> programResponse = requestHelper.callEcobeeAPIForObject(showProgramURL, HttpMethod.GET, Object.class);
+        ResponseEntity<?> programResponse = requestHelper.callEcobeeAPIForObject(showProgramURL, HttpMethod.GET,
+                Object.class);
         if (programResponse.getStatusCode() == HttpStatus.OK) {
             Map<String, Object> responseMap = (Map<String, Object>) ((Map<String, Object>) programResponse.getBody())
                     .get("program");
