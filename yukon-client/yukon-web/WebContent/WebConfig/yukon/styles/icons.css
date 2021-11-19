@@ -1020,7 +1020,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-vector { background-position: -160px -384px; }
 .icon-vector-add { background-position: -176px -384px; }
 .icon-vector-delete { background-position: -192px -384px; }
-.icon-plus-green { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="039b620" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>'); }
+.icon-plus-green { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%2339b620" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>'); }
 .icon-weather-clouds { background-position: -224px -384px; }
 .icon-weather-cloudy { background-position: -240px -384px; }
 .icon-weather-lightning { background-position: -256px -384px; }
