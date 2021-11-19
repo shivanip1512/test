@@ -174,7 +174,6 @@ yukon.dialogConfirm = (function () {
      */
     mod = {
         add : function (args) {
-        	debugger;
         //initialize the dialog if needed
         _init();
 

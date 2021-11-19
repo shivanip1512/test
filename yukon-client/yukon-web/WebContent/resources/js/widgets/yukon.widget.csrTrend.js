@@ -26,7 +26,7 @@ yukon.widget.csrTrend = (function () {
                     titleContainer = $(this).closest('.titled-container'),
                     helpText = titleContainer.find('.js-trend-help-text');
                 if (helpText.exists()) {
-                    popup.find('.scroll-lg').html(helpText.val());
+                    popup.html(helpText.val());
                 }
             });
 
