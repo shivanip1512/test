@@ -405,46 +405,52 @@ span.fancytree-node {
 .ui-tabs {
     
     border: none !important;
+    cursor: pointer;
     
     .ui-tabs-nav {
         background: none;
-        padding: 0 0 0 5px;
-        
+        padding: 0;
+        outline: 0;
+        border-radius: 0;
         li {
-            background: whitesmoke; 
-            border: 1px solid #ccc;
-            border-bottom-width: 0;
-            border-radius: @border-radius @border-radius 0 0;
-            /*this is to fix IE10-IE11 bug where the default state of a hoverable item exposes the list decoration
-              when it should be hidden. Does not effect other browsers. 
-            */  
-            list-style-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
-            margin: 0 -1px 0 0;
+            background-color: white; 
+            border: none;
             
+            vertical-align: middle;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 0.875rem;
+            line-height: 1.25;
+            letter-spacing: 0.02857em;
+            text-transform: uppercase;
+            max-width: 360px;
+            min-width: 90px;
+            position: relative;
+            min-height: 48px;
+            align-items: center;
+            text-decoration: none;
+            text-align: center;
+            margin: 0;
+            box-sizing: border-box;
+
             &.error { background-color: #fdd; }
             &.error .ui-tabs-anchor { color: @red !important }
-            &.ui-tabs-active { background: #fff;
-           
-                
+            &.ui-tabs-active { 
+                border-bottom-width: solid 3px @primary-color;
+                text-shadow: 1px 1px 0 white;
+                background: white;
             }
-            
-            &:not(.ui-tabs-active):hover {
-                background: #fff;
-                a {
-                    color: @font-color;
-                }
-            }
-            
+
             a {
                 color: @font-color;
-                padding: 5px 8px !important;
-            }
+              }
         }
     }
     
     .ui-tabs-active > .ui-tabs-anchor {
-        font-weight: bold !important;
+        font-weight: 500 !important;
         color: @primary-color;
+        border-bottom: solid 3px @primary-color;
     }
 }
 .link-tabbed-container .ui-tabs-nav { border-bottom: 1px solid #ccc; }
