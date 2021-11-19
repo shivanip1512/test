@@ -65,7 +65,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private static final int thresholdThermostatCount = 9900;
+    private static final int thresholdThermostatCount = 4900;
     private static final String YUKON_CYCLE_EVENT_NAME = "yukonCycle";
 
     @Override
@@ -78,7 +78,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             ResponseEntity<Map> responseEntity = requestHelper.callEcobeeAPIForObject(listThermostatsURL, HttpMethod.PUT,
                     Map.class, device);
             if (responseEntity.getStatusCode() != HttpStatus.OK || (int) responseEntity.getBody().get("added") != 1) {
-                log.error("Not creating the device as the provided thermostat serrial number is invalid.");
+                log.error("Not creating the device as the provided thermostat serial number is invalid.");
                 throw new DeviceCreationException("Invalid thermostat serial number.");
             }
         } catch (RestClientException | EcobeeAuthenticationException e) {
@@ -140,17 +140,17 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                 String zeusGroupId = StringUtils.EMPTY;
                 List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(lmGroupId, programId);
                 // For new system and when there are no suitable Ecobee group available for enrollment, create a new Ecobee group.
-                if (CollectionUtils.isEmpty(zeusGroupIds) || getSuitableGroupForEnrolment(zeusGroupIds).isEmpty()) {
+                if (CollectionUtils.isEmpty(zeusGroupIds) || getSuitableGroupForEnrollment(zeusGroupIds).isEmpty()) {
                     zeusGroupId = createEcobeeGroup(lmGroupId, serialNumber, programId);
                 } else {
-                    zeusGroupId = getSuitableGroupForEnrolment(zeusGroupIds);
+                    zeusGroupId = getSuitableGroupForEnrollment(zeusGroupIds);
                 }
                 addThermostatToGroup(zeusGroupId, serialNumber, inventoryId, updateDeviceMapping);
                 if (ecobeeZeusGroupService.shouldUpdateProgramId(zeusGroupId)) {
                     ecobeeZeusGroupService.updateProgramId(zeusGroupId, programId);
                 }
             } else {
-                throw new EnrollmentException("Enrollment faild as serial number " + serialNumber + " is not in ENROLLED state.");
+                throw new EnrollmentException("Enrollment failed as serial number " + serialNumber + " is not in ENROLLED state.");
             }
         }
     }
@@ -176,7 +176,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     /**
      * Return the 1st group which can accommodate the thermostat. Return Empty String if all group have reached the threshold limit.
      */
-    private String getSuitableGroupForEnrolment(List<String> zeusGroupIds) {
+    private String getSuitableGroupForEnrollment(List<String> zeusGroupIds) {
         String zeusGroupId = StringUtils.EMPTY;
         for (String groupId : zeusGroupIds) {
             if (ecobeeZeusGroupService.getDeviceCount(groupId) < thresholdThermostatCount) {

@@ -152,7 +152,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Override
     @Transactional
-    public LoadProgram copyNew(int programId, LoadProgramCopy loadProgramCopy, LiteYukonUser liteYukonUser) {
+    public LoadProgram copy(int programId, LoadProgramCopy loadProgramCopy, LiteYukonUser liteYukonUser) {
 
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
  
@@ -645,10 +645,5 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         }
     }
 
-	@Override
-	public int copy(int id, LoadProgramCopy lmCopy, LiteYukonUser liteYukonUser) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 }
