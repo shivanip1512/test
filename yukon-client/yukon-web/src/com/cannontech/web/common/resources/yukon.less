@@ -114,8 +114,7 @@ a.show-visited:visited { color: @visited-color; }
 /* COLORS */
 a, 
 .primary-color, 
-.vertical-menu li.selected a, 
-.vertical-menu a:hover, 
+.vertical-menu li.selected a,
 .ui-widget-content a, 
 #subMenu a:visited, 
 .page-size a:visited {
@@ -406,20 +405,56 @@ input[type=radio] {
 /* VERTICAL MENUS */
 #LeftColumn .info-fragment, #LeftColumn .bumper {border-right: 1px solid #ccc;}
 #LeftColumn .bumper {min-height: 120px;}
-#LeftColumn .info-fragment {padding-bottom: 10px;font-size: .9em;}
+#LeftColumn .info-fragment {font-size: .9em;}
 .vertical-menu {
-    background:#EEE;
-    border:solid 1px #ccc;
-    border-style:solid none solid solid;
-    overflow: hidden;
-    z-index: 100;
-    border-radius: @border-radius 0 0 @border-radius;
+    border-right: 1px solid;
+    border-color: rgba(0, 0, 0, 0.12);
+    width: 100%;
+    margin-left: auto;
+    box-sizing: border-box;
+    margin-right: auto;
+    display: block;
+    padding-left: 1px;
+    max-width: 105ch;
+    position: relative;
 }
 .vertical-menu ul {margin: 0;padding: 0; list-style-type: none;}
-.vertical-menu li {border: solid 1px #ccc;border-style: solid solid none none;margin-top: -1px;padding: 3px 1px 3px 8px;}
-.vertical-menu li.selected, .vertical-menu li:hover, .vertical-menu li:focus {background: white;border-right: solid 1px white;}
-.vertical-menu li.selected {border-left: solid 5px #ccc;}
-.vertical-menu a {color: inherit;display: block;word-wrap: break-word;text-shadow: 1px 1px 0 white;}
+.vertical-menu li {
+	border: 0;
+	border-style: none;
+	margin-top: -1px;
+}
+
+.vertical-menu li div {
+	width: 100%;
+}
+.vertical-menu li.selected, .vertical-menu li:focus {background: white;}
+.vertical-menu li.selected {border-right: solid 3px @primary-color}
+
+.vertical-menu a { 
+    color: rgba(0, 0, 0, 0.6);
+    text-shadow: 1px 1px 0 white;
+    background: white;
+    border-style:0;
+    z-index: 100;
+    border-radius: @border-radius 0 0 @border-radius;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25;
+    letter-spacing: 0.02857em;
+    text-transform: uppercase;
+    max-width: 360px;
+    min-width: 90px;
+    position: relative;
+    min-height: 48px;
+    text-align: center;
+    cursor: pointer;
+    vertical-align: middle !important;
+	justify-content: center;
+	display: flex;
+	align-items: center;
+	text-decoration: none;
+}
 
 .side-tabs {
     list-style: none;
@@ -494,7 +529,7 @@ table th,
     border-bottom: 1px solid @table-border-color;
     text-align: left;
     color: #424e54;
-	background: white;
+    background: white;
 }
 
 table.dashed th, 
