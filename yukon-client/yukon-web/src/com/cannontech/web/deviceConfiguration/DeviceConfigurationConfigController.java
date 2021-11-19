@@ -566,6 +566,18 @@ public class DeviceConfigurationConfigController {
         
         model.addAttribute("touConfigurationType", CategoryType.TOU.value());
         model.addAttribute("demandFreezeConfigurationType", CategoryType.DEMAND_FREEZE.value());
+
+        // Check list of supported devices to check if any support advanced metrology configuration
+        // https://confluence-prod.tcc.etn.com/display/EASAMIMAR/Advanced+Metrology
+        boolean supportsAdvancedMetrology = false;
+        for (PaoType paoType : deviceConfigTypes.getSupportedTypes().keySet()) {
+            if (paoDefinitionDao.isAdvancedMetrologyConfigurationType(paoType)) {
+                supportsAdvancedMetrology = true;
+                break;
+            }
+        }
+
+        model.addAttribute("rfnMetrologyConfigurationSupported", supportsAdvancedMetrology);
     }
     
     private Map<String, Collection<PaoType>> collectCategoryMap(Collection<Entry<ConfigurationCategory, PaoType>> categoryTypeLists) {

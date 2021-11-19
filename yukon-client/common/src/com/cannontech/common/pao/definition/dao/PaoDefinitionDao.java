@@ -77,6 +77,14 @@ import com.google.common.collect.SetMultimap;
     boolean isDnpConfigurationType(PaoType paoType);
     boolean isAttributeMappingConfigurationType(PaoType paoType);
 
+    /**
+     * Method to check if a given pao supports Advanced Metrology
+     * 
+     * @param pao - Pao to get point templates for
+     * @return true if the pao contains the rfnMetrologyConfiguration category type, false if not
+     */
+    boolean isAdvancedMetrologyConfigurationType(PaoType paoType);
+    
     // POINTS
     // ============================================
 
