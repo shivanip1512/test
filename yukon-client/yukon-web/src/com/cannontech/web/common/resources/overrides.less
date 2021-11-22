@@ -403,19 +403,18 @@ span.fancytree-node {
 }
 
 .ui-tabs {
-    
+
     border: none !important;
-    cursor: pointer;
-    
+
     .ui-tabs-nav {
         background: none;
         padding: 0;
         outline: 0;
         border-radius: 0;
+        cursor: pointer;
         li {
             background-color: white; 
             border: none;
-
             vertical-align: middle;
             justify-content: center;
             font-weight: 500;
@@ -425,7 +424,6 @@ span.fancytree-node {
             text-transform: uppercase;
             max-width: 360px;
             position: relative;
-            min-height: 48px;
             align-items: center;
             text-decoration: none;
             text-align: center;
@@ -450,6 +448,7 @@ span.fancytree-node {
         font-weight: 500 !important;
         color: @primary-color;
         border-bottom: solid 3px @primary-color;
+        cursor: pointer;
     }
 }
 .link-tabbed-container .ui-tabs-nav { border-bottom: 1px solid #ccc; }
@@ -460,7 +459,7 @@ span.fancytree-node {
     border: 1px solid #ccc;
     
     .ui-dialog-titlebar-tabbed {
-        background-color: whitesmoke;
+        background-color: white;
         border-bottom: 1px solid #ccc;
         &:hover { cursor: move; }
          
@@ -469,7 +468,8 @@ span.fancytree-node {
         }
         
         .ui-tabs-anchor {
-            padding: 8px 8px !important; 
+            padding: 12px 16px !important;
+            cursor: pointer !important;
         }
     }
     
@@ -486,8 +486,8 @@ span.fancytree-node {
     }
     .ui-dialog-tabbed-title {
         border: none;
-        padding: 8px 20px 8px 5px;
-        &:hover { background-color: whitesmoke !important; }
+        padding: 12px 16px;
+        &:hover { background-color: white !important; }
     }
     .ui-dialog-titlebar-close {
         border: none;
