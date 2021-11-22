@@ -14,7 +14,7 @@
     text-indent: -9999px;
     width: 16px;
 }
-.icon.disabled, .icon[disabled] { background-image: url(../Icons/icons-disabled.png); }
+.icon.disabled, .icon[disabled] { opacity: .3; }
 /* This is for bullet icons. They should have there background-position-x adjusted to center the icon */
 .icon.thin { width: 8px; }
 
@@ -27,7 +27,7 @@
 }
 .icon-32.disabled, 
 .icon-32[disabled] { 
-    background-image: url(../Icons/icons-32-disabled.png); 
+    opacity: .3;; 
 }
 
 /*
