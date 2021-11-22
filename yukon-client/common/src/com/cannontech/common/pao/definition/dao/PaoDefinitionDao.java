@@ -78,10 +78,10 @@ import com.google.common.collect.SetMultimap;
     boolean isAttributeMappingConfigurationType(PaoType paoType);
 
     /**
-     * Method to check if a given pao supports Advanced Metrology
+     * Method to check if a given pao type supports Advanced Metrology
      * 
-     * @param pao - Pao to get point templates for
-     * @return true if the pao contains the rfnMetrologyConfiguration category type, false if not
+     * @param paoType - pao type to get point templates for
+     * @return true if the pao type contains the rfnMetrologyConfiguration category type, false if not
      */
     boolean isAdvancedMetrologyConfigurationType(PaoType paoType);
     
