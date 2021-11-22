@@ -1,8 +1,6 @@
-import React, { useCallback }  from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { useSecurityActions } from '@pxblue/react-auth-shared';
 import { LocalStorage } from '../../store/local-storage';
@@ -70,7 +68,6 @@ const useStyles = makeStyles(theme => ({
 const NavigationMenu = (props) => {
     const theme = useTheme();
     const classes = useStyles();
-    const history = useHistory();
     const yukonTheme = useSelector(store => store.app.theme);
     const securityHelper = useSecurityActions();
     const { t } = useTranslation();
@@ -85,23 +82,6 @@ const NavigationMenu = (props) => {
     const changePassword = () => {
         securityHelper.showChangePassword();
     };
-
-    const onNavItemClick = useCallback(
-        (url) => {
-            const reactPage = url.startsWith("/yukon-ui");
-            const currentUrlReact = window.location.href.includes('/yukon-ui');
-            if (reactPage) {
-                if (history && currentUrlReact) {
-                    history.push(url);
-                } else {
-                    window.location.href = props.reactPath + url;
-                }
-            } else {
-                window.location.href = props.yukonPath + url;
-            }
-
-        }, [history, props.reactPath, props.yukonPath]
-    );
 
     return (
         <AppBar position={'sticky'} color={'primary'} 
@@ -146,7 +126,7 @@ const NavigationMenu = (props) => {
                                 {
                                     title: t('menu.userProfile'),
                                     icon: <PersonIcon />,
-                                    onClick: () => {onNavItemClick("/user/profile")},
+                                    onClick: () => window.location.href = props.yukonPath + "/user/profile",
                                     divider: true,
                                 },
                                 {
