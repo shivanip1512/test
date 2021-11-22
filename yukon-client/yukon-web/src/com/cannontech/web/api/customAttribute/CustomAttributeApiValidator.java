@@ -41,15 +41,19 @@ public class CustomAttributeApiValidator extends SimpleValidator<CustomAttribute
             String attributeNameWithoutSpace = attribute.getName().trim();
             YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", attribute.getName(), 60);
             YukonApiValidationUtils.checkBlacklistedCharacter(errors, "name", attribute.getName(), nameI18nText);
-            Optional<CustomAttribute> customAttribute = AttributeService.customAttributes.asMap()
-                                                                        .values()
-                                                                        .stream()
-                                                                        .filter(attr -> attr.getName().equalsIgnoreCase(attributeNameWithoutSpace))
-                                                                        .findFirst();
-            if (customAttribute.isPresent()) {
-                errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
-                        new Object[] { attributeNameWithoutSpace }, "");
-            }
+            
+            Integer customAttributeId = attribute.getCustomAttributeId();
+            AttributeService.customAttributes.asMap()
+                    .values()
+                    .stream()
+                    .filter(attr -> attr.getName().equalsIgnoreCase(attributeNameWithoutSpace))
+                    .findAny()
+                    .ifPresent(cattr -> {
+                        if (customAttributeId == null || cattr.getCustomAttributeId() != customAttributeId) {
+                            errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                                    new Object[] { attributeNameWithoutSpace }, "");
+                        }
+                    });
         }
     }
 }
