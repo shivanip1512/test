@@ -84,8 +84,8 @@
                 var maxHeight,
                     dialog = $('#' + 'window_${id}'),
                     windowHeight = $(window).height(),
-                    dialogMaxHeight = windowHeight * 0.70,
-                    divHeigth = windowHeight * 0.50;
+                    dialogMaxHeight = windowHeight * 0.95,
+                    divHeigth = windowHeight * 0.80;
 
                 
                 if ('${!empty pageScope.loadDataOnTrigger}' === 'true') {
