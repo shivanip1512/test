@@ -29,7 +29,7 @@ function showTrends(title, url, id) {
 }
 </script>
 
-<div id="trend-popup" class="dn dialog-no-buttons"></div>
+<div id="trend-popup" class="dn dialog-no-buttons MB0"></div>
 
 <c:if test="${!empty viewableArea}">
     <c:set var="subBusList" value="${viewableArea.subBusList}"/>
