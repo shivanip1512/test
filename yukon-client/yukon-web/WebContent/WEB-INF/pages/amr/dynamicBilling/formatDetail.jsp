@@ -115,10 +115,10 @@ BILLING_ERRORS = {
                             
                         </div>
                         
-                        <div id="addFieldsDropDown" style="display:none;">
+                        <div id="addFieldsDropDown" style="display:none; width: 500px">
                             <br>
                             <h4 style="display: inline;"><cti:msg2 key=".availableFields"/></h4><br>
-                            <select id="availableFields" name="availableFields" style="width:260px;" >
+                            <select id="availableFields" name="availableFields" style="width:260px;">
                                 <c:forEach var="field" items="${availableFields}">
                                     <option>${field}</option>
                                 </c:forEach>
