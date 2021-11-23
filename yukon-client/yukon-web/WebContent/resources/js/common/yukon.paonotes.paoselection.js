@@ -51,7 +51,6 @@ yukon.paonotes.paoselection = (function () {
             }
             if($("#paoIds\\.errors").exists()) {
                 $("<br>").insertBefore("#paoIds\\.errors");
-                $("#paoIds\\.errors").addClass("fl MB5");
             }
             _initialized = true;
         }

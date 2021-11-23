@@ -82,13 +82,4 @@
         </div>
     
     </form:form>
-    
-    <script>
-        $(function () {
-            if ($("#primaryOperatorUserGroupId\\.errors").exists()) {
-                $("#primaryOperatorUserGroupId\\.errors").addClass("fl MB5");
-            }
-        });
-    </script>
-    
 </cti:standardPage>
