@@ -41,6 +41,6 @@
             </cti:list>
             <i:inline key="yukon.common.paging.viewing" arguments="${arguments}"/>
         </span>
-        <tags:pageNextPrevControls previousNeeded="${response.pageNumber > 1}" nextNeeded="${result.pageNumber < numberOfPages}"/>
+        <tags:pageNextPrevControls previousNeeded="${response.pageNumber > 1}" nextNeeded="${response.pageNumber < numberOfPages}"/>
     </div>
 </div>
