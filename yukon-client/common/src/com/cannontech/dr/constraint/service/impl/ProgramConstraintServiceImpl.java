@@ -162,7 +162,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public int copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
+    public ProgramConstraint copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
         throw new UnsupportedOperationException("Not supported copy operation");
     }
 

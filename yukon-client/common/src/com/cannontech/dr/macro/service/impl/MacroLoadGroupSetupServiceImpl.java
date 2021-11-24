@@ -89,7 +89,7 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
 
     @Override
     @Transactional
-    public MacroLoadGroup copyNew(int loadGroupId, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
+    public MacroLoadGroup copy(int loadGroupId, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
         Optional<LiteYukonPAObject> liteLoadGroup = getGroupFromCache(loadGroupId);
         if (liteLoadGroup.isEmpty()) {
             throw new NotFoundException("Macro load group Id not found");
@@ -190,11 +190,5 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
                                                            .findFirst();
         return litePaoObject;
     }
-
-        @Override
-        public int copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
-                // TODO Auto-generated method stub
-                return 0;
-        }
 
 }

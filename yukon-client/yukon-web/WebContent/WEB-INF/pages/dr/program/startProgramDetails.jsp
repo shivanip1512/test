@@ -78,7 +78,7 @@ $( function () {
     <input type="hidden" name="from" value="details"/>
     <form:hidden path="now"/>
 
-    <table class="compact-results-table no-stripes">
+    <table class="compact-results-table no-stripes no-borders">
         <thead>
             <tr class="headerRow">
                 <th><cti:msg2 key=".gear"/></th>

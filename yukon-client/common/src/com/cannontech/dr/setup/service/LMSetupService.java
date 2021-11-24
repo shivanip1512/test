@@ -27,15 +27,8 @@ public interface LMSetupService<T1, T2> {
     /**
      * Copy the LM object.
      */
-    int copy(int id, T2 lmCopy, LiteYukonUser liteYukonUser);
-    
-    /*
-	 * Default method returns the new copy method created. Need to remove this when
-	 * return type of copy method is changed to generic.
-	 */
-
-	default T1 copyNew(int id, T2 lmCopy, LiteYukonUser liteYukonUser) {
-		return copyNew(id, lmCopy, liteYukonUser);
-	}
+    T1 copy(int id, T2 lmCopy, LiteYukonUser liteYukonUser);
+       
+   
     
 }

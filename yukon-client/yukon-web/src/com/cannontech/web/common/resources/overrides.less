@@ -57,6 +57,7 @@
 .ML5 { margin-left: 5px !important; }
 .ML15 { margin-left: 15px; }
 .MT5 { margin-top: 5px; }
+.MB0 { margin-bottom: 0px; }
 .MB5 { margin-bottom: 5px; }
 .ma { margin: auto; }
 .mw100 { min-width: 100px !important; }
@@ -316,10 +317,22 @@ span.fancytree-node {
             transition: margin-top 0.25s ease-in-out;
     z-index: 1000;
     
+    div.ui-widget-content {
+        border-bottom: 1px solid #ccc;
+        padding: 16px 24px;
+    }
+
     .ui-dialog-titlebar {
+    
+        background: #fff;
+        margin: 0px;
+        padding: 16px;  
     
         .ui-dialog-title {
             margin: 0;
+            font-size: 1.10rem;
+            font-weight: 600;
+            line-height: 1.6;
         }
     
         .ui-dialog-titlebar-close {
@@ -345,7 +358,7 @@ span.fancytree-node {
     .ui-dialog-buttonpane {
         border: none;
         margin-top: 0;
-        padding: 0;
+        padding: 8px;
         
         .ui-dialog-buttonset {
             
@@ -363,7 +376,8 @@ span.fancytree-node {
                 line-height: 1.75;
                 margin: 0;
                 margin-right: 16px;
-                margin-bottom: 12px;
+                margin-top: 10px;
+                margin-bottom: 10px;
                 padding: 5px 15px;
                 box-sizing: border-box;
                 text-decoration: none;
@@ -382,15 +396,19 @@ span.fancytree-node {
                 padding: 4px 12px;
             }
             
-            button.delete:not([disabled]) {
-               color: @red;
-            }
-            
             button.primary {
                 background: @primary-button-color;
                 border: 1px solid @primary-button-color-border!important;
                 transition: border .20s;
                 color: #ffffff;
+            }
+            
+            button.delete:not([disabled]) {
+               color: #ffffff; 
+               background: @red;
+               border: 1px solid @red!important;
+               transition: border .20s;
+               &:hover { background-color: @red !important; }
             }
         }
     }
