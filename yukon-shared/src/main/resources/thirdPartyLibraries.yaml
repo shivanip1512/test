@@ -972,19 +972,19 @@ Java :
     jira : YUK-18680
     notes : 
   
-  - filename : itext.jar
-    yukon group : jfreereport
+  - filename : itext-2.1.7.jar
+    yukon group : pentahoreport
     project : iText
-    version : 1.2.3
+    version : 2.1.7
     project URL : "https://www.lowagie.com/iText/"
     license : MPL 1.1
     license URLs : "https://www.mozilla.org/MPL/1.1/"
-    maven URL : "https://mvnrepository.com/artifact/com.lowagie/itext/1.2.3"
-    md5 : 4360099c7cceadd56e67d503902e1fdc
-    sha1 : 1ba6645ade975c3b0adf2e17009ccbc3dda8aeb4
-    updated : 2005-05-09
-    jira : none
-    notes : Discontinued in 2012, should no longer to be used for legal reasons
+    maven URL : "https://mvnrepository.com/artifact/com.lowagie/itext/2.1.7"
+    md5 : 7587a618197a065eac4a453d173d4ed6 
+    sha1 : 892bfb3e97074a61123b3b2d7caa2db112750864
+    updated : 2009-07-08
+    jira : YUK-25377
+    notes : Pentaho reporting latest version is dependent on this
     
   - filename : jackson-annotations-2.12.3.jar
     yukon group : Jackson
@@ -1730,19 +1730,19 @@ Java :
     jira : YUK-12674
     notes : 
   
-  - filename : libfonts-0.1.0.jar
-    yukon group : jfreereport
-    project : jfreereport
-    version : 0.1.0
-    project URL : "https://sourceforge.net/projects/jfreereport/"
-    license : ???
+  - filename : libfonts-9.3.0.0-257.jar
+    yukon group : pentahoreport
+    project : pentahoreport
+    version : 9.3.0.0-257
+    project URL : "https://sourceforge.net/projects/pentaho/"
+    license : LGPL 2.1
     license URLs : ???
-    maven URL : n/a
-    md5 : 5893b652c7fac18d0f97df24316b4137
-    sha1 : 5bbef549d28ef3bf484395065362953f9094f857
-    updated : 2006-01-04
-    jira : none
-    notes : jfreereport libfonts
+    maven URL : https://mvnrepository.com/artifact/pentaho-library/libfonts/9.3.0.0-257
+    md5 : 0449e3cd8476d14af74d2406a3721448
+    sha1 : 8d654fdff7613477a9eb2f0c14d0085d7d858bf1
+    updated : 2017-05-23
+    jira : YUK-25377
+    notes : pentaho libfonts
   
   - filename : libthrift-0.13.0.jar
     yukon group : Thrift
@@ -1757,6 +1757,118 @@ Java :
     updated : 2019-12-16
     jira : YUK-21105
     notes : 
+    
+  - filename : libserializer-9.3.0.0-257.jar
+    yukon group : pentahoreport
+    project : pentahoreport
+    version : 9.3.0.0-257
+    project URL : "https://sourceforge.net/projects/pentaho/"
+    license : LGPL 2.1
+    license URLs : ???
+    maven URL : https://mvnrepository.com/artifact/pentaho-library/libserializer/9.3.0.0-257
+    md5 : 806e33d38ba20a8173f822cb10b87d19
+    sha1 : 78b158492f7679f39a1243a44469db3b58f4901a
+    updated : 2017-05-23
+    jira : YUK-25377
+    notes : pentaho libserializer
+    
+  - filename : libformat-9.3.0.0-257.jar
+    yukon group : pentahoreport
+    project : pentahoreport
+    version : 9.3.0.0-257
+    project URL : "https://sourceforge.net/projects/pentaho/"
+    license : LGPL 2.1
+    license URLs : ???
+    maven URL : https://mvnrepository.com/artifact/pentaho-library/libformat/9.3.0.0-257
+    md5 : 5dbc3575bc45307d9518d37a9e9853da
+    sha1 : fc1987fc5e431d0d560b04f71aaff8c8422a84bf
+    updated : 2017-05-23
+    jira : YUK-25377
+    notes : pentaho libformat
+    
+  - filename : libformula-9.3.0.0-257.jar
+    yukon group : pentahoreport
+    project : pentahoreport
+    version : 9.3.0.0-257
+    project URL : "https://sourceforge.net/projects/pentaho/"
+    license : LGPL 2.1
+    license URLs : ???
+    maven URL : https://mvnrepository.com/artifact/pentaho-library/libformula/9.3.0.0-257
+    md5 : 42833371b06ad2c89bcbf4a760ca676e
+    sha1 : a69107b586d395a276801d43abc5cdc9a325a843
+    updated : 2017-05-23
+    jira : YUK-25377
+    notes : pentaho libformula
+    
+  - filename : libdocbundle-9.3.0.0-257.jar
+    yukon group : pentahoreport
+    project : pentahoreport
+    version : 9.3.0.0-257
+    project URL : "https://sourceforge.net/projects/pentaho/"
+    license : LGPL 2.1
+    license URLs : ???
+    maven URL : https://mvnrepository.com/artifact/pentaho-library/libdocbundle/9.3.0.0-257
+    md5 : 199a200a2edd7190c8ae1d0e304fb836
+    sha1 : 6feba6db8a723adf362e401bfba794a029bfa853
+    updated : 2017-05-23
+    jira : YUK-25377
+    notes : pentaho libdocbundle
+    
+  - filename : librepository-9.3.0.0-257.jar
+    yukon group : pentahoreport
+    project : pentahoreport
+    version : 9.3.0.0-257
+    project URL : "https://sourceforge.net/projects/pentaho/"
+    license : LGPL 2.1
+    license URLs : ???
+    maven URL : https://mvnrepository.com/artifact/pentaho-library/librepository/9.3.0.0-257
+    md5 : 90b4c9895c197c1a9562ee34d683964e
+    sha1 : 43df27514e416c6fb5139d9103ac9c37edfebfeb
+    updated : 2017-05-23
+    jira : YUK-25377
+    notes : pentaho librepository
+    
+  - filename : libxml-9.3.0.0-257.jar
+    yukon group : pentahoreport
+    project : pentahoreport
+    version : 9.3.0.0-257
+    project URL : "https://sourceforge.net/projects/pentaho/"
+    license : LGPL 2.1
+    license URLs : ???
+    maven URL : https://mvnrepository.com/artifact/pentaho-library/libxml/9.3.0.0-257
+    md5 : 6f1ca544fde8d668da8daeeefed36d93
+    sha1 : af75cd57250bebaa1943b4b87bf9ea022ef2e2f1
+    updated : 2017-05-23
+    jira : YUK-25377
+    notes : pentaho libxml
+    
+  - filename : libbase-9.3.0.0-257.jar
+    yukon group : pentahoreport
+    project : pentahoreport
+    version : 9.3.0.0-257
+    project URL : "https://sourceforge.net/projects/pentaho/"
+    license : LGPL 2.1
+    license URLs : ???
+    maven URL : https://mvnrepository.com/artifact/pentaho-library/libbase/9.3.0.0-257
+    md5 : 134ede5fb9b8fc9446420300fa501e01
+    sha1 : e13c83e614f2d0ef052a5e393260f60d7592eaa2
+    updated : 2017-05-23
+    jira : YUK-25377
+    notes : pentaho libbase
+    
+  - filename : libloader-9.3.0.0-257.jar
+    yukon group : pentahoreport
+    project : pentahoreport
+    version : 9.3.0.0-257
+    project URL : "https://sourceforge.net/projects/pentaho/"
+    license : LGPL 2.1
+    license URLs : ???
+    maven URL : https://mvnrepository.com/artifact/pentaho-library/libloader/9.3.0.0-257
+    md5 : 99857a279f4bcf5855a596e8167c2b68
+    sha1 : 5131a9dd7b407e8375519df6ccfddea7118c7e98
+    updated : 2017-05-23
+    jira : YUK-25377
+    notes : pentaho libloader
   
   - filename : log4j-api-2.14.0.jar
     yukon group : Log4j
@@ -2234,19 +2346,19 @@ Java :
     jira : YUK-8590
     notes : 
   
-  - filename : poi.jar
-    yukon group : jfreereport
-    project : Apache POI - Java API To Access Microsoft Format Files
-    version : 2.5.1-final-20040804
-    project URL : "https://poi.apache.org/"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/poi/poi-2.5.1-final/20040804"
-    md5 : e6fa038dfe2602a14437f308764e5b2e
-    sha1 : b64b12868b4ebc0213a8780a1291219fd831e4e9
-    updated : 2005-05-09
-    jira : none
-    notes : 
+  - filename : pentaho-reporting-engine-classic-core-7.0.0.5-89.jar
+    yukon group : pentahoreport
+    project : pentahoreport
+    version : 7.0.0.6-95
+    project URL : "https://sourceforge.net/projects/pentaho/"
+    license : LGPL 2.1
+    license URLs : "https://opensource.org/licenses/LGPL-2.1"
+    maven URL : https://mvnrepository.com/artifact/pentaho-reporting-engine/pentaho-reporting-engine-classic-core/7.0.0.5-89
+    md5 : 5893b652c7fac18d0f97df24316b4137
+    sha1 : 8d654fdff7613477a9eb2f0c14d0085d7d858bf1
+    updated : 2017-02-02
+    jira : YUK-25377
+    notes : pentaho reporting engine core
     
   - filename : protobuf-java-3.15.8.jar
     yukon group : Protobuf

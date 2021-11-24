@@ -123,7 +123,7 @@ public class MeterReadReport extends YukonReportBase {
         devGrpGroup.setHeader(header);
 
         final GroupFooter footer = new GroupFooter();
-        footer.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 12);
+        footer.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 12f);
         footer.getStyle().getStyleProperty(TextStyleKeys.FONT, "Serif");
         footer.getStyle().getIntStyleProperty(TextStyleKeys.FONTSIZE, 12);
 

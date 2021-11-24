@@ -86,7 +86,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/reflections-0.9.12.jar"/>
 	<classpathentry kind="lib" path="/third-party/javassist-3.26.0-GA.jar"/>
-	<classpathentry kind="lib" path="/third-party/pentaho-reporting-engine-classic-core-5.0.1-stable.jar"/>
-	<classpathentry kind="lib" path="/third-party/libloader-1.2.1.jar"/>
+	<classpathentry kind="lib" path="/third-party/pentaho-reporting-engine-classic-core-7.0.0.5-89.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
