@@ -31,10 +31,9 @@ import org.pentaho.reporting.engine.classic.core.layout.output.AbstractReportPro
 import org.pentaho.reporting.engine.classic.core.modules.output.pageable.base.PageableReportProcessor;
 import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfOutputProcessor;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.base.FlowReportProcessor;
-import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.FlowExcelOutputProcessor;
-/*import org.pentaho.reporting.libraries.repository.ContentLocation;
-import org.pentaho.reporting.libraries.repository.DefaultNameGenerator;
-import org.pentaho.reporting.libraries.repository.stream.StreamRepository;*/
+import org.pentaho.reporting.engine.classic.core.modules.output.table.csv.FlowCSVOutputProcessor;
+
+import com.cannontech.analysis.tablemodel.ReportModelBase;
 
 /**
  * This is the base class used with the report generation examples. It contains the actual <code>embedding</code>
@@ -49,160 +48,155 @@ import org.pentaho.reporting.libraries.repository.stream.StreamRepository;*/
  * If no report parameters are required, then this method can simply return <code>null</code>
  * </ol>
  */
-public abstract class AbstractReportGenerator
-{
-  /**
-   * The supported output types for this sample
-   */
-  public static enum OutputType
-  {
-    PDF, EXCEL
-  }
+public abstract class AbstractReportGenerator extends java.awt.event.WindowAdapter {
 
-  /**
-   * Performs the basic initialization required to generate a report
-   */
-  public AbstractReportGenerator()
-  {
-    // Initialize the reporting engine
-    ClassicEngineBoot.getInstance().start();
-  }
+    protected ReportModelBase model = null;
 
-  /**
-   * Returns the report definition used by this report generator. If this method returns <code>null</code>,
-   * the report generation process will throw a <code>NullPointerException</code>.
-   *
-   * @return the report definition used by thus report generator
-   */
-  public abstract MasterReport getReportDefinition();
-
-  /**
-   * Returns the data factory used by this report generator. If this method returns <code>null</code>,
-   * the report generation process will use the data factory used in the report definition.
-   *
-   * @return the data factory used by this report generator
-   */
-  public abstract DataFactory getDataFactory();
-
-  /**
-   * Returns the set of parameters that will be passed to the report generation process. If there are no parameters
-   * required for report generation, this method may return either an empty or a <code>null</code> <code>Map</code>
-   *
-   * @return the set of report parameters to be used by the report generation process, or <code>null</code> if no
-   *         parameters are required.
-   */
-  public abstract Map<String, Object> getReportParameters();
-
-  /**
-   * Generates the report in the specified <code>outputType</code> and writes it into the specified
-   * <code>outputFile</code>.
-   *
-   * @param outputType the output type of the report (HTML, PDF, HTML)
-   * @param outputFile the file into which the report will be written
-   * @throws IllegalArgumentException  indicates the required parameters were not provided
-   * @throws IOException               indicates an error opening the file for writing
-   * @throws ReportProcessingException indicates an error generating the report
-   */
-  public void generateReport(final OutputType outputType, File outputFile)
-      throws IllegalArgumentException, IOException, ReportProcessingException
-  {
-    if (outputFile == null)
-    {
-      throw new IllegalArgumentException("The output file was not specified");
+    /**
+     * The supported output types for this sample
+     */
+    public static enum OutputType {
+        PDF, CSV
     }
 
-    OutputStream outputStream = null;
-    try
-    {
-      // Open the output stream
-      outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
-
-      // Generate the report to this output stream
-      generateReport(outputType, outputStream);
-    }
-    finally
-    {
-      if (outputStream != null)
-      {
-        outputStream.close();
-      }
-    }
-  }
-
-  /**
-   * Generates the report in the specified <code>outputType</code> and writes it into the specified
-   * <code>outputStream</code>.
-   * <p/>
-   * It is the responsibility of the caller to close the <code>outputStream</code>
-   * after this method is executed.
-   *
-   * @param outputType   the output type of the report (HTML, PDF, HTML)
-   * @param outputStream the stream into which the report will be written
-   * @throws IllegalArgumentException  indicates the required parameters were not provided
-   * @throws ReportProcessingException indicates an error generating the report
-   */
-  public void generateReport(final OutputType outputType, OutputStream outputStream)
-      throws IllegalArgumentException, ReportProcessingException
-  {
-    if (outputStream == null)
-    {
-      throw new IllegalArgumentException("The output stream was not specified");
+    /**
+     * Performs the basic initialization required to generate a report
+     */
+    public AbstractReportGenerator() {
+        // Initialize the reporting engine
+        ClassicEngineBoot.getInstance().start();
     }
 
-    // Get the report and data factory
-    final MasterReport report = getReportDefinition();
-    final DataFactory dataFactory = getDataFactory();
+    /**
+     * Returns the report definition used by this report generator. If this method returns <code>null</code>,
+     * the report generation process will throw a <code>NullPointerException</code>.
+     *
+     * @return the report definition used by thus report generator
+     */
+    public abstract MasterReport getReportDefinition();
 
-    // Set the data factory for the report
-    if (dataFactory != null)
-    {
-      report.setDataFactory(dataFactory);
-    }
+    /**
+     * Returns the data factory used by this report generator. If this method returns <code>null</code>,
+     * the report generation process will use the data factory used in the report definition.
+     *
+     * @return the data factory used by this report generator
+     */
+    public abstract DataFactory getDataFactory();
 
-    // Add any parameters to the report
-    final Map<String, Object> reportParameters = getReportParameters();
-    if (null != reportParameters)
-    {
-      for (String key : reportParameters.keySet())
-      {
-        report.getParameterValues().put(key, reportParameters.get(key));
-      }
-    }
+    /**
+     * Returns the set of parameters that will be passed to the report generation process. If there are no parameters
+     * required for report generation, this method may return either an empty or a <code>null</code> <code>Map</code>
+     *
+     * @return the set of report parameters to be used by the report generation process, or <code>null</code> if no
+     *         parameters are required.
+     */
+    public abstract Map<String, Object> getReportParameters();
 
-    // Prepare to generate the report
-    AbstractReportProcessor reportProcessor = null;
-    try
-    {
-      // Greate the report processor for the specified output type
-      switch (outputType)
-      {
-        case PDF:
-        {
-          final PdfOutputProcessor outputProcessor =
-              new PdfOutputProcessor(report.getConfiguration(), outputStream, report.getResourceManager());
-          reportProcessor = new PageableReportProcessor(report, outputProcessor);
-          break;
+    /**
+     * Generates the report in the specified <code>outputType</code> and writes it into the specified
+     * <code>outputFile</code>.
+     *
+     * @param outputType the output type of the report (PDF, CSV)
+     *                   //Can add more output types if needed in Yukon
+     * @param outputFile the file into which the report will be written
+     * @throws IllegalArgumentException  indicates the required parameters were not provided
+     * @throws IOException               indicates an error opening the file for writing
+     * @throws ReportProcessingException indicates an error generating the report
+     */
+    public void generateReport(final OutputType outputType, File outputFile)
+            throws IllegalArgumentException, IOException, ReportProcessingException {
+        if (outputFile == null) {
+            throw new IllegalArgumentException("The output file was not specified");
         }
 
-        case EXCEL:
-        {
-          final FlowExcelOutputProcessor target =
-              new FlowExcelOutputProcessor(report.getConfiguration(), outputStream, report.getResourceManager());
-          reportProcessor = new FlowReportProcessor(report, target);
-          break;
-        }
-      }
+        OutputStream outputStream = null;
+        try {
+            // Open the output stream
+            outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
 
-      // Generate the report
-      reportProcessor.processReport();
+            // Generate the report to this output stream
+            generateReport(outputType, outputStream);
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+        }
     }
-    finally
-    {
-      if (reportProcessor != null)
-      {
-        reportProcessor.close();
-      }
+
+    /**
+     * Generates the report in the specified <code>outputType</code> and writes it into the specified
+     * <code>outputStream</code>.
+     * <p/>
+     * It is the responsibility of the caller to close the <code>outputStream</code>
+     * after this method is executed.
+     *
+     * @param outputType   the output type of the report (PDF, CSV) //Can add more if needed in Yukon
+     * @param outputStream the stream into which the report will be written
+     * @throws IllegalArgumentException  indicates the required parameters were not provided
+     * @throws ReportProcessingException indicates an error generating the report
+     */
+    public void generateReport(final OutputType outputType, OutputStream outputStream)
+            throws IllegalArgumentException, ReportProcessingException {
+        if (outputStream == null) {
+            throw new IllegalArgumentException("The output stream was not specified");
+        }
+
+        // Get the report and data factory
+        final MasterReport report = getReportDefinition();
+        final DataFactory dataFactory = getDataFactory();
+
+        // Set the data factory for the report
+        if (dataFactory != null) {
+            report.setDataFactory(dataFactory);
+        }
+
+        // Add any parameters to the report
+        final Map<String, Object> reportParameters = getReportParameters();
+        if (null != reportParameters) {
+            for (String key : reportParameters.keySet()) {
+                report.getParameterValues().put(key, reportParameters.get(key));
+            }
+        }
+
+        // Prepare to generate the report
+        AbstractReportProcessor reportProcessor = null;
+        try {
+            // Greate the report processor for the specified output type
+            switch (outputType) {
+            case PDF: {
+                final PdfOutputProcessor outputProcessor = new PdfOutputProcessor(report.getConfiguration(), outputStream,
+                        report.getResourceManager());
+                reportProcessor = new PageableReportProcessor(report, outputProcessor);
+                break;
+            }
+
+            case CSV: {
+                final FlowCSVOutputProcessor target = new FlowCSVOutputProcessor(report.getConfiguration());
+                reportProcessor = new FlowReportProcessor(report, target);
+                break;
+            }
+            }
+
+            // Generate the report
+            reportProcessor.processReport();
+        } finally {
+            if (reportProcessor != null) {
+                reportProcessor.close();
+            }
+        }
     }
-  }
+
+    /**
+     * @return
+     */
+    public ReportModelBase getModel() {
+        return model;
+    }
+
+    /**
+     * @param base
+     */
+    public void setModel(ReportModelBase base) {
+        model = base;
+    }
 }
-

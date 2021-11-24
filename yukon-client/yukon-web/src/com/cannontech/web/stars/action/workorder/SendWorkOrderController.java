@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.jfree.report.JFreeReport;
+import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 
@@ -80,9 +80,9 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
             ReportBean reportBean = new ReportBean();
             reportBean.setType(ReportTypes.EC_WORK_ORDER);
             reportBean.getModel().setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
-            ((WorkOrderModel)reportBean.getModel()).setOrderID( new Integer(orderID) );
+            ((WorkOrderModel)reportBean.getModel()).setOrderID(orderID);
             
-            JFreeReport report = reportBean.createReport();
+            MasterReport report = reportBean.createReport();
             
             File tempDir = new File( StarsUtils.getStarsTempDir(), "/WorkOrder" );
             if (!tempDir.exists()) {

@@ -7,12 +7,14 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jfree.report.JFreeReport;
+import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.PageDefinition;
 import org.pentaho.reporting.engine.classic.core.ReportProcessingException;
+import org.pentaho.reporting.engine.classic.core.TableDataFactory;
 import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
 import org.pentaho.reporting.engine.classic.core.modules.gui.base.PreviewDialog;
 import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfReportUtil;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.csv.CSVReportUtil;
 
 import com.cannontech.analysis.report.CapBankRecentMaxDailyOpsReport;
 import com.cannontech.analysis.report.CapBankReport;
@@ -188,13 +190,20 @@ public class ReportFuncs {
         return returnVal;
     }
     
-    public static void outputYukonReport(JFreeReport report, String ext, OutputStream out) throws IOException
+    public static void outputYukonReport(MasterReport report, String ext, OutputStream out) throws IOException
     {
+        try
+        {
         if (ext.equalsIgnoreCase("pdf"))
             PdfReportUtil.createPDF(report, out);
 
         else if (ext.equalsIgnoreCase("csv"))
-            ((ReportModelBase<?>)report.getData()).buildByteStream(out);
+            CSVReportUtil.createCSV(report, out, null);
+        }
+        catch(ReportProcessingException e)
+        {
+            //ignore for now
+        }
     }
     
     /**
@@ -223,8 +232,9 @@ public class ReportFuncs {
         rmReport.getModel().collectData();
     
         //Create the report
-        JFreeReport report = rmReport.createReport();
-        report.setData(rmReport.getModel());
+        MasterReport report = rmReport.createReport();
+        report.setDataFactory(new TableDataFactory
+                ("default", rmReport.getModel()));
     
         final PreviewDialog dialog = new PreviewDialog(report);
         // Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
