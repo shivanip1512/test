@@ -93,7 +93,6 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
                 receivedPoints.keySet().size());
         if (!receivedPoints.isEmpty()) {
             dispatchData.putValues(receivedPoints.values());
-            updateAssetAvailability(receivedPoints);
         }
         return receivedPoints;
     }
@@ -161,6 +160,16 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
                         value.getTimestamp(), guid);
                 if (pointData != null) {
                     pointMap.put(device.getPaoIdentifier(), pointData);
+                    AssetAvailabilityPointDataTimes time = new AssetAvailabilityPointDataTimes(device.getLiteID());
+                    time.setLastCommunicationTime(new Instant(pointData.getTimeStamp()));
+                    if (mwChannel.getRelayNumberByRuntime() != null && pointData.getValue() > 0) {
+                        time.setRelayRuntime(mwChannel.getRelayNumberByRuntime(), new Instant(pointData.getTimeStamp()));
+                        log.debug("Publishing asset availability {} info for PAO {} relay:{} point data value:{}", time, device,
+                                mwChannel.getRelayNumberByRuntime(), pointData.getValue());
+                    } else {
+                        log.debug("Publishing asset availability {} info for PAO {}", time, device);
+                    }
+                    dynamicLcrCommunicationsDao.insertData(time);
                 }
             }
         }
@@ -298,18 +307,6 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         }
         return chunkedRequests;
     }
-
-    private void updateAssetAvailability(Multimap<PaoIdentifier, PointData> pointUpdates) {
-        for (PaoIdentifier pao : pointUpdates.keySet()) {
-            for (PointData pointData : pointUpdates.get(pao)) {
-                AssetAvailabilityPointDataTimes time = new AssetAvailabilityPointDataTimes(pao.getPaoId());
-                time.setLastCommunicationTime(new Instant(pointData.getTimeStamp()));
-                log.debug("Publishing asset avaiability {} info for PAO {}", time, pao);
-                dynamicLcrCommunicationsDao.insertData(time);
-            }
-        }
-    }
-
     /**
      * Takes a paoTypes and gets all of the tags that have a builtInAttribute for that paoType
      */

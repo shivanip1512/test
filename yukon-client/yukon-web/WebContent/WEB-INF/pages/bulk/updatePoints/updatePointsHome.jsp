@@ -111,7 +111,7 @@
                     </select>
                     <span class="fl" style="margin-left: 10px;"><i:inline key=".value"/></span>
                     <input type="text" name="setValue" class="fl" style="margin-left: 10px;">
-                    <cti:button nameKey="update" classes="action primary js-action-submit" busy="true"/>
+                    <cti:button nameKey="update" classes="action primary js-action-submit ML5" busy="true"/>
                 </div>
             </form>
     

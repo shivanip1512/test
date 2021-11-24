@@ -27,7 +27,8 @@
         <br/>
         <br/>Configure the Brightlayer Utilities Suite Demand Response URL - Admin/Configuration/Demand Response
         <br/>Brightlayer Utilities Suite Demand Response URL:https://eas-dev.eastus.cloudapp.azure.com/api
-        <br/>Simulator URL: http://localhost:8080/yukon/dev/api
+        <br/>Simulator URL local: http://localhost:8080/yukon/dev/api
+        <br/>Simulator URL QA: http://localhost:8080/dev/api
         <br/>
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
      </div>
