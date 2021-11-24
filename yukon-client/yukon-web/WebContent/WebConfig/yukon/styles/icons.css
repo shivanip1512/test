@@ -533,7 +533,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-image-edit { background-position: -48px -192px; }
 .icon-image-link { background-position: -64px -192px; }
 .icon-images { background-position: -80px -192px; }
-.icon-information { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>'); }
+.icon-information { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23007bc1" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>'); }
 .icon-ipod { background-position: -112px -192px; }
 .icon-ipod-cast { background-position: -128px -192px; }
 .icon-ipod-cast-add { background-position: -144px -192px; }
