@@ -218,6 +218,11 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     }
 
     @Override
+    public boolean isAdvancedMetrologyConfigurationType(PaoType paoType) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
     public List<CategoryType> getRequiredCategoriesByPaoType(PaoType paoType) {
         throw new UnsupportedOperationException("not implemented"); 
     }
