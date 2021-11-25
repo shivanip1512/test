@@ -55,7 +55,7 @@ public abstract class GroupYukonReportBase extends SimpleYukonReportBase {
         singleGroup.addField(columnLayoutData.getFieldName());
         GroupHeader header = new GroupHeader();
 
-        header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, ReportFactory.GROUP_HEADER_STYLE_DIMENSION);
+        header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 30f);
         header.getStyle().getStyleProperty(TextStyleKeys.FONT, ReportFactory.GROUP_HEADER_BAND_FONT);
 
         header.setRepeat(true);

@@ -43,9 +43,6 @@ import com.cannontech.analysis.tablemodel.PointDataSummaryModel;
 
 /**
  * Created on Dec 15, 2003
- *
- * TODO - Rework report when subreporting feature is available in jfreereport
- * 
  * @author snebben
  */
 public class PointDataSummaryReport extends YukonReportBase {
@@ -76,7 +73,7 @@ public class PointDataSummaryReport extends YukonReportBase {
      * @throws Exception if an error occurs (default: print a stack trace)
      */
     public static void main(final String[] args) throws Exception {
-        // initialize JFreeReport
+        // initialize Report
         ClassicEngineBoot.getInstance().start();
         javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
 
@@ -98,11 +95,10 @@ public class PointDataSummaryReport extends YukonReportBase {
 
         // Create the report
         MasterReport report = dbReport.createReport();
-        // report.setData(dbReport.getModel());
         report.setDataFactory(new TableDataFactory("default", dbReport.getModel()));
 
         final PreviewDialog dialog = new PreviewDialog(report);
-        // Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
+        // Add a window closing event, even though I think it's already handled by setDefaultCloseOperation(..)
         dialog.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent e) {
                 dialog.setVisible(false);
@@ -127,7 +123,7 @@ public class PointDataSummaryReport extends YukonReportBase {
         devGroup.addField(PointDataSummaryModel.PAO_NAME_STRING);
 
         GroupHeader header = ReportFactory.createGroupHeaderDefault();
-        header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 18);
+        header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 18f);
 
         for (int i = PointDataSummaryModel.PAO_NAME_COLUMN; i <= PointDataSummaryModel.PAO_TYPE_COLUMN; i++) {
             LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
@@ -349,7 +345,7 @@ public class PointDataSummaryReport extends YukonReportBase {
      * Creates the function collection. The xml definition for this construct:
      * 
      * @return the functions.
-     * @throws FunctionInitializeException if there is a problem initialising the functions.
+     * @throws FunctionProcessingException if there is a problem processing the functions.
      */
     protected ExpressionCollection getExpressions() throws FunctionProcessingException {
         super.getExpressions();

@@ -84,9 +84,9 @@ public class SimpleReportOutputterImpl implements SimpleReportOutputter {
         }
 
         try {
-            MasterReport jfreeReport = report.createReport();
-            jfreeReport.setDataFactory(new TableDataFactory("default", report.getModel()));
-            ReportFuncs.outputYukonReport(jfreeReport, "pdf", outputStream);
+            MasterReport pentahoReport = report.createReport();
+            pentahoReport.setDataFactory(new TableDataFactory("default", report.getModel()));
+            ReportFuncs.outputYukonReport(pentahoReport, "pdf", outputStream);
         } catch (FunctionProcessingException e) {
             throw new RuntimeException("Unable to output report", e);
         }

@@ -118,7 +118,7 @@ public class MeterOutageCountReport extends YukonReportBase {
         }
 
         GroupHeader header = ReportFactory.createGroupHeaderDefault();
-        header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 2);
+        header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 2f);
 
         header.addElement(HorizontalLineElementFactory.createHorizontalLine(20, null, new BasicStroke(0.5f)));
         for (int i = MeterOutageCountModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++) {
@@ -134,7 +134,7 @@ public class MeterOutageCountReport extends YukonReportBase {
 
         if (!((MeterOutageCountModel) getModel()).isIncompleteDataReport()) {
             GroupFooter footer = ReportFactory.createGroupFooterDefault();
-            footer.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 20);
+            footer.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 20f);
 
             LabelElementFactory lfactory = ReportFactory.createLabelElementDefault(getModel(),
                     MeterOutageCountModel.VALUE_COLUMN);

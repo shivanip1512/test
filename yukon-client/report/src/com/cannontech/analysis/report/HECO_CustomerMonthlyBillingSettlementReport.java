@@ -187,7 +187,7 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
      */
     protected PageHeader createPageHeader() {
         final PageHeader header = super.createPageHeader();
-        header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, ReportFactory.REPORT_STYLE_DIMENSION);
+        header.getStyle().setStyleProperty(ElementStyleKeys.MIN_HEIGHT, 48f);
         header.getStyle().getStyleProperty(TextStyleKeys.FONT, ReportFactory.REPORT_HEADER_BAND_FONT);
 
         LabelElementFactory factory = new LabelElementFactory();

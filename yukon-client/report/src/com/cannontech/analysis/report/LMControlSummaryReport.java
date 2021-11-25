@@ -59,7 +59,7 @@ public class LMControlSummaryReport extends SingleGroupYukonReportBase {
      * @throws Exception if an error occurs (default: print a stack trace)
      */
     public static void main(final String[] args) throws Exception {
-        // initialize JFreeReport
+        // initialize Report
         ClassicEngineBoot.getInstance().start();
         javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
         YukonSpringHook.setDefaultContext(YukonSpringHook.WEB_BEAN_FACTORY_KEY);

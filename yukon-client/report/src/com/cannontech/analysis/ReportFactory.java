@@ -32,9 +32,6 @@ import com.cannontech.analysis.tablemodel.ReportModelBase;
 
 /**
  * @author stacey
- *
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class ReportFactory {
     public static final String NAME_LABEL = " Label";
@@ -105,17 +102,11 @@ public class ReportFactory {
         return items;
     }
 
-    /**
-     * 
-     */
     public static LabelElementFactory createGroupLabelElementDefault(ReportModelBase model, int index) {
         return createGroupLabelElementDefault(model.getColumnName(index), model.getColumnProperties(index).getPositionX(),
                 model.getColumnProperties(index).getPositionY(), model.getColumnProperties(index).getWidth());
     }
 
-    /**
-     * 
-     */
     public static LabelElementFactory createGroupLabelElementDefault(String name, float posX, float posY, float width) {
         LabelElementFactory factory = new LabelElementFactory();
         factory.setText(name);
@@ -155,17 +146,11 @@ public class ReportFactory {
         return factory;
     }
 
-    /**
-     * 
-     */
     public static LabelElementFactory createLabelElementDefault(ReportModelBase model, int index) {
         return createLabelElementDefault(model.getColumnName(index), model.getColumnProperties(index).getPositionX(),
                 model.getColumnProperties(index).getPositionY(), model.getColumnProperties(index).getWidth());
     }
 
-    /**
-     * 
-     */
     public static LabelElementFactory createLabelElementDefault(String name, float posX, float posY, float width) {
         LabelElementFactory factory = new LabelElementFactory();
         factory.setText(name);

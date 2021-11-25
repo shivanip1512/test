@@ -329,7 +329,7 @@ Java :
     notes : Open source, but supported via donation or purchase
   
   - filename : bsf-2.3.0.jar
-    yukon group : jfreereport
+    yukon group : pentahoreport
     project : Apache Commons Bean Scripting Framework
     version : 2.3.0
     project URL : "https://commons.apache.org/proper/commons-bsf/"
@@ -343,7 +343,7 @@ Java :
     notes : 
   
   - filename : bsh.jar
-    yukon group : jfreereport
+    yukon group : pentahoreport
     project : BeanShell
     version : 1.3.0
     project URL : "http://www.beanshell.org/"
@@ -1395,7 +1395,7 @@ Java :
     notes : 
   
   - filename : jcommon.jar
-    yukon group : jfreereport
+    yukon group : pentahoreport
     project : JFree Common Library
     version : 1.0.0
     project URL : "http://www.jfree.org/jcommon/"
@@ -1437,7 +1437,7 @@ Java :
     notes : 
   
   - filename : jfreechart.jar
-    yukon group : jfreereport
+    yukon group : pentahoreport
     project : jfreechart
     version : 1.0.0-rc1?
     project URL : "http://www.jfree.org/jfreechart/"

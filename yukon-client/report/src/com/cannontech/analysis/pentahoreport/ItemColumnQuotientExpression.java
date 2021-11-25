@@ -19,7 +19,7 @@ public class ItemColumnQuotientExpression
     /*
      * (non-Javadoc)
      * 
-     * @see org.jfree.report.function.ItemColumnQuotientExpression#getValue()
+     * @see org.pentaho.reporting.engine.classic.core.function.ItemColumnQuotientExpression#getValue()
      */
     public Object getValue() {
         // If the divisor is null, this data is returned as null, the super returns it as Double.NAN, which we don't want.

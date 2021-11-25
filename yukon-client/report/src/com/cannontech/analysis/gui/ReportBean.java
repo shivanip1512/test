@@ -229,9 +229,9 @@ public class ReportBean {
     }
 
     /**
-     * Returns a JFreeReport instance using a YukonReportBase parameter.
+     * Returns a MasterReport instance using a YukonReportBase parameter.
      * Uses the getModel() field value to create the YukonReportBase parameter.
-     * Collects the model data and sets the JFreeReports data field using the getModel() field.
+     * Collects the model data and sets the MasterReports data field using the getModel() field.
      * 
      * @return
      * @throws FunctionInitializeException
@@ -243,7 +243,7 @@ public class ReportBean {
             // be already available during the ReportHeaders/Footers creation.
             getModel().collectData();
 
-            // Create an instance of JFreeReport from the YukonReportBase
+            // Create an instance of MasterReport from the YukonReportBase
             YukonReportBase report = reportController.getReport();
             MasterReport masterReport = report.createReport();
 

@@ -1,5 +1,6 @@
 package com.cannontech.analysis.report;
 
+import java.awt.BasicStroke;
 import java.awt.print.PageFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -118,7 +119,8 @@ public class HECO_LMEventSummaryReport extends YukonReportBase {
             header.addElement(factory.createElement());
         }
 
-        header.addElement(HorizontalLineElementFactory.createHorizontalLine(22));
+        header.addElement(HorizontalLineElementFactory.createHorizontalLine(22, null, new BasicStroke(0.5f)));
+        //"line1", null, new BasicStroke(0.5f), 22)
         collHdgGroup.setHeader(header);
 
         GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -143,7 +145,7 @@ public class HECO_LMEventSummaryReport extends YukonReportBase {
      */
     protected ItemBand createItemBand() {
         ItemBand items = ReportFactory.createItemBandDefault();
-        items.addElement(HorizontalLineElementFactory.createHorizontalLine(0));
+        items.addElement(HorizontalLineElementFactory.createHorizontalLine(0, java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f)));
 
         for (int i = 0; i < getModel().getColumnNames().length; i++) {
             TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
@@ -160,7 +162,7 @@ public class HECO_LMEventSummaryReport extends YukonReportBase {
      * Creates the function collection. The xml definition for this construct:
      * 
      * @return the functions.
-     * @throws FunctionInitializeException if there is a problem initialising the functions.
+     * @throws FunctionProcessingException if there is a problem processing the functions.
      */
     protected ExpressionCollection getExpressions() throws FunctionProcessingException {
         super.getExpressions();

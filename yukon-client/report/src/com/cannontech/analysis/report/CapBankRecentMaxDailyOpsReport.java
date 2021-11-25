@@ -45,9 +45,9 @@ public class CapBankRecentMaxDailyOpsReport extends YukonReportBase {
             header.addElement(factory.createElement());
         }
 
-        header.addElement(HorizontalLineElementFactory.createHorizontalLine(22));
+        header.addElement(HorizontalLineElementFactory.createHorizontalLine(22, null, new BasicStroke(0.5f)));
         collHdgGroup.setHeader(header);
-
+        
         GroupFooter footer = ReportFactory.createGroupFooterDefault();
         collHdgGroup.setFooter(footer);
 

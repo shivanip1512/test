@@ -177,7 +177,7 @@ public class ECActivityDetailReport extends YukonReportBase {
             /*
              * (non-Javadoc)
              * 
-             * @see org.jfree.report.function.TextFormatExpression#getValue()
+             * @see org.pentaho.reporting.engine.classic.core.function.TextFormatExpression#getValue()
              */
             public Object getValue() {
                 // dataRow is predefined and allows access to the

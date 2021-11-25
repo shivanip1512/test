@@ -41,9 +41,7 @@ import com.google.common.collect.Lists;
 /**
  * Created on Dec 15, 2003
  *
- * Base Class for Report data models.  Implements the required AbstractTableModel
- * for use with the JFreeReport API.
- 
+ * Base Class for Report data models.   
  * Extending classes must initialize these ReportModelBase fields:
  *   String[] columnNames - table column names
  *   Class[] columnTypes  - table column class type.
