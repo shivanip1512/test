@@ -1736,11 +1736,11 @@ Java :
     version : 9.3.0.0-257
     project URL : "https://sourceforge.net/projects/pentaho/"
     license : LGPL 2.1
-    license URLs : ???
+    license URLs : https://opensource.org/licenses/LGPL-2.1
     maven URL : https://mvnrepository.com/artifact/pentaho-library/libfonts/9.3.0.0-257
     md5 : 0449e3cd8476d14af74d2406a3721448
     sha1 : 8d654fdff7613477a9eb2f0c14d0085d7d858bf1
-    updated : 2017-05-23
+    updated : 2021-11-24
     jira : YUK-25377
     notes : pentaho libfonts
   
@@ -1764,11 +1764,11 @@ Java :
     version : 9.3.0.0-257
     project URL : "https://sourceforge.net/projects/pentaho/"
     license : LGPL 2.1
-    license URLs : ???
+    license URLs : https://opensource.org/licenses/LGPL-2.1
     maven URL : https://mvnrepository.com/artifact/pentaho-library/libserializer/9.3.0.0-257
     md5 : 806e33d38ba20a8173f822cb10b87d19
     sha1 : 78b158492f7679f39a1243a44469db3b58f4901a
-    updated : 2017-05-23
+    updated : 2021-11-24
     jira : YUK-25377
     notes : pentaho libserializer
     
@@ -1778,11 +1778,11 @@ Java :
     version : 9.3.0.0-257
     project URL : "https://sourceforge.net/projects/pentaho/"
     license : LGPL 2.1
-    license URLs : ???
+    license URLs : https://opensource.org/licenses/LGPL-2.1
     maven URL : https://mvnrepository.com/artifact/pentaho-library/libformat/9.3.0.0-257
     md5 : 5dbc3575bc45307d9518d37a9e9853da
     sha1 : fc1987fc5e431d0d560b04f71aaff8c8422a84bf
-    updated : 2017-05-23
+    updated : 2021-11-24
     jira : YUK-25377
     notes : pentaho libformat
     
@@ -1792,11 +1792,11 @@ Java :
     version : 9.3.0.0-257
     project URL : "https://sourceforge.net/projects/pentaho/"
     license : LGPL 2.1
-    license URLs : ???
+    license URLs : https://opensource.org/licenses/LGPL-2.1
     maven URL : https://mvnrepository.com/artifact/pentaho-library/libformula/9.3.0.0-257
     md5 : 42833371b06ad2c89bcbf4a760ca676e
     sha1 : a69107b586d395a276801d43abc5cdc9a325a843
-    updated : 2017-05-23
+    updated : 2021-11-24
     jira : YUK-25377
     notes : pentaho libformula
     
@@ -1806,11 +1806,11 @@ Java :
     version : 9.3.0.0-257
     project URL : "https://sourceforge.net/projects/pentaho/"
     license : LGPL 2.1
-    license URLs : ???
+    license URLs : https://opensource.org/licenses/LGPL-2.1
     maven URL : https://mvnrepository.com/artifact/pentaho-library/libdocbundle/9.3.0.0-257
     md5 : 199a200a2edd7190c8ae1d0e304fb836
     sha1 : 6feba6db8a723adf362e401bfba794a029bfa853
-    updated : 2017-05-23
+    updated : 2021-11-24
     jira : YUK-25377
     notes : pentaho libdocbundle
     
@@ -1820,11 +1820,11 @@ Java :
     version : 9.3.0.0-257
     project URL : "https://sourceforge.net/projects/pentaho/"
     license : LGPL 2.1
-    license URLs : ???
+    license URLs : https://opensource.org/licenses/LGPL-2.1
     maven URL : https://mvnrepository.com/artifact/pentaho-library/librepository/9.3.0.0-257
     md5 : 90b4c9895c197c1a9562ee34d683964e
     sha1 : 43df27514e416c6fb5139d9103ac9c37edfebfeb
-    updated : 2017-05-23
+    updated : 2021-11-24
     jira : YUK-25377
     notes : pentaho librepository
     
@@ -1834,11 +1834,11 @@ Java :
     version : 9.3.0.0-257
     project URL : "https://sourceforge.net/projects/pentaho/"
     license : LGPL 2.1
-    license URLs : ???
+    license URLs : https://opensource.org/licenses/LGPL-2.1
     maven URL : https://mvnrepository.com/artifact/pentaho-library/libxml/9.3.0.0-257
     md5 : 6f1ca544fde8d668da8daeeefed36d93
     sha1 : af75cd57250bebaa1943b4b87bf9ea022ef2e2f1
-    updated : 2017-05-23
+    updated : 2021-11-24
     jira : YUK-25377
     notes : pentaho libxml
     
@@ -1848,11 +1848,11 @@ Java :
     version : 9.3.0.0-257
     project URL : "https://sourceforge.net/projects/pentaho/"
     license : LGPL 2.1
-    license URLs : ???
+    license URLs : https://opensource.org/licenses/LGPL-2.1
     maven URL : https://mvnrepository.com/artifact/pentaho-library/libbase/9.3.0.0-257
     md5 : 134ede5fb9b8fc9446420300fa501e01
     sha1 : e13c83e614f2d0ef052a5e393260f60d7592eaa2
-    updated : 2017-05-23
+    updated : 2021-11-24
     jira : YUK-25377
     notes : pentaho libbase
     
@@ -1862,11 +1862,11 @@ Java :
     version : 9.3.0.0-257
     project URL : "https://sourceforge.net/projects/pentaho/"
     license : LGPL 2.1
-    license URLs : ???
+    license URLs : https://opensource.org/licenses/LGPL-2.1
     maven URL : https://mvnrepository.com/artifact/pentaho-library/libloader/9.3.0.0-257
     md5 : 99857a279f4bcf5855a596e8167c2b68
     sha1 : 5131a9dd7b407e8375519df6ccfddea7118c7e98
-    updated : 2017-05-23
+    updated : 2021-11-24
     jira : YUK-25377
     notes : pentaho libloader
   
@@ -2354,9 +2354,9 @@ Java :
     license : LGPL 2.1
     license URLs : "https://opensource.org/licenses/LGPL-2.1"
     maven URL : https://mvnrepository.com/artifact/pentaho-reporting-engine/pentaho-reporting-engine-classic-core/7.0.0.5-89
-    md5 : 5893b652c7fac18d0f97df24316b4137
-    sha1 : 8d654fdff7613477a9eb2f0c14d0085d7d858bf1
-    updated : 2017-02-02
+    md5 : 59bb9662c8d4196f1f86ad45af24c558
+    sha1 : e33a859163e3f4786cbb111693d6d5e0e4784088
+    updated : 2021-11-24
     jira : YUK-25377
     notes : pentaho reporting engine core
     
