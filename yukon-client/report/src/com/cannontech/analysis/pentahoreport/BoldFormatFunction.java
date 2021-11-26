@@ -18,9 +18,6 @@ import com.cannontech.analysis.tablemodel.HECO_LMEventSummaryModel;
 
 /**
  * @author stacey
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class BoldFormatFunction extends AbstractElementFormatFunction {
     private int col = HECO_LMEventSummaryModel.START_TIME_COLUMN; // the first customer column

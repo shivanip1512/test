@@ -128,7 +128,6 @@ public class PointDataSummaryReport extends YukonReportBase {
         for (int i = PointDataSummaryModel.PAO_NAME_COLUMN; i <= PointDataSummaryModel.PAO_TYPE_COLUMN; i++) {
             LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
             factory.setText(factory.getText() + ":");
-            Font font = (Font) header.getStyle().getStyleProperty(TextStyleKeys.FONT, ReportFactory.GROUP_HEADER_BAND_FONT);
             header.addElement(factory.createElement());
 
             TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), i);

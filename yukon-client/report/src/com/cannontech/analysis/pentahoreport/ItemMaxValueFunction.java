@@ -1,8 +1,5 @@
 /*
  * Created on Feb 17, 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 package com.cannontech.analysis.pentahoreport;
 
@@ -17,9 +14,6 @@ import org.jfree.util.Log;
 
 /**
  * @author stacey
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class ItemMaxValueFunction extends AbstractFunction implements Serializable
 { 
@@ -31,7 +25,7 @@ public class ItemMaxValueFunction extends AbstractFunction implements Serializab
   private Object dataFieldValue; 
 
   /** 
-   * Constructs an unnamed function. Make sure to set a Name or function initialisation 
+   * Constructs an unnamed function. Make sure to set a Name or function initialization 
    * will fail. 
    */ 
   public ItemMaxValueFunction() 
@@ -192,7 +186,7 @@ public class ItemMaxValueFunction extends AbstractFunction implements Serializab
   }
 
   /** 
-   * Return a completly separated copy of this function. The copy does no 
+   * Return a completely separated copy of this function. The copy does no 
    * longer share any changeable objects with the original function. 
    * 
    * @return a copy of this function. 

@@ -240,7 +240,6 @@ public class ProgramDetailReport extends YukonReportBase {
      */
 
     protected List<RelationalGroup> createGroups() {
-        // Add a Grouping for Date column.
         return List.of(createECGroup(), createProgramGroup());
     }
 

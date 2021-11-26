@@ -147,7 +147,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
             }
 
             // A filename for downloading the report to.
-            String fileName = "Report";
+            String fileName = reportBean.getModel().getTitleString();
             param = req.getParameter("fileName");
             if (param != null) {
                 fileName = param.toString();
@@ -237,7 +237,6 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
 
                 resp.setContentType("text/plain");
                 CSVQuoter quoter = new CSVQuoter(",");
-
                 // Write data
                 for (int r = 0; r < reportBean.getModel().getRowCount(); r++) {
                     String rawValue = String.valueOf(reportBean.getModel().getValueAt(r, MeterReadModel.DEVICE_NAME_COLUMN));

@@ -200,7 +200,7 @@ public class ReportFuncs {
 				CSVReportUtil.createCSV(report, out, null);
 			}
 		} catch (ReportProcessingException e) {
-			throw new IOException("Error occured while creating the Yukon report");
+			throw new IOException(e.getMessage());
 		}
 	}
 

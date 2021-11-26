@@ -47,7 +47,6 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
     /**
      * Constructor for Report.
      * Data Base for this report type is instanceOf LoadControlEventSummaryModel.
-     * 
      * @param data_ - DatabaseModel TableModel data
      */
     public HECO_CustomerMonthlyBillingSettlementReport(HECO_CustomerMonthlyBillingSettlementModel model_) {
@@ -57,7 +56,6 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
 
     /**
      * Runs this report and shows a preview dialog.
-     * 
      * @param args the arguments (ignored).
      * @throws Exception if an error occurs (default: print a stack trace)
      */
@@ -104,7 +102,6 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
 
     /**
      * Create a Group for Column Headings only.
-     * 
      * @return Group
      */
     private RelationalGroup createCustomerHeadingGroup() {
@@ -154,7 +151,6 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
 
     /**
      * Create a GroupList and all Group(s) to it.
-     * 
      * @return the groupList.
      */
     protected List<RelationalGroup> createGroups() {
@@ -163,7 +159,6 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
 
     /**
      * Creates the itemBand, the rows of data.
-     * 
      * @return the item band.
      */
     protected ItemBand createItemBand() {
@@ -182,7 +177,6 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
     /**
      * Add the same elements as those from the report header so they show on every page.
      * Creates the page header.
-     * 
      * @return the page header.
      */
     protected PageHeader createPageHeader() {

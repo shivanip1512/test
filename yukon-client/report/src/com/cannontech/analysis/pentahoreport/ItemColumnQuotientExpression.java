@@ -8,10 +8,8 @@ package com.cannontech.analysis.pentahoreport;
 
 /**
  * @author stacey
- *         Yukon override of getValue() method in super.
- *         We want different formatting!
- *         TODO To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Style - Code Templates
+ * 
+ * Yukon override of getValue() method in super.
  */
 public class ItemColumnQuotientExpression
         extends org.pentaho.reporting.engine.classic.core.function.ItemColumnQuotientExpression {
