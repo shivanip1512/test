@@ -71,7 +71,6 @@ public class EimJavaLibraryTest {
         "jaxb2-basics-ant-0.6.3.jar",
         "jaxb2-default-value-1.1.jar",
         "jaxm-runtime.jar",
-        "jfreereport.jar",
         "jjwt-impl-0.11.2.jar", 
         "jjwt-jackson-0.11.2.jar", 
         "jjwt-api-0.11.2.jar",

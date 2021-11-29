@@ -1,9 +1,9 @@
 package com.cannontech.analysis.function;
 
-import org.jfree.report.elementfactory.NumberFieldElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.Expression;
-import org.jfree.report.function.ItemSumFunction;
+import org.pentaho.reporting.engine.classic.core.elementfactory.NumberFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
+import org.pentaho.reporting.engine.classic.core.function.Expression;
+import org.pentaho.reporting.engine.classic.core.function.ItemSumFunction;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.report.ColumnLayoutData;

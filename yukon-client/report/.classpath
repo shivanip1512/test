@@ -37,12 +37,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/itext.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/poi.jar">
+	<classpathentry kind="lib" path="/third-party/itext-2.1.7.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -52,29 +47,59 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="/third-party/linked-sources/jfreereport-0.8.6-4.zip">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/bsf-2.3.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/libfonts-0.1.0.jar">
+	<classpathentry kind="lib" path="/third-party/libfonts-9.3.0.0-257.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v9.0">
+	<classpathentry kind="lib" path="/third-party/pentaho-reporting-engine-classic-core-7.0.0.5-89.jar">
 		<attributes>
-			<attribute name="owner.project.facets" value="jst.utility"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+	<classpathentry kind="lib" path="/third-party/libxml-9.3.0.0-257.jar">
 		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/libdocbundle-9.3.0.0-257.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/libloader-9.3.0.0-257.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/libbase-9.3.0.0-257.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/librepository-9.3.0.0-257.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/libserializer-9.3.0.0-257.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/libformula-9.3.0.0-257.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/libformat-9.3.0.0-257.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
