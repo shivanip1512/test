@@ -2556,6 +2556,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
             <components>
                 <component point="Blink Count"/>
                 <component point="Outage Count"/>
+                <component point="Blink Restore Count"/>
             </components>
         </calculation>
     </point>
