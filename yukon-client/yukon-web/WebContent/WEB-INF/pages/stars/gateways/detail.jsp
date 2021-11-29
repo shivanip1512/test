@@ -91,9 +91,9 @@
                                 </c:if>
                             </span>
                         </tags:nameValue2>
-				        <tags:nameValue2 nameKey=".ipaddress">
-                            <span class="js-gw-ip">${fn:escapeXml(data.nmIpAddress)}</span>&nbsp;
-                            <span class="js-gw-port">
+				        <tags:nameValue2 nameKey=".nmipaddress">
+                            <span class="js-gw-nmip">${fn:escapeXml(data.nmIpAddress)}</span>&nbsp;
+                            <span class="js-gw-nmport">
                                 <c:if test="${not empty data}">
                                     <i:inline key=".port" arguments="${data.nmPort}"/>
                                 </c:if>

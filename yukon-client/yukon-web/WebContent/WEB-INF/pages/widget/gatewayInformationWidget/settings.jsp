@@ -41,7 +41,7 @@
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".useDefaultPort">
             <tags:switchButton path="useDefaultPort" onNameKey=".yes.label" offNameKey=".no.label" 
-                toggleGroup="virtual-gateway" toggleAction="invisible" toggleInverse="true"/>
+                toggleGroup="virtual-gateway" toggleAction="hide" toggleInverse="true"/>
             <cti:msg2 var="portHelpTextTitle" key=".default.port.title"/>
             <tags:helpInfoPopup title="${portHelpTextTitle}" classes="vam">
                 <cti:msg2 key=".default.port.helpText"/>
@@ -50,11 +50,11 @@
         <tags:nameValue2 nameKey=".default.port" data-toggle-group="virtual-gateway">
             <tags:input path="port" maxlength="5" size="5" tabindex="3"/>
         </tags:nameValue2>
-        <tags:nameValue2 nameKey=".ipaddress">
-            <tags:input path="nmIpAddress" maxlength="15" size="15" tabindex="2"/>
+        <tags:nameValue2 nameKey=".nmipaddress">
+            <tags:input path="nmIpAddress" maxlength="15" size="15" tabindex="4"/>
         </tags:nameValue2>
-        <tags:nameValue2 nameKey=".default.port">
-            <tags:input path="nmPort" maxlength="5" size="5" tabindex="3"/>
+        <tags:nameValue2 nameKey=".nmport">
+            <tags:input path="nmPort" maxlength="5" size="5" tabindex="5"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".authentication" nameClass="fwb" excludeColon="true" valueClass="js-test-results">
         </tags:nameValue2>
@@ -63,13 +63,13 @@
             <spring:bind path="admin.username">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <tags:password path="admin.username" cssClass="js-gateway-edit-username M0 left ${clazz}"
-                      showPassword="true" placeholder="${phUsername}" tabindex="4" includeShowHideButton="true"/>
+                      showPassword="true" placeholder="${phUsername}" tabindex="6" includeShowHideButton="true"/>
             </spring:bind>
             <spring:bind path="admin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <c:set var="clazz" value="${clazz} ${mode == 'EDIT' ? 'middle' : 'right'}"/>
                 <tags:password path="admin.password" cssClass="js-gateway-edit-password M0" 
-                      placeholder="${phPassword}" tabindex="5" showPassword="true" includeShowHideButton="true"/>
+                      placeholder="${phPassword}" tabindex="7" showPassword="true" includeShowHideButton="true"/>
             </spring:bind>
         </tags:nameValue2>
         
@@ -77,14 +77,14 @@
             <spring:bind path="superAdmin.username">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <tags:password path="superAdmin.username" cssClass="js-gateway-edit-username M0 left ${clazz}" 
-                     placeholder="${phUsername}" tabindex="7" showPassword="true" includeShowHideButton="true"/>
+                     placeholder="${phUsername}" tabindex="8" showPassword="true" includeShowHideButton="true"/>
             </spring:bind>
             <spring:bind path="superAdmin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <c:set var="clazz" value="${clazz} ${mode == 'EDIT' ? 'middle' : 'right'}"/>
                 <div class="dib M0">
                     <tags:password  path="superAdmin.password" cssClass="js-gateway-edit-password M0"
-                        placeholder="${phPassword}" tabindex="8" showPassword="true" includeShowHideButton="true"/>
+                        placeholder="${phPassword}" tabindex="9" showPassword="true" includeShowHideButton="true"/>
                 </div>
             </spring:bind>
         </tags:nameValue2>
@@ -100,7 +100,7 @@
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".updateServer.default">
             <tags:switchButton path="useDefaultUpdateServer" onNameKey=".yes.label" offNameKey=".no.label" 
-                toggleGroup="update-server" toggleAction="invisible" toggleInverse="true"/>
+                toggleGroup="update-server" toggleAction="hide" toggleInverse="true"/>
         </tags:nameValue2>
 
         <tags:nameValue2 nameKey=".updateServer.url" data-toggle-group="update-server">

@@ -62,8 +62,17 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
             }
         }
         if (!settings.isUseDefaultPort()) {
-           YukonValidationUtils.validatePort(errors, "port", yukonValidationHelper.getMessage(baseKey + "default.port"),String.valueOf(settings.getPort()));
+           YukonValidationUtils.validatePort(errors, "port", yukonValidationHelper.getMessage(baseKey + "default.port"), String.valueOf(settings.getPort()));
         }
+        
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "nmIpAddress", baseKey + "ipAddress.required");
+        if (StringUtils.isNoneBlank(settings.getNmIpAddress())) {
+            boolean nmIpValid = InetAddressValidator.getInstance().isValid(settings.getNmIpAddress());
+            if (!nmIpValid) {
+                errors.rejectValue("nmIpAddress", baseKey + "ipAddress.invalid");
+            }
+        }
+        YukonValidationUtils.validatePort(errors, "nmPort", yukonValidationHelper.getMessage(baseKey + "default.port"), String.valueOf(settings.getNmPort()));
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "admin.username", baseKey + "username.required");
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "superAdmin.username", baseKey + "username.required");
