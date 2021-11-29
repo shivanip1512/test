@@ -982,7 +982,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.lowagie/itext/2.1.7"
     md5 : 7587a618197a065eac4a453d173d4ed6 
     sha1 : 892bfb3e97074a61123b3b2d7caa2db112750864
-    updated : 2009-07-08
+    updated : 2021-11-24
     jira : YUK-25377
     notes : Pentaho reporting latest version is dependent on this
     
