@@ -15,9 +15,11 @@ public class ZeusEcobeeDataConfiguration {
     private int cancelDemandResponse = 0;
     private int generateDiscrepency = 0;
     private int paginatedResponse = 0;
+    private int deviceStatus = 0;
 
-    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment, int issueDemandResponse, int showUser,
-            int createPushConfiguration, int showPushConfiguration, boolean enableRuntime,int getGroup, Integer generateDiscrepency, int cancelDemandResponse, int paginatedResponse) {
+    public void setZeusEcobeeDataConfiguration(int authenticate, int createDevice, int deleteDevice, int enrollment,
+            int issueDemandResponse, int showUser, int createPushConfiguration, int showPushConfiguration, boolean enableRuntime,
+            int getGroup, Integer generateDiscrepency, int cancelDemandResponse, int paginatedResponse, int deviceStatus) {
         this.authenticate = authenticate;
         this.createDevice = createDevice;
         this.deleteDevice = deleteDevice;
@@ -31,6 +33,7 @@ public class ZeusEcobeeDataConfiguration {
         this.setGenerateDiscrepency(generateDiscrepency);
         this.cancelDemandResponse = cancelDemandResponse;
         this.setPaginatedResponse(paginatedResponse);
+        this.deviceStatus = deviceStatus;
     }
 
     public int getAuthenticate() {
@@ -135,6 +138,14 @@ public class ZeusEcobeeDataConfiguration {
 
     public void setPaginatedResponse(int paginatedResponse) {
         this.paginatedResponse = paginatedResponse;
+    }
+
+    public int getDeviceStatus() {
+        return deviceStatus;
+    }
+
+    public void setDeviceStatus(int deviceStatus) {
+        this.deviceStatus = deviceStatus;
     }
 
 }

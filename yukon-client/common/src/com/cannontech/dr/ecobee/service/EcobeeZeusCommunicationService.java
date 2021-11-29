@@ -14,9 +14,9 @@ import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 public interface EcobeeZeusCommunicationService {
 
     /**
-     * Check whether the provided thermostat serial number is registered in Ecobee portal and its already connected.
+     * Add the specified thermostat to the root group with NOT_YET_CONNECTED state
      */
-    boolean isDeviceRegistered(String serialNumber);
+    void createDevice(String serialNumber);
 
     /**
      * Deletes the specified thermostat from a program's root group and deletes from all child groups.
