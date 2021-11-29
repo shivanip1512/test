@@ -9,6 +9,10 @@ import java.util.List;
 
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.PageDefinition;
+import org.pentaho.reporting.engine.classic.core.PageFooter;
+import org.pentaho.reporting.engine.classic.core.PageHeader;
+import org.pentaho.reporting.engine.classic.core.ReportFooter;
+import org.pentaho.reporting.engine.classic.core.ReportHeader;
 import org.pentaho.reporting.engine.classic.core.ReportProcessingException;
 import org.pentaho.reporting.engine.classic.core.TableDataFactory;
 import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
@@ -197,6 +201,13 @@ public class ReportFuncs {
 			}
 
 			else if (ext.equalsIgnoreCase("csv")) {
+				// Do not set the headers/footers for csv reports, it may cause issues while importing the reports
+				//it was earlier handled in the library
+				report.setReportFooter(new ReportFooter()); 
+				report.setReportHeader(new ReportHeader());
+				report.setPageHeader(new PageHeader()); 
+				report.setPageFooter(new PageFooter());
+				 
 				CSVReportUtil.createCSV(report, out, null);
 			}
 		} catch (ReportProcessingException e) {
