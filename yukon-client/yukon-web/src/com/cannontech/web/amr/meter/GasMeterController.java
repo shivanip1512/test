@@ -77,7 +77,7 @@ public class GasMeterController {
                 mav.addObject("showEvents", true);
             }
 
-            if (deviceType == PaoType.RFG201) {
+            if (deviceType.isGasMeter()) {
                 mav.addObject("deviceConfigSupported", true);
                 mav.addObject("configurableDevice", true);
             }
