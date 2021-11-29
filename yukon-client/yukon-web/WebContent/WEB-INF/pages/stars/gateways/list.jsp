@@ -16,6 +16,7 @@
             data-url="<cti:url value="/stars/gateways/create"/>" 
             data-width="570" 
             data-min-width="570" 
+            data-height="600"
             data-event="yukon:assets:gateway:save" 
             data-ok-text="<cti:msg2 key="components.button.save.label"/>" 
             data-load-event="yukon:assets:gateway:load">
