@@ -32,7 +32,7 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
     private INotifConnection notifClientConnection;
     private MessageSourceAccessor messageSourceAccessor;
     private GlobalSettingDao globalSettingDao;
-    private static Logger snLogger = YukonLogManager.getCommsLogger();
+    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger(SmartNotificationEmailMessageParametersHandler.class);
     
     @Autowired
     public SmartNotificationEmailMessageParametersHandler(List<SmartNotificationEmailBuilder> emailBuilderList,
