@@ -115,18 +115,18 @@ BILLING_ERRORS = {
                             
                         </div>
                         
-                        <div id="addFieldsDropDown" style="display:none;">
+                        <div id="addFieldsDropDown" style="display:none; width: 500px">
                             <br>
                             <h4 style="display: inline;"><cti:msg2 key=".availableFields"/></h4><br>
-                            <select id="availableFields" name="availableFields" style="width:260px;" >
+                            <select id="availableFields" name="availableFields" style="width:260px;" class="MT5">
                                 <c:forEach var="field" items="${availableFields}">
                                     <option>${field}</option>
                                 </c:forEach>
                             </select>&nbsp;
                             <cti:msg2 key=".add" var="add" />
                             <cti:msg2 key=".done" var="done" />
-                            <cti:button onclick="addToSelected('${defaultRoundingMode}');" label="${add}"/>
-                            <cti:button onclick="addFieldButton();" label="${done}"/>
+                            <cti:button onclick="addToSelected('${defaultRoundingMode}');" label="${add}" classes="MT5"/>
+                            <cti:button onclick="addFieldButton();" label="${done}" classes="MT5"/>
                         </div>
                     </div>
                     </ct:sectionContainer2>
