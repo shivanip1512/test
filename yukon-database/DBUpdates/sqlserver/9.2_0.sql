@@ -70,7 +70,6 @@ INSERT INTO DBUpdates VALUES ('YUK-25103', '9.2.0', GETDATE());
 INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'LCR-6200S', 1344);
 
 INSERT INTO DBUpdates VALUES ('YUK-25214', '9.2.0', GETDATE());
-
 /* @end YUK-25214 */
 
 /***********************************************************************************/
