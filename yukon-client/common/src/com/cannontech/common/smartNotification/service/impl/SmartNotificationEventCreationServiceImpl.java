@@ -61,7 +61,7 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
     private void sendEvents(SmartNotificationEventType type, List<SmartNotificationEvent> events) {
         if (!events.isEmpty()) {
             SmartNotificationEventMulti msg = new SmartNotificationEventMulti(type, events);
-            snLogger.info("[SN:SmartNotificationEventCreationServiceImpl:{}] Sending Smart Notification {}", type,
+            snLogger.info("Sending Smart Notification {}", type,
                     msg.loggingString(snLogger.getLevel()));
             template.convertAndSend(msg);
         }
