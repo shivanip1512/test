@@ -295,4 +295,5 @@ public interface DeviceTypes extends TypeBase
     
     public final static int RFN530FAXE = DEVICE_OFFSET + 226;
     public final static int RFN530FRXE = DEVICE_OFFSET + 227;
+    public final static int LCR6200S = DEVICE_OFFSET + 228;
 }
