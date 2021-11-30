@@ -67,6 +67,10 @@ INSERT INTO DBUpdates VALUES ('YUK-25103', '9.2.0', SYSDATE);
 /* @end YUK-25103 */
 
 /* @start YUK-24293 */
+UPDATE CALCCOMPONENT 
+SET COMPONENTTYPE='Operation' 
+WHERE COMPONENTTYPE='OPERATION';
+
 INSERT INTO CALCCOMPONENT (
     PointID, 
     COMPONENTORDER, 
@@ -94,7 +98,7 @@ FROM
         JOIN CALCCOMPONENT cc1
             ON cc1.PointID=cb.POINTID
                 and cc1.COMPONENTORDER=1
-                and cc1.COMPONENTTYPE='OPERATION'
+                and cc1.COMPONENTTYPE='Operation'
                 and cc1.OPERATION='+'
         JOIN POINT ccp1
             ON ccp1.POINTID=cc1.COMPONENTPOINTID
@@ -103,7 +107,7 @@ FROM
         JOIN CALCCOMPONENT cc2
             ON cc2.PointID=cb.POINTID
                 and cc2.COMPONENTORDER=2
-                and cc2.COMPONENTTYPE='OPERATION'
+                and cc2.COMPONENTTYPE='Operation'
                 and cc2.OPERATION='+'
         JOIN POINT ccp2
             ON ccp2.POINTID=cc2.COMPONENTPOINTID
