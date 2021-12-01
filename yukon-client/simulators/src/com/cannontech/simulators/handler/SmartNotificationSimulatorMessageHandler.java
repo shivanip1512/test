@@ -13,7 +13,7 @@ import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.simulators.message.response.SmartNotificationSimulatorResponse;
 
 public class SmartNotificationSimulatorMessageHandler extends SimulatorMessageHandler {
-    private static final Logger log = YukonLogManager.getLogger(SmartNotificationSimulatorMessageHandler.class);
+    private static final Logger log = YukonLogManager.getSmartNotificationsLogger(SmartNotificationSimulatorMessageHandler.class);
     @Autowired private SmartNotificationSimulatorService smartNotificationSimulatorService;
     
     public SmartNotificationSimulatorMessageHandler() {

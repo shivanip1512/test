@@ -52,7 +52,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 public class SmartNotificationSimulatorServiceImpl implements SmartNotificationSimulatorService {
-    private static final Logger log = YukonLogManager.getLogger(SmartNotificationSimulatorServiceImpl.class);
+    private static final Logger log = YukonLogManager.getSmartNotificationsLogger(SmartNotificationSimulatorServiceImpl.class);
     @Autowired protected IDatabaseCache cache;
     @Autowired private SmartNotificationEventCreationService eventCreationService;
     @Autowired private SmartNotificationEventDao eventDao;
