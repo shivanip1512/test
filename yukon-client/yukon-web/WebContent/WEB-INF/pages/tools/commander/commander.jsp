@@ -80,7 +80,7 @@
                     data-event="yukon.tools.commander.routeChange" class="dn"></div>
         </span>
         
-        <cm:dropdown type="button" id="device-actions-menu" triggerClasses="js-device-actions-btn vab" showLabel="false">
+        <cm:dropdown id="device-actions-menu" triggerClasses="js-device-actions-btn vab" showLabel="false">
             <c:set var="clazz" value="${!routable ? 'dn' : ''}"/>
             <c:if test="${changeRoute}">
                 <cm:dropdownOption id="change-route-btn" key=".changeRoute" icon="icon-pencil" classes="${clazz}"/>
@@ -210,7 +210,23 @@
             <tr>
                 <td class="name js-prompt-text"></td>
                 <td class="value">
-                    <input class="js-prompt-input" type="text">
+                    <input class="js-prompt-input dn" type="text">
+                    <span class="js-prompt-expresscom-group-picker dn">
+	                    <input type="hidden" id="expresscom-group-id"/>
+				        <tags:pickerDialog type="expresscomGroupPicker" id="expressComGroupPicker" 
+				    		linkType="selection" 
+				    		selectionProperty="paoName"
+				    		endEvent="yukon:tools:commander:group:picker:closed"
+				    		destinationFieldId="expresscom-group-id"/>
+				    </span>
+				    <span class="js-prompt-versacom-group-picker dn">
+				    	<input type="hidden" id="versacom-group-id"/>
+				    	<tags:pickerDialog type="versacomGroupPicker" id="versaComGroupPicker" 
+				    		linkType="selection" 
+				    		selectionProperty="paoName"
+				    		endEvent="yukon:tools:commander:group:picker:closed"
+				    		destinationFieldId="versacom-group-id"/>
+				    </span>
                 </td>
             </tr>
         </tbody>
