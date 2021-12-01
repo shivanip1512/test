@@ -171,7 +171,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
                 UTILITY_PRO_G3);
         
         rfTypes = ImmutableSet.of(LCR_6200_RFN, LCR_6600_RFN, LCR_6700_RFN);
-        itronTypes = ImmutableSet.of(LCR_6600S, LCR_6601S);
+        itronTypes = ImmutableSet.of(LCR_6600S, LCR_6601S, LCR_6200S);
         
         utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE);
         autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
@@ -187,6 +187,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         starsToPaoMap.put(PaoType.LCR6200_RFN, LCR_6200_RFN);
         starsToPaoMap.put(PaoType.LCR6600_RFN, LCR_6600_RFN);
         starsToPaoMap.put(PaoType.LCR6700_RFN, LCR_6700_RFN);
+        starsToPaoMap.put(PaoType.LCR6200S, LCR_6200S);
         starsToPaoMap.put(PaoType.LCR6600S, LCR_6600S);
         starsToPaoMap.put(PaoType.LCR6601S, LCR_6601S);
         starsToPaoMap.put(PaoType.LCR6200C, LCR_6200C);

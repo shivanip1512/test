@@ -36,6 +36,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
         
     private static final Logger log = YukonLogManager.getLogger(ItronBuilder.class);
     private static final ImmutableMap<HardwareType, PaoType> hardwareTypeToPaoType = ImmutableMap.<HardwareType, PaoType> builder()
+            .put(HardwareType.LCR_6200S, PaoType.LCR6200S)
             .put(HardwareType.LCR_6600S, PaoType.LCR6600S)
             .put(HardwareType.LCR_6601S, PaoType.LCR6601S)
             .build();
