@@ -49,6 +49,7 @@
 .L0 { left: 0; }
 .lhn { line-height: normal; }
 .M0 { margin: 0 !important; }
+.MT10 { margin-top:10px; }
 .MT30 { margin-top:30px; }
 .MR0 { margin-right: 0 !important; }
 .MR5 { margin-right: 5px !important; }
@@ -421,48 +422,52 @@ span.fancytree-node {
 }
 
 .ui-tabs {
-    
+
     border: none !important;
-    
+
     .ui-tabs-nav {
         background: none;
-        padding: 0 0 0 5px;
-        
+        padding: 0;
+        outline: 0;
+        border-radius: 0;
+        cursor: pointer;
         li {
-            background: whitesmoke; 
-            border: 1px solid #ccc;
-            border-bottom-width: 0;
-            border-radius: @border-radius @border-radius 0 0;
-            /*this is to fix IE10-IE11 bug where the default state of a hoverable item exposes the list decoration
-              when it should be hidden. Does not effect other browsers. 
-            */  
-            list-style-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
-            margin: 0 -1px 0 0;
-            
+            background-color: white; 
+            border: none;
+            vertical-align: middle;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 0.875rem;
+            line-height: 1.25;
+            letter-spacing: 0.02857em;
+            text-transform: uppercase;
+            max-width: 360px;
+            position: relative;
+            align-items: center;
+            text-decoration: none;
+            text-align: center;
+            margin: 0;
+            box-sizing: border-box;
+
             &.error { background-color: #fdd; }
             &.error .ui-tabs-anchor { color: @red !important }
-            &.ui-tabs-active { background: #fff;
-           
-                
+            &.ui-tabs-active { 
+                border-bottom-width: solid 3px @primary-color;
+                text-shadow: 1px 1px 0 white;
+                background: white;
             }
-            
-            &:not(.ui-tabs-active):hover {
-                background: #fff;
-                a {
-                    color: @font-color;
-                }
-            }
-            
+
             a {
                 color: @font-color;
-                padding: 5px 8px !important;
-            }
+              }
         }
     }
     
     .ui-tabs-active > .ui-tabs-anchor {
-        font-weight: bold !important;
+        font-weight: 500 !important;
         color: @primary-color;
+        border-bottom: solid 3px @primary-color;
+        cursor: pointer;
     }
 }
 .link-tabbed-container .ui-tabs-nav { border-bottom: 1px solid #ccc; }
@@ -473,7 +478,7 @@ span.fancytree-node {
     border: 1px solid #ccc;
     
     .ui-dialog-titlebar-tabbed {
-        background-color: whitesmoke;
+        background-color: white;
         border-bottom: 1px solid #ccc;
         &:hover { cursor: move; }
          
@@ -482,7 +487,8 @@ span.fancytree-node {
         }
         
         .ui-tabs-anchor {
-            padding: 8px 8px !important; 
+            padding: 12px 16px !important;
+            cursor: pointer !important;
         }
     }
     
@@ -499,8 +505,8 @@ span.fancytree-node {
     }
     .ui-dialog-tabbed-title {
         border: none;
-        padding: 8px 20px 8px 5px;
-        &:hover { background-color: whitesmoke !important; }
+        padding: 12px 16px;
+        &:hover { background-color: white !important; }
     }
     .ui-dialog-titlebar-close {
         border: none;
@@ -668,7 +674,7 @@ span.fancytree-node {
 	padding-left: 12px;
 	padding-right: 20px;
 	height: 26px;
-	font-size: 0.8125rem;
+	font-size: 0.9rem;
 }
 .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
 	top: 6px;
@@ -681,7 +687,7 @@ span.fancytree-node {
     padding: 2px 5px;
 	cursor: pointer;
 	color: #72828f;
-	font: inherit;
+	font-size: 0.9rem;
 }
 .chosen-container-single .chosen-single div b {
     background: url('../Icons/bullet_arrow_down.png') no-repeat 1px 8px;
@@ -959,4 +965,8 @@ input[readonly], input[readonly="readonly"] {
 .ui-jqgrid .ui-jqgrid-htable .ui-th-div {
     margin-bottom: 7px;
     height: 20px !important;
+}
+
+span.error {
+    float: left;
 }

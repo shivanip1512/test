@@ -176,7 +176,7 @@ textarea {
     transition: background-color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
     font-weight: 400;
 	line-height: 1.1876rem;
-	font-size: 1rem;
+	font-size: 0.9rem;
 	color: #424e54;
     
     &:not([readonly]):hover {
@@ -223,9 +223,12 @@ input[type=number],
 input[type=password], 
 input[type=tel], 
 input[type=text], 
-input[type=url], 
-select:not([multiple]):not([size]) {
+input[type=url]
+{
     height: 1.1876em;
+    line-height: normal !important;
+}
+select:not([multiple]):not([size]) {
     line-height: normal !important;
 }
 select:not([disabled]) {

@@ -19,7 +19,7 @@
         <cti:csrfToken/>
         <input type="hidden" class="js-unique-identifier" value="${uniqueId}"/>
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey="yukon.common.point" nameClass="vam">
+            <tags:nameValue2 nameKey="yukon.common.point" nameClass="vam" valueClass="fl MB5">
                 <tags:pickerDialog id="trendPointPicker_${uniqueId}"
                                                  type="pointPicker"
                                                  destinationFieldId="js-point-id-${uniqueId}"

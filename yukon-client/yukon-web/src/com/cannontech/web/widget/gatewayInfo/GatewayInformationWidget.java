@@ -244,7 +244,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             if (settings.isUseDefaultPort()) {
                 port = null;
             }
-
+            
             RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
             RfnGatewayData data = builder.copyOf(gateway.getData())
            .ipAddress(settings.getIpAddress())
@@ -254,8 +254,10 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
            .superAdmin(settings.getSuperAdmin())
            .updateServerUrl(updateServerUrl)
            .updateServerLogin(auth)
+           .nmIpAddress(settings.getNmIpAddress())
+           .nmPort(settings.getNmPort())
            .build();
-            
+                        
             gateway.setData(data);
             
             GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway, userContext.getYukonUser());
