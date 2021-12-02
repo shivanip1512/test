@@ -161,6 +161,9 @@ public class YukonLogManager {
             }
         });
 
+        //Disable Pentaho report generation logging
+        builder.add(builder.newLogger("org.pentaho", Level.OFF));
+
         // Create root logger and add to the builder.
         builder.add(builder.newRootLogger(Level.INFO)
                            .add(builder.newAppenderRef("console"))
