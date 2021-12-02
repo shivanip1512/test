@@ -1386,10 +1386,8 @@ public final class JmsApiDirectory {
             .builder(RfnDeviceDeleteRequest.class, RfnDeviceDeleteInitialReply.class, RfnDeviceDeleteConfirmationReply.class)
             .name("Device Delete Request")
             .description("Request is sent from Yukon to NM to delete a RFN device."
-                    + "NM send a an acknowledgement confirmimg the presence/absence of the device in the NM Db. "
-                    + "This should come within a minute."
-                    + "NM will then send a second response confirmimg the deletion failure or success. "
-                    + "This response is expected within 10 minutes depending on network performance.")
+                    + "NM send a an acknowledgement confirmimg the presence/absence of the device in the NM Db."
+                    + "NM will then send a second response confirmimg the deletion failure or success.")
             .communicationPattern(REQUEST_ACK_RESPONSE)
             .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnDeviceDeleteRequest"))
             .ackQueue(JmsQueue.TEMP_QUEUE)
