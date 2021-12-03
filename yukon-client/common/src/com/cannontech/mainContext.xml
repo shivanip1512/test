@@ -481,4 +481,5 @@
     <bean class="com.cannontech.infrastructure.simulation.service.impl.InfrastructureWarningsGeneratorServiceImpl"/>
     <bean class="com.cannontech.common.smartNotification.simulation.service.impl.SmartNotificationSimulatorServiceImpl"/>
     <bean id="rfnDataValidator" class="com.cannontech.amr.rfn.service.RfnDataValidatorImpl"/>
+    <bean class="com.cannontech.yukon.system.metrics.publisher.YukonMetricPublisher"/>
 </beans>

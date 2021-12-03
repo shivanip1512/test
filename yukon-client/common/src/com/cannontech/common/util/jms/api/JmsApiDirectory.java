@@ -25,6 +25,7 @@ import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_S
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WATCHDOG;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_CLOUD_SERVICE;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_MULTI_RESPONSE;
@@ -157,6 +158,7 @@ import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 import com.cannontech.support.rfn.message.RfnSupportBundleRequest;
 import com.cannontech.support.rfn.message.RfnSupportBundleResponse;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
+import com.cannontech.yukon.system.metrics.message.YukonMetric;
 import com.cannontech.simulators.message.request.ItronRuntimeCalcSimulatonRequest;
 
 /**
@@ -1378,7 +1380,21 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-                  
+
+    public static final JmsApi<YukonMetric, ?, ?> YUKON_METRIC = JmsApi.builder(YukonMetric.class)
+            .name("Yukon Metric")
+            .description("Multiple services publish system metrics data to this topic. Different consumers "
+                    + "will process data as per their requirment.")
+            .topic(true)
+            .communicationPattern(NOTIFICATION)
+            .queue(new JmsQueue("com.eaton.eas.yukon.metric"))
+            .requestMessage(YukonMetric.class)
+            .sender(YUKON_WEBSERVER)
+            .sender(YUKON_SERVICE_MANAGER)
+            .receiver(YUKON_SERVICE_MANAGER)
+            .receiver(YUKON_CLOUD_SERVICE)
+            .build();
+
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1418,7 +1434,8 @@ public final class JmsApiDirectory {
                 RFN_DEVICE_CREATION_ALERT,
                 SYSTEM_DATA,
                 ZEUS_ECOBEE_AUTH_TOKEN,
-                DATABASE_CHANGE_EVENT_REQUEST);
+                DATABASE_CHANGE_EVENT_REQUEST,
+                YUKON_METRIC);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 
