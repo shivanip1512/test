@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/11/2021 11:00:26 AM                       */
+/* Created on:     11/30/2021 5:38:59 PM                        */
 /*==============================================================*/
 
 
@@ -10328,9 +10328,10 @@ INSERT INTO YukonListEntry VALUES (2034, 1005, 0, 'LCR-6700 (RFN)', 1337);
 INSERT INTO YukonListEntry VALUES (2035, 1005, 0, 'Nest', 1338);
 INSERT INTO YukonListEntry VALUES (2036, 1005, 0, 'LCR-6601S', 1339);
 INSERT INTO YukonListEntry VALUES (2037, 1005, 0, 'LCR-6600S', 1340);
+INSERT INTO YukonListEntry VALUES (2038, 1005, 0, 'LCR-6200S', 1344);
 
-INSERT INTO YukonListEntry VALUES (2038, 1005, 0, 'LCR-6200C', 1342);
-INSERT INTO YukonListEntry VALUES (2039, 1005, 0, 'LCR-6600C', 1343);
+INSERT INTO YukonListEntry VALUES (2039, 1005, 0, 'LCR-6200C', 1342);
+INSERT INTO YukonListEntry VALUES (2040, 1005, 0, 'LCR-6600C', 1343);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
