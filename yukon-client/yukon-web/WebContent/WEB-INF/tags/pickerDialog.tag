@@ -45,6 +45,8 @@
 <%@ attribute name="includeRemoveButton" description="Adds a red x next to the picker to clear out the selected item" %>
 <%@ attribute name="removeValue" description="Value to set the item to when cleared.  Default will be blank" %>
 <%@ attribute name="maxNumSelections" type="java.lang.Integer" description="An upper limit on the number of selections that the user can make. This can only be set if multiSelectMode is enabled." %>
+<%@ attribute name="iconMagnifierCssClasses" description="CSS classes to be applied to the magnifier icon." %>
+
 
 <cti:default var="linkType" value="normal"/>
 <cti:msg2 var="okText" key="yukon.common.okButton"/>
@@ -130,7 +132,8 @@
                         <cti:icon id="picker-${id}-show-selected-icon" 
                                   href="javascript:${id}.showSelected.call(${id})" 
                                   nameKey="zoom" 
-                                  icon="icon-magnifier"/>
+                                  icon="icon-magnifier"
+                                  classes="${iconMagnifierCssClasses}"/>
                     </c:if>
                 </c:when>
                 <c:when test="${linkType == 'selectionLabel'}">
@@ -153,7 +156,8 @@
                         <cti:icon id="picker-${id}-show-selected-icon" 
                                   href="javascript:${id}.showSelected.call(${id})" 
                                   nameKey="zoom" 
-                                  icon="icon-magnifier"/>
+                                  icon="icon-magnifier"
+                                  classes="${iconMagnifierCssClasses}"/>
                     </c:if>
                 </c:when>
                 <c:otherwise>
