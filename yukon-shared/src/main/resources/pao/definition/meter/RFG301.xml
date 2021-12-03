@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFG301" changeGroup="rfg" creatable="false"  displayGroup="RFMESH" displayName="RFG-301" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFG301" changeGroup="rfg" displayGroup="RFMESH" displayName="RFG-301" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFG.xml</pointFile>
     </pointFiles>
@@ -12,6 +12,9 @@
         <tag name="GAS_METER_DETAIL_DISPLAYABLE"/>
         <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
     </tags>
+    <configuration>
+        <category type="rfnGasChannelConfiguration"/>
+    </configuration>
     <pointInfos>
         <pointInfo name="Battery Voltage" init="true" attributes="BATTERY_VOLTAGE"/>
         <pointInfo name="Gas Usage" init="true" attributes="USAGE_GAS, USAGE"/>

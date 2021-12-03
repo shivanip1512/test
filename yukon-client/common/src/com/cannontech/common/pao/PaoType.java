@@ -826,7 +826,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         batteryAnalysisTypes = ImmutableSet.of(
             RFW201,
-            RFG201
+            RFG201,
+            RFG301
           );
         
         rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();
