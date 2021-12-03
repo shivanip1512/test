@@ -41,7 +41,7 @@
                         <tags:pickerDialog id="userPicker" type="deviceActionsRoleUserPicker" destinationFieldName="userIds"
                                            linkType="selection" selectionProperty="userName" initialId="${filter.userIds}" 
                                            icon="icon-user" allowEmptySelection="true" styleClass="fl MT15 vam" multiSelectMode="true"
-                                           excludeIds="${excludedUserIds}" iconMagnifierCssClasses="MT5"/>
+                                           excludeIds="${excludedUserIds}"/>
                     </div>
                     <div class="push-down-4 fr">
                         <cti:button classes="primary action" nameKey="filter" type="submit" busy="true" style="margin: 0px 0px 5px"/>

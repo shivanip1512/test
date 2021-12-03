@@ -45,7 +45,6 @@
 <%@ attribute name="includeRemoveButton" description="Adds a red x next to the picker to clear out the selected item" %>
 <%@ attribute name="removeValue" description="Value to set the item to when cleared.  Default will be blank" %>
 <%@ attribute name="maxNumSelections" type="java.lang.Integer" description="An upper limit on the number of selections that the user can make. This can only be set if multiSelectMode is enabled." %>
-<%@ attribute name="iconMagnifierCssClasses" description="CSS classes to be applied to the magnifier icon." %>
 
 
 <cti:default var="linkType" value="normal"/>
@@ -133,7 +132,7 @@
                                   href="javascript:${id}.showSelected.call(${id})" 
                                   nameKey="zoom" 
                                   icon="icon-magnifier"
-                                  classes="${iconMagnifierCssClasses}"/>
+                                  classes="MT5"/>
                     </c:if>
                 </c:when>
                 <c:when test="${linkType == 'selectionLabel'}">
@@ -157,7 +156,7 @@
                                   href="javascript:${id}.showSelected.call(${id})" 
                                   nameKey="zoom" 
                                   icon="icon-magnifier"
-                                  classes="${iconMagnifierCssClasses}"/>
+                                  classes="MT5"/>
                     </c:if>
                 </c:when>
                 <c:otherwise>
