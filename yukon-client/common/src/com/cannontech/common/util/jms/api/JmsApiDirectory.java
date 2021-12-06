@@ -25,7 +25,6 @@ import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_S
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WATCHDOG;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_CLOUD_SERVICE;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_MULTI_RESPONSE;
@@ -114,6 +113,9 @@ import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveRequest
 import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveResponse;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
+import com.cannontech.common.rfn.model.RfnDeviceDeleteConfirmationReply;
+import com.cannontech.common.rfn.model.RfnDeviceDeleteInitialReply;
+import com.cannontech.common.rfn.model.RfnDeviceDeleteRequest;
 import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
@@ -158,7 +160,6 @@ import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 import com.cannontech.support.rfn.message.RfnSupportBundleRequest;
 import com.cannontech.support.rfn.message.RfnSupportBundleResponse;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
-import com.cannontech.yukon.system.metrics.message.YukonMetric;
 import com.cannontech.simulators.message.request.ItronRuntimeCalcSimulatonRequest;
 
 /**
@@ -1381,18 +1382,22 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
 
-    public static final JmsApi<YukonMetric, ?, ?> YUKON_METRIC = JmsApi.builder(YukonMetric.class)
-            .name("Yukon Metric")
-            .description("Multiple services publish system metrics data to this topic. Different consumers "
-                    + "will process data as per their requirment.")
-            .topic(true)
-            .communicationPattern(NOTIFICATION)
-            .queue(new JmsQueue("com.eaton.eas.yukon.metric"))
-            .requestMessage(YukonMetric.class)
+    public static final JmsApi<RfnDeviceDeleteRequest, RfnDeviceDeleteInitialReply, RfnDeviceDeleteConfirmationReply> RFN_DEVICE_DELETE = JmsApi
+            .builder(RfnDeviceDeleteRequest.class, RfnDeviceDeleteInitialReply.class, RfnDeviceDeleteConfirmationReply.class)
+            .name("Device Delete Request")
+            .description("Request is sent from Yukon to NM to delete a RFN device."
+                    + "NM send a an acknowledgement confirmimg the presence/absence of the device in the NM Db."
+                    + "NM will then send a second response confirmimg the deletion failure or success.")
+            .communicationPattern(REQUEST_ACK_RESPONSE)
+            .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnDeviceDeleteRequest"))
+            .ackQueue(JmsQueue.TEMP_QUEUE)
+            .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnDeviceDeleteConfirmationReply"))
+            .requestMessage(RfnDeviceDeleteRequest.class)
+            .ackMessage(RfnDeviceDeleteInitialReply.class)
+            .responseMessage(RfnDeviceDeleteConfirmationReply.class)
             .sender(YUKON_WEBSERVER)
-            .sender(YUKON_SERVICE_MANAGER)
-            .receiver(YUKON_SERVICE_MANAGER)
-            .receiver(YUKON_CLOUD_SERVICE)
+            .receiver(NETWORK_MANAGER)
+            .sender(YUKON_SIMULATORS)
             .build();
 
     /*
@@ -1434,8 +1439,7 @@ public final class JmsApiDirectory {
                 RFN_DEVICE_CREATION_ALERT,
                 SYSTEM_DATA,
                 ZEUS_ECOBEE_AUTH_TOKEN,
-                DATABASE_CHANGE_EVENT_REQUEST,
-                YUKON_METRIC);
+                DATABASE_CHANGE_EVENT_REQUEST);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 
@@ -1484,6 +1488,7 @@ public final class JmsApiDirectory {
                 RF_ALARM_ARCHIVE,
                 RF_EVENT_ARCHIVE,
                 RFN_DEVICE_ARCHIVE,
+                RFN_DEVICE_DELETE,
                 RFN_STATUS_ARCHIVE,
                 RFN_NODE_WIFI_COMM_ARCHIVE,
                 RFN_RELAY_CELL_COMM_ARCHIVE,
