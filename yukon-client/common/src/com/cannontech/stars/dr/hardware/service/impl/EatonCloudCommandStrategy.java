@@ -68,7 +68,7 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
         case RESTORE:
             checkOptout(command);
             Map<String, Object> restoreParams =  getRestoreParams(command);
-            sendRequest(command, getRestoreParams(command));
+            sendRequest(command, restoreParams);
             eatonCloudEventLogService.sendRestore(deviceName, deviceGuid,
                     (String) restoreParams.get(CommandParam.EVENT_ID.getParamName()),
                     (Integer) command.getParams().get(LmHardwareCommandParam.RELAY));
