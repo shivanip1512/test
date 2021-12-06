@@ -30,7 +30,5 @@
         <pointInfo name="Service Manager Memory Utilization" init="true" attributes="SERVICE_MANAGER_MEMORY_UTILIZATION"/>
         <pointInfo name="Web Service CPU Utilization" init="true" attributes="WEB_SERVICE_CPU_UTILIZATION"/>
         <pointInfo name="Web Service Memory Utilization" init="true" attributes="WEB_SERVICE_MEMORY_UTILIZATION"/>
-        <pointInfo name="Rfn Meter Reading Archive Requests Received" init="true" attributes="RFN_METER_READING_ARCHIVERE_REQUEST_RECEIVED"/>
-        <pointInfo name="Rfn Meter Reading Archive Requests Pushed" init="true" attributes="RFN_METER_READING_ARCHIVERE_REQUEST_PUSHED"/>
     </pointInfos>
 </pao>

@@ -817,11 +817,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_3_ACTIVATION_STATUS("Relay 3 Activation Status", AttributeGroup.RELAY),
     RELAY_3_COLD_LOAD_PICKUP_TIME("Relay 3 Cold Load Pickup Time", AttributeGroup.RELAY),
     RELAY_4_ACTIVATION_STATUS("Relay 4 Activation Status", AttributeGroup.RELAY),
-    RELAY_4_COLD_LOAD_PICKUP_TIME("Relay 4 Cold Load Pickup Time", AttributeGroup.RELAY),
-    
-    //System Metrics attributes
-    RFN_METER_READING_ARCHIVERE_REQUEST_RECEIVED("Rfn Meter Reading Archive Requests Received", AttributeGroup.SYSTEM),
-    RFN_METER_READING_ARCHIVERE_REQUEST_PUSHED("Rfn Meter Reading Archive Requests Pushed", AttributeGroup.SYSTEM),
+    RELAY_4_COLD_LOAD_PICKUP_TIME("Relay 4 Cold Load Pickup Time", AttributeGroup.RELAY)
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
