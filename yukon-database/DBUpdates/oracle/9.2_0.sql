@@ -66,6 +66,12 @@ AND Property = 'LOGIN_FONT_SHADOW';
 INSERT INTO DBUpdates VALUES ('YUK-25103', '9.2.0', SYSDATE);
 /* @end YUK-25103 */
 
+/* @start YUK-25214 */
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'LCR-6200S', 1344);
+
+INSERT INTO DBUpdates VALUES ('YUK-25214', '9.2.0', SYSDATE);
+/* @end YUK-25214 */
+
 /* @start YUK-25507 */
 UPDATE LMGroupExpressCom 
 SET ProtocolPriority = 0 

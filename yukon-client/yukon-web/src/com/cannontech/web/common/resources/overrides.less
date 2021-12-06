@@ -56,6 +56,7 @@
 .MR10 { margin-right: 10px !important; }
 .ML0 { margin-left: 0 !important; }
 .ML5 { margin-left: 5px !important; }
+.ML10 { margin-left: 10px !important; }
 .ML15 { margin-left: 15px; }
 .MT5 { margin-top: 5px; }
 .MB0 { margin-bottom: 0px; }
@@ -318,7 +319,7 @@ span.fancytree-node {
             transition: margin-top 0.25s ease-in-out;
     z-index: 1000;
     
-    div.ui-widget-content {
+    > div.ui-widget-content {
         border-bottom: 1px solid #ccc;
         padding: 16px 24px;
     }
@@ -673,7 +674,6 @@ span.fancytree-node {
 	font: inherit;
 	padding-left: 12px;
 	padding-right: 20px;
-	height: 26px;
 	font-size: 0.9rem;
 }
 .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
