@@ -7,20 +7,28 @@ import org.joda.time.DateTime;
 public class YukonMetric implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Object fieldValue;
+    private YukonMetricPointInfo pointInfo;
+    private Object value;
     private DateTime timestamp;
-    private String attributeName;
 
     public YukonMetric() {
         super();
     }
 
-    public Object getFieldValue() {
-        return fieldValue;
+    public YukonMetricPointInfo getPointInfo() {
+        return pointInfo;
     }
 
-    public void setFieldValue(Object fieldValue) {
-        this.fieldValue = fieldValue;
+    public void setPointInfo(YukonMetricPointInfo pointInfo) {
+        this.pointInfo = pointInfo;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
     }
 
     public DateTime getTimestamp() {
@@ -29,14 +37,6 @@ public class YukonMetric implements Serializable {
 
     public void setTimestamp(DateTime timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public String getAttributeName() {
-        return attributeName;
-    }
-
-    public void setAttributeName(String attributeName) {
-        this.attributeName = attributeName;
     }
 
 }
