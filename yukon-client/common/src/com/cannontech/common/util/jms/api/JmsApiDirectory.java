@@ -24,6 +24,7 @@ import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_S
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SIMULATORS;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WATCHDOG;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_CLOUD_SERVICE;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
@@ -145,10 +146,11 @@ import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenReque
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
-import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
-import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
+import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
+import com.cannontech.simulators.message.request.ItronRuntimeCalcSimulatonRequest;
+import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.FieldSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.ModifyFieldSimulatorResponse;
@@ -160,7 +162,7 @@ import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 import com.cannontech.support.rfn.message.RfnSupportBundleRequest;
 import com.cannontech.support.rfn.message.RfnSupportBundleResponse;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
-import com.cannontech.simulators.message.request.ItronRuntimeCalcSimulatonRequest;
+import com.cannontech.yukon.system.metrics.message.YukonMetric;
 
 /**
  * This is intended to be the single repository for all JmsApi information in the Yukon Java code.<br><br>
@@ -1400,6 +1402,20 @@ public final class JmsApiDirectory {
             .sender(YUKON_SIMULATORS)
             .build();
 
+    public static final JmsApi<YukonMetric, ?, ?> YUKON_METRIC = JmsApi.builder(YukonMetric.class)
+            .name("Yukon Metric")
+            .description("Multiple services publish system metrics data to this topic. Different consumers "
+                    + "will process data as per their requirment.")
+            .topic(true)
+            .communicationPattern(NOTIFICATION)
+            .queue(new JmsQueue("com.eaton.eas.yukon.metric"))
+            .requestMessage(YukonMetric.class)
+            .sender(YUKON_WEBSERVER)
+            .sender(YUKON_SERVICE_MANAGER)
+            .receiver(YUKON_SERVICE_MANAGER)
+            .receiver(YUKON_CLOUD_SERVICE)
+            .build();
+
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1439,7 +1455,8 @@ public final class JmsApiDirectory {
                 RFN_DEVICE_CREATION_ALERT,
                 SYSTEM_DATA,
                 ZEUS_ECOBEE_AUTH_TOKEN,
-                DATABASE_CHANGE_EVENT_REQUEST);
+                DATABASE_CHANGE_EVENT_REQUEST,
+                YUKON_METRIC);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 
