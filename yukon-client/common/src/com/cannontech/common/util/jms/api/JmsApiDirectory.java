@@ -113,6 +113,9 @@ import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveRequest
 import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveResponse;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
+import com.cannontech.common.rfn.model.RfnDeviceDeleteConfirmationReply;
+import com.cannontech.common.rfn.model.RfnDeviceDeleteInitialReply;
+import com.cannontech.common.rfn.model.RfnDeviceDeleteRequest;
 import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
@@ -1378,7 +1381,25 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-                  
+
+    public static final JmsApi<RfnDeviceDeleteRequest, RfnDeviceDeleteInitialReply, RfnDeviceDeleteConfirmationReply> RFN_DEVICE_DELETE = JmsApi
+            .builder(RfnDeviceDeleteRequest.class, RfnDeviceDeleteInitialReply.class, RfnDeviceDeleteConfirmationReply.class)
+            .name("Device Delete Request")
+            .description("Request is sent from Yukon to NM to delete a RFN device."
+                    + "NM send a an acknowledgement confirmimg the presence/absence of the device in the NM Db."
+                    + "NM will then send a second response confirmimg the deletion failure or success.")
+            .communicationPattern(REQUEST_ACK_RESPONSE)
+            .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnDeviceDeleteRequest"))
+            .ackQueue(JmsQueue.TEMP_QUEUE)
+            .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnDeviceDeleteConfirmationReply"))
+            .requestMessage(RfnDeviceDeleteRequest.class)
+            .ackMessage(RfnDeviceDeleteInitialReply.class)
+            .responseMessage(RfnDeviceDeleteConfirmationReply.class)
+            .sender(YUKON_WEBSERVER)
+            .receiver(NETWORK_MANAGER)
+            .sender(YUKON_SIMULATORS)
+            .build();
+
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1467,6 +1488,7 @@ public final class JmsApiDirectory {
                 RF_ALARM_ARCHIVE,
                 RF_EVENT_ARCHIVE,
                 RFN_DEVICE_ARCHIVE,
+                RFN_DEVICE_DELETE,
                 RFN_STATUS_ARCHIVE,
                 RFN_NODE_WIFI_COMM_ARCHIVE,
                 RFN_RELAY_CELL_COMM_ARCHIVE,
