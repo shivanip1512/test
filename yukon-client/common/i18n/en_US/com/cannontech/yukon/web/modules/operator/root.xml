@@ -206,6 +206,8 @@
     <entry key="yukon.web.modules.operator.gateways.appMode.failsafe">Fail-Safe</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionType">Connection Type</entry>
     <entry key="yukon.web.modules.operator.gateways.ipaddress">IP Address</entry>
+    <entry key="yukon.web.modules.operator.gateways.nmipaddressPort">NM IP Address/Port</entry>
+    <entry key="yukon.web.modules.operator.gateways.nmipaddressPortHelpText">The IP Address and Port that the gateway should use to connect to Network Manager.</entry>
     <entry key="yukon.web.modules.operator.gateways.nmipaddress">NM IP Address</entry>
     <entry key="yukon.web.modules.operator.gateways.nmport">NM Port</entry>
     <entry key="yukon.web.modules.operator.gateways.useDefaultPort">Use Default Port</entry>

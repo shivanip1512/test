@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.gateway;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,6 +66,7 @@ public class GatewaySettingsController {
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private GatewayControllerHelper helper;
 
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping("/gateways/create")
@@ -75,6 +77,10 @@ public class GatewaySettingsController {
         
         settings.setNmPort(RfnGatewayService.GATEWAY_DEFAULT_PORT);
         Set<RfnGateway> allGateways = rfnGatewayService.getAllGateways();
+        
+        //get all NM IP Address/Port combos
+        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
+        
         // prefill with the most used nm ip address and port
         String mostNmIpAddress = allGateways.stream()
                 .filter(g -> g.getData().getNmIpAddress() != null)
@@ -122,6 +128,7 @@ public class GatewaySettingsController {
             @ModelAttribute("settings") GatewaySettings settings,
             BindingResult result) {
         
+        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
         validator.validate(settings, result);
         
         if (result.hasErrors()) {
