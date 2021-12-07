@@ -228,7 +228,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                     .orElse(null);
             try {
                 log.debug(
-                        "[external event id: {} ({} of {})] Attampting to send shed command to device id:{} guid:{} name:{} relay:{}",
+                        "[external event id: {} ({} of {})] Attempting to send shed command to device id:{} guid:{} name:{} relay:{}",
                         eventId, tryNumber, totalTries, deviceId, guid, deviceName, command.getVirtualRelayId());
                 EatonCloudCommandResponseV1 response = eatonCloudCommunicationService.sendCommand(guid,
                         new EatonCloudCommandRequestV1("LCR_Control", params));
@@ -255,7 +255,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
             } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
                 totalFailed.getAndIncrement();
                 log.error(
-                        "[external event id: {} ({} of {})] Error sending shed command device id:{} guid:{} name:{} external event id:{} try:({} of {}) relay:{}",
+                        "[external event id: {} ({} of {})] Error sending shed command device id:{} guid:{} name:{} relay:{}",
                         eventId, tryNumber, totalTries, deviceId,
                         guid, deviceName, command.getVirtualRelayId(), e);
                 processError(eventId, deviceName, deviceId, guid, command, e.getMessage(), tryNumber);
@@ -302,7 +302,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                     .getPaoName();
             SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed);
 
-            log.debug("[external event id:{}] sending smart notification event: {}", eventId, event);
+            log.info("[external event id:{}] Sending smart notification event: {}", eventId, event);
             smartNotificationEventCreationService.send(SmartNotificationEventType.EATON_CLOUD_DR, List.of(event));
         }
     }
@@ -365,8 +365,8 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                 eatonCloudEventLogService.sendRestore(deviceName, guid, eventId.toString(), command.getVirtualRelayId());
             } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
                 totalFailed.getAndIncrement();
-                eatonCloudEventLogService.sendRestoreFailed(deviceName, guid, eventId.toString(), command.getVirtualRelayId(),
-                        truncateErrorForEventLog(e.getMessage()));
+                eatonCloudEventLogService.sendRestoreFailed(deviceName, guid, truncateErrorForEventLog(e.getMessage()),
+                        eventId.toString(), command.getVirtualRelayId());
                 log.error("[external event id:{}] Error sending restore command device id:{} guid:{} name:{} relay:{}", eventId, deviceId, guid,
                          deviceName, command.getVirtualRelayId(), e);
             }
@@ -418,7 +418,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
             // we ran out of retries and will mark all FAILED_WILL_RETRY or UNKNOWN devices as FAILED
             int affectedRows = recentEventParticipationDao.failWillRetryDevices(eventId);
             log.info(
-                    "[external event id:{}] No more retries avaliable, changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
+                    "[external event id:{}] No more retries available, changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
                     eventId, affectedRows);
             return false;
         }

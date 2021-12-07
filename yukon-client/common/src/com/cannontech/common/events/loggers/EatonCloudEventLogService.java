@@ -33,6 +33,6 @@ public interface EatonCloudEventLogService {
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.eatoncloud")
     public void sendRestoreFailed(@Arg(ArgEnum.deviceLabel) String deviceLabel,
-            String deviceGuid, String externalEventId, int relay, String error);
+            String deviceGuid, String error, String externalEventId, int relay);
 
 }
