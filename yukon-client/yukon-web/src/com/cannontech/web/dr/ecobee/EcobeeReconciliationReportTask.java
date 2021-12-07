@@ -2,8 +2,10 @@ package com.cannontech.web.dr.ecobee;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
 import com.cannontech.jobs.support.YukonTaskBase;
@@ -13,7 +15,7 @@ public class EcobeeReconciliationReportTask extends YukonTaskBase {
     @Autowired private EcobeeZeusReconciliationService ecobeeZeusReconciliationService;
     
     @Override
-    public void start() {
+    public void start() throws RestClientException, EcobeeAuthenticationException {
         log.info("Building ecobee reconciliation report.");
         try {
             ecobeeZeusReconciliationService.runReconciliationReport();

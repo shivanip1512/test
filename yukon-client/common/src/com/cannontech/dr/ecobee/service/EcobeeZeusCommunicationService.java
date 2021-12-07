@@ -3,7 +3,10 @@ package com.cannontech.dr.ecobee.service;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.web.client.RestClientException;
+
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
@@ -103,4 +106,19 @@ public interface EcobeeZeusCommunicationService {
      * Cancel opt out for the device.
      */
     void cancelOptOut(String serialNumber, int inventoryID);
+    
+    /**
+     * Get root group. 
+     */
+    String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException;
+    
+    /**
+     * Check enrollment state for device. 
+     */
+    boolean isDeviceEnrolled(String yukonSerialNumber);
+    
+    /**
+     * Get suitable ecobee group from multiple ecobee groups. 
+     */
+    String getSuitableGroupForEnrollment(List<String> zeusGroupIds);
 }

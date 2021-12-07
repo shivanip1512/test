@@ -129,7 +129,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     /**
      * Return root thermostat group ID for the configured programID.
      */
-    private String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException {
+    public String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException {
         if (StringUtils.isBlank(thermostatGroupIDCache.get(thermostatGroupIDCacheKey))) {
             thermostatGroupIDCache.put(thermostatGroupIDCacheKey, retrieveRootTstatGroupID());
             asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
@@ -188,7 +188,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     /**
      * Check the thermostat status in root group. If status is ENROLLED, return true else return false.
      */
-    private boolean isDeviceEnrolled(String serialNumber) {
+    public boolean isDeviceEnrolled(String serialNumber) {
         try {
             String thermostatGroupID = retrieveThermostatGroupID();
             String listThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats?enrollment_state="
@@ -206,7 +206,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     /**
      * Return the 1st group which can accommodate the thermostat. Return Empty String if all group have reached the threshold limit.
      */
-    private String getSuitableGroupForEnrollment(List<String> zeusGroupIds) {
+    public String getSuitableGroupForEnrollment(List<String> zeusGroupIds) {
         String zeusGroupId = StringUtils.EMPTY;
         for (String groupId : zeusGroupIds) {
             if (ecobeeZeusGroupService.getDeviceCount(groupId) < thresholdThermostatCount) {

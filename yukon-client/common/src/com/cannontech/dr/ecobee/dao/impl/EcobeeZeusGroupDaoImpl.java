@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -40,14 +41,18 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
 
     @Override
     public String getZeusGroupId(int yukonGroupId, int inventoryId, int programId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT LGZM.EcobeeGroupId FROM LMGroupZeusMapping LGZM");
-        sql.append("LEFT JOIN ZeusGroupInventoryMapping ZGIM");
-        sql.append("ON LGZM.EcobeeGroupId = ZGIM.EcobeeGroupId");
-        sql.append("WHERE LGZM.YukonGroupId").eq(yukonGroupId);
-        sql.append("AND ZGIM.InventoryID").eq(inventoryId);
-        sql.append("AND LGZM.ProgramId").eq(programId);
-        return jdbcTemplate.queryForString(sql);
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT LGZM.EcobeeGroupId FROM LMGroupZeusMapping LGZM");
+            sql.append("LEFT JOIN ZeusGroupInventoryMapping ZGIM");
+            sql.append("ON LGZM.EcobeeGroupId = ZGIM.EcobeeGroupId");
+            sql.append("WHERE LGZM.YukonGroupId").eq(yukonGroupId);
+            sql.append("AND ZGIM.InventoryID").eq(inventoryId);
+            sql.append("AND LGZM.ProgramId").eq(programId);
+            return jdbcTemplate.queryForString(sql);
+        } catch (EmptyResultDataAccessException e) {
+            return StringUtils.EMPTY;
+        }
     }
 
     @Override
