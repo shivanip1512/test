@@ -417,6 +417,37 @@ public class DBUpdater extends MessageFrameAdaptor {
         }
     }
 
+    /**
+     * Method to display warning message for control priority.
+     */
+    private void checkControlPriority(Statement stat, String cmd, String warningMessage) throws SQLException, IOException {
+        List<String> loadGroupNames = new ArrayList<String>();
+        ResultSet resultSet = stat.executeQuery(cmd);
+        while (resultSet.next()) {
+            String value = resultSet.getString("PAOName");
+            loadGroupNames.add(value);
+        }
+        if (CollectionUtils.isNotEmpty(loadGroupNames)) {
+            getIMessageFrame().addOutput("");
+            getIMessageFrame().addOutput(
+                    " ************************************************************************** ");
+            getIMessageFrame().addOutput("   Warning Message:");
+            getIMessageFrame().addOutput("   " + warningMessage);
+            getIMessageFrame().addOutput("   " + "The control priority of load group(s) " + StringUtils.join(loadGroupNames, ',')
+                    + " might not be correct as per below query. Update the control priority of the load groups manually if it is incorrect.");
+            getIMessageFrame().addOutput("   " + "SELECT DISTINCT(ypo.PAOName) FROM \n"
+                    + "      YukonPAObject ypo INNER JOIN EventLog eventLog ON eventLog.String1 = ypo.PAOName JOIN \n"
+                    + "      LMGroupExpressCom lmGroup ON lmGroup.LMGroupID = ypo.PAObjectID WHERE\n"
+                    + "      eventLog.EventType IN('dr.setup.loadGroup.loadGroupCreated', 'dr.setup.loadGroup.loadGroupUpdated') AND\n"
+                    + "      eventLog.String2 IN('LM_GROUP_EXPRESSCOMM', 'LM_GROUP_RFN_EXPRESSCOMM')\n"
+                    + "      AND lmGroup.ProtocolPriority = '3';");
+            getIMessageFrame().addOutput("");
+            getIMessageFrame().addOutput(
+                    " ************************************************************************** ");
+        }
+    }
+
+    
     private void processLine(UpdateLine line_, Connection conn) throws SQLException {
         if (line_ == null || conn == null)
             return;
