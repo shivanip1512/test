@@ -566,6 +566,7 @@ public class DeviceConfigurationConfigController {
         
         model.addAttribute("touConfigurationType", CategoryType.TOU.value());
         model.addAttribute("demandFreezeConfigurationType", CategoryType.DEMAND_FREEZE.value());
+        model.addAttribute("rfnDemandConfigurationType", CategoryType.RFN_DEMAND.value());
 
         // Check list of supported devices to check if any support advanced metrology configuration
         // https://confluence-prod.tcc.etn.com/display/EASAMIMAR/Advanced+Metrology

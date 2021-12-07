@@ -33,7 +33,7 @@
         <tags:alertBox type="warning" key=".${catType}.warning"/>
     </c:if>
     
-    <c:if test="${(catType == touConfigurationType || catType == demandFreezeConfigurationType) && rfnMetrologyConfigurationSupported}">
+    <c:if test="${(catType == touConfigurationType || catType == demandFreezeConfigurationType || catType == rfnDemandConfigurationType) && rfnMetrologyConfigurationSupported}">
         <tags:alertBox type="warning" key=".${catType}.warning"/>
     </c:if>
     
