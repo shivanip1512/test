@@ -267,12 +267,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>api</servlet-name>
-        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
         <servlet-name>meter</servlet-name>
         <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -663,11 +657,6 @@
     <servlet-mapping>
         <servlet-name>dr</servlet-name>
         <url-pattern>/dr/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>api</servlet-name>
-        <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
