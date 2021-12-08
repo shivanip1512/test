@@ -117,8 +117,4 @@ public interface EcobeeZeusCommunicationService {
      */
     boolean isDeviceEnrolled(String yukonSerialNumber);
     
-    /**
-     * Get suitable ecobee group from multiple ecobee groups. 
-     */
-    String getSuitableGroupForEnrollment(List<String> zeusGroupIds);
 }

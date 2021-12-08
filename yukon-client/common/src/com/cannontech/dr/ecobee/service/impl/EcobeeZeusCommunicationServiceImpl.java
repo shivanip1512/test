@@ -206,7 +206,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     /**
      * Return the 1st group which can accommodate the thermostat. Return Empty String if all group have reached the threshold limit.
      */
-    public String getSuitableGroupForEnrollment(List<String> zeusGroupIds) {
+    private String getSuitableGroupForEnrollment(List<String> zeusGroupIds) {
         String zeusGroupId = StringUtils.EMPTY;
         for (String groupId : zeusGroupIds) {
             if (ecobeeZeusGroupService.getDeviceCount(groupId) < thresholdThermostatCount) {

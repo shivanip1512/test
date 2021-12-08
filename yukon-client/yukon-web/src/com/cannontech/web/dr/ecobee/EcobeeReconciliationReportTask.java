@@ -15,12 +15,16 @@ public class EcobeeReconciliationReportTask extends YukonTaskBase {
     @Autowired private EcobeeZeusReconciliationService ecobeeZeusReconciliationService;
     
     @Override
-    public void start() throws RestClientException, EcobeeAuthenticationException {
+    public void start()  {
         log.info("Building ecobee reconciliation report.");
         try {
             ecobeeZeusReconciliationService.runReconciliationReport();
         } catch (EcobeeCommunicationException e) {
             log.error("Unable to complete the ecobee reconciliation report.", e);
+        } catch (RestClientException e) {
+            e.printStackTrace();
+        } catch (EcobeeAuthenticationException e) {
+            e.printStackTrace();
         }
         log.info("Ecobee reconciliation report finished.");
     }

@@ -12,6 +12,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -51,7 +52,7 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
             sql.append("AND LGZM.ProgramId").eq(programId);
             return jdbcTemplate.queryForString(sql);
         } catch (EmptyResultDataAccessException e) {
-            return StringUtils.EMPTY;
+            throw new NotFoundException("No ecobee group found for the yukon group");
         }
     }
 
