@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
-        <analog offset="1031"/>
+        <analog offset="1033"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1007" type="Analog">
@@ -146,6 +146,18 @@
         <name>Message Broker Memory Utilization</name>
         <multiplier value="1"/>
         <unitofmeasure value="MEGABYTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1032" type="Analog">
+        <name>Rfn Meter Reading Archive Requests Received</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1033" type="Analog">
+        <name>Rfn Meter Reading Archive Requests Pushed</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
     </point>
 </points>
