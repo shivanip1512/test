@@ -38,4 +38,5 @@
     <bean class="com.cannontech.simulators.dao.impl.RegulatorEventsSimulatorDaoImpl"/>
     <bean class="com.cannontech.simulators.dao.impl.DeviceConfigurationSimulatorDaoImpl"/>
     <bean class="com.cannontech.simulators.eatonCloud.model.EatonCloudFakeTimeseriesDataV1"/>
+    <bean class="com.cannontech.simulators.eatonCloud.model.EatonCloudDataV1"/>
 </beans>

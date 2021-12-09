@@ -10,18 +10,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.dr.eatonCloud.model.EatonCloudVersion;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDeviceV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteV1;
@@ -30,15 +37,19 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceResultV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesResultV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTokenV1;
 import com.cannontech.simulators.message.response.EatonCloudSimulatorResponse;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 public class EatonCloudDataV1 extends EatonCloudDataGenerator {
-    private EatonCloudFakeTimeseriesDataV1 timeseriesData;
- 
-    public EatonCloudDataV1(EatonCloudFakeTimeseriesDataV1 eatonCloudTimeSeriesResultV1) {
-        timeseriesData = eatonCloudTimeSeriesResultV1; 
-    }
+    
+    @Autowired GlobalSettingDao settingDao;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private EatonCloudFakeTimeseriesDataV1 timeseriesData;
+    private EatonCloudServiceAccountDetailV1 account;
+    
+    private EatonCloudVersion version = EatonCloudVersion.V1;
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudDataV1.class);
 
@@ -49,6 +60,16 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     //if device was not create in 30 seconds, it will not create at all. If debugging creation code, extend the 30 sec value. 
     private static Cache<String, String> creatingGuids =
             CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
+    
+    @PostConstruct
+    public void init() {
+        String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+
+        List<EatonCloudSecretV1> secrets = new ArrayList<>();
+        secrets.add(new EatonCloudSecretV1("secret1", DateTime.now().toString()));
+        secrets.add(new EatonCloudSecretV1("secret2", DateTime.now().toString()));
+        account = new EatonCloudServiceAccountDetailV1(serviceAccountId, "", true, "", "", secrets, "", "", "", "");
+    }
     
     public EatonCloudSimulatorResponse token() {
         
@@ -309,5 +330,13 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         account.getSecrets().add(secret); 
         
         return new EatonCloudSimulatorResponse(secret, status);
+    }
+
+    @Override
+    public EatonCloudDataGenerator getDataGenerator(EatonCloudVersion version) {
+        if(this.version == version) {
+            return this;
+        }
+        return null;
     }
 }
