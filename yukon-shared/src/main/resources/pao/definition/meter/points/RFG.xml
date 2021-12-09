@@ -78,4 +78,20 @@
         <name>Reverse Flow</name>
         <stategroup value="TrueFalse"/>
     </point>
+     <point offset="96" type="Status">
+        <name>Pulse 1 Switch Failure</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+     <point offset="97" type="Status">
+        <name>Pulse 2 Switch Failure</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+     <point offset="98" type="Status">
+        <name>Node Commission Event</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+     <point offset="99" type="Status">
+        <name>Lost Association</name>
+        <stategroup value="TrueFalse"/>
+    </point>
 </points>
