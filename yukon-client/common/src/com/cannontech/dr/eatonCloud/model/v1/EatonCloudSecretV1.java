@@ -1,14 +1,15 @@
 package com.cannontech.dr.eatonCloud.model.v1;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EatonCloudSecretV1 implements Serializable {
     private String name;
-    private String expiryTime;
+    private Date expiryTime;
 
-    public EatonCloudSecretV1(@JsonProperty("name") String name, @JsonProperty("expiry") String expiryTime) {
+    public EatonCloudSecretV1(@JsonProperty("name") String name, @JsonProperty("expiry") Date expiryTime) {
         this.name = name;
         this.expiryTime = expiryTime;
     }
@@ -19,7 +20,7 @@ public class EatonCloudSecretV1 implements Serializable {
     }
 
     @JsonProperty("expiry") 
-    public String getExpiryTime() {
+    public Date getExpiryTime() {
         return expiryTime;
     }
 }

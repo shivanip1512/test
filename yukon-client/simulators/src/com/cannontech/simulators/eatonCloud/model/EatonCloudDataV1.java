@@ -2,6 +2,7 @@ package com.cannontech.simulators.eatonCloud.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -64,11 +65,11 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     @PostConstruct
     public void init() {
         String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-
+        Date now = DateTime.now().toDate();
         List<EatonCloudSecretV1> secrets = new ArrayList<>();
-        secrets.add(new EatonCloudSecretV1("secret1", DateTime.now().toString()));
-        secrets.add(new EatonCloudSecretV1("secret2", DateTime.now().toString()));
-        account = new EatonCloudServiceAccountDetailV1(serviceAccountId, "", true, "", "", secrets, "", "", "", "");
+        secrets.add(new EatonCloudSecretV1("secret1", now));
+        secrets.add(new EatonCloudSecretV1("secret2", now));
+        account = new EatonCloudServiceAccountDetailV1(serviceAccountId, "", true, "", "", secrets, now, "", now, "");
     }
     
     public EatonCloudSimulatorResponse token() {
@@ -324,7 +325,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
 
         }
         
-        EatonCloudSecretValueV1 secret = new EatonCloudSecretValueV1(secretName, DateTime.now().plusYears(1).toString(), RandomStringUtils.random(5, true, true));
+        EatonCloudSecretValueV1 secret = new EatonCloudSecretValueV1(secretName, DateTime.now().plusYears(1).toDate(), RandomStringUtils.random(5, true, true));
         //replace existing secret with new secret
         account.getSecrets().removeIf(s -> s.getName().equals(secret.getName()));
         account.getSecrets().add(secret); 

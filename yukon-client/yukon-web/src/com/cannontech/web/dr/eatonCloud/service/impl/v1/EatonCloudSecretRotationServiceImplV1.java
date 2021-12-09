@@ -1,6 +1,7 @@
 package com.cannontech.web.dr.eatonCloud.service.impl.v1;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Date;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,16 +29,16 @@ public class EatonCloudSecretRotationServiceImplV1 implements EatonCloudSecretRo
     public Instant rotateSecret(int secretNumber) {
         // this will eventually send message to SM to rotate the secrets and properly refresh token cache
         EatonCloudSecretValueV1 value = eatonCloudCommunicationService.rotateAccountSecret(secretNumber);
-        return StringUtils.isEmpty(value.getExpiryTime()) ? null : new Instant(value.getExpiryTime());
+        return value.getExpiryTime() == null ? null : new Instant(value.getExpiryTime());
     }
 
     private Instant getExpiryTime(int secretNumber, EatonCloudServiceAccountDetailV1 detail) {
-        String time1 = detail.getSecrets().stream()
+        Date time1 = detail.getSecrets().stream()
                 .filter(s -> s.getName().equals("secret" + secretNumber))
                 .findFirst()
                 .orElse(null)
                 .getExpiryTime();
-        if (StringUtils.isEmpty(time1)) {
+        if (time1 == null) {
             return null;
         }
         return new Instant(time1);

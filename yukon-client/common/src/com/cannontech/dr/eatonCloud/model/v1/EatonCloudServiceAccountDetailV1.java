@@ -1,6 +1,7 @@
 package com.cannontech.dr.eatonCloud.model.v1;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,18 +13,18 @@ public class EatonCloudServiceAccountDetailV1 implements Serializable {
     private String userType;
     private String adopterId;
     private List<EatonCloudSecretV1> secrets;
-    private String createdTime;
+    private Date createdTime;
     private String createdByUser;
-    private String modifiedTime;
+    private Date modifiedTime;
     private String modifiedByUser;
     
     public EatonCloudServiceAccountDetailV1(@JsonProperty("id") String serviceAccountId, @JsonProperty("name") String name,
             @JsonProperty("is_active") Boolean isActive, @JsonProperty("user_type") String userType,
             @JsonProperty("service_account_adopterid") String adopterId,
             @JsonProperty("secrets") List<EatonCloudSecretV1> secrets,
-            @JsonProperty("created") String createdTime,
+            @JsonProperty("created") Date createdTime,
             @JsonProperty("created_by") String createdByUser,
-            @JsonProperty("modified") String modifiedTime,
+            @JsonProperty("modified") Date modifiedTime,
             @JsonProperty("modified_by") String modifiedByUser) {
         this.serviceAccountId = serviceAccountId;
         this.name = name;
@@ -67,7 +68,7 @@ public class EatonCloudServiceAccountDetailV1 implements Serializable {
     }
 
     @JsonProperty("created")
-    public String getCreatedTime() {
+    public Date getCreatedTime() {
         return createdTime;
     }
 
@@ -77,7 +78,7 @@ public class EatonCloudServiceAccountDetailV1 implements Serializable {
     }
 
     @JsonProperty("modified")
-    public String getModifiedTime() {
+    public Date getModifiedTime() {
         return modifiedTime;
     }
 
