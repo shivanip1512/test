@@ -14,6 +14,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.rfn.model.RfnRelay;
+import com.cannontech.common.rfn.service.RfnDeviceDeletionMessageService;
 import com.cannontech.common.rfn.service.RfnRelayService;
 import com.cannontech.core.dao.DeviceDao;
 
@@ -23,6 +24,7 @@ public class RfnRelayServiceImpl implements RfnRelayService {
     
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private RfnDeviceDeletionMessageService rfnDeviceDeletionMessageService;
 
     @Override
     public Set<RfnRelay> getAllRelays() {
@@ -63,6 +65,7 @@ public class RfnRelayServiceImpl implements RfnRelayService {
     @Override
     public boolean deleteRelay(int id) {
         try {
+            rfnDeviceDeletionMessageService.sendRfnDeviceDeletionRequest(id);
             deviceDao.removeDevice(id);
             return true;
         } catch (Exception e) {
