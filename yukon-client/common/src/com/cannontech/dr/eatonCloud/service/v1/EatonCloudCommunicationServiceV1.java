@@ -10,6 +10,8 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceResultV1;
@@ -101,4 +103,20 @@ public interface EatonCloudCommunicationServiceV1 {
      * Retrieves the list of sites
      */
     List<EatonCloudSiteV1> getSites(String siteGuid) throws EatonCloudCommunicationExceptionV1, EatonCloudException;
+
+    /**
+     * @return Service account details
+     * @throws EatonCloudCommunicationExceptionV1
+     * @throws EatonCloudException
+     */
+    EatonCloudServiceAccountDetailV1 getServiceAccountDetail() throws EatonCloudCommunicationExceptionV1, EatonCloudException;
+
+    /**
+     * Rotates a client secret for the given service account
+     * @param secretNumber 1 - secret1, 2 - secret2
+     * @return new secret
+     * @throws EatonCloudCommunicationExceptionV1
+     * @throws EatonCloudException
+     */
+    EatonCloudSecretValueV1 rotateAccountSecret(int secretNumber) throws EatonCloudCommunicationExceptionV1, EatonCloudException;
 }

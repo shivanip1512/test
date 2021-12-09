@@ -27,6 +27,7 @@ import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.EatonCloudSimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 /**
  * This class gets a message EatonCloudSimulatorRequest from WS, which contains a method information to be called using reflection on the data object specified for that version.
@@ -35,8 +36,9 @@ import com.cannontech.simulators.message.response.SimulatorResponseBase;
  * EatonCloudVersion.V2, new EatonCloudv2Data() to map the new version to a new object.
  */
 public class EatonCloudMessageHandler extends SimulatorMessageHandler {
+    @Autowired GlobalSettingDao settingDao;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private EatonCloudFakeTimeseriesDataV1 eatonCloudFakeTimeseriesDataV1 ;
+    @Autowired private EatonCloudFakeTimeseriesDataV1 eatonCloudFakeTimeseriesDataV1;
     private static final Logger log = YukonLogManager.getLogger(EatonCloudMessageHandler.class);
 
     public EatonCloudMessageHandler() {
@@ -58,7 +60,6 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
    
     @Override
     public SimulatorResponse handle(SimulatorRequest simulatorRequest) {
-        
         try {
             if (simulatorRequest instanceof EatonCloudSimulatorRequest) {
                 EatonCloudSimulatorRequest request = (EatonCloudSimulatorRequest) simulatorRequest;
@@ -67,6 +68,7 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
                         //status requested to be returned by the user
                         int status = statuses.get(request.getUrl());
                         EatonCloudDataGenerator generator = data.get(request.getUrl().getVersion());
+                        generator.setSettingDao(settingDao);
                         generator.setStatus(status);
                         generator.setSuccessPercentage(HttpStatus.OK.value() == status && successPercentages
                                 .get(request.getUrl()) != null ? successPercentages.get(request.getUrl()) : 100);
@@ -87,6 +89,7 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
             } else if (simulatorRequest instanceof EatonCloudSimulatorDeviceCreateRequest) {
                 EatonCloudSimulatorDeviceCreateRequest request = (EatonCloudSimulatorDeviceCreateRequest) simulatorRequest;
                 EatonCloudDataGenerator generator = data.get(request.getVersion());
+                generator.setSettingDao(settingDao);
                 if (request.isComplete()) {
                     // auto creation is done
                     generator.setCreateRequest(null);

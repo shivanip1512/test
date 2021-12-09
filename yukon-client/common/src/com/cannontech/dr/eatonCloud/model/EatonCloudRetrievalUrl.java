@@ -57,6 +57,20 @@ public enum EatonCloudRetrievalUrl {
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
             ImmutableMap.of(),
             false,
+            false),
+    ACCOUNT_DETAIL(EatonCloudVersion.V1, "/v1/security/serviceaccount/{serviceAccountId}",
+            "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=security&operation=get-getserviceaccountdetail",
+            // 200, 400, 401, 404
+            List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
+            ImmutableMap.of("Service Account Guid", "beaeae03-0178-4b45-80fd-98321f43734f"),
+            false,
+            false),
+    ROTATE_ACCOUNT_SECRET(EatonCloudVersion.V1, "/v1/security/serviceaccount/{serviceAccountId}/secret/{secretName}/rotate",
+            "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=security&operation=get-rotateserviceaccountsecret",
+            //200, 400, 401, 404
+            List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
+            ImmutableMap.of("Service Account Guid", "821d549c-c1b7-469e-bbf5-9d9d401883b2", "Secret Name", "secret1"),
+            false, 
             false);
     private EatonCloudVersion version;
     private String suffix;

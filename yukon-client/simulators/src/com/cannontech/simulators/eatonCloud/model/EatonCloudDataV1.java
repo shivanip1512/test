@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.core.Logger;
+import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -20,6 +21,7 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDeviceV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteV1;
@@ -35,7 +37,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     private EatonCloudFakeTimeseriesDataV1 timeseriesData;
  
     public EatonCloudDataV1(EatonCloudFakeTimeseriesDataV1 eatonCloudTimeSeriesResultV1) {
-        timeseriesData = eatonCloudTimeSeriesResultV1;
+        timeseriesData = eatonCloudTimeSeriesResultV1; 
     }
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudDataV1.class);
@@ -47,8 +49,9 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     //if device was not create in 30 seconds, it will not create at all. If debugging creation code, extend the 30 sec value. 
     private static Cache<String, String> creatingGuids =
             CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
-
+    
     public EatonCloudSimulatorResponse token() {
+        
         if (status == HttpStatus.BAD_REQUEST.value()) {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("ClientId"), "The field 'ClientId' is not a valid uuid.", "f0d48574-d5f5-47c1-b817-a1042a103b29", status, "2021-02-25T07:07:03.2423402+00:00", null);
             return new EatonCloudSimulatorResponse(error, status);
@@ -263,5 +266,48 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         creatingGuids.put(deviceId,deviceId);
         EatonCloudDeviceDetailV1 detail = new EatonCloudDeviceDetailV1(deviceId, "", "", "", "", "2143535", "", "", "", "", "", "", "", "", "", "YUKON_SIMULATOR", true, "");
         return new EatonCloudSimulatorResponse(detail, status);
+    }
+    
+    public EatonCloudSimulatorResponse serviceAccountV1(String serviceAccountId) {
+        if (status == HttpStatus.BAD_REQUEST.value()) {
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Invalid UUID "+ serviceAccountId, "b970fd57-8097-4159-b1b0-34630bce891", status, "2021-02-26T10:52:16.0799958+00:00", 11417);
+            return new EatonCloudSimulatorResponse(error, status);
+
+        }
+        if (status == HttpStatus.UNAUTHORIZED.value()) {
+            return new EatonCloudSimulatorResponse(
+                    new EatonCloudErrorV1(status,"Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
+                    status);
+        } 
+        if (status == HttpStatus.NOT_FOUND.value()) {
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of(), "Given Service Account Not found.","624b5e65-5e4c-4196-8a8a-54f833c9fc42", status, "2021-03-10T07:27:38.2222228+00:00", 11418);
+            return new EatonCloudSimulatorResponse(error, status);
+        }
+        return new EatonCloudSimulatorResponse(account, status);
+    }
+    
+    public EatonCloudSimulatorResponse rotateV1(String serviceAccountId, String secretName) {
+        if (status == HttpStatus.BAD_REQUEST.value()) {
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Invalid UUID "+ serviceAccountId, "616ff40f-63b2-4d3c-87e2-16b3c40614ed", status, "2021-02-26T10:52:16.0799958+00:00", 11417);
+            return new EatonCloudSimulatorResponse(error, status);
+
+        }
+        if (status == HttpStatus.UNAUTHORIZED.value()) {
+            return new EatonCloudSimulatorResponse(
+                    new EatonCloudErrorV1(status,"Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
+                    status);
+        } 
+        if (status == HttpStatus.NOT_FOUND.value()) {
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of(), "Given Service Account Not found.","624b5e65-5e4c-4196-8a8a-54f833c9fc42", status, "2021-03-10T07:27:38.2222228+00:00", 11418);
+            return new EatonCloudSimulatorResponse(error, status);
+
+        }
+        
+        EatonCloudSecretValueV1 secret = new EatonCloudSecretValueV1(secretName, DateTime.now().plusYears(1).toString(), RandomStringUtils.random(5, true, true));
+        //replace existing secret with new secret
+        account.getSecrets().removeIf(s -> s.getName().equals(secret.getName()));
+        account.getSecrets().add(secret); 
+        
+        return new EatonCloudSimulatorResponse(secret, status);
     }
 }
