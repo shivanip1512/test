@@ -35,6 +35,7 @@
     <entry key="yukon.web.modules.operator.gateways.list.firmwareUpdates.totalServers">Total Update Servers</entry>
     <entry key="yukon.web.modules.operator.gateways.list.manageFirmware">Manage Firmware</entry>
     <entry key="yukon.web.modules.operator.gateways.list.manageCertificates">Manage Certificates</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.updateGateways">Update NM IP Address/Port</entry>
     <entry key="yukon.web.modules.operator.gateways.list.NAME">Name</entry>
     <entry key="yukon.web.modules.operator.gateways.list.SERIALNUMBER">Serial Number</entry>
     <entry key="yukon.web.modules.operator.gateways.list.FIRMWAREVERSION">Firmware Version</entry>

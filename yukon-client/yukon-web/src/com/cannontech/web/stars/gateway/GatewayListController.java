@@ -102,6 +102,12 @@ public class GatewayListController {
         helper.buildCertificateListModel(model, userContext, sorting);
         return "gateways/certificateTable.jsp";
     }
+    
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
+    @GetMapping("/gateways/update")
+    public String bulkUpdateGateways() {
+        return "gateways/bulkUpdate.jsp";
+    }
 
     @RequestMapping("/gateways/data")
     public @ResponseBody Map<Integer, Object> data(YukonUserContext userContext) {
