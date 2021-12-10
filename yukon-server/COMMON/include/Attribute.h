@@ -638,6 +638,10 @@ public:
 
     static const Attribute  RegisterRemoval;
     static const Attribute  MagnetTampering;
+    static const Attribute  Pulse1SwitchFailure;
+    static const Attribute  Pulse2SwitchFailure;
+    static const Attribute  NodeCommissionEvent;
+    static const Attribute  LostAssociation;
 
     static const Attribute  TamperNoUsageOver24Hours;
     static const Attribute  TamperReverseWhDetected;

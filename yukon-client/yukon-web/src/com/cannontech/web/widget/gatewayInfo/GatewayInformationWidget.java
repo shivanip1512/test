@@ -42,6 +42,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.stars.gateway.GatewayControllerHelper;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
@@ -62,7 +63,8 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     @Autowired private GatewaySettingsValidator validator;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GatewayEventLogService gatewayEventLogService;
-    
+    @Autowired private GatewayControllerHelper helper;
+
     @Autowired
     public GatewayInformationWidget(@Qualifier("widgetInput.deviceId")
             SimpleWidgetInput simpleWidgetInput,
@@ -111,6 +113,9 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
             model.addAttribute("errorMsg", errorMsg);
         }
+        
+        //get all NM IP Address/Port combos
+        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
         
         return "gatewayInformationWidget/settings.jsp";
     }
@@ -215,7 +220,8 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
 
         validator.validate(settings, result);
         model.addAttribute("deviceId", deviceId);
-        
+        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
+
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.EDIT);

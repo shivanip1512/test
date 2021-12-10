@@ -14,8 +14,8 @@
             data-dialog
             data-title="<cti:msg2 key=".create.gateway.label"/>" 
             data-url="<cti:url value="/stars/gateways/create"/>" 
-            data-width="570" 
-            data-min-width="570" 
+            data-width="680" 
+            data-min-width="680" 
             data-height="600"
             data-event="yukon:assets:gateway:save" 
             data-ok-text="<cti:msg2 key="components.button.save.label"/>" 

@@ -50,12 +50,14 @@
 .lhn { line-height: normal; }
 .M0 { margin: 0 !important; }
 .MT10 { margin-top:10px; }
+.MT15 { margin-top:15px; }
 .MT30 { margin-top:30px; }
 .MR0 { margin-right: 0 !important; }
 .MR5 { margin-right: 5px !important; }
 .MR10 { margin-right: 10px !important; }
 .ML0 { margin-left: 0 !important; }
 .ML5 { margin-left: 5px !important; }
+.ML10 { margin-left: 10px !important; }
 .ML15 { margin-left: 15px; }
 .MT5 { margin-top: 5px; }
 .MB0 { margin-bottom: 0px; }
@@ -318,7 +320,7 @@ span.fancytree-node {
             transition: margin-top 0.25s ease-in-out;
     z-index: 1000;
     
-    div.ui-widget-content {
+    > div.ui-widget-content {
         border-bottom: 1px solid #ccc;
         padding: 16px 24px;
     }
@@ -673,7 +675,6 @@ span.fancytree-node {
 	font: inherit;
 	padding-left: 12px;
 	padding-right: 20px;
-	height: 26px;
 	font-size: 0.9rem;
 }
 .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
@@ -969,4 +970,11 @@ input[readonly], input[readonly="readonly"] {
 
 span.error {
     float: left;
+}
+
+div.ui-widget-content div.action-area {
+    margin-left: -24px;
+    margin-right: -24px;
+    padding: 20px 10px 5px 10px !important;
+    border-top: 1px solid #ccc;
 }

@@ -442,6 +442,7 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "lcr-6700 rfn",
         "lcr-6200c",
         "lcr-6600c",
+		"lcr-6200s",
         "lcr-6600s",
         "lcr-6601s",
         "weather location",

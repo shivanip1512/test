@@ -285,6 +285,7 @@
 
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.title">RFN Demand</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.definition">Demand settings for single-phase RFN meters.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDemand.warning">These settings only apply to RFN meters if Advanced Metrology Preferred is enabled.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.demandInterval">Demand Interval</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.demandInterval.description">Interval in minutes over which most recent demand is calculated.</entry>
 
