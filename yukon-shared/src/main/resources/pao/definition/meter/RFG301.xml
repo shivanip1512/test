@@ -24,5 +24,9 @@
         <pointInfo name="Register Removal" attributes="REGISTER_REMOVAL"/>
         <pointInfo name="Reverse Flow" attributes="REVERSE_FLOW"/>
         <pointInfo name="Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
+        <pointInfo name="Pulse 1 Switch Failure" attributes="PULSE_1_SWITCH_FAILURE"/>
+        <pointInfo name="Pulse 2 Switch Failure" attributes="PULSE_2_SWITCH_FAILURE"/>
+        <pointInfo name="Node Commission Event"  attributes="NODE_COMMISSION_EVENT"/>
+        <pointInfo name="Lost Association" attributes="LOST_ASSOCIATION"/>
     </pointInfos>
 </pao>
