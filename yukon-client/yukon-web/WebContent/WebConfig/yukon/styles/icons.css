@@ -46,7 +46,7 @@ Below icons are refrenced from there only.
 .icon-arrow-down-green { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%2339b620" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg>'); }
 .icon-arrow-down-orange { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23f47721" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg>'); }
 .icon-arrow-down-red { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23da3227" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg>'); }
-icon-arrow-join-right { background-position: -544px -400px; }
+.icon-arrow-join-right { background-position: -544px -400px; }
 .icon-arrow-refresh { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg>'); }
 .icon-arrow-right { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.01 11H4v2h12.01v3L20 12l-3.99-4z"/></svg>'); }
 .icon-arrow-rotate-clockwise { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.55 5.55L11 1v3.07C7.06 4.56 4 7.92 4 12s3.05 7.44 7 7.93v-2.02c-2.84-.48-5-2.94-5-5.91s2.16-5.43 5-5.91V10l4.55-4.45zM19.93 11c-.17-1.39-.72-2.73-1.62-3.89l-1.42 1.42c.54.75.88 1.6 1.02 2.47h2.02zM13 17.9v2.02c1.39-.17 2.74-.71 3.9-1.61l-1.44-1.44c-.75.54-1.59.89-2.46 1.03zm3.89-2.42l1.42 1.41c.9-1.16 1.45-2.5 1.62-3.89h-2.02c-.14.87-.48 1.72-1.02 2.48z"/></svg>'); }
@@ -62,6 +62,11 @@ icon-arrow-join-right { background-position: -544px -400px; }
 .icon-brick-add { background-position: -416px -32px; }
 .icon-bullet-arrow-down { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>'); }
 .icon-bullet-go { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%2339b620" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8V4l8 8-8 8v-4H4V8z"/></svg>'); }
+.icon-bullet-go-down { background-position: -96px -400px; }
+.icon-bullet-go-left { background-position: -112px -400px; }
+.icon-bullet-go-up { background-position: -80px -400px; }
+.icon-bullet-red { background-position: -432px -48px; }
+.icon-bullet-orange { background-position: -368px -48px; }
 .icon-cake { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99l-1.07-1.07-1.08 1.07c-1.3 1.3-3.58 1.31-4.89 0l-1.07-1.07-1.09 1.07C6.75 16.64 5.88 17 4.96 17c-.73 0-1.4-.23-1.96-.61V21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-4.61c-.56.38-1.23.61-1.96.61-.92 0-1.79-.36-2.44-1.01zM18 9h-5V7h-2v2H6c-1.66 0-3 1.34-3 3v1.54c0 1.08.88 1.96 1.96 1.96.52 0 1.02-.2 1.38-.57l2.14-2.13 2.13 2.13c.74.74 2.03.74 2.77 0l2.14-2.13 2.13 2.13c.37.37.86.57 1.38.57 1.08 0 1.96-.88 1.96-1.96V12C21 10.34 19.66 9 18 9z"/></svg>'); }
 .icon-calculator { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2V9h-1l-2 1v1h1.5v4H13z"/></svg>'); }
 .icon-calendar { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="17" viewBox="0 0 25 25" width="17"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>'); }
@@ -70,6 +75,7 @@ icon-arrow-join-right { background-position: -544px -400px; }
 .icon-calendar-view-month { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>'); }
 .icon-chart-bar { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg>'); }
 .icon-chart-line { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>'); }
+.icon-clipboard { background-position: -176px -400px; }
 .icon-clock { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>'); }
 .icon-close-x { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); }
 .icon-cog {background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>');}
@@ -85,6 +91,7 @@ icon-arrow-join-right { background-position: -544px -400px; }
 .icon-control-stop-blue { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%230068b3" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 6h12v12H6z"/></svg>'); }
 .icon-cross { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>'); }
 .icon-cross-gray { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); }
+.icon-csv { background-position: -128px -400px; }
 .icon-dashboard { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>'); }
 .icon-dashboard-manage { background-position: -357px -416px; }
 .icon-database { background-position: -480px -112px; }
@@ -122,7 +129,6 @@ icon-arrow-join-right { background-position: -544px -400px; }
 .icon-filter { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>'); }
 .icon-flag-blue { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23007bc1" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>'); }
 .icon-flag-green { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%2339b620" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>'); }
-.icon-flag-orange { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23f5bf33" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>'); }
 .icon-flag-red { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23da3227" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>'); }
 .icon-flag-gray { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>'); }
 .icon-folder { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>'); }
@@ -156,8 +162,10 @@ icon-arrow-join-right { background-position: -544px -400px; }
 .icon-notes-pin { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"/></svg>'); }
 .icon-page-code { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" fill="%23727e84" height="18" viewBox="0 0 24 24" width="17"><g><g><path d="M0,0h24v24H0V0z" fill="none"/></g></g><g><g><path d="M9.4,16.6L4.8,12l4.6-4.6L8,6l-6,6l6,6L9.4,16.6z M14.6,16.6l4.6-4.6l-4.6-4.6L16,6l6,6l-6,6L14.6,16.6z"/></g></g></svg>'); }
 .icon-page-copy { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="17" viewBox="0 0 25 25" width="17"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm-1 4l6 6v10c0 1.1-.9 2-2 2H7.99C6.89 23 6 22.1 6 21l.01-14c0-1.1.89-2 1.99-2h7zm-1 7h5.5L14 6.5V12z"/></svg>'); }
+.icon-page-edit { background-position: -208px -240px; }
 .icon-page-excel { background-position: -240px -240px; }
 .icon-page-white-excel { background-position: -128px -256px; }
+.icon-pdf { background-position: -144px -400px; }
 .icon-pencil { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>'); }
 .icon-phone-sound { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="17" viewBox="0 0 24 24" width="17"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20.1 7.7l-1 1c1.8 1.8 1.8 4.6 0 6.5l1 1c2.5-2.3 2.5-6.1 0-8.5zM18 9.8l-1 1c.5.7.5 1.6 0 2.3l1 1c1.2-1.2 1.2-3 0-4.3zM14 1H4c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 19H4V4h10v16z"/></svg>'); }
 .icon-picture { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="17"><path d="M0 0h24v24H0z" fill="none"/><path d="M23 18V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2zM8.5 12.5l2.5 3.01L14.5 11l4.5 6H5l3.5-4.5z"/></svg>'); }
@@ -186,6 +194,7 @@ icon-arrow-join-right { background-position: -544px -400px; }
 .icon-table-relationship { background-position: -464px -336px; }
 .icon-table-row-insert { background-position: -496px -336px; }
 .icon-tag-blue { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23007bc1" height="17" viewBox="0 0 24 24" width="17"><path d="M0 0h24v24H0z" fill="none"/><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>'); }
+.icon-textfield { background-position: -208px -368px; }
 .icon-text-align-center { background-position: -256px -352px; }
 .icon-text-align-justify { background-position: -272px -352px; }
 .icon-text-align-left { background-position: -288px -352px; }
@@ -194,6 +203,7 @@ icon-arrow-join-right { background-position: -544px -400px; }
 .icon-tick { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%2339b620" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>'); }
 .icon-time { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>'); }
 .icon-transmit-blue { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23007bc1" height="17" viewBox="0 0 25 25" width="17"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 5c-3.87 0-7 3.13-7 7h2c0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.87-3.13-7-7-7zm1 9.29c.88-.39 1.5-1.26 1.5-2.29 0-1.38-1.12-2.5-2.5-2.5S9.5 10.62 9.5 12c0 1.02.62 1.9 1.5 2.29v3.3L7.59 21 9 22.41l3-3 3 3L16.41 21 13 17.59v-3.3zM12 1C5.93 1 1 5.93 1 12h2c0-4.97 4.03-9 9-9s9 4.03 9 9h2c0-6.07-4.93-11-11-11z"/></svg>'); }
+.icon-transmit-delete { background-position: -464px -368px; }
 .icon-transmitter { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="17" viewBox="0 0 24 24" width="17"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 9H9c-.55 0-1 .45-1 1v12c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V10c0-.55-.45-1-1-1zm-3 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM7.05 6.05l1.41 1.41C9.37 6.56 10.62 6 12 6s2.63.56 3.54 1.46l1.41-1.41C15.68 4.78 13.93 4 12 4s-3.68.78-4.95 2.05zM12 0C8.96 0 6.21 1.23 4.22 3.22l1.41 1.41C7.26 3.01 9.51 2 12 2s4.74 1.01 6.36 2.64l1.41-1.41C17.79 1.23 15.04 0 12 0z"/></svg>'); }
 .icon-trend-up { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%2339b620" height="18" viewBox="0 0 24 24" width="17"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>'); }
 .icon-trend-down { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%2339b620" height="18" viewBox="0 0 24 24" width="17"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z"/></svg>'); }
@@ -291,53 +301,43 @@ icon-arrow-join-right { background-position: -544px -400px; }
 }
 
 .icon-app-32-home { background-position: -5px -5px; }
-.icon-app-32-book { background-position: -47px -5px; }
 .icon-app-32-brick { background-position: -89px -5px; }
-.icon-app-32-brick-delete { background-position: -131px -5px; }
-.icon-app-32-brick-edit { background-position: -173px -5px; }
 .icon-app-32-address { background-position: -215px -5px; }
-.icon-app-32-categories { background-position: -5px -47px; }
 .icon-app-32-chart-line { background-position: -47px -47px; }
 .icon-app-32-cog { background-position: -89px -47px; }
-.icon-app-32-dashboard { background-position: -131px -47px; }
+.icon-app-32-cog-with-meter { background-position: -331px -4px; }
 .icon-app-32-datastreaming-configure { background-position: -173px -47px; }
 .icon-app-32-datastreaming-remove { background-position: -215px -47px; }
 .icon-app-32-disconnect { background-position: -5px -89px; }
-.icon-app-32-points { background-position: -47px -89px; }
 .icon-app-32-folder { background-position: -89px -89px; }
 .icon-app-32-folder-add { background-position: -131px -89px; }
 .icon-app-32-folder-blue { background-position: -173px -89px; }
 .icon-app-32-folder-delete { background-position: -215px -89px; }
+.icon-app-32-points { background-position: -47px -89px; }
+.icon-app-32-points-add { background-position: -131px -173px; }
+.icon-app-32-points-delete { background-position: -173px -173px; }
+.icon-app-32-points-update { background-position: -215px -173px; }
 .icon-app-32-map { background-position: -5px -131px; }
 .icon-app-32-key { background-position: -47px -131px; }
 .icon-app-32-lightbulb { background-position: -89px -131px; }
 .icon-app-32-pin { background-position: -131px -131px; }
 .icon-app-32-lock { background-position: -173px -131px; }
-.icon-app-32-excel { background-position: -215px -131px; }
+.icon-app-32-page-upload { background-position: -257px -89px; }
+.icon-app-32-page-go { background-position: -257px -131px; }
+.icon-app-32-page-magnify { background-position: -257px -173px; }
 .icon-app-32-paintbrush { background-position: -5px -173px; }
-.icon-app-32-pencil { background-position: -47px -173px; }
 .icon-app-32-phone { background-position: -89px -173px; }
-.icon-app-32-points-add { background-position: -131px -173px; }
-.icon-app-32-points-delete { background-position: -173px -173px; }
-.icon-app-32-points-update { background-position: -215px -173px; }
-.icon-app-32-read-attribute { background-position: -5px -215px; }
 .icon-app-32-list { background-position: -47px -215px; }
-.icon-app-32-transmit-send { background-position: -89px -215px; }
 .icon-app-32-update { background-position: -131px -215px; }
 .icon-app-32-weather { background-position: -173px -215px; }
 .icon-app-32-widgets { background-position: -215px -215px; }
 .icon-app-32-world { background-position: -257px -5px; }
 .icon-app-32-brick-add { background-position: -257px -47px; }
-.icon-app-32-page-upload { background-position: -257px -89px; }
-.icon-app-32-page-go { background-position: -257px -131px; }
-.icon-app-32-page-magnify { background-position: -257px -173px; }
 .icon-app-32-database-edit { background-position: -257px -215px; }
 .icon-app-32-database-refresh { background-position: -299px -5px; }
 .icon-app-32-database-delete { background-position: -299px -47px; }
 .icon-app-32-database-table { background-position: -299px -89px; }
 .icon-app-32-report-magnify { background-position: -299px -131px; }
-.icon-app-32-page-excel { background-position: -299px -173px; }
 .icon-app-32-application-windows { background-position: -299px -215px; }
-.icon-app-32-cog-with-meter { background-position: -331px -4px; }
 .icon-app-32-attributes { background-position: -332px -45px; }
 .icon-app-32-loggers { background-position: -332px -87px; }
