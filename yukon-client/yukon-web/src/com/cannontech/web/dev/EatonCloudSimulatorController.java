@@ -188,7 +188,7 @@ public class EatonCloudSimulatorController {
             log.error("Error", e);
             json.put("alertError", e.getMessage());
         } 
-        eatonCloudSecretRotationServiceV1.rotateSecret(1);
+       // eatonCloudSecretRotationServiceV1.rotateSecret(1);
         eatonCloudSecretRotationServiceV1.getSecretExpiryTime();
         return json;
     }
