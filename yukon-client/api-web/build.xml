@@ -100,9 +100,9 @@
     	<include name="librepository-9.3.0.0-257.jar"/>
     	<include name="libxml-9.3.0.0-257.jar"/>
     	<include name="libbase-9.3.0.0-257.jar"/>
-    	<include name="log4j-api-2.14.0.jar"/>
-    	<include name="log4j-core-2.14.0.jar"/>
-    	<include name="log4j-jcl-2.14.0.jar"/>
+        <include name="log4j-api-2.16.0.jar"/>
+        <include name="log4j-core-2.16.0.jar"/>
+        <include name="log4j-jcl-2.16.0.jar"/>
         <include name="logging-mailhandler-2.0.1.jar"/>
         <include name="lucene-analyzers-common-8.8.2.jar"/>
         <include name="lucene-core-8.8.2.jar"/>
@@ -116,7 +116,7 @@
         <include name="saaj.jar"/>
         <include name="slf4j-api-1.7.30.jar"/>
         <include name="slf4j-api-1.8.0-alpha2.jar"/>
-        <include name="log4j-slf4j-impl-2.14.0.jar"/>
+        <include name="log4j-slf4j-impl-2.16.0.jar"/>
         <include name="spring-xml-3.1.1.jar"/>
         <include name="spring-ws-core-3.1.1.jar"/>
         <include name="stax-ex-1.8.jar"/>
