@@ -159,5 +159,9 @@ public enum EatonCloudRetrievalUrl {
     public boolean displaySuccessPercentage() {
         return successPercentage;
     }
+
+    public boolean showTestButton() {
+        return showTestButton;
+    }
 }
 
