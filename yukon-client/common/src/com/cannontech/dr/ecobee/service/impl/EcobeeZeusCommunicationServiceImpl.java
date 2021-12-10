@@ -129,7 +129,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     /**
      * Return root thermostat group ID for the configured programID.
      */
-    private String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException {
+    public String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException {
         if (StringUtils.isBlank(thermostatGroupIDCache.get(thermostatGroupIDCacheKey))) {
             thermostatGroupIDCache.put(thermostatGroupIDCacheKey, retrieveRootTstatGroupID());
             asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
@@ -188,7 +188,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     /**
      * Check the thermostat status in root group. If status is ENROLLED, return true else return false.
      */
-    private boolean isDeviceEnrolled(String serialNumber) {
+    public boolean isDeviceEnrolled(String serialNumber) {
         try {
             String thermostatGroupID = retrieveThermostatGroupID();
             String listThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats?enrollment_state="
