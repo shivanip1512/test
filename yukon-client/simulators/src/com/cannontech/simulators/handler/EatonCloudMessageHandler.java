@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
 import com.cannontech.dr.eatonCloud.model.EatonCloudVersion;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCredentialsV1;
 import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.eatonCloud.model.EatonCloudDataGenerator;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorDeviceCreateRequest;
@@ -23,6 +24,8 @@ import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.EatonCloudSimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 /**
  * This class gets a message EatonCloudSimulatorRequest from WS, which contains a method information to be called using reflection on the data object specified for that version.
@@ -36,6 +39,7 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
     }
 
     @Autowired private List<EatonCloudDataGenerator> data;
+    @Autowired private GlobalSettingDao settingDao;
     
     
     private Map<EatonCloudRetrievalUrl, Integer> statuses = Arrays.stream(EatonCloudRetrievalUrl.values())
@@ -56,9 +60,20 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
                     generator.setStatus(status);
                     generator.setSuccessPercentage(HttpStatus.OK.value() == status && successPercentages
                             .get(request.getUrl()) != null ? successPercentages.get(request.getUrl()) : 100);
-
-                    Method method = generator.getClass().getMethod(request.getMethod(), request.getParamClasses());
-                    return (EatonCloudSimulatorResponse) method.invoke(generator, request.getParamValues());
+                    if(request.getUrl() == EatonCloudRetrievalUrl.SECURITY_TOKEN) {
+                        Method method = generator.getClass().getMethod(request.getMethod(), request.getParamClasses());
+                        EatonCloudCredentialsV1 cred = (EatonCloudCredentialsV1) request.getParamValues()[0];
+                        String secret = settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET2);
+                        if(secret.equals(cred.getSecret())) {
+                            generator.setStatus(statuses.get(EatonCloudRetrievalUrl.SECURITY_TOKEN2));
+                            generator.setSuccessPercentage(HttpStatus.OK.value() == status && successPercentages
+                                    .get(EatonCloudRetrievalUrl.SECURITY_TOKEN2) != null ? successPercentages.get(request.getUrl()) : 100);
+                        }
+                        return (EatonCloudSimulatorResponse) method.invoke(generator, new  Object[] {});
+                    } else {
+                        Method method = generator.getClass().getMethod(request.getMethod(), request.getParamClasses());
+                        return (EatonCloudSimulatorResponse) method.invoke(generator, request.getParamValues());  
+                    }
                 } catch (Exception e) {
                     throw new IllegalArgumentException(
                             "Unable to use reflection to call method " + request.getMethod() + " to get data", e);

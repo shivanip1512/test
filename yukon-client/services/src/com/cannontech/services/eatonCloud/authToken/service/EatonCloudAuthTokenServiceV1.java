@@ -74,8 +74,8 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
                                 new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
                         retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2, serviceAccountId);
                     } catch (EatonCloudCommunicationExceptionV1 ex) {
-                        log.error("Unable to retrieve Eaton Cloud token:{}",
-                                new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
+                        log.error("Token retrieval for secret2 failed:{}",
+                                new GsonBuilder().setPrettyPrinting().create().toJson(ex.getErrorMessage()));
                     }
                 }
             }
@@ -114,6 +114,8 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
                                         serviceAccountId);
                                 sendResponse(message, newToken, null);
                             } catch (EatonCloudCommunicationExceptionV1 ex) {
+                                log.error("Token retrieval for secret2 failed:{}",
+                                        new GsonBuilder().setPrettyPrinting().create().toJson(ex.getErrorMessage()));
                                 sendResponse(message, null, ex);
                             }
                         }
@@ -143,12 +145,6 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
 
     private void sendResponse(Message message, EatonCloudTokenV1 cachedToken, EatonCloudCommunicationExceptionV1 error)
             throws JMSException {
-        if (cachedToken != null) {
-            log.debug("Got Eaton Cloud token:{}", cachedToken);
-        } else if (error != null) {
-            log.error("Unable to retrieve Eaton Cloud token:{}",
-                    new GsonBuilder().setPrettyPrinting().create().toJson(error.getErrorMessage()));
-        }
         jmsTemplate.convertAndSend(message.getJMSReplyTo(), new EatonCloudAuthTokenResponseV1(cachedToken, error));
     }
 

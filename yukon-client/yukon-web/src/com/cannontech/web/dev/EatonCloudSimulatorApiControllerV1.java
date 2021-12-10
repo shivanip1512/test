@@ -67,7 +67,7 @@ public class EatonCloudSimulatorApiControllerV1 {
         try {
             EatonCloudSimulatorResponse response = simulatorsCommunicationService
                     .sendRequest(new EatonCloudSimulatorRequest(EatonCloudRetrievalUrl.SECURITY_TOKEN, "token",
-                            new Class[] {}, new Object[] {}), EatonCloudSimulatorResponse.class);
+                            new Class[] {}, new Object[] {eatonCloudCredentialsV1}), EatonCloudSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
             log.error("Error", e);

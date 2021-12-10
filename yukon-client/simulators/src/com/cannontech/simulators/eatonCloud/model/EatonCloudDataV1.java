@@ -45,7 +45,7 @@ import com.google.common.cache.CacheBuilder;
 
 public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     
-    @Autowired GlobalSettingDao settingDao;
+    @Autowired private GlobalSettingDao settingDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private EatonCloudFakeTimeseriesDataV1 timeseriesData;
     private EatonCloudServiceAccountDetailV1 account;

@@ -22,6 +22,13 @@ public enum EatonCloudRetrievalUrl {
             ImmutableMap.of(),
             false,
             false),
+    SECURITY_TOKEN2(EatonCloudVersion.V1, "Using secret2",
+            "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=security&operation=post-getserviceaccounttoken",
+            // 200,401
+            List.of(HttpStatus.OK, HttpStatus.UNAUTHORIZED),
+            ImmutableMap.of(),
+            false,
+            false),
     DEVICES_BY_SITE(EatonCloudVersion.V1, "/v1/sites/{id}/devices",
             "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=devices&operation=get-getsitedevices",
             // 200, 400, 401
