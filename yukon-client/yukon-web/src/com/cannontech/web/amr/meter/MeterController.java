@@ -59,7 +59,6 @@ import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.service.RfnDeviceDeletionMessageService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
@@ -136,7 +135,6 @@ public class MeterController {
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private MeterProgrammingSummaryDao meterProgrammingSummaryDao;
-    @Autowired private RfnDeviceDeletionMessageService rfnDeviceDeletionMessageService;
     
     private static final Logger log = YukonLogManager.getLogger(MeterController.class); 
 
@@ -530,9 +528,6 @@ public class MeterController {
         LiteYukonPAObject meter = serverDatabaseCache.getAllPaosMap().get(id);
         String meterName = serverDatabaseCache.getAllMeters().get(id).getMeterNumber();
         try {
-            if(meter.getPaoType().isRfMeter()) {
-                rfnDeviceDeletionMessageService.sendRfnDeviceDeletionRequest(id);
-            }
             deviceDao.removeDevice(id);
             
             meteringEventLogService.meterDeleted(meter.getPaoName(), meterName, user.getUsername());

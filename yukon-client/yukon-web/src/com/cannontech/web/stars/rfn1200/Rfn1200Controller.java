@@ -22,7 +22,6 @@ import org.springframework.web.client.RestClientException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
-import com.cannontech.common.rfn.service.RfnDeviceDeletionMessageService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -49,7 +48,6 @@ public class Rfn1200Controller {
     @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
     @Autowired private ServerDatabaseCache dbCache;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private RfnDeviceDeletionMessageService rfnDeviceDeletionMessageService;
 
     @GetMapping("/{id}")
     public String view(@PathVariable int id, ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
@@ -65,7 +63,6 @@ public class Rfn1200Controller {
     public String delete(@PathVariable int id, FlashScope flash, YukonUserContext userContext) {
         LiteYukonPAObject device = dbCache.getAllPaosMap().get(id);
         try {
-            rfnDeviceDeletionMessageService.sendRfnDeviceDeletionRequest(id);
             deviceDao.removeDevice(id);
             
             rfnDeviceEventLogService.rfn1200Deleted(device.getPaoName(), userContext.getYukonUser().getUsername());

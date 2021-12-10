@@ -1642,9 +1642,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 YukonMeter meter;
                 try {
                     meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
-                    if(meter.getPaoType().isRfMeter()) {
-                        rfnDeviceDeletionMessageService.sendRfnDeviceDeletionRequest(meter.getPaoIdentifier().getPaoId());
-                    }
                     removeDeviceNameExtension(meter, METER_REMOVE_STRING, mspVendor);
                     removeDeviceFromCISGroups(meter, METER_REMOVE_STRING, mspVendor);
                     // Added meter to Inventory

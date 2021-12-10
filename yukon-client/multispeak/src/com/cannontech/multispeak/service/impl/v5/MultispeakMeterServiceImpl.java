@@ -303,9 +303,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             YukonMeter meter;
             try {
                 meter = getMeterByMeterNumber(mspMeter.getObjectRef().getPrimaryIdentifierValue());
-                if(meter.getPaoType().isRfMeter()) {
-                    rfnDeviceDeletionMessageService.sendRfnDeviceDeletionRequest(meter.getPaoIdentifier().getPaoId());
-                }
                 deviceDao.removeDevice(meter);
                 multispeakEventLogService.removeDevice(meter.getMeterNumber(), meter, METER_DELETED_STRING,
                     mspVendor.getCompanyName());
