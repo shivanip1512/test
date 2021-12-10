@@ -78,7 +78,6 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.location.Origin;
-import com.cannontech.common.rfn.service.RfnDeviceDeletionMessageService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -191,7 +190,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private OAClient oaClient;
     @Autowired private CBClient cbClient;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
-    @Autowired private RfnDeviceDeletionMessageService rfnDeviceDeletionMessageService;
 
     /** Singleton incrementor for messageIDs to send to porter connection */
     private static long messageID = 1;

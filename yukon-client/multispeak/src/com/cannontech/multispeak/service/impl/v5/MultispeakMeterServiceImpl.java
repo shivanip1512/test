@@ -69,7 +69,6 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.location.Origin;
-import com.cannontech.common.rfn.service.RfnDeviceDeletionMessageService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -185,7 +184,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private ObjectFactory objectFactory;
     @Autowired private DeviceUpdateService deviceUpdateService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
-    @Autowired private RfnDeviceDeletionMessageService rfnDeviceDeletionMessageService;
     
     private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
 
@@ -303,6 +301,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             YukonMeter meter;
             try {
                 meter = getMeterByMeterNumber(mspMeter.getObjectRef().getPrimaryIdentifierValue());
+
                 deviceDao.removeDevice(meter);
                 multispeakEventLogService.removeDevice(meter.getMeterNumber(), meter, METER_DELETED_STRING,
                     mspVendor.getCompanyName());

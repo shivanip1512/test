@@ -8,14 +8,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.service.RfnDeviceDeletionMessageService;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.yukon.IDatabaseCache;
 
 public abstract class RfnBase extends DeviceBase {
     
