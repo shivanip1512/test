@@ -6,5 +6,15 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:component-scan base-package="com.cannontech.web.api"/>
+    <context:component-scan base-package="com.cannontech.web.api">
+        
+        <!-- As we pull APIs into their own files, we can exclude them here. -->
+        
+        <!-- Handled in WEB-INF/contexts/api/api-context-ecobee.xml -->
+        <context:exclude-filter type="regex" expression="com.cannontech.web.api.dr.ecobee.*"/>
+        
+        <!-- Handled in WEB-INF/contexts/api/api-context-aggregateIntervalDataReport.xml -->
+        <context:exclude-filter type="regex" expression="com.cannontech.web.api.aggregateIntervalDataReport.*"/>
+        
+    </context:component-scan>
 </beans>

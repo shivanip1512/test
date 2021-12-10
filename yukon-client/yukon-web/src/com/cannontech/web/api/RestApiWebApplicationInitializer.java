@@ -8,7 +8,8 @@ import org.apache.logging.log4j.core.Logger;
 import org.springframework.web.WebApplicationInitializer;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.web.spring.CannonDispatcherServlet;
+import com.cannontech.spring.ConfigurableXmlWebApplicationContext;
+import com.cannontech.web.spring.RestApiDispatcherServlet;
 
 /**
  * This initializer is bootstrapped automatically by Tomcat. 
@@ -31,13 +32,28 @@ public class RestApiWebApplicationInitializer implements WebApplicationInitializ
         // apiContext.setConfigLocation("/WEB-INF/contexts/api-servlet.xml");
         // ServletRegistration.Dynamic servlet =
         //        servletContext.addServlet("dispatcher", new DispatcherServlet(apiContext));
-
+        
         log.info("REST API servlet initializing.");
+        
+        String[] contextPaths = {
+                ""
+        };
+        
+        ConfigurableXmlWebApplicationContext apiContext = 
+                new ConfigurableXmlWebApplicationContext(true, true, contextPaths);
         ServletRegistration.Dynamic servlet =
-                servletContext.addServlet("api", new CannonDispatcherServlet());
+                servletContext.addServlet("api", new RestApiDispatcherServlet(apiContext));
         servlet.setLoadOnStartup(1);
         servlet.addMapping("/api/*");
+        
         log.info("REST API servlet initialized.");
+        
+//        log.info("REST API servlet initializing.");
+//        ServletRegistration.Dynamic servlet =
+//                servletContext.addServlet("api", new CannonDispatcherServlet());
+//        servlet.setLoadOnStartup(1);
+//        servlet.addMapping("/api/*");
+//        log.info("REST API servlet initialized.");
         
         //When this is migrated to a new service, we may want to handle filters here instead of in web.xml
         /*
