@@ -9,7 +9,6 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -51,21 +50,20 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
     }
     
-    private Cache<String, Pair<GlobalSettingType, EatonCloudTokenV1>> tokenCache = CacheBuilder.newBuilder().expireAfterWrite(59, TimeUnit.MINUTES).build();
+    private Cache<String, EatonCloudTokenV1> tokenCache = CacheBuilder.newBuilder().expireAfterWrite(59, TimeUnit.MINUTES).build();
        
     /**
      * Called when any global setting is updated
      */
     private void databaseChangeEvent(DatabaseChangeEvent event) {
-        String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-        if(tokenCache.size() == 0 || tokenCache.getIfPresent(serviceAccountId) == null) {
+        if (tokenCache.size() == 0) {
             return;
         }
-
         try {
-            Pair<GlobalSettingType, EatonCloudTokenV1> token = tokenCache.getIfPresent(serviceAccountId);
-            if (settingDao.isDbChangeForSetting(event, token.getKey())) {
-                // secret we used to retrieve token has been changed, retrieve new token and update the cache
+            if (settingDao.isDbChangeForSetting(event, GlobalSettingType.EATON_CLOUD_SECRET)
+                    || settingDao.isDbChangeForSetting(event, GlobalSettingType.EATON_CLOUD_SECRET2)) {
+                String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+                tokenCache.invalidateAll();
                 try {
                     retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
                 } catch (EatonCloudCommunicationExceptionV1 e) {
@@ -99,9 +97,9 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
                         return;
                     }
                    
-                    Pair<GlobalSettingType, EatonCloudTokenV1> cachedToken = tokenCache.getIfPresent(serviceAccountId);
+                    EatonCloudTokenV1 cachedToken = tokenCache.getIfPresent(serviceAccountId);
                     if ((cachedToken != null)) {
-                        sendResponse(message, cachedToken.getValue(), null);
+                        sendResponse(message, cachedToken, null);
                     } else {
                         try {
                             EatonCloudTokenV1 newToken = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
@@ -139,7 +137,7 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
         EatonCloudCredentialsV1 credentials = getCredentials(type, serviceAccountId);
         EatonCloudTokenV1 newToken = restTemplate.postForObject(url, credentials, EatonCloudTokenV1.class);
         log.info("Retrieved Eaton Cloud token for secret{} serviceAccountId:{} url:{}.", secret, serviceAccountId, url);
-        tokenCache.put(credentials.getServiceAccountId(), Pair.of(type, newToken));
+        tokenCache.put(credentials.getServiceAccountId(), newToken);
         return newToken;
     }
 
