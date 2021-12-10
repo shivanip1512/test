@@ -417,6 +417,36 @@ public class DBUpdater extends MessageFrameAdaptor {
         }
     }
 
+    /**
+     * Method to display warning message for control priority.
+     */
+    private void checkControlPriority(Statement stat, String cmd, String warningMessage) throws SQLException, IOException {
+        List<String> loadGroupNames = new ArrayList<String>();
+        ResultSet resultSet = stat.executeQuery(cmd);
+        while (resultSet.next()) {
+            String value = resultSet.getString("PAOName");
+            loadGroupNames.add(value);
+        }
+        if (CollectionUtils.isNotEmpty(loadGroupNames)) {
+            getIMessageFrame().addOutput("");
+            getIMessageFrame().addOutput(
+                    " ************************************************************************** ");
+            getIMessageFrame().addOutput("   Warning Message:");
+            getIMessageFrame().addOutput("   " + warningMessage);
+            getIMessageFrame().addOutput("   " + "The control priority of load group(s) " + StringUtils.join(loadGroupNames, ',')
+                    + " may not be correct as they were edited via the web interface which had set priorities incorrectly.\n"
+                    + "   " + "You should examine your expresscom load group priorities to ensure they are set appropriately. You can manually check them on the UI which is now fixed,\n"
+                    + "   " + "or if you have a significant number you can run the below query to find the priorities of all of your expresscom groups, and note that in the database,\n"
+                    + "   " + "Default = 3, Medium = 2, High = 1, and Highest = 0.");
+            getIMessageFrame().addOutput("\n    "
+                    + "SELECT ypo.PAOName AS GroupName,lmGroup.LMGroupID, lmGroup.ProtocolPriority AS CommandProperty FROM \n"
+                    + "    YukonPAObject ypo JOIN LMGroupExpressCom lmGroup ON lmGroup.LMGroupID = ypo.PAObjectID; ");
+            getIMessageFrame().addOutput("");
+            getIMessageFrame().addOutput(
+                    " ************************************************************************** ");
+        }
+    }
+
     private void processLine(UpdateLine line_, Connection conn) throws SQLException {
         if (line_ == null || conn == null)
             return;
