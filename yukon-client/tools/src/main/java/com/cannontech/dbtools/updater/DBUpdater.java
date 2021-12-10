@@ -434,13 +434,13 @@ public class DBUpdater extends MessageFrameAdaptor {
             getIMessageFrame().addOutput("   Warning Message:");
             getIMessageFrame().addOutput("   " + warningMessage);
             getIMessageFrame().addOutput("   " + "The control priority of load group(s) " + StringUtils.join(loadGroupNames, ',')
-                    + " might not be correct as per below query. Update the control priority of the load groups manually if it is incorrect.");
-            getIMessageFrame().addOutput("   " + "SELECT DISTINCT(ypo.PAOName) FROM \n"
-                    + "      YukonPAObject ypo INNER JOIN EventLog eventLog ON eventLog.String1 = ypo.PAOName JOIN \n"
-                    + "      LMGroupExpressCom lmGroup ON lmGroup.LMGroupID = ypo.PAObjectID WHERE\n"
-                    + "      eventLog.EventType IN('dr.setup.loadGroup.loadGroupCreated', 'dr.setup.loadGroup.loadGroupUpdated') AND\n"
-                    + "      eventLog.String2 IN('LM_GROUP_EXPRESSCOMM', 'LM_GROUP_RFN_EXPRESSCOMM')\n"
-                    + "      AND lmGroup.ProtocolPriority = '3';");
+                    + " may not be correct as they were edited via the web interface which had set priorities incorrectly.\n"
+                    + "   " + "You should examine your expresscom load group priorities to ensure they are set appropriately. You can manually check them on the UI which is now fixed,\n"
+                    + "   " + "or if you have a significant number you can run the below query to find the priorities of all of your expresscom groups, and note that in the database,\n"
+                    + "   " + "Default = 3, Medium = 2, High = 1, and Highest = 0.");
+            getIMessageFrame().addOutput("\n    "
+                    + "SELECT ypo.PAOName AS GroupName,lmGroup.LMGroupID, lmGroup.ProtocolPriority AS CommandProperty FROM \n"
+                    + "    YukonPAObject ypo JOIN LMGroupExpressCom lmGroup ON lmGroup.LMGroupID = ypo.PAObjectID; ");
             getIMessageFrame().addOutput("");
             getIMessageFrame().addOutput(
                     " ************************************************************************** ");

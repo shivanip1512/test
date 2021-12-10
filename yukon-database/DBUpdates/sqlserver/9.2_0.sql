@@ -87,7 +87,7 @@ SELECT DISTINCT(ypo.PAOName) FROM
     LMGroupExpressCom lmGroup ON lmGroup.LMGroupID = ypo.PAObjectID WHERE
     eventLog.EventType IN('dr.setup.loadGroup.loadGroupCreated', 'dr.setup.loadGroup.loadGroupUpdated') AND
     eventLog.String2 IN('LM_GROUP_EXPRESSCOMM', 'LM_GROUP_RFN_EXPRESSCOMM')
-    AND lmGroup.ProtocolPriority = '3';
+    AND lmGroup.ProtocolPriority != '3';
    
 /* @end-warning checkControlPriority */
 
