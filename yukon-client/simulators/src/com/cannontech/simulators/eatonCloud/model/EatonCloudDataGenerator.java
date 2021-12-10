@@ -13,7 +13,7 @@ public abstract class EatonCloudDataGenerator {
 
     protected int status = HttpStatus.OK.value();
     protected int successPercentage = 100;
-    protected EatonCloudSimulatorDeviceCreateRequest createRequest;;
+    protected EatonCloudSimulatorDeviceCreateRequest createRequest;
 
     protected Map<PaoType, HardwareType> paoTypeToHardware = Map.of(PaoType.LCR6600C, HardwareType.LCR_6600C, PaoType.LCR6200C,
             HardwareType.LCR_6200C);

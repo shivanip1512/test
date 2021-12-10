@@ -53,7 +53,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     private EatonCloudVersion version = EatonCloudVersion.V1;
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudDataV1.class);
-
+    
     //Simulator has 2 sites
     private List<String> siteGuids = List.of("eccdcf03-2ca8-40a9-a5f3-9446a52f515d", "616ff40f-63b2-4d3c-87e2-16b3c40614ed");
    

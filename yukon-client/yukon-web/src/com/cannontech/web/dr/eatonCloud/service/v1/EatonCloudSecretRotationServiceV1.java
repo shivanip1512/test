@@ -2,6 +2,7 @@ package com.cannontech.web.dr.eatonCloud.service.v1;
 
 import org.joda.time.Instant;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.web.dr.eatonCloud.model.EatonCloudSecretExpiryTime;
@@ -21,5 +22,6 @@ public interface EatonCloudSecretRotationServiceV1 {
      * @throws EatonCloudCommunicationExceptionV1
      * @throws EatonCloudException
      */
-    Instant rotateSecret(int secretNumber);
+
+    Instant rotateSecret(int secretNumber, LiteYukonUser user);
 }
