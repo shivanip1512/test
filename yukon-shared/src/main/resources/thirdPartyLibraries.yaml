@@ -1744,60 +1744,60 @@ Java :
     jira : YUK-21105
     notes : 
   
-  - filename : log4j-api-2.14.0.jar
+  - filename : log4j-api-2.16.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.14.0
+    version : 2.16.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.14.0"
-    md5 : 85ee6b9b4d0d13091e73db2d2b8ab939
-    sha1 : c532ba992e0d748dc2bfa8592ea09d5d19527755
-    updated : 2021-01-15
-    jira : YUK-23078
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.16.0"
+    md5 : ade293913c90e835c2deb56cbfa2229b
+    sha1 : 4727d93a76616ffc4149dffac5801827c0f4ac71
+    updated : 2021-12-14
+    jira : YUK-25624
     notes : Apache Log4j API
   
-  - filename : log4j-core-2.14.0.jar
+  - filename : log4j-core-2.16.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.14.0
+    version : 2.16.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.14.0"
-    md5 : 62ad26fbfb783183663ba5bfdbfb5ace
-    sha1 : 94bc1813a537b3b5c04f9b4adead3c434f364a70
-    updated : 2021-01-15
-    jira : YUK-23078
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.16.0"
+    md5 : 9f41928a418200de2232dd326e522cc7
+    sha1 : ca12fb3902ecfcba1e1357ebfc55407acec30ede
+    updated : 2021-12-14
+    jira : YUK-25624
     notes : Apache Log4j Core
   
-  - filename : log4j-jcl-2.14.0.jar
+  - filename : log4j-jcl-2.16.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.14.0
+    version : 2.16.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-jcl/2.14.0"
-    md5 : 14736dad73aa32c68e1b2b565183ca62
-    sha1 : 1600323b15cda5c33424978e5cb179c67941aa8c
-    updated : 2021-01-15
-    jira : YUK-23078
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-jcl/2.16.0"
+    md5 : 3dba1b7a43b37545539946fee5f26738
+    sha1 : 548063fa2d86f90aa23cc839ad9a1df680a442e9
+    updated : 2021-12-14
+    jira : YUK-25624
     notes : Apache Commons Logging Bridge for Log4j
   
-  - filename : log4j-slf4j-impl-2.14.0.jar
+  - filename : log4j-slf4j-impl-2.16.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.14.0
+    version : 2.16.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.14.0"
-    md5 : 0fecb509f39c3de5f481b6c33f8cfa5e
-    sha1 : 79f3b3b85a8e75663f843c1ad14d94c1d6c65269
-    updated : 2021-01-15
-    jira : YUK-23078
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.16.0"
+    md5 : 05e1ad2e42e2228da25c853512c9eaa7
+    sha1 : d4cc7712ebb4744681db815679248e4312f61b32
+    updated : 2021-12-14
+    jira : YUK-25624
     notes : Apache Log4j 2 SLF4J Binding
   
   - filename : lucene-analyzers-common-8.8.2.jar
