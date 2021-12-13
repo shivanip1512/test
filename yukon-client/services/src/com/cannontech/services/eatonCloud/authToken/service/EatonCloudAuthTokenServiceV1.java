@@ -64,7 +64,7 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
                     || settingDao.isDbChangeForSetting(event, GlobalSettingType.EATON_CLOUD_SECRET2)) {
                 String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
                 tokenCache.invalidateAll();
-                resfreshToken(null, serviceAccountId);
+                refreshToken(null, serviceAccountId);
             }
         } catch (Exception e) {
             log.error("Unable to retrieve token", e);
@@ -90,7 +90,7 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
                     if ((cachedToken != null)) {
                         sendResponse(message, cachedToken, null);
                     } else {
-                        resfreshToken(message, serviceAccountId);
+                        refreshToken(message, serviceAccountId);
                     }
                 }
             } catch (Exception e) {
@@ -111,7 +111,7 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
      * 
      * @param message - if message is not null the reply will be send
      */
-    private void resfreshToken(Message message, String serviceAccountId) throws JMSException {
+    private void refreshToken(Message message, String serviceAccountId) throws JMSException {
         try {
             EatonCloudTokenV1 newToken = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
             sendResponse(message, newToken, null);
