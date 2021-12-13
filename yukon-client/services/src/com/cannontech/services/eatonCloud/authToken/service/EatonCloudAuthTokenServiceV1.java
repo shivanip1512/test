@@ -64,18 +64,7 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
                     || settingDao.isDbChangeForSetting(event, GlobalSettingType.EATON_CLOUD_SECRET2)) {
                 String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
                 tokenCache.invalidateAll();
-                try {
-                    retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
-                } catch (EatonCloudCommunicationExceptionV1 e) {
-                    try {
-                        log.error("Token retrieval for secret1 failed:{}",
-                                new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
-                        retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2, serviceAccountId);
-                    } catch (EatonCloudCommunicationExceptionV1 ex) {
-                        log.error("Token retrieval for secret2 failed:{}",
-                                new GsonBuilder().setPrettyPrinting().create().toJson(ex.getErrorMessage()));
-                    }
-                }
+                resfreshToken(null, serviceAccountId);
             }
         } catch (Exception e) {
             log.error("Unable to retrieve token", e);
@@ -101,22 +90,7 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
                     if ((cachedToken != null)) {
                         sendResponse(message, cachedToken, null);
                     } else {
-                        try {
-                            EatonCloudTokenV1 newToken = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
-                            sendResponse(message, newToken, null);
-                        } catch (EatonCloudCommunicationExceptionV1 e) {
-                            try {
-                                log.error("Token retrieval for secret1 failed:{}",
-                                        new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
-                                EatonCloudTokenV1 newToken = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2,
-                                        serviceAccountId);
-                                sendResponse(message, newToken, null);
-                            } catch (EatonCloudCommunicationExceptionV1 ex) {
-                                log.error("Token retrieval for secret2 failed:{}",
-                                        new GsonBuilder().setPrettyPrinting().create().toJson(ex.getErrorMessage()));
-                                sendResponse(message, null, ex);
-                            }
-                        }
+                        resfreshToken(message, serviceAccountId);
                     }
                 }
             } catch (Exception e) {
@@ -126,6 +100,32 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
                 } catch (JMSException e1) {
                     log.error("Unable to process message", e);
                 }
+            }
+        }
+    }
+
+
+    /**
+     * Sends message to Eaton Cloud to get a token using secret1 if unable to get token tries secret2. Sends reply with new
+     * token if reply was requested.
+     * 
+     * @param message - if message is not null the reply will be send
+     */
+    private void resfreshToken(Message message, String serviceAccountId) throws JMSException {
+        try {
+            EatonCloudTokenV1 newToken = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
+            sendResponse(message, newToken, null);
+        } catch (EatonCloudCommunicationExceptionV1 e) {
+            try {
+                log.error("Token retrieval for secret1 failed:{}",
+                        new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
+                EatonCloudTokenV1 newToken = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2,
+                        serviceAccountId);
+                sendResponse(message, newToken, null);
+            } catch (EatonCloudCommunicationExceptionV1 ex) {
+                log.error("Token retrieval for secret2 failed:{}",
+                        new GsonBuilder().setPrettyPrinting().create().toJson(ex.getErrorMessage()));
+                sendResponse(message, null, ex);
             }
         }
     }
@@ -143,7 +143,9 @@ public class EatonCloudAuthTokenServiceV1 implements MessageListener {
 
     private void sendResponse(Message message, EatonCloudTokenV1 cachedToken, EatonCloudCommunicationExceptionV1 error)
             throws JMSException {
-        jmsTemplate.convertAndSend(message.getJMSReplyTo(), new EatonCloudAuthTokenResponseV1(cachedToken, error));
+        if (message != null) {
+            jmsTemplate.convertAndSend(message.getJMSReplyTo(), new EatonCloudAuthTokenResponseV1(cachedToken, error));
+        }
     }
 
     private EatonCloudCredentialsV1 getCredentials(GlobalSettingType type, String serviceAccountId) {
