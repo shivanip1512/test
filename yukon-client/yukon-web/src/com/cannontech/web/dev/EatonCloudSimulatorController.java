@@ -39,6 +39,8 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDataRequestV1;
@@ -56,6 +58,7 @@ import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.dr.eatonCloud.service.v1.EatonCloudSecretRotationServiceV1;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,6 +78,8 @@ public class EatonCloudSimulatorController {
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private YukonJmsTemplate jmsTemplate;
     private YukonJmsTemplate jmsTemplateCalc;
+    
+    @Autowired private EatonCloudSecretRotationServiceV1 eatonCloudSecretRotationServiceV1;
 
     
     @PostConstruct
@@ -170,6 +175,12 @@ public class EatonCloudSimulatorController {
                 String siteGuid = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
                 List<EatonCloudSiteV1> detail = eatonCloudCommunicationServiceV1.getSites(siteGuid);
                 processSuccess(params, json, getFormattedJson(detail));
+            } else if (endpoint == EatonCloudRetrievalUrl.ACCOUNT_DETAIL) {
+                EatonCloudServiceAccountDetailV1 detail = eatonCloudCommunicationServiceV1.getServiceAccountDetail();
+                processSuccess(params, json, getFormattedJson(detail));
+            } else if (endpoint == EatonCloudRetrievalUrl.ROTATE_ACCOUNT_SECRET) {
+                EatonCloudSecretValueV1 value = eatonCloudCommunicationServiceV1.rotateAccountSecret(1);
+                processSuccess(params, json, getFormattedJson(value));
             }
         } catch (EatonCloudCommunicationExceptionV1 e) {
             processError(json, e);
@@ -177,6 +188,8 @@ public class EatonCloudSimulatorController {
             log.error("Error", e);
             json.put("alertError", e.getMessage());
         } 
+       // eatonCloudSecretRotationServiceV1.rotateSecret(1);
+        eatonCloudSecretRotationServiceV1.getSecretExpiryTime();
         return json;
     }
 

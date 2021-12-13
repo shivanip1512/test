@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.dr.eatonCloud.model.EatonCloudVersion;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorDeviceCreateRequest;
 
 public abstract class EatonCloudDataGenerator {
@@ -14,7 +14,7 @@ public abstract class EatonCloudDataGenerator {
     protected int status = HttpStatus.OK.value();
     protected int successPercentage = 100;
     protected EatonCloudSimulatorDeviceCreateRequest createRequest;
-    protected NextValueHelper nextValueHelper;
+
     protected Map<PaoType, HardwareType> paoTypeToHardware = Map.of(PaoType.LCR6600C, HardwareType.LCR_6600C, PaoType.LCR6200C,
             HardwareType.LCR_6200C);
  
@@ -26,11 +26,9 @@ public abstract class EatonCloudDataGenerator {
         this.createRequest = request;
     }
 
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-
     public void setSuccessPercentage(int successPercentage) {
         this.successPercentage = successPercentage;
     }
+    
+    public abstract EatonCloudDataGenerator getDataGenerator(EatonCloudVersion version);
 }

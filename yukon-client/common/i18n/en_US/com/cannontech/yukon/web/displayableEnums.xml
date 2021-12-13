@@ -464,8 +464,10 @@
     <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES.description">The interval, in minutes of how often Yukon will try to read Eaton Cloud Cellular LCRs</entry>
     <entry key="yukon.common.setting.EATON_CLOUD_SERVICE_ACCOUNT_ID">Brightlayer Utilities Suite Demand Response System Service Account Id</entry>
     <entry key="yukon.common.setting.EATON_CLOUD_SERVICE_ACCOUNT_ID.description">Service Account Id used to access Brightlayer Utilities Suite Demand Response functionality</entry>
-    <entry key="yukon.common.setting.EATON_CLOUD_SECRET">Brightlayer Utilities Suite Demand Response System Secret</entry>
-    <entry key="yukon.common.setting.EATON_CLOUD_SECRET.description">Secret used to access Brightlayer Utilities Suite Demand Response functionality</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET">Brightlayer Utilities Suite Demand Response System Secret 1</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET.description">Secret 1 used to access Brightlayer Utilities Suite Demand Response functionality</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET2">Brightlayer Utilities Suite Demand Response System Secret 2</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET2.description">Secret 2 used to access Brightlayer Utilities Suite Demand Response functionality</entry>
     <entry key="yukon.common.setting.EATON_CLOUD_URL">Brightlayer Utilities Suite Demand Response URL</entry>
     <entry key="yukon.common.setting.EATON_CLOUD_URL.description">API URL for Brightlayer Utilities Suite Demand Response functionality</entry>
     

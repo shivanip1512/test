@@ -67,7 +67,7 @@ public class EatonCloudSimulatorApiControllerV1 {
         try {
             EatonCloudSimulatorResponse response = simulatorsCommunicationService
                     .sendRequest(new EatonCloudSimulatorRequest(EatonCloudRetrievalUrl.SECURITY_TOKEN, "token",
-                            new Class[] {}, new Object[] {}), EatonCloudSimulatorResponse.class);
+                            new Class[] {}, new Object[] {eatonCloudCredentialsV1}), EatonCloudSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
             log.error("Error", e);
@@ -127,6 +127,34 @@ public class EatonCloudSimulatorApiControllerV1 {
                     .sendRequest(new EatonCloudSimulatorRequest(EatonCloudRetrievalUrl.DEVICE_DETAIL, "detailsV1",
                             new Class[] { String.class, Boolean.class},
                             new Object[] { deviceId, recursive }), EatonCloudSimulatorResponse.class);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
+        } catch (ExecutionException e) {
+            log.error("Error", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @GetMapping("/v1/security/serviceaccount/{serviceAccountId}")
+    public ResponseEntity<Object> serviceAccountV1(@PathVariable String serviceAccountId) {
+        try {
+            EatonCloudSimulatorResponse response = simulatorsCommunicationService
+                    .sendRequest(new EatonCloudSimulatorRequest(EatonCloudRetrievalUrl.ACCOUNT_DETAIL, "serviceAccountV1",
+                            new Class[] { String.class },
+                            new Object[] { serviceAccountId }), EatonCloudSimulatorResponse.class);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
+        } catch (ExecutionException e) {
+            log.error("Error", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @GetMapping("/v1/security/serviceaccount/{serviceAccountId}/secret/{secretName}/rotate")
+    public ResponseEntity<Object> rotateV1(@PathVariable String serviceAccountId, @PathVariable String secretName) {
+        try {
+            EatonCloudSimulatorResponse response = simulatorsCommunicationService
+                    .sendRequest(new EatonCloudSimulatorRequest(EatonCloudRetrievalUrl.ROTATE_ACCOUNT_SECRET, "rotateV1",
+                            new Class[] { String.class, String.class},
+                            new Object[] { serviceAccountId, secretName }), EatonCloudSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
             log.error("Error", e);
