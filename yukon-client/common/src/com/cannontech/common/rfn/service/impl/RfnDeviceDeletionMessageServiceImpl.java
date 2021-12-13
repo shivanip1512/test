@@ -9,12 +9,12 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.model.RfnDeviceDeleteConfirmationReply;
 import com.cannontech.common.rfn.model.RfnDeviceDeleteInitialReply;
 import com.cannontech.common.rfn.model.RfnDeviceDeleteRequest;
 import com.cannontech.common.rfn.service.RfnDeviceDeletionMessageService;
-import com.cannontech.common.util.jms.JmsReplyReplyHandler;
-import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
+import com.cannontech.common.util.jms.JmsReplyHandler;
+import com.cannontech.common.util.jms.RequestReplyTemplate;
+import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -28,7 +28,7 @@ public class RfnDeviceDeletionMessageServiceImpl implements RfnDeviceDeletionMes
     private final static Logger log = YukonLogManager.getLogger(RfnDeviceDeletionMessageServiceImpl.class);
 
     private YukonJmsTemplate rfnDeviceDeletionJmsTemplate;
-    private RequestReplyReplyTemplate<RfnDeviceDeleteInitialReply, RfnDeviceDeleteConfirmationReply> rfnDeviceDeletionTemplate;
+    private RequestReplyTemplate<RfnDeviceDeleteInitialReply> rfnDeviceDeletionTemplate;
 
     @Override
     public void sendRfnDeviceDeletionRequest(Integer paoId) {
@@ -42,7 +42,7 @@ public class RfnDeviceDeletionMessageServiceImpl implements RfnDeviceDeletionMes
         RfnDeviceDeleteRequest request = new RfnDeviceDeleteRequest();
         request.setRfnIdentifier(rfnDevice.getRfnIdentifier());
 
-        JmsReplyReplyHandler<RfnDeviceDeleteInitialReply, RfnDeviceDeleteConfirmationReply> handler = new JmsReplyReplyHandler<RfnDeviceDeleteInitialReply, RfnDeviceDeleteConfirmationReply>() {
+        JmsReplyHandler<RfnDeviceDeleteInitialReply> handler = new JmsReplyHandler<RfnDeviceDeleteInitialReply>() {
 
             @Override
             public void handleException(Exception e) {
@@ -54,39 +54,21 @@ public class RfnDeviceDeletionMessageServiceImpl implements RfnDeviceDeletionMes
             }
 
             @Override
-            public void handleTimeout1() {
+            public void handleTimeout() {
                 log.info("{} - device deletion request timed out receiving initial response.", request.getRfnIdentifier());
+
             }
 
             @Override
-            public boolean handleReply1(RfnDeviceDeleteInitialReply t) {
+            public void handleReply(RfnDeviceDeleteInitialReply t) {
                 log.info("{} received reply - {} from NM", request.getRfnIdentifier(), t.getReplyType());
-                if (!t.isSuccess()) {
-                    // Request unsuccessful, device not present
-                    return false;
-                }
-                // Device is present in the NM Db
-                return true;
+
             }
 
             @Override
-            public Class<RfnDeviceDeleteInitialReply> getExpectedType1() {
+            public Class<RfnDeviceDeleteInitialReply> getExpectedType() {
                 return RfnDeviceDeleteInitialReply.class;
-            }
 
-            @Override
-            public void handleTimeout2() {
-                log.info("{} - device deletion request timed out.", request.getRfnIdentifier());
-            }
-
-            @Override
-            public void handleReply2(RfnDeviceDeleteConfirmationReply t) {
-                log.info("{} - received reply ({}) from NM ", request.getRfnIdentifier(), t.getReplyType());
-            }
-
-            @Override
-            public Class<RfnDeviceDeleteConfirmationReply> getExpectedType2() {
-                return RfnDeviceDeleteConfirmationReply.class;
             }
         };
 
@@ -96,7 +78,7 @@ public class RfnDeviceDeletionMessageServiceImpl implements RfnDeviceDeletionMes
     @PostConstruct
     public void initialize() {
         rfnDeviceDeletionJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_DEVICE_DELETE);
-        rfnDeviceDeletionTemplate = new RequestReplyReplyTemplate<>("RFN_DEVICEDELETION_REQUEST", configurationSource,
+        rfnDeviceDeletionTemplate = new RequestReplyTemplateImpl<>("RFN_DEVICEDELETION_REQUEST", configurationSource,
                 rfnDeviceDeletionJmsTemplate);
     }
 }

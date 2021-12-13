@@ -243,6 +243,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.lcrReadArchiveRequest.pageName">LCR Read Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.deviceArchive.pageName">Device Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewLcrDataSimulator.pageName">LCR Data Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeleteSimulator.pageName">RFN Device Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.pageName">RFN Meter Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.pageName">Data Streaming Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.pageName">Mapping Simulator</entry>
@@ -272,6 +273,11 @@
     <entry key="yukon.web.modules.dev.rfnTest.dataType.OLD_DNP3_ADDRESS">Old DNP3 Address</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.NEW_DNP3_ADDRESS">New DNP3 Address</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.title">LCR Data Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.title">RFN Device Delete Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStartFailed">Simulator failed to start</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStartSuccess">Simulator started</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStopFailed">Simulator failed to stop</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStopSuccess">Simulator stopped</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.title">RFN Meter Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.data.title">RFN Meter Data Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.data.duplicates">Duplicates</entry>

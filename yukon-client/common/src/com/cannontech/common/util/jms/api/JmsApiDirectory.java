@@ -1399,6 +1399,7 @@ public final class JmsApiDirectory {
             .responseMessage(RfnDeviceDeleteConfirmationReply.class)
             .sender(YUKON_WEBSERVER)
             .receiver(NETWORK_MANAGER)
+            .receiver(YUKON_SERVICE_MANAGER)
             .sender(YUKON_SIMULATORS)
             .build();
 
