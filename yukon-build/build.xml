@@ -27,17 +27,6 @@
         <echo message=" jsdoctoolkit    - generates documentation from commented JavaScript source code" />
    </target>
 
-    <target name="svn-info-build">
-        <mkdir dir="${log.dir}"/>
-        <exec failonerror="false"
-              dir="${basedir}"
-              output="${basedir}/yukon-client/common/src/com/cannontech/build-info.xml"
-              resultproperty="errorcode"
-              executable="svn.exe" >
-            <arg value="info"/>
-            <arg value="--xml"/>
-        </exec>
-    </target>
 
     <target name="init">
         <property file="yukon-build/build_version.properties" />
@@ -55,8 +44,8 @@
     </target>
 
     <!-- build-release is now the only way to store symbols -->
-    <target name="build" depends="init,clean,svn-info-build,buildTarget,build-dist-pdb" />
-    <target name="build-release" depends="init,clean,svn-info-build,buildTarget,symstore,build-dist" />
+    <target name="build" depends="init,clean,buildTarget,build-dist-server" />
+    <target name="build-release" depends="init,clean,buildTarget,symstore,build-dist" />
 
     <target name="buildTarget" depends="build-client,build-server,build-install" />
     
@@ -68,7 +57,11 @@
         </ant>
     </target>
     
-    <target name="build-client" depends="init,clean,svn-info-build">
+    <target name="build-client">
+        <antcall target="compile-java" />
+    </target>
+
+    <target name="compile-java" depends="init,clean">
         <echo message="building module yukon-client" />
         <mkdir dir="${log.dir}" />
         
@@ -83,7 +76,6 @@
         <ant dir="${basedir}/yukon-client/build"
              target="help"
              inheritAll="true"/>
-        <antcall target="runUnitTests" />
     </target>
     
     <target name="build-server" depends="init,clean">
@@ -176,7 +168,7 @@
         <copy file="${basedir}/yukon-client/common/src/com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml" 
             tofile="${yukon.exampleXml}/rfnPointMapping_Example.xml"/>
 
-        <signjar alias="cannon6" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
+        <!--<signjar alias="cannon6" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
             <fileset dir="${client.bin}">
                 <include name="*.jar"/>
                 <exclude name="activation.jar"/>
@@ -184,7 +176,7 @@
                 <exclude name="azure-servicebus-0.9.7.jar"/>
                 <exclude name="sqljdbc42.jar"/>
             </fileset>
-        </signjar>
+        </signjar>-->
 
         <!-- Yukon Base Component (Server) -->      
         <property name="server.dir" value="${install.bag}/Yukon Base/Server"/>
@@ -251,9 +243,11 @@
             <fileset dir="${install.bag}/Yukon Base/Client/bin" includes="*.exe,*.conf,*.dll"/>
         </copy>
         
-        <exec executable="svnversion" dir='${basedir}/yukon-build' outputproperty="svnversion" />
-        <echo message="SVN Version: ${svnversion}"/>
-        <echo message="SVN Version: ${svnversion}" file="${install.bag}/svnversion.txt"/>
+        <exec executable="git" dir='${basedir}/yukon-build' outputproperty="gitcommit">
+            <arg line="rev-parse --short HEAD"/>
+        </exec>
+        <echo message="GIT Commit Revision: ${gitcommit}"/>
+        <echo message="GIT Commit Revision: ${gitcommit}" file="${install.bag}/gitcommitrevision.txt"/>
 
         <!-- Location of the stand-alone build module -->
         <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012SpringSP1 SAB\System\IsCmdBld.exe" />
@@ -358,11 +352,11 @@
         <delete dir="${temp.dir}" />
     </target>
 
-    <target name="build-dist-pdb" depends="build-dist">
+    <target name="build-dist-server" depends="build-dist">
         <mkdir dir="${temp.dir}" />
 
-        <zip destfile="${temp.dir}/YukonInstall/yukon-pdb.zip" update="true">
-          <fileset dir="${basedir}/yukon-server/pdb" />
+        <zip destfile="${temp.dir}/YukonInstall/yukon-server.zip" update="true">
+          <fileset dir="${basedir}/yukon-server" />
         </zip>
         <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}.zip" update="true">
             <fileset dir="${temp.dir}" />
