@@ -46,13 +46,14 @@ public class YukonMetricListener implements MessageListener {
                 YukonMetric yukonMetric = gson.fromJson(textMessage, YukonMetric.class);
                 log.info("Received Yukon Metric data: {}", JsonUtils.toJson(yukonMetric));
                 if (shouldGeneratePointData(yukonMetric.getPointInfo())) {
-                    PointIdentifier pointIdentifier = new PointIdentifier(yukonMetric.getPointInfo().getType(),
-                            yukonMetric.getPointInfo().getOffset());
+                    YukonMetricPointDataType pointDataype = YukonMetricPointDataType.valueOf(yukonMetric.getPointInfo().name());
+                    PointIdentifier pointIdentifier = new PointIdentifier(pointDataype.getType(), pointDataype.getOffset());
                     PaoPointIdentifier paoPointIdentifier = new PaoPointIdentifier(PaoUtils.SYSTEM_PAOIDENTIFIER,
                             pointIdentifier);
-                    //Commented these lines as DB changes are not yet committed to master. 
-                    //LitePoint litePoint = pointDao.getLitePoint(paoPointIdentifier);
-                    //pointAccessDao.setPointValue(litePoint, yukonMetric.getTimestamp().toInstant(), Double.valueOf(yukonMetric.getValue().toString()));
+                    // Commented these lines as DB changes are not yet committed to master.
+                    // LitePoint litePoint = pointDao.getLitePoint(paoPointIdentifier);
+                    // pointAccessDao.setPointValue(litePoint, yukonMetric.getTimestamp().toInstant(),
+                    // Double.valueOf(yukonMetric.getValue().toString()));
                 }
             } catch (Exception e) {
                 log.error("Error occurred while generating point data.", e);
