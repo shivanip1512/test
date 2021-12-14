@@ -132,8 +132,9 @@
     <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
     <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">
-            <param name="halt" value="yes" />
-            <param name="testDir" value="test/build" />
+            <param name="halt" value="no" />
+            <param name="srcdir" value="test"/>
+            <param name="destdir" value="test/build" />
         </antcall>
     </target>
 
@@ -166,38 +167,39 @@
     </target>
     
     <!-- Run tests. This target must be supplied a halt and testDir property -->
-    <target name="executeTests" depends="compileUnitTests">
+    <target name="executeTests">
 
-        <property name="test.results.dir" value="test/testResults"/>
-        <!-- Clear out any old results -->
-        <delete dir="${test.results.dir}" />
-        <mkdir dir="${test.results.dir}" />
+       <property name="test.results.dir" value="test/testResults"/>
+       <!-- Clear out any old results -->
+       <delete dir="${test.results.dir}" />
+       <mkdir dir="${test.results.dir}" />
 
-        <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-        <junit printsummary="yes" haltonerror="${halt}" haltonfailure="${halt}">
-            <classpath id="junit.class.path">
-                <dirset dir="test" />
-                <fileset dir="${yukon.lib}">
-                    <include name="**/*.jar" />
-                    <exclude name="**/WebContent/**" />
-                </fileset>
-            </classpath>
-            <formatter type="xml" />
-            <batchtest fork="yes" todir="${test.results.dir}">
-                <fileset dir="${testDir}">
-                    <include name="**/*Test.class" />
-                </fileset>
-            </batchtest>
-        </junit>
+       <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
+       <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
+           <classpath id="junit.class.path">
+               <pathelement location="${srcdir}"/>
+               <pathelement location="${destdir}"/>
+               <fileset dir="${yukon.lib}">
+                   <include name="**/*.jar" />
+                   <exclude name="**/WebContent/**" />
+               </fileset>
+           </classpath>
+           <formatter type="xml" />
+           <batchtest fork="yes" todir="${test.results.dir}">
+               <fileset dir="${destdir}">
+                   <include name="**/*Test.class" />
+               </fileset>
+           </batchtest>
+       </junit>
 
-        <!-- Create the html reports for test results -->
-        <property name="test.results.dir" value="test/unitTestResults" />
-        <junitreport todir="${test.results.dir}">
-            <fileset dir="${test.results.dir}">
-                <include name="TEST-*.xml" />
-            </fileset>
-            <report todir="${test.results.dir}" />
-        </junitreport>
-    </target>
+       <!-- Create the html reports for test results -->
+       <property name="test.results.dir" value="test/unitTestResults" />
+       <junitreport todir="${test.results.dir}">
+           <fileset dir="${test.results.dir}">
+               <include name="TEST-*.xml" />
+           </fileset>
+           <report todir="${test.results.dir}" />
+       </junitreport>
+   </target>
     
 </project>
