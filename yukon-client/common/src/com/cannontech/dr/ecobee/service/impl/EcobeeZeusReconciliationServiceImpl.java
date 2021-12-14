@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -16,10 +15,13 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.EcobeeEventLogService;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.dao.EcobeeGroupDeviceMappingDao;
 import com.cannontech.dr.ecobee.dao.EcobeeZeusGroupDao;
@@ -39,6 +41,7 @@ import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMissingDeviceDiscrep
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMissingGroupDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -54,7 +57,8 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private EcobeeZeusGroupDao ecobeeZeusGroupDao;
-
+    @Autowired private LoadGroupDao loadGroupDao;
+  
     // Fix issues in this order to avoid e.g. deleting an extraneous group containing a mislocated group.
     // (This should not be rearranged without some thought)
     private static final ImmutableList<EcobeeZeusDiscrepancyType> errorTypes = ImmutableList.of(
@@ -65,7 +69,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
             EcobeeZeusDiscrepancyType.EXTRANEOUS_DEVICE);
 
     @Override
-    public int runReconciliationReport() throws EcobeeCommunicationException {
+    public int runReconciliationReport() throws EcobeeCommunicationException, RestClientException, EcobeeAuthenticationException {
         // get structure from ecobee
         List<EcobeeZeusGroupDeviceMapping> ecobeeGroupDeviceMapping = getZeusGroupDeviceMapping();
 
@@ -89,7 +93,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
 
     @Override
     public EcobeeZeusReconciliationResult fixDiscrepancy(int reportId, int errorId, LiteYukonUser liteYukonUser)
-            throws IllegalArgumentException {
+            throws IllegalArgumentException, RestClientException, EcobeeAuthenticationException {
         log.debug("Fixing ecobee discrepancy. ReportId: " + reportId + " ErrorId: " + errorId);
 
         // get discrepancy
@@ -151,7 +155,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
 
     @Override
     public List<EcobeeZeusReconciliationResult> fixAllDiscrepancies(int reportId, LiteYukonUser liteYukonUser)
-            throws IllegalArgumentException {
+            throws IllegalArgumentException, RestClientException, EcobeeAuthenticationException {
         int successCount = 0;
         int unsupportedCount = 0;
         log.debug("Fixing all ecobee discrepancies. ReportId: " + reportId);
@@ -189,7 +193,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
         return results;
     }
 
-    private EcobeeZeusReconciliationResult fixDiscrepancy(EcobeeZeusDiscrepancy error) {
+    private EcobeeZeusReconciliationResult fixDiscrepancy(EcobeeZeusDiscrepancy error) throws RestClientException, EcobeeAuthenticationException {
         try {
             switch (error.getErrorType()) {
             // Group in ecobee, doesn't correspond to a Yukon group
@@ -212,9 +216,22 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
                 return EcobeeZeusReconciliationResult.newSuccess(error);
 
             // Device in Yukon, not in ecobee
+            // Fixable error
             case MISSING_DEVICE:
-                // Cant fix this at Ecobee Zeus, as this require creation of thermostat at Zeus. Which is not supported
-                return EcobeeZeusReconciliationResult.newFailure(error, NOT_FIXABLE);
+                // Creating thermostat in ecobee with NOT_YET_CONNECTED state
+                if (error.getCorrectPath().equals(communicationService.retrieveThermostatGroupID())) {
+                    communicationService.createDevice(error.getSerialNumber());
+                } else {
+                    if (StringUtils.isNotBlank(error.getCorrectPath())) {
+                        List<Integer> programIds = loadGroupDao.getProgramIdsByGroupId(Integer.valueOf(error.getCorrectPath()));
+                        int invId = lmHardwareBaseDao.getBySerialNumber(error.getSerialNumber()).getInventoryId();
+                        programIds.stream().forEach(programId -> {
+                            communicationService.enroll(Integer.valueOf(error.getCorrectPath()), error.getSerialNumber(), invId,
+                                    programId, true);
+                        });
+                    }
+                }
+                return EcobeeZeusReconciliationResult.newSuccess(error);
 
             // Yukon group has no corresponding ecobee group
             case MISSING_GROUP:
@@ -256,16 +273,18 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
 
     /**
      * Compares the Yukon groups and devices to the ecobee groups and devices and builds a report of discrepancies.
+     * @throws EcobeeAuthenticationException 
+     * @throws RestClientException 
      */
     private EcobeeZeusReconciliationReport generateReport(Multimap<Integer, String> yukonGroupToDevicesMap,
-            List<String> allYukonSerialNumbers, List<EcobeeZeusGroupDeviceMapping> ecobeeGroupDeviceMapping) {
+            List<String> allYukonSerialNumbers, List<EcobeeZeusGroupDeviceMapping> ecobeeGroupDeviceMapping) throws RestClientException, EcobeeAuthenticationException {
 
         List<EcobeeZeusDiscrepancy> errorsList = new ArrayList<>();
 
         List<String> ecobeeGroupIdsInYukon = ecobeeZeusGroupDao.getGroupMapping(yukonGroupToDevicesMap.keySet());
         Multimap<String, String> ecobeeSerialNumberToGroupMapping = ArrayListMultimap.create();
-        
-        ecobeeGroupDeviceMapping.forEach(mapping -> {
+
+        ecobeeGroupDeviceMapping.stream().filter(o -> StringUtils.isNotEmpty(o.getParentGroupId())).forEach(mapping -> {
             List<String> thermostatsSerialNumber = mapping.getThermostatsSerialNumber();
             String zeusGroupId = mapping.getGroupId();
             thermostatsSerialNumber.forEach(serialNumber -> {
@@ -274,7 +293,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
         });
 
         checkForMissingAndExtraneousGroup(ecobeeGroupDeviceMapping, ecobeeGroupIdsInYukon, errorsList);
-        checkForMissingAndExtraneousDevices(allYukonSerialNumbers, ecobeeSerialNumberToGroupMapping.keySet(), errorsList);
+        checkForMissingAndExtraneousDevices(allYukonSerialNumbers, ecobeeSerialNumberToGroupMapping, errorsList, yukonGroupToDevicesMap);
         checkForMisLocatedDevices(ecobeeGroupDeviceMapping, errorsList);
         // Build the actual report
         EcobeeZeusReconciliationReport report = new EcobeeZeusReconciliationReport(errorsList);
@@ -331,22 +350,67 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
 
     /**
      * Checks for mismatch in devices at ecobee and yukon side.
+     * @param yukonGroupToDevicesMap 
+     * @throws EcobeeAuthenticationException 
+     * @throws RestClientException 
      */
     private void checkForMissingAndExtraneousDevices(List<String> yukonSerialNumbers,
-            Set<String> ecobeeSerialNumbers,
-            List<EcobeeZeusDiscrepancy> errorsList) {
+            Multimap<String, String> ecobeeSerialNumberToGroupMapping,
+            List<EcobeeZeusDiscrepancy> errorsList, Multimap<Integer, String> yukonGroupToDevicesMap) throws RestClientException, EcobeeAuthenticationException {
 
-        for (String ecobeeSerialNumber : ecobeeSerialNumbers) {
+        for (String ecobeeSerialNumber : ecobeeSerialNumberToGroupMapping.keySet()) {
             if (!yukonSerialNumbers.contains(ecobeeSerialNumber)) {
                 // Device is in ecobee but not in Yukon
                 errorsList.add(new EcobeeZeusExtraneousDeviceDiscrepancy(ecobeeSerialNumber, StringUtils.EMPTY));
             }
         }
+        
+        // Device is in Yukon but not in Ecobee
+        for (Integer groupId : yukonGroupToDevicesMap.keySet()) {
+            List<String> serialNoForDevicesInYukon = new ArrayList<String>(yukonGroupToDevicesMap.get(groupId));
+            for (String serialNumber : serialNoForDevicesInYukon) {
+                // getting ecobee groups for device
+                List<String> ecobeeGrps = new ArrayList<String>(ecobeeSerialNumberToGroupMapping.get(serialNumber));
+                // if ecobee groups are found for this device
+                if (CollectionUtils.isNotEmpty(ecobeeGrps)) {
+                    List<Integer> progmIds = loadGroupDao.getProgramIdsByGroupId(groupId);
+                    Integer invId = lmHardwareBaseDao.getBySerialNumber(serialNumber).getInventoryId();
 
-        for (String yukonSerialNumber : yukonSerialNumbers) {
-            if (!ecobeeSerialNumbers.contains(yukonSerialNumber)) {
-                // Device is in Yukon and not in ecobee.
-                errorsList.add(new EcobeeZeusMissingDeviceDiscrepancy(yukonSerialNumber, StringUtils.EMPTY));
+                    progmIds.stream().forEach(progmId -> {
+                        String ecobeeGroupInYukon = new String();
+                        try {
+                            // getting ecobee group mapped with yukon group and thermostat
+                            ecobeeGroupInYukon = ecobeeZeusGroupDao.getZeusGroupId(groupId, invId,
+                                    progmId);
+
+                        } catch (NotFoundException e) {
+                        }
+                        // ecobeeGroupInYukon cannot be blank and should be present in Ecobee Groups.
+                        // If not present in Ecobee Groups, then this is a missing device
+                        if (StringUtils.isBlank(ecobeeGroupInYukon) || !ecobeeGrps.contains(ecobeeGroupInYukon)) {
+                            // using yukon group as correct path since Yukon will decide which ecobee groups to add to
+                            // while
+                            // fixing this discrepancy
+                            errorsList.add(new EcobeeZeusMissingDeviceDiscrepancy(serialNumber,
+                                    String.valueOf(groupId)));
+                        }
+                    });
+                }
+                // if no ecobee groups found for this device
+                else {
+                    // if the device is not in Enrolled state in root group
+                    if (!communicationService.isDeviceEnrolled(serialNumber)) {
+                        // using root group as correct path since Yukon will add this device to Root group in NOT_YET_CONNECTED
+                        // state
+                        errorsList.add(new EcobeeZeusMissingDeviceDiscrepancy(serialNumber,
+                                communicationService.retrieveThermostatGroupID()));
+                    } else {
+                        // if device is in Enrolled state in root group but not in any ecobee groups, using Yukon group as correct
+                        // path since Yukon will decide correct ecobee group to add.
+                        errorsList.add(new EcobeeZeusMissingDeviceDiscrepancy(serialNumber,
+                                String.valueOf(groupId)));
+                    }
+                }
             }
         }
     }

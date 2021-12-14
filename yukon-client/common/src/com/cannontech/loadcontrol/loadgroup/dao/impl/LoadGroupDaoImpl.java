@@ -201,6 +201,17 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         return jdbcTemplate.queryForInt(sql);
     }
     
+    @Override
+    public List<Integer> getProgramIdsByGroupId(int lmGroupId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM LmProgramDirectGroup");
+        sql.append("WHERE LmGroupDeviceId").eq(lmGroupId);
+        
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+    }
+    
     private final YukonRowMapper<LoadGroup> loadGroupRowMapper = new YukonRowMapper<>() {
         @Override
         public LoadGroup mapRow(YukonResultSet rs) throws SQLException {
