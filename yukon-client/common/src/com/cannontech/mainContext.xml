@@ -427,6 +427,7 @@
     
     <bean class="com.cannontech.simulators.startup.service.impl.SimulatorStartupSettingsServiceImpl"/>
     <bean class="com.cannontech.simulators.dao.impl.YukonSimulatorSettingsDaoImpl"/>
+    <bean class="com.cannontech.common.rfn.simulation.service.impl.RfnDeviceDeletionSimulatorServiceImpl"/>
     <bean class="com.cannontech.common.rfn.simulation.service.impl.RfnGatewaySimulatorServiceImpl"/>
     <bean class="com.cannontech.common.rfn.simulation.service.impl.DataStreamingSimulatorServiceImpl"/>
     <bean class="com.cannontech.common.rfn.simulation.service.impl.NmNetworkSimulatorServiceImpl"/>

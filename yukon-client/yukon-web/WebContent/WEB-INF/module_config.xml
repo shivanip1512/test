@@ -1807,6 +1807,7 @@
               <page name="rfnTest.pointMappingDecipher" type="BASIC"/>
               <page name="rfnTest.pointMappingIcd" type="BASIC"/>
               <page name="rfnTest.lcrReadArchiveRequest" type="BASIC"/>
+              <page name="rfnTest.rfnDeviceDeleteSimulator" type="BASIC"/>
               <page name="rfnTest.rfnMeterSimulator" type="BASIC"/>
               <page name="rfnTest.deviceArchive" type="BASIC"/>
               <page name="rfnTest.rfLocationArchiveRequest" type="BASIC"/>
