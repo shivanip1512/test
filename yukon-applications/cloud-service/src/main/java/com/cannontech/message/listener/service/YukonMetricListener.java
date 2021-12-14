@@ -13,20 +13,26 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.data.provider.DataProvider;
 import com.cannontech.message.model.SystemData;
+import com.cannontech.message.model.YukonMetric;
+import com.cannontech.message.model.YukonMetricIOTDataType;
+import com.cannontech.message.model.YukonMetricPointInfo;
 import com.cannontech.util.DateTimeDeserializer;
+import com.cannontech.util.SystemDataConverterHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
  * Listen for system data on queue, once received call method to update cache.
  */
+
+
 @Service
-public class SystemDataMessageListener {
-    Logger log = (Logger) LogManager.getLogger(SystemDataMessageListener.class);
+public class YukonMetricListener {
+    Logger log = (Logger) LogManager.getLogger(YukonMetricListener.class);
 
     @Autowired DataProvider dataProvider;
-
-    @JmsListener(destination = "com.eaton.eas.SystemData", containerFactory = "topicListenerFactory")
+   
+    @JmsListener(destination = "com.eaton.eas.yukon.metric", containerFactory = "topicListenerFactory")
     public void receiveMessage(Message message) {
         if (message instanceof TextMessage) {
             String json = null;
@@ -35,12 +41,25 @@ public class SystemDataMessageListener {
                 Gson gson = new GsonBuilder()
                         .registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
                         .create();
-                SystemData data = gson.fromJson(json, SystemData.class);
-                log.info("System data received " + data);
-                dataProvider.updateSystemInformation(data);
+                YukonMetric yukonMetric = gson.fromJson(json, YukonMetric.class);
+                
+                if (isIOTData(yukonMetric.getPointInfo())) {
+                    SystemData data = SystemDataConverterHelper.convert(yukonMetric);
+                    log.info("Yukon Metric data received " + yukonMetric);
+                    dataProvider.updateSystemInformation(data);
+                }                
             } catch (JMSException e) {
                 log.error("Error receiving system data " + e);
             }
+        }
+    }
+    
+    private boolean isIOTData(YukonMetricPointInfo pointInfo) {
+        try {
+            YukonMetricIOTDataType.valueOf(pointInfo.name());
+            return true;
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return false;
         }
     }
 }
