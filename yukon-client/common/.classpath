@@ -378,7 +378,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-slf4j-impl-2.9.1.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-slf4j-impl-2.16.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -495,17 +495,17 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-api-2.9.1.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-api-2.16.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-core-2.9.1.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-core-2.16.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/log4j-jcl-2.9.1.jar">
+	<classpathentry kind="lib" path="/third-party/log4j-jcl-2.16.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
