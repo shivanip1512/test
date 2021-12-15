@@ -5088,8 +5088,8 @@ Network Manager :
     maven URL : "n/a"
     md5 : 8c3730da4674197c7a050027021c46ad
     sha1 : 4e0d5f8706a4ba31defa6034130289eb03260f74
-    updated : 2021-12-14
-    jira : NM-2269
+    updated : 2021-12-15
+    jira : NM-2268
     notes : Apache Log4j API
 
   - filename : log4j-api-2.16.0.jar
@@ -5102,8 +5102,8 @@ Network Manager :
     maven URL : "n/a"
     md5 : c0338cbc28a4beec6b8ad3356b43e26f
     sha1 : f821a18687126c2e2f227038f540e7953ad2cc8c
-    updated : 2021-12-14
-    jira : NM-2269
+    updated : 2021-12-15
+    jira : NM-2268
     notes : Apache Log4j API
 
   - filename : log4j-appserver-2.16.0.jar
@@ -5116,8 +5116,8 @@ Network Manager :
     maven URL : "n/a"
     md5 : 9a7d237e5b217627ca9f908650b54c71
     sha1 : 16a36cb0588ce190020a65fed660d02934dcfde4
-    updated : 2021-12-14
-    jira : NM-2269
+    updated : 2021-12-15
+    jira : NM-2268
     notes : Provide Log4j as the logging implementation for application servers
 
   - filename : log4j-core-2.16.0.jar
@@ -5130,8 +5130,8 @@ Network Manager :
     maven URL : "n/a"
     md5 : cf0634270eafdbb083eb5951d7f2232d
     sha1 : 539a445388aee52108700f26d9644989e7916e7c
-    updated : 2021-12-14
-    jira : NM-2269
+    updated : 2021-12-15
+    jira : NM-2268
     notes : Apache Log4j Core
 
   - filename : log4j-jcl-2.16.0.jar
@@ -5144,8 +5144,8 @@ Network Manager :
     maven URL : "n/a"
     md5 : e4b132e27f11b9ffdd3600e6ac171773
     sha1 : ebbcfbd118f2d9c4841e67b7b4d2036612828600
-    updated : 2021-12-14
-    jira : NM-2269
+    updated : 2021-12-15
+    jira : NM-2268
     notes : Apache Commons Logging Bridge for Log4j
 
   - filename : log4j-slf4j-impl-2.16.0.jar
@@ -5158,8 +5158,8 @@ Network Manager :
     maven URL : "n/a"
     md5 : 92fbe1da470daedda665cde2ae5d790c
     sha1 : 3f42beef56a97d7db1be7ed6ff9965e1086beeec
-    updated : 2021-12-14
-    jira : NM-2269
+    updated : 2021-12-15
+    jira : NM-2268
     notes : The Apache Log4j SLF4J API binding to Log4j 2 Core
 
   - filename : looks.jar
