@@ -23,12 +23,12 @@ public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMet
     public List<LitePoint> getAllSystemPoints() {
         List<LitePoint> systemPoints = new ArrayList<LitePoint>();
         try {
-            //For System Points, Device Id is 0 and Point Type is System.
+            // For System Points, Device Id is 0 and Point Type is System.
             systemPoints = pointDao.getLitePointIdByDeviceId_PointType(0, PointType.System);
             systemPoints.stream().forEach(litePoint -> log.debug("Point Name {}, Point type {}, PAObject ID {} ",
                     litePoint.getPointName(), PointType.getForId(litePoint.getLiteType()), litePoint.getPaobjectID()));
         } catch (NotFoundException e) {
-            log.error("No System points found  in the database.");
+            log.error("No System points found in the database.");
         }
         return systemPoints;
     }
