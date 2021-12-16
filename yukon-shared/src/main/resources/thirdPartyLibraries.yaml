@@ -4909,10 +4909,10 @@ Network Manager :
     jira : NM-2267
     notes : Apache Log4j API
 
-  - filename : log4j-appserver-2.16.1.jar
+  - filename : log4j-appserver-2.16.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.1
+    version : 2.16.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
