@@ -15,21 +15,21 @@ import com.cannontech.system.dao.GlobalSettingDao;
 
 //Data retrieval URLs
 public enum EatonCloudRetrievalUrl {
-    SECURITY_TOKEN(EatonCloudVersion.V1, "/v1/security/serviceaccount/token",
+    SECURITY_TOKEN(EatonCloudVersion.V1, "Retrieve Token with secret1",
             "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=security&operation=post-getserviceaccounttoken",
             // 200,401
             List.of(HttpStatus.OK, HttpStatus.UNAUTHORIZED),
             ImmutableMap.of(),
             false,
-            false,
+            true,
             true),
-    SECURITY_TOKEN2(EatonCloudVersion.V1, "Using secret2",
+    SECURITY_TOKEN2(EatonCloudVersion.V1, "Retrieve Token with secret2",
             "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=security&operation=post-getserviceaccounttoken",
             // 200,401
             List.of(HttpStatus.OK, HttpStatus.UNAUTHORIZED),
             ImmutableMap.of(),
             false,
-            false,
+            true,
             false),
     DEVICES_BY_SITE(EatonCloudVersion.V1, "/v1/sites/{id}/devices",
             "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=devices&operation=get-getsitedevices",
@@ -86,7 +86,7 @@ public enum EatonCloudRetrievalUrl {
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
             ImmutableMap.of("Service Account Guid", "821d549c-c1b7-469e-bbf5-9d9d401883b2", "Secret Name", "secret1"),
             false, 
-            false,
+            true,
             false);
     private EatonCloudVersion version;
     private String suffix;

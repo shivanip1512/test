@@ -144,36 +144,43 @@
         </tags:nameValueContainer>
     </form:form>
     
-    
-    <div class="notes">
-        <br/>Reads all Eaton Cloud LCRs
-     </div>
+  
     <br/>
-    <cti:url var="autoReadUrl" value="deviceAutoRead"/>
-    <form:form id="autoReadForm" action="${autoReadUrl}" method="post">
-        <tags:nameValueContainer>
-            <tags:nameValue name="Read LCRs" nameColumnWidth="250px">
-                <cti:button label="Submit" type="submit" classes="fn vam"/>
-                <form:form id="autoReadForm" action="${autoReadUrl}" method="post"/>
-                <cti:csrfToken/>
-            </tags:nameValue>
-        </tags:nameValueContainer>
-    </form:form>
-    
-        <div class="notes">
-        <br/>Force Runtime Calculation
-     </div>
-    <br/>
-    <cti:url var="forceRuntimeCalcUrl" value="forceRuntimeCalc"/>
-    <form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}" method="post">
-        <tags:nameValueContainer>
-            <tags:nameValue name="" nameColumnWidth="250px">
-                <cti:button label="Submit" type="submit" classes="fn vam"/>
-                <form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}" method="post"/>
-                <cti:csrfToken/>
-            </tags:nameValue>
-        </tags:nameValueContainer>
-    </form:form>
-    
-    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.eatonCloudSimulator.js" />
+	<cti:url var="rotateSecretsUrl" value="rotateSecrets" />
+	<form:form id="rotateSecretsForm" action="${rotateSecretsUrl}"
+		method="post">
+		<tags:nameValueContainer>
+			<cti:button label="Start Automatic Secret Rotation" type="submit" />
+			<form:form id="rotateSecretsForm" action="${rotateSecretsUrl}"
+				method="post" />
+			<cti:csrfToken />
+		</tags:nameValueContainer>
+	</form:form>
+	<div class="notes">
+		<br />
+		<cti:url var="autoReadUrl" value="deviceAutoRead" />
+		<form:form id="autoReadForm" action="${autoReadUrl}" method="post">
+			<tags:nameValueContainer>
+				<cti:button label="Reads all Eaton Cloud LCRs" type="submit" />
+				<form:form id="autoReadForm" action="${autoReadUrl}" method="post" />
+				<cti:csrfToken />
+			</tags:nameValueContainer>
+		</form:form>
+
+		<br />
+		<cti:url var="forceRuntimeCalcUrl" value="forceRuntimeCalc" />
+		<form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}"
+			method="post">
+			<tags:nameValueContainer>
+
+				<cti:button label="Force Runtime Calculation" type="submit" />
+				<form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}"
+					method="post" />
+				<cti:csrfToken />
+
+			</tags:nameValueContainer>
+		</form:form>
+
+		<cti:includeScript
+			link="/resources/js/pages/yukon.dev.simulators.eatonCloudSimulator.js" />
 </cti:standardPage>

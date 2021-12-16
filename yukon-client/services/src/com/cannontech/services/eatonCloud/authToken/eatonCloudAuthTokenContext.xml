@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
 
-    <bean id="eatonCloudAuthTokenListener" class="com.cannontech.services.eatonCloud.authToken.service.EatonCloudAuthTokenServiceV1" />
+    <bean id="eatonCloudAuthTokenListener" class="com.cannontech.services.eatonCloud.authToken.service.impl.EatonCloudAuthTokenServiceImplV1" />
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="destinationName" value="com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenRequestV1"/>
         <property name="pubSubDomain" value="false"/>

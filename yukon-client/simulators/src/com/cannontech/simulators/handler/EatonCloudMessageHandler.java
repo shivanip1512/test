@@ -81,8 +81,13 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
 
             } else if (simulatorRequest instanceof EatonCloudSimulatorSettingsUpdateRequest) {
                 EatonCloudSimulatorSettingsUpdateRequest request = (EatonCloudSimulatorSettingsUpdateRequest) simulatorRequest;
-                statuses = request.getStatuses();
-                successPercentages = request.getSuccessPercentages();
+                if (request.isResetSecretsExpireTime()) {
+                    EatonCloudDataGenerator generator = getGenerator(request.getVersion());
+                    generator.expireSecrets();
+                } else {
+                    statuses = request.getStatuses();
+                    successPercentages = request.getSuccessPercentages();
+                }
                 return new SimulatorResponseBase(true);
             } else if (simulatorRequest instanceof EatonCloudSimulatorDeviceCreateRequest) {
                 EatonCloudSimulatorDeviceCreateRequest request = (EatonCloudSimulatorDeviceCreateRequest) simulatorRequest;

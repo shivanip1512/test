@@ -31,4 +31,6 @@ public abstract class EatonCloudDataGenerator {
     }
     
     public abstract EatonCloudDataGenerator getDataGenerator(EatonCloudVersion version);
+    
+    public abstract void expireSecrets();
 }

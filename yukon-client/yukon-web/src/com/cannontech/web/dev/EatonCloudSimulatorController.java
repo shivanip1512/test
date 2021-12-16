@@ -51,6 +51,7 @@ import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
+import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorDeviceCreateRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorSettingsUpdateRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
@@ -58,7 +59,6 @@ import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.dr.eatonCloud.service.v1.EatonCloudSecretRotationServiceV1;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,14 +78,13 @@ public class EatonCloudSimulatorController {
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private YukonJmsTemplate jmsTemplate;
     private YukonJmsTemplate jmsTemplateCalc;
-    
-    @Autowired private EatonCloudSecretRotationServiceV1 eatonCloudSecretRotationServiceV1;
-
+    private YukonJmsTemplate jmsTemplateSecretRotation;
     
     @PostConstruct
     public void init() {
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
         jmsTemplateCalc = jmsTemplateFactory.createTemplate(JmsApiDirectory.EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST);
+        jmsTemplateSecretRotation = jmsTemplateFactory.createTemplate(JmsApiDirectory.EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST);
     }
     @GetMapping("/home")
     public String home(ModelMap model) {
@@ -108,7 +107,7 @@ public class EatonCloudSimulatorController {
     @PostMapping("/updateSettings")
     public String updateSettings(@ModelAttribute("settings") SimulatedEatonCloudSettings newSettings, FlashScope flashScope, ModelMap model) {
         try {   
-            EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest();
+            EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest(EatonCloudVersion.V1);
             request.setStatuses(getStatuses(newSettings));
             request.setSuccessPercentages(newSettings.getSuccessPercentages());
             
@@ -188,8 +187,6 @@ public class EatonCloudSimulatorController {
             log.error("Error", e);
             json.put("alertError", e.getMessage());
         } 
-       // eatonCloudSecretRotationServiceV1.rotateSecret(1);
-        eatonCloudSecretRotationServiceV1.getSecretExpiryTime();
         return json;
     }
 
@@ -279,6 +276,24 @@ public class EatonCloudSimulatorController {
         try {
             jmsTemplateCalc.convertAndSend(new EatonCloudRuntimeCalcSimulatonRequest());
             flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("Runtime calculation started. See SM log for details."));
+        } catch (Exception e) {
+            log.error("Error", e);
+        }
+        return "redirect:home";
+    }
+    
+    @PostMapping("/rotateSecrets")
+    public String rotateSecrets(FlashScope flashScope) {
+        try {
+            EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest(EatonCloudVersion.V1);
+            request.setResetSecretsExpireTime(true);
+            //notify simulator to changes secret expiration dates in preparation for the SM request to rotate secrets
+            SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            if (response.isSuccessful()) {
+                //send request to SM to start secret rotation
+                jmsTemplateSecretRotation.convertAndSend(new EatonCloudSecretRotationSimulationRequest());
+                flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("Sent message to SM to rotate secrets."));
+            }
         } catch (Exception e) {
             log.error("Error", e);
         }

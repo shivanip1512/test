@@ -67,9 +67,17 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
         Date now = DateTime.now().toDate();
         List<EatonCloudSecretV1> secrets = new ArrayList<>();
-        secrets.add(new EatonCloudSecretV1("secret1", now));
-        secrets.add(new EatonCloudSecretV1("secret2", now));
+        secrets.add(new EatonCloudSecretV1("secret1", DateTime.now().plusMonths(6).toDate()));
+        secrets.add(new EatonCloudSecretV1("secret2", DateTime.now().plusMonths(7).toDate()));
         account = new EatonCloudServiceAccountDetailV1(serviceAccountId, "", true, "", "", secrets, now, "", now, "");
+    }
+    
+
+    @Override
+    public void expireSecrets() {
+      account.getSecrets().clear();
+      account.getSecrets().add(new EatonCloudSecretV1("secret1", DateTime.now().plusMonths(6).toDate()));
+      account.getSecrets().add(new EatonCloudSecretV1("secret2", DateTime.now().plusMonths(6).toDate()));
     }
     
     public EatonCloudSimulatorResponse token() {
