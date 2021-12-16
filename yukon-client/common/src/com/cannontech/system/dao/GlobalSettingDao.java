@@ -86,9 +86,9 @@ public interface GlobalSettingDao {
      * that can be cast to Integer.
      * 
      * @param setting - any GlobalSetting setting with a Integer return type
-     * @return value of property or 0 if undefined
+     * @return value of property or Optional.empty() if undefined
      */
-    public Integer getNullableInteger(GlobalSettingType type);
+    public Optional<Integer> getOptionalInteger(GlobalSettingType type);
 
     /**
      * Returns the setting value of the specified Yukon setting as an enum.

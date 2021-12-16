@@ -29,14 +29,15 @@ public class OpenAdrConfigurationServiceImpl implements OpenAdrConfigurationServ
     
     @Override
     public long getReplyLimit() {
-        Integer gsVal = globalSettingDao.getNullableInteger(GlobalSettingType.OADR_REPLY_LIMIT);
-        return (gsVal != null) ? gsVal : DEFAULT_REPLY_LIMIT;
+        return globalSettingDao.getOptionalInteger(GlobalSettingType.OADR_REPLY_LIMIT)
+                .map(Integer::longValue)
+                .orElse(DEFAULT_REPLY_LIMIT);
     }
 
     @Override
     public int getRequestInterval() {
-        Integer gsVal = globalSettingDao.getNullableInteger(GlobalSettingType.OADR_REQUEST_INTERVAL);
-        return (gsVal != null) ? gsVal : DEFAULT_REQUEST_INTERVAL_MILLIS;
+        return globalSettingDao.getOptionalInteger(GlobalSettingType.OADR_REQUEST_INTERVAL)
+                .orElse(DEFAULT_REQUEST_INTERVAL_MILLIS);
     }
     
     @Override
@@ -136,10 +137,9 @@ public class OpenAdrConfigurationServiceImpl implements OpenAdrConfigurationServ
 
     @Override
     public LiteYukonUser getOadrUser() {
-        Integer oadrUserId = globalSettingDao.getNullableInteger(GlobalSettingType.OADR_YUKON_USER);
-        if (oadrUserId == null) {
-            throw new OpenAdrConfigurationException("No OpenADR Yukon User defined in Global Settings.");
-        }
+        Integer oadrUserId = globalSettingDao.getOptionalInteger(GlobalSettingType.OADR_YUKON_USER)
+                .orElseThrow(() -> 
+                    new OpenAdrConfigurationException("No OpenADR Yukon User defined in Global Settings."));
         
         LiteYukonUser oadrUser = yukonUserDao.getLiteYukonUser(oadrUserId);
         if (oadrUser == null) {

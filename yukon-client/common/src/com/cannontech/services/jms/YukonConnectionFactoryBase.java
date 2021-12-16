@@ -41,14 +41,14 @@ abstract class YukonConnectionFactoryBase {
     
     protected String getServerListenConnection() throws Exception {
         String hostUri = "tcp://" + globalSettingDao.getString(GlobalSettingType.JMS_BROKER_HOST);
-        Integer port = globalSettingDao.getNullableInteger(GlobalSettingType.JMS_BROKER_PORT);
+        Integer port = globalSettingDao.getOptionalInteger(GlobalSettingType.JMS_BROKER_PORT).orElse(61616);
 
         // MaxInactivityDuration controls how long AMQ keeps a socket open when it has had no activity.
         String maxInactivityDuration =
             "wireFormat.MaxInactivityDuration=" +
                     (globalSettingDao.getInteger(GlobalSettingType.MAX_INACTIVITY_DURATION) * 1000);
 
-        String jmsHost = hostUri + (port == null ? ":61616" : ":" + port) + "?" + maxInactivityDuration;
+        String jmsHost = hostUri + ":" + port + "?" + maxInactivityDuration;
 
         String serverListenConnection
             = configurationSource.getString(JMS_SERVER_BROKER_LISTEN_CONNECTION, jmsHost);

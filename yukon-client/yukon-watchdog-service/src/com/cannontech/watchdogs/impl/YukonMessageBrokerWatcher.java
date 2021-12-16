@@ -70,12 +70,12 @@ public class YukonMessageBrokerWatcher extends ServiceStatusWatchdogImpl {
      */
     private String getBrokerConnection() {
         String hostUri = "failover:tcp://" + globalSettingDao.getString(GlobalSettingType.JMS_BROKER_HOST);
-        Integer port = globalSettingDao.getNullableInteger(GlobalSettingType.JMS_BROKER_PORT);
+        Integer port = globalSettingDao.getOptionalInteger(GlobalSettingType.JMS_BROKER_PORT).orElse(61616);
 
         String maxInactivityDuration = "wireFormat.MaxInactivityDuration="
             + (globalSettingDao.getInteger(GlobalSettingType.MAX_INACTIVITY_DURATION) * 1000);
 
-        String jmsHost = hostUri + (port == null ? ":61616" : ":" + port) + "?" + maxInactivityDuration;
+        String jmsHost = hostUri + ":" + port + "?" + maxInactivityDuration;
         String brokerConnection = configurationSource.getString(JMS_SERVER_BROKER_LISTEN_CONNECTION, jmsHost);
         log.debug("Broker connection url: ", brokerConnection);
         return brokerConnection;
