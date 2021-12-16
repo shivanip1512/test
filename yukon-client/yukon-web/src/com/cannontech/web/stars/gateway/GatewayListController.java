@@ -1,18 +1,26 @@
 package com.cannontech.web.stars.gateway;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,10 +33,13 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.gateway.DataType;
+import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -58,6 +69,7 @@ public class GatewayListController {
     @Autowired private RfnGatewayFirmwareUpgradeService rfnGatewayFirmwareUpgradeService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PaoNotesService paoNotesService;
+    @Autowired private GatewayBulkUpdateValidator bulkUpdateValidator;
 
     @GetMapping({ "/gateways", "/gateways/" })
     public String gateways(ModelMap model) {
@@ -105,8 +117,61 @@ public class GatewayListController {
     
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @GetMapping("/gateways/update")
-    public String bulkUpdateGateways() {
+    public String bulkUpdateGatewaysPopup(ModelMap model) {
+    	GatewayBulkUpdateModel updateModel = new GatewayBulkUpdateModel();
+    	GatewayNMIPAddressPort mostUsedNMIPAddressPort = helper.getMostUsedGatewayNMIPPort();
+    	if (mostUsedNMIPAddressPort != null) {
+    		updateModel.setNmIpAddress(mostUsedNMIPAddressPort.getNmIpAddress());
+    		updateModel.setNmPort(mostUsedNMIPAddressPort.getNmPort());
+    	}
+    	model.addAttribute("settings", updateModel);
+        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
         return "gateways/bulkUpdate.jsp";
+    }
+    
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
+    @PostMapping("/gateways/update")
+    public String bulkUpdateGateways(@ModelAttribute("settings") GatewayBulkUpdateModel gatewayUpdateModel, BindingResult result,
+    		ModelMap model, HttpServletResponse resp, YukonUserContext userContext) {
+        Map<String, Object> json = new HashMap<>();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+    	bulkUpdateValidator.validate(gatewayUpdateModel, result);
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
+            return "gateways/bulkUpdate.jsp";
+        }
+        List<String> gatewaySuccess = new ArrayList<String>();
+        List<String> gatewayErrors = new ArrayList<String>();
+        try {
+	        for (int gatewayId : gatewayUpdateModel.getGatewayIds()) {
+	        	RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(gatewayId);
+	            RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
+	            RfnGatewayData data = builder.copyOf(gateway.getData())
+	           .nmIpAddress(gatewayUpdateModel.getNmIpAddress())
+	           .nmPort(gatewayUpdateModel.getNmPort())
+	           .build();  
+	            gateway.setData(data);
+				GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway, userContext.getYukonUser());
+				if (updateResult == GatewayUpdateResult.SUCCESSFUL) {
+					gatewaySuccess.add(gateway.getName());
+				} else {
+					gatewayErrors.add(gateway.getName());
+				}
+	        }
+	        if (!gatewaySuccess.isEmpty()) {
+	        	json.put("successMessage", 
+	        			accessor.getMessage(baseKey + "bulkUpdate.gatewaySuccessMessage", StringUtils.collectionToDelimitedString(gatewaySuccess, ", ")));
+	        }
+	        if (!gatewayErrors.isEmpty()) {
+	        	json.put("errorMessage", 
+	        			accessor.getMessage(baseKey + "bulkUpdate.gatewayErrorMessage", StringUtils.collectionToDelimitedString(gatewayErrors, ", ")));
+	        }
+		} catch (NmCommunicationException e) {
+            log.error("Failed communicating to NM while updating gateways.", e);
+            json.put("errorMessage", accessor.getMessage(baseKey + "error.comm"));
+		}
+        return JsonUtils.writeResponse(resp, json);
     }
 
     @RequestMapping("/gateways/data")
