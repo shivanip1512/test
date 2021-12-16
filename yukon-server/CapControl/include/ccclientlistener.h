@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ccclientconn.h"
-#include "connection_listener.h"
 
 #include <boost/thread.hpp>
 
@@ -22,8 +21,6 @@ public:
     static CtiCCClientListener& getInstance();
 
 private:
-
-    CtiListenerConnection _listenerConnection;
 
     boost::thread   _listenerThr;
     boost::thread   _checkThr;

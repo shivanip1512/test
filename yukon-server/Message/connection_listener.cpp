@@ -20,6 +20,7 @@ using namespace std;
 #include <vector>
 #include <map>
 #include <set>
+#include <chrono>
 
 #include "connection_listener.h"
 #include "dllbase.h"
@@ -27,8 +28,10 @@ using namespace std;
 #include "amq_util.h"
 #include "logger.h"
 #include "GlobalSettings.h"
+#include "amq_connection.h"
 
-#include <activemq/core/ActiveMQConnection.h>
+#include <proton/types.hpp>
+#include <proton/session_options.hpp>
 
 #include <atomic>
 
@@ -42,11 +45,48 @@ static std::atomic<long> listenerConnectionCount = 0;
  * @param serverQueueName name of the queue
  */
 CtiListenerConnection::CtiListenerConnection( const string &serverQueueName ) :
-    _closed( false ),
-    _valid( false ),
     _serverQueueName( serverQueueName ),
-    _title( "Listener Connection " + std::to_string(++listenerConnectionCount) )
+    _title( "Listener Connection " + std::to_string(++listenerConnectionCount) + " \"" + _serverQueueName + "\"" ),
+    _ready( false )
 {
+    // initialize the session
+    _session = Cti::Messaging::ActiveMQConnectionManager::getSession( *this );
+}
+
+void CtiListenerConnection::on_session_open( proton::session & session )
+{
+    // create the consumer
+    _consumer = createQueueConsumer(
+        session,
+        _serverQueueName,
+        [this](proton::message& m)
+        {
+            std::string jms_type;
+            if (m.message_annotations().exists("x-opt-jms-type"))
+            {
+                jms_type = proton::get<std::string>(m.message_annotations().get("x-opt-jms-type"));
+            }
+
+            if (jms_type == MessageType::clientInit)
+            {
+                std::unique_lock<std::mutex> lock(_clientMux);
+
+                _clients.push(m.reply_to());
+                _clientCond.notify_one();       // signal acceptClient() that we got a valid response
+            }
+            else
+            {
+                CTILOG_ERROR(dout, "invalid queue consumer response message type: " << jms_type << " - replyTo: " << m.reply_to() );
+            }
+        });
+    
+    // signal acceptClient() that we are ready
+    {
+        std::unique_lock<std::mutex> lock(_clientMux);
+
+        _ready = true;
+        _clientCond.notify_one();
+    }
 }
 
 /**
@@ -56,7 +96,10 @@ CtiListenerConnection::~CtiListenerConnection()
 {
     try
     {
-        close();
+        // the consumer destructor calls close on the receiver
+        
+        // close the session
+        _session.close();        
     }
     catch(...)
     {
@@ -65,203 +108,52 @@ CtiListenerConnection::~CtiListenerConnection()
 }
 
 /**
- * Establish a new connection, creates a session and consumer
- */
-void CtiListenerConnection::start()
-{
-    using Cti::GlobalSettings;
-
-    if( _valid || _closed )
-    {
-        return;
-    }
-
-    for( ; ; )
-    {
-        try
-        {
-            //
-            // release resources and reset the connection
-            //
-            {
-                WriterGuard guard(_connMux);
-
-                if( _closed )
-                {
-                    // prevent starting a new connection while closing
-                    return;
-                }
-
-                releaseResources();
-
-                const auto broker_host = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerHost, Broker::defaultHost);
-                const auto broker_port = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerPort, Broker::defaultPort);
-
-                // producerWindowSize sets the size in Bytes of messages that a producer can send before it is blocked
-                // to await a ProducerAck from the broker that frees enough memory to allow another message to be sent.
-                const string producerWindowSize = "connection.producerWindowSize=" +
-                    to_string( GlobalSettings::getInteger( GlobalSettings::Integers::ProducerWindowSize, 8192 ) * 1024 );
-
-                // MaxInactivityDuration controls how long AMQ keeps a socket open when it's not heard from it.
-                const string maxInactivityDuration = "wireFormat.MaxInactivityDuration=" +
-                    to_string( GlobalSettings::getInteger( GlobalSettings::Integers::MaxInactivityDuration, 30 ) * 1000 );
-
-                _connection.reset( new ManagedConnection( Broker::protocol + broker_host + ":" + broker_port + "?" + producerWindowSize + "&" + maxInactivityDuration, proton::connection_options() ) );
-            }
-
-            if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
-            {
-                CTILOG_DEBUG(dout, who() << " - connecting to the broker.")
-            }
-
-            //
-            // connect to the broker
-            //
-            {
-                ReaderGuard guard(_connMux);
-
-                if( _connection )
-                {
-                    _connection->start();
-                }
-            }
-
-            //
-            // create session and consumer
-            //
-            {
-                WriterGuard guard(_connMux);
-
-                if( _closed )
-                {
-                    // connection has closed during broker connection attempt
-                    return;
-                }
-
-                // Create a Session
-                _session = _connection->createSession();
-
-                // Create managed queue consumer
-        //        _consumer = createQueueConsumer( *_session, _serverQueueName );
-
-                _valid = true;
-            }
-
-            CTILOG_INFO(dout, who() << " - successfully connected.");
-
-            return;
-        }
-        catch( proton::error& e )
-        {
-            CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - Error while starting listener connection");
-        }
-        catch( ConnectionException& e )
-        {
-            if( !_closed )
-            {
-                CTILOG_EXCEPTION_WARN(dout, e, who() <<" - unable to connect to the broker. Will try to reconnect..");
-            }
-        }
-
-        Sleep( 1000 ); // Don't pound the system....
-    }
-}
-
-/**
- * Closes the connection, or interrupt and close the connection that is currently established
- */
-void CtiListenerConnection::close()
-{
-    {
-        ReaderGuard guard(_connMux);
-
-        if( _closed )
-        {
-            return;
-        }
-
-        // once the connection has been closed, it cannot be restarted
-        _closed = true;
-
-        if( _consumer )
-        {
-            // if the consumer exist, we are currently connected, close the consumer and release resources
- //           _consumer->close();
-        }
-        else if( _connection )
-        {
-            // if the consumer does not exist, but the connection does, we are currently trying to establish a connection,
-            // abort the connection attempt by closing it.
-            _connection->close();
-        }
-    }
-
-    {
-        WriterGuard guard(_connMux);
-        releaseResources();
-    }
-
-    CTILOG_INFO(dout, who() << " - has closed.");
-}
-
-/**
- * check if the underlying cms connection is started and not failed
- * @return true is the connection is valid, false otherwise
- */
-bool CtiListenerConnection::verifyConnection()
-{
-    ReaderGuard guard(_connMux);
-
-    if( !_connection || !_connection->verifyConnection() || _closed )
-    {
-        _valid = false;
-    }
-
-    return _valid;
-}
-
-/**
  * This is blocking function that waits for a client handshake message
- * @return true if a new client as been accepted, false otherwise
+ * @return the reply address
  */
-bool CtiListenerConnection::acceptClient()
+std::string CtiListenerConnection::acceptClient()
 {
-    ReaderGuard guard(_connMux);
+    const auto timeOut = std::chrono::seconds(30);
 
-    if( !_valid || _closed )
+    // waiting for the session to be completely initialized and open
     {
-        return false;
+        std::unique_lock<std::mutex> lock(_clientMux);
+
+        _clientCond.wait(
+            lock,
+            [this]()
+            {
+                return _ready;
+            } );
     }
 
-    try
+    // waiting for the client initialization response
     {
-        const int timeoutMillis = 1000 * 30; // 30 seconds
+        std::unique_lock<std::mutex> lock(_clientMux);
 
-        // We should block here until the connection is closed or if there is a timeout
-        boost::scoped_ptr<cms::Message> message( _consumer->receive(timeoutMillis) );
-
-        if( ! message || message->getCMSType() != MessageType::clientInit || ! message->getCMSReplyTo() )
+        if (_clientCond.wait_for(
+            lock,
+            timeOut,
+            [this]()
+            {
+                return !_clients.empty();
+            } ) )
         {
-            return false;
+            const auto clientReplyDest = _clients.front();
+            _clients.pop();
+
+            if (validateRequest(clientReplyDest))
+            {
+                return clientReplyDest;
+            }
         }
-
-        // validate the request : check for a duplicate request in the recent past
- //       if( ! validateRequest( destPhysicalName( *message->getCMSReplyTo() )))
- //       {
- //           return false;
- //       }
-
-        // update the client reply destination when there's no error
-        _clientReplyDest.reset( message->getCMSReplyTo()->clone() );
-
-        return true;
+        else
+        {
+            CTILOG_ERROR(dout, "timed out while waiting for reply");
+        }
     }
-    catch( proton::error& e )
-    {
-        CTILOG_EXCEPTION_ERROR(dout, e, who() << " - Error while accepting new client connection");
 
-        return _valid = false;
-    }
+    return "";
 }
 
 /**
@@ -289,34 +181,14 @@ bool CtiListenerConnection::validateRequest( const string &replyTo )
     }
 
     // try to insert
-    return requestTimeMap.insert( make_pair( replyTo, now )).second;
-}
-
-/**
- * Creates a new session that is a child of the CMS Connection
- * @return a pointer to the new connection created
- */
-boost::shared_ptr<ManagedConnection> CtiListenerConnection::getConnection() const
-{
-    ReaderGuard guard(_connMux);
-
-    return _connection;
-}
-
-/**
- * Return the accepted client reply destination
- * @return a pointer to a clone of the client reply destination
- */
-std::unique_ptr<cms::Destination> CtiListenerConnection::getClientReplyDest() const
-{
-    std::unique_ptr<cms::Destination> clone;
-
-    if( _clientReplyDest )
+    const auto [iter, result] = requestTimeMap.emplace(replyTo, now);
+    
+    if ( ! result )
     {
-        clone.reset( _clientReplyDest->clone() );
+        CTILOG_ERROR( dout, "Already seen destination: " << replyTo << " at: " << iter->second );
     }
 
-    return clone;
+    return result;
 }
 
 /**
@@ -325,24 +197,5 @@ std::unique_ptr<cms::Destination> CtiListenerConnection::getClientReplyDest() co
  */
 string CtiListenerConnection::who() const
 {
-    return _title + " \"" + _serverQueueName + "\"";
-}
-
-/**
- * get the server queue name use by this connection
- * @return string with the name
- */
-string CtiListenerConnection::getServerQueueName() const
-{
-    return _serverQueueName;
-}
-
-/**
- * cleans up consumer, producer, sessions
- */
-void CtiListenerConnection::releaseResources()
-{
-    _consumer.reset();
-    _session.reset();
-    _connection.reset(); // release the shared_ptr (child server connection may still be sharing this)
+    return _title;
 }

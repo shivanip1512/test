@@ -28,6 +28,7 @@
 #undef protected
 
 #include "connection_server.h"
+#include "connection_listener.h"
 
 #define private public
 #define protected public
@@ -78,7 +79,9 @@ void __cdecl Purecall(void)
 
 bool bGCtrlC;
 
-CtiListenerConnection listenerConn( "com.eaton.eas.yukon.conntest" );
+const auto queueName = "com.eaton.eas.yukon.conntest";
+
+CtiListenerConnection listenerConn(queueName);
 
 // CtrlHandler handles is used to catch ctrl-c when run in a console
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
@@ -151,15 +154,10 @@ void main(void)
 
     for(;!bGCtrlC;)
     {
-        if( !listenerConn.verifyConnection() )
-        {
-            listenerConn.start();
-        }
-
         // will wait here until a new client connection is accepted.
-        if( listenerConn.acceptClient() )
+        if( auto replyTo = listenerConn.acceptClient(); ! replyTo.empty() )
         {
-            unique_ptr<CtiServerConnection> serverConn( new CtiServerConnection( listenerConn ));
+            auto serverConn = std::make_unique<CtiServerConnection>( replyTo, queueName );
             serverConn->start();
 
             cout << CtiTime() << " New server connection established, Running test." << endl;

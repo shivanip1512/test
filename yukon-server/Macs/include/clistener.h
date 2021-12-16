@@ -1,7 +1,6 @@
 #pragma once
 
 #include "thread.h"
-#include "connection_listener.h"
 #include "clientconn.h"
 
 
@@ -28,8 +27,6 @@ public:
     void setQueue( CtiConnection::Que_t* queue );
 
 private:
-
-    CtiListenerConnection _listenerConnection;
 
     typedef boost::ptr_vector<CtiMCConnection> ConnectionVec;
 

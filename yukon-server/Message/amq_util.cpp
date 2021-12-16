@@ -1,8 +1,5 @@
 #include "precompiled.h"
 
-#include "cms/ConnectionFactory.h"
-#include "activemq/library/activemqcpp.h"
-#include "activemq/core/ActiveMQConnection.h"
 #include "amq_util.h"
 
 #include "logger.h"
@@ -18,38 +15,10 @@
 namespace Cti::Messaging::Qpid
 {
 
-ConnectionFactory::ConnectionFactory()
-    :   _container()
-{
-    _container_thread = std::thread( [ & ]() { _container.run(); } );
-}
-
-ConnectionFactory::~ConnectionFactory()
-{
-    _container_thread.join();
-}
-
-proton::container & ConnectionFactory::getContainer()
-{
-    return _container;
-}
-
-void ConnectionFactory::createConnection( const std::string &brokerUri, proton::connection_options & connOpt )
-{
-    auto connection = _container.connect( brokerUri, connOpt );
-}
-
-
-/*-----------------------------------------------------------------------------
-    Singleton of connectionFactory
------------------------------------------------------------------------------*/
-//IM_EX_MSG ConnectionFactory g_connectionFactory;
-
-
 /*-----------------------------------------------------------------------------
   Managed connection
 -----------------------------------------------------------------------------*/
-ManagedConnection::ManagedConnection( const std::string &brokerUri, proton::connection_options & connOpt ) :
+/*ManagedConnection::ManagedConnection(const std::string& brokerUri, proton::connection_options& connOpt) :
     _brokerUri( brokerUri ),
     _conn_options( connOpt ),
     _closed( false )
@@ -214,18 +183,6 @@ void ManagedConnection::close()
     closeConnection();
 }
 
-void ManagedConnection::setExceptionListener( cms::ExceptionListener *listener )
-{
-    CTIREADLOCKGUARD(guard, _lock);
-
-    if( !_connection )
-    {
-        throw ConnectionException("Connection object is NULL");
-    }
-
-    _connection->setExceptionListener( listener );
-}
-
 std::unique_ptr<cms::Session> ManagedConnection::createSession()
 {
     CTIREADLOCKGUARD(guard, _lock);
@@ -251,7 +208,7 @@ const std::string& ManagedConnection::getBrokerUri() const
 {
     return _brokerUri;
 }
-
+*/
 /*-----------------------------------------------------------------------------
   Managed destination
 -----------------------------------------------------------------------------*/
@@ -329,9 +286,9 @@ void ManagedProducer::on_sender_open( proton::sender & s )
 /*-----------------------------------------------------------------------------
   Managed message consumer
 -----------------------------------------------------------------------------*/
-ManagedConsumer::ManagedConsumer( proton::session & sess, const std::string & dest, Callback c )
+ManagedConsumer::ManagedConsumer( proton::session & sess, const std::string & dest, MessageCallback c )
     :   ManagedDestination( dest ),
-        _callback( c )
+        _msgCallback( c )
 {
     proton::receiver_options    options;
 
@@ -344,47 +301,29 @@ ManagedConsumer::ManagedConsumer( proton::session & sess, const std::string & de
     _consumer = sess.open_receiver( dest, options );
 }
 
+ManagedConsumer::ManagedConsumer( proton::session& sess, const std::string& dest, MessageCallback c, OpenCallback o )
+    :   ManagedConsumer(sess, dest, c)
+{
+    _openCallback = o;
+}
+
 ManagedConsumer::~ManagedConsumer()
 {
     _consumer.close();
 }
 
-void ManagedConsumer::setMessageListener( Qpid::MessageListener *listener )
-{
-    // jmoc
-
-    //_consumer->setMessageListener( listener );
-}
-
-cms::Message* ManagedConsumer::receive()
-{
-    return nullptr;
-  //  return _consumer->receive();
-}
-
-cms::Message* ManagedConsumer::receive( int millisecs )
-{
-    // wait on mux with condition var + notify_one()1
-
-    return nullptr;
- //   return _consumer->receive( millisecs );
-}
-
-cms::Message* ManagedConsumer::receiveNoWait()
-{
- //   if (d!empty getit) else null
-    {
-    }
-
-    return nullptr;
-  //  return _consumer->receiveNoWait();
-}
-
 void ManagedConsumer::on_message( proton::delivery & d, proton::message & msg )
 {
-    _callback( msg );   // magic!!!!!!!!!!!!!!!!!!!!!
+    _msgCallback( msg );   // magic!!!!!!!!!!!!!!!!!!!!!
 }
 
+void ManagedConsumer::on_receiver_open( proton::receiver & rcvr )
+{
+    if ( _openCallback )
+    {
+        _openCallback( rcvr );
+    }
+}
 
 /*-----------------------------------------------------------------------------
   Managed destination message producer
@@ -402,8 +341,13 @@ DestinationProducer::~DestinationProducer()
 /*-----------------------------------------------------------------------------
   Managed destination message consumer
 -----------------------------------------------------------------------------*/
-DestinationConsumer::DestinationConsumer( proton::session & sess, const std::string & dest, Callback c ) :
-    ManagedConsumer( sess, dest, c )
+DestinationConsumer::DestinationConsumer(proton::session& sess, const std::string& dest, MessageCallback c) :
+    ManagedConsumer(sess, dest, c)
+{
+}
+
+DestinationConsumer::DestinationConsumer( proton::session & sess, const std::string & dest, MessageCallback c, OpenCallback o ) :
+    ManagedConsumer( sess, dest, c, o )
 {
 }
 
@@ -426,8 +370,13 @@ QueueProducer::~QueueProducer()
 /*-----------------------------------------------------------------------------
   Managed Queue message consumer
 -----------------------------------------------------------------------------*/
-QueueConsumer::QueueConsumer( proton::session & sess, const std::string & dest, Callback c ) :
-    DestinationConsumer( sess, dest, c )
+QueueConsumer::QueueConsumer(proton::session& sess, const std::string& dest, MessageCallback c) :
+    DestinationConsumer(sess, dest, c)
+{
+}
+
+QueueConsumer::QueueConsumer( proton::session & sess, const std::string & dest, MessageCallback c, OpenCallback o ) :
+    DestinationConsumer( sess, dest, c, o )
 {
 }
 
@@ -438,8 +387,14 @@ QueueConsumer::~QueueConsumer()
 /*-----------------------------------------------------------------------------
   Managed topic message consumer
 -----------------------------------------------------------------------------*/
-TopicConsumer::TopicConsumer( proton::session & sess, const std::string & dest, Callback c, const std::string & selector ) :
-     DestinationConsumer( sess, dest, c ),
+TopicConsumer::TopicConsumer(proton::session& sess, const std::string& dest, MessageCallback c, const std::string& selector) :
+    DestinationConsumer(sess, dest, c),
+    _selector(selector)
+{
+}
+
+TopicConsumer::TopicConsumer( proton::session & sess, const std::string & dest, MessageCallback c, OpenCallback o, const std::string & selector ) :
+     DestinationConsumer( sess, dest, c, o ),
      _selector( selector )
 {
 }
@@ -451,8 +406,13 @@ TopicConsumer::~TopicConsumer()
 /*-----------------------------------------------------------------------------
   Managed temporary queue message consumer
 -----------------------------------------------------------------------------*/
-TempQueueConsumer::TempQueueConsumer( proton::session & sess, Callback c ) :
+TempQueueConsumer::TempQueueConsumer( proton::session & sess, MessageCallback c) :
     QueueConsumer( sess, "", c )
+{
+}
+
+TempQueueConsumer::TempQueueConsumer(proton::session& sess, MessageCallback c, OpenCallback o) :
+    QueueConsumer(sess, "", c, o)
 {
 }
 

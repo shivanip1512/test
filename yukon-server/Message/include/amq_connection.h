@@ -8,6 +8,10 @@
 #include <proton/messaging_handler.hpp>
 #include <proton/message.hpp>
 #include <proton/session.hpp>
+#include <proton/session_options.hpp>
+#include <proton/container.hpp>
+#include <proton/connection.hpp>
+
 
 #include <chrono>
 #include <queue>
@@ -17,11 +21,9 @@ namespace Cti::Messaging
 {
 namespace Qpid
 {
-class ManagedConnection;
 class QueueConsumer;
 class QueueProducer;
 class TempQueueConsumer;
-class MessageListener;
 
 namespace Queues
 {
@@ -142,7 +144,17 @@ public:
     void on_connection_open( proton::connection & c ) override;
     void on_connection_close( proton::connection & c ) override;
     void on_session_open( proton::session & s ) override;
+
+    static proton::session getSession( proton::messaging_handler & handler );
     	
+    proton::session getNewSession( proton::messaging_handler & handler );
+
+    proton::container  _container;
+
+    std::thread  _container_thread;
+
+    proton::connection  _connection;
+
 protected:
 
     struct TimedCallback

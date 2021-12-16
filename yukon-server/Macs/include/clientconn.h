@@ -11,7 +11,7 @@ class CtiMCConnection
 
 public:
 
-    CtiMCConnection( CtiListenerConnection& listenerConn, CtiConnection::Que_t *inQ );
+    CtiMCConnection( const std::string & replyToName, const std::string & serverQueueName, CtiConnection::Que_t *inQ );
 
     ~CtiMCConnection();
 

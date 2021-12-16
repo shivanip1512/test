@@ -6,6 +6,7 @@
 #include "pt_analog.h"
 #include "con_mgr_vg.h"
 #include "connection.h"
+#include "connection_listener.h"
 
 #include "rtdb_test_helpers.h"
 
@@ -360,10 +361,9 @@ struct Test_CtiListenerConnection : CtiListenerConnection
     {
     }
 
-    std::unique_ptr<cms::Destination> getClientReplyDest() const override
+    std::string getClientReplyDest() const override
     {
-        std::unique_ptr<cms::Destination> d;
-        return d;
+        return "";
     }
 };
 
@@ -373,12 +373,15 @@ BOOST_AUTO_TEST_CASE( test_erase )
     Test_CtiPointClientManager2 manager;
     Test_CtiPointConnection connection;
 
-    CtiListenerConnection lc1( "test1" );
-    CtiListenerConnection lc2( "test2" );
+    const auto queue1 = "test1";
+    const auto queue2 = "test2";
+
+    CtiListenerConnection lc1( queue1 );
+    CtiListenerConnection lc2( queue2 );
 
     boost::shared_ptr<CtiConnection::Que_t> testQ(new CtiConnection::Que_t());
-    boost::shared_ptr<CtiConnectionManager> cm1( new CtiVanGoghConnectionManager(lc1, testQ.get()) );
-    boost::shared_ptr<CtiConnectionManager> cm2( new CtiVanGoghConnectionManager(lc2, testQ.get()) );
+    boost::shared_ptr<CtiConnectionManager> cm1( new CtiVanGoghConnectionManager( "client1", queue1, testQ.get() ) );
+    boost::shared_ptr<CtiConnectionManager> cm2( new CtiVanGoghConnectionManager( "client2", queue2, testQ.get() ) );
 
     CtiPointRegistrationMsg aReg1( REG_ADD_POINTS );
     CtiPointRegistrationMsg aReg2( REG_ADD_POINTS );
@@ -478,12 +481,15 @@ BOOST_AUTO_TEST_CASE( test_removePointsFromConnectionManager )
     Test_CtiPointClientManager2 manager;
     Test_CtiPointConnection connection;
 
-    CtiListenerConnection lc1( "test1" );
-    CtiListenerConnection lc2( "test2" );
+    const auto queue1 = "test1";
+    const auto queue2 = "test2";
+
+    CtiListenerConnection lc1( queue1 );
+    CtiListenerConnection lc2( queue2 );
 
     boost::shared_ptr<CtiConnection::Que_t> testQ(new CtiConnection::Que_t());
-    boost::shared_ptr<CtiConnectionManager> cm1(new CtiVanGoghConnectionManager(lc1, testQ.get()));
-    boost::shared_ptr<CtiConnectionManager> cm2(new CtiVanGoghConnectionManager(lc2, testQ.get()));
+    boost::shared_ptr<CtiConnectionManager> cm1(new CtiVanGoghConnectionManager( "client1", queue1, testQ.get() ) );
+    boost::shared_ptr<CtiConnectionManager> cm2(new CtiVanGoghConnectionManager( "client2", queue2, testQ.get() ) );
 
     CtiPointRegistrationMsg aReg1( REG_ADD_POINTS );
     CtiPointRegistrationMsg aReg2( REG_ADD_POINTS );
@@ -559,12 +565,15 @@ BOOST_AUTO_TEST_CASE( test_expire )
     Test_CtiPointClientManager2 manager;
     Test_CtiPointConnection connection;
 
-    CtiListenerConnection lc1( "test1" );
-    CtiListenerConnection lc2( "test2" );
+    const auto queue1 = "test1";
+    const auto queue2 = "test2";
+
+    CtiListenerConnection lc1( queue1 );
+    CtiListenerConnection lc2( queue2 );
 
     boost::shared_ptr<CtiConnection::Que_t> testQ(new CtiConnection::Que_t());
-    boost::shared_ptr<CtiConnectionManager> cm1(new CtiVanGoghConnectionManager(lc1, testQ.get()));
-    boost::shared_ptr<CtiConnectionManager> cm2(new CtiVanGoghConnectionManager(lc2, testQ.get()));
+    boost::shared_ptr<CtiConnectionManager> cm1(new CtiVanGoghConnectionManager( "client1", queue1, testQ.get() ) );
+    boost::shared_ptr<CtiConnectionManager> cm2(new CtiVanGoghConnectionManager( "client2", queue2, testQ.get() ) );
 
     CtiPointRegistrationMsg aReg1( REG_ADD_POINTS );
     CtiPointRegistrationMsg aReg2( REG_ADD_POINTS );

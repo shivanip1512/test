@@ -30,6 +30,7 @@
 #include "test_serialization.h"
 
 #include "connection_server.h"
+#include "connection_listener.h"
 #include "logManager.h"
 #include "std_helper.h"
 
@@ -47,7 +48,9 @@ void __cdecl Purecall(void)
 bool bGCtrlC;
 DLLIMPORT extern Cti::Logging::LogManager doutManager;
 
-CtiListenerConnection listenerConn( "com.eaton.eas.yukon.conntest" );
+const auto queueName = "com.eaton.eas.yukon.conntest";
+
+CtiListenerConnection listenerConn(queueName);
 
 // CtrlHandler handles is used to catch ctrl-c when run in a console
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
@@ -164,15 +167,10 @@ void main(int argc, char* argv[])
 
     for(;!bGCtrlC;)
     {
-        if( !listenerConn.verifyConnection() )
-        {
-            listenerConn.start();
-        }
-
         // will wait here until a new client connection is accepted.
-        if( listenerConn.acceptClient() )
+        if( auto replyTo = listenerConn.acceptClient(); ! replyTo.empty() )
         {
-            unique_ptr<CtiServerConnection> serverConn( new CtiServerConnection( listenerConn ));
+            auto serverConn = std::make_unique<CtiServerConnection>( replyTo, queueName );
             serverConn->start();
 
             cout << CtiTime() << " New server connection established, Running test." << endl;

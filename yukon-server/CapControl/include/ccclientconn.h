@@ -3,6 +3,7 @@
 #include "message.h"
 #include "connection_server.h"
 
+
 class CtiCCClientConnection
 {
     bool _valid;
@@ -11,7 +12,7 @@ class CtiCCClientConnection
 
 public:
 
-    CtiCCClientConnection( CtiListenerConnection& listenerConn );
+    CtiCCClientConnection( const std::string & replyDestination, const std::string & serverQueueName );
     
     virtual ~CtiCCClientConnection();
 

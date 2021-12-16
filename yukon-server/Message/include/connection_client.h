@@ -2,6 +2,7 @@
 
 #include "connection.h"
 
+
 class IM_EX_MSG CtiClientConnection : public CtiConnection
 {
     const std::string _serverQueueName;
@@ -22,11 +23,11 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
     bool establishConnection () override;
     void abortConnection     () override;
 
-    std::unique_ptr<cms::ExceptionListener> _exceptionListener;
-
-    void onException ( const cms::CMSException& ex );
+    std::unique_ptr<Cti::Messaging::Qpid::QueueProducer>    _handshakeProducer;
 
 public:
+
+    void on_session_open(proton::session& s) override;
 
     CtiClientConnection ( const std::string &serverQueueName,
                           Que_t *inQ = NULL,

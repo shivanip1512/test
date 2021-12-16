@@ -41,21 +41,24 @@ using Cti::Logging::Vector::Hex::operator<<;
 
 namespace Cti::Messaging {
 
-Qpid::ConnectionFactory g_connectionFactory;
-
-
-
 extern IM_EX_MSG std::unique_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
 std::atomic_size_t ActiveMQConnectionManager::SessionCallback::globalId;
 
-ActiveMQConnectionManager::ActiveMQConnectionManager() = default;
+
+ActiveMQConnectionManager::ActiveMQConnectionManager()
+    : _container()
+{
+    _container_thread = std::thread([&]() { _container.run(); });
+}
 
 ActiveMQConnectionManager::~ActiveMQConnectionManager()
 {
     try
     {
         close();
+
+        _container_thread.join();
     }
     catch(...)
     {
@@ -75,8 +78,6 @@ void ActiveMQConnectionManager::on_connection_open( proton::connection & c )
 
         _brokerSession = c.open_session( options );
     }
-
-    CTILOG_INFO(dout, "Broker session established");
 }
 
 
@@ -88,6 +89,8 @@ void ActiveMQConnectionManager::on_connection_close( proton::connection & c )
 
 void ActiveMQConnectionManager::on_session_open( proton::session & s )
 {
+    CTILOG_INFO(dout, "Broker session established");
+
     // register callbacks
 
     createConsumersForCallbacks( _namedCallbacks );
@@ -102,6 +105,22 @@ void ActiveMQConnectionManager::on_session_open( proton::session & s )
                    } );
 }
 
+proton::session ActiveMQConnectionManager::getSession( proton::messaging_handler & handler )
+{
+    return gActiveMQConnection->getNewSession( handler );
+}
+
+proton::session ActiveMQConnectionManager::getNewSession( proton::messaging_handler & handler )
+{
+    // get the connection and create a new session from it
+
+    auto connection = _brokerSession.connection();
+
+    proton::session_options options;
+    options.handler( handler );
+
+    return connection.open_session( options );
+}
 
 void ActiveMQConnectionManager::start()
 {
@@ -123,7 +142,7 @@ void ActiveMQConnectionManager::start()
                         .max_delay( 30 * proton::duration::SECOND )
                     );
 
-    g_connectionFactory.createConnection( brokerUri, options );
+    _container.connect( brokerUri, options );
 }
 
 void ActiveMQConnectionManager::close()
@@ -138,7 +157,11 @@ void ActiveMQConnectionManager::close()
 
         auto connection = _brokerSession.connection();
 
-        _brokerSession.close();
+   //     if ( _brokerSession  )
+    //    {
+           _brokerSession.close();
+    //    }
+
 
         connection.close();
     }
@@ -572,7 +595,7 @@ void ActiveMQConnectionManager::enqueueOutgoingReply(
         CTILOG_DEBUG(dout, "Sending outgoing reply to destination " << replyProducer->getDestination());
     }
 
-    proton::message m;      // this ok??  also unroll loops...?
+    proton::message m;
 
     m.body( proton::binary{ std::cbegin(message), std::cend(message) } );
 
@@ -649,7 +672,7 @@ void ActiveMQConnectionManager::addNewCallback(const Qpid::Queues::InboundQueue 
                     return;
                 }
 
-                proton::message m;      // this ok?
+                proton::message m;
 
                 m.body( proton::binary{ std::cbegin(*result), std::cend(*result) } );
 
@@ -677,7 +700,6 @@ void ActiveMQConnectionManager::addNewCallback(const Qpid::Queues::InboundQueue&
 }
 
 
-// jmoc - what if it is empty or doesn;t exist?
 std::string ActiveMQConnectionManager::getJMSType( proton::message & msg ) const
 {
     std::string jms_type;

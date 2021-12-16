@@ -27,7 +27,7 @@ class CtiVanGoghConnectionManager : public CtiConnectionManager
 
 public:
 
-   CtiVanGoghConnectionManager( CtiListenerConnection &listenerConn, Que_t *MainQueue_ );
+   CtiVanGoghConnectionManager( const std::string& replyToName, const std::string& serverQueueName, Que_t *MainQueue_ );
    virtual ~CtiVanGoghConnectionManager();
 
    static unsigned hash(const CtiVanGoghConnectionManager& aRef);

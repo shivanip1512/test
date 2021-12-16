@@ -14,7 +14,11 @@
 #include "millisecond_timer.h"
 #include "logManager.h"
 
-#include <decaf/internal/util/concurrent/Threading.h>
+#include <proton/types.hpp>
+#include <proton/transport.hpp>
+#include <proton/connection.hpp>
+#include <proton/receiver.hpp>
+#include <proton/sender.hpp>
 
 #include <boost/algorithm/string/replace.hpp>
 
@@ -43,26 +47,11 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
     _outthread( WorkerThread::Function([this]{ outThreadFunc(); })
             .name( boost::replace_all_copy( title, " ", "" ) + "_outThread" ) // use the title and remove all white spaces to set the thread name
             .priority( THREAD_PRIORITY_HIGHEST )),
-    _amqOutThreadHandle{nullptr},
     _outQueueLogCountConfig(0),
-    _outQueueLogInterval(0)
+    _outQueueLogInterval(0),
+    _connectionState{ ConnectionState::WaitingForAck }
 {
     CTILOG_DEBUG( dout, who() << " - CtiConnection::CtiConnection() @0x" << std::hex << this );
-
-    // create message listener and register function and caller
-    _messageListener =
-            std::make_unique<MessageListener>(
-                [this]( proton::message& msg )
-                {
-                    onMessage(msg);
-                } );
-    // create advisory message listener and register function and caller
-    _advisoryListener =
-            std::make_unique<MessageListener>(
-                [this]( proton::message& msg )
-                {
-                    onAdvisoryMessage(msg);
-                } );
 }
 
 CtiConnection::~CtiConnection()
@@ -73,6 +62,48 @@ CtiConnection::~CtiConnection()
 long CtiConnection::getConnectionId() const
 {
     return _connectionId;
+}
+
+
+std::string CtiConnection::getJmsType(const proton::message& m)
+{
+    std::string jms_type;
+    if (m.message_annotations().exists("x-opt-jms-type"))
+    {
+        jms_type = proton::get<std::string>(m.message_annotations().get("x-opt-jms-type"));
+    }
+
+    return jms_type;
+}
+
+void CtiConnection::setJmsType(proton::message& m, const std::string& type)
+{
+    m.message_annotations().put("x-opt-jms-type", type);
+}
+
+void CtiConnection::on_transport_error(proton::transport & t)
+{
+    CTILOG_ERROR(dout, who() << " - transport error: " << t.error().what() );
+}
+
+void CtiConnection::on_connection_error(proton::connection & c)
+{
+    CTILOG_ERROR(dout, who() << " - connection error: " << c.error().what());
+}
+
+void CtiConnection::on_session_error(proton::session & s)
+{
+    CTILOG_ERROR(dout, who() << " - session error: " << s.error().what());
+}
+
+void CtiConnection::on_receiver_error(proton::receiver & r)
+{
+    CTILOG_ERROR(dout, who() << " - receiver error: " << r.error().what());
+}
+
+void CtiConnection::on_sender_error(proton::sender & s)
+{
+    CTILOG_ERROR(dout, who() << " - sender error: " << s.error().what());
 }
 
 /**
@@ -156,8 +187,6 @@ void CtiConnection::outThreadFunc()
 
                     continue;
                 }
-
-                _amqOutThreadHandle.store(decaf::internal::util::concurrent::Threading::getCurrentThreadHandle());
 
                 _bConnected = true;
             }
@@ -258,15 +287,15 @@ void CtiConnection::sendMessage( const CtiMessage& msg )
         return;
     }
 
-    // create a new cms bytes message
-    const boost::scoped_ptr<cms::BytesMessage> bytes_msg( _sessionOut->createBytesMessage() );
+    // create a new message
+    proton::message m;
 
-    bytes_msg->writeBytes( obytes );
-    bytes_msg->setCMSType( msgType );
-
+    m.body( proton::binary{ std::cbegin(obytes), std::cend(obytes) });
+    setJmsType( m, msgType );
+ 
     _sendStart.exchange(time(nullptr));  // Mark when the send started
     // send the message
-//jmoc    _producer->send( bytes_msg.get() );
+    _producer->send( m );
     _sendStart.exchange(0);   // Mark send as complete
 }
 
@@ -279,7 +308,7 @@ void CtiConnection::receiveAllMessages()
     try
     {
         // disconnect asynchronous message listener
-        _consumer->setMessageListener( NULL );
+   //     _consumer->setMessageListener( NULL );
 
         unsigned elapsedMillis;
         const unsigned timeoutMillis = 1000;
@@ -289,11 +318,12 @@ void CtiConnection::receiveAllMessages()
         while( (elapsedMillis = timer.elapsed()) < timeoutMillis )
         {
             // receive with a timeout set to the remaining millis
-            const boost::scoped_ptr<cms::Message> msg( _consumer->receive( timeoutMillis - elapsedMillis ));
+//  jmoc          const boost::scoped_ptr<cms::Message> msg(_consumer->receive(timeoutMillis - elapsedMillis));
+         //   const boost::scoped_ptr<cms::Message> msg;// (_consumer->receive(timeoutMillis - elapsedMillis));
 
-            if( ! msg )
+          //  if( ! msg )
             {
-                break;
+          //      break;
             }
 
 // jmoc
@@ -310,115 +340,53 @@ void CtiConnection::receiveAllMessages()
 /**
  * asynchronous function called when a message is received. uses the message factory to deserialize
  * the message and writes it to the inQueue.
- * This function is registerd with the consumer message listener
+ * This function is registered with the consumer message listener
  * @param message  pointer to the cms::message received
  */
 void CtiConnection::onMessage( proton::message& msg )
 {
-    // jmoc
+    vector<unsigned char>  payload{ proton::get<proton::binary>(msg.body()) };
 
-//    MessagePtr<CtiMessage>::type omsg;
-//
-//    // deserialize received message
-//    if( const cms::BytesMessage* bytes_msg = dynamic_cast<const cms::BytesMessage*>(message) )
-//    {
-//        vector<unsigned char> ibytes( bytes_msg->getBodyLength() );
-//
-//        bytes_msg->readBytes( ibytes );
-//
-//        // deserialize the message
-//        omsg = g_messageFactory.deserialize( message->getCMSType(), ibytes );
-//    }
-//
-//    // check for any deserialize failure
-//    if( !omsg.get() )
-//    {
-//        CTILOG_ERROR(dout, who() << " - message: \"" << message->getCMSType() << "\" cannot be deserialized.");
-//        triggerReconnect();
-//        return;
-//    }
-//
-//    omsg->setConnectionHandle( Cti::ConnectionHandle{ _connectionId } );
-//
-//    // write incoming message to _inQueue
-//    if( !_inQueue )
-//    {
-//        CTILOG_ERROR(dout, who() << " - _inQueue is NULL.");
-//        return;
-//    }
-//
-//    if( isDebugLudicrous() )
-//    {
-//        CTILOG_TRACE(dout, getName() << " just received " << *omsg);
-//    }
-//
-//    // Refresh the time...
-//    _lastInQueueWrite = _lastInQueueWrite.now();
-//
-//    writeIncomingMessageToQueue( omsg.release() );
-//
-//    const auto inQueueSize = _inQueue->size();
-//    auto inQueueSizeWarning = _inQueueSizeWarning.load();
-//
-//    if(inQueueSize > inQueueSizeWarning)
-//    {
-//        CTILOG_WARN(dout, who() << " - inQueue has more than " << inQueueSizeWarning << " elements (" << inQueueSize << ")");
-//
-//        if(!_inQueueSizeWarning.compare_exchange_strong(inQueueSizeWarning, inQueueSizeWarning * 2))
-//        {
-//            CTILOG_WARN(dout, who() << " - could not update _inQueueSizeWarning, value was set to " << inQueueSizeWarning << " by another thread");
-//        }
-//    }
-}
+    MessagePtr<CtiMessage>::type omsg = g_messageFactory.deserialize( getJmsType(msg), payload);
 
-/**
- * Function called when an advisory message is received. This function is registered with the advisory message listener
- * @param message pointer to the cms::message received
- */
-void CtiConnection::onAdvisoryMessage( proton::message& msg )
-{
-    // jmoc
+    // check for any deserialize failure
+    if( !omsg.get() )
+    {
+        CTILOG_ERROR(dout, who() << " - message: \"" << getJmsType(msg) << "\" cannot be deserialized.");
+        return;
+    }
 
+    omsg->setConnectionHandle(Cti::ConnectionHandle{ _connectionId });
 
-//    /* YUK-15137: 
-//     * If _closed is set, skip everything and don't attempt to get _advisoryMux.
-//     */
-//    if( _closed )
-//    {
-//        return;
-//    }
-//
-//    if( message->getCMSType() != "Advisory" )
-//    {
-//        CTILOG_ERROR(dout, who() << " - received unexpected message: \"" << message->getCMSType() << "\" is not \"Advisory\".");
-//    }
-//
-//    triggerReconnect();
-//
-//    {
-//        CtiLockGuard<CtiCriticalSection> guard(_advisoryMux);
-//        if( _advisoryConsumer )
-//        {
-//            // un-register the message listener since we dont need it anymore
-//            _advisoryConsumer->setMessageListener(NULL);
-//        }
-//    }
-}
+    // write incoming message to _inQueue
+    if( !_inQueue )
+    {
+        CTILOG_ERROR(dout, who() << " - _inQueue is NULL.");
+        return;
+    }
 
-/**
- * setup topic advisory consumers to monitor number of consumer on the outbound destination
- */
-void CtiConnection::setupAdvisoryListener()
-{
-    CtiLockGuard<CtiCriticalSection> guard(_advisoryMux);
+    if( isDebugLudicrous() )
+    {
+        CTILOG_TRACE(dout, getName() << " just received " << *omsg);
+    }
 
-    // create advisory topic consumer to monitor if the outbound destination has only 1 message consumer
-//    _advisoryConsumer = createTopicConsumer(
- //           *_sessionOut,
- //           "ActiveMQ.Advisory.Producer.Queue." + _consumer->getDestination(),
- //           "producerCount <> 1" );
+    // Refresh the time...
+    _lastInQueueWrite = _lastInQueueWrite.now();
 
-    _advisoryConsumer->setMessageListener(_advisoryListener.get());
+    writeIncomingMessageToQueue( omsg.release() );
+
+    const auto inQueueSize = _inQueue->size();
+    auto inQueueSizeWarning = _inQueueSizeWarning.load();
+
+    if(inQueueSize > inQueueSizeWarning)
+    {
+        CTILOG_WARN(dout, who() << " - inQueue has more than " << inQueueSizeWarning << " elements (" << inQueueSize << ")");
+
+        if(!_inQueueSizeWarning.compare_exchange_strong(inQueueSizeWarning, inQueueSizeWarning * 2))
+        {
+            CTILOG_WARN(dout, who() << " - could not update _inQueueSizeWarning, value was set to " << inQueueSizeWarning << " by another thread");
+        }
+    }
 }
 
 bool CtiConnection::canReconnect() const
@@ -547,17 +515,6 @@ void CtiConnection::joinOutThreadOrDie()
     catch( boost::thread_interrupted& )
     {
         CTILOG_INFO(dout, "Interrupted while joining outThread");
-    }
-
-    if( const auto threadHandle = _amqOutThreadHandle.load() )
-    {
-        CTILOG_WARN(dout, who() << "_outthread did not join.  Interrupting AMQ native thread.");
-
-        decaf::internal::util::concurrent::Threading::interrupt(threadHandle);
-    }
-    else
-    {
-        CTILOG_WARN(dout, who() << "_outthread did not join.  Missing AMQ thread handle, cannot interrupt AMQ send, if any.");
     }
 
     try
@@ -1014,18 +971,10 @@ void CtiConnection::abortConnection()
  */
 void CtiConnection::releaseResources()
 {
-    _consumer.reset();
-    _producer.reset();
+  //  _consumer.reset();
+  //  _producer.reset();
 
-    {
-        CtiLockGuard<CtiCriticalSection> guard(_advisoryMux);
-        _advisoryConsumer.reset();
-    }
 
-    _sessionIn.reset();
-    _sessionOut.reset();
-
-    _connection.reset();
 }
 
 void CtiConnection::setOutQueueLogging( std::size_t messageCount, std::chrono::seconds period )

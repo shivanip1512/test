@@ -6,6 +6,7 @@
 #include "mc.h"
 #include "std_helper.h"
 #include "clistener.h"
+#include "connection_listener.h"
 
 
 using std::endl;
@@ -16,8 +17,7 @@ using std::endl;
 ---------------------------------------------------------------------------*/
 CtiMCClientListener::CtiMCClientListener() :
     _doquit(false),
-    _conn_in_queue(NULL),
-    _listenerConnection( Cti::Messaging::Qpid::Queue::macs )
+    _conn_in_queue(NULL)
 {
 }
 
@@ -43,14 +43,6 @@ void CtiMCClientListener::interrupt(int id)
     }
 
     _doquit = true;
-
-    try{
-        _listenerConnection.close();
-    }
-    catch(...)
-    {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-    }
 }
 
 /*----------------------------------------------------------------------------
@@ -138,22 +130,19 @@ void CtiMCClientListener::run()
 {
     try
     {
+        const auto queueName = Cti::Messaging::Qpid::Queue::macs;
+
+        CtiListenerConnection _listenerConnection(queueName);
+
         // main loop
         for(;!_doquit;)
         {
             checkConnections();
 
-            if( !_listenerConnection.verifyConnection() )
-            {
-                removeAllConnections();
-
-                _listenerConnection.start();
-            }
-
-            if( _listenerConnection.acceptClient() )
+            if( auto replyTo = _listenerConnection.acceptClient(); ! replyTo.empty() )
             {
                 // Create and add new connection manager
-                std::unique_ptr<CtiMCConnection> new_connection( new CtiMCConnection( _listenerConnection, _conn_in_queue ));
+                auto new_connection = std::make_unique<CtiMCConnection>( replyTo, queueName, _conn_in_queue );
 
                 new_connection->start(); // Kick off the connection's communication threads.
 

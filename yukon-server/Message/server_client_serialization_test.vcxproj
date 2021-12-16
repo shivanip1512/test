@@ -151,7 +151,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(QPID_PROTON)\lib\qpid-protond.lib;$(QPID_PROTON)\lib\qpid-proton-cored.lib;$(QPID_PROTON)\lib\qpid-proton-cppd.lib;$(QPID_PROTON)\lib\qpid-proton-proactord.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -199,7 +199,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\lib\ctimsg.lib;..\lib\ctibase.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(QPID_PROTON)\lib\qpid-proton.lib;$(QPID_PROTON)\lib\qpid-proton-core.lib;$(QPID_PROTON)\lib\qpid-proton-cpp.lib;$(QPID_PROTON)\lib\qpid-proton-proactor.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

@@ -4,9 +4,9 @@
 #include "lmmessage.h"
 
 #include <boost/thread.hpp>
+#include <memory>
 
-typedef boost::shared_ptr<CtiServerConnection> CtiLMConnectionPtr;
-typedef std::vector<CtiLMConnectionPtr> CtiLMConnectionVec;
+typedef std::vector<std::shared_ptr<CtiServerConnection>> CtiLMConnectionVec;
 
 class CtiLMClientListener
 {
@@ -26,8 +26,6 @@ public:
     CtiMessage* getQueue(unsigned time);
 
 private:
-
-    CtiListenerConnection _listenerConnection;
 
     boost::thread   _listenerthr;
     boost::thread   _checkthr;

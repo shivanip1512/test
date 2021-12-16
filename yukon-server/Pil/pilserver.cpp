@@ -50,6 +50,8 @@
 #include "millisecond_timer.h"
 
 #include "connection_client.h"
+#include "connection_listener.h"
+
 #include "win_helper.h"
 #include "desolvers.h"
 #include "MessageCounter.h"
@@ -120,7 +122,6 @@ PilServer::PilServer(CtiDeviceManager& DM, CtiPointManager& PM, CtiRouteManager&
     bServerClosing(FALSE),
     _currentParse(""),
     _currentUserMessageId(0),
-    _listenerConnection( Cti::Messaging::Qpid::Queue::porter ),
     _rfnRequestId(0),
     _resultThread        (WorkerThread::Function([this]{ resultThread();         }).name("_resultThread")),
     _nexusThread         (WorkerThread::Function([this]{ nexusThread();          }).name("_nexusThread")),
@@ -345,16 +346,6 @@ void PilServer::mainThread()
             // Force the inherited Listener socket to close!
             Inherited::shutdown();                   // Should cause the ConnThread_ to be closed!
                                                      //
-            try
-            {
-                // This forces the listener thread to exit on shutdown.
-                _listenerConnection.close();
-            }
-            catch (...)
-            {
-                // Dont really care, we are shutting down.
-            }
-
             if (!_connThread.timed_join(boost::posix_time::seconds(10))) // Wait for the Conn thread to die.
             {
                 CTILOG_ERROR(dout, "PIL Server shutting down the ConnThread_: FAILED (will terminate)");
@@ -418,22 +409,16 @@ void PilServer::connectionThread()
     // main loop
     try
     {
+        const auto queueName = Cti::Messaging::Qpid::Queue::porter;
+
+        CtiListenerConnection _listenerConnection(queueName);
+
         for(;!bServerClosing;)
         {
-            if( !_listenerConnection.verifyConnection() )
-            {
-                CtiServerExclusion guard(_server_exclusion);
-
-                CTILOG_INFO( dout, "[Re]starting listener, resetting connections" );
-                mConnectionTable.clear();
-
-                _listenerConnection.start();
-            }
-
-            if( _listenerConnection.acceptClient() )
+            if( auto replyTo = _listenerConnection.acceptClient(); ! replyTo.empty() )
             {
                 // create new pil connection manager
-                CtiServer::ptr_type sptrConMan(new CtiConnectionManager(_listenerConnection, &MainQueue_));
+                CtiServer::ptr_type sptrConMan(new CtiConnectionManager(replyTo, queueName, &MainQueue_));
 
                 // add the new client connection
                 clientConnect(sptrConMan);

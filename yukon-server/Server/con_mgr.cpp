@@ -7,7 +7,7 @@
 #include "msg_cmd.h"
 
 
-CtiConnectionManager::CtiConnectionManager( CtiListenerConnection& listenerConn, Que_t *inQ ) :
+CtiConnectionManager::CtiConnectionManager( const std::string& replyToName, const std::string& serverQueueName, Que_t *inQ ) :
    ClientName("DEFAULT"),
    ClientAppId(0),
    ClientUnique(FALSE),
@@ -15,7 +15,7 @@ CtiConnectionManager::CtiConnectionManager( CtiListenerConnection& listenerConn,
    ClientRegistered(FALSE),
    _clientExpirationDelay(900),
    _serverRequestId(0),
-   CtiServerConnection(listenerConn, inQ)
+   CtiServerConnection( replyToName, serverQueueName, inQ )
 {
     CTILOG_DEBUG( dout, who() << " - CtiConnectionManager::CtiConnectionManager() @0x" << std::hex << this );
 }

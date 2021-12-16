@@ -51,9 +51,9 @@ void CtiVanGoghConnectionManager::reportRegistration() const
    CTILOG_INFO(dout, itemList);
 }
 
-CtiVanGoghConnectionManager::CtiVanGoghConnectionManager( CtiListenerConnection &listenerConn, Que_t *MainQueue_) :
+CtiVanGoghConnectionManager::CtiVanGoghConnectionManager( const std::string& replyToName, const std::string& serverQueueName, Que_t *MainQueue_ ) :
    _blank(0),
-   CtiConnectionManager(listenerConn, MainQueue_)
+   CtiConnectionManager( replyToName, serverQueueName, MainQueue_ )
 {
 }
 

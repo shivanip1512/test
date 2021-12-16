@@ -10,7 +10,6 @@
 #include "mgr_config.h"
 #include "dllbase.h"
 
-#include "connection_listener.h"
 #include "amq_constants.h"
 
 #include "mgr_rfn_request.h"
@@ -29,8 +28,6 @@ class IM_EX_CTIPIL PilServer : public CtiServer
 {
    BOOL                 bServerClosing;
    HANDLE               serverClosingEvent;
-
-   CtiListenerConnection _listenerConnection;
 
    CtiDeviceManager&    DeviceManager;
    CtiPointManager&     PointManager;

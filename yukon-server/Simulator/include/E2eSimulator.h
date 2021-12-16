@@ -2,19 +2,15 @@
 
 #include "amq_connection.h"
 
-namespace cms {
-class Session;
-class Message;
-class Destination;
-}
+#include <proton/session.hpp>
+#include <proton/message.hpp>
+#include <proton/messaging_handler.hpp>
 
 namespace Cti {
     struct RfnIdentifier;
 }
 namespace Cti::Messaging::Qpid {
-    class ManagedConnection;
     class ManagedConsumer;
-    class MessageListener;
     class ManagedProducer;
 }
 namespace Cti::Messaging::Rfn {
@@ -32,7 +28,7 @@ struct e2edt_packet;
 struct e2edt_request_packet;
 struct e2edt_reply_packet;
 
-class E2eSimulator
+class E2eSimulator : public proton::messaging_handler
 {
 public:
 
@@ -41,34 +37,33 @@ public:
 
     void stop();
 
+    void on_session_open(proton::session& s) override;
+
 private:
+
+    proton::session _session;
+
+    std::mutex _sessionMutex;
+    std::condition_variable _sessionCv;
+    bool _sessionReady;
 
     using Bytes = std::vector<unsigned char>;
 
-    std::unique_ptr<Messaging::Qpid::ManagedConnection> conn;
-
-    std::unique_ptr<cms::Session> consumerSession;
-    std::unique_ptr<cms::Session> producerSession;
-
     std::unique_ptr<Messaging::Qpid::ManagedConsumer> batteryNodeGetRequestConsumer;
-    std::unique_ptr<Messaging::Qpid::MessageListener> batteryNodeGetRequestListener;
-    
     std::unique_ptr<Messaging::Qpid::ManagedConsumer> batteryNodeSetRequestConsumer;
-    std::unique_ptr<Messaging::Qpid::MessageListener> batteryNodeSetRequestListener;
 
     std::unique_ptr<Messaging::Qpid::ManagedConsumer> e2eRequestConsumer;
-    std::unique_ptr<Messaging::Qpid::MessageListener> e2eRequestListener;
-                    
     std::unique_ptr<Messaging::Qpid::ManagedProducer> e2eConfirmProducer;
     std::unique_ptr<Messaging::Qpid::ManagedProducer> e2eIndicationProducer;
 
-    void handleBatteryNodeGetChannelConfigRequest(const cms::Message* msg);
-    void handleBatteryNodeSetChannelConfigRequest(const cms::Message* msg);
-    void handleE2eDtRequest(const cms::Message *msg);
+    void handleBatteryNodeGetChannelConfigRequest(const proton::message& msg);
+    void handleBatteryNodeSetChannelConfigRequest(const proton::message& msg);
+    void handleE2eDtRequest(const proton::message& msg);
+
     void delayProcessing(float delay, const Messaging::Rfn::E2eDataRequestMsg requestMsg);
     void processE2eDtRequest(const Messaging::Rfn::E2eDataRequestMsg requestMsg);
 
-    void sendNetworkManagerRequestAck(const Messaging::Rfn::NetworkManagerRequestHeader&, const cms::Destination*);
+    void sendNetworkManagerRequestAck(const Messaging::Rfn::NetworkManagerRequestHeader&, const std::string & destination);
     void sendE2eDataConfirm(const Messaging::Rfn::E2eDataRequestMsg&);
 
     std::unique_ptr<e2edt_packet> parseE2eDtRequestPayload(const Bytes&, const RfnIdentifier&);

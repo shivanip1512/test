@@ -17,37 +17,28 @@
 
 #include <atomic>
 
+#include <proton/session.hpp>
 #include <proton/message.hpp>
+#include <proton/messaging_handler.hpp>
 
-namespace cms {
-class Connection;
-class Session;
-class Message;
-class ExceptionListener;
-class MessageListener;
-class Destination;
-class MessageConsumer;
-class MessageProducer;
-class CMSException;
-}
-
-namespace decaf::internal::util::concurrent {
-struct Threading;
-struct ThreadHandle;
+namespace proton {
+    class transport;
+    class connection;
+//    class session;
+    class receiver;
+    class sender;
 }
 
 namespace Cti::Messaging::Qpid {
-class ManagedConnection;
 class DestinationProducer;
 class DestinationConsumer;
 class QueueProducer;
 class QueueConsumer;
 class TopicConsumer;
 class TempQueueConsumer;
-class MessageListener;
 }
 
-class IM_EX_MSG CtiConnection : public Cti::Messaging::BaseConnection
+class IM_EX_MSG CtiConnection : public Cti::Messaging::BaseConnection, public proton::messaging_handler
 {
 public:
 
@@ -62,6 +53,23 @@ protected:
     CtiConnection( const CtiConnection& other ) = delete; // non construction-copyable
     CtiConnection& operator=( const CtiConnection& ) = delete; // non copyable
 
+    proton::session _session;
+    std::mutex _sessionMutex;
+    std::condition_variable _sessionCv;
+
+    enum class ConnectionState
+    {
+        WaitingForAck,
+        Connected,
+        Error
+    };
+
+    std::atomic<ConnectionState> _connectionState;
+
+    std::string getJmsType( const proton::message & m );
+    void setJmsType( proton::message & m, const std::string& type );
+
+
     void joinOutThreadOrDie();
 
     std::string _name;
@@ -75,7 +83,6 @@ protected:
     CtiTime _peerConnectTime;
 
     Cti::WorkerThread _outthread;
-    std::atomic<decaf::internal::util::concurrent::ThreadHandle*> _amqOutThreadHandle;
 
     Que_t  _outQueue; // contains message to send
     Que_t* _inQueue;  // contains message received
@@ -99,7 +106,6 @@ protected:
 
     mutable Lock               _connMux;
     mutable CtiCriticalSection _peerMux;
-    mutable CtiCriticalSection _advisoryMux;
 
     // State Descriptions:
     union
@@ -135,37 +141,30 @@ protected:
     void checkInterruption ();
     void checkInterruption ( const Cti::Timing::Chrono &duration );
 
-    void outThreadFunc    (); // OutBound messages to the application go through here
+    void outThreadFunc    (); // OutBound messages to the application go through here -- on_sendable ?? jmoc
     void threadInitiate   (); // This function starts the execution of the next two, which are threads.
     void cleanConnection  ();
     void forceTermination ();
     void triggerReconnect ();
     void resetPeer        ( const std::string &peerName );
 
-    boost::shared_ptr<Cti::Messaging::Qpid::ManagedConnection> _connection;
-
-    std::unique_ptr<cms::Session> _sessionIn;
-    std::unique_ptr<cms::Session> _sessionOut;
-
     std::unique_ptr<Cti::Messaging::Qpid::DestinationProducer> _producer;
     std::unique_ptr<Cti::Messaging::Qpid::TempQueueConsumer>   _consumer;
-//    std::unique_ptr<cms::MessageListener>                          _messageListener;
-    std::unique_ptr<Cti::Messaging::Qpid::MessageListener>                          _messageListener;
 
-    std::unique_ptr<Cti::Messaging::Qpid::TopicConsumer> _advisoryConsumer;
-//    std::unique_ptr<cms::MessageListener>                    _advisoryListener;
-    std::unique_ptr<Cti::Messaging::Qpid::MessageListener>                    _advisoryListener;
-
-//    void onMessage         ( const cms::Message* message );
-  //  void onAdvisoryMessage ( const cms::Message* message );
-    void onMessage         ( proton::message& msg );
-    void onAdvisoryMessage ( proton::message& msg );
-
-    void setupAdvisoryListener();
+    void onMessage( proton::message & msg );
 
     std::unique_ptr<CtiMessage> _outMessage;
 
 public:
+
+    // message_handler overloads for error handling...
+    void on_transport_error(proton::transport & t) override;
+    void on_connection_error(proton::connection & c) override;
+    void on_session_error(proton::session & s) override;
+    void on_receiver_error(proton::receiver & r) override;
+    void on_sender_error(proton::sender & s) override;
+//    void on_error(const error_condition&)
+
 
     void start();
     virtual void close();

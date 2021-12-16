@@ -498,36 +498,36 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
     try
     {
+        const auto queueName = Cti::Messaging::Qpid::Queue::dispatch;
+
+        CtiListenerConnection _listenerConnection(queueName);
+
         // main loop
-        for(;!bGCtrlC;)
+        for (; !bGCtrlC;)
         {
-            if( !_listenerConnection.verifyConnection() )
-            {
-                shutdownAllClients();
-
-                _listenerConnection.start();
-            }
-
-            if( _listenerConnection.acceptClient() )
+            if (auto replyTo = _listenerConnection.acceptClient(); !replyTo.empty())
             {
                 // Create new vangogh connection manager
-                CtiServer::ptr_type sptrConMan( CTIDBG_new CtiVanGoghConnectionManager( _listenerConnection, &MainQueue_ ));
+                CtiServer::ptr_type sptrConMan = boost::make_shared<CtiVanGoghConnectionManager>( replyTo, queueName, &MainQueue_ );
 
                 // add the new client connection
-                clientConnect( sptrConMan );
+                clientConnect(sptrConMan);
 
                 // Kick off the connection's communication threads.
                 sptrConMan->start();
 
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
+                if (gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
                 {
                     CTILOG_DEBUG(dout, "New connection established");
                 }
             }
 
-            validateConnections();
+            // once every 30s
+            {
+                validateConnections();
 
-            reportOnThreads();
+                reportOnThreads();
+            }
         }
     }
     catch(...)
@@ -4386,7 +4386,6 @@ CtiVanGogh::CtiVanGogh(CtiPointClientManager* externalMgr)
                     : *_localPointClientMgr },
         _pendingOpThread{PointMgr},
         _notificationConnection(NULL),
-        _listenerConnection( Cti::Messaging::Qpid::Queue::dispatch ),
         ShutdownOnThreadTimeout { true },
         _rphArchiver { ShutdownOnThreadTimeout, &CtiVanGogh::sendbGCtrlC }
 {
@@ -5964,14 +5963,6 @@ void CtiVanGogh::stopDispatch()
 {
     bGCtrlC = TRUE;     // set this flag so vangogh main thread signals the rest to shutdown.  YUK-8884
 
-    try
-    {
-        _listenerConnection.close();
-    }
-    catch(...)
-    {
-        // Dont really care, we are shutting down.
-    }
     shutdown();                   // Shutdown the server object.
 
     // Interrupt the CtiThread based threads.

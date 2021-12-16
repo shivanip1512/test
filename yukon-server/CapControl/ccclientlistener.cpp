@@ -7,6 +7,7 @@
 #include "utility.h"
 #include "ThreadStatusKeeper.h"
 #include "amq_constants.h"
+#include "connection_listener.h"
 
 extern unsigned long _CC_DEBUG;
 
@@ -35,8 +36,7 @@ CtiCCClientListener& CtiCCClientListener::getInstance()
 ---------------------------------------------------------------------------*/
 CtiCCClientListener::CtiCCClientListener() :
     _started(false),
-    _doquit(false),
-    _listenerConnection( Cti::Messaging::Qpid::Queue::capcontrol )
+    _doquit(false)
 {
 }
 
@@ -103,18 +103,6 @@ void CtiCCClientListener::stop()
     }
 
     removeAllConnections();
-
-    try
-    {
-        _listenerConnection.close();
-    }
-    catch(...)
-    {
-        if( _CC_DEBUG & CC_DEBUG_CLIENT )
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
-    }
 
     _started = false;
 
@@ -211,21 +199,17 @@ void CtiCCClientListener::_listen()
 
     try
     {
+        const auto queueName = Cti::Messaging::Qpid::Queue::capcontrol;
+
+        CtiListenerConnection _listenerConnection(queueName);
+
         // main loop
         while ( ! _doquit )
         {
-            if( !_listenerConnection.verifyConnection() )
-            {
-                removeAllConnections();
-
-                // proceed with (re)connection
-                _listenerConnection.start();
-            }
-
-            if( _listenerConnection.acceptClient() )
+            if( auto replyTo = _listenerConnection.acceptClient(); ! replyTo.empty() )
             {
                 // Create new connection manager
-                std::unique_ptr<CtiCCClientConnection> new_conn( CTIDBG_new CtiCCClientConnection( _listenerConnection ));
+                auto new_conn = std::make_unique<CtiCCClientConnection>(replyTo, queueName);
 
                 // Kick off the connection's communication threads.
                 new_conn->start();

@@ -1,54 +1,49 @@
 #pragma once
 
-#include <string>
 #include "dlldefs.h"
 #include "critical_section.h"
 #include "connection.h"
 
-class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
+#include <proton/session.hpp>
+#include <proton/messaging_handler.hpp>
+
+
+class IM_EX_MSG CtiListenerConnection
+    :   public Cti::Messaging::BaseConnection,
+        public proton::messaging_handler
 {
     const std::string _serverQueueName;
 
-    boost::shared_ptr<Cti::Messaging::Qpid::ManagedConnection> _connection;
+    proton::session     _session;
 
-    std::unique_ptr<cms::Session>                            _session;
-    std::unique_ptr<cms::Destination>                        _clientReplyDest;
     std::unique_ptr<Cti::Messaging::Qpid::QueueConsumer> _consumer;
+
+    std::queue<std::string> _clients;
+
+    std::mutex  _clientMux;
+    std::condition_variable _clientCond;
+
+    bool _ready;
 
     typedef std::map<std::string, CtiTime> DestTimeMap;
     DestTimeMap requestTimeMap;
 
-    typedef Cti::readers_writer_lock_t Lock;
-    typedef Lock::reader_lock_guard_t  ReaderGuard;
-    typedef Lock::writer_lock_guard_t  WriterGuard;
-
-    mutable Lock _connMux;
-
-    bool _closed;
-    bool _valid;
-
     const std::string _title;
 
-    void releaseResources();
     bool validateRequest( const std::string &replyTo );
 
 public:
 
+    void on_session_open(proton::session& session) override;
+
     CtiListenerConnection( const std::string &serverQueueName );
     virtual ~CtiListenerConnection();
 
-    void start();
-    virtual void close();
+    void close() override { }   // jmoc -- need to revisit this in the base class...
 
-    bool verifyConnection();
-    bool acceptClient();
-
-    boost::shared_ptr<Cti::Messaging::Qpid::ManagedConnection> getConnection() const;
-
-    virtual std::unique_ptr<cms::Destination> getClientReplyDest() const;
+    std::string acceptClient();
 
     std::string who() const;
-    std::string getServerQueueName() const;
 };
 
 

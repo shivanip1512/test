@@ -7,6 +7,7 @@
 #include "executor.h"
 #include "logger.h"
 #include "amq_constants.h"
+#include "connection_listener.h"
 
 using std::endl;
 using std::string;
@@ -36,8 +37,7 @@ CtiLMClientListener& CtiLMClientListener::getInstance()
 ---------------------------------------------------------------------------*/
 CtiLMClientListener::CtiLMClientListener() :
     _started(false),
-    _doquit(false),
-    _listenerConnection( Cti::Messaging::Qpid::Queue::loadmanagement )
+    _doquit(false)
 {
 }
 
@@ -102,18 +102,6 @@ void CtiLMClientListener::stop()
     }
 
     removeAllConnections();
-
-    try
-    {
-        _listenerConnection.close();
-    }
-    catch(...)
-    {
-        if(_LM_DEBUG & LM_DEBUG_STANDARD)
-        {
-            CTILOG_DEBUG(dout, "Unknown exception in CtiLMClientListener::stop()");
-        }
-    }
 
     _started = false;
 
@@ -197,19 +185,16 @@ void CtiLMClientListener::_listen()
 
     try
     {
+        const auto queueName = Cti::Messaging::Qpid::Queue::loadmanagement;
+
+        CtiListenerConnection _listenerConnection(queueName);
+
         while ( ! _doquit )
         {
-            if( !_listenerConnection.verifyConnection() )
-            {
-                removeAllConnections();
-
-                _listenerConnection.start();
-            }
-
-            if( _listenerConnection.acceptClient() )
+            if( auto replyTo =_listenerConnection.acceptClient(); ! replyTo.empty() )
             {
                 // Create new connection manager
-                CtiLMConnectionPtr new_conn( CTIDBG_new CtiServerConnection( _listenerConnection, &_incomingQueue ));
+                auto new_conn = std::make_shared<CtiServerConnection>( replyTo, queueName, &_incomingQueue );
 
                 // Log the outQueue memory consumption every additional 100 messages queued or 5 minutes
                 new_conn->setOutQueueLogging( 100, std::chrono::minutes( 5 ) );

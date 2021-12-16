@@ -9,9 +9,9 @@ using namespace std;
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCClientConnection::CtiCCClientConnection( CtiListenerConnection &listenerConn ) :
+CtiCCClientConnection::CtiCCClientConnection(const std::string& replyDestination, const std::string& serverQueueName) :
 _valid(true),
-_connection( listenerConn, & CtiCapController::getInClientMsgQueueHandle() )
+_connection( replyDestination, serverQueueName, & CtiCapController::getInClientMsgQueueHandle() )
 {
 }
 

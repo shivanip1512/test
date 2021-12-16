@@ -317,10 +317,12 @@ BOOST_AUTO_TEST_CASE( test_registration_add_remove_points )
     test_CtiPointClientManager pcm;
     test_CtiVanGogh vg{pcm};
 
-    CtiListenerConnection lc( "test1" );
+    const auto queue1 = "test1";
+
+    CtiListenerConnection lc( queue1 );
 
     auto testQ = boost::make_shared<CtiConnection::Que_t>();
-    auto  vgcm = boost::make_shared<CtiVanGoghConnectionManager>(lc, testQ.get());
+    auto  vgcm = boost::make_shared<CtiVanGoghConnectionManager>( "client1", queue1, testQ.get() );
     auto    cm = boost::static_pointer_cast<CtiConnectionManager>(vgcm);
 
     //  Check ADD_POINTS
@@ -371,10 +373,12 @@ BOOST_AUTO_TEST_CASE( test_registration_all_points )
     test_CtiPointClientManager pcm;
     test_CtiVanGogh vg{pcm};
 
-    CtiListenerConnection lc( "test1" );
+    const auto queue1 = "test1";
+
+    CtiListenerConnection lc( queue1 );
 
     auto testQ = boost::make_shared<CtiConnection::Que_t>();
-    auto  vgcm = boost::make_shared<CtiVanGoghConnectionManager>(lc, testQ.get());
+    auto  vgcm = boost::make_shared<CtiVanGoghConnectionManager>( "client2", queue1, testQ.get() );
     auto    cm = boost::static_pointer_cast<CtiConnectionManager>(vgcm);
 
     CtiPointRegistrationMsg aReg{ REG_ALL_POINTS };

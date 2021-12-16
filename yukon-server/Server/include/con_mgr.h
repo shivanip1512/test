@@ -5,6 +5,7 @@
 #include "connection_server.h"
 #include "dllbase.h"
 
+
 class IM_EX_CTISVR CtiConnectionManager : public CtiServerConnection
 {
 protected:
@@ -29,7 +30,7 @@ public:
 
    typedef CtiConnection Inherited;
 
-   CtiConnectionManager( CtiListenerConnection& listenerConn, Que_t *inQ = NULL );
+   CtiConnectionManager( const std::string & replyToName, const std::string & serverQueueName, Que_t* inQ = NULL );
 
    virtual ~CtiConnectionManager();
 

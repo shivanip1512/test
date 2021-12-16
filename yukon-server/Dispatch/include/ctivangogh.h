@@ -31,6 +31,7 @@
 #include "tbl_contact_notification.h"
 #include "rtdb.h"
 #include "connection_client.h"
+#include "connection_listener.h"
 #include "rph_archiver.h"
 
 class CtiPointRegistrationMsg;
@@ -134,10 +135,6 @@ private:
     void loadStalePointMaps(int pointID = 0);
     void processStalePoint(const CtiPointBase &point, CtiDynamicPointDispatch &dpd, int updateType, const CtiPointDataMsg &aPD, CtiMultiWrapper& wrap );
     void checkForStalePoints(CtiMultiWrapper &aWrap);
-
-
-    // handles dispatcher activemq static queue to receive client request to connect
-    CtiListenerConnection _listenerConnection;
 
 protected:
 
