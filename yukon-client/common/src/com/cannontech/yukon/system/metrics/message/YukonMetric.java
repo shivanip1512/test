@@ -4,11 +4,15 @@ import java.io.Serializable;
 
 import org.joda.time.DateTime;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.joda.deser.DateTimeDeserializer;
+
 public class YukonMetric implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private YukonMetricPointInfo pointInfo;
     private Object value;
+    @JsonDeserialize(using = DateTimeDeserializer.class)
     private DateTime timestamp;
 
     public YukonMetric() {
@@ -37,6 +41,11 @@ public class YukonMetric implements Serializable {
 
     public void setTimestamp(DateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "YukonMetric [pointInfo=" + pointInfo + ", value=" + value + ", timestamp=" + timestamp + "]";
     }
 
 }
