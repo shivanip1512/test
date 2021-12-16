@@ -916,6 +916,7 @@
               </page>
             </pages>
           </page>
+          <page name="systemPerformanceMetrics" type="BASIC" />
         </pages>
       </page>
       <page name="siteMap" type="BASIC">
