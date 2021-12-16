@@ -13,6 +13,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.device.Device;
 import com.cannontech.web.support.systemPerformanceMetrics.service.SystemPerformanceMetricsService;
 
 public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMetricsService {
@@ -24,7 +25,7 @@ public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMet
         List<LitePoint> systemPoints = new ArrayList<LitePoint>();
         try {
             // For System Points, Device Id is 0 and Point Type is System.
-            systemPoints = pointDao.getLitePointIdByDeviceId_PointType(0, PointType.System);
+            systemPoints = pointDao.getLitePointIdByDeviceId_PointType(Device.SYSTEM_DEVICE_ID, PointType.System);
             systemPoints.stream().forEach(litePoint -> log.debug("Point Name {}, Point type {}, PAObject ID {} ",
                     litePoint.getPointName(), PointType.getForId(litePoint.getLiteType()), litePoint.getPaobjectID()));
         } catch (NotFoundException e) {
