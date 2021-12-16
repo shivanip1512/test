@@ -9,13 +9,6 @@ LIB=lib
 PDB=pdb
 !ENDIF
 
-ACTIVEMQ_BIN    = $(ACTIVEMQ)\$(CONFIGURATION)\bin
-!IF "$(CONFIGURATION)"=="DEBUG"
-ACTIVEMQ_DLL    = activemq-cppd.dll
-!ELSE
-ACTIVEMQ_DLL    = activemq-cpp.dll
-!ENDIF
-
 APR_BIN         = $(APR)\$(CONFIGURATION)\bin
 APR_DLL         = libapr-1.dll
 
@@ -97,7 +90,6 @@ XERCES_DLL      = xerces-c_3_2.dll
 !ENDIF
 
 ALL: $(BIN) $(LIB) $(PDB) \
-  $(BIN)\$(ACTIVEMQ_DLL) \
   $(BIN)\$(APR_DLL) \
   $(BIN)\$(APR_ICONV_DLL) \
   $(BIN)\$(APR_UTIL_DLL) \
@@ -127,8 +119,6 @@ ALL: $(BIN) $(LIB) $(PDB) \
 $(BIN):; md $(BIN)
 $(LIB):; md $(LIB)
 $(PDB):; md $(PDB)
-
-$(BIN)\$(ACTIVEMQ_DLL):$(ACTIVEMQ_BIN)\$(ACTIVEMQ_DLL); copy $? $@
 
 $(BIN)\$(APR_DLL):$(APR_BIN)\$(APR_DLL); copy $? $@
 $(BIN)\$(APR_UTIL_DLL):$(APR_UTIL_BIN)\$(APR_UTIL_DLL); copy $? $@

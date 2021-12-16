@@ -48,7 +48,6 @@ std::map<std::string, std::string> ThirdPartyLibraries::getKnownLibraryPaths()
 {
     //  List of PATH_TO... library paths provided in the Properties -> C/C++ -> Preprocessor -> Preprocessor Definitions
     return {
-        LIBRARY_ENTRY(ACTIVEMQ),
         LIBRARY_ENTRY(APR),
         LIBRARY_ENTRY(APR_ICONV),
         LIBRARY_ENTRY(APR_UTIL),

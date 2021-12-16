@@ -6218,20 +6218,6 @@ Icons :
 
 # -------
 C++ :
-  - project : ActiveMQ-CPP 
-    path : ACTIVEMQ
-    version : 3.9.5
-    project URL : "http://activemq.apache.org/cms/"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : 01c2e51bfced38625795d1a006f5a9bd
-    sha1 : 14c729fe48a88ca797fedb7a4327bc8f1078af65
-    fileCount : 691
-    totalSize : 36792387
-    updated : 2020-06-25  
-    jira : YUK-21544
-    notes : Updated internal zlib to 1.2.11
-
   - project : Apache Portable Runtime
     path : APR
     version : 1.7.0
