@@ -18,7 +18,7 @@ public abstract class PaoCountDataProcessor extends YukonMetricIntervalProducer 
 
     @Override
     public YukonMetric produce() {
-        double value = getData();
+        int value = getData();
         YukonMetric metric = new YukonMetric();
         metric.setValue(value);
         metric.setPointInfo(getYukonMetricPointInfo());
