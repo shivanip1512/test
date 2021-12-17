@@ -12,11 +12,17 @@ public class YukonMetric implements Serializable {
     private static final long serialVersionUID = 1L;
     private YukonMetricPointInfo pointInfo;
     private Object value;
-    @JsonDeserialize(using = DateTimeDeserializer.class)
-    private DateTime timestamp;
+    @JsonDeserialize(using = DateTimeDeserializer.class) private DateTime timestamp;
 
     public YukonMetric() {
         super();
+    }
+
+    public YukonMetric(YukonMetricPointInfo pointInfo, Object value, DateTime timestamp) {
+        super();
+        this.pointInfo = pointInfo;
+        this.value = value;
+        this.timestamp = timestamp;
     }
 
     public YukonMetricPointInfo getPointInfo() {

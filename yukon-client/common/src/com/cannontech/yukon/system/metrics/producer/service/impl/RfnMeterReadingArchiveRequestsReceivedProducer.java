@@ -25,7 +25,7 @@ public class RfnMeterReadingArchiveRequestsReceivedProducer extends YukonMetricT
     @Override
     public YukonMetric produce() {
         YukonMetric metric = new YukonMetric();
-        metric.setPointInfo(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUEST_RECEIVED);
+        metric.setPointInfo(getYukonMetricPointInfo());
         metric.setValue(10);
         metric.setTimestamp(new DateTime());
         debug(metric, log);
@@ -50,5 +50,10 @@ public class RfnMeterReadingArchiveRequestsReceivedProducer extends YukonMetricT
             }
         }
         return false;
+    }
+
+    @Override
+    public YukonMetricPointInfo getYukonMetricPointInfo() {
+        return YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUEST_RECEIVED;
     }
 }
