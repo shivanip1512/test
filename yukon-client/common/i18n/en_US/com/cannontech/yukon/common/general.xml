@@ -279,6 +279,7 @@
 <entry key="yukon.common.search.noResultsFound">No results found.</entry>
 <entry key="yukon.common.search.placeholder">search</entry>
 <entry key="yukon.common.selectall">Select All</entry>
+<entry key="yukon.common.selectDateRange">Select Date Range</entry>
 <entry key="yukon.common.selectGroup">Select Device Group</entry>
 <entry key="yukon.common.selectGroup.more">and {0} more</entry>
 <entry key="yukon.common.selectGroup.title">Select Device Group</entry>

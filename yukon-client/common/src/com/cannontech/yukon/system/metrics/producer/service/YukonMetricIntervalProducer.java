@@ -8,9 +8,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
 
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Base class for the producers which will produce and publish the data on specified time interval.
@@ -38,11 +36,7 @@ public abstract class YukonMetricIntervalProducer implements YukonMetricProducer
      */
     public void debug(YukonMetric metric, Logger log) {
         if (log.isDebugEnabled()) {
-            try {
-                log.debug("Publishing Yukon Metric Interval data {} to the topic", JsonUtils.toJson(metric));
-            } catch (JsonProcessingException e) {
-                log.error("Error occurred while parsing to JSON in debug mode.", e);
-            }
+            log.debug("Publishing Yukon Metric Interval data {} to the topic", metric);
         }
     }
 }

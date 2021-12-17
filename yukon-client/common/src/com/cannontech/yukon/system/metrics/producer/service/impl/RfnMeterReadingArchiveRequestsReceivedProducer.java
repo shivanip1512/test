@@ -25,7 +25,7 @@ public class RfnMeterReadingArchiveRequestsReceivedProducer extends YukonMetricT
     @Override
     public void produceAndPublish() {
         YukonMetric metric = new YukonMetric();
-        metric.setPointInfo(YukonMetricPointInfo.RFN_METER_READING_ARCHIVERE_REQUEST_RECEIVED);
+        metric.setPointInfo(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUEST_RECEIVED);
         metric.setValue(10);
         metric.setTimestamp(new DateTime());
         debug(metric, log);
