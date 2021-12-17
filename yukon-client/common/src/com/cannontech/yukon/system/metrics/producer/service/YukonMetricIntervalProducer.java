@@ -7,13 +7,16 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
+import com.cannontech.yukon.system.metrics.publisher.YukonMetricPublisher;
 
 /**
  * Base class for the producers which will produce and publish the data on specified time interval.
  */
 public abstract class YukonMetricIntervalProducer implements YukonMetricProducer {
+    @Autowired private YukonMetricPublisher publisher;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1, new YukonMetricThreadFactory());
 
     @PostConstruct
@@ -21,7 +24,10 @@ public abstract class YukonMetricIntervalProducer implements YukonMetricProducer
         scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                produceAndPublish();
+                YukonMetric metric = produce();
+                if (metric != null) {
+                    publisher.publish(metric);
+                }
             }
         }, 1, getPeriodInMinutes(), TimeUnit.MINUTES);
     }

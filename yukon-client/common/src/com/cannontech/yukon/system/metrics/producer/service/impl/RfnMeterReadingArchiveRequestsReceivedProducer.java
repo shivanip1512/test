@@ -23,13 +23,14 @@ public class RfnMeterReadingArchiveRequestsReceivedProducer extends YukonMetricT
      * exceeds 95%, it push the data.
      */
     @Override
-    public void produceAndPublish() {
+    public YukonMetric produce() {
         YukonMetric metric = new YukonMetric();
         metric.setPointInfo(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUEST_RECEIVED);
         metric.setValue(10);
         metric.setTimestamp(new DateTime());
         debug(metric, log);
         publisher.publish(metric);
+        return metric;
     }
 
     @Override
@@ -38,15 +39,16 @@ public class RfnMeterReadingArchiveRequestsReceivedProducer extends YukonMetricT
     }
 
     @Override
-    public void watchAndNotify() {
+    public boolean watch() {
         // Logic to continuously monitor a data. Can use a thread to monitor and notify the once reached the threshold value
         if (shouldProduce()) {
             Random random = new Random();
             int percentage = random.nextInt(100);
             if (percentage > thresholdLevel) {
                 log.info("Threashold Reached to {}, so publishing data to the topic.", percentage);
-                produceAndPublish();
+                return true;
             }
         }
+        return false;
     }
 }

@@ -7,8 +7,10 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
+import com.cannontech.yukon.system.metrics.publisher.YukonMetricPublisher;
 
 /**
  * Base class for the producers which will produce and publish the data based on threshold value. This will compute and then
@@ -16,7 +18,7 @@ import com.cannontech.yukon.system.metrics.message.YukonMetric;
  * and publish Yukon Metrics data.
  */
 public abstract class YukonMetricThresholdProducer implements YukonMetricProducer {
-
+    @Autowired private YukonMetricPublisher publisher;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1, new YukonMetricThreadFactory());
 
     @PostConstruct
@@ -24,7 +26,10 @@ public abstract class YukonMetricThresholdProducer implements YukonMetricProduce
         scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                watchAndNotify();
+                boolean shouldProduce = watch();
+                if (shouldProduce) {
+                    publisher.publish(produce());
+                }
             }
         }, 15, 30, TimeUnit.SECONDS);
     }
@@ -33,7 +38,7 @@ public abstract class YukonMetricThresholdProducer implements YukonMetricProduce
      * Compute the data and compare the data with the threshold value in a regular interval. Once exceeded the threshold level
      * notify the publisher to generate and publish the metric data.
      */
-    public abstract void watchAndNotify();
+    public abstract boolean watch();
 
     /**
      * Debug message for threshold data
