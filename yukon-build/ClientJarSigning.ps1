@@ -20,7 +20,7 @@ Foreach-Object {
 try {
     $originalName = $_.FullName
     $unsigned = $_.basename + '-unsigned' + $_.extension
-    Rename-Item –path $_.Fullname –Newname ($unsigned)
+    Rename-Item -Path $_.Fullname -NewName ($unsigned)
     $unsignedFilePath = Get-Item -Path "..\yukon-install\sign-jar\$unsigned"
     Write-Host "Original File: $originalName"
     Write-Host "Unsigned File: $unsignedFilePath"
@@ -32,10 +32,12 @@ try {
             "-digestalgorithm SHA-256 " +
             "-truststore $ENV:SIGNSERVER_HOME\eaton-truststore.jks -truststorepwd eaton " +
             "-infile $unsignedFilePath -outfile $originalName")
-    Write-Host "Signing Jar File: $originalName"
+    Write-Host "Signing Command: $signingCommand"
     Invoke-Expression -Command $signingCommand
+    Start-Sleep -s 1
     if (Test-Path $originalName -PathType leaf) {
-        Remove-Item -Path $unsignedFilePath
+        Write-Host "Removing File: $unsignedFilePath"
+        Remove-Item -Path $unsignedFilePath -Verbose
     }
     } 
     catch {
