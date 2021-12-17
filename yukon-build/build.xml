@@ -167,7 +167,24 @@
         <mkdir dir="${yukon.exampleXml}"/>
         <copy file="${basedir}/yukon-client/common/src/com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml" 
             tofile="${yukon.exampleXml}/rfnPointMapping_Example.xml"/>
+        
+        <mkdir dir="${basedir}/yukon-install/sign-jar"/>
+        <property name="sign.jar" value="${basedir}/yukon-install/sign-jar"/>
+        <copy todir="${sign.jar}" preservelastmodified="yes">
+            <fileset dir="${client.bin}">
+                <include name="*.jar"/>
+                <exclude name="activation.jar"/>
+                <exclude name="azure-core-0.9.7.jar"/>
+                <exclude name="azure-servicebus-0.9.7.jar"/>
+                <exclude name="sqljdbc42.jar"/>
+            </fileset>
+         </copy>
 
+        <exec failonerror="true" dir="${basedir}/yukon-build" executable="cmd.exe">
+            <arg value="/c" />
+            <arg value="powershell" />
+            <arg value="${basedir}\yukon-build\ClientJarSigning.ps1" />
+        </exec>
         <!--<signjar alias="cannon6" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
             <fileset dir="${client.bin}">
                 <include name="*.jar"/>
