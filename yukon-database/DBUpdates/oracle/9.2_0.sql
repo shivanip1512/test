@@ -173,9 +173,6 @@ HAVING
 INSERT INTO DBUpdates VALUES ('YUK-24293', '9.2.0', SYSDATE);
 /* @end YUK-24293 */
 
-INSERT INTO DBUpdates VALUES ('YUK-25214', '9.2.0', SYSDATE);
-/* @end YUK-25214 */
-
 /* @start YUK-25509 */
 UPDATE LMGroupExpressCom 
 SET ProtocolPriority = 3 
