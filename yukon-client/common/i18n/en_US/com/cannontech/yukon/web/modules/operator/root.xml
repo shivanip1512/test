@@ -35,6 +35,8 @@
     <entry key="yukon.web.modules.operator.gateways.list.firmwareUpdates.totalServers">Total Update Servers</entry>
     <entry key="yukon.web.modules.operator.gateways.list.manageFirmware">Manage Firmware</entry>
     <entry key="yukon.web.modules.operator.gateways.list.manageCertificates">Manage Certificates</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.gateways">Gateways</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.updateGateways">Update NM IP Address/Port</entry>
     <entry key="yukon.web.modules.operator.gateways.list.NAME">Name</entry>
     <entry key="yukon.web.modules.operator.gateways.list.SERIALNUMBER">Serial Number</entry>
     <entry key="yukon.web.modules.operator.gateways.list.FIRMWAREVERSION">Firmware Version</entry>
@@ -173,6 +175,10 @@
     <entry key="yukon.web.modules.operator.gateways.updateserver.url.required">Server URL is required when not using defaults.</entry>
     <entry key="yukon.web.modules.operator.gateways.updateserver.password.required">Password is required when not using defaults.</entry>
     <entry key="yukon.web.modules.operator.gateways.updateserver.username.required">Username is required when not using defaults.</entry>
+    <entry key="yukon.web.modules.operator.gateways.bulkUpdate.gateways.required">Gateway selection is required.</entry>
+    <entry key="yukon.web.modules.operator.gateways.bulkUpdate.gatewaySuccessMessage">The following gateways were updated successfully: {0}.</entry>
+    <entry key="yukon.web.modules.operator.gateways.bulkUpdate.gatewayErrorMessage">An error occurred while trying to update the following gateways: {0}.</entry>
+    
     <entry key="yukon.web.modules.operator.gateways.ipAddress.required">IP Address is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.ipAddress.invalid">Not a valid IP Address.</entry>
     <entry key="yukon.web.modules.operator.gateways.latitude.invalid">Latitude must be between -90 and 90.</entry>
