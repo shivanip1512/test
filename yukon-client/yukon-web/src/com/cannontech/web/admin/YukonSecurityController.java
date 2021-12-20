@@ -68,6 +68,8 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.security.EncryptionKey;
+import com.cannontech.dr.eatonCloud.model.EatonCloudException;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.ecobee.message.ZeusEncryptionKey;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.service.impl.EcobeeZeusCommunicationServiceImpl;
@@ -323,9 +325,9 @@ public class YukonSecurityController {
     	try {
     		eatonCloudSecretRotationServiceV1.rotateSecret(secretNumber, user);
     		flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".secretsBox.secretRotationSuccess", secretNumber));
-    	} catch (Exception e) {
+    	} catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
     		log.error("Error occurred refreshing the Brightlayer Secret", e);
-    		flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".secretsBox.secretRotationError", secretNumber));
+    		flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".secretsBox.secretRotationError", secretNumber, e.getMessage()));
     	}
         return "redirect:view";
     }
