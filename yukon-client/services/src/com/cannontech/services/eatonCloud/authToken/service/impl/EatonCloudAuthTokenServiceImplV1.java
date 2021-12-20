@@ -116,6 +116,7 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
         try {
             EatonCloudTokenV1 newToken = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
             tokenCache.put(serviceAccountId, newToken);
+            log.trace("Retrieved Eaton Cloud token for secret1.");
             sendResponse(message, newToken, null);
         } catch (EatonCloudCommunicationExceptionV1 e) {
             try {
@@ -125,6 +126,7 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
                         serviceAccountId);
                 tokenCache.put(serviceAccountId, newToken);
                 sendResponse(message, newToken, null);
+                log.trace("Retrieved Eaton Cloud token for secret2.");
             } catch (EatonCloudCommunicationExceptionV1 ex) {
                 log.error("Token retrieval for secret2 failed:{}",
                         new GsonBuilder().setPrettyPrinting().create().toJson(ex.getErrorMessage()));
@@ -136,10 +138,8 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
     @Override
     public EatonCloudTokenV1 retrieveNewToken(GlobalSettingType type, String serviceAccountId) {
         String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, log, restTemplate);
-        int secret = type == GlobalSettingType.EATON_CLOUD_SECRET ? 1 : 2;
         EatonCloudCredentialsV1 credentials = getCredentials(type, serviceAccountId);
         EatonCloudTokenV1 newToken = restTemplate.postForObject(url, credentials, EatonCloudTokenV1.class);
-        log.trace("{} Retrieved Eaton Cloud token for secret{} serviceAccountId:{} url:{}.", newToken.getToken(), secret, serviceAccountId, url);
         return newToken;
     }
 

@@ -84,7 +84,7 @@ public class EatonCloudSecretRotationServiceV1 {
     private void rotateSecrets() {
         try {
             EatonCloudServiceAccountDetailV1 detail = eatonCloudCommunicationService.getServiceAccountDetail();
-            globalSettingsToSecret.keySet().forEach(type -> rotateAndValidateSecret(detail, type));
+            globalSettingsToSecret.keySet().stream().sorted().forEach(type -> rotateAndValidateSecret(detail, type));
         } catch (EatonCloudCommunicationExceptionV1 e) {
             log.error("Account info retrieval failed:{}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));

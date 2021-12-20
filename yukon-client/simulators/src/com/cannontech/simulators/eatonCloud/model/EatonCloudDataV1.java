@@ -16,7 +16,6 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
@@ -49,7 +48,6 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private EatonCloudFakeTimeseriesDataV1 timeseriesData;
-    private EatonCloudServiceAccountDetailV1 account;
     
     private EatonCloudVersion version = EatonCloudVersion.V1;
     
@@ -62,27 +60,12 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     //if device was not create in 30 seconds, it will not create at all. If debugging creation code, extend the 30 sec value. 
     private static Cache<String, String> creatingGuids =
             CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
-    
-    @PostConstruct
-    public void init() {
-        String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-        Date now = DateTime.now().toDate();
-        List<EatonCloudSecretV1> secrets = new ArrayList<>();
-        secrets.add(new EatonCloudSecretV1("secret1", DateTime.now().plusMonths(6).toDate()));
-        secrets.add(new EatonCloudSecretV1("secret2", DateTime.now().plusMonths(7).toDate()));
-        account = new EatonCloudServiceAccountDetailV1(serviceAccountId, "", true, "", "", secrets, now, "", now, "");
-    }
-    
-
+   
     @Override
     public void expireSecrets() {
-      account.getSecrets().clear();
-      account.getSecrets().add(new EatonCloudSecretV1("secret1", DateTime.now().plusMonths(6).toDate()));
-      account.getSecrets().add(new EatonCloudSecretV1("secret2", DateTime.now().plusMonths(6).toDate()));
+      super.expireSecrets();
     }
-    
-    
-    
+     
     public EatonCloudSimulatorResponse token1() {
         
         if (status == HttpStatus.BAD_REQUEST.value()) {
@@ -327,6 +310,11 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of(), "Given Service Account Not found.","624b5e65-5e4c-4196-8a8a-54f833c9fc42", status, "2021-03-10T07:27:38.2222228+00:00", 11418);
             return new EatonCloudSimulatorResponse(error, status);
         }
+        
+        List<EatonCloudSecretV1> secrets = new ArrayList<>();
+        secrets.add(new EatonCloudSecretV1("secret1", expiryTime1));
+        secrets.add(new EatonCloudSecretV1("secret2", expiryTime2));
+        EatonCloudServiceAccountDetailV1 account = new EatonCloudServiceAccountDetailV1(serviceAccountId, "", true, "", "", secrets, new Date(), "", new Date(), "");
         return new EatonCloudSimulatorResponse(account, status);
     }
     
@@ -347,10 +335,15 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
 
         }
         
-        EatonCloudSecretValueV1 secret = new EatonCloudSecretValueV1(secretName, DateTime.now().plusYears(1).toDate(), RandomStringUtils.random(5, true, true));
-        //replace existing secret with new secret
-        account.getSecrets().removeIf(s -> s.getName().equals(secret.getName()));
-        account.getSecrets().add(secret); 
+        EatonCloudSecretValueV1 secret = null;
+        if(secretName.equals("secret1")) {
+            this.resetToken1();
+            secret = new EatonCloudSecretValueV1(secretName, expiryTime1, RandomStringUtils.random(5, true, true));
+        }
+        if(secretName.equals("secret2")) {
+            this.resetToken2();
+            secret = new EatonCloudSecretValueV1(secretName, expiryTime2, RandomStringUtils.random(3, true, true));
+        }
         
         return new EatonCloudSimulatorResponse(secret, status);
     }
@@ -361,30 +354,6 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
             return this;
         }
         return null;
-    }
-
-
-    @Override
-    public Instant getExpiryTime1() {
-        return getExpiryTime(1, account);
-    }
-
-
-    @Override
-    public Instant getExpiryTime2() {
-        return getExpiryTime(2, account);
-    }
-
-    private Instant getExpiryTime(int secretNumber, EatonCloudServiceAccountDetailV1 detail) {
-        Date time1 = detail.getSecrets().stream()
-                .filter(s -> s.getName().equals("secret" + secretNumber))
-                .findFirst()
-                .orElse(null)
-                .getExpiryTime();
-        if (time1 == null) {
-            return null;
-        }
-        return new Instant(time1);
     }
     
 }

@@ -115,14 +115,14 @@ public class EatonCloudSimulatorController {
             EatonCloudSimulatorStatisticsResponse response = simulatorsCommunicationService.sendRequest(request,
                     EatonCloudSimulatorStatisticsResponse.class);
             model.addAttribute("cachedToken", cachedToken);
-            model.addAttribute("secret1", response.getToken1());
+            model.addAttribute("secret1", settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET));
+            model.addAttribute("secret1Token", response.getToken1());
             model.addAttribute("secret1Expiration", response.getExpiryTime1());
-            model.addAttribute("secret2", response.getToken2());
+            model.addAttribute("secret2", settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET2));
+            model.addAttribute("secret2Token", response.getToken2());
             model.addAttribute("secret2Expiration", response.getExpiryTime2());
-            log.info("Token:{} cached by Service Manager", cachedToken);
-            log.info("secret1 Token:{} ExpiryTime:{} cached by Simulator", response.getToken1(), response.getExpiryTime1());
-            log.info("secret2 Token:{} ExpiryTime:{} cached by Simulator", response.getToken2(), response.getExpiryTime2());
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
+            model.addAttribute("cachedToken", "Doesn't exist");
             log.error("Error", e);
         }
     }
@@ -317,7 +317,6 @@ public class EatonCloudSimulatorController {
                 jmsTemplateSecretRotation.convertAndSend(new EatonCloudSecretRotationSimulationRequest());
                 flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Sent message to SM to rotate secrets."));
             }
-            printStatistics();
         } catch (Exception e) {
             log.error("Error", e);
         }
