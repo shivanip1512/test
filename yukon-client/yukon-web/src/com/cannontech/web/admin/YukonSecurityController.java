@@ -65,6 +65,7 @@ import com.cannontech.core.dao.PaoDao.InfoKey;
 import com.cannontech.core.dao.impl.DynamicPaoInfo;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.dr.ecobee.message.ZeusEncryptionKey;
@@ -89,6 +90,7 @@ import com.cannontech.system.dao.impl.GlobalSettingDaoImpl;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.dr.eatonCloud.service.v1.EatonCloudSecretRotationServiceV1;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Maps;
@@ -110,7 +112,7 @@ public class YukonSecurityController {
     @Autowired private EcobeeZeusCommunicationServiceImpl ecobeeZeusCommunicationService;
     @Autowired private EventLogHelper eventLogHelper;
     @Autowired private PaoDao paoDao;
-   
+    @Autowired private EatonCloudSecretRotationServiceV1 eatonCloudSecretRotationServiceV1;   
     
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -223,6 +225,8 @@ public class YukonSecurityController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("encryptedRoute", encryptedRoute);
         model.addAttribute("encryptedRoutes", encryptedRouteDao.getAllEncryptedRoutes());
+        
+        model.addAttribute("brightlayerSecretKeyExpiration", eatonCloudSecretRotationServiceV1.getSecretExpiryTime());
 
         model.addAttribute("encryptionKey", encryptionKey);
         List<EncryptionKey> encryptionKeys = encryptedRouteDao.getEncryptionKeys();
@@ -312,6 +316,18 @@ public class YukonSecurityController {
         model.addAttribute("honeywellFileImportBindingBean", honeywellFileImportBindingBean);
 
         return "security/view.jsp";
+    }
+    
+    @PostMapping("/config/security/refreshSecret")
+    public String refreshSecret(Integer secretNumber, LiteYukonUser user, FlashScope flashScope) {
+    	try {
+    		eatonCloudSecretRotationServiceV1.rotateSecret(secretNumber, user);
+    		flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".secretsBox.secretRotationSuccess", secretNumber));
+    	} catch (Exception e) {
+    		log.error("Error occurred refreshing the Brightlayer Secret", e);
+    		flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".secretsBox.secretRotationError", secretNumber));
+    	}
+        return "redirect:view";
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/config/security/saveNewKey")
