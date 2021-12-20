@@ -33,7 +33,7 @@ try {
             "-truststore $ENV:SIGNSERVER_HOME\eaton-truststore.jks -truststorepwd eaton " +
             "-infile $unsignedFilePath -outfile $originalName")
     Write-Host "Signing Command: $signingCommand"
-    Invoke-Expression -Command $signingCommand -Verbose
+    Invoke-Expression -Command $signingCommand
     Start-Sleep -s 1
     if (Test-Path $originalName -PathType leaf) {
         Write-Host "Removing File: $unsignedFilePath"

@@ -180,10 +180,9 @@
             </fileset>
          </copy>
 
-        <exec failonerror="true" dir="${basedir}/yukon-build" executable="cmd.exe">
-            <arg value="/c" />
-            <arg value="powershell" />
-            <arg value="${basedir}\yukon-build\ClientJarSigning.ps1" />
+        <exec dir="${basedir}/yukon-build" executable="powershell.exe" timeout="5000000" failonerror="true">
+            <arg line="-ExecutionPolicy bypass" />
+            <arg line="-File ${basedir}\yukon-build\ClientJarSigning.ps1" />
         </exec>
         <!--<signjar alias="cannon6" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
             <fileset dir="${client.bin}">
