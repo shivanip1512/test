@@ -76,9 +76,9 @@
 	    </copy>
    	
 	    <copy todir="dist/lib">
-	      <fileset file="${yukon.lib}/log4j-api-2.16.0.jar"/>
-	      <fileset file="${yukon.lib}/log4j-core-2.16.0.jar"/>
-	      <fileset file="${yukon.lib}/log4j-jcl-2.16.0.jar"/>
+	      <fileset file="${yukon.lib}/log4j-api-2.17.0.jar"/>
+	      <fileset file="${yukon.lib}/log4j-core-2.17.0.jar"/>
+	      <fileset file="${yukon.lib}/log4j-jcl-2.17.0.jar"/>
 	      <fileset file="${yukon.lib}/commons-lang3-3.3.1.jar"/>
 	      <fileset file="${yukon.lib}/spring-aop-5.1.5.RELEASE.jar"/>
 	      <fileset file="${yukon.lib}/spring-aspects-5.1.5.RELEASE.jar"/>
