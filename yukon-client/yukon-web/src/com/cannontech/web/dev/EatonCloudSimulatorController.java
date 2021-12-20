@@ -103,17 +103,22 @@ public class EatonCloudSimulatorController {
 
         model.addAttribute("autoCreationTypes", List.of(PaoType.LCR6200C, PaoType.LCR6600C));
         
-        printStatistics();
+        printStatistics(model);
 
         return "eatonCloud/home.jsp";
     }
 
-    private void printStatistics() {
+    private void printStatistics(ModelMap model) {
         try {
             String cachedToken = eatonCloudCommunicationServiceV1.getToken().getToken();
             EatonCloudSimulatorStatisticsRequest request = new EatonCloudSimulatorStatisticsRequest(EatonCloudVersion.V1);
             EatonCloudSimulatorStatisticsResponse response = simulatorsCommunicationService.sendRequest(request,
                     EatonCloudSimulatorStatisticsResponse.class);
+            model.addAttribute("cachedToken", cachedToken);
+            model.addAttribute("secret1", response.getToken1());
+            model.addAttribute("secret1Expiration", response.getExpiryTime1());
+            model.addAttribute("secret2", response.getToken2());
+            model.addAttribute("secret2Expiration", response.getExpiryTime2());
             log.info("Token:{} cached by Service Manager", cachedToken);
             log.info("secret1 Token:{} ExpiryTime:{} cached by Simulator", response.getToken1(), response.getExpiryTime1());
             log.info("secret2 Token:{} ExpiryTime:{} cached by Simulator", response.getToken2(), response.getExpiryTime2());

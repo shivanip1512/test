@@ -24,13 +24,19 @@
         <br/>Click on the Test button to test the Endpoint and the JSON result will be displayed below.
         <br/>The Clear Cache button will clear the cache.
         <br/>
-        <br/>
         <br/>Configure the Brightlayer Utilities Suite Demand Response URL - Admin/Configuration/Demand Response
         <br/>Brightlayer Utilities Suite Demand Response URL:https://eas-dev.eastus.cloudapp.azure.com/api
         <br/>Simulator URL local: http://localhost:8080/yukon/dev/api
         <br/>Simulator URL QA: http://localhost:8080/dev/api
         <br/>
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
+     </div><br/>
+     <div class="user-message error">
+     	Secret cached by Service Manager: ${cachedToken}
+     	<br/>
+        Secret1 cached by Simulator: ${secret1} Expiration: <cti:formatDate type="DATEHMS_12" value="${secret1Expiration}"/>
+        <br/>
+        Secret2 cached by Simulator: ${secret2} Expiration: <cti:formatDate type="DATEHMS_12" value="${secret2Expiration}"/>
      </div>
      <br/>
 	    
@@ -106,7 +112,9 @@
                             </c:if>
                         </td>
                         <td>
-                            <cti:button label="Test" classes="js-test-endpoint MR0" data-endpoint="${endpoint}" data-params="${params}"/>
+                        	<c:if test="${endpoint.showTestButton()}">
+                            	<cti:button label="Test" classes="js-test-endpoint MR0" data-endpoint="${endpoint}" data-params="${params}"/>
+                            </c:if>
                             <c:if test="${endpoint == 'SECURITY_TOKEN'}">
                                 <cti:button label="Clear" classes="js-clear-cache MR0"/>
                             </c:if>
