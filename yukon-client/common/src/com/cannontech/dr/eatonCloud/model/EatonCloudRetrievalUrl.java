@@ -15,19 +15,19 @@ import com.cannontech.system.dao.GlobalSettingDao;
 
 //Data retrieval URLs
 public enum EatonCloudRetrievalUrl {
-    SECURITY_TOKEN(EatonCloudVersion.V1, "Retrieve Token with secret1",
+    SECURITY_TOKEN(EatonCloudVersion.V1, "/v1/security/serviceaccount/token",
             "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=security&operation=post-getserviceaccounttoken",
             // 200,401
             List.of(HttpStatus.OK, HttpStatus.UNAUTHORIZED),
-            ImmutableMap.of(),
+            ImmutableMap.of("Using secret1", "Using secret1"),
             false,
             true,
             true),
-    SECURITY_TOKEN2(EatonCloudVersion.V1, "Retrieve Token with secret2",
+    SECURITY_TOKEN2(EatonCloudVersion.V1, "/v1/security/serviceaccount/token",
             "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=security&operation=post-getserviceaccounttoken",
             // 200,401
             List.of(HttpStatus.OK, HttpStatus.UNAUTHORIZED),
-            ImmutableMap.of(),
+            ImmutableMap.of("Using secret2", "Using secret2"),
             false,
             true,
             false),
@@ -84,7 +84,7 @@ public enum EatonCloudRetrievalUrl {
             "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=security&operation=get-rotateserviceaccountsecret",
             //200, 400, 401, 404
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
-            ImmutableMap.of("Service Account Guid", "821d549c-c1b7-469e-bbf5-9d9d401883b2", "Secret Name", "secret1"),
+            ImmutableMap.of("Use secret rotation UI for testing", "Use secret rotation UI for testing"),
             false, 
             true,
             false);
@@ -164,4 +164,3 @@ public enum EatonCloudRetrievalUrl {
         return showTestButton;
     }
 }
-

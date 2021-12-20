@@ -81,7 +81,7 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
                 if (objMessage.getObject() instanceof EatonCloudAuthTokenRequestV1) {
                     String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
                     if (((EatonCloudAuthTokenRequestV1) objMessage.getObject()).isClearCache()) {
-                        log.error("Recieved message from the simulator to invalidate Eaton Cloud token cache");
+                        log.info("Recieved message from the simulator to invalidate Eaton Cloud token cache");
                         tokenCache.invalidate(serviceAccountId);
                         sendResponse(message, null, null);
                         return;
@@ -115,6 +115,7 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
     private void refreshToken(Message message, String serviceAccountId) throws JMSException {
         try {
             EatonCloudTokenV1 newToken = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
+            tokenCache.put(serviceAccountId, newToken);
             sendResponse(message, newToken, null);
         } catch (EatonCloudCommunicationExceptionV1 e) {
             try {
@@ -136,10 +137,9 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
     public EatonCloudTokenV1 retrieveNewToken(GlobalSettingType type, String serviceAccountId) {
         String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, log, restTemplate);
         int secret = type == GlobalSettingType.EATON_CLOUD_SECRET ? 1 : 2;
-        log.info("Retrieving Eaton Cloud token for secret{} serviceAccountId:{} url:{}.", secret, serviceAccountId, url);
         EatonCloudCredentialsV1 credentials = getCredentials(type, serviceAccountId);
         EatonCloudTokenV1 newToken = restTemplate.postForObject(url, credentials, EatonCloudTokenV1.class);
-        log.info("Retrieved Eaton Cloud token for secret{} serviceAccountId:{} url:{}.", secret, serviceAccountId, url);
+        log.trace("{} Retrieved Eaton Cloud token for secret{} serviceAccountId:{} url:{}.", newToken.getToken(), secret, serviceAccountId, url);
         return newToken;
     }
 

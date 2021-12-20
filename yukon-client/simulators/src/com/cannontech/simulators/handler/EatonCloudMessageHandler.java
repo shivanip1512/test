@@ -14,12 +14,13 @@ import org.springframework.http.HttpStatus;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
 import com.cannontech.dr.eatonCloud.model.EatonCloudVersion;
-import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCredentialsV1;
 import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.eatonCloud.model.EatonCloudDataGenerator;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorDeviceCreateRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorSettingsUpdateRequest;
+import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsRequest;
+import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsResponse;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.EatonCloudSimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponse;
@@ -52,28 +53,30 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
         try {
             if (simulatorRequest instanceof EatonCloudSimulatorRequest) {
                 EatonCloudSimulatorRequest request = (EatonCloudSimulatorRequest) simulatorRequest;
-
+                EatonCloudDataGenerator generator = getGenerator(request.getUrl().getVersion());
+                initSettings(request.getUrl(), generator);
+                Method method;
                 try {
-                    // status requested to be returned by the user
-                    int status = statuses.get(request.getUrl());
-                    EatonCloudDataGenerator generator = getGenerator(request.getUrl().getVersion());
-                    generator.setStatus(status);
-                    generator.setSuccessPercentage(HttpStatus.OK.value() == status && successPercentages
-                            .get(request.getUrl()) != null ? successPercentages.get(request.getUrl()) : 100);
-                    if(request.getUrl() == EatonCloudRetrievalUrl.SECURITY_TOKEN) {
-                        Method method = generator.getClass().getMethod(request.getMethod(), request.getParamClasses());
-                        EatonCloudCredentialsV1 cred = (EatonCloudCredentialsV1) request.getParamValues()[0];
+                    if (request.getUrl() == EatonCloudRetrievalUrl.SECURITY_TOKEN) {
                         String secret = settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET2);
-                        if(secret.equals(cred.getSecret())) {
-                            generator.setStatus(statuses.get(EatonCloudRetrievalUrl.SECURITY_TOKEN2));
-                            generator.setSuccessPercentage(HttpStatus.OK.value() == status && successPercentages
-                                    .get(EatonCloudRetrievalUrl.SECURITY_TOKEN2) != null ? successPercentages.get(request.getUrl()) : 100);
+                        if (secret.equals(request.getHeader())) {
+                            initSettings(EatonCloudRetrievalUrl.SECURITY_TOKEN2, generator);
+                            method = generator.getClass().getMethod("token2", request.getParamClasses());
+                        } else {
+                            method = generator.getClass().getMethod("token1", request.getParamClasses());
                         }
-                        return (EatonCloudSimulatorResponse) method.invoke(generator, new  Object[] {});
+
                     } else {
-                        Method method = generator.getClass().getMethod(request.getMethod(), request.getParamClasses());
-                        return (EatonCloudSimulatorResponse) method.invoke(generator, request.getParamValues());  
+                        log.info("Header:{} ", request.getHeader());
+                        String token = request.getHeader().replaceAll("Bearer ", "");
+                        checkTokenRetrievalFailure(generator.getToken1(), token,
+                                EatonCloudRetrievalUrl.SECURITY_TOKEN, generator);
+
+                        checkTokenRetrievalFailure(generator.getToken2(), token,
+                                EatonCloudRetrievalUrl.SECURITY_TOKEN2, generator);
+                        method = generator.getClass().getMethod(request.getMethod(), request.getParamClasses());
                     }
+                    return (EatonCloudSimulatorResponse) method.invoke(generator, request.getParamValues());
                 } catch (Exception e) {
                     throw new IllegalArgumentException(
                             "Unable to use reflection to call method " + request.getMethod() + " to get data", e);
@@ -89,6 +92,11 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
                     successPercentages = request.getSuccessPercentages();
                 }
                 return new SimulatorResponseBase(true);
+            } else if (simulatorRequest instanceof EatonCloudSimulatorStatisticsRequest) {
+                EatonCloudSimulatorStatisticsRequest request = (EatonCloudSimulatorStatisticsRequest) simulatorRequest;
+                EatonCloudDataGenerator generator = getGenerator(request.getVersion());
+                return new EatonCloudSimulatorStatisticsResponse(generator.getToken1(), generator.getExpiryTime1(),
+                        generator.getToken2(), generator.getExpiryTime2());
             } else if (simulatorRequest instanceof EatonCloudSimulatorDeviceCreateRequest) {
                 EatonCloudSimulatorDeviceCreateRequest request = (EatonCloudSimulatorDeviceCreateRequest) simulatorRequest;
                 EatonCloudDataGenerator generator = getGenerator(request.getVersion());
@@ -108,6 +116,23 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
             log.error("Exception handling request: " + simulatorRequest, e);
             throw e;
         }
+    }
+
+    void checkTokenRetrievalFailure(String cachedToken, String headerToken, EatonCloudRetrievalUrl tokenUrl,
+            EatonCloudDataGenerator generator) {
+        if (headerToken.equals(cachedToken)) {
+            int status = statuses.get(tokenUrl);
+            if (status != HttpStatus.OK.value()) {
+                generator.setStatus(status);
+            }
+        }
+    }
+
+    private void initSettings(EatonCloudRetrievalUrl url, EatonCloudDataGenerator generator) {
+        int status = statuses.get(url);
+        generator.setStatus(status);
+        generator.setSuccessPercentage(HttpStatus.OK.value() == status && successPercentages
+                .get(url) != null ? successPercentages.get(url) : 100);
     }
 
     private EatonCloudDataGenerator getGenerator(EatonCloudVersion version) {

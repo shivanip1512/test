@@ -161,7 +161,7 @@
 		<cti:url var="autoReadUrl" value="deviceAutoRead" />
 		<form:form id="autoReadForm" action="${autoReadUrl}" method="post">
 			<tags:nameValueContainer>
-				<cti:button label="Reads all Eaton Cloud LCRs" type="submit" />
+				<cti:button label="Read all Eaton Cloud LCRs" type="submit" />
 				<form:form id="autoReadForm" action="${autoReadUrl}" method="post" />
 				<cti:csrfToken />
 			</tags:nameValueContainer>

@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
@@ -80,7 +81,9 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
       account.getSecrets().add(new EatonCloudSecretV1("secret2", DateTime.now().plusMonths(6).toDate()));
     }
     
-    public EatonCloudSimulatorResponse token() {
+    
+    
+    public EatonCloudSimulatorResponse token1() {
         
         if (status == HttpStatus.BAD_REQUEST.value()) {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("ClientId"), "The field 'ClientId' is not a valid uuid.", "f0d48574-d5f5-47c1-b817-a1042a103b29", status, "2021-02-25T07:07:03.2423402+00:00", null);
@@ -93,12 +96,23 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
                             "Authorization has been denied for this request. Invalid clientId and clientSecret combination."),
                     status);
         }
+        return new EatonCloudSimulatorResponse(new EatonCloudTokenV1(token1), status);
+    }
+    
+    public EatonCloudSimulatorResponse token2() {
+        
+        if (status == HttpStatus.BAD_REQUEST.value()) {
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("ClientId"), "The field 'ClientId' is not a valid uuid.", "f0d48574-d5f5-47c1-b817-a1042a103b29", status, "2021-02-25T07:07:03.2423402+00:00", null);
+            return new EatonCloudSimulatorResponse(error, status);
 
-        int length = 120;
-        boolean useLetters = true;
-        boolean useNumbers = true;
-        String generatedString = RandomStringUtils.random(length, useLetters, useNumbers);
-        return new EatonCloudSimulatorResponse(new EatonCloudTokenV1(generatedString), status);
+        }
+        if (status == HttpStatus.UNAUTHORIZED.value()) {
+            return new EatonCloudSimulatorResponse(
+                    new EatonCloudErrorV1(status,
+                            "Authorization has been denied for this request. Invalid clientId and clientSecret combination."),
+                    status);
+        }
+        return new EatonCloudSimulatorResponse(new EatonCloudTokenV1(token2), status);
     }
 
     public EatonCloudSimulatorResponse devicesV1(String id, Boolean recursive, Boolean includeDetail) {
@@ -348,4 +362,29 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         }
         return null;
     }
+
+
+    @Override
+    public Instant getExpiryTime1() {
+        return getExpiryTime(1, account);
+    }
+
+
+    @Override
+    public Instant getExpiryTime2() {
+        return getExpiryTime(2, account);
+    }
+
+    private Instant getExpiryTime(int secretNumber, EatonCloudServiceAccountDetailV1 detail) {
+        Date time1 = detail.getSecrets().stream()
+                .filter(s -> s.getName().equals("secret" + secretNumber))
+                .findFirst()
+                .orElse(null)
+                .getExpiryTime();
+        if (time1 == null) {
+            return null;
+        }
+        return new Instant(time1);
+    }
+    
 }

@@ -54,6 +54,8 @@ import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonR
 import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorDeviceCreateRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorSettingsUpdateRequest;
+import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsRequest;
+import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsResponse;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.system.GlobalSettingType;
@@ -100,8 +102,24 @@ public class EatonCloudSimulatorController {
         }
 
         model.addAttribute("autoCreationTypes", List.of(PaoType.LCR6200C, PaoType.LCR6600C));
+        
+        printStatistics();
 
         return "eatonCloud/home.jsp";
+    }
+
+    private void printStatistics() {
+        try {
+            String cachedToken = eatonCloudCommunicationServiceV1.getToken().getToken();
+            EatonCloudSimulatorStatisticsRequest request = new EatonCloudSimulatorStatisticsRequest(EatonCloudVersion.V1);
+            EatonCloudSimulatorStatisticsResponse response = simulatorsCommunicationService.sendRequest(request,
+                    EatonCloudSimulatorStatisticsResponse.class);
+            log.info("Token:{} cached by Service Manager", cachedToken);
+            log.info("secret1 Token:{} ExpiryTime:{} cached by Simulator", response.getToken1(), response.getExpiryTime1());
+            log.info("secret2 Token:{} ExpiryTime:{} cached by Simulator", response.getToken2(), response.getExpiryTime2());
+        } catch (ExecutionException e) {
+            log.error("Error", e);
+        }
     }
 
     @PostMapping("/updateSettings")
@@ -275,7 +293,7 @@ public class EatonCloudSimulatorController {
     public String forceRuntimeCalc(FlashScope flashScope) {
         try {
             jmsTemplateCalc.convertAndSend(new EatonCloudRuntimeCalcSimulatonRequest());
-            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("Runtime calculation started. See SM log for details."));
+            flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Runtime calculation started. See SM log for details."));
         } catch (Exception e) {
             log.error("Error", e);
         }
@@ -292,8 +310,9 @@ public class EatonCloudSimulatorController {
             if (response.isSuccessful()) {
                 //send request to SM to start secret rotation
                 jmsTemplateSecretRotation.convertAndSend(new EatonCloudSecretRotationSimulationRequest());
-                flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("Sent message to SM to rotate secrets."));
+                flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Sent message to SM to rotate secrets."));
             }
+            printStatistics();
         } catch (Exception e) {
             log.error("Error", e);
         }

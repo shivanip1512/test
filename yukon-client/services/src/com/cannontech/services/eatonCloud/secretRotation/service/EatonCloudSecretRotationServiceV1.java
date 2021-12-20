@@ -77,6 +77,7 @@ public class EatonCloudSecretRotationServiceV1 {
     public void startSimulation(EatonCloudSecretRotationSimulationRequest request) {
         // we are going wait 1 minute instead of 10 for each retry to make the testing easier
         retryIntervalMinutes = 1;
+        log.info("startSimulation");
         rotateSecrets();
     }
 
@@ -126,19 +127,18 @@ public class EatonCloudSecretRotationServiceV1 {
         try {
             eatonCloudAuthTokenServiceV1.retrieveNewToken(type, serviceAccountId);
             secretValidations.remove(type);
-            log.info("({} of {}) Token retrieval using {} is successful.", currentTry.get(), numberOfTimesToRetry, secret);
+            log.info("({} of {}) {} token retrieval successful.", currentTry.get(), numberOfTimesToRetry, secret);
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            String jsonError = new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage());
             if (currentTry.get() == numberOfTimesToRetry) {
-                log.error("({} of {}) Token retrieval for {} failed: {}", currentTry.get(), numberOfTimesToRetry, secret,
-                        jsonError);
+                log.error("({} of {}) {} token retrieval failed: {}", currentTry.get(), numberOfTimesToRetry, secret,
+                        e.getMessage());
                 secretValidations.remove(type);
                 eatonCloudEventLogService.tokenRetrievalFailed(secret, e.getMessage(), currentTry.get());
                 createAlert(AlertType.RFN_DEVICE_CREATION_FAILED, secret, null);
             } else {
-                log.error("({} of {}) Token retrieval for {} failed: {} Next try in {} minutes.", currentTry.get(),
+                log.error("({} of {}) {} token retrieval failed: {} Next try in {} minutes.", currentTry.get(),
                         numberOfTimesToRetry, secret,
-                        jsonError, retryIntervalMinutes);
+                        e.getMessage(), retryIntervalMinutes);
                 executor.schedule(() -> validateSecret(type), retryIntervalMinutes, TimeUnit.MINUTES);
                 currentTry.incrementAndGet();
                 secretValidations.put(type, currentTry);
@@ -158,12 +158,11 @@ public class EatonCloudSecretRotationServiceV1 {
             EatonCloudSecretValueV1 value = eatonCloudCommunicationService.rotateAccountSecret(globalSettingsToSecret.get(type));
             settingUpdateDao.updateSetting(new GlobalSetting(type, value.getSecret()), YukonUserContext.system.getYukonUser());
             secretRotations.remove(type);
-            log.info("({} of {}) {} rotation is successful.", secret, currentTry.get(), numberOfTimesToRetry);
+            log.info("({} of {}) {} rotation is successful.", currentTry.get(), numberOfTimesToRetry, secret);
             eatonCloudEventLogService.secretRotationSuccess(secret, currentTry.get());
             validateSecret(type);
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            log.error("Secret rotaion for for secret{} failed:{}", globalSettingsToSecret.get(type),
-                    new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
+            log.error("({} of {}) {} rotation failed:{}", secret, globalSettingsToSecret.get(type), e.getErrorMessage());
             if (currentTry.get() == numberOfTimesToRetry) {
                 secretRotations.remove(type);
                 eatonCloudEventLogService.secretRotationFailed(secret, e.getMessage(), currentTry.get());

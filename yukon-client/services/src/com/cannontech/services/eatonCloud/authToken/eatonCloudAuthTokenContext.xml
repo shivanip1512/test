@@ -13,4 +13,13 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="eatonCloudAuthTokenListener"/>
     </bean>
+    <bean id="simulation" class="com.cannontech.services.eatonCloud.secretRotation.service.EatonCloudSecretRotationServiceV1" />
+    <jms:listener-container 
+        connection-factory="connectionFactory" 
+        destination-type="queue"
+        concurrency="1" 
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="yukon.notif.obj.simulator.EatonCloudSecretRotationSimulationRequest" ref="simulation" method="startSimulation"/>
+    </jms:listener-container>
 </beans>
