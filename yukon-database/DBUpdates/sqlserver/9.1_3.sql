@@ -28,4 +28,4 @@ INSERT INTO DBUpdates VALUES ('YUK-25508', '9.1.2', GETDATE());
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */
 /***********************************************************************************/
-/* INSERT INTO CTIDatabase VALUES ('9.1', '01-DEC-2021', 'Latest Update', 2, GETDATE()); */
+/* INSERT INTO CTIDatabase VALUES ('9.1', '01-DEC-2021', 'Latest Update', 3, GETDATE()); */
