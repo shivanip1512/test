@@ -405,6 +405,8 @@
 
     <bean name="dmvTestPicker" class="com.cannontech.web.picker.DmvTestPicker" />
     
+    <bean name="gatewayNmIpAddressPortPicker" class="com.cannontech.web.picker.GatewayNMIPAddressPortPicker" />
+    
     <bean name="nonResidentailUserPicker" class="com.cannontech.web.picker.NonResidentailUserPicker">
         <property name="searcher" ref="userSearcherLucene"/>
     </bean>

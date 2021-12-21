@@ -1,7 +1,10 @@
 package com.cannontech.web.support.systemPerformanceMetrics.service.impl;
 
+<<<<<<< HEAD
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+=======
+>>>>>>> e95112d86e9fabc29feff96c8d8c7d36dc0d7439
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +13,7 @@ import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+<<<<<<< HEAD
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.ConverterType;
@@ -25,13 +29,25 @@ import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+=======
+import com.cannontech.common.chart.model.ChartValue;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.device.Device;
+>>>>>>> e95112d86e9fabc29feff96c8d8c7d36dc0d7439
 import com.cannontech.web.support.systemPerformanceMetrics.service.SystemPerformanceMetricsService;
 
 public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMetricsService {
     private static final Logger log = YukonLogManager.getLogger(SystemPerformanceMetricsServiceImpl.class);
+<<<<<<< HEAD
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private PointDao pointDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+=======
+    @Autowired private PointDao pointDao;
+>>>>>>> e95112d86e9fabc29feff96c8d8c7d36dc0d7439
     
     @Override
     public List<LitePoint> getAllSystemPoints() {

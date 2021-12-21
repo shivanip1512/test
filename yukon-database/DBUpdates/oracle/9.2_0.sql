@@ -173,6 +173,14 @@ HAVING
 INSERT INTO DBUpdates VALUES ('YUK-24293', '9.2.0', SYSDATE);
 /* @end YUK-24293 */
 
+/* @start YUK-25509 */
+UPDATE LMGroupExpressCom 
+SET ProtocolPriority = 3 
+WHERE (SELECT COUNT(*) FROM LMGroupExpressCom) = (SELECT COUNT(*) FROM LMGroupExpressCom WHERE ProtocolPriority = 1);
+
+INSERT INTO DBUpdates VALUES ('YUK-25509', '9.2.0', SYSDATE);
+/* @end YUK-25509 */
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */

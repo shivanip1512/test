@@ -9,7 +9,7 @@ public class SystemDataConverterHelper {
 
     public static SystemData convert(YukonMetric yukonMetric) {
         SystemData systemData = new SystemData();
-        systemData.setFieldName(YukonMetricIOTDataType.valueOf(yukonMetric.getPointInfo().name()).getFieldName());
+        systemData.setFieldName(YukonMetricIOTDataType.getForPointInfo(yukonMetric.getPointInfo()).getFieldName());
         systemData.setFieldValue(yukonMetric.getValue());
         systemData.setIotDataType(IOTDataType.TELEMETRY);
         systemData.setTimestamp(yukonMetric.getTimestamp());
