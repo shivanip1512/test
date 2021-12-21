@@ -21,7 +21,6 @@ import com.cannontech.web.spring.RestApiDispatcherServlet;
  * 
  * @see <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/WebApplicationInitializer.html">WebApplicationInitializer</a>
  * @see <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/SpringServletContainerInitializer.html">SpringServletContainerInitializer</a>
- * 
  */
 public class RestApiWebApplicationInitializer implements WebApplicationInitializer {
     private static final Logger log = YukonLogManager.getLogger(RestApiWebApplicationInitializer.class);
