@@ -172,6 +172,22 @@
                     </tbody>
                 </table>
             </tags:boxContainer2>
+            <tags:boxContainer2 nameKey="secretsBox" styleClass="largeContainer">
+                <form:form id="refreshSecretForm" method="POST" action="refreshSecret">
+                	<cti:csrfToken/>
+                	<input type="hidden" id="secretNumber" name="secretNumber"/>
+                </form:form>
+            	<div class="PB10" style="line-height:40px;">
+            		<i:inline key=".secretsBox.secret1Expiration"/>:&nbsp;
+            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime1}"/>
+            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="1"/>
+            	</div>
+            	<div style="line-height:40px;">
+            		<i:inline key=".secretsBox.secret2Expiration"/>:&nbsp;
+            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime2}"/>
+            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="2"/>
+            	</div>
+            </tags:boxContainer2>
         </div>
         <div class="column two nogutter">
             <tags:boxContainer2 nameKey="keyBox" styleClass="largeContainer">
