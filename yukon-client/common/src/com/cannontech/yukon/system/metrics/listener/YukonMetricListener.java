@@ -6,33 +6,25 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
 import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 public class YukonMetricListener implements MessageListener {
     private static final Logger log = YukonLogManager.getLogger(YukonMetricListener.class);
 
-    @Autowired private PointDao pointDao;
-    @Autowired private SimplePointAccessDao pointAccessDao;
-
-    private Gson gson;
+    private ObjectMapper mapper;
 
     @PostConstruct
     public void init() {
-        gson = new GsonBuilder()
-                .registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
-                .create();
+        mapper = new ObjectMapper()
+                .registerModule(new JodaModule());
     }
 
     @Override
@@ -41,7 +33,7 @@ public class YukonMetricListener implements MessageListener {
             String textMessage = null;
             try {
                 textMessage = ((TextMessage) message).getText();
-                YukonMetric yukonMetric = gson.fromJson(textMessage, YukonMetric.class);
+                YukonMetric yukonMetric = mapper.readValue(textMessage, YukonMetric.class);
                 if (shouldGeneratePointData(yukonMetric.getPointInfo())) {
                     log.info("Received Yukon Metric data " + yukonMetric);
                     YukonMetricPointDataType pointDataype = YukonMetricPointDataType.valueOf(yukonMetric.getPointInfo().name());

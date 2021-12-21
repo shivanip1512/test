@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.services.systemDataPublisher.service.model.RfnDeviceDescendantCountData;
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
 import com.cannontech.yukon.system.metrics.producer.service.YukonMetricIntervalProducer;
 
@@ -19,14 +18,8 @@ public abstract class RfnDeviceDescendantCountDataProcessor extends YukonMetricI
 
     @Override
     public YukonMetric produce() {
-        RfnDeviceDescendantCountData data = rfnDeviceDao.findDeviceDescendantCountDataForPaoTypes(getSupportedPaoTypes());
-        YukonMetric metric = new YukonMetric();
-        if (data != null) {
-            metric.setValue(data);
-        }
-        metric.setPointInfo(getYukonMetricPointInfo());
-        metric.setTimestamp(new DateTime());
-        return metric;
+        return new YukonMetric(getYukonMetricPointInfo(),
+                rfnDeviceDao.findDeviceDescendantCountDataForPaoTypes(getSupportedPaoTypes()), new DateTime());
     }
 
     @Override

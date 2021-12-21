@@ -19,12 +19,7 @@ public abstract class ReadRateDataProcessor extends YukonMetricIntervalProducer 
 
     @Override
     public YukonMetric produce() {
-        String value = getData();
-        YukonMetric metric = new YukonMetric();
-        metric.setValue(value);
-        metric.setPointInfo(getYukonMetricPointInfo());
-        metric.setTimestamp(new DateTime());
-        return metric;
+        return new YukonMetric(getYukonMetricPointInfo(), getData(), new DateTime());
     }
 
     @Override

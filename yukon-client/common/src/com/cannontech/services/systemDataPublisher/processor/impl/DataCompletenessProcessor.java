@@ -17,12 +17,7 @@ public abstract class DataCompletenessProcessor extends YukonMetricIntervalProdu
 
     @Override
     public YukonMetric produce() {
-        double value = getData();
-        YukonMetric metric = new YukonMetric();
-        metric.setValue(value);
-        metric.setPointInfo(getYukonMetricPointInfo());
-        metric.setTimestamp(new DateTime());
-        return metric;
+        return new YukonMetric(getYukonMetricPointInfo(), getData(), new DateTime());
     }
 
     @Override

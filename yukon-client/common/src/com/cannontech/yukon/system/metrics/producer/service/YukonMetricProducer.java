@@ -7,8 +7,6 @@ public interface YukonMetricProducer {
 
     /**
      * Generate Yukon metric data.
-     * 
-     * @return TODO
      */
     YukonMetric produce();
 
@@ -18,7 +16,7 @@ public interface YukonMetricProducer {
     boolean shouldProduce();
 
     /**
-     * Checks if the passed field is supported by the processor.
+     * Return Yukon Metric Point Info.
      */
     public abstract YukonMetricPointInfo getYukonMetricPointInfo();
 }
