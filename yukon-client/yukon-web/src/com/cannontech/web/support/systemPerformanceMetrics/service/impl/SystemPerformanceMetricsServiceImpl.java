@@ -17,8 +17,8 @@ import com.cannontech.database.db.device.Device;
 import com.cannontech.web.support.systemPerformanceMetrics.service.SystemPerformanceMetricsService;
 
 public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMetricsService {
-    private static Logger log = YukonLogManager.getLogger(SystemPerformanceMetricsServiceImpl.class);
-    @Autowired PointDao pointDao;
+    private static final Logger log = YukonLogManager.getLogger(SystemPerformanceMetricsServiceImpl.class);
+    @Autowired private PointDao pointDao;
     
     @Override
     public List<LitePoint> getAllSystemPoints() {
@@ -26,8 +26,10 @@ public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMet
         try {
             // For System Points, Device Id is 0 and Point Type is System.
             systemPoints = pointDao.getLitePointIdByDeviceId_PointType(Device.SYSTEM_DEVICE_ID, PointType.System);
-            systemPoints.stream().forEach(litePoint -> log.debug("Point Name {}, Point type {}, PAObject ID {} ",
-                    litePoint.getPointName(), PointType.getForId(litePoint.getLiteType()), litePoint.getPaobjectID()));
+            if (log.isDebugEnabled()) {
+                systemPoints.stream().forEach(litePoint -> log.debug("Point Name {}, Point type {}, PAObject ID {} ",
+                        litePoint.getPointName(), PointType.getForId(litePoint.getLiteType()), litePoint.getPaobjectID()));
+            }
         } catch (NotFoundException e) {
             log.error("No System points found in the database.");
         }
