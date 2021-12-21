@@ -33,7 +33,6 @@ import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
-import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -62,10 +61,10 @@ public class YukonMetricListener implements MessageListener {
             try {
                 textMessage = ((TextMessage) message).getText();
                 YukonMetric yukonMetric = gson.fromJson(textMessage, YukonMetric.class);
-                if (shouldGeneratePointData(yukonMetric.getPointInfo())) {
+                if (YukonMetricPointDataType.isPointData(yukonMetric.getPointInfo())) {
                     log.info("Received Yukon Metric data " + yukonMetric);
-                    YukonMetricPointDataType pointDataype = YukonMetricPointDataType.valueOf(yukonMetric.getPointInfo().name());
-                    PointIdentifier pointIdentifier = new PointIdentifier(pointDataype.getType(), pointDataype.getOffset());
+                    YukonMetricPointDataType pointDataType = YukonMetricPointDataType.getForPointInfo(yukonMetric.getPointInfo());
+                    PointIdentifier pointIdentifier = new PointIdentifier(pointDataType.getType(), pointDataType.getOffset());
                     PaoPointIdentifier paoPointIdentifier = new PaoPointIdentifier(PaoUtils.SYSTEM_PAOIDENTIFIER,
                             pointIdentifier);
                     LitePoint litePoint = null;
@@ -73,11 +72,11 @@ public class YukonMetricListener implements MessageListener {
                         litePoint = pointDao.getLitePoint(paoPointIdentifier);
                     } catch (NotFoundException e) {
                         Map<String, Point> systemDevicePoints = definitionDao.getSystemDevicePoints();
-                        if (systemDevicePoints.containsKey(pointDataype.getName())) {
-                            litePoint = createPoint(systemDevicePoints.get(pointDataype.getName()));
+                        if (isPointDefined(systemDevicePoints, pointDataType.getOffset(), pointDataType.getType())) {
+                            litePoint = createPoint(systemDevicePoints.get(pointDataType.getName()));
                         } else {
                             throw new NotFoundException(
-                                    "Point definition not found for " + pointDataype.getName() + " in SYSTEM>xml file");
+                                    "Point definition not found for " + pointDataType.getName() + " in SYSTEM.xml file");
                         }
                     }
                     pointAccessDao.setPointValue(litePoint, yukonMetric.getTimestamp().toInstant(),
@@ -89,6 +88,17 @@ public class YukonMetricListener implements MessageListener {
         }
     }
 
+    /**
+     * Check whether point is defined in SSYSTEM.xml by comparing offset value and pointType.
+     */
+    private boolean isPointDefined(Map<String, Point> systemDevicePoints, Integer offset, PointType type) {
+        return systemDevicePoints.values().stream()
+                .filter(point -> point.getOffset() == offset && PointType.valueOf(point.getType()) == type).findAny().isPresent();
+    }
+
+    /**
+     * Create the specified Point and return LitePoint object for the created point.
+     */
     private LitePoint createPoint(Point point) throws SQLException {
         StatusControlType controlType = point.getControlType() == null ? StatusControlType.NONE : StatusControlType
                 .valueOf(point.getControlType().getValue().name());
@@ -108,15 +118,6 @@ public class YukonMetricListener implements MessageListener {
         LitePoint litePoint = pointDao.getLitePoint(pointBase.getPoint().getPointID());
         return litePoint;
 
-    }
-
-    private boolean shouldGeneratePointData(YukonMetricPointInfo pointInfo) {
-        try {
-            YukonMetricPointDataType.valueOf(pointInfo.name());
-            return true;
-        } catch (IllegalArgumentException | NullPointerException e) {
-            return false;
-        }
     }
 
 }
