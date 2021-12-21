@@ -12,8 +12,8 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * and allows configuration of any number of XML context files.
  * 
  * This application context does not automatically include the /WEB-INF/contexts/sharedWebContext.xml
- * or [namespace]-servlet.xml files like CannonXmlWebApplictionContext, so those must be manually 
- * included in the constructor contextFilePaths list for it to be used.
+ * or [namespace]-servlet.xml files like CannonXmlWebApplictionContext. Use the boolean constructor parameters or 
+ * include them in the contextFilePaths list instead.
  */
 public class ConfigurableXmlWebApplicationContext extends XmlWebApplicationContext {
     private static final String SHARED_WEB_CONFIG_LOCATION = "/WEB-INF/contexts/sharedWebContext.xml";
