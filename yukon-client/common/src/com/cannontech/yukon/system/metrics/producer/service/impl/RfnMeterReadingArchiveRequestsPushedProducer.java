@@ -39,6 +39,6 @@ public class RfnMeterReadingArchiveRequestsPushedProducer extends YukonMetricInt
 
     @Override
     public YukonMetricPointInfo getYukonMetricPointInfo() {
-        return YukonMetricPointInfo.RFN_METER_READING_ARCHIVERE_REQUEST_PUSHED;
+        return YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUEST_PUSHED;
     }
 }

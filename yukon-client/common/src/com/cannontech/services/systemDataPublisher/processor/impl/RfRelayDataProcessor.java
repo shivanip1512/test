@@ -17,7 +17,7 @@ public class RfRelayDataProcessor extends PaoCountDataProcessor {
 
     @Override
     public YukonMetricPointInfo getYukonMetricPointInfo() {
-        return YukonMetricPointInfo.RFN_RELAYS;
+        return YukonMetricPointInfo.RELAYS;
     }
 
     @Override

@@ -17,7 +17,7 @@ public class LCRDataProcessor extends PaoCountDataProcessor {
 
     @Override
     public YukonMetricPointInfo getYukonMetricPointInfo() {
-        return YukonMetricPointInfo.RFN_LCR_COUNT;
+        return YukonMetricPointInfo.RFN_LCR;
     }
 
     @Override

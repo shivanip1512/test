@@ -17,7 +17,7 @@ public class MeterDescendantCountDataProcessor extends RfnDeviceDescendantCountD
 
     @Override
     public YukonMetricPointInfo getYukonMetricPointInfo() {
-        return YukonMetricPointInfo.HIGHEST_METER_DESCEDANT_COUNT_DATA;
+        return YukonMetricPointInfo.RF_METER_DESCENDANT_COUNT;
     }
 
     @Override

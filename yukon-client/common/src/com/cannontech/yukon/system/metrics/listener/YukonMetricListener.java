@@ -9,7 +9,6 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -33,8 +32,8 @@ import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 public class YukonMetricListener implements MessageListener {
     private static final Logger log = YukonLogManager.getLogger(YukonMetricListener.class);
@@ -45,13 +44,12 @@ public class YukonMetricListener implements MessageListener {
     @Autowired private PaoDefinitionDao definitionDao;
     @Autowired private DBPersistentDao dbPersistentDao;
 
-    private Gson gson;
+    private ObjectMapper mapper;
 
     @PostConstruct
     public void init() {
-        gson = new GsonBuilder()
-                .registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
-                .create();
+        mapper = new ObjectMapper()
+                .registerModule(new JodaModule());
     }
 
     @Override
@@ -60,7 +58,7 @@ public class YukonMetricListener implements MessageListener {
             String textMessage = null;
             try {
                 textMessage = ((TextMessage) message).getText();
-                YukonMetric yukonMetric = gson.fromJson(textMessage, YukonMetric.class);
+                YukonMetric yukonMetric = mapper.readValue(textMessage, YukonMetric.class);
                 if (YukonMetricPointDataType.isPointData(yukonMetric.getPointInfo())) {
                     log.info("Received Yukon Metric data " + yukonMetric);
                     YukonMetricPointDataType pointDataType = YukonMetricPointDataType.getForPointInfo(yukonMetric.getPointInfo());

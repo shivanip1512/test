@@ -17,7 +17,7 @@ public class LcrDescendantCountDataProcessor extends RfnDeviceDescendantCountDat
 
     @Override
     public YukonMetricPointInfo getYukonMetricPointInfo() {
-        return YukonMetricPointInfo.HIGHEST_LCR_DESCEDANT_COUNT_DATA;
+        return YukonMetricPointInfo.LCR_DESCENDANT_COUNT;
     }
 
     @Override
