@@ -12,33 +12,37 @@ import com.cannontech.spring.ConfigurableXmlWebApplicationContext;
 import com.cannontech.web.spring.RestApiDispatcherServlet;
 
 /**
- * This initializer is bootstrapped automatically by Tomcat. 
- * The REST API servlet is the only servlet initialized here. All other servlets are defined in WEB-INF/web.xml.
+ * This initializer is bootstrapped automatically by Tomcat & Spring on startup.
+ * @see <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/WebApplicationInitializer.html">WebApplicationInitializer</a>
+ * @see <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/SpringServletContainerInitializer.html">SpringServletContainerInitializer</a>
+ * 
+ * The REST API servlet is the only servlet initialized here. All other servlets are defined in /WEB-INF/web.xml.
  * 
  * There are also filters defined in web.xml that reference this servlet.
  */
 public class RestApiWebApplicationInitializer implements WebApplicationInitializer {
     private static final Logger log = YukonLogManager.getLogger(RestApiWebApplicationInitializer.class);
     
+    private static final String[] contextPaths = {
+            "/WEB-INF/contexts/api/api-context-ecobee.xml",
+            "/WEB-INF/contexts/api/api-context-aggregateIntervalDataReport.xml"
+    };
+    
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        // We don't need to manually set the config file location, because CannonDispatcherServlet looks in
-        // /WEB-INF/contexts for a file named after the servlet.
-        // see CannonDispatcherServlet.java and CannonXmlWebApplicationContext.java
-        // 
-        // To manually set the config file location, we'd have to do something like this:
-        //
-        // XmlWebApplicationContext apiContext = new XmlWebApplicationContext();
-        // apiContext.setConfigLocation("/WEB-INF/contexts/api-servlet.xml");
-        // ServletRegistration.Dynamic servlet =
-        //        servletContext.addServlet("dispatcher", new DispatcherServlet(apiContext));
         
         log.info("REST API servlet initializing.");
+        if (log.isDebugEnabled()) {
+            String paths = String.join(",\n", contextPaths);
+            log.info("Context paths: \n{}", paths);
+        }
         
-        String[] contextPaths = {
-                ""
-        };
-        
+        /*
+         * This context is composed from:
+         *   /WEB-INF/contexts/sharedWebContext.xml
+         *   /WEB-INF/contexts/api-servlet.xml
+         *   (all files in "contextPaths" array)
+         */
         ConfigurableXmlWebApplicationContext apiContext = 
                 new ConfigurableXmlWebApplicationContext(true, true, contextPaths);
         ServletRegistration.Dynamic servlet =
@@ -48,25 +52,11 @@ public class RestApiWebApplicationInitializer implements WebApplicationInitializ
         
         log.info("REST API servlet initialized.");
         
-//        log.info("REST API servlet initializing.");
-//        ServletRegistration.Dynamic servlet =
-//                servletContext.addServlet("api", new CannonDispatcherServlet());
-//        servlet.setLoadOnStartup(1);
-//        servlet.addMapping("/api/*");
-//        log.info("REST API servlet initialized.");
-        
-        //When this is migrated to a new service, we may want to handle filters here instead of in web.xml
         /*
-        loginFilter
-        jwtFilter
-        hiddenHttpMethodFilter
-        errorhelper
-        timerfilter
-        generalSecurityFilter
-        getMethodConvertingFilter
-        */
-        
-        //remove api refs from web.xml, add comment
+         * When the APIs are migrated to a new service, we may want to handle filters here instead of in web.xml
+         *   loginFilter, jwtFilter, hiddenHttpMethodFilter, errorhelper, timerfilter, generalSecurityFilter,
+         *   getMethodConvertingFilter
+         */
     }
 
 }

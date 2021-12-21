@@ -45,12 +45,10 @@ public class RestApiDispatcherServlet extends DispatcherServlet {
             handleException(servletConfig, t);
             throw new ServletException("Wrapping an unknown error", t);
         }
-        
     }
     
     @Override
     protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
-
         HandlerExecutionChain handler = super.getHandler(request);
         if (handler == null) {
             return null;
@@ -59,12 +57,6 @@ public class RestApiDispatcherServlet extends DispatcherServlet {
         handler.addInterceptor(securityInterceptor);
         return handler;
     }
-    
-//    @Override
-//    protected WebApplicationContext initWebApplicationContext() throws BeansException {
-//        setContextClass(ConfigurableXmlWebApplicationContext.class);
-//        return super.initWebApplicationContext();
-//    }
     
     private void setSecurityInterceptor() {
         securityInterceptor = (HandlerInterceptor) getWebApplicationContext().getBean("webSecurityInterceptor");
@@ -76,16 +68,11 @@ public class RestApiDispatcherServlet extends DispatcherServlet {
     }
     
     /**
-     * No handler found -> set appropriate HTTP response status for API
+     * No handler found -> set appropriate HTTP response status for API.
      */
     @Override
     protected void noHandlerFound(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //boolean apiLoginrequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/**"));
-        //if (apiLoginrequest) {
-            ApiExceptionHandler.noHandlerFoundException(request, response);
-            return;
-        //}
-        //super.noHandlerFound(request, response);
+        ApiExceptionHandler.noHandlerFoundException(request, response);
     }
 
     /**
@@ -95,13 +82,9 @@ public class RestApiDispatcherServlet extends DispatcherServlet {
     protected ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response,
             Object handler, Exception ex) throws Exception {
         if (ex instanceof HttpRequestMethodNotSupportedException) {
-            //boolean apiLoginrequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/**"));
-            //if (apiLoginrequest) {
-
-                ApiExceptionHandler.handleHttpRequestMethodNotSupported((HttpRequestMethodNotSupportedException) ex,
-                    request, response);
-                return null;
-            //}
+            ApiExceptionHandler.handleHttpRequestMethodNotSupported((HttpRequestMethodNotSupportedException) ex,
+                request, response);
+            return null;
         }
         return super.processHandlerException(request, response, handler, ex);
     }

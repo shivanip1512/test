@@ -8,7 +8,7 @@
 
     <context:component-scan base-package="com.cannontech.web.api">
         
-        <!-- As we pull APIs into their own files, we can exclude them here. -->
+        <!-- As APIs are added into their own files referenced in RestApiWebApplicationInitializer, we can exclude them here. -->
         
         <!-- Handled in WEB-INF/contexts/api/api-context-ecobee.xml -->
         <context:exclude-filter type="regex" expression="com.cannontech.web.api.dr.ecobee.*"/>
