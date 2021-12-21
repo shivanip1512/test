@@ -12,13 +12,16 @@ import com.cannontech.spring.ConfigurableXmlWebApplicationContext;
 import com.cannontech.web.spring.RestApiDispatcherServlet;
 
 /**
- * This initializer is bootstrapped automatically by Tomcat & Spring on startup.
- * @see <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/WebApplicationInitializer.html">WebApplicationInitializer</a>
- * @see <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/SpringServletContainerInitializer.html">SpringServletContainerInitializer</a>
+ * This initializer is bootstrapped automatically by Tomcat & Spring on startup. 
+ * See WebApplicationInitializer and SpringServletContainerInitializer documentation for more info on how this works.
  * 
  * The REST API servlet is the only servlet initialized here. All other servlets are defined in /WEB-INF/web.xml.
  * 
  * There are also filters defined in web.xml that reference this servlet.
+ * 
+ * @see <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/WebApplicationInitializer.html">WebApplicationInitializer</a>
+ * @see <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/SpringServletContainerInitializer.html">SpringServletContainerInitializer</a>
+ * 
  */
 public class RestApiWebApplicationInitializer implements WebApplicationInitializer {
     private static final Logger log = YukonLogManager.getLogger(RestApiWebApplicationInitializer.class);
@@ -41,7 +44,7 @@ public class RestApiWebApplicationInitializer implements WebApplicationInitializ
          * This context is composed from:
          *   /WEB-INF/contexts/sharedWebContext.xml
          *   /WEB-INF/contexts/api-servlet.xml
-         *   (all files in "contextPaths" array)
+         *   (all files in "contextPaths" array, defined above)
          */
         ConfigurableXmlWebApplicationContext apiContext = 
                 new ConfigurableXmlWebApplicationContext(true, true, contextPaths);
