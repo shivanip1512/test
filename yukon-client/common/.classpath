@@ -104,7 +104,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-    <classpathentry kind="lib" path="/third-party/jakarta.activation-api-2.0.1.jar">
+	<classpathentry kind="lib" path="/third-party/jakarta.activation-api-2.0.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -428,7 +428,7 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/snakeyaml-1.18.2.jar" sourcepath="/third-party/linked-sources/snakeyaml-1.18.2-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/objenesis-1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-slf4j-impl-2.14.0.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-slf4j-impl-2.16.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -587,17 +587,17 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-api-2.14.0.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-api-2.16.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-core-2.14.0.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-core-2.16.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/log4j-jcl-2.14.0.jar">
+	<classpathentry kind="lib" path="/third-party/log4j-jcl-2.16.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

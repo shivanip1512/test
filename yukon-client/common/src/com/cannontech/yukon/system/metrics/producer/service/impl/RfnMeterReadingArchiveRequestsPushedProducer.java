@@ -21,7 +21,7 @@ public class RfnMeterReadingArchiveRequestsPushedProducer extends YukonMetricInt
     public void produceAndPublish() {
         if (shouldProduce()) {
             YukonMetric metric = new YukonMetric();
-            metric.setPointInfo(YukonMetricPointInfo.RFN_METER_READING_ARCHIVERE_REQUEST_PUSHED);
+            metric.setPointInfo(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUEST_PUSHED);
             metric.setValue(10);
             metric.setTimestamp(new DateTime());
             debug(metric, log);
