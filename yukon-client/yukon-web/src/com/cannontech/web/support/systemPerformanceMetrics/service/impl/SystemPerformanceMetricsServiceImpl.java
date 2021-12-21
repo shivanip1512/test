@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.ConverterType;
@@ -23,9 +25,10 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.support.systemPerformanceMetrics.service.SystemPerformanceMetricsService;
 
 public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMetricsService {
-
-    @Autowired RawPointHistoryDao rawPointHistoryDao;
-    @Autowired PointDao pointDao;
+    
+    private static Logger log = YukonLogManager.getLogger(SystemPerformanceMetricsServiceImpl.class);
+    @Autowired private RawPointHistoryDao rawPointHistoryDao;
+    @Autowired private PointDao pointDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @Override
@@ -39,7 +42,10 @@ public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMet
             ChartInterval interval, ConverterType converterType) {
         
         List<PointValueHolder> pointData = rawPointHistoryDao.getPointData(pointId, startDate, stopDate);
-        
+
+        log.debug("Point ID {}, Point Data Count {} ",
+                pointId, pointData.size());
+
         String pointName = pointDao.getPointName(pointId);
         
         LitePointUnit pointUnit = pointDao.getPointUnit(pointId);
