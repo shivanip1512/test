@@ -1,11 +1,10 @@
 package com.cannontech.simulators.eatonCloud.model;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.joda.time.Instant;
 import org.springframework.http.HttpStatus;
 
 import com.cannontech.common.inventory.HardwareType;
@@ -60,8 +59,11 @@ public abstract class EatonCloudDataGenerator {
     public abstract EatonCloudDataGenerator getDataGenerator(EatonCloudVersion version);
     
     public void expireSecrets() {
-        expiryTime1 = DateUtils.addMonths(expiryTime1, 5);
-        expiryTime2 = DateUtils.addMonths(expiryTime2, 4);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -6);
+        expiryTime1 = calendar.getTime();
+        calendar.add(Calendar.MINUTE, -1);
+        expiryTime2 = calendar.getTime();
     }
 
     public String getToken2() {

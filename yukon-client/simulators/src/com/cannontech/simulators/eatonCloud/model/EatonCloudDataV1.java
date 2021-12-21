@@ -11,11 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.core.Logger;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
@@ -38,14 +35,11 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceResultV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesResultV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTokenV1;
 import com.cannontech.simulators.message.response.EatonCloudSimulatorResponse;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     
-    @Autowired private GlobalSettingDao settingDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private EatonCloudFakeTimeseriesDataV1 timeseriesData;
     

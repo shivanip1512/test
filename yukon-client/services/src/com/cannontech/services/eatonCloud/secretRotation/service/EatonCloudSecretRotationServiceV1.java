@@ -76,6 +76,8 @@ public class EatonCloudSecretRotationServiceV1 {
 
     public void startSimulation(EatonCloudSecretRotationSimulationRequest request) {
         // we are going wait 1 minute instead of 10 for each retry to make the testing easier
+        secretValidations.clear();
+        secretRotations.clear();
         retryIntervalMinutes = 1;
         log.info("startSimulation");
         rotateSecrets();
@@ -130,11 +132,11 @@ public class EatonCloudSecretRotationServiceV1 {
             log.info("({} of {}) {} token retrieval successful.", currentTry.get(), numberOfTimesToRetry, secret);
         } catch (EatonCloudCommunicationExceptionV1 e) {
             if (currentTry.get() == numberOfTimesToRetry) {
-                log.error("({} of {}) {} token retrieval failed: {}", currentTry.get(), numberOfTimesToRetry, secret,
-                        e.getMessage());
+                log.error("({} of {}) {} token retrieval failed:{}  alert created:{}", currentTry.get(), numberOfTimesToRetry, secret,
+                        e.getMessage(), AlertType.EATON_CLOUD_CREDENTIAL_INVALID);
                 secretValidations.remove(type);
                 eatonCloudEventLogService.tokenRetrievalFailed(secret, e.getMessage(), currentTry.get());
-                createAlert(AlertType.RFN_DEVICE_CREATION_FAILED, secret, null);
+                createAlert(AlertType.EATON_CLOUD_CREDENTIAL_INVALID, secret, null);
             } else {
                 log.error("({} of {}) {} token retrieval failed: {} Next try in {} minutes.", currentTry.get(),
                         numberOfTimesToRetry, secret,
@@ -162,13 +164,17 @@ public class EatonCloudSecretRotationServiceV1 {
             eatonCloudEventLogService.secretRotationSuccess(secret, currentTry.get());
             validateSecret(type);
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            log.error("({} of {}) {} rotation failed:{}", secret, globalSettingsToSecret.get(type), e.getErrorMessage());
             if (currentTry.get() == numberOfTimesToRetry) {
+                log.error("({} of {}) {} rotation failed:{} alert created:{}", currentTry.get(), numberOfTimesToRetry, secret,
+                        e.getMessage(), AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE);
                 secretRotations.remove(type);
                 eatonCloudEventLogService.secretRotationFailed(secret, e.getMessage(), currentTry.get());
                 createAlert(AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE, secret, secretExpiryTime.toDate());
                 validateSecret(type);
             } else {
+                log.error("({} of {}) {} secret rotation failed: {} Next try in {} minutes.", currentTry.get(),
+                        numberOfTimesToRetry, secret,
+                        e.getMessage(), retryIntervalMinutes);
                 executor.schedule(() -> rotateSecret(type, secretExpiryTime), retryIntervalMinutes, TimeUnit.MINUTES);
                 currentTry.incrementAndGet();
                 secretRotations.put(type, currentTry);
