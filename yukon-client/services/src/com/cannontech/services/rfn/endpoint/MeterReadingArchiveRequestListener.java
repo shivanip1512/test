@@ -95,7 +95,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
             }
             return trackingIds;
         }
-
+        
         @Override
         protected void createLogEntry(RfnMeterReadingArchiveRequest request, Optional<String> trackingInfo, 
                                       Predicate<Level> isEnabled, BiConsumer<Level, String> log) {
