@@ -38,5 +38,5 @@
         <property name="messageListener" ref="yukonMetricListener"/>
     </bean>
     <bean class="com.cannontech.yukon.system.metrics.producer.service.impl.RfnMeterReadingArchiveRequestsPushedProducer"/>
-    <bean class="com.cannontech.yukon.system.metrics.producer.service.impl.RfnMeterReadingArchiveRequestsReceivedProducer"/>
+    <bean class="com.cannontech.yukon.system.metrics.producer.RfnMeterReadingArchiveRequestsReceivedProducer"/>
 </beans>
