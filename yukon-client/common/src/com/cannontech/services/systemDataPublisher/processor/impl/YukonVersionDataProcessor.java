@@ -1,25 +1,29 @@
 package com.cannontech.services.systemDataPublisher.processor.impl;
 
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.services.systemDataPublisher.dao.impl.SystemDataProcessorHelper;
-import com.cannontech.services.systemDataPublisher.service.model.SystemData;
-import com.cannontech.services.systemDataPublisher.service.model.SystemDataFieldType.FieldType;
-import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
+import com.cannontech.yukon.system.metrics.message.YukonMetric;
+import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
+import com.cannontech.yukon.system.metrics.producer.service.YukonMetricStartupProducer;
 
 @Service
-public class YukonVersionDataProcessor extends YukonDataProcessor {
+public class YukonVersionDataProcessor extends YukonMetricStartupProducer {
 
     @Override
-    public SystemData buildSystemData(CloudDataConfiguration cloudDataConfiguration) {
-        String yukonVersion = VersionTools.getYukonDetails();
-        SystemData systemData = SystemDataProcessorHelper.buildSystemData(cloudDataConfiguration, yukonVersion);
-        return systemData;
+    public YukonMetric produce() {
+        return new YukonMetric(getYukonMetricPointInfo(), VersionTools.getYukonDetails(), new DateTime());
     }
 
     @Override
-    public boolean supportsField(FieldType field) {
-        return field == FieldType.YUKON_VERSION;
+    public boolean shouldProduce() {
+        return true;
     }
+
+    @Override
+    public YukonMetricPointInfo getYukonMetricPointInfo() {
+        return YukonMetricPointInfo.YUKON_VERSION;
+    }
+
 }
