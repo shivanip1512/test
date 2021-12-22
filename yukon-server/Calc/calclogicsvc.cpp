@@ -881,7 +881,7 @@ bool CtiCalcLogicService::isDatabaseCalcPointID(const long aPointID)
 
 bool CtiCalcLogicService::isDatabaseCalcDeviceID(const long aDeviceID)
 {
-    //  figure out what points are calc points
+    //  Find any calc point on the specified device ID
     static const string subquery = 
         "SELECT *"
         " FROM CALCBASE cb JOIN POINT p"
@@ -904,20 +904,22 @@ bool CtiCalcLogicService::isDatabaseCalcDeviceID(const long aDeviceID)
     {
         case DatabaseConnection::ClientType::Oracle:
             rdr.setCommandText(oracle);
+            CTILOG_DEBUG(dout, rdr.asString());
             break;
         case DatabaseConnection::ClientType::SqlServer:
             rdr.setCommandText(sqlServer);
+            CTILOG_DEBUG(dout, rdr.asString());
             break;
         default:
             CTILOG_ERROR(dout, "Unhandled client type " << Cti::as_underlying(connection.getClientType()));
-            return true;  //  return true just in case
+            return true;  //  Reload all devices since we can't check this one with a query
     }
 
     rdr << aDeviceID;
 
     rdr.execute();
 
-    // Return whether the ID exists in the DB
+    //  Indicate whether we found a calc point on the device
     return rdr();
 }
 
