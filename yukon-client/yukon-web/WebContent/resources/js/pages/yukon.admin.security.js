@@ -232,6 +232,13 @@ yukon.admin.security = (function () {
                 });
             });
             
+            $(document).on('click', '.js-refresh-secret', function() {
+            	var secretNumber = $(this).data('secretNumber'),
+            		form = $('#refreshSecretForm');
+            	form.find('#secretNumber').val(secretNumber);
+            	form.submit();
+            });
+            
             _initialized = true;
         }
         
