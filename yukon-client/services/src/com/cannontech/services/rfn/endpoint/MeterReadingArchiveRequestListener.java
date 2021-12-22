@@ -45,7 +45,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     private List<Converter> converters; // Threads to convert channel data to point data
     private List<Calculator> calculators; // Threads to calculate point data based on converted channel data
     private AtomicInteger archivedReadings = new AtomicInteger();
-    
+    private static AtomicInteger pointDataCount = new AtomicInteger();
     /**
      * Special thread class to handle archiving channel data converted point data.
      */
@@ -65,6 +65,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
 
             asyncDynamicDataSource.putValues(messagesToSend);
             archivedReadings.addAndGet(messagesToSend.size());
+            pointDataCount.addAndGet(messagesToSend.size());
 
             sendAcknowledgement(request);
             if (log.isDebugEnabled()) {
@@ -94,7 +95,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
             }
             return trackingIds;
         }
-        
+
         @Override
         protected void createLogEntry(RfnMeterReadingArchiveRequest request, Optional<String> trackingInfo, 
                                       Predicate<Level> isEnabled, BiConsumer<Level, String> log) {
@@ -196,5 +197,12 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     @ManagedAttribute
     public int getArchivedReadings() {
         return archivedReadings.get();
+    }
+
+    // Return the point data count every 60 min to Yukon Metric Topic and resets again.
+    public static Integer getPointDataCount() {
+        Integer currentCount = pointDataCount.get();
+        pointDataCount = new AtomicInteger();
+        return currentCount;
     }
 }

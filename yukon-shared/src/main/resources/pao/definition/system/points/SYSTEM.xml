@@ -160,4 +160,10 @@
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
     </point>
+    <point offset="1034" type="Analog">
+        <name>Rfn Meter Reading Archive Requests Pt Data Generated Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
 </points>
