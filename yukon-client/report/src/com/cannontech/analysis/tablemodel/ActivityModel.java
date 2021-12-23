@@ -22,7 +22,7 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class ActivityModel extends ReportModelBase<Object> {
     /** A string for the title of the data */
-    private static String title = "ENERGY COMPANY ACTIVITY LOG";
+    private static String title = "Energy Company Activity Log";
 
     /** Number of columns */
     protected final int NUMBER_COLUMNS = 6;

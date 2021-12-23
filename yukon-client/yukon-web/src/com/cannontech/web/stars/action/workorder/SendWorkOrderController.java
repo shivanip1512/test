@@ -94,7 +94,7 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
             FileOutputStream fos = null;
             try {
                 fos = new FileOutputStream( tempFile );
-                ReportFuncs.outputYukonReport( report, "pdf", fos );
+                ReportFuncs.outputYukonReport( report, "pdf", fos , reportBean.getModel());
             }
             catch (Exception e) {
                 // There will always be an exception because the PDF encoder will try to write two versions
