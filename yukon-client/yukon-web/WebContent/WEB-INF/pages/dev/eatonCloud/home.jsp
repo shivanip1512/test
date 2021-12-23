@@ -32,7 +32,7 @@
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
      </div><br/>
      <div class="user-message info">
-     	Secret cached by Service Manager: ${cachedToken}
+     	Token cached by Service Manager: ${cachedToken}
      	<br/>
         Token1:${secret1Token} cached by Simulator Secret1: ${secret1} Expiration: <cti:formatDate type="DATEHMS_12" value="${secret1Expiration}"/>
         <br/>
@@ -151,9 +151,9 @@
             </tags:nameValue>
         </tags:nameValueContainer>
     </form:form>
-    
-  
-    <br/>
+
+
+	<br />
 	<cti:url var="rotateSecretsUrl" value="rotateSecrets" />
 	<form:form id="rotateSecretsForm" action="${rotateSecretsUrl}"
 		method="post">
@@ -164,31 +164,41 @@
 			<cti:csrfToken />
 		</tags:nameValueContainer>
 	</form:form>
-	<div class="notes">
-		<br />
-		<cti:url var="autoReadUrl" value="deviceAutoRead" />
-		<form:form id="autoReadForm" action="${autoReadUrl}" method="post">
-			<tags:nameValueContainer>
-				<cti:button label="Read all Eaton Cloud LCRs" type="submit" />
-				<form:form id="autoReadForm" action="${autoReadUrl}" method="post" />
-				<cti:csrfToken />
-			</tags:nameValueContainer>
-		</form:form>
+	<br />
+	<cti:url var="validateSecretsUrl" value="validateSecrets" />
+	<form:form id="validateSecretsForm" action="${rotateSecretsUrl}"
+		method="post">
+		<tags:nameValueContainer>
+			<cti:button label="Start Automatic Secret Validation" type="submit" />
+			<form:form id="validateSecretsForm" action="${validateSecretsUrl}"
+				method="post" />
+			<cti:csrfToken />
+		</tags:nameValueContainer>
+	</form:form>
+	<br />
+	<cti:url var="autoReadUrl" value="deviceAutoRead" />
+	<form:form id="autoReadForm" action="${autoReadUrl}" method="post">
+		<tags:nameValueContainer>
+			<cti:button label="Read all Eaton Cloud LCRs" type="submit" />
+			<form:form id="autoReadForm" action="${autoReadUrl}" method="post" />
+			<cti:csrfToken />
+		</tags:nameValueContainer>
+	</form:form>
 
-		<br />
-		<cti:url var="forceRuntimeCalcUrl" value="forceRuntimeCalc" />
-		<form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}"
-			method="post">
-			<tags:nameValueContainer>
+	<br />
+	<cti:url var="forceRuntimeCalcUrl" value="forceRuntimeCalc" />
+	<form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}"
+		method="post">
+		<tags:nameValueContainer>
 
-				<cti:button label="Force Runtime Calculation" type="submit" />
-				<form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}"
-					method="post" />
-				<cti:csrfToken />
+			<cti:button label="Force Runtime Calculation" type="submit" />
+			<form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}"
+				method="post" />
+			<cti:csrfToken />
 
-			</tags:nameValueContainer>
-		</form:form>
+		</tags:nameValueContainer>
+	</form:form>
 
-		<cti:includeScript
+	<cti:includeScript
 			link="/resources/js/pages/yukon.dev.simulators.eatonCloudSimulator.js" />
 </cti:standardPage>

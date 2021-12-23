@@ -1066,11 +1066,11 @@
     <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed.1">Secret</entry>
     <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed.2">Error</entry>
     <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed.7">Try</entry>
-    <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed">Brightlayer Credential Update Failure. Failed to rotate secret for {1} Error: {2} Try: {7}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed">Brightlayer Credential Update Failed for {1} by {2}. {3}. Try: {7}</entry>
     <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed.1">Secret</entry>
     <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed.2">Error</entry>
     <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed.7">Try</entry>
-    <entry key="yukon.common.events.dr.eatoncloud.secretRotationSuccess">Brightlayer Credential Update Success for {1}. Try: {7}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationSuccess">Brightlayer Credential Update Success for {1} by {2}. Try: {7}</entry>
     <entry key="yukon.common.events.dr.eatoncloud.secretRotationSuccess.1">Secret</entry>
     <entry key="yukon.common.events.dr.eatoncloud.secretRotationSuccess.7">Try</entry>
     

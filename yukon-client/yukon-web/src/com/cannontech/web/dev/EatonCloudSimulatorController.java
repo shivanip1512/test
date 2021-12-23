@@ -322,4 +322,16 @@ public class EatonCloudSimulatorController {
         }
         return "redirect:home";
     }
+    
+    @PostMapping("/validateSecrets")
+    public String validateSecrets(FlashScope flashScope) {
+        try {
+            // send request to SM to start secret rotation
+            jmsTemplateSecretRotation.convertAndSend(new EatonCloudSecretRotationSimulationRequest());
+            flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Sent message to SM to rotate secrets."));
+        } catch (Exception e) {
+            log.error("Error", e);
+        }
+        return "redirect:home";
+    }
 }

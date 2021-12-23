@@ -79,7 +79,7 @@ public class EatonCloudSecretRotationServiceV1 {
         secretValidations.clear();
         secretRotations.clear();
         retryIntervalMinutes = 1;
-        log.info("startSimulation");
+        log.info("Start Simulation");
         rotateSecrets();
     }
 
@@ -161,14 +161,15 @@ public class EatonCloudSecretRotationServiceV1 {
             settingUpdateDao.updateSetting(new GlobalSetting(type, value.getSecret()), YukonUserContext.system.getYukonUser());
             secretRotations.remove(type);
             log.info("({} of {}) {} rotation is successful.", currentTry.get(), numberOfTimesToRetry, secret);
-            eatonCloudEventLogService.secretRotationSuccess(secret, currentTry.get());
+            eatonCloudEventLogService.secretRotationSuccess(secret, YukonUserContext.system.getYukonUser(), currentTry.get());
             validateSecret(type);
         } catch (EatonCloudCommunicationExceptionV1 e) {
             if (currentTry.get() == numberOfTimesToRetry) {
                 log.error("({} of {}) {} rotation failed:{} alert created:{}", currentTry.get(), numberOfTimesToRetry, secret,
                         e.getMessage(), AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE);
                 secretRotations.remove(type);
-                eatonCloudEventLogService.secretRotationFailed(secret, e.getMessage(), currentTry.get());
+                eatonCloudEventLogService.secretRotationFailed(secret, YukonUserContext.system.getYukonUser(), e.getMessage(),
+                        currentTry.get());
                 createAlert(AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE, secret, secretExpiryTime.toDate());
                 validateSecret(type);
             } else {
