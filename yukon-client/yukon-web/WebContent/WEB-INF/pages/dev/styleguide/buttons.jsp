@@ -597,11 +597,13 @@ yukon.ui.unbusy('#busy-test-3');
             <cm:dropdownOption icon="icon-plus-green" key=".create" id="create-option"/>
         </cm:dropdown>
         &nbsp;&nbsp;
-        <cm:dropdown icon="icon-emoticon-smile">
-            <cm:dropdownOption icon="icon-emoticon-smile">Smile</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-emoticon-tongue">Tongue</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-emoticon-happy">Happy</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-emoticon-surprised">Surprised</cm:dropdownOption>
+        <cm:dropdown icon="icon-vehicle-car">
+            <cm:dropdownOption icon="icon-vehicle-car">Smile</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-vehicle-forklift">Tongue</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-vehicle-sports-car">Happy</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-vehicle-tractor">Surprised</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-vehicle-utility-van">Surprised</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-vehicle-pickup-truck">Surprised</cm:dropdownOption>
         </cm:dropdown>
     </div>
 </div>
@@ -623,11 +625,13 @@ yukon.ui.unbusy('#busy-test-3');
     &lt;cm:dropdownOption icon=&quot;icon-plus-green&quot; key=&quot;.create&quot; id=&quot;create-option&quot;/&gt;
 &lt;/cm:dropdown&gt;
 ...
-&lt;cm:dropdown icon=&quot;icon-emoticon-smile&quot;&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-emoticon-smile&quot;&gt;Smile&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-emoticon-tongue&quot;&gt;Tongue&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-emoticon-happy&quot;&gt;Happy&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-emoticon-surprised&quot;&gt;Surprised&lt;/cm:dropdownOption&gt;
+&lt;cm:dropdown icon=&quot;icon-vehicle-car&quot;&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-car&quot;&gt;Smile&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-forklift&quot;&gt;Tongue&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-sports-car&quot;&gt;Happy&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-tractor&quot;&gt;Surprised&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-utility-van&quot;&gt;Surprised&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-pickup-truck&quot;&gt;Surprised&lt;/cm:dropdownOption&gt;
 &lt;/cm:dropdown&gt;
 </pre>
     
