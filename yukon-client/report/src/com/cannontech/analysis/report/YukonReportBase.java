@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.GroupBody;
 import org.pentaho.reporting.engine.classic.core.GroupDataBody;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
@@ -19,7 +20,6 @@ import org.pentaho.reporting.engine.classic.core.TableDataFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.DateFieldElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
 import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
-import org.pentaho.reporting.engine.classic.core.filter.types.bands.GroupDataBodyType;
 import org.pentaho.reporting.engine.classic.core.function.ElementVisibilitySwitchFunction;
 import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
 import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
@@ -135,11 +135,11 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter {
         List<RelationalGroup> createdGroups = createGroups();
         for (int i = 0; i < createGroups().size(); i++) {
             RelationalGroup rg = createdGroups.get(i);
+            GroupBody groupBody = report.getGroup(i).getBody();
+            ((GroupDataBody) groupBody).setItemBand(createItemBand());
             report.addGroup(rg);
         }
 
-        final GroupDataBody dataBody = (GroupDataBody) report.getChildElementByType(GroupDataBodyType.INSTANCE);
-        dataBody.setItemBand(createItemBand());
         report.setExpressions(getExpressions());
         report.setPageDefinition(getPageDefinition());
         report.getReportConfiguration().setConfigProperty(

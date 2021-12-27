@@ -215,7 +215,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
                 }
 
                 report = reportBean.createReport();
-                ReportFuncs.outputYukonReport(report, ext, bufferedTemp);
+                ReportFuncs.outputYukonReport(report, ext, bufferedTemp, reportBean.getModel());
                 bufferedTemp.close();
 
                 if (!ext.equalsIgnoreCase("png")) {

@@ -23,6 +23,7 @@ import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bean.WorkOrderBean;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
@@ -48,12 +49,14 @@ public class CreateReportController extends StarsWorkorderActionController {
         MasterReport report = createReport(user, session);
         final ServletOutputStream out = response.getOutputStream();
         try {
+            ReportBean reportBean = (ReportBean) session.getAttribute(ServletUtil.ATT_REPORT_BEAN);
             if (ext.equalsIgnoreCase("pdf")) {
                 response.setContentType("application/pdf");
                 response.addHeader("Content-Type", "application/pdf");
-                ReportFuncs.outputYukonReport(report, ext, out);
+                
+                ReportFuncs.outputYukonReport(report, ext, out, reportBean.getModel());
             } else if (ext.equalsIgnoreCase("csv")) {
-                ReportFuncs.outputYukonReport(report, ext, out);
+                ReportFuncs.outputYukonReport(report, ext, out, reportBean.getModel());
                 out.flush();
             }
         } catch (Exception e) {
