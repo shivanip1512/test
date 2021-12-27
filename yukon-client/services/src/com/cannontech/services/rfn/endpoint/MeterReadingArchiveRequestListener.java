@@ -46,6 +46,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     private List<Calculator> calculators; // Threads to calculate point data based on converted channel data
     private AtomicInteger archivedReadings = new AtomicInteger();
     private static AtomicInteger pointDataCount = new AtomicInteger();
+    private static AtomicInteger archiveRequestsReceivedCount = new AtomicInteger();
     /**
      * Special thread class to handle archiving channel data converted point data.
      */
@@ -57,6 +58,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
         @Override
         public Optional<String> processData(RfnDevice device, RfnMeterReadingArchiveRequest request) {
             incrementProcessedArchiveRequest();
+            archiveRequestsReceivedCount.getAndIncrement();
             RfnMeterPlusReadingData meterPlusReadingData = new RfnMeterPlusReadingData(device, request.getData());
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
             List<CalculationData> toCalculate = pointDataProducer.convert(meterPlusReadingData, messagesToSend, request.getDataPointId());
@@ -204,5 +206,11 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
         Integer currentCount = pointDataCount.get();
         pointDataCount = new AtomicInteger();
         return currentCount;
+    }
+
+    public static Integer getArchiveRequestsReceivedCount() {
+        Integer count = archiveRequestsReceivedCount.get();
+        archiveRequestsReceivedCount = new AtomicInteger();
+        return count;
     }
 }
