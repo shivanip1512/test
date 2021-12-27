@@ -34,6 +34,6 @@ public class RfnMeterReadingArchiveRequestsReceivedProducer extends YukonMetricI
 
     @Override
     public long getPeriodInMinutes() {
-        return 5;
+        return 60;
     }
 }
