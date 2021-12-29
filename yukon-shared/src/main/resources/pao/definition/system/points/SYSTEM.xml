@@ -167,7 +167,7 @@
         <decimalplaces value="0"/>
     </point>
     <point offset="1035" type="Analog">
-        <name>RFN LCR Archive Requests Received</name>
+        <name>RFN LCR Reading Archive Requests Received</name>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>

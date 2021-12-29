@@ -16,7 +16,7 @@ public enum YukonMetricPointDataType {
             YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_POINT_DATA_GENERATED_COUNT, 1034, PointType.Analog,
             "Rfn Meter Reading Archive Requests Pt Data Generated Count"),
     RFN_LCR_ARCHIVE_REQUESTS_RECEIVED(YukonMetricPointInfo.RFN_LCR_ARCHIVE_REQUESTS_RECEIVED, 1035, PointType.Analog,
-            "RFN LCR Archive Requests Received");
+            "RFN LCR Reading Archive Requests Received");
 
     private final static ImmutableSet<YukonMetricPointInfo> lookupByYukonMetricPointInfo;
     private final static ImmutableMap<YukonMetricPointInfo, YukonMetricPointDataType> lookupByPointInfo;
