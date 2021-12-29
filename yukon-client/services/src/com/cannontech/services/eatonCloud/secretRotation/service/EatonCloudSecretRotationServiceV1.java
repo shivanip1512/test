@@ -99,24 +99,12 @@ public class EatonCloudSecretRotationServiceV1 {
      * If secret expires within 6 month get a new secret otherwise check is the secret is still valid by obtaining the token 
      */
     private void rotateAndValidateSecret(EatonCloudServiceAccountDetailV1 detail, GlobalSettingType type) {
-        Instant secretExpiryTime = getExpiryTime(globalSettingsToSecret.get(type), detail);
+        Instant secretExpiryTime =  detail.getExpiryTime(globalSettingsToSecret.get(type));
         if (DateTime.now().plusMonths(6).isAfter(secretExpiryTime)) {
             rotateSecret(type, secretExpiryTime);
         } else {
             validateSecret(type);
         }
-    }
-    
-    private Instant getExpiryTime(int secretNumber, EatonCloudServiceAccountDetailV1 detail) {
-        Date time1 = detail.getSecrets().stream()
-                .filter(s -> s.getName().equals("secret" + secretNumber))
-                .findFirst()
-                .orElse(null)
-                .getExpiryTime();
-        if (time1 == null) {
-            return null;
-        }
-        return new Instant(time1);
     }
     
     /**
