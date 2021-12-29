@@ -149,13 +149,13 @@
         <decimalplaces value="0"/>
     </point>
     <point offset="1032" type="Analog">
-        <name>Rfn Meter Reading Archive Requests Received</name>
+        <name>RFN Meter Reading Archive Requests Received</name>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
     </point>
     <point offset="1033" type="Analog">
-        <name>Rfn Meter Reading Archive Requests Pushed</name>
+        <name>RFN Meter Reading Archive Requests Pushed</name>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
