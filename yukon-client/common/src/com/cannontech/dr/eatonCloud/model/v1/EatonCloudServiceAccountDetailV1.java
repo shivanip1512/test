@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.Instant;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EatonCloudServiceAccountDetailV1 implements Serializable {
@@ -85,5 +87,17 @@ public class EatonCloudServiceAccountDetailV1 implements Serializable {
     @JsonProperty("modified_by")
     public String getModifiedByUser() {
         return modifiedByUser;
+    }
+    
+    public Instant getExpiryTime(int secretNumber) {
+        Date time1 = getSecrets().stream()
+                .filter(s -> s.getName().equals("secret" + secretNumber))
+                .findFirst()
+                .orElse(null)
+                .getExpiryTime();
+        if (time1 == null) {
+            return null;
+        }
+        return new Instant(time1);
     }
 }

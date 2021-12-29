@@ -66,6 +66,7 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
                 String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
                 tokenCache.invalidateAll();
                 refreshToken(null, serviceAccountId);
+                log.info("Secret1 or Secret2 was updated, refreshing the token");
             }
         } catch (Exception e) {
             log.error("Unable to retrieve token", e);

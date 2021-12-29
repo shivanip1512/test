@@ -1,10 +1,10 @@
 package com.cannontech.simulators.eatonCloud.model;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.http.HttpStatus;
 
 import com.cannontech.common.inventory.HardwareType;
@@ -24,6 +24,7 @@ public abstract class EatonCloudDataGenerator {
     private static int length = 5;
     private static boolean useLetters = true;
     private static boolean useNumbers = true;
+    protected boolean refreshToken = true;
     
     {
         resetToken1();
@@ -32,12 +33,12 @@ public abstract class EatonCloudDataGenerator {
 
     protected void resetToken1() {
         token1 = RandomStringUtils.random(length, useLetters, useNumbers);
-        expiryTime1 = new Date();
+        expiryTime1 = DateUtils.addYears(new Date(), 1);
     }
     
     protected void resetToken2() {
         token2 = RandomStringUtils.random(length, useLetters, useNumbers); 
-        expiryTime2 = new Date();
+        expiryTime2 = DateUtils.addYears(new Date(), 1);
     }
 
     protected Map<PaoType, HardwareType> paoTypeToHardware = Map.of(PaoType.LCR6600C, HardwareType.LCR_6600C, PaoType.LCR6200C,
@@ -59,11 +60,8 @@ public abstract class EatonCloudDataGenerator {
     public abstract EatonCloudDataGenerator getDataGenerator(EatonCloudVersion version);
     
     public void expireSecrets() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MONTH, -6);
-        expiryTime1 = calendar.getTime();
-        calendar.add(Calendar.MINUTE, -1);
-        expiryTime2 = calendar.getTime();
+        expiryTime1 = DateUtils.addMonths(new Date(), -6);
+        expiryTime2 = DateUtils.addMonths(new Date(), -6);
     }
 
     public String getToken2() {
@@ -80,5 +78,13 @@ public abstract class EatonCloudDataGenerator {
     
     public Date getExpiryTime2() {
         return expiryTime2;
+    }
+
+    public boolean isRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(boolean refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

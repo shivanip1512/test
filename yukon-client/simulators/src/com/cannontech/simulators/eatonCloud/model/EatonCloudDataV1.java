@@ -54,12 +54,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     //if device was not create in 30 seconds, it will not create at all. If debugging creation code, extend the 30 sec value. 
     private static Cache<String, String> creatingGuids =
             CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
-   
-    @Override
-    public void expireSecrets() {
-      super.expireSecrets();
-    }
-     
+        
     public EatonCloudSimulatorResponse token1() {
         
         if (status == HttpStatus.BAD_REQUEST.value()) {
@@ -331,11 +326,11 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         
         EatonCloudSecretValueV1 secret = null;
         if(secretName.equals("secret1")) {
-            this.resetToken1();
+            resetToken1();
             secret = new EatonCloudSecretValueV1(secretName, expiryTime1, RandomStringUtils.random(5, true, true));
         }
         if(secretName.equals("secret2")) {
-            this.resetToken2();
+            resetToken2();
             secret = new EatonCloudSecretValueV1(secretName, expiryTime2, RandomStringUtils.random(3, true, true));
         }
         

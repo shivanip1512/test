@@ -1,6 +1,5 @@
 package com.cannontech.web.dr.eatonCloud.service.impl.v1;
 
-import java.util.Date;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -32,8 +31,8 @@ public class EatonCloudSecretRotationServiceImplV1 implements EatonCloudSecretRo
     @Override
     public EatonCloudSecretExpiryTime getSecretExpiryTime() {
         EatonCloudServiceAccountDetailV1 detail = eatonCloudCommunicationService.getServiceAccountDetail();
-        log.debug(new EatonCloudSecretExpiryTime(getExpiryTime(1, detail), getExpiryTime(2, detail)));
-        return new EatonCloudSecretExpiryTime(getExpiryTime(1, detail), getExpiryTime(2, detail));
+        log.debug(new EatonCloudSecretExpiryTime(detail.getExpiryTime(1), detail.getExpiryTime(2)));
+        return new EatonCloudSecretExpiryTime(detail.getExpiryTime(1), detail.getExpiryTime(2));
     }
 
     @Override
@@ -42,17 +41,5 @@ public class EatonCloudSecretRotationServiceImplV1 implements EatonCloudSecretRo
         settingDao.updateSetting(new GlobalSetting(secretToGlobalSettings.get(secretNumber), value.getSecret()), user);
         eatonCloudEventLogService.secretRotationSuccess("secret" + secretNumber, user, 1);
         return value.getExpiryTime() == null ? null : new Instant(value.getExpiryTime());
-    }
-
-    private Instant getExpiryTime(int secretNumber, EatonCloudServiceAccountDetailV1 detail) {
-        Date time1 = detail.getSecrets().stream()
-                .filter(s -> s.getName().equals("secret" + secretNumber))
-                .findFirst()
-                .orElse(null)
-                .getExpiryTime();
-        if (time1 == null) {
-            return null;
-        }
-        return new Instant(time1);
     }
 }

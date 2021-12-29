@@ -34,9 +34,9 @@
      <div class="user-message info">
      	Token cached by Service Manager: ${cachedToken}
      	<br/>
-        Token1:${secret1Token} cached by Simulator Secret1: ${secret1} Expiration: <cti:formatDate type="DATEHMS_12" value="${secret1Expiration}"/>
+        Token1:${secret1Token} cached by ${cachedBy} Secret1: ${secret1} Expiration: <cti:formatDate type="DATEHMS_12" value="${secret1Expiration}"/>
         <br/>
-        Token2:${secret2Token} cached by Simulator Secret2: ${secret2} Expiration: <cti:formatDate type="DATEHMS_12" value="${secret2Expiration}"/>
+        Token2:${secret2Token} cached by ${cachedBy} Secret2: ${secret2} Expiration: <cti:formatDate type="DATEHMS_12" value="${secret2Expiration}"/>
      </div>
      <br/>
 	    

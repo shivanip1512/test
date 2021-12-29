@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
@@ -96,8 +95,8 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
             } else if (simulatorRequest instanceof EatonCloudSimulatorStatisticsRequest) {
                 EatonCloudSimulatorStatisticsRequest request = (EatonCloudSimulatorStatisticsRequest) simulatorRequest;
                 EatonCloudDataGenerator generator = getGenerator(request.getVersion());
-                return new EatonCloudSimulatorStatisticsResponse(generator.getToken1(), new Instant(generator.getExpiryTime1()),
-                        generator.getToken2(), new Instant(generator.getExpiryTime1()));
+                return new EatonCloudSimulatorStatisticsResponse(generator.getToken1(),
+                        generator.getToken2());
             } else if (simulatorRequest instanceof EatonCloudSimulatorDeviceCreateRequest) {
                 EatonCloudSimulatorDeviceCreateRequest request = (EatonCloudSimulatorDeviceCreateRequest) simulatorRequest;
                 EatonCloudDataGenerator generator = getGenerator(request.getVersion());
