@@ -1590,18 +1590,18 @@ Java :
     jira : YUK-16690
     notes : 
   
-  - filename : jsoup-1.10.3.jar
+  - filename : jsoup-1.14.3.jar
     yukon group : UI
     project : JSoup Java HTML Parser
-    version : 1.10.3
+    version : 1.14.3
     project URL : "https://jsoup.org/"
     license : MIT
     license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/org.jsoup/jsoup/1.10.3"
-    md5 : 1e04f3fb93ba00b59cdfa9228cffa59a
-    sha1 : b842f960942503cf1abbcc8c173a7f2c19d43726
-    updated : 2017-06-15
-    jira : YUK-16690
+    maven URL : "https://mvnrepository.com/artifact/org.jsoup/jsoup/1.14.3"
+    md5 : 079f92557fa3577329d498aee5cc25ee
+    sha1 : c43a81e18e6d0eb71951aa031d55d5c293c531a6
+    updated : 2021-12-30
+    jira : YUK-25139
     notes : 
   
   - filename : jsp-api.jar

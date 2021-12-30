@@ -78,7 +78,7 @@ public class EimJavaLibraryTest {
         "jna-platform-4.5.0.jar",
         "js.jar",
         "jsch-0.1.54.jar",
-        "jsoup-1.10.3.jar",
+        "jsoup-1.14.3.jar",
         "jsp-api.jar",
         "junit-jupiter-api-5.7.1.jar",
         "junit-jupiter-engine-5.7.1.jar",

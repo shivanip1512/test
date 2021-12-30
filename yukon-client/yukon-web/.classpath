@@ -42,7 +42,7 @@
 	<classpathentry kind="lib" path="/third-party/lucene-core-8.8.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/lucene-analyzers-common-8.8.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/lucene-queryparser-8.8.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/jsoup-1.10.3.jar">
+	<classpathentry kind="lib" path="/third-party/jsoup-1.14.3.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
