@@ -23,4 +23,36 @@
         </div>
         </form:form>
     <hr>
+    
+    
+    <cti:msg var="pointNameText" key="yukon.common.pointName"/>
+    <cti:msg2 var="chartText" key=".chart"/>
+    <div class="column-12-12 clearfix">
+        <div class="column one">
+            <!-- TODO: Alternate rows in the table are highlighted. Remove that styling -->
+            <table class="compact-results-table js-chart-table-left">
+                <thead>
+                    <tr>
+                        <th>${pointNameText}</th>
+                        <th>${chartText}</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="column two nogutter">
+            <!-- TODO: Alternate rows in the table are highlighted. Remove that styling -->
+            <table class="compact-results-table js-chart-table-right">
+                <thead>
+                    <tr>
+                        <th>${pointNameText}</th>
+                        <th>${chartText}</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.support.systemPerformanceMetrics.js" />
 </cti:standardPage>

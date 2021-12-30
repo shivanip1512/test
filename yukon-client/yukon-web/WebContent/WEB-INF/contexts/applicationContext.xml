@@ -1315,6 +1315,8 @@
     <bean class="com.cannontech.web.support.service.impl.YsmJmxQueryService"/>
     <bean class="com.cannontech.web.support.dao.impl.SystemMetricCriteriaDaoImpl"/>
     
+    <bean class="com.cannontech.web.support.systemPerformanceMetrics.service.impl.SystemPerformanceMetricsServiceImpl"/>
+    
     <bean class="com.cannontech.web.support.waterNode.dao.impl.WaterNodeDaoImpl"/>
     <bean class="com.cannontech.web.support.waterNode.fileUploadDao.impl.WaterNodeFileUploadDaoImpl"/>
     <bean class="com.cannontech.web.support.waterNode.service.impl.WaterNodeServiceImpl"/>
