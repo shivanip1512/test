@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
-        <analog offset="1034"/>
+        <analog offset="1035"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1007" type="Analog">
@@ -162,6 +162,12 @@
     </point>
     <point offset="1034" type="Analog">
         <name>Rfn Meter Reading Archive Requests Pt Data Generated Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1035" type="Analog">
+        <name>Rfn LCR Reading Archive Requests Queue Size</name>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
