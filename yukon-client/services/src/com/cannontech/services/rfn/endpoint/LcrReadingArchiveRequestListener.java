@@ -69,7 +69,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     private List<Worker> workers;
     private final AtomicInteger archivedReadings = new AtomicInteger();
     private final AtomicInteger numPausedQueues = new AtomicInteger();
-
+    private static AtomicInteger archivedRequestsReceived = new AtomicInteger();
     public class Worker extends ConverterBase {
         
         public Worker(int workerNumber, int queueSize) {
@@ -79,6 +79,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         @Override
         public Optional<String> processData(RfnDevice rfnDevice, RfnLcrArchiveRequest request) {
             incrementProcessedArchiveRequest();
+            archivedRequestsReceived.getAndIncrement();
             Instant startTime = new Instant();
             
             // Make sure dispatch message handling isn't blocked up.
@@ -221,6 +222,12 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         return numPausedQueues.get();
     }
 
+    public static Integer getArchiveRequestsReceivedCount() {
+        Integer count = archivedRequestsReceived.get();
+        archivedRequestsReceived = new AtomicInteger();
+        return count;
+    }
+    
     @Autowired
     public void setStrategies(List<RfnLcrParsingStrategy> strategyList) {
 

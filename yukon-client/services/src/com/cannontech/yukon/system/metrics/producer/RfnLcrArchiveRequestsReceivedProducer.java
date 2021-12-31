@@ -5,19 +5,19 @@ import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.services.rfn.endpoint.MeterReadingArchiveRequestListener;
+import com.cannontech.services.rfn.endpoint.LcrReadingArchiveRequestListener;
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
 import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
 import com.cannontech.yukon.system.metrics.producer.service.YukonMetricIntervalProducer;
 
 @Service
-public class RfnMeterReadingArchiveRequestsReceivedProducer extends YukonMetricIntervalProducer {
-    private static final Logger log = YukonLogManager.getLogger(RfnMeterReadingArchiveRequestsReceivedProducer.class);
+public class RfnLcrArchiveRequestsReceivedProducer extends YukonMetricIntervalProducer {
+    private static final Logger log = YukonLogManager.getLogger(RfnLcrArchiveRequestsReceivedProducer.class);
 
     @Override
     public YukonMetric produce() {
         YukonMetric metric = new YukonMetric(getYukonMetricPointInfo(),
-                MeterReadingArchiveRequestListener.getArchiveRequestsReceivedCount(), new DateTime());
+                LcrReadingArchiveRequestListener.getArchiveRequestsReceivedCount(), new DateTime());
         debug(metric, log);
         return metric;
     }
@@ -29,11 +29,11 @@ public class RfnMeterReadingArchiveRequestsReceivedProducer extends YukonMetricI
 
     @Override
     public YukonMetricPointInfo getYukonMetricPointInfo() {
-        return YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_RECEIVED;
+        return YukonMetricPointInfo.RFN_LCR_READING_ARCHIVE_REQUESTS_RECEIVED;
     }
 
     @Override
     public long getPeriodInMinutes() {
-        return 60;
+        return 3;
     }
 }
