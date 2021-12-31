@@ -12,8 +12,8 @@ import com.cannontech.yukon.system.metrics.message.YukonMetric;
 import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
 import com.cannontech.yukon.system.metrics.producer.service.YukonMetricIntervalProducer;
 
-public class RfnLcrReadingArchiveRequestQueueSizeProducer extends YukonMetricIntervalProducer {
-    private static final Logger log = YukonLogManager.getLogger(RfnLcrReadingArchiveRequestQueueSizeProducer.class);
+public class RfnLcrReadingArchiveRequestsQueueSizeProducer extends YukonMetricIntervalProducer {
+    private static final Logger log = YukonLogManager.getLogger(RfnLcrReadingArchiveRequestsQueueSizeProducer.class);
     private static final String queueName = JmsApiDirectory.RFN_LCR_READ_ARCHIVE.getQueueName();
     @Autowired private YukonMetricHelper helper;
 
@@ -32,7 +32,7 @@ public class RfnLcrReadingArchiveRequestQueueSizeProducer extends YukonMetricInt
 
     @Override
     public YukonMetricPointInfo getYukonMetricPointInfo() {
-        return YukonMetricPointInfo.RFN_LCR_READING_ARCHIVE_REQUEST_QUEUE_SIZE;
+        return YukonMetricPointInfo.RFN_LCR_READING_ARCHIVE_REQUESTS_QUEUE_SIZE;
     }
 
     @Override

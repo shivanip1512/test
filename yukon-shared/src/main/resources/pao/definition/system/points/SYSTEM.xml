@@ -172,4 +172,10 @@
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
     </point>
+    <point offset="1036" type="Analog">
+        <name>RFN LCR Reading Archive Requests Queue Size</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
 </points>
