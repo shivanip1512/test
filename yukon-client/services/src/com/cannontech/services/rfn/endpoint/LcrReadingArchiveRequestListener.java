@@ -69,8 +69,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     private List<Worker> workers;
     private final AtomicInteger archivedReadings = new AtomicInteger();
     private final AtomicInteger numPausedQueues = new AtomicInteger();
-    private static AtomicInteger pointDatas= new AtomicInteger();
-
+    private static AtomicInteger archivedRequestsReceived = new AtomicInteger();
     public class Worker extends ConverterBase {
         
         public Worker(int workerNumber, int queueSize) {
@@ -80,6 +79,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         @Override
         public Optional<String> processData(RfnDevice rfnDevice, RfnLcrArchiveRequest request) {
             incrementProcessedArchiveRequest();
+            archivedRequestsReceived.getAndIncrement();
             Instant startTime = new Instant();
             
             // Make sure dispatch message handling isn't blocked up.
@@ -107,7 +107,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 byte[] payload = reading.getData().getPayload();
                 Schema schema = ParsingService.getSchema(payload);
                 try {
-                    strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings, pointDatas);
+                    strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings);
                 } catch (ParseException e) {
                     // Acknowledge the request to prevent NM from sending back that data which can't be parsed.
                     sendAcknowledgement(request);
@@ -221,11 +221,11 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     public int getNumPausedQueues() {
         return numPausedQueues.get();
     }
-    // Return the point data count every 60 min to Yukon Metric Topic and resets again.
-    public static Integer getPointDataCount() {
-        Integer currentCount = pointDatas.get();
-        pointDatas = new AtomicInteger();
-        return currentCount;
+
+    public static Integer getArchiveRequestsReceivedCount() {
+        Integer count = archivedRequestsReceived.get();
+        archivedRequestsReceived = new AtomicInteger();
+        return count;
     }
     
     @Autowired

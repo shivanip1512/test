@@ -8,15 +8,16 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public enum YukonMetricPointDataType {
-    RFN_METER_READING_ARCHIVE_REQUEST_RECEIVED(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUEST_RECEIVED, 1032,
+    RFN_METER_READING_ARCHIVE_REQUESTS_RECEIVED(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_RECEIVED, 1032,
             PointType.Analog, "RFN Meter Reading Archive Requests Received"),
-    RFN_METER_READING_ARCHIVE_REQUEST_PUSHED(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUEST_PUSHED, 1033,
+    RFN_METER_READING_ARCHIVE_REQUESTS_PUSHED(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_PUSHED, 1033,
             PointType.Analog, "RFN Meter Reading Archive Requests Pushed"),
     RFN_METER_READING_ARCHIVE_REQUESTS_POINT_DATA_GENERATED_COUNT(
             YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_POINT_DATA_GENERATED_COUNT, 1034, PointType.Analog,
             "RFN Meter Reading Archive Point Data Generated Count"),
-    RFN_LCR_READING_POINT_DATA_GENERATED_COUNT(YukonMetricPointInfo.RFN_LCR_READING_POINT_DATA_GENERATED_COUNT, 1035,
-            PointType.Analog, "RFN LCR Reading Archive Point Data Generated Count");
+    RFN_LCR_READING_ARCHIVE_REQUESTS_RECEIVED(YukonMetricPointInfo.RFN_LCR_READING_ARCHIVE_REQUESTS_RECEIVED, 1035, PointType.Analog,
+            "RFN LCR Reading Archive Requests Received");
+
 
     private final static ImmutableSet<YukonMetricPointInfo> lookupByYukonMetricPointInfo;
     private final static ImmutableMap<YukonMetricPointInfo, YukonMetricPointDataType> lookupByPointInfo;
