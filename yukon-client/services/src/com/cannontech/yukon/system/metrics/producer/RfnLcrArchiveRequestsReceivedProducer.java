@@ -34,6 +34,6 @@ public class RfnLcrArchiveRequestsReceivedProducer extends YukonMetricIntervalPr
 
     @Override
     public long getPeriodInMinutes() {
-        return 3;
+        return 60;
     }
 }
