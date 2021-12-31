@@ -69,6 +69,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     private List<Worker> workers;
     private final AtomicInteger archivedReadings = new AtomicInteger();
     private final AtomicInteger numPausedQueues = new AtomicInteger();
+    private static AtomicInteger pointDatas= new AtomicInteger();
 
     public class Worker extends ConverterBase {
         
@@ -106,7 +107,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 byte[] payload = reading.getData().getPayload();
                 Schema schema = ParsingService.getSchema(payload);
                 try {
-                    strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings);
+                    strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings, pointDatas);
                 } catch (ParseException e) {
                     // Acknowledge the request to prevent NM from sending back that data which can't be parsed.
                     sendAcknowledgement(request);
@@ -220,7 +221,13 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     public int getNumPausedQueues() {
         return numPausedQueues.get();
     }
-
+    // Return the point data count every 60 min to Yukon Metric Topic and resets again.
+    public static Integer getPointDataCount() {
+        Integer currentCount = pointDatas.get();
+        pointDatas = new AtomicInteger();
+        return currentCount;
+    }
+    
     @Autowired
     public void setStrategies(List<RfnLcrParsingStrategy> strategyList) {
 
