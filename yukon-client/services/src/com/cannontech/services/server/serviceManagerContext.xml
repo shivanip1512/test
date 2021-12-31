@@ -42,4 +42,5 @@
     <bean class="com.cannontech.yukon.system.metrics.producer.RfnMeterReadingPointDataCountProducer"/>
     <bean class="com.cannontech.yukon.system.metrics.producer.RfnLcrArchiveRequestsReceivedProducer"/>
     <bean class="com.cannontech.yukon.system.metrics.producer.RfnLcrReadingArchiveRequestsQueueSizeProducer"/>
+    <bean class="com.cannontech.yukon.system.metrics.producer.RfnMeterReadingArchiveRequestsQueueSizeProducer"/>
 </beans>
