@@ -20,7 +20,7 @@ public class RfnMeterReadingPointDataCountProducer extends YukonMetricIntervalPr
             try {
                 int pointDataCount = MeterReadingArchiveRequestListener.getPointDataCount();
                 yukonMetric = new YukonMetric();
-                yukonMetric.setPointInfo(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_POINT_DATA_GENERATED_COUNT);
+                yukonMetric.setPointInfo(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_POINT_DATA_GENERATED_COUNT);
                 yukonMetric.setTimestamp(new DateTime());
                 yukonMetric.setValue(pointDataCount);
                 debug(yukonMetric, log);
@@ -43,7 +43,7 @@ public class RfnMeterReadingPointDataCountProducer extends YukonMetricIntervalPr
 
     @Override
     public YukonMetricPointInfo getYukonMetricPointInfo() {
-        return YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_POINT_DATA_GENERATED_COUNT;
+        return YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_POINT_DATA_GENERATED_COUNT;
     }
 
 }
