@@ -4783,74 +4783,74 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : log4j-api-2.16.0.jar
+  - filename : log4j-api-2.17.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.0
+    version : 2.17.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : c0338cbc28a4beec6b8ad3356b43e26f
-    sha1 : f821a18687126c2e2f227038f540e7953ad2cc8c
-    updated : 2021-12-16
-    jira : NM-2266
+    md5 : 4e4dc08c475a79f6b310e5cadcb9de19
+    sha1 : 0215451c98dd2673d3dd4257ec01d590ac4359e9
+    updated : 2022-01-01
+    jira : NM-2284
     notes : Apache Log4j API
 
-  - filename : log4j-appserver-2.16.0.jar
+  - filename : log4j-appserver-2.17.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.0
+    version : 2.17.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : 9a7d237e5b217627ca9f908650b54c71
-    sha1 : 16a36cb0588ce190020a65fed660d02934dcfde4
-    updated : 2021-12-16
-    jira : NM-2266
+    md5 : 21028cb226bc05ca0618bfc71312a2a1
+    sha1 : 5433c7a8eb43052129349f9eda033a24cdcc2898
+    updated : 2022-01-01
+    jira : NM-2284
     notes : Provide Log4j as the logging implementation for application servers
 
-  - filename : log4j-core-2.16.0.jar
+  - filename : log4j-core-2.17.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.0
+    version : 2.17.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : cf0634270eafdbb083eb5951d7f2232d
-    sha1 : 539a445388aee52108700f26d9644989e7916e7c
-    updated : 2021-12-16
-    jira : NM-2266
+    md5 : 0ac2d4109e083ff8ef193a396c540ec2
+    sha1 : 2cc97f5b3328f5934224e3090e2b80dcfe3575b4
+    updated : 2022-01-01
+    jira : NM-2284
     notes : Apache Log4j Core
 
-  - filename : log4j-jcl-2.16.0.jar
+  - filename : log4j-jcl-2.17.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.0
+    version : 2.17.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : e4b132e27f11b9ffdd3600e6ac171773
-    sha1 : ebbcfbd118f2d9c4841e67b7b4d2036612828600
-    updated : 2021-12-16
-    jira : NM-2266
+    md5 : 02a7c68a46b2bcdc223be339de4563ca
+    sha1 : 3c5e889f602c425d57c057f047d27632496e629a
+    updated : 2022-01-01
+    jira : NM-2284
     notes : Apache Commons Logging Bridge for Log4j
 
-  - filename : log4j-slf4j-impl-2.16.0.jar
+  - filename : log4j-slf4j-impl-2.17.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.0
+    version : 2.17.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : 92fbe1da470daedda665cde2ae5d790c
-    sha1 : 3f42beef56a97d7db1be7ed6ff9965e1086beeec
-    updated : 2021-12-16
-    jira : NM-2266
+    md5 : 6b5349ca30f41229cdd399b47c1cd431
+    sha1 : bdc25c28728b399132d2f56d9353af0f65bec1be
+    updated : 2022-01-01
+    jira : NM-2284
     notes : The Apache Log4j SLF4J API binding to Log4j 2 Core
 
   - filename : looks.jar
