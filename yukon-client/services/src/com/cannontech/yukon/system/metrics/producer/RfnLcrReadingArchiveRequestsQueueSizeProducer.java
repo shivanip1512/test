@@ -1,5 +1,7 @@
 package com.cannontech.yukon.system.metrics.producer;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,18 +12,24 @@ import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.yukon.system.metrics.helper.YukonMetricHelper;
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
 import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
-import com.cannontech.yukon.system.metrics.producer.service.YukonMetricIntervalProducer;
+import com.cannontech.yukon.system.metrics.producer.service.YukonMetricThresholdProducer;
 
-public class RfnLcrReadingArchiveRequestsQueueSizeProducer extends YukonMetricIntervalProducer {
+public class RfnLcrReadingArchiveRequestsQueueSizeProducer extends YukonMetricThresholdProducer {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrReadingArchiveRequestsQueueSizeProducer.class);
     private static final String queueName = JmsApiDirectory.RFN_LCR_READ_ARCHIVE.getQueueName();
+    private static int thresholdValue;
     @Autowired private YukonMetricHelper helper;
+
+    @PostConstruct
+    public void init() {
+        thresholdValue = helper.getThresholdValueForArchiveRequests();
+    }
 
     @Override
     public YukonMetric produce() {
         long queueSize = helper.getQueueSize(ApplicationId.SERVICE_MANAGER, queueName);
         YukonMetric metric = new YukonMetric(getYukonMetricPointInfo(), queueSize, new DateTime());
-        debug(metric, log);
+        debug(metric, log, thresholdValue);
         return metric;
     }
 
@@ -36,7 +44,8 @@ public class RfnLcrReadingArchiveRequestsQueueSizeProducer extends YukonMetricIn
     }
 
     @Override
-    public long getPeriodInMinutes() {
-        return 60;
+    public boolean watch() {
+        return helper.getQueueSize(ApplicationId.SERVICE_MANAGER, queueName) > thresholdValue;
     }
+
 }
