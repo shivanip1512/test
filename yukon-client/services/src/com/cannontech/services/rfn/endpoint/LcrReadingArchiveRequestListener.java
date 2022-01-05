@@ -52,7 +52,7 @@ import com.google.common.collect.ImmutableList;
 
 @ManagedResource
 public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnLcrArchiveRequest> {
-    
+
     @Autowired private ConfigurationSource configSource;
     @Autowired private DispatchClientConnection dispatch;
     @Autowired private EnergyCompanyDao ecDao;
@@ -65,30 +65,32 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
 
     private YukonJmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
-    private  Map<Schema, RfnLcrParsingStrategy> strategies;
+    private Map<Schema, RfnLcrParsingStrategy> strategies;
     private List<Worker> workers;
     private final AtomicInteger archivedReadings = new AtomicInteger();
     private final AtomicInteger numPausedQueues = new AtomicInteger();
     private static AtomicInteger archivedRequestsReceived = new AtomicInteger();
+    private static AtomicInteger pointDataProduced = new AtomicInteger();
+
     public class Worker extends ConverterBase {
-        
+
         public Worker(int workerNumber, int queueSize) {
             super("LcrReadingArchive", workerNumber, queueSize);
         }
-        
+
         @Override
         public Optional<String> processData(RfnDevice rfnDevice, RfnLcrArchiveRequest request) {
             incrementProcessedArchiveRequest();
             archivedRequestsReceived.getAndIncrement();
             Instant startTime = new Instant();
-            
+
             // Make sure dispatch message handling isn't blocked up.
             boolean pausingEnabled = configSource.getBoolean(MasterConfigBoolean.PAUSE_FOR_DISPATCH_MESSAGE_BACKUP, true);
             if (pausingEnabled && dispatch.isBehind()) {
-                
+
                 numPausedQueues.incrementAndGet();
                 log.warn("dispatch message handling is behind...sleeping");
-                
+
                 int msSlept = 0;
                 while (dispatch.isBehind()) {
                     try {
@@ -101,42 +103,40 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 log.warn("slept for " + msSlept + "ms waiting for dispatch message handling to catch up.");
                 numPausedQueues.decrementAndGet();
             }
-            
+
             if (request instanceof RfnLcrReadingArchiveRequest) {
                 RfnLcrReadingArchiveRequest reading = ((RfnLcrReadingArchiveRequest) request);
                 byte[] payload = reading.getData().getPayload();
                 Schema schema = ParsingService.getSchema(payload);
                 try {
-                    strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings);
+                    strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings, pointDataProduced);
                 } catch (ParseException e) {
                     // Acknowledge the request to prevent NM from sending back that data which can't be parsed.
                     sendAcknowledgement(request);
                     log.error(
-                        "Can't parse incoming RF LCR payload data for " + rfnDevice + 
-                        ". Payload: 0x" + DatatypeConverter.printHexBinary(payload) + 
-                        ". Payload may be corrupt or not schema compliant.");
+                            "Can't parse incoming RF LCR payload data for " + rfnDevice +
+                                    ". Payload: 0x" + DatatypeConverter.printHexBinary(payload) +
+                                    ". Payload may be corrupt or not schema compliant.");
                     throw new RuntimeException("Error parsing RF LCR payload.", e);
-                }    
+                }
             } else {
                 // Just an LCR archive request, these happen when devices join the network
-                InventoryIdentifier inventory =
-                    inventoryDao.getYukonInventoryForDeviceId(rfnDevice.getPaoIdentifier().getPaoId());
+                InventoryIdentifier inventory = inventoryDao
+                        .getYukonInventoryForDeviceId(rfnDevice.getPaoIdentifier().getPaoId());
                 int inventoryId = inventory.getInventoryId();
-                List<ProgramEnrollment> activeEnrollments =
-                    enrollmentService.getActiveEnrollmentsByInventory(inventoryId);
-                
+                List<ProgramEnrollment> activeEnrollments = enrollmentService.getActiveEnrollmentsByInventory(inventoryId);
+
                 if (!activeEnrollments.isEmpty()) {
                     // Send config if auto-config is enabled
                     EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
-                    boolean autoConfig =
-                        ecSettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, ec.getId());
+                    boolean autoConfig = ecSettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, ec.getId());
                     if (autoConfig) {
                         LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
                         LmHardwareCommand lmhc = new LmHardwareCommand();
                         lmhc.setDevice(lmhb);
                         lmhc.setType(LmHardwareCommandType.CONFIG);
                         lmhc.setUser(ec.getUser());
-                        
+
                         try {
                             commandService.sendConfigCommand(lmhc);
                             log.debug("Sent config command for RfnLcrArchiveRequest");
@@ -146,13 +146,13 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                     }
                 }
             }
-            
+
             sendAcknowledgement(request);
             if (log.isDebugEnabled()) {
                 Duration processingDuration = new Duration(startTime, new Instant());
                 log.debug("It took " + processingDuration + " to process a request");
             }
-            return Optional.empty();  //  not tracking this point data yet
+            return Optional.empty(); // not tracking this point data yet
         }
 
         @Override
@@ -160,7 +160,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             return null;
         }
     }
-    
+
     @Override
     @PostConstruct
     public void init() {
@@ -176,7 +176,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         workers = workerBuilder.build();
         jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RFN_LCR_ARCHIVE);
     }
-    
+
     @PreDestroy
     @Override
     protected void shutdown() {
@@ -185,15 +185,15 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             worker.shutdown();
         }
     }
-    
+
     @Override
     protected List<Worker> getConverters() {
         return workers;
     }
-    
+
     @Override
     protected Object getRfnArchiveResponse(RfnLcrArchiveRequest archiveRequest) {
-        
+
         if (archiveRequest instanceof RfnLcrReadingArchiveRequest) {
             RfnLcrReadingArchiveRequest readRequest = (RfnLcrReadingArchiveRequest) archiveRequest;
             RfnLcrReadingArchiveResponse response = new RfnLcrReadingArchiveResponse();
@@ -201,22 +201,22 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             response.setType(readRequest.getType());
             return response;
         }
-        
+
         RfnLcrArchiveResponse response = new RfnLcrArchiveResponse();
         response.setSensorId(archiveRequest.getSensorId());
         return response;
     }
-    
+
     @Override
     protected YukonJmsTemplate getJmsTemplate() {
         return jmsTemplate;
     }
-    
+
     @ManagedAttribute
     public int getArchivedReadings() {
         return archivedReadings.get();
     }
-    
+
     @ManagedAttribute
     public int getNumPausedQueues() {
         return numPausedQueues.get();
@@ -227,14 +227,21 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         archivedRequestsReceived = new AtomicInteger();
         return count;
     }
-    
+
+    // Return current point data produced count and resets it after returning.
+    public static Integer getPointDataCount() {
+        Integer currentCount = pointDataProduced.get();
+        pointDataProduced = new AtomicInteger();
+        return currentCount;
+    }
+
     @Autowired
     public void setStrategies(List<RfnLcrParsingStrategy> strategyList) {
 
         strategies = strategyList.stream()
-                                 .flatMap(strategy -> strategy.getSchema().stream()
-                                                                          .map(schema -> new SimpleEntry<>(schema, strategy)))
-                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .flatMap(strategy -> strategy.getSchema().stream()
+                        .map(schema -> new SimpleEntry<>(schema, strategy)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
     }
 }
