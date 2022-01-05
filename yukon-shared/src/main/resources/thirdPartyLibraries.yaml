@@ -108,15 +108,15 @@ Java :
   - filename : annotations-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-annotations-api/9.0.50"
-    md5 : ef2306db94b9d0589bb13b93d7f9b615
-    sha1 : 5bb3c34b6884bc1e3848238667f5300b9aea7065
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-annotations-api/9.0.56"
+    md5 : 29d1503cbb90154411274257868ee40a
+    sha1 : 32eed3d8d8fef4e3cb387815670c7d83fccd673f
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
     
   - filename : aopalliance-1.0.jar
@@ -359,85 +359,85 @@ Java :
   - filename : catalina.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina/9.0.50"
-    md5 : 212625b32146280217217b55e77f2035
-    sha1 : 618b82a19b61cb2bccfad1d5cbf13e7512868aa0
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina/9.0.56"
+    md5 : e346d5bedb4989ed7d29c60c19e6611a
+    sha1 : 7a94de4ed640f38c5b93a9db1fff6965895cce00
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : catalina-ant.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ant/9.0.50"
-    md5 : de54465e936454857c57b4297bf01851
-    sha1 : e79310737952f97d78ffe2550088f4f562e8d7b1
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ant/9.0.56"
+    md5 : bc67f3259575352e91aeec952eeb0632
+    sha1 : e6f43a345477476580e2db103b5ce6dbed4df9bd
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : catalina-ha.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ha/9.0.50"
-    md5 : 785fe4888af85bdd2be44742a05718aa
-    sha1 : 20a63dc47063b938305eebe6cd0c310af916d721
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ha/9.0.56"
+    md5 : 24a78c95d4273dd6770ae51b5d740214
+    sha1 : d4f7b0005788f351d960c9a5a10b9ed2d56f82bd
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
     
   - filename : catalina-ssi.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/"
-    md5 : b70d2d1572c653ddeba8af1c36eecb4d
-    sha1 : 7d5ac9158c28ac9648de386b2d0e123a811ba7fc
-    updated : 2021-07-14
-    jira : YUK-24693
+    md5 : 7273302614cbf5792888f3835ac33caa
+    sha1 : b65213cb882087dedf6d3fa9ebba4e1875f9737a
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : catalina-storeconfig.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-storeconfig/9.0.50"
-    md5 : 331347acea297c752bf14e27ec74dc00
-    sha1 : 7ea5decc0bc4d13c15203fea736885e053e6f33a
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-storeconfig/9.0.56"
+    md5 : 9b24593bbf4968b63754b6ba4dc8aa3a
+    sha1 : 5b9e17904963122e010c984d5b1607cdacf08244
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : catalina-tribes.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-tribes/9.0.50"
-    md5 : 22039b0a7d0db521e04c763353744cb5
-    sha1 : 8302535b271f6545a6d7ad436f5a3b136f1abc50
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-tribes/9.0.56"
+    md5 : 8f4d7219f582318e6329a1bb9375248b
+    sha1 : 75fb958422a508c6e7ebb3bcdd67eb6da1d0b887
+    updated : 2021-12-28
+    jira : YUK-25694
     notes :
   
   - filename : cglib-2.1.3.jar
@@ -765,15 +765,15 @@ Java :
   - filename : el-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-el-api/9.0.50"
-    md5 : 271aef3966b0dd7b5dd509391e3f9af8
-    sha1 : e290c887d0089d51abaca1c2c6b37ca1a1459cb2
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-el-api/9.0.56"
+    md5 : 2f2ab824d4e4782f812a2e4d224735fd
+    sha1 : 05d8bc8d3490c78d42f485ec3e8eed1b81dc40e7
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : geojson-jackson-1.1.jar
@@ -1159,43 +1159,43 @@ Java :
   - filename : jasper-el.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper-el/9.0.50"
-    md5 : 9199d8348d208dfe26ef5a593f043354
-    sha1 : 9651dd4ec04b4a725f0250ccacce3ece0384d6f5
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper-el/9.0.56"
+    md5 : 7afa4e89008c205ece7e40d90338fe7a
+    sha1 : 95fb7ed13d2e3b812851d68e17c8fdb19b5a84a7
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : jasper.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper/9.0.50"
-    md5 : 896196befd8bed03b85814cd755fec22
-    sha1 : 7f1ee180f3383d3e5a500eb24913e1a4610e4cfa
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper/9.0.56"
+    md5 : ae362bb8e8ca1ff304aaecf4e80ebd46
+    sha1 : 002281a44d448188d25afabd17bea9dba3ceb85b
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : jaspic-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jaspic-api/9.0.50"
-    md5 : 64fc0f2804cd8af9360436046a5d3c55
-    sha1 : 6532b8f4c615abbbe8d8d20d160ddb2011245bef
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jaspic-api/9.0.56"
+    md5 : ddaa43077f8e0810fa71c38c76908b58
+    sha1 : 0d85830718f6558916b0a54876c239a3aeb687be
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : jasypt-1.9.2.jar
@@ -1590,32 +1590,32 @@ Java :
     jira : YUK-16690
     notes : 
   
-  - filename : jsoup-1.10.3.jar
+  - filename : jsoup-1.14.3.jar
     yukon group : UI
     project : JSoup Java HTML Parser
-    version : 1.10.3
+    version : 1.14.3
     project URL : "https://jsoup.org/"
     license : MIT
     license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/org.jsoup/jsoup/1.10.3"
-    md5 : 1e04f3fb93ba00b59cdfa9228cffa59a
-    sha1 : b842f960942503cf1abbcc8c173a7f2c19d43726
-    updated : 2017-06-15
-    jira : YUK-16690
+    maven URL : "https://mvnrepository.com/artifact/org.jsoup/jsoup/1.14.3"
+    md5 : 079f92557fa3577329d498aee5cc25ee
+    sha1 : c43a81e18e6d0eb71951aa031d55d5c293c531a6
+    updated : 2021-12-30
+    jira : YUK-25139
     notes : 
   
   - filename : jsp-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api/9.0.50"
-    md5 : c9de8ca8a92acb69e0d5dee0bc16fa11
-    sha1 : 81101360d68698394b2ea15e734e1cee56522d8f
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api/9.0.56"
+    md5 : 715065ef553b4c72416ce2ee1b33854a
+    sha1 : 9529bc1a7e1a1563ab563ba0270dc9a91bbbda47
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : Tomcat JSP API
   
   - filename : jtds-1.3.1.jar
@@ -1870,60 +1870,60 @@ Java :
     jira : YUK-25377
     notes : pentaho libloader
   
-  - filename : log4j-api-2.14.0.jar
+  - filename : log4j-api-2.16.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.14.0
+    version : 2.16.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.14.0"
-    md5 : 85ee6b9b4d0d13091e73db2d2b8ab939
-    sha1 : c532ba992e0d748dc2bfa8592ea09d5d19527755
-    updated : 2021-01-15
-    jira : YUK-23078
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.16.0"
+    md5 : ade293913c90e835c2deb56cbfa2229b
+    sha1 : 4727d93a76616ffc4149dffac5801827c0f4ac71
+    updated : 2021-12-14
+    jira : YUK-25624
     notes : Apache Log4j API
   
-  - filename : log4j-core-2.14.0.jar
+  - filename : log4j-core-2.16.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.14.0
+    version : 2.16.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.14.0"
-    md5 : 62ad26fbfb783183663ba5bfdbfb5ace
-    sha1 : 94bc1813a537b3b5c04f9b4adead3c434f364a70
-    updated : 2021-01-15
-    jira : YUK-23078
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.16.0"
+    md5 : 9f41928a418200de2232dd326e522cc7
+    sha1 : ca12fb3902ecfcba1e1357ebfc55407acec30ede
+    updated : 2021-12-14
+    jira : YUK-25624
     notes : Apache Log4j Core
   
-  - filename : log4j-jcl-2.14.0.jar
+  - filename : log4j-jcl-2.16.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.14.0
+    version : 2.16.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-jcl/2.14.0"
-    md5 : 14736dad73aa32c68e1b2b565183ca62
-    sha1 : 1600323b15cda5c33424978e5cb179c67941aa8c
-    updated : 2021-01-15
-    jira : YUK-23078
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-jcl/2.16.0"
+    md5 : 3dba1b7a43b37545539946fee5f26738
+    sha1 : 548063fa2d86f90aa23cc839ad9a1df680a442e9
+    updated : 2021-12-14
+    jira : YUK-25624
     notes : Apache Commons Logging Bridge for Log4j
   
-  - filename : log4j-slf4j-impl-2.14.0.jar
+  - filename : log4j-slf4j-impl-2.16.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.14.0
+    version : 2.16.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.14.0"
-    md5 : 0fecb509f39c3de5f481b6c33f8cfa5e
-    sha1 : 79f3b3b85a8e75663f843c1ad14d94c1d6c65269
-    updated : 2021-01-15
-    jira : YUK-23078
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.16.0"
+    md5 : 05e1ad2e42e2228da25c853512c9eaa7
+    sha1 : d4cc7712ebb4744681db815679248e4312f61b32
+    updated : 2021-12-14
+    jira : YUK-25624
     notes : Apache Log4j 2 SLF4J Binding
   
   - filename : logging-mailhandler-2.0.1.jar
@@ -2587,15 +2587,15 @@ Java :
   - filename : servlet-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0, CDDL 1.0
     license URLs : "https://opensource.org/licenses/Apache-2.0, http://www.opensource.org/licenses/cddl1.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api/9.0.50"
-    md5 : d398110129d8692a1456caa20ad15eff
-    sha1 : c667be72154204c9d6fdb01a5e260e40cebb2952
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api/9.0.56"
+    md5 : 3a66a713eff97a1053ae785ec189833d
+    sha1 : 81633925d88e8502bafe5a1e74763654a3a79190
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : Tomcat Servlet API
   
   - filename : slf4j-api-1.7.30.jar
@@ -3064,253 +3064,253 @@ Java :
   - filename : tomcat-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-api/9.0.50"
-    md5 : 88d2b4066ef53bcc1421d5d08b7a144d
-    sha1 : 05a5490895694df58800ee351c6fc04fe0cb0bb4
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-api/9.0.56"
+    md5 : d41fb791f161ca13d9403472b7215299
+    sha1 : 7127eb8f711c344e3736ac112f395fc068a35bea
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : Tomcat API
   
   - filename : tomcat-coyote.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-coyote/9.0.50"
-    md5 : 5d55ed4be67ec0c8a158b61032fd3ac1
-    sha1 : ef20d9c87cdab3c667efb55091d8bd5f65b10735
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-coyote/9.0.56"
+    md5 : 355a851f36f2f7997b987341e905e2ae
+    sha1 : dfd5c0ab358091ba639c400cc101d1ecd7eac4aa
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : tomcat-dbcp.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-dbcp/9.0.50"
-    md5 : 53c1f52a1d50b1334b1d5f9f1df8ecd4
-    sha1 : 7ae588075686c3eb1b637ac7915418f23c679bf2
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-dbcp/9.0.56"
+    md5 : e4050c6bec20ee9e663e508affedcd5f
+    sha1 : 588ecf52a5baeec225c22a6b1d78322dd247b318
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
     
   - filename : tomcat-i18n-cs.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-cs/9.0.50"
-    md5 : e4b7bd361a4c9d26056a5b8541587024
-    sha1 : 497005fac5f0a0fe39d401bf4c9279d4732d9b9f
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-cs/9.0.56"
+    md5 : c131b52dfe461aea46c635bb629900c7
+    sha1 : fad5c2e48d2fc8b9e2e32c87d33233a96da8bb75
+    updated : 2021-12-28
+    jira : YUK-25694
     notes :
     
   - filename : tomcat-i18n-de.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-de/9.0.50"
-    md5 : 73188bb3dc877270dd30cc119e1ec03d
-    sha1 : 7fa1fa6ff754e503f56d344278a774823c28e4a4
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-de/9.0.56"
+    md5 : 075c71a7e16320f2196887c3f3f38f3e
+    sha1 : 64a85124b811c6306e4f1a5711b425cc4be333d4
+    updated : 2021-12-28
+    jira : YUK-25694
     notes :
   
   - filename : tomcat-i18n-es.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-es/9.0.50"
-    md5 : 62e4e08702f475848205b9ba84539e3a
-    sha1 : b7b63e172f08ea15112d67abe5d47f4c1eab15fd
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-es/9.0.56"
+    md5 : ad646e9e1ac3e9b4782172efd741923e
+    sha1 : 033161555210f7f9673f6f1068eb42dd286ce2b4
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : tomcat-i18n-fr.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-fr/9.0.50"
-    md5 : 5c0d1b28363b61d689d96afd825d9e78
-    sha1 : 4531f2c27640212fdc7e4cfebfa60b263935d2ed
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-fr/9.0.56"
+    md5 : de9556e06b8a04b9387d291bedccb0a7
+    sha1 : ca1d6c674435093831cafb3b66995fc22fd523e0
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : tomcat-i18n-ja.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ja/9.0.50"
-    md5 : e75f8e826ab17d90cac8cfdb54a596bc
-    sha1 : 86aeacc9062d8781d0e9181d23c4eb8625561978
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ja/9.0.56"
+    md5 : e17de49678257f3d7d0bb820cce3e279
+    sha1 : 711d5b304f9c0660f378c2d48cf748bab6dbe07e
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
     
   - filename : tomcat-i18n-ko.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ko/9.0.50"
-    md5 : 0380c06dd23416b090bc6da1130826bf
-    sha1 : 43baaa831ae393bbbc52585a6605bb7512dccdd6
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ko/9.0.56"
+    md5 : 05ac4f013e68e6608d30bb3c5eec85f0
+    sha1 : 542f13b76cbf87551ea4268d6a34d220b73b0190
+    updated : 2021-12-28
+    jira : YUK-25694
     notes :   
     
   - filename : tomcat-i18n-pt-BR.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-pt-BR/9.0.50"
-    md5 : 75c89651d7eb42dd7c473a870233c7fc
-    sha1 : 9b7240cb4f317ea3a034f05af719f78ec2c00e7a
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-pt-BR/9.0.56"
+    md5 : 4abfa4bda350fd0c5020ff0858bdd16a
+    sha1 : e6fbd6e51536ae9066a3842b9ee69e3f870144d9
+    updated : 2021-12-28
+    jira : YUK-25694
     notes :    
   
   - filename : tomcat-i18n-ru.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ru/9.0.50"
-    md5 : ac2d9e3248db5f45002e539153a48ec5
-    sha1 : c2d6adb8f7f760568fa2841c185d262a684c666a
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ru/9.0.56"
+    md5 : ef2b1fdc43f7a985f47ee681a7e1e8a4
+    sha1 : d3515a0cd455ae2470d80cdbe2f5fb523576db54
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
     
   - filename : tomcat-i18n-zh-CN.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-zh-CN/9.0.50"
-    md5 : a11c7d16f7f7cd6ce388530da9355e50
-    sha1 : e5e3955bbe789807e0df533d47e3bb3bfb18e7db
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-zh-CN/9.0.56"
+    md5 : 5df1512db663dd39d076bf95f0f68662
+    sha1 : 74e807480a832dd0a75dd80e182a1f947cc29d8d
+    updated : 2021-12-28
+    jira : YUK-25694
     notes :    
   
   - filename : tomcat-jdbc.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc/9.0.50"
-    md5 : f772a0568888b33122a6219c908d551c
-    sha1 : e58b033e8c2814fb63135398191ecb06270a32d5
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc/9.0.56"
+    md5 : ed04734ae6f0beeb671cb84d1693ea3f
+    sha1 : 17324cd65ea10bd980f3f1588e5db5bd26987400
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : tomcat-jni.jar
     yukon group : Tomcat
     project : Apache Tomcat 
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jni/9.0.50"
-    md5 : 6a3eb20ea84188b0f5295f8d2ee7aaf1
-    sha1 : a8381606c5e6f534a9df0e9c5588b822922832cf
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jni/9.0.56"
+    md5 : d80e74e3b411831f19fc76832e0643ad
+    sha1 : 9b497f7f6b1b36ad0aef23ffb64382c7896bf318
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
-  - filename : tomcat-juli-9.0.50.jar
+  - filename : tomcat-juli-9.0.56.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.50"
-    md5 : 6ca7c3d023775de6a9169c2045802a5f
-    sha1 : 8f667854088e3b867302ff939d7d1997d49878e2
-    updated : 2021-09-09
-    jira : YUK-25031
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.56"
+    md5 : 56cb03f6533b99260af945ef58c4979e
+    sha1 : e4a43621a253273afa3462542c77a47b668b3254
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : tomcat-util.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util/9.0.50"
-    md5 : ef539683a9f93fe8fec728767cfda0d7
-    sha1 : 8bc1fdc9c8e889bf444f4f89b4503c65595d16af
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util/9.0.56"
+    md5 : a636aaf1606f88bd850f9822abce9ab2
+    sha1 : dc14819f0a1b9c7a9aad38c71aa86391929e25b4
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : tomcat-util-scan.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util-scan/9.0.50"
-    md5 : 11b5d0b2ee22c74a7e2658363432f0e3
-    sha1 : 70f604021660f775883798b9b25602ee30a6f34a
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util-scan/9.0.56"
+    md5 : a9b7857167f34fac8243df96caaec8e2
+    sha1 : 033c69b0a98b7171dceab10e4d8f5394624b52b9
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : tomcat-websocket.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket/9.0.50"
-    md5 : 998037180f015e8c7370a9d94395920e
-    sha1 : 019d9f5fdf138dc58b5296cfce791b9f2a101716
-    updated : 2021-07-14
-    jira : YUK-24693
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket/9.0.56"
+    md5 : 165910f042796b6c933e6316cb0cbffb
+    sha1 : 49ca5c87c08d65806cbc7eeb40d2d7e6bbb3cfea
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
 
   - filename : validation-api-2.0.1.Final.jar
@@ -3330,15 +3330,15 @@ Java :
   - filename : websocket-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.50
+    version : 9.0.56
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket-api/9.0.50"
-    md5 : 87b455eece9b4bc4480f4c0741824bae
-    sha1 : 7fc2a8069883acde7a6fb20618ea38a9bcfca4ca
-    updated : 2021-07-14
-    jira : YUK-246937
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket-api/9.0.56"
+    md5 : f2b7079f1bb639876d53e0a014fe5a65
+    sha1 : 7418486cf4d36c1ed448915fe31f3f6032c41ba8
+    updated : 2021-12-28
+    jira : YUK-25694
     notes : 
   
   - filename : wrapper.jar
@@ -5204,88 +5204,88 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : log4j-1.2-api-2.16.0.jar
+  - filename : log4j-1.2-api-2.17.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.0
+    version : 2.17.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : 8c3730da4674197c7a050027021c46ad
-    sha1 : 4e0d5f8706a4ba31defa6034130289eb03260f74
-    updated : 2021-12-14
-    jira : NM-2269
+    md5 : 0c95ec5afce732907310772107ef9f6a
+    sha1 : b62e94bea3c54b7512a6adfc86166ed3f062095b
+    updated : 2021-12-29
+    jira : NM-2275
     notes : Apache Log4j API
 
-  - filename : log4j-api-2.16.0.jar
+  - filename : log4j-api-2.17.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.0
+    version : 2.17.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : c0338cbc28a4beec6b8ad3356b43e26f
-    sha1 : f821a18687126c2e2f227038f540e7953ad2cc8c
-    updated : 2021-12-14
-    jira : NM-2269
+    md5 : 4e4dc08c475a79f6b310e5cadcb9de19
+    sha1 : 0215451c98dd2673d3dd4257ec01d590ac4359e9
+    updated : 2021-12-29
+    jira : NM-2275
     notes : Apache Log4j API
 
-  - filename : log4j-appserver-2.16.0.jar
+  - filename : log4j-appserver-2.17.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.0
+    version : 2.17.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : 9a7d237e5b217627ca9f908650b54c71
-    sha1 : 16a36cb0588ce190020a65fed660d02934dcfde4
-    updated : 2021-12-14
-    jira : NM-2269
+    md5 : 21028cb226bc05ca0618bfc71312a2a1
+    sha1 : 5433c7a8eb43052129349f9eda033a24cdcc2898
+    updated : 2021-12-29
+    jira : NM-2275
     notes : Provide Log4j as the logging implementation for application servers
 
-  - filename : log4j-core-2.16.0.jar
+  - filename : log4j-core-2.17.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.0
+    version : 2.17.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : cf0634270eafdbb083eb5951d7f2232d
-    sha1 : 539a445388aee52108700f26d9644989e7916e7c
-    updated : 2021-12-14
-    jira : NM-2269
+    md5 : 0ac2d4109e083ff8ef193a396c540ec2
+    sha1 : 2cc97f5b3328f5934224e3090e2b80dcfe3575b4
+    updated : 2021-12-29
+    jira : NM-2275
     notes : Apache Log4j Core
 
-  - filename : log4j-jcl-2.16.0.jar
+  - filename : log4j-jcl-2.17.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.0
+    version : 2.17.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : e4b132e27f11b9ffdd3600e6ac171773
-    sha1 : ebbcfbd118f2d9c4841e67b7b4d2036612828600
-    updated : 2021-12-14
-    jira : NM-2269
+    md5 : 02a7c68a46b2bcdc223be339de4563ca
+    sha1 : 3c5e889f602c425d57c057f047d27632496e629a
+    updated : 2021-12-29
+    jira : NM-2275
     notes : Apache Commons Logging Bridge for Log4j
 
-  - filename : log4j-slf4j-impl-2.16.0.jar
+  - filename : log4j-slf4j-impl-2.17.0.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.16.0
+    version : 2.17.0
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : 92fbe1da470daedda665cde2ae5d790c
-    sha1 : 3f42beef56a97d7db1be7ed6ff9965e1086beeec
-    updated : 2021-12-14
-    jira : NM-2269
+    md5 : 6b5349ca30f41229cdd399b47c1cd431
+    sha1 : bdc25c28728b399132d2f56d9353af0f65bec1be
+    updated : 2021-12-29
+    jira : NM-2275
     notes : The Apache Log4j SLF4J API binding to Log4j 2 Core
 
   - filename : looks.jar

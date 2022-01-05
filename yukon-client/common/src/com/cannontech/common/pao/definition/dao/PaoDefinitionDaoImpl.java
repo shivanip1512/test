@@ -31,6 +31,7 @@ import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition
 import com.cannontech.common.pao.definition.loader.DefinitionLoaderService;
 import com.cannontech.common.pao.definition.loader.jaxb.CategoryType;
 import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories.Category;
+import com.cannontech.common.pao.definition.loader.jaxb.Point;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -77,6 +78,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Map<PaoTag, BiMap<PaoType, PaoDefinition>> typesBySupportedTag;
     private Set<PaoDefinition> creatablePaoDefinitions;
     private SetMultimap<PaoTypePointIdentifier, BuiltInAttribute> paoAndPointToAttribute;
+    private Map<String, Point> systemDevicePoints;
     
     @Autowired private DefinitionLoaderService definitionLoaderService;
    
@@ -88,6 +90,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         paoAndPointToAttribute =  HashMultimap.create();
         creatablePaoDefinitions = new HashSet<>();
         paoTypeAttributesMultiMap = LinkedListMultimap.create();
+        systemDevicePoints = new HashMap<String, Point>();
         
         paoAttributeAttrDefinitionMap = definitionLoaderService.getPaoAttributeAttrDefinitionMap();
         for (Map.Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : paoAttributeAttrDefinitionMap.entrySet()) {
@@ -131,7 +134,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 }
             }
         }
-        
+        systemDevicePoints = definitionLoaderService.getSystemDevicePoints();
         definitionLoaderService.cleanUp();
     }
     
@@ -478,6 +481,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                                                             && entry.getKey().isRequired())
                                                 .map(entry -> entry.getKey().getType())
                                                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, Point> getSystemDevicePoints() {
+        return systemDevicePoints;
     }
 }
 

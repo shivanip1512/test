@@ -12,6 +12,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.loader.jaxb.CategoryType;
+import com.cannontech.common.pao.definition.loader.jaxb.Point;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -225,5 +226,10 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     @Override
     public List<CategoryType> getRequiredCategoriesByPaoType(PaoType paoType) {
         throw new UnsupportedOperationException("not implemented"); 
+    }
+
+    @Override
+    public Map<String, Point> getSystemDevicePoints() {
+        throw new UnsupportedOperationException("not implemented");
     }
 }

@@ -299,4 +299,25 @@ public class GatewayControllerHelper {
     	return nmIPAddressPorts;
     
     }
+    
+    public GatewayNMIPAddressPort getMostUsedGatewayNMIPPort() {
+        Set<RfnGateway> allGateways = rfnGatewayService.getAllGateways();
+        String mostNmIpAddress = allGateways.stream()
+                .filter(g -> g.getData().getNmIpAddress() != null)
+                // summarize NmIpAddress
+                .collect(Collectors.groupingBy(g -> g.getData().getNmIpAddress(), Collectors.counting()))
+                // fetch the max entry
+                .entrySet().stream().max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey).orElse(null);
+
+        if (mostNmIpAddress != null) {
+            Integer nmPort = allGateways.stream()
+                    .filter(g -> g.getData().getNmIpAddress().equals(mostNmIpAddress))
+                    .findFirst().orElse(null)
+                    .getData()
+                    .getNmPort();
+            return new GatewayNMIPAddressPort(mostNmIpAddress, nmPort);
+        }
+        return null;
+    }
 }

@@ -16,6 +16,8 @@
     
     <bean class="com.cannontech.web.stars.gateway.model.GatewaySettingsValidator"/>
     
+    <bean class="com.cannontech.web.stars.gateway.GatewayBulkUpdateValidator"/>
+    
     <bean class="com.cannontech.web.tools.mapping.LocationValidator"/>
     
     <bean class="com.cannontech.web.tools.commander.service.CommanderServiceImpl"/>

@@ -1,7 +1,7 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.50) - The Host Container</title><meta name="author" content="Craig R. McClanahan"><meta name="author" content="Remy Maucherat"><meta name="author" content="Yoav Shapira"></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
-            Version 9.0.50,
-            <time datetime="2021-06-28">Jun 28 2021</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The Host Container</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
+<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.56) - The Host Container</title><meta name="author" content="Craig R. McClanahan"><meta name="author" content="Remy Maucherat"><meta name="author" content="Yoav Shapira"></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
+            Version 9.0.56,
+            <time datetime="2021-12-02">Dec 2 2021</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The Host Container</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
 <ul><li><a href="#Introduction">Introduction</a></li><li><a href="#Attributes">Attributes</a><ol><li><a href="#Common_Attributes">Common Attributes</a></li><li><a href="#Standard_Implementation">Standard Implementation</a></li></ol></li><li><a href="#Nested_Components">Nested Components</a></li><li><a href="#Special_Features">Special Features</a><ol><li><a href="#Logging">Logging</a></li><li><a href="#Access_Logs">Access Logs</a></li><li><a href="#Automatic_Application_Deployment">Automatic Application Deployment</a></li><li><a href="#Host_Name_Aliases">Host Name Aliases</a></li><li><a href="#Lifecycle_Listeners">Lifecycle Listeners</a></li><li><a href="#Request_Filters">Request Filters</a></li><li><a href="#Single_Sign_On">Single Sign On</a></li><li><a href="#User_Web_Applications">User Web Applications</a></li><li><a href="#Custom_context.xml_and_web.xml">Custom context.xml and web.xml</a></li></ol></li></ul>
 </div><h3 id="Introduction">Introduction</h3><div class="text">
 
@@ -73,19 +73,20 @@
         deployment of web applications. If not specified the default of
         <code>conf/&lt;engine_name&gt;/&lt;host_name&gt;</code> will be used.</p>
       </td></tr><tr><td><code class="attributeName">createDirs</code></td><td>
-        <p>If set to true, Tomcat will attempt to create the directories defined
-        by the  attributes <code>appBase</code> and <code>xmlBase</code> during
-        the startup phase. The default value is <code>true</code>. If set to
-        true, and directory creation fails, an error message will be printed out
-        but will not halt the startup sequence.</p>
+        <p>If set to <code>true</code>, Tomcat will attempt to create the
+        directories defined by the  attributes <code>appBase</code> and
+        <code>xmlBase</code> during the startup phase. The default value is
+        <code>true</code>. If set to <code>true</code>, and directory creation
+        fails, an error message will be printed out but will not halt the
+        startup sequence.</p>
       </td></tr><tr><td><code class="attributeName">autoDeploy</code></td><td>
         <p>This flag value indicates if Tomcat should check periodically for new
-        or updated web applications while Tomcat is running. If true, Tomcat
-        periodically checks the <code>appBase</code> and <code>xmlBase</code>
-        directories and deploys any new web applications or context XML
-        descriptors found. Updated web applications or context XML descriptors
-        will trigger a reload of the web application. The flag's value defaults
-        to true.  See
+        or updated web applications while Tomcat is running. If
+        <code>true</code>, Tomcat periodically checks the <code>appBase</code>
+        and <code>xmlBase</code> directories and deploys any new web
+        applications or context XML descriptors found. Updated web applications
+        or context XML descriptors will trigger a reload of the web application.
+        The default is <code>true</code>. See
         <a href="#Automatic_Application_Deployment">Automatic Application
         Deployment</a> for more information.</p>
       </td></tr><tr><td><code class="attributeName">backgroundProcessorDelay</code></td><td>
@@ -122,8 +123,8 @@
         Deployment</a> for more information.</p>
       </td></tr><tr><td><code class="attributeName">deployOnStartup</code></td><td>
         <p>This flag value indicates if web applications from this host should
-        be automatically deployed when Tomcat starts. The flag's value defaults
-        to true.  See
+        be automatically deployed when Tomcat starts. The default is
+        <code>true</code>.  See
         <a href="#Automatic_Application_Deployment">Automatic Application
         Deployment</a> for more information.</p>
       </td></tr><tr><td><code class="attributeName">failCtxIfServletStartFails</code></td><td>
@@ -159,8 +160,9 @@
         <p>This flag determines if Tomcat, as part of the auto deployment
         process, will check for old, unused versions of web applications
         deployed using parallel deployment and, if any are found, remove them.
-        This flag only applies if <code>autoDeploy</code> is true. If not
-        specified the default value of false will be used.</p>
+        This flag only applies if <code>autoDeploy</code> is <code>true</code>.
+        If not specified the default value of <code>false</code> will be used.
+        </p>
       </td></tr></table>
 
   </div></div>
@@ -184,9 +186,9 @@
         when the application is deployed. On subsequent starts, the copied
         context XML descriptor will be used in preference to any context XML
         descriptor embedded inside the application even if the descriptor
-        embedded inside the application is more recent. The flag's value
-        defaults to <code>false</code>.  Note if <strong>deployXML</strong>
-        is <code>false</code>, this attribute will have no effect.</p>
+        embedded inside the application is more recent. The default is
+        <code>false</code>.  Note if <strong>deployXML</strong> is
+        <code>false</code>, this attribute will have no effect.</p>
       </td></tr><tr><td><code class="attributeName">deployXML</code></td><td>
         <p>Set to <code>false</code> if you want to disable parsing the context
         XML descriptor embedded inside the application (located at
@@ -200,10 +202,10 @@
         descriptor is present in <strong>xmlBase</strong> then the context will
         fail to start in case the descriptor contains necessary configuration
         for secure deployment (such as a RemoteAddrValve) which should not be
-        ignored. The flag's value defaults to <code>true</code> unless a
-        security manager is enabled when the default is <code>false</code>.
-        When running under a security manager this may be enabled on a per web
-        application basis by granting the
+        ignored. The default is <code>true</code> unless a security manager is
+        enabled when the default is <code>false</code>. When running under a
+        security manager this may be enabled on a per web application basis by
+        granting the
         <code>org.apache.catalina.security.DeployXmlPermission</code> to the web
         application. The Manager and Host Manager applications are granted this
         permission by default so that they continue to work when running under a
@@ -222,7 +224,7 @@
         placed in the <code>appBase</code> directory as web application
         archive (WAR) files to be unpacked into a corresponding disk directory
         structure, <code>false</code> to run such web applications directly
-        from a WAR file. See
+        from a WAR file. The default is <code>true</code>. See
         <a href="#Automatic_Application_Deployment">Automatic Application
         Deployment</a> for more information.</p>
         <p>Note: If Tomcat expands the WAR file then it will add a file

@@ -375,4 +375,9 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
         PointIdentifier pointIdentifier = new PointIdentifier(type, point.getOffset());
         return pointIdentifier;
     }
+
+    @Override
+    public Map<String, Point> getSystemDevicePoints() {
+        return fileLoader.getPoints(PaoType.SYSTEM.getDbString());
+    }
 }

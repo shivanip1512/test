@@ -15,6 +15,13 @@ public class YukonMetric implements Serializable {
         super();
     }
 
+    public YukonMetric(YukonMetricPointInfo pointInfo, Object value, DateTime timestamp) {
+        super();
+        this.pointInfo = pointInfo;
+        this.value = value;
+        this.timestamp = timestamp;
+    }
+
     public YukonMetricPointInfo getPointInfo() {
         return pointInfo;
     }
@@ -37,6 +44,11 @@ public class YukonMetric implements Serializable {
 
     public void setTimestamp(DateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "YukonMetric [pointInfo=" + pointInfo + ", value=" + value + ", timestamp=" + timestamp + "]";
     }
 
 }

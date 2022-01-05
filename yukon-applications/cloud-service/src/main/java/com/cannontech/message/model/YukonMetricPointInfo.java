@@ -1,31 +1,34 @@
 package com.cannontech.message.model;
 
 public enum YukonMetricPointInfo {
-    RFN_METER_READING_ARCHIVERE_REQUEST_RECEIVED(1032, PointType.Analog),
-    RFN_METER_READING_ARCHIVERE_REQUEST_PUSHED(1033, PointType.Analog);
-
-    private Integer offset;
-    private PointType type;
-
-    YukonMetricPointInfo(Integer offset, PointType type) {
-        this.setOffset(offset);
-        this.setType(type);
-    }
-
-    public Integer getOffset() {
-        return offset;
-    }
-
-    public void setOffset(Integer offset) {
-        this.offset = offset;
-    }
-
-    public PointType getType() {
-        return type;
-    }
-
-    public void setType(PointType type) {
-        this.type = type;
-    }
-
+    RFN_METER_READING_ARCHIVE_REQUEST_RECEIVED,
+    RFN_METER_READING_ARCHIVE_REQUEST_PUSHED,
+    GAS_METER_COUNT,
+    DATA_COMPLETENESS_ELECTRIC,
+    DATA_COMPLETENESS_WATER,
+    ELECTRIC_METER_COUNT,
+    ELECTRIC_READ_RATE,
+    WATER_METER_COUNT,
+    WATER_READ_RATE,
+    YUKON_VERSION,
+    RELAYS,
+    RFN_LCR,
+    RF_METER_DESCENDANT_COUNT,
+    RF_RELAY_DESCENDANT_COUNT,
+    LCR_DESCENDANT_COUNT,
+    BATTERY_NODES,
+    CONNECTED_GATEWAYS,
+    DUPLICATE_ROUTE_COLORS,
+    GAP_FILL_REQUESTS_24_HOURS,
+    GATEWAY_COUNT,
+    GATEWAY_LOADING_MAX,
+    GATEWAY_RESET_COUNT_7_DAY,
+    GATEWAY_SOCKET_ERROR_COUNT,
+    GATEWAYS_MISSING_TSYNCS_24_HOUR,
+    NODES_MISSING_ROUTE_TABLE,
+    POWERED_NODE_COUNT,
+    ROUTE_TABLE_REQUESTS,
+    ROUTE_TABLE_RESPONSES,
+    RF_NETWORK_VERSION,
+    RFN_METER_READING_ARCHIVE_REQUESTS_POINT_DATA_GENERATED_COUNT;
 }

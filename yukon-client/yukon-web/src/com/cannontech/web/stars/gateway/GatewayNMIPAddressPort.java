@@ -7,6 +7,8 @@ public class GatewayNMIPAddressPort {
     // Port that the gateway should use to connect to NM.
     private Integer nmPort;
     
+    public GatewayNMIPAddressPort() {}
+    
     public GatewayNMIPAddressPort(String nmIpAddress, Integer nmPort) {
     	this.nmIpAddress = nmIpAddress;
     	this.nmPort = nmPort;

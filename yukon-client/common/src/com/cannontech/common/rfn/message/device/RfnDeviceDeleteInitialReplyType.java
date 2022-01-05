@@ -1,4 +1,4 @@
-package com.cannontech.common.rfn.model;
+package com.cannontech.common.rfn.message.device;
 
 public enum RfnDeviceDeleteInitialReplyType {
     OK,

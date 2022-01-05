@@ -216,7 +216,7 @@ public class OperatorWorkOrderController {
         response.setContentType("application/pdf");
         OutputStream outputStream = response.getOutputStream();
 
-        ReportFuncs.outputYukonReport(workOrderReport, "pdf", outputStream);
+        ReportFuncs.outputYukonReport(workOrderReport, "pdf", outputStream, workOrderModel);
 
     }
 

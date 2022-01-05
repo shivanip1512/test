@@ -81,6 +81,9 @@ import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamin
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfoRequest;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfoResponse;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteConfirmationReply;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteInitialReply;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayActionResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayCollectionRequest;
@@ -114,9 +117,6 @@ import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveRequest
 import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveResponse;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
-import com.cannontech.common.rfn.model.RfnDeviceDeleteConfirmationReply;
-import com.cannontech.common.rfn.model.RfnDeviceDeleteInitialReply;
-import com.cannontech.common.rfn.model.RfnDeviceDeleteRequest;
 import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
