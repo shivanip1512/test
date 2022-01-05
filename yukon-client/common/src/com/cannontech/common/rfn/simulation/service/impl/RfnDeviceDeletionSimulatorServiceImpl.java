@@ -9,11 +9,11 @@ import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.rfn.model.RfnDeviceDeleteConfirmationReply;
-import com.cannontech.common.rfn.model.RfnDeviceDeleteConfirmationReplyType;
-import com.cannontech.common.rfn.model.RfnDeviceDeleteInitialReply;
-import com.cannontech.common.rfn.model.RfnDeviceDeleteInitialReplyType;
-import com.cannontech.common.rfn.model.RfnDeviceDeleteRequest;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteConfirmationReply;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteConfirmationReplyType;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteInitialReply;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteInitialReplyType;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteRequest;
 import com.cannontech.common.rfn.simulation.SimulatedRfnDeviceDeletionSettings;
 import com.cannontech.common.rfn.simulation.service.RfnDeviceDeletionSimulatorService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;

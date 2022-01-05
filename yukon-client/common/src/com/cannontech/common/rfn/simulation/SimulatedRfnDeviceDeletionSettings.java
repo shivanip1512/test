@@ -2,8 +2,8 @@ package com.cannontech.common.rfn.simulation;
 
 import java.io.Serializable;
 
-import com.cannontech.common.rfn.model.RfnDeviceDeleteConfirmationReplyType;
-import com.cannontech.common.rfn.model.RfnDeviceDeleteInitialReplyType;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteConfirmationReplyType;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteInitialReplyType;
 
 public class SimulatedRfnDeviceDeletionSettings implements Serializable {
     private static final long serialVersionUID = 1L;
