@@ -1,10 +1,17 @@
 package com.cannontech.web.picker;
 
-import com.cannontech.common.search.result.UltraLightPao;
-
-public class GatewayPickerModel implements UltraLightPao {
+public class GatewayPickerModel {
+	private Integer gatewayId;
+	private String gatewayName;
 	private String nmIpAddress;
 	private Integer nmPort;
+	
+	public GatewayPickerModel(int gatewayId, String gatewayName, String nmIpAddress, int nmPort) {
+		this.gatewayId = gatewayId;
+		this.gatewayName = gatewayName;
+		this.nmIpAddress = nmIpAddress;
+		this.nmPort = nmPort;
+	}
 
 	public String getNmIpAddress() {
 		return nmIpAddress;
@@ -18,16 +25,16 @@ public class GatewayPickerModel implements UltraLightPao {
 	public void setNmPort(Integer nmPort) {
 		this.nmPort = nmPort;
 	}
-	@Override
-	public String getPaoName() {
-		return this.getPaoName();
+	public Integer getGatewayId() {
+		return gatewayId;
 	}
-	@Override
-	public String getType() {
-		return this.getType();
+	public void setGatewayId(Integer gatewayId) {
+		this.gatewayId = gatewayId;
 	}
-	@Override
-	public int getPaoId() {
-		return this.getPaoId();
+	public String getGatewayName() {
+		return gatewayName;
+	}
+	public void setGatewayName(String gatewayName) {
+		this.gatewayName = gatewayName;
 	}
 }
