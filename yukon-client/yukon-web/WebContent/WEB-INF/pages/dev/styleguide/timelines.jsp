@@ -32,7 +32,7 @@
             var event_stuff = {
                 0: { message: 'Earthquake!' },
                 1: { message: 'Legos!', icon: 'icon-brick' },
-                2: { message: 'OMG A BOMB!', icon: 'icon-bomb' },
+                2: { message: 'OMG A SPORTS CAR!', icon: 'icon-vehicle-sports-car' },
                 3: { message: 'Happy Birthday!', icon: 'icon-cake' }
             };
             
@@ -69,7 +69,7 @@
     var event_stuff = {
         0: { message: 'Earthquake!' },
         1: { message: 'Legos!', icon: 'icon-brick' },
-        2: { message: 'OMG A BOMB!', icon: 'icon-bomb' },
+        2: { message: 'OMG A SPORTS CAR!', icon: 'icon-vehicle-sports-car' },
         3: { message: 'Happy Birthday!', icon: 'icon-cake' }
     };
     

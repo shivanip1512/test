@@ -598,12 +598,12 @@ yukon.ui.unbusy('#busy-test-3');
         </cm:dropdown>
         &nbsp;&nbsp;
         <cm:dropdown icon="icon-vehicle-car">
-            <cm:dropdownOption icon="icon-vehicle-car">Smile</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-vehicle-forklift">Tongue</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-vehicle-sports-car">Happy</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-vehicle-tractor">Surprised</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-vehicle-utility-van">Surprised</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-vehicle-pickup-truck">Surprised</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-vehicle-car">Car</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-vehicle-forklift">Forklift</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-vehicle-sports-car">Sports Car</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-vehicle-tractor">Tractor</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-vehicle-utility-van">Utility Van</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-vehicle-pickup-truck">Pickup Truck</cm:dropdownOption>
         </cm:dropdown>
     </div>
 </div>
