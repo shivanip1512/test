@@ -38,8 +38,8 @@ public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMet
     public List<LitePoint> getAllSystemPoints() {
         List<LitePoint> systemPoints = new ArrayList<LitePoint>();
         try {
-            // For System Points, Device Id is 0 and Point Type is System.
-            systemPoints = pointDao.getLitePointIdByDeviceId_PointType(Device.SYSTEM_DEVICE_ID, PointType.System);
+            //TODO:  For System Points, Device Id is 0 and Point Type is System. only for testing purpose, will update with PointType.System  
+            systemPoints = pointDao.getLitePointIdByDeviceId_PointType(Device.SYSTEM_DEVICE_ID, PointType.Analog);
             if (log.isDebugEnabled()) {
                 systemPoints.stream().forEach(litePoint -> log.debug("Point Name {}, Point type {}, PAObject ID {} ",
                         litePoint.getPointName(), PointType.getForId(litePoint.getLiteType()), litePoint.getPaobjectID()));
@@ -47,6 +47,8 @@ public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMet
         } catch (NotFoundException e) {
             log.error("No System points found in the database.");
         }
+        //TODO: Check if this is right
+        systemPoints.removeIf(x -> x.getLiteID() == 0);
         return systemPoints;
     }
 
@@ -74,6 +76,7 @@ public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMet
                 .getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
 
         List<ChartValue<Double>> chartData = new ArrayList<>();
+//        pointData.size();
         for (PointValueHolder point : pointData) {
             ChartValue<Double> chartValue = new ChartValue<>();
             long timeStamp = point.getPointDataTimeStamp().getTime();
