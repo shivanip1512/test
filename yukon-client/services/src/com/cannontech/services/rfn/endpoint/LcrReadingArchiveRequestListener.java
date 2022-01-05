@@ -70,6 +70,8 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     private final AtomicInteger archivedReadings = new AtomicInteger();
     private final AtomicInteger numPausedQueues = new AtomicInteger();
     private static AtomicInteger archivedRequestsReceived = new AtomicInteger();
+    private static AtomicInteger pointDataProduced = new AtomicInteger();
+
     public class Worker extends ConverterBase {
         
         public Worker(int workerNumber, int queueSize) {
@@ -107,7 +109,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 byte[] payload = reading.getData().getPayload();
                 Schema schema = ParsingService.getSchema(payload);
                 try {
-                    strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings);
+                    strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings, pointDataProduced);
                 } catch (ParseException e) {
                     // Acknowledge the request to prevent NM from sending back that data which can't be parsed.
                     sendAcknowledgement(request);
@@ -227,7 +229,14 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         archivedRequestsReceived = new AtomicInteger();
         return count;
     }
-    
+
+    // Return current point data produced count and resets it after returning.
+    public static Integer getPointDataCount() {
+        Integer currentCount = pointDataProduced.get();
+        pointDataProduced = new AtomicInteger();
+        return currentCount;
+    }
+
     @Autowired
     public void setStrategies(List<RfnLcrParsingStrategy> strategyList) {
 
