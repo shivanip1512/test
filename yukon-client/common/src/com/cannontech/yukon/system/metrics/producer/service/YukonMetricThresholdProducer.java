@@ -22,7 +22,7 @@ public abstract class YukonMetricThresholdProducer implements YukonMetricProduce
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1, new YukonMetricThreadFactory());
 
     @PostConstruct
-    public void init() {
+    public void initScheduler() {
         scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -43,9 +43,10 @@ public abstract class YukonMetricThresholdProducer implements YukonMetricProduce
     /**
      * Debug message for threshold data
      */
-    public void debug(YukonMetric metric, Logger log) {
+    public void debug(YukonMetric metric, Logger log, Object thresholdValue) {
         if (log.isDebugEnabled()) {
-            log.debug("Publishing Yukon Metric threshold data {} to the topic", metric);
+            log.debug("Publishing Yukon Metric threshold data {} to the topic as value exceeds threshold value {}.", metric,
+                    thresholdValue);
         }
     }
 
