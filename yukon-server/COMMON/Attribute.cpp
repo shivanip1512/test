@@ -651,6 +651,7 @@ INIT_ATTRIBUTE( Pulse1SwitchFailure,                                "PULSE_1_SWI
 INIT_ATTRIBUTE( Pulse2SwitchFailure,                                "PULSE_2_SWITCH_FAILURE" );
 INIT_ATTRIBUTE( NodeCommissionEvent,                                "NODE_COMMISSION_EVENT" );
 INIT_ATTRIBUTE( LostAssociation,                                    "LOST_ASSOCIATION" );
+INIT_ATTRIBUTE( FieldExceededMaximumDigits,                         "FIELD_EXCEEDED_MAXIMUM_DIGITS" );
 
 INIT_ATTRIBUTE( TamperNoUsageOver24Hours,                           "TAMPER_NO_USAGE_OVER_24_HOURS" );
 INIT_ATTRIBUTE( TamperReverseWhDetected,                            "TAMPER_REVERSE_WH_DETECTED" );
