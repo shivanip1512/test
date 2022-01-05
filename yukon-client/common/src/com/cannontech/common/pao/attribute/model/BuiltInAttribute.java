@@ -653,7 +653,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     PULSE_2_SWITCH_FAILURE("Pulse 2 Switch Failure", AttributeGroup.RFN_METERING_EVENT, false),
     NODE_COMMISSION_EVENT("Node Commission Event", AttributeGroup.RFN_METERING_EVENT, false),
     LOST_ASSOCIATION("Lost Association", AttributeGroup.RFN_METERING_EVENT, false),
-    FIELD_EXCEEDED_MAXIMUM_DIGITS("Field Exceeded Maximum Digits", AttributeGroup.RFN_METERING_EVENT, false),
     
     // RFN Tamper Alarm/Event
     TAMPER_NO_USAGE_OVER_24_HOURS("Tamper - No Usage over 24 hours", AttributeGroup.RFN_METERING_EVENT, false),

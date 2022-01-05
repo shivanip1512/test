@@ -2,7 +2,7 @@
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
         <analog offset="186"/>
-        <status offset="100"/>
+        <status offset="99"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
@@ -92,10 +92,6 @@
     </point>
      <point offset="99" type="Status">
         <name>Lost Association</name>
-        <stategroup value="TrueFalse"/>
-    </point>
-     <point offset="99" type="Status">
-        <name>Field Exceeded Maximum Digits</name>
         <stategroup value="TrueFalse"/>
     </point>
 </points>
