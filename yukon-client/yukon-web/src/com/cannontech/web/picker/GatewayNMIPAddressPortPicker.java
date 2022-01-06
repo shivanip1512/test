@@ -13,6 +13,7 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -69,7 +70,16 @@ public class GatewayNMIPAddressPortPicker extends BasePicker<GatewayPickerModel>
 	@Override
 	public SearchResults<GatewayPickerModel> search(Collection<Integer> initialIds, String extraArgs,
 			YukonUserContext userContext) {
-		return null;
+        final Set<Integer> initialIdsSet = ImmutableSet.copyOf(initialIds);
+        Predicate<GatewayPickerModel> idPredicate = new Predicate<GatewayPickerModel>() {
+            @Override
+            public boolean apply(GatewayPickerModel gateway) {
+                return initialIdsSet.contains(gateway.getGatewayId());
+            }
+        };
+        List<GatewayPickerModel> gateways =
+            Lists.newArrayList(Iterables.filter(getAllGateways(), idPredicate));
+        return SearchResults.pageBasedForWholeList(1, Integer.MAX_VALUE, gateways);
 	}
 
 }
