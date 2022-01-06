@@ -1062,6 +1062,18 @@
     <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.9">Criticality</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.10">Relay</entry>
     
+    <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed">Brightlayer Credential Validation Failure. Failed to obtain token using {1} Error: {2} Try: {7}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed.1">Secret</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed.2">Error</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed.7">Try</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed">Brightlayer Credential Update Failed for {1} by {2}. {3}. Try: {7}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed.1">Secret</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed.2">Error</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed.7">Try</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationSuccess">Brightlayer Credential Update Success for {1} by {2}. Try: {7}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationSuccess.1">Secret</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationSuccess.7">Try</entry>
+    
     <!-- User, User Group, Role Group, Role Property Changes -->
     <entry key="yukon.common.events.system.usersAndGroups.user.userCreated">User {1} created with user group: {2}, energy company: {3}, status: {4} by {5}.</entry>
     <entry key="yukon.common.events.system.usersAndGroups.user.userCreated.1">New User</entry>

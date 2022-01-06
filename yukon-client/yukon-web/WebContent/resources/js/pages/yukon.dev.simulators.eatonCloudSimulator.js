@@ -93,7 +93,6 @@ yukon.dev.simulators.eatonCloudSimulator = ( function() {
             });
             
             $(document).on('click', '.js-clear-cache', function () {
-                $.post(yukon.url('/dev/eatonCloud/clearCache'));
                 $.ajax({
                     type: 'POST',
                     url: yukon.url('/dev/eatonCloud/clearCache')

@@ -11,11 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.core.Logger;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
@@ -38,17 +35,13 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceResultV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesResultV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTokenV1;
 import com.cannontech.simulators.message.response.EatonCloudSimulatorResponse;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     
-    @Autowired private GlobalSettingDao settingDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private EatonCloudFakeTimeseriesDataV1 timeseriesData;
-    private EatonCloudServiceAccountDetailV1 account;
     
     private EatonCloudVersion version = EatonCloudVersion.V1;
     
@@ -61,18 +54,8 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     //if device was not create in 30 seconds, it will not create at all. If debugging creation code, extend the 30 sec value. 
     private static Cache<String, String> creatingGuids =
             CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
-    
-    @PostConstruct
-    public void init() {
-        String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-        Date now = DateTime.now().toDate();
-        List<EatonCloudSecretV1> secrets = new ArrayList<>();
-        secrets.add(new EatonCloudSecretV1("secret1", now));
-        secrets.add(new EatonCloudSecretV1("secret2", now));
-        account = new EatonCloudServiceAccountDetailV1(serviceAccountId, "", true, "", "", secrets, now, "", now, "");
-    }
-    
-    public EatonCloudSimulatorResponse token() {
+        
+    public EatonCloudSimulatorResponse token1() {
         
         if (status == HttpStatus.BAD_REQUEST.value()) {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("ClientId"), "The field 'ClientId' is not a valid uuid.", "f0d48574-d5f5-47c1-b817-a1042a103b29", status, "2021-02-25T07:07:03.2423402+00:00", null);
@@ -85,12 +68,23 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
                             "Authorization has been denied for this request. Invalid clientId and clientSecret combination."),
                     status);
         }
+        return new EatonCloudSimulatorResponse(new EatonCloudTokenV1(token1), status);
+    }
+    
+    public EatonCloudSimulatorResponse token2() {
+        
+        if (status == HttpStatus.BAD_REQUEST.value()) {
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("ClientId"), "The field 'ClientId' is not a valid uuid.", "f0d48574-d5f5-47c1-b817-a1042a103b29", status, "2021-02-25T07:07:03.2423402+00:00", null);
+            return new EatonCloudSimulatorResponse(error, status);
 
-        int length = 120;
-        boolean useLetters = true;
-        boolean useNumbers = true;
-        String generatedString = RandomStringUtils.random(length, useLetters, useNumbers);
-        return new EatonCloudSimulatorResponse(new EatonCloudTokenV1(generatedString), status);
+        }
+        if (status == HttpStatus.UNAUTHORIZED.value()) {
+            return new EatonCloudSimulatorResponse(
+                    new EatonCloudErrorV1(status,
+                            "Authorization has been denied for this request. Invalid clientId and clientSecret combination."),
+                    status);
+        }
+        return new EatonCloudSimulatorResponse(new EatonCloudTokenV1(token2), status);
     }
 
     public EatonCloudSimulatorResponse devicesV1(String id, Boolean recursive, Boolean includeDetail) {
@@ -305,6 +299,11 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of(), "Given Service Account Not found.","624b5e65-5e4c-4196-8a8a-54f833c9fc42", status, "2021-03-10T07:27:38.2222228+00:00", 11418);
             return new EatonCloudSimulatorResponse(error, status);
         }
+        
+        List<EatonCloudSecretV1> secrets = new ArrayList<>();
+        secrets.add(new EatonCloudSecretV1("secret1", expiryTime1));
+        secrets.add(new EatonCloudSecretV1("secret2", expiryTime2));
+        EatonCloudServiceAccountDetailV1 account = new EatonCloudServiceAccountDetailV1(serviceAccountId, "", true, "", "", secrets, new Date(), "", new Date(), "");
         return new EatonCloudSimulatorResponse(account, status);
     }
     
@@ -325,10 +324,15 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
 
         }
         
-        EatonCloudSecretValueV1 secret = new EatonCloudSecretValueV1(secretName, DateTime.now().plusYears(1).toDate(), RandomStringUtils.random(5, true, true));
-        //replace existing secret with new secret
-        account.getSecrets().removeIf(s -> s.getName().equals(secret.getName()));
-        account.getSecrets().add(secret); 
+        EatonCloudSecretValueV1 secret = null;
+        if(secretName.equals("secret1")) {
+            resetToken1();
+            secret = new EatonCloudSecretValueV1(secretName, expiryTime1, RandomStringUtils.random(5, true, true));
+        }
+        if(secretName.equals("secret2")) {
+            resetToken2();
+            secret = new EatonCloudSecretValueV1(secretName, expiryTime2, RandomStringUtils.random(3, true, true));
+        }
         
         return new EatonCloudSimulatorResponse(secret, status);
     }
@@ -340,4 +344,5 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         }
         return null;
     }
+    
 }

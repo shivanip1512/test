@@ -1,6 +1,7 @@
 package com.cannontech.web.dev;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
@@ -38,7 +41,9 @@ import com.cannontech.dr.eatonCloud.model.EatonCloudVersion;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCredentialsV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorHandlerV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
@@ -51,14 +56,16 @@ import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
+import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorDeviceCreateRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorSettingsUpdateRequest;
+import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsRequest;
+import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsResponse;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.dr.eatonCloud.service.v1.EatonCloudSecretRotationServiceV1;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,19 +80,19 @@ public class EatonCloudSimulatorController {
     @Autowired EatonCloudCommunicationServiceV1 eatonCloudCommunicationServiceV1;
     @Autowired GlobalSettingDao settingDao;
     @Autowired EatonCloudDataReadService eatonCloudDataReadService;
-    private static final Logger log = YukonLogManager.getLogger(EatonCloudSimulatorController.class);
-    private SimulatedEatonCloudSettings settings = new SimulatedEatonCloudSettings();
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private YukonJmsTemplate jmsTemplate;
     private YukonJmsTemplate jmsTemplateCalc;
-    
-    @Autowired private EatonCloudSecretRotationServiceV1 eatonCloudSecretRotationServiceV1;
-
+    private YukonJmsTemplate jmsTemplateSecretRotation;
+    private RestTemplate restTemplate;
+    private static final Logger log = YukonLogManager.getLogger(EatonCloudSimulatorController.class);
+    private SimulatedEatonCloudSettings settings = new SimulatedEatonCloudSettings();
     
     @PostConstruct
     public void init() {
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST);
         jmsTemplateCalc = jmsTemplateFactory.createTemplate(JmsApiDirectory.EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST);
+        jmsTemplateSecretRotation = jmsTemplateFactory.createTemplate(JmsApiDirectory.EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST);
     }
     @GetMapping("/home")
     public String home(ModelMap model) {
@@ -96,19 +103,95 @@ public class EatonCloudSimulatorController {
         if (url.contains("localhost") || url.contains("127.0.0.1")) {
             model.addAttribute("isLocalHost", true);
             model.addAttribute("urlType", "Simulated URL");
+            model.addAttribute("cachedBy", "Simulator");
         } else {
             model.addAttribute("urlType", "PX White URL");
+            model.addAttribute("cachedBy", "Cloud");
         }
 
         model.addAttribute("autoCreationTypes", List.of(PaoType.LCR6200C, PaoType.LCR6600C));
+        
+        printStatistics(model);
 
         return "eatonCloud/home.jsp";
+    }
+
+    private void printStatistics(ModelMap model) {
+        String url = settingDao.getString(GlobalSettingType.EATON_CLOUD_URL);
+
+        if (url.contains("localhost") || url.contains("127.0.0.1")) {
+            try {
+                EatonCloudSimulatorStatisticsRequest request = new EatonCloudSimulatorStatisticsRequest(EatonCloudVersion.V1);
+                EatonCloudSimulatorStatisticsResponse response = simulatorsCommunicationService.sendRequest(request,
+                        EatonCloudSimulatorStatisticsResponse.class);
+                model.addAttribute("secret1Token", response.getToken1());
+                model.addAttribute("secret2Token", response.getToken2());
+            } catch (Exception e) {
+                model.addAttribute("secret1Token", "Date doesn't exist");
+                model.addAttribute("secret2Token", "Date doesn't exist");
+                log.error("Error", e);
+            }
+        } else {
+            if (restTemplate == null) {
+                restTemplate = new RestTemplate();
+                restTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
+                restTemplate.setMessageConverters(Arrays.asList(new MappingJackson2HttpMessageConverter()));
+            }
+
+            String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+            try {
+                EatonCloudTokenV1 token1 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
+                model.addAttribute("secret1Token", token1.getToken());
+            } catch (Exception e) {
+                model.addAttribute("secret1Token", "Date doesn't exist");
+                log.error("Error", e);
+            }
+
+            try {
+                EatonCloudTokenV1 token2 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2, serviceAccountId);
+                model.addAttribute("secret2Token", token2.getToken());
+            } catch (Exception e) {
+                model.addAttribute("secret2Token", "Date doesn't exist");
+                log.error("Error", e);
+            }
+        }
+        
+        try {
+            String cachedToken = eatonCloudCommunicationServiceV1.getToken().getToken();
+            model.addAttribute("cachedToken", cachedToken);
+        } catch (Exception e) {
+            model.addAttribute("cachedToken", "Date doesn't exist");
+            log.error("Error", e);
+        }
+
+        try {
+            EatonCloudServiceAccountDetailV1 detail = eatonCloudCommunicationServiceV1.getServiceAccountDetail();
+            model.addAttribute("secret1Expiration", detail.getExpiryTime(1));
+            model.addAttribute("secret2Expiration", detail.getExpiryTime(2));
+        } catch (Exception e) {
+            log.error("Error", e);
+        }
+
+        model.addAttribute("secret1", settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET));
+        model.addAttribute("secret2", settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET2));
+    }
+    
+    private EatonCloudTokenV1 retrieveNewToken(GlobalSettingType type, String serviceAccountId) {
+        String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, log, restTemplate);
+        EatonCloudCredentialsV1 credentials = getCredentials(type, serviceAccountId);
+        EatonCloudTokenV1 newToken = restTemplate.postForObject(url, credentials, EatonCloudTokenV1.class);
+        return newToken;
+    }
+    
+    private EatonCloudCredentialsV1 getCredentials(GlobalSettingType type, String serviceAccountId) {
+        String secret = settingDao.getString(type);
+        return new EatonCloudCredentialsV1(serviceAccountId, secret);
     }
 
     @PostMapping("/updateSettings")
     public String updateSettings(@ModelAttribute("settings") SimulatedEatonCloudSettings newSettings, FlashScope flashScope, ModelMap model) {
         try {   
-            EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest();
+            EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest(EatonCloudVersion.V1);
             request.setStatuses(getStatuses(newSettings));
             request.setSuccessPercentages(newSettings.getSuccessPercentages());
             
@@ -188,8 +271,6 @@ public class EatonCloudSimulatorController {
             log.error("Error", e);
             json.put("alertError", e.getMessage());
         } 
-       // eatonCloudSecretRotationServiceV1.rotateSecret(1);
-        eatonCloudSecretRotationServiceV1.getSecretExpiryTime();
         return json;
     }
 
@@ -212,11 +293,11 @@ public class EatonCloudSimulatorController {
     }
 
     @PostMapping("/clearCache")
-    public @ResponseBody Map<String, Object> clearCache() {
-        Map<String, Object> json = new HashMap<>();
+    public String clearCache(FlashScope flashScope) {
         eatonCloudCommunicationServiceV1.clearCache();
-        json.put("userMessage", "Cache was successfully cleared.");
-        return json;   
+        flashScope.setConfirm(
+                YukonMessageSourceResolvable.createDefaultWithoutCode("Cache was successfully cleared."));
+        return "redirect:home";
     }
 
     private String getFormattedJson(Object profile) {
@@ -278,7 +359,37 @@ public class EatonCloudSimulatorController {
     public String forceRuntimeCalc(FlashScope flashScope) {
         try {
             jmsTemplateCalc.convertAndSend(new EatonCloudRuntimeCalcSimulatonRequest());
-            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("Runtime calculation started. See SM log for details."));
+            flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Runtime calculation started. See SM log for details."));
+        } catch (Exception e) {
+            log.error("Error", e);
+        }
+        return "redirect:home";
+    }
+    
+    @PostMapping("/rotateSecrets")
+    public String rotateSecrets(FlashScope flashScope) {
+        try {
+            EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest(EatonCloudVersion.V1);
+            request.setResetSecretsExpireTime(true);
+            //notify simulator to changes secret expiration dates in preparation for the SM request to rotate secrets
+            SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            if (response.isSuccessful()) {
+                //send request to SM to start secret rotation
+                jmsTemplateSecretRotation.convertAndSend(new EatonCloudSecretRotationSimulationRequest());
+                flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Sent message to SM to rotate secrets."));
+            }
+        } catch (Exception e) {
+            log.error("Error", e);
+        }
+        return "redirect:home";
+    }
+    
+    @PostMapping("/validateSecrets")
+    public String validateSecrets(FlashScope flashScope) {
+        try {
+            // send request to SM to start secret rotation
+            jmsTemplateSecretRotation.convertAndSend(new EatonCloudSecretRotationSimulationRequest());
+            flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Sent message to SM to rotate secrets."));
         } catch (Exception e) {
             log.error("Error", e);
         }
