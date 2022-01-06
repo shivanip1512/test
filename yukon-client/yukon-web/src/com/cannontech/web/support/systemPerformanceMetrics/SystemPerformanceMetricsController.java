@@ -3,8 +3,6 @@ package com.cannontech.web.support.systemPerformanceMetrics;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Months;
@@ -42,67 +40,42 @@ public class SystemPerformanceMetricsController {
             DateTime earliestStartDate = new DateTime().withTimeAtStartOfDay().minus(Months.TWO);
             startDate = earliestStartDate.toDate();
         }
-
         if (endDate == null) {
             endDate = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
         }
 
-       /* List<LitePoint> systemPoints = systemPerformanceMetricsService.getAllSystemPoints();
-        //TODO: Remove the below a logic. This is specific to my db since it was returning a different point.
-        systemPoints = systemPoints.stream().filter(systemPoint -> systemPoint.getPointID() < 0).collect(Collectors.toList());
-        // ============================================================================
-        
-        model.addAttribute("systemPoints", systemPoints);
-        log.info("System Points:");
-        systemPoints.forEach(systemPoint -> {
-            log.info("Point Id:" + systemPoint.getLiteID() + "  Point Name:" + systemPoint.getPointName());
-        });*/
-
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
-//        model.addAttribute("chartJSON", getChartJSON(startDate, endDate, userContext, systemPoints));
         return "systemPerformanceMetrics.jsp";
     }
 
     @GetMapping("getChartJson")
     public @ResponseBody Map<Integer, Object> getChartJson(@RequestParam(value = "startDate", required = false) Date startDate,
             @RequestParam(value = "endDate", required = false) Date endDate, YukonUserContext userContext) {
+
         // If start date is not provided, start date will be current date minus two months
         if (startDate == null) {
             DateTime earliestStartDate = new DateTime().withTimeAtStartOfDay().minus(Months.TWO);
             startDate = earliestStartDate.toDate();
         }
-
         if (endDate == null) {
             endDate = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
         }
 
         List<LitePoint> systemPoints = systemPerformanceMetricsService.getAllSystemPoints();
-        //TODO: Remove the below a logic. This is specific to my db since it was returning a different point.
-        systemPoints = systemPoints.stream().filter(systemPoint -> systemPoint.getPointID() < 0).collect(Collectors.toList());
-        // ============================================================================
         
-        log.info("System Points:");
-        systemPoints.forEach(systemPoint -> {
-            log.info("Point Id:" + systemPoint.getLiteID() + "  Point Name:" + systemPoint.getPointName());
-        });
-        Map<Integer, Object> graphAsJSON = getChartJSON(startDate, endDate, userContext, systemPoints);
-
-        return graphAsJSON;
-    }
-
-    private Map<Integer, Object> getChartJSON(Date startDate, Date endDate, YukonUserContext userContext, List<LitePoint> systemPoints) {
-        Map<Integer, Object> allGraphsJSON = Maps.newHashMap();
-        systemPoints.forEach(systemPoint -> {
+        Map<Integer, Object> graphAsJSON = Maps.newHashMap();
+        for (LitePoint systemPoint : systemPoints) {
             Map<String, Object> graphJSON = Maps.newHashMap();
             graphJSON.put("pointId", systemPoint.getPointID());
             graphJSON.put("pointName", systemPoint.getPointName());
+            /* TODO: ChartInterval.DAY, ConverterType.RAW kind of hardcoded value. We need decide how to retrieve those values.
+                         Created YUK-25718 for this.*/
             List<ChartValue<Double>> pointData = systemPerformanceMetricsService.getPointData(systemPoint.getPointID(), startDate,
-                    endDate,userContext, ChartInterval.DAY, ConverterType.RAW);
+                    endDate, userContext, ChartInterval.DAY, ConverterType.RAW);
             graphJSON.put("pointData", pointData);
-            allGraphsJSON.put(systemPoint.getLiteID(), graphJSON);
-        });
-        return allGraphsJSON;
+            graphAsJSON.put(systemPoint.getLiteID(), graphJSON);
+        }
+        return graphAsJSON;
     }
-
 }

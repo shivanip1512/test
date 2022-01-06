@@ -33,7 +33,7 @@ yukon.support.systemPerformanceMetrics = (function() {
                 enabled: false
             },
             xAxis: {
-            	type: 'datetime',
+                type: 'datetime',
                 labels: {
                     enabled: false
                 },
@@ -89,26 +89,25 @@ yukon.support.systemPerformanceMetrics = (function() {
                 }
             }
         },
-    
 
     mod = {
-        
+
         /** Initialize this module. */
         init: function () {
-            
+
             if (_initialized) return;
-            
+
             var startDate = $(".js-dateStart").val(),
                 endDate = $(".js-dateEnd").val();
             $.get(yukon.url("/support/systemPerformanceMetrics/getChartJson?startDate=" + startDate + "&endDate=" + endDate)).done(function(data){
                 var count = 0;
                 $.each(data, function (key, value) {
                     var data = [];
-                    	if (value.pointData != null) {
-                    		value.pointData.forEach(function (item, index) {
-                    			data.push([item.time, item.value]);
-                    		});
-                    	}
+                        if (value.pointData != null) {
+                            value.pointData.forEach(function (item, index) {
+                                data.push([item.time, item.value]);
+                            });
+                        }
                     var row = $('<tr></tr>'),
                         pointNameTableCell = $('<td></td>').attr({'data-point-id': value.pointId})
                                                            .css({'width': '20%'})
@@ -121,26 +120,24 @@ yukon.support.systemPerformanceMetrics = (function() {
                     var appendToTableCssClass = (count % 2 == 0) ? '.js-chart-table-left' : '.js-chart-table-right';
                     row.appendTo(appendToTableCssClass);
                     count++;
-                    
+
                     var sparklineOptions = {
-                    		chart: {
-                    			renderTo: chartTableCell
-                    		},
-                    		series: [{
-                    			data: data
-                    		}]
+                        chart: {
+                            renderTo: chartTableCell
+                        },
+                        series: [{
+                            data: data
+                        }]
                     };
-                    
+
                     var options = Highcharts.merge(_sparklineDefaultOptions, sparklineOptions);
-                    
+
                     chartTableCell.highcharts(options);
-                    
+
                 });
             });
-            
             _initialized = true;
         }
-        
     };
     
     return mod;
