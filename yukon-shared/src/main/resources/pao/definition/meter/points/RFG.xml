@@ -8,7 +8,7 @@
     <point offset="1" type="Analog">
         <name>Gas Usage</name>
         <multiplier value="1"/>
-        <unitofmeasure value="CUBIC_FEET"/>
+        <unitofmeasure value="CCF"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="5" type="Analog">
@@ -26,7 +26,7 @@
     <point offset="186" type="Analog">
         <name>Gas Usage per Interval</name>
         <multiplier value="1"/>
-        <unitofmeasure value="CUBIC_FEET"/>
+        <unitofmeasure value="CCF"/>
         <decimalplaces value="3"/>
     </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

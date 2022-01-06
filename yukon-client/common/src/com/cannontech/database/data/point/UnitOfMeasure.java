@@ -70,7 +70,8 @@ public enum UnitOfMeasure implements DisplayableEnum {
     MEGABYTES(56, "MB", "Megabytes"),
     DBM(57, "dBm", "Decibel-Milliwatts"),
     THERMS(58, "Therms", "Therms"),
-    DB(59, "dB", "Decibels");
+    DB(59, "dB", "Decibels"),
+    CCF(60, "CCF", "Centum Cubic Feet");
     // When adding a new UoM, remember to update displayableEnums.xml and point.xsd and creation scripts and update scripts
     
     private static final ImmutableSet<UnitOfMeasure> CAP_CONTROL_VAR_UOM = ImmutableSet.of(KVAR, VARS, MVAR, KQ);
