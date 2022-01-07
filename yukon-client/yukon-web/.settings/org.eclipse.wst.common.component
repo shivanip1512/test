@@ -549,7 +549,7 @@
                                 
         
         
-        <dependent-module archiveName="jackson-annotations-2.12.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-annotations-2.12.3.jar">
+        <dependent-module archiveName="jackson-annotations-2.13.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-annotations-2.13.0.jar">
                                                 
             
             
@@ -561,7 +561,7 @@
                                 
         
         
-        <dependent-module archiveName="jackson-databind-2.12.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-databind-2.12.3.jar">
+        <dependent-module archiveName="jackson-databind-2.13.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-databind-2.13.0.jar">
                                                 
             
             
@@ -585,7 +585,7 @@
                                 
         
         
-        <dependent-module archiveName="jackson-core-2.12.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-core-2.12.3.jar">
+        <dependent-module archiveName="jackson-core-2.13.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-core-2.13.0.jar">
                                                 
             
             

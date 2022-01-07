@@ -29,7 +29,7 @@ public class EimJavaLibraryTest {
         "apiguardian-api-1.1.0.jar",
         "aspectjweaver-1.9.6.jar",
         "azure-core-1.23.1.jar",
-        "azure-core-amqp-2.3.5jar",
+        "azure-core-amqp-2.3.5.jar",
         "azure-core-http-netty-1.11.4.jar",
         "azure-messaging-servicebus-7.5.1.jar",
         "bsf-2.3.0.jar",

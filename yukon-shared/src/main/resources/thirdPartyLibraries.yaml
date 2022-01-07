@@ -2121,6 +2121,20 @@ Java :
     jira : YUK-25692
     notes :
 
+  - filename : netty-resolver-dns-classes-macos-4.1.70.Final.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 4.1.70
+    project URL : "https://netty.io/index.html"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-classes-macos/4.1.70.Final"
+    md5 : 02e9a80e232c15a74de22b1ef6b325a1
+    sha1 : 8a12da3c8cc0bc6f3c7596a3ac29b65fb4d50139
+    updated : 2022-01-06
+    jira : YUK-25692
+    notes :
+
   - filename : netty-resolver-dns-native-macos-4.1.70.Final-osx-x86_64.jar
     yukon group : Azure
     project : Microsoft Azure SDK
@@ -2129,8 +2143,8 @@ Java :
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-native-macos/4.1.70.Final"
-    md5 : cedc378086b915b81d043931d48b0103
-    sha1 : d72f13b680d361b0e217704bda59ccb4b3256297
+    md5 : 3284d5e0a6e7cee74931eaa406af3e61
+    sha1 : 73d632adc7497d5cd074ac16efa8c9b4ec7632d5
     updated : 2022-01-06
     jira : YUK-25692
     notes : 
@@ -2149,6 +2163,20 @@ Java :
     jira : YUK-25692
     notes :
 
+  - filename : netty-tcnative-classes-2.0.46.Final.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 2.0.46
+    project URL : "https://netty.io/index.html"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-tcnative-classes/2.0.46.Final"
+    md5 : b398595d12e13f97ff9295abdf0d6a76
+    sha1 : 9937a832d9c19861822d345b48ced388b645aa5f
+    updated : 2022-01-06
+    jira : YUK-25692
+    notes :
+
   - filename : netty-transport-4.1.70.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
@@ -2157,12 +2185,40 @@ Java :
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport/4.1.70.Final"
-    md5 : a4a6e16a9fd19f4c0820450042286cf1
-    sha1 : 14c0c0356af101fb7f6e2ba77b3e68d7b21dc37b
-    updated : 2021-06-23
-    jira : YUK-24554
-    notes :       
-  
+    md5 : 4849571f19a5dd64cd2ca18d7d8b596a
+    sha1 : 38f683ad3a6c63fec73e5702d237ecbc9839deb6
+    updated : 2022-01-06
+    jira : YUK-25692
+    notes :
+
+  - filename : netty-transport-classes-epoll-4.1.70.Final.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 4.1.70
+    project URL : "https://netty.io/index.html"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-classes-epoll/4.1.70.Final"
+    md5 : 2496cba3094defe8afd044a59d2a7ddc
+    sha1 : e71ea6f70691af09c6000bf65a8c35a7e1a58f84
+    updated : 2022-01-06
+    jira : YUK-25692
+    notes :
+
+  - filename : netty-transport-classes-kqueue-4.1.70.Final.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 4.1.70
+    project URL : "https://netty.io/index.html"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-classes-kqueue/4.1.70.Final"
+    md5 : c59539ed0314539917370b80ba8dfee2
+    sha1 : 52b8dee51e297a88b792c752f0a57dec0a77e668
+    updated : 2022-01-06
+    jira : YUK-25692
+    notes :
+
   - filename : netty-transport-native-epoll-4.1.70.Final-linux-x86_64.jar
     yukon group : Azure
     project : Microsoft Azure SDK
@@ -2171,11 +2227,11 @@ Java :
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-epoll/4.1.70.Final"
-    md5 : 236bcc1a2e90221ff48d9f9ad6b30713
-    sha1 : 0ed1ce93ceaaec02c7d3d88daf82360745499747
-    updated : 2021-06-23
-    jira : YUK-24554
-    notes :      
+    md5 : 6fbc246fdf667729c2bd49f386c45c54
+    sha1 : 89f5a0f9903404900b3dfe2ecfc969eaf40ce26c
+    updated : 2022-01-07
+    jira : YUK-25692
+    notes :
 
   - filename : netty-transport-native-kqueue-4.1.70.Final-osx-x86_64.jar
     yukon group : Azure
@@ -2185,11 +2241,11 @@ Java :
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-kqueue/4.1.70.Final"
-    md5 : 9e3e10aecd5534c7f1c0fece085e11e9
-    sha1 : 502a18402e38131c669840363ad50fe60a899d0d
-    updated : 2021-06-23
-    jira : YUK-24554
-    notes :      
+    md5 : 4e9133385dae95713b6a5818a35c8b5c
+    sha1 : effade0fceb3642b5a2435a6dac2211fd08759b3
+    updated : 2022-01-07
+    jira : YUK-25692
+    notes :
 
   - filename : netty-transport-native-unix-common-4.1.70.Final.jar
     yukon group : Azure
@@ -2199,11 +2255,11 @@ Java :
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-unix-common/4.1.70.Final"
-    md5 : aa766b71c05aebd63dd334d39f6f5ca4
-    sha1 : 6aea23759e5325309028ed239885fcd5a9075c66
-    updated : 2021-06-23
-    jira : YUK-24554
-    notes :       
+    md5 : 9dd524d424a56447dba5084e5d211a3d
+    sha1 : ba6ad1e8c0570242a9bb2b4526ad4a1c56f71e2f
+    updated : 2022-01-07
+    jira : YUK-25692
+    notes :
   
   - filename : objenesis-1.2.jar
     yukon group : Unit Tests
@@ -2376,44 +2432,44 @@ Java :
   - filename : reactor-core-3.4.12.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 3.4.6
+    version : 3.4.12
     project URL : "https://github.com/reactor/reactor-core"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.projectreactor/reactor-core/3.4.12"
-    md5 : 2f13b945f220dbbe4aee43ba73ac6ce7
-    sha1 : d8d52418db9eea651d4772a619d5c9ea820449b7
-    updated : 2021-06-23
-    jira : YUK-24554
-    notes :       
+    md5 : d50df715121fa262bf005f2dd6ab4393
+    sha1 : dc05b8178674edd0c45b7842644b31e22dc1f4f2
+    updated : 2022-01-07
+    jira : YUK-25692
+    notes :
 
   - filename : reactor-netty-core-1.0.13.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 1.0.7
+    version : 1.0.13
     project URL : "https://github.com/reactor/reactor-netty"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty-http/1.0.13"
-    md5 : 74de0a56cf45501783f80638068b2d56
-    sha1 : f5819084c49d6651a3be5805c5e128e535bd8eb4
-    updated : 2021-06-23
-    jira : YUK-24554
-    notes :       
+    maven URL : "https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty-core/1.0.13"
+    md5 : 349c2ef8647dc3e29a2b3b9a3c00fd51
+    sha1 : a67949c5946dd66c7ab0a3b059213c23345c32b1
+    updated : 2022-01-07
+    jira : YUK-25692
+    notes :
 
   - filename : reactor-netty-http-1.0.13.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 1.0.7
+    version : 1.0.13
     project URL : "https://github.com/reactor/reactor-netty"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty-http/1.0.13"
-    md5 : c269cc48166dca5eaac57add6c30ec77
-    sha1 : 95106e62dce6e83933823bc54f4177c2a60c8028
-    updated : 2021-06-23
-    jira : YUK-24554
-    notes :       
+    md5 : d824a7f93a93afe0a0765991f4fa90ae
+    sha1 : de7a38101098db9438c18fdd09acc5b79a2ec02a
+    updated : 2022-01-07
+    jira : YUK-25692
+    notes :
 
   - filename : reactive-streams-1.0.3.jar
     yukon group : Spring
@@ -2498,22 +2554,21 @@ Java :
     updated : 2021-12-28
     jira : YUK-25694
     notes : Tomcat Servlet API
-  
+
   - filename : slf4j-api-1.7.32.jar
     yukon group : Log4j
     project : Simple Logging Facade for Java API
-    version : 1.7.30
+    version : 1.7.32
     project URL : "https://www.slf4j.org/"
     license : MIT
     license URLs : "https://opensource.org/licenses/MIT"
-    maven URL : "https://mvnrepository.com/artifact/org.slf4j/slf4j-api/1.7.30"
-    md5 : f8be00da99bc4ab64c79ab1e2be7cb7c
-    sha1 : b5a4b6d16ab13e34a88fae84c35cd5d68cac922c
-    updated : 2021-02-24
-    jira : YUK-23771
+    maven URL : "https://mvnrepository.com/artifact/org.slf4j/slf4j-api/1.7.32"
+    md5 : fbcf58513bc25b80f075d812aad3e3cf
+    sha1 : cdcff33940d9f2de763bc41ea05a0be5941176c3
+    updated : 2022-01-07
+    jira : YUK-25692
     notes : 
-  
-  
+
   - filename : slf4j-api-1.8.0-alpha2.jar
     yukon group : Log4j
     project : Simple Logging Facade for Java API
@@ -3273,17 +3328,17 @@ Java :
   - filename : woodstox-core-6.2.6.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 6.2.4
+    version : 6.2.6
     project URL : "https://github.com/FasterXML/woodstox"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core/6.2.6"
-    md5 : c72181f3fb82bda9aa724e6b0fed3395
-    sha1 : 16b9f8ab972e67eb21872ea2c40046249d543989
-    updated : 2021-06-23
-    jira : YUK-24554
+    md5 : 4c608d2fbe8f156704bee0ebcf09f72a
+    sha1 : d4a055af5dcadea8d1bded5b64bc7be5bb7fea95
+    updated : 2022-01-07
+    jira : YUK-25692
     notes :
-  
+
   - filename : wro4j-core-1.6.3.jar
     yukon group : UI
     project : Web Resource Optimizer
