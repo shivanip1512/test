@@ -487,6 +487,7 @@
     
     <!-- system performance metrics view.jsp  -->
     <entry key="yukon.web.modules.support.systemPerformanceMetrics.pageName">System Performance Metrics</entry>
+    <entry key="yukon.web.modules.support.systemPerformanceMetrics.chart">Chart</entry>
     
     
     <!-- system health detail.jsp -->
