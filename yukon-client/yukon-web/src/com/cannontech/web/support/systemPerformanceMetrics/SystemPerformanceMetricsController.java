@@ -3,7 +3,6 @@ package com.cannontech.web.support.systemPerformanceMetrics;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Months;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.ConverterType;
@@ -29,16 +27,13 @@ public class SystemPerformanceMetricsController {
 
     @Autowired private SystemPerformanceMetricsService systemPerformanceMetricsService;
 
-    private Logger log = YukonLogManager.getLogger(SystemPerformanceMetricsController.class);
-
     @RequestMapping("/view")
     public String home(ModelMap model, @RequestParam(value = "startDate", required = false) Date startDate,
             @RequestParam(value = "endDate", required = false) Date endDate, YukonUserContext userContext) {
 
         // If start date is not provided, start date will be current date minus two months
         if (startDate == null) {
-            DateTime earliestStartDate = new DateTime().withTimeAtStartOfDay().minus(Months.TWO);
-            startDate = earliestStartDate.toDate();
+            startDate = new DateTime().withTimeAtStartOfDay().minus(Months.TWO).toDate();
         }
         if (endDate == null) {
             endDate = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
@@ -55,8 +50,7 @@ public class SystemPerformanceMetricsController {
 
         // If start date is not provided, start date will be current date minus two months
         if (startDate == null) {
-            DateTime earliestStartDate = new DateTime().withTimeAtStartOfDay().minus(Months.TWO);
-            startDate = earliestStartDate.toDate();
+            startDate = new DateTime().withTimeAtStartOfDay().minus(Months.TWO).toDate();
         }
         if (endDate == null) {
             endDate = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
