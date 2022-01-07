@@ -83,7 +83,7 @@
         <include name="quartz-2.3.2.jar"/>
         <include name="saaj.jar"/>
         <include name="slf4j-api-1.8.0-alpha2.jar"/>
-        <include name="slf4j-api-1.7.30.jar"/>
+        <include name="slf4j-api-1.7.32.jar"/>
         <include name="log4j-slf4j-impl-2.16.0.jar"/>
         <include name="spring-xml-3.1.1.jar"/>
         <include name="stax2-api-4.2.1.jar"/>
@@ -93,7 +93,7 @@
         <include name="javax.jms-api-2.0.1.jar"/>
         <include name="micrometer-core-1.0.7.jar"/>
         <include name="reactive-streams-1.0.3.jar"/>
-        <include name="reactor-core-3.4.6.jar"/>
+        <include name="reactor-core-3.4.12.jar"/>
         <include name="sqljdbc42.jar"/>
         <include name="web-common.jar"/>
         <include name="xercesImpl-2.12.0.jar"/>
