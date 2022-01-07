@@ -213,7 +213,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.azure/azure-core/1.23.1"
     md5 : 152f9395ddf81c795b0e62c5fd7de033
     sha1 : 325f218c668bd6f20813981638343a35dbc7eb27
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -227,7 +227,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.azure/azure-core-amqp/2.3.5"
     md5 : b4c5ee6f2ca3ed4b23d69302fd9a8312
     sha1 : ceea41515e7b28f856d092e54c25f21dbd25cb17
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -241,7 +241,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.azure/azure-core-http-netty/1.11.4"
     md5 : 80d121cbdf13b82270b9c1ee92769fd1
     sha1 : 1d21f8aeaea2d4a2db60b739f787ce59ccbf055e
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -255,7 +255,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.azure/azure-messaging-servicebus/7.5.1"
     md5 : bd95c85b6ed84dab10af7ea78577ffa4
     sha1 : fffa248e230b06fc6135b2eb708b15d543a44169
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes : Microsoft Azure Service Bus
 
@@ -969,7 +969,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.13.0"
     md5 : 9b8bb9a5e1f2af431ad919252c643cbc
     sha1 : 15be89db6609bd6fda3dc309bacf0318a312c03f
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes : Jackson Annotations
 
@@ -983,7 +983,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.13.0"
     md5 : 94e04abccab99e295a3f4f57f6e387c8
     sha1 : e957ec5442966e69cef543927bdc80e5426968bb
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes : Jackson Core
 
@@ -997,7 +997,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.13.0"
     md5 : 309228a89a5a9da89174114b1e681def
     sha1 : 889672a1721d6d85b2834fcd29d3fda92c8c8891
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes : Jackson Databind
 
@@ -1039,7 +1039,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.13.0"
     md5 : b00a072102430c1efbd9d4be63e102dd
     sha1 : 396634365e8439b27794fa94b571fdc03b4cf7be
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -1053,7 +1053,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.13.0"
     md5 : 44c4fb74c4f5a0966b9655bfbc86af4e
     sha1 : 4c143877fc733befe6189151c8b95d84acd06941
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -1963,7 +1963,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-buffer/4.1.70.Final"
     md5 : 831200f595550d7d5bc42cfe4d362a46
     sha1 : 54620560d725f497b73d54509baac64dfc4e0093
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -1977,7 +1977,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec/4.1.70.Final"
     md5 : 674c37868ed03227b70ec322ba72ee35
     sha1 : 176fdba2f467ef6d35a7dd764d000705e16a01f6
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -1991,7 +1991,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-dns/4.1.70.Final"
     md5 : 3318af28a5649718d1e91764b9929682
     sha1 : dc35157c87508fad20bb64c203710435059cd2a6
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -2005,7 +2005,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http/4.1.70.Final"
     md5 : 594f6112ed29df648e1ae6ff09999a69
     sha1 : aa8d13d24427e80403d9fc69c1365ec2aa25263b
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
   
@@ -2019,7 +2019,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http2/4.1.70.Final"
     md5 : 9880874c3b8802324deda275c72de420
     sha1 : 84b9a564c0fe8e10bc5b660129db01fa052eabca
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
   
@@ -2033,7 +2033,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-socks/4.1.70.Final"
     md5 : 62faad567191981cd7957eaaa88621b2
     sha1 : 9cde02a4dddb4baa568718f80d026c48a3f258c7
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
   
@@ -2047,7 +2047,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-common/4.1.70.Final"
     md5 : 75ded3bde221b50248f9f004dd841ee5
     sha1 : c2db94c855f472573b64ca68d00effcde00329bd
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -2061,7 +2061,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler/4.1.70.Final"
     md5 : 2e615dd3195439a35f56cc5633e93d91
     sha1 : bddcbdf42338e760382d8d732420c4a0b969f5e5
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -2075,7 +2075,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler-proxy/4.1.70.Final"
     md5 : ca0c6d9a622ac3f15bc64d4b8d88ac21
     sha1 : fb5459e297cfa16e5dc131cab653271dbb96b429
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -2103,7 +2103,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver/4.1.70.Final"
     md5 : 60fc1fc3d50ea498e6828d76c80aa029
     sha1 : 9fd1fb006141dae4a4f3dd8e83662edf56ae5d1b
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -2117,7 +2117,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns/4.1.70.Final"
     md5 : 234a0a4c6b7b563e4ac1969560fcaa9e
     sha1 : 409f417440156a794f8b9f3acf8a00258d46b499
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -2131,7 +2131,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-classes-macos/4.1.70.Final"
     md5 : 02e9a80e232c15a74de22b1ef6b325a1
     sha1 : 8a12da3c8cc0bc6f3c7596a3ac29b65fb4d50139
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -2145,7 +2145,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-native-macos/4.1.70.Final"
     md5 : 3284d5e0a6e7cee74931eaa406af3e61
     sha1 : 73d632adc7497d5cd074ac16efa8c9b4ec7632d5
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes : 
 
@@ -2159,7 +2159,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-tcnative-boringssl-static/2.0.46.Final"
     md5 : e8982855f2c681ce8ed7eac375138d85
     sha1 : 5aaf1b7bf74dfe4ae8458c308b616e05f98403f3
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -2173,7 +2173,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-tcnative-classes/2.0.46.Final"
     md5 : b398595d12e13f97ff9295abdf0d6a76
     sha1 : 9937a832d9c19861822d345b48ced388b645aa5f
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -2187,7 +2187,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport/4.1.70.Final"
     md5 : 4849571f19a5dd64cd2ca18d7d8b596a
     sha1 : 38f683ad3a6c63fec73e5702d237ecbc9839deb6
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -2201,7 +2201,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-classes-epoll/4.1.70.Final"
     md5 : 2496cba3094defe8afd044a59d2a7ddc
     sha1 : e71ea6f70691af09c6000bf65a8c35a7e1a58f84
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
@@ -2215,7 +2215,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-classes-kqueue/4.1.70.Final"
     md5 : c59539ed0314539917370b80ba8dfee2
     sha1 : 52b8dee51e297a88b792c752f0a57dec0a77e668
-    updated : 2022-01-06
+    updated : 2022-01-07
     jira : YUK-25692
     notes :
 
