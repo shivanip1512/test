@@ -92,6 +92,7 @@ import com.cannontech.system.dao.impl.GlobalSettingDaoImpl;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.dr.eatonCloud.model.EatonCloudSecretExpiryTime;
 import com.cannontech.web.dr.eatonCloud.service.v1.EatonCloudSecretRotationServiceV1;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
@@ -228,8 +229,14 @@ public class YukonSecurityController {
         model.addAttribute("encryptedRoute", encryptedRoute);
         model.addAttribute("encryptedRoutes", encryptedRouteDao.getAllEncryptedRoutes());
         
-        model.addAttribute("brightlayerSecretKeyExpiration", eatonCloudSecretRotationServiceV1.getSecretExpiryTime());
-
+        try {
+        	EatonCloudSecretExpiryTime secretExpirations = eatonCloudSecretRotationServiceV1.getSecretExpiryTime();
+            model.addAttribute("brightlayerSecretKeyExpiration", secretExpirations);
+        } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
+         	log.error("Error occurred retrieving Brightlayer Secret Expirations", e);
+         	model.addAttribute("secretExpirationError", accessor.getMessage(baseKey + ".secretsBox.secretExpirationRetrieveError", e.getMessage()));
+        }
+        
         model.addAttribute("encryptionKey", encryptionKey);
         List<EncryptionKey> encryptionKeys = encryptedRouteDao.getEncryptionKeys();
         model.addAttribute("reportingUrl", getReportingUrl());
