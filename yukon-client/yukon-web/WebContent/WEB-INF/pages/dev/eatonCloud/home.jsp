@@ -31,6 +31,7 @@
         <br/>
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
      </div><br/>
+     <tags:alertBox classes="js-success-message dn" type="success" includeCloseButton="true"></tags:alertBox>
      <div class="js-secret-information user-message info dn">
      	Token cached by Service Manager: <span class="js-cached-token">${cachedToken}</span>
      	<br/>

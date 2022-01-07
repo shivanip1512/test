@@ -125,7 +125,7 @@ yukon.dev.simulators.eatonCloudSimulator = ( function() {
                     url: yukon.url('/dev/eatonCloud/clearCache')
                 }).done(function(json) {
                    if (json.userMessage) {
-                       yukon.ui.alertSuccess(json.userMessage);
+                	   $('.js-success-message').removeClass('dn').text(json.userMessage);
                    } 
                 });
             });
