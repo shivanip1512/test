@@ -173,18 +173,22 @@
                 </table>
             </tags:boxContainer2>
             <tags:boxContainer2 nameKey="secretsBox" styleClass="largeContainer">
+                <c:if test="${!empty secretExpirationError}">
+                    <tags:alertBox type="warning">${secretExpirationError}</tags:alertBox> 
+                </c:if>
                 <form:form id="refreshSecretForm" method="POST" action="refreshSecret">
                 	<cti:csrfToken/>
                 	<input type="hidden" id="secretNumber" name="secretNumber"/>
                 </form:form>
+                <cti:msg2 var="secretNotFoundMessage" key=".secretsBox.secretNotFound"/>
             	<div class="PB10" style="line-height:40px;">
             		<i:inline key=".secretsBox.secret1Expiration"/>:&nbsp;
-            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime1}"/>
+            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime1}" nullText="${secretNotFoundMessage}"/>
             		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="1"/>
             	</div>
             	<div style="line-height:40px;">
             		<i:inline key=".secretsBox.secret2Expiration"/>:&nbsp;
-            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime2}"/>
+            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime2}" nullText="${secretNotFoundMessage}"/>
             		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="2"/>
             	</div>
             </tags:boxContainer2>
