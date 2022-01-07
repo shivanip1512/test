@@ -103,35 +103,36 @@ public class EatonCloudSimulatorController {
         if (url.contains("localhost") || url.contains("127.0.0.1")) {
             model.addAttribute("isLocalHost", true);
             model.addAttribute("urlType", "Simulated URL");
-            model.addAttribute("cachedBy", "Simulator");
         } else {
             model.addAttribute("urlType", "PX White URL");
-            model.addAttribute("cachedBy", "Cloud");
         }
 
         model.addAttribute("autoCreationTypes", List.of(PaoType.LCR6200C, PaoType.LCR6600C));
         
-        printStatistics(model);
-
         return "eatonCloud/home.jsp";
     }
-
-    private void printStatistics(ModelMap model) {
+    
+    @GetMapping("/updateSecretInformation")
+    public @ResponseBody Map<String, Object> updateSecretInformation() {
+        Map<String, Object> json = new HashMap<>();
         String url = settingDao.getString(GlobalSettingType.EATON_CLOUD_URL);
 
         if (url.contains("localhost") || url.contains("127.0.0.1")) {
+        	json.put("cachedBy", "Simulator");
             try {
                 EatonCloudSimulatorStatisticsRequest request = new EatonCloudSimulatorStatisticsRequest(EatonCloudVersion.V1);
                 EatonCloudSimulatorStatisticsResponse response = simulatorsCommunicationService.sendRequest(request,
                         EatonCloudSimulatorStatisticsResponse.class);
-                model.addAttribute("secret1Token", response.getToken1());
-                model.addAttribute("secret2Token", response.getToken2());
+                json.put("secret1Token", response.getToken1());
+                json.put("secret2Token", response.getToken2());
             } catch (Exception e) {
-                model.addAttribute("secret1Token", "Date doesn't exist");
-                model.addAttribute("secret2Token", "Date doesn't exist");
+            	json.put("secret1Token", "Date doesn't exist");
+            	json.put("secret2Token", "Date doesn't exist");
                 log.error("Error", e);
             }
         } else {
+        	json.put("cachedBy", "Cloud");
+
             if (restTemplate == null) {
                 restTemplate = new RestTemplate();
                 restTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
@@ -141,39 +142,41 @@ public class EatonCloudSimulatorController {
             String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
             try {
                 EatonCloudTokenV1 token1 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
-                model.addAttribute("secret1Token", token1.getToken());
+                json.put("secret1Token", token1.getToken());
             } catch (Exception e) {
-                model.addAttribute("secret1Token", "Date doesn't exist");
+            	json.put("secret1Token", "Date doesn't exist");
                 log.error("Error", e);
             }
 
             try {
                 EatonCloudTokenV1 token2 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2, serviceAccountId);
-                model.addAttribute("secret2Token", token2.getToken());
+                json.put("secret2Token", token2.getToken());
             } catch (Exception e) {
-                model.addAttribute("secret2Token", "Date doesn't exist");
+            	json.put("secret2Token", "Date doesn't exist");
                 log.error("Error", e);
             }
         }
         
         try {
             String cachedToken = eatonCloudCommunicationServiceV1.getToken().getToken();
-            model.addAttribute("cachedToken", cachedToken);
+            json.put("cachedToken", cachedToken);
         } catch (Exception e) {
-            model.addAttribute("cachedToken", "Date doesn't exist");
+        	json.put("cachedToken", "Date doesn't exist");
             log.error("Error", e);
         }
 
         try {
             EatonCloudServiceAccountDetailV1 detail = eatonCloudCommunicationServiceV1.getServiceAccountDetail();
-            model.addAttribute("secret1Expiration", detail.getExpiryTime(1));
-            model.addAttribute("secret2Expiration", detail.getExpiryTime(2));
+            json.put("secret1Expiration", detail.getExpiryTime(1));
+            json.put("secret2Expiration", detail.getExpiryTime(2));
         } catch (Exception e) {
             log.error("Error", e);
         }
 
-        model.addAttribute("secret1", settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET));
-        model.addAttribute("secret2", settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET2));
+        json.put("secret1", settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET));
+        json.put("secret2", settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET2));
+        
+        return json;
     }
     
     private EatonCloudTokenV1 retrieveNewToken(GlobalSettingType type, String serviceAccountId) {
@@ -293,11 +296,11 @@ public class EatonCloudSimulatorController {
     }
 
     @PostMapping("/clearCache")
-    public String clearCache(FlashScope flashScope) {
+    public @ResponseBody Map<String, Object> clearCache() {
+    	Map<String, Object> json = new HashMap<>();
         eatonCloudCommunicationServiceV1.clearCache();
-        flashScope.setConfirm(
-                YukonMessageSourceResolvable.createDefaultWithoutCode("Cache was successfully cleared."));
-        return "redirect:home";
+        json.put("userMessage", "Cache was successfully cleared.");
+        return json; 
     }
 
     private String getFormattedJson(Object profile) {

@@ -13,6 +13,8 @@ yukon.dev.simulators.eatonCloudSimulator = ( function() {
 
     var 
     _initialized = false,
+    _updateInterval = 10000, // 10 seconds
+    _updateTimeout = null,
     _json= {
         TREND_DATA_RETRIEVAL: {
             "devices": [{
@@ -45,11 +47,36 @@ yukon.dev.simulators.eatonCloudSimulator = ( function() {
             }
         }
     },
+    
+    _updateSecretInformation = function() {
+        $.ajax({
+            url: yukon.url('/dev/eatonCloud/updateSecretInformation'),
+            type: 'get'
+        }).done(function (data) {
+        	var secretInformation = $('.js-secret-information').removeClass('dn');
+        	secretInformation.find('.js-cached-token').text(data.cachedToken);
+        	secretInformation.find('.js-cachedBy').text(data.cachedBy);
+        	secretInformation.find('.js-secret1Token').text(data.secret1Token);
+        	secretInformation.find('.js-secret2Token').text(data.secret2Token);
+        	secretInformation.find('.js-secret1').text(data.secret1);
+        	secretInformation.find('.js-secret2').text(data.secret2);
+        	secretInformation.find('.js-secret1Expiration').text(moment(data.secret1Expiration).tz(yg.timezone).format(yg.formats.date.date_hms_12));
+        	secretInformation.find('.js-secret2Expiration').text(moment(data.secret2Expiration).tz(yg.timezone).format(yg.formats.date.date_hms_12));
+        });
+        
+        if (_updateTimeout) {
+            clearTimeout(_updateTimeout);
+        }        
+
+        _updateTimeout = setTimeout(function () { _updateSecretInformation()}, _updateInterval);
+    },
 
     mod = {
         init : function() {
             
             if (_initialized) return;
+            
+            _updateSecretInformation();
             
             //prefill json data
             $('.js-json-text').each(function(i, item) {
