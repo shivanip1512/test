@@ -1183,20 +1183,6 @@ Java :
     jira : YUK-18846
     notes : 
   
-  - filename : javax.mail-1.6.1.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 1.6.1
-    project URL : "https://javaee.github.io/javamail"
-    license : GPL 2.0
-    license URLs : "https://javaee.github.io/javamail/LICENSE"
-    maven URL : "https://mvnrepository.com/artifact/com.sun.mail/javax.mail/1.6.1"
-    md5 : 95b39bf7494bbd3725861297206878a4
-    sha1 : 757ba4630692bb2a1ec2d9d57a616b63f15e947e
-    updated : 2019-12-04
-    jira : YUK-20500
-    notes :       
-  
   - filename : jaxb2-basics-ant-0.6.3.jar
     yukon group : JAXB
     project : JAXB2 Basics Ant Task
