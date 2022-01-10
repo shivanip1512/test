@@ -181,6 +181,11 @@ WHERE (SELECT COUNT(*) FROM LMGroupExpressCom) = (SELECT COUNT(*) FROM LMGroupEx
 INSERT INTO DBUpdates VALUES ('YUK-25509', '9.2.0', GETDATE());
 /* @end YUK-25509 */
 
+/* @start YUK-25562 */
+INSERT INTO UnitMeasure VALUES ( 60,'CCF', 0, 'Centum Cubic Feet', '(none)');
+
+INSERT INTO DBUpdates VALUES ('YUK-25562', '9.2.0', GETDATE());
+/* @end YUK-25562 */
 
 /***********************************************************************************/
 /* VERSION INFO                                                                    */

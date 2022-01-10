@@ -766,4 +766,5 @@
     <entry key="yukon.common.unitOfMeasure.DBM">dBm</entry>
     <entry key="yukon.common.unitOfMeasure.THERMS">Therms</entry>
     <entry key="yukon.common.unitOfMeasure.DB">dB</entry>
+    <entry key="yukon.common.unitOfMeasure.CCF">CCF</entry>
 </properties>
