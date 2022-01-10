@@ -538,7 +538,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/logging-mailhandler-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/javax.mail-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/netty-buffer-4.1.70.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-4.1.70.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-dns-4.1.70.Final.jar"/>

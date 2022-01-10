@@ -75,7 +75,6 @@
         <include name="lucene-analyzers-common-8.8.2.jar"/>
         <include name="lucene-core-8.8.2.jar"/>
         <include name="lucene-queryparser-8.8.2.jar"/>
-        <include name="javax.mail-1.6.1.jar"/>
         <include name="jakarta.mail-2.0.1.jar"/>
         <include name="jakarta.activation-api-2.0.1.jar"/>
         <include name="notification.jar"/>
