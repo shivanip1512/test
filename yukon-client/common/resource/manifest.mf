@@ -108,7 +108,6 @@ Class-Path: ./
  jackson-core-2.13.0.jar 
  jackson-databind-2.13.0.jar 
  jackson-dataformat-csv-2.9.6.jar 
- javax.mail-1.6.1.jar 
  jakarta.mail-2.0.1.jar 
  jackson-datatype-joda-2.12.3.jar 
  jackson-dataformat-xml-2.13.0.jar 

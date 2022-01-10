@@ -666,16 +666,6 @@
         
         
         </dependent-module>
-                        
-        
-        <dependent-module archiveName="javax.mail-1.6.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/javax.mail-1.6.1.jar">
-                                    
-            
-            <dependency-type>uses</dependency-type>
-                                
-        
-        </dependent-module>
-                        
         
         <dependent-module archiveName="jakarta.mail-2.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jakarta.mail-2.0.1.jar">
                                     
