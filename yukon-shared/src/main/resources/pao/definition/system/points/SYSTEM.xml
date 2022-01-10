@@ -150,6 +150,7 @@
     </point>
     <point offset="1032" type="Analog">
         <name>RFN Meter Reading Archive Requests Received</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
@@ -162,30 +163,35 @@
     </point>
     <point offset="1034" type="Analog">
         <name>RFN Meter Reading Archive Requests Pt Data Generated Count</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
     </point>
     <point offset="1035" type="Analog">
         <name>RFN LCR Reading Archive Requests Received</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
     </point>
     <point offset="1036" type="Analog">
         <name>RFN LCR Reading Archive Requests Queue Size</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
     </point>
     <point offset="1037" type="Analog">
         <name>RFN Meter Reading Archive Requests Queue Size</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
     </point>
     <point offset="1038" type="Analog">
         <name>RFN LCR Reading Archive Point Data Generated Count</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
