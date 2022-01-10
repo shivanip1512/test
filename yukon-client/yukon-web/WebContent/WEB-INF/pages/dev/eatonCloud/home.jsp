@@ -31,12 +31,15 @@
         <br/>
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
      </div><br/>
-     <div class="user-message info">
-     	Token cached by Service Manager: ${cachedToken}
+     <tags:alertBox classes="js-success-message dn" type="success" includeCloseButton="true"></tags:alertBox>
+     <div class="js-secret-information user-message info dn">
+     	Token cached by Service Manager: <span class="js-cached-token">${cachedToken}</span>
      	<br/>
-        Token1:${secret1Token} cached by ${cachedBy} Secret1: ${secret1} Expiration: <cti:formatDate type="DATEHMS_12" value="${secret1Expiration}"/>
+        Token1:<span class="js-secret1Token">${secret1Token}</span> cached by <span class="js-cachedBy">${cachedBy}</span> 
+        Secret1: <span class="js-secret1">${secret1}</span> Expiration: <span class="js-secret1Expiration"></span>
         <br/>
-        Token2:${secret2Token} cached by ${cachedBy} Secret2: ${secret2} Expiration: <cti:formatDate type="DATEHMS_12" value="${secret2Expiration}"/>
+        Token2:<span class="js-secret2Token">${secret2Token}</span> cached by <span class="js-cachedBy">${cachedBy}</span> 
+        Secret2: <span class="js-secret2">${secret2}</span> Expiration: <span class="js-secret2Expiration"></span>
      </div>
      <br/>
 	    
