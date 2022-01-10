@@ -57,7 +57,7 @@ CtiClientConnection::CtiClientConnection( const string &serverQueueName,
 {
 
     // initialize the session
-    _session = Cti::Messaging::ActiveMQConnectionManager::getSession(*this);
+//    _session = Cti::Messaging::ActiveMQConnectionManager::getSession(*this);
 
 }
 
@@ -86,6 +86,12 @@ CtiClientConnection::~CtiClientConnection()
  */
 bool CtiClientConnection::establishConnection()
 {
+    if ( ! Cti::Messaging::ActiveMQConnectionManager::getSession( *this )  )
+    {
+        return false;
+    }
+
+
     // waiting for the session to be completely initialized and open
     {
         std::unique_lock<std::mutex> lock(_sessionMutex);

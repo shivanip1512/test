@@ -109,8 +109,8 @@ public:
     ActiveMQConnectionManager();
     virtual ~ActiveMQConnectionManager();
 
-    // static
-    void start();
+    static void start();
+    void start_impl();
 
     static void enqueueMessage(const Qpid::Queues::OutboundQueue &queue, StreamableMessagePtr message);
     static void enqueueMessage(const Qpid::Queues::OutboundQueue &queue, const SerializedMessage &message);
@@ -145,9 +145,10 @@ public:
     void on_connection_close( proton::connection & c ) override;
     void on_session_open( proton::session & s ) override;
 
-    static proton::session getSession( proton::messaging_handler & handler );
-    	
-    proton::session getNewSession( proton::messaging_handler & handler );
+    static bool getSession( proton::messaging_handler & handler );    	
+    bool getNewSession( proton::messaging_handler & handler );
+
+    bool _sessionIsAlive;
 
     proton::container  _container;
 

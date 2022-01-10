@@ -50,7 +50,9 @@ CtiListenerConnection::CtiListenerConnection( const string &serverQueueName ) :
     _ready( false )
 {
     // initialize the session
-    _session = Cti::Messaging::ActiveMQConnectionManager::getSession( *this );
+
+    // jmoc - gotta fix this
+   //_session = Cti::Messaging::ActiveMQConnectionManager::getSession( *this );
 }
 
 void CtiListenerConnection::on_session_open( proton::session & session )

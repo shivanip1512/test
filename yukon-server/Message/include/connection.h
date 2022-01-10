@@ -58,7 +58,7 @@ protected:
     std::condition_variable _sessionCv;
 
     enum class ConnectionState
-    {
+    {   // uninit, registered w/session, waiting for ack, connected, bad/error
         WaitingForAck,
         Connected,
         Error

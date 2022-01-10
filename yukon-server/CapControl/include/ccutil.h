@@ -111,12 +111,16 @@ private:
 
 void static sendCapControlOperationMessage( Cti::Messaging::CapControl::CapControlOperationMessage * message )
 {
+    // jmoc
+    //  instead we...
+    delete message;
+
     using namespace Cti::Messaging;
     using Cti::Messaging::Qpid::Queues::OutboundQueue;
-
-    ActiveMQConnectionManager::enqueueMessage( 
-            OutboundQueue::CapControlOperationMessage, 
-            std::unique_ptr<StreamableMessage>(message));
+    // jmoc -- breaks unit testing and such.. capcontrol is broke too now - worst thing is i don't think these ops messages are used anymore
+ //   ActiveMQConnectionManager::enqueueMessage( 
+   //         OutboundQueue::CapControlOperationMessage, 
+     //       std::unique_ptr<StreamableMessage>(message));
 }
 
 

@@ -13,6 +13,7 @@ using namespace std;
 #include "dbghelp.h"
 #include "connection_base.h"
 #include "cparms.h"
+#include "amq_connection.h"
 
 // Shutdown logging when this object is destroyed
 Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
@@ -56,6 +57,9 @@ int main(int argc, char* argv[])
 
    doutManager.setDefaultOptions( CompileInfo, "dispatch" );
    doutManager.start();     // fire up the logger thread
+
+   //  start the amq stuff here!!!!!
+   Cti::Messaging::ActiveMQConnectionManager::start();
 
    Cti::identifyExecutable(CompileInfo);
 

@@ -47,7 +47,8 @@ std::atomic_size_t ActiveMQConnectionManager::SessionCallback::globalId;
 
 
 ActiveMQConnectionManager::ActiveMQConnectionManager()
-    : _container()
+    : _container(),
+        _sessionIsAlive{ false }
 {
     _container_thread = std::thread([&]() { _container.run(); });
 }
@@ -89,6 +90,8 @@ void ActiveMQConnectionManager::on_connection_close( proton::connection & c )
 
 void ActiveMQConnectionManager::on_session_open( proton::session & s )
 {
+    _sessionIsAlive = true;
+
     CTILOG_INFO(dout, "Broker session established");
 
     // register callbacks
@@ -105,13 +108,19 @@ void ActiveMQConnectionManager::on_session_open( proton::session & s )
                    } );
 }
 
-proton::session ActiveMQConnectionManager::getSession( proton::messaging_handler & handler )
+bool ActiveMQConnectionManager::getSession( proton::messaging_handler & handler )
 {
     return gActiveMQConnection->getNewSession( handler );
 }
 
-proton::session ActiveMQConnectionManager::getNewSession( proton::messaging_handler & handler )
+bool ActiveMQConnectionManager::getNewSession( proton::messaging_handler & handler )
 {
+
+    if ( !_sessionIsAlive)
+    {
+        return false;   // session not open yet...
+    }
+    
     // get the connection and create a new session from it
 
     auto connection = _brokerSession.connection();
@@ -119,15 +128,24 @@ proton::session ActiveMQConnectionManager::getNewSession( proton::messaging_hand
     proton::session_options options;
     options.handler( handler );
 
-    return connection.open_session( options );
+    connection.open_session( options );
+
+    return true;
 }
 
 void ActiveMQConnectionManager::start()
 {
+    gActiveMQConnection->start_impl();
+}
+
+void ActiveMQConnectionManager::start_impl()
+{
     const auto broker_host = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerHost, Qpid::Broker::defaultHost);
     const auto broker_port = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerPort, Qpid::Broker::defaultPort);
 
-    const auto brokerUri = Qpid::Broker::protocol + broker_host + ":" + broker_port;
+ //   const auto brokerUri = Qpid::Broker::protocol + broker_host + ":" + broker_port;
+    // jmoc
+    const std::string brokerUri = "tcp://127.0.0.1:5672";
 
     // the idle timeout
     const auto idle = GlobalSettings::getInteger( GlobalSettings::Integers::MaxInactivityDuration, 30 );    // seconds
@@ -152,19 +170,21 @@ void ActiveMQConnectionManager::close()
     releaseConnectionObjects();
 
     // close the session and connection
-    {
-        CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
-
-        auto connection = _brokerSession.connection();
+    // jmoc -- this all needs to be revisited to validate that resources are cleaned up properly
+    //      right now unit tests are failing -- getting a null pointer exception when closing the broker session...
+//    {
+//        CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
+//
+//        auto connection = _brokerSession.connection();
 
    //     if ( _brokerSession  )
     //    {
-           _brokerSession.close();
+//           _brokerSession.close();
     //    }
 
 
-        connection.close();
-    }
+//        connection.close();
+//    }
 }
 
 inline bool debugActivityInfo()

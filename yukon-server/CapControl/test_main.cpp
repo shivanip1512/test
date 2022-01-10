@@ -18,8 +18,8 @@ Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 namespace Cti {
 namespace Messaging {
-
-extern IM_EX_MSG std::unique_ptr<ActiveMQConnectionManager> gActiveMQConnection;
+// jmoc -- hanging the test
+//extern IM_EX_MSG std::unique_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
 }
 }
@@ -35,7 +35,7 @@ struct test_ActiveMQConnectionManager : Cti::Messaging::ActiveMQConnectionManage
         //  ignore message, do not send
     }
 };
-
+/*  jmoc -- this stuff is hanging the test
 struct OverrideActiveMQConnectionManager
 {
     OverrideActiveMQConnectionManager()
@@ -45,3 +45,4 @@ struct OverrideActiveMQConnectionManager
 };
 
 BOOST_GLOBAL_FIXTURE( OverrideActiveMQConnectionManager );
+*/

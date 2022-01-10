@@ -109,7 +109,8 @@ E2eSimulator::E2eSimulator()
     : _sessionReady{ false }
 {
     // initialize the session
-    _session = Cti::Messaging::ActiveMQConnectionManager::getSession(*this);
+    // jmoc - gotta fix this too
+    //_session = Cti::Messaging::ActiveMQConnectionManager::getSession(*this);
 
     // waiting for the session to be completely initialized and open
     {

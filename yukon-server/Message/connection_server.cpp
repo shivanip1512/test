@@ -48,7 +48,8 @@ CtiServerConnection::CtiServerConnection( const std::string & clientReplyDestina
     _valid = true;
 
     // initialize the session
-    _session = Cti::Messaging::ActiveMQConnectionManager::getSession(*this);
+    // jmoc - gotta fix this too...
+    //_session = Cti::Messaging::ActiveMQConnectionManager::getSession(*this);
 
 }
 
