@@ -251,7 +251,9 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                 out.write("<i class=\"icon busy\"></i>");
             }
             if (hasImage) {
-                out.write("<i class=\"icon " + icon + "\"></i>");
+                out.write("<i class=\"icon " + icon + "\">"
+                		+ IconSvg.getIconForClass(icon).getSvg()
+                		+ "</i>");
             }
             
             if (mode != RenderMode.IMAGE 
