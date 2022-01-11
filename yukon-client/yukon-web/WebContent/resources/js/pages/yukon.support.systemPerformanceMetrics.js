@@ -112,8 +112,7 @@ yukon.support.systemPerformanceMetrics = (function() {
                         pointNameTableCell = $('<td></td>').attr({'data-point-id': value.pointId})
                                                            .css({'width': '20%'})
                                                            .appendTo(row),
-                        anchorTag = $('<a></a>').text(value.pointName)
-                                                .attr({'href': '#'})
+                        anchorTag = $('<a class="js-metrics cp"></a>').text(value.pointName).attr({'data-point-id': value.pointId})
                                                 .appendTo(pointNameTableCell),
                         chartTableCell = $('<td></td>').attr({id: value.pointId, class: 'js-chart-cell', 'data-point-data': JSON.stringify(value.pointData)})
                                                        .appendTo(row);
@@ -133,6 +132,19 @@ yukon.support.systemPerformanceMetrics = (function() {
                     var options = Highcharts.merge(_sparklineDefaultOptions, sparklineOptions);
 
                     chartTableCell.highcharts(options);
+                  
+                    $(document).on('click', '.js-metrics', function (ev) {
+                    	var pointId = $(this).data('pointId');
+                    	$('.js-point-data-dialog').load(yukon.url('/meter/historicalReadings/view?pointId=' + pointId), function () {
+                    		$('.js-point-data-dialog').dialog({
+                    			title : "test",       // value.pointName
+                    			width : 500,
+                    			height: 600,
+                    			autoOpen : true
+                    			//chartTableCell.highcharts(options);
+                    		});
+                    	});
+                    });
 
                 });
             });
