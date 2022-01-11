@@ -49,7 +49,7 @@
             </button>
         </c:when>
         <c:otherwise>
-            <a><cti:icon icon="${icon}" classes="M0 fn"/><c:if test="${showArrow}"><cti:icon icon="icon-bullet-arrow-down" classes="M0 fn"/></c:if></a>
+            <a><cti:icon icon="${icon}" classes="M0 fn"/></a>
         </c:otherwise>
     </c:choose>
     <ul class="dropdown-menu dn ${pageScope.menuClasses}" role="menu"><jsp:doBody/></ul>
