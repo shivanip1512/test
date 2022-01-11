@@ -38,6 +38,7 @@
         <c:when test="${type == 'button'}">
             <cti:default var="key" value="yukon.common.actions"/>
             <button role="button" class="button">
+                <c:if test="${showIcon}"><i class="icon ${icon}"></i></c:if>
                 <c:if test="${showLabel}">
                     <c:choose>
                         <c:when test="${not empty pageScope.label}"><span class="b-label">${pageScope.label}</span></c:when>
