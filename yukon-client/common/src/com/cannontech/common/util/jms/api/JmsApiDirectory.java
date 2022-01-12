@@ -1548,7 +1548,8 @@ public final class JmsApiDirectory {
                 SIMULATOR, 
                 EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST, 
                 EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST,
-                ITRON_SIM_RUNTIME_CALC_START_REQUEST);
+                ITRON_SIM_RUNTIME_CALC_START_REQUEST,
+                EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST);
 
         return jmsApis;
     }
