@@ -807,9 +807,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             } else {
                 request = new ObjectFactory().createEditESIGroupRequest(requestType);
             }
-            macAddresses.forEach(macAddress ->
-                itronEventLogService.addMacAddressToGroup(macAddress, lmGroupId)
-            );
+
             log.debug("ITRON-addMacAddressToGroup url:{} lm group id:{} mac addresses:{} create group: {}.", url, lmGroupId,
                 macAddresses, createGroup);
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));

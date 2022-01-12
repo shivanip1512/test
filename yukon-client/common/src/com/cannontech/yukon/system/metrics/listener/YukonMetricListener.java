@@ -9,6 +9,7 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -18,10 +19,11 @@ import com.cannontech.common.pao.definition.loader.jaxb.Point;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.service.PointCreationService;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.SimplePointAccessDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointArchiveInterval;
@@ -31,6 +33,7 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
@@ -39,10 +42,10 @@ public class YukonMetricListener implements MessageListener {
     private static final Logger log = YukonLogManager.getLogger(YukonMetricListener.class);
 
     @Autowired private PointDao pointDao;
-    @Autowired private SimplePointAccessDao pointAccessDao;
     @Autowired private PointCreationService pointCreationService;
     @Autowired private PaoDefinitionDao definitionDao;
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private ObjectMapper mapper;
 
@@ -77,13 +80,27 @@ public class YukonMetricListener implements MessageListener {
                                     "Point definition not found for " + pointDataType.getName() + " in SYSTEM.xml file");
                         }
                     }
-                    pointAccessDao.setPointValue(litePoint, yukonMetric.getTimestamp().toInstant(),
-                            Double.valueOf(yukonMetric.getValue().toString()));
+                    asyncDynamicDataSource.putValue(buildPointData(litePoint, yukonMetric.getTimestamp().toInstant(),
+                            Double.valueOf(yukonMetric.getValue().toString())));
                 }
             } catch (Exception e) {
                 log.error("Error occurred while generating point data.", e);
             }
         }
+    }
+
+    /**
+     * Build point data with must archive as true.
+     */
+    private PointData buildPointData(LitePoint litePoint, Instant timestamp, Double value) {
+        PointData pointData = new PointData();
+        pointData.setId(litePoint.getPointID());
+        pointData.setValue(value);
+        pointData.setType(litePoint.getPointTypeEnum().getPointTypeId());
+        pointData.setPointQuality(PointQuality.Normal);
+        pointData.setTime(timestamp.toDate());
+        pointData.setTagsPointMustArchive(true);
+        return pointData;
     }
 
     /**
