@@ -26,6 +26,7 @@ import com.cannontech.database.db.device.Device;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.support.systemPerformanceMetrics.service.SystemPerformanceMetricsService;
+import com.cannontech.yukon.system.metrics.listener.YukonMetricPointDataType;
 
 public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMetricsService {
 
@@ -39,6 +40,8 @@ public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMet
         List<LitePoint> systemPoints = new ArrayList<LitePoint>();
         try {
             systemPoints = pointDao.getLitePointIdByDeviceId_PointType(Device.SYSTEM_DEVICE_ID, PointType.Analog);
+            systemPoints.removeIf(point -> !YukonMetricPointDataType.isYukonMetricType(point.getPointOffset(),
+                    PointType.getForId(point.getPointType())));
         } catch (NotFoundException e) {
             log.error("No System points found in the database.");
         }

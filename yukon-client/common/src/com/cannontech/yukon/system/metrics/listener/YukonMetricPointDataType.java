@@ -78,4 +78,15 @@ public enum YukonMetricPointDataType {
         checkArgument(pointInfo != null);
         return lookupByPointInfo.get(pointInfo);
     }
+
+    public static boolean isYukonMetricType(Integer offset, PointType pointType) {
+        checkArgument(offset != null);
+        checkArgument(pointType != null);
+        for (YukonMetricPointDataType metricPointDataType : lookupByPointInfo.values()) {
+            if (metricPointDataType.getOffset().equals(offset) && metricPointDataType.getType() == pointType) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
