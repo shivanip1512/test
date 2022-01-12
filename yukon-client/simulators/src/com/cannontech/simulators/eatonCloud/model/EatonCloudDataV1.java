@@ -62,13 +62,22 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
             return new EatonCloudSimulatorResponse(error, status);
 
         }
-        if (status == HttpStatus.UNAUTHORIZED.value()) {
+        if (status == HttpStatus.UNAUTHORIZED.value() || displayError()) {
             return new EatonCloudSimulatorResponse(
-                    new EatonCloudErrorV1(status,
-                            "Authorization has been denied for this request. Invalid clientId and clientSecret combination."),
-                    status);
+                    new EatonCloudErrorV1(status,"Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
+                    HttpStatus.UNAUTHORIZED.value());
         }
         return new EatonCloudSimulatorResponse(new EatonCloudTokenV1(token1), status);
+    }
+
+    private boolean displayError() {
+        if(successPercentage != 100) {
+            int randomPercentage = (int) (Math.random() * 100);
+            if (randomPercentage > successPercentage) { 
+                return true;
+            }
+        }
+        return false;
     }
     
     public EatonCloudSimulatorResponse token2() {
@@ -78,11 +87,10 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
             return new EatonCloudSimulatorResponse(error, status);
 
         }
-        if (status == HttpStatus.UNAUTHORIZED.value()) {
+        if (status == HttpStatus.UNAUTHORIZED.value() || displayError()) {
             return new EatonCloudSimulatorResponse(
-                    new EatonCloudErrorV1(status,
-                            "Authorization has been denied for this request. Invalid clientId and clientSecret combination."),
-                    status);
+                    new EatonCloudErrorV1(status,"Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
+                    HttpStatus.UNAUTHORIZED.value());
         }
         return new EatonCloudSimulatorResponse(new EatonCloudTokenV1(token2), status);
     }
@@ -313,15 +321,16 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
             return new EatonCloudSimulatorResponse(error, status);
 
         }
-        if (status == HttpStatus.UNAUTHORIZED.value()) {
-            return new EatonCloudSimulatorResponse(
-                    new EatonCloudErrorV1(status,"Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
-                    status);
-        } 
         if (status == HttpStatus.NOT_FOUND.value()) {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of(), "Given Service Account Not found.","624b5e65-5e4c-4196-8a8a-54f833c9fc42", status, "2021-03-10T07:27:38.2222228+00:00", 11418);
             return new EatonCloudSimulatorResponse(error, status);
 
+        }
+        
+        if (status == HttpStatus.UNAUTHORIZED.value() || displayError()) {
+            return new EatonCloudSimulatorResponse(
+                    new EatonCloudErrorV1(status,"Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
+                    HttpStatus.UNAUTHORIZED.value());
         }
         
         EatonCloudSecretValueV1 secret = null;

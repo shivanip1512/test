@@ -59,8 +59,6 @@ import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonR
 import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorDeviceCreateRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorSettingsUpdateRequest;
-import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsRequest;
-import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsResponse;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.system.GlobalSettingType;
@@ -118,50 +116,39 @@ public class EatonCloudSimulatorController {
         String url = settingDao.getString(GlobalSettingType.EATON_CLOUD_URL);
 
         if (url.contains("localhost") || url.contains("127.0.0.1")) {
-        	json.put("cachedBy", "Simulator");
-            try {
-                EatonCloudSimulatorStatisticsRequest request = new EatonCloudSimulatorStatisticsRequest(EatonCloudVersion.V1);
-                EatonCloudSimulatorStatisticsResponse response = simulatorsCommunicationService.sendRequest(request,
-                        EatonCloudSimulatorStatisticsResponse.class);
-                json.put("secret1Token", response.getToken1());
-                json.put("secret2Token", response.getToken2());
-            } catch (Exception e) {
-            	json.put("secret1Token", "Date doesn't exist");
-            	json.put("secret2Token", "Date doesn't exist");
-                log.error("Error", e);
-            }
+            json.put("cachedBy", "Simulator");
         } else {
-        	json.put("cachedBy", "Cloud");
-
-            if (restTemplate == null) {
-                restTemplate = new RestTemplate();
-                restTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
-                restTemplate.setMessageConverters(Arrays.asList(new MappingJackson2HttpMessageConverter()));
-            }
-
-            String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-            try {
-                EatonCloudTokenV1 token1 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
-                json.put("secret1Token", token1.getToken());
-            } catch (Exception e) {
-            	json.put("secret1Token", "Date doesn't exist");
-                log.error("Error", e);
-            }
-
-            try {
-                EatonCloudTokenV1 token2 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2, serviceAccountId);
-                json.put("secret2Token", token2.getToken());
-            } catch (Exception e) {
-            	json.put("secret2Token", "Date doesn't exist");
-                log.error("Error", e);
-            }
+            json.put("cachedBy", "Cloud");
         }
-        
+
+        if (restTemplate == null) {
+            restTemplate = new RestTemplate();
+            restTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
+            restTemplate.setMessageConverters(Arrays.asList(new MappingJackson2HttpMessageConverter()));
+        }
+
+        String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+        try {
+            EatonCloudTokenV1 token1 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
+            json.put("secret1Token", token1.getToken());
+        } catch (Exception e) {
+            json.put("secret1Token", "Date doesn't exist");
+            log.error("Error", e);
+        }
+
+        try {
+            EatonCloudTokenV1 token2 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2, serviceAccountId);
+            json.put("secret2Token", token2.getToken());
+        } catch (Exception e) {
+            json.put("secret2Token", "Date doesn't exist");
+            log.error("Error", e);
+        }
+
         try {
             String cachedToken = eatonCloudCommunicationServiceV1.getToken().getToken();
             json.put("cachedToken", cachedToken);
         } catch (Exception e) {
-        	json.put("cachedToken", "Date doesn't exist");
+            json.put("cachedToken", "Date doesn't exist");
             log.error("Error", e);
         }
 
