@@ -111,27 +111,31 @@ public class EatonCloudSecretRotationServiceV1 {
      * Obtains a token to validate the secret, if error is received, tries again ever 10 minutes up to 3 times.
      */
     private void validateSecret(GlobalSettingType type) {
-        String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-        AtomicInteger currentTry = secretValidations.getOrDefault(type, new AtomicInteger(1));
-        String secret = "secret" + globalSettingsToSecret.get(type);
-        try {
-            eatonCloudAuthTokenServiceV1.retrieveNewToken(type, serviceAccountId);
-            secretValidations.remove(type);
-            log.info("({} of {}) {} token retrieval successful.", currentTry.get(), numberOfTimesToRetry, secret);
-        } catch (EatonCloudCommunicationExceptionV1 e) {
-            if (currentTry.get() == numberOfTimesToRetry) {
-                log.error("({} of {}) {} token retrieval failed:{}  alert created:{}", currentTry.get(), numberOfTimesToRetry, secret,
-                        e.getMessage(), AlertType.EATON_CLOUD_CREDENTIAL_INVALID);
+        synchronized (this) {
+            String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+            String secret = "secret" + globalSettingsToSecret.get(type);
+            AtomicInteger currentTry = secretValidations.getOrDefault(type, new AtomicInteger(1));
+            try {
+                // log.info("Validating {} current try:{}", secret, currentTry.get());
+                eatonCloudAuthTokenServiceV1.retrieveNewToken(type, serviceAccountId);
                 secretValidations.remove(type);
-                eatonCloudEventLogService.tokenRetrievalFailed(secret, e.getMessage(), currentTry.get());
-                createAlert(AlertType.EATON_CLOUD_CREDENTIAL_INVALID, secret, null);
-            } else {
-                log.error("({} of {}) {} token retrieval failed: {} Next try in {} minutes.", currentTry.get(),
-                        numberOfTimesToRetry, secret,
-                        e.getMessage(), retryIntervalMinutes);
-                executor.schedule(() -> validateSecret(type), retryIntervalMinutes, TimeUnit.MINUTES);
-                currentTry.incrementAndGet();
-                secretValidations.put(type, currentTry);
+                log.info("({} of {}) {} token retrieval successful.", currentTry.get(), numberOfTimesToRetry, secret);
+            } catch (EatonCloudCommunicationExceptionV1 e) {
+                if (currentTry.get() == numberOfTimesToRetry) {
+                    log.error("({} of {}) {} token retrieval failed:{} alert created:{}", currentTry.get(), numberOfTimesToRetry,
+                            secret,
+                            e.getMessage(), AlertType.EATON_CLOUD_CREDENTIAL_INVALID);
+                    secretValidations.remove(type);
+                    eatonCloudEventLogService.tokenRetrievalFailed(secret, e.getMessage(), currentTry.get());
+                    createAlert(AlertType.EATON_CLOUD_CREDENTIAL_INVALID, secret, null);
+                } else {
+                    log.error("({} of {}) {} token retrieval failed:{} Next try in {} minutes.", currentTry.get(),
+                            numberOfTimesToRetry, secret,
+                            e.getMessage(), retryIntervalMinutes);
+                    executor.schedule(() -> validateSecret(type), retryIntervalMinutes, TimeUnit.MINUTES);
+                    currentTry.incrementAndGet();
+                    secretValidations.put(type, currentTry);
+                }
             }
         }
     }
@@ -142,31 +146,35 @@ public class EatonCloudSecretRotationServiceV1 {
      * succeeded.
      */
     private void rotateSecret(GlobalSettingType type, Instant secretExpiryTime) {
-        AtomicInteger currentTry = secretRotations.getOrDefault(type, new AtomicInteger(1));
-        String secret = "secret" + globalSettingsToSecret.get(type);
-        try {
-            EatonCloudSecretValueV1 value = eatonCloudCommunicationService.rotateAccountSecret(globalSettingsToSecret.get(type));
-            settingUpdateDao.updateSetting(new GlobalSetting(type, value.getSecret()), YukonUserContext.system.getYukonUser());
-            secretRotations.remove(type);
-            log.info("({} of {}) {} rotation is successful.", currentTry.get(), numberOfTimesToRetry, secret);
-            eatonCloudEventLogService.secretRotationSuccess(secret, YukonUserContext.system.getYukonUser(), currentTry.get());
-            validateSecret(type);
-        } catch (EatonCloudCommunicationExceptionV1 e) {
-            if (currentTry.get() == numberOfTimesToRetry) {
-                log.error("({} of {}) {} rotation failed:{} alert created:{}", currentTry.get(), numberOfTimesToRetry, secret,
-                        e.getMessage(), AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE);
+        synchronized (this) {
+            AtomicInteger currentTry = secretRotations.getOrDefault(type, new AtomicInteger(1));
+            String secret = "secret" + globalSettingsToSecret.get(type);
+            try {
+                EatonCloudSecretValueV1 value = eatonCloudCommunicationService
+                        .rotateAccountSecret(globalSettingsToSecret.get(type));
+                settingUpdateDao.updateSetting(new GlobalSetting(type, value.getSecret()),
+                        YukonUserContext.system.getYukonUser());
                 secretRotations.remove(type);
-                eatonCloudEventLogService.secretRotationFailed(secret, YukonUserContext.system.getYukonUser(), e.getMessage(),
-                        currentTry.get());
-                createAlert(AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE, secret, secretExpiryTime.toDate());
+                log.info("({} of {}) {} rotation is successful.", currentTry.get(), numberOfTimesToRetry, secret);
+                eatonCloudEventLogService.secretRotationSuccess(secret, YukonUserContext.system.getYukonUser(), currentTry.get());
                 validateSecret(type);
-            } else {
-                log.error("({} of {}) {} secret rotation failed: {} Next try in {} minutes.", currentTry.get(),
-                        numberOfTimesToRetry, secret,
-                        e.getMessage(), retryIntervalMinutes);
-                executor.schedule(() -> rotateSecret(type, secretExpiryTime), retryIntervalMinutes, TimeUnit.MINUTES);
-                currentTry.incrementAndGet();
-                secretRotations.put(type, currentTry);
+            } catch (EatonCloudCommunicationExceptionV1 e) {
+                if (currentTry.get() == numberOfTimesToRetry) {
+                    log.error("({} of {}) {} rotation failed:{} alert created:{}", currentTry.get(), numberOfTimesToRetry, secret,
+                            e.getMessage(), AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE);
+                    secretRotations.remove(type);
+                    eatonCloudEventLogService.secretRotationFailed(secret, YukonUserContext.system.getYukonUser(), e.getMessage(),
+                            currentTry.get());
+                    createAlert(AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE, secret, secretExpiryTime.toDate());
+                    validateSecret(type);
+                } else {
+                    log.error("({} of {}) {} secret rotation failed:{} Next try in {} minutes.", currentTry.get(),
+                            numberOfTimesToRetry, secret,
+                            e.getMessage(), retryIntervalMinutes);
+                    executor.schedule(() -> rotateSecret(type, secretExpiryTime), retryIntervalMinutes, TimeUnit.MINUTES);
+                    currentTry.incrementAndGet();
+                    secretRotations.put(type, currentTry);
+                }
             }
         }
     }
@@ -176,8 +184,6 @@ public class EatonCloudSecretRotationServiceV1 {
      */
     private void createAlert(AlertType type, String secret, Date expireTime) {
         ResolvableTemplate template = new ResolvableTemplate("yukon.common.alerts." + type);
-        String url = "TBD";
-        template.addData("url", url);
         template.addData("secret", secret);
         if (expireTime != null) {
             DateFormat dateFormatter = dateFormattingService.getDateFormatter(DateFormattingService.DateFormatEnum.FULL, YukonUserContext.system);
