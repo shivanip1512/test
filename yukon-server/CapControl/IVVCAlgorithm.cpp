@@ -3239,9 +3239,6 @@ bool IVVCAlgorithm::allRegulatorsInRemoteMode(IVVCStatePtr state, CtiCCSubstatio
 
     Zone::IdSet subbusZoneIds   = zoneManager.getZoneIdsBySubbus(subbus->getPaoId());
 
-    long stationId, areaId, spAreaId;
-    store->getSubBusParentInfo( subbus, spAreaId, areaId, stationId );
-
     EventLogEntries ccEvents;
 
     for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
