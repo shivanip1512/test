@@ -35,6 +35,7 @@ import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
+import com.cannontech.yukon.system.metrics.message.YukonMetricPointDataType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 

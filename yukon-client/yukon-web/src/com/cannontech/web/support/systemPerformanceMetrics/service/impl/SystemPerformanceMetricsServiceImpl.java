@@ -26,7 +26,7 @@ import com.cannontech.database.db.device.Device;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.support.systemPerformanceMetrics.service.SystemPerformanceMetricsService;
-import com.cannontech.yukon.system.metrics.listener.YukonMetricPointDataType;
+import com.cannontech.yukon.system.metrics.message.YukonMetricPointDataType;
 
 public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMetricsService {
 

@@ -1,9 +1,8 @@
-package com.cannontech.yukon.system.metrics.listener;
+package com.cannontech.yukon.system.metrics.message;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
