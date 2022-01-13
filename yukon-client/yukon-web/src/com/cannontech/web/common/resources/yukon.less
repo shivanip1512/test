@@ -120,6 +120,12 @@ a,
 .page-size a:visited {
     color: @primary-color;
 }
+
+.vertical-menu li.selected a {
+    font-weight: 600;
+    background-color: rgba(25, 118, 210, 0.08); 
+}
+
 .primary-background {
     background-color: @primary-color; 
     color: white;
@@ -408,7 +414,7 @@ input[type=radio] {
 /* VERTICAL MENUS */
 #LeftColumn .info-fragment, #LeftColumn .bumper {border-right: 1px solid #ccc;}
 #LeftColumn .bumper {min-height: 120px;}
-#LeftColumn .info-fragment {font-size: .9em;}
+#LeftColumn .info-fragment {font-size: .9em; border-bottom: 3px solid #ccc;}
 .vertical-menu {
     border-right: 1px solid;
     border-color: rgba(0, 0, 0, 0.12);
@@ -450,13 +456,12 @@ input[type=radio] {
     min-width: 90px;
     position: relative;
     min-height: 48px;
-    text-align: center;
     cursor: pointer;
     vertical-align: middle !important;
-	justify-content: center;
-	display: flex;
-	align-items: center;
-	text-decoration: none;
+    justify-content: left;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
 }
 
 .side-tabs {
@@ -1005,7 +1010,7 @@ ul.selectable li.selected {
 .titled-container > .title-bar .title {
 	display: inline-block;
 	color: @primary-color; 
-	font-size: .875rem; 
+	font-size: 1rem; 
 	font-weight: 600; 
 	line-height: 1;
 }
