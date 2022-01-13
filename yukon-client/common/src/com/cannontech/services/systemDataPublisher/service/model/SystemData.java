@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 import org.joda.time.DateTime;
 
-import com.cannontech.services.systemDataPublisher.yaml.model.IOTDataType;
-
 /**
  * POJO class to publish system data to message broker.
  */
@@ -15,7 +13,6 @@ public class SystemData implements Serializable {
     private String fieldName;
     private Object fieldValue;
     private DateTime timestamp;
-    private IOTDataType iotDataType;
 
     public String getFieldName() {
         return fieldName;
@@ -41,18 +38,10 @@ public class SystemData implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public IOTDataType getIotDataType() {
-        return iotDataType;
-    }
-
-    public void setIotDataType(IOTDataType iotDataType) {
-        this.iotDataType = iotDataType;
-    }
-
     @Override
     public String toString() {
         return String
-                .format("SystemData [fieldName=%s, fieldValue=%s, timestamp=%s, iotDataType=%s]",
-                        fieldName, fieldValue, timestamp, iotDataType);
+                .format("SystemData [fieldName=%s, fieldValue=%s, timestamp=%s]",
+                        fieldName, fieldValue, timestamp);
     }
 }

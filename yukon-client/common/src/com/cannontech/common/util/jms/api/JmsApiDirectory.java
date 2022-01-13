@@ -145,7 +145,6 @@ import com.cannontech.services.configurationSettingMessage.model.ConfigurationSe
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
-import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
@@ -1189,21 +1188,6 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
 
-    public static final JmsApi<CloudDataConfigurations,?,?> CLOUD_DATA_CONFIGURATIONS =
-            JmsApi.builder(CloudDataConfigurations.class)
-                  .name("Yukon Cloud Data")
-                  .description("Yukon Service Manager processes the data definition for cloud integrations and publishes"
-                          + " it on a topic for other services to use")
-                  .topic(true)
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("com.eaton.eas.cloud.CloudDataConfigurations"))
-                  .requestMessage(CloudDataConfigurations.class)
-                  .sender(YUKON_SERVICE_MANAGER)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .receiver(NETWORK_MANAGER)
-                  .logger(YukonLogManager.getRfnLogger())
-                  .build();
-
     public static final JmsApi<DynamicPaoInfoRequest,?,DynamicPaoInfoResponse> PORTER_DYNAMIC_PAOINFO =
             JmsApi.builder(DynamicPaoInfoRequest.class, DynamicPaoInfoResponse.class)
                   .name("Porter Dynamic Pao Info")
@@ -1467,7 +1451,6 @@ public final class JmsApiDirectory {
                 ARCHIVE_STARTUP, 
                 BROKER_SYSTEM_METRICS,
                 CLOUD_CONFIGURATION_SETTINGS,
-                CLOUD_DATA_CONFIGURATIONS,
                 EATON_CLOUD_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LM_EATON_CLOUD_SCHEDULED_CYCLE_COMMAND,

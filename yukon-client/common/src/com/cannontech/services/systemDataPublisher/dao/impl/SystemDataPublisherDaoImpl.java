@@ -3,18 +3,13 @@ package com.cannontech.services.systemDataPublisher.dao.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.stereotype.Repository;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
 import com.cannontech.common.device.data.collection.model.DataCollectionSummary;
@@ -24,11 +19,8 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.database.NetworkManagerJdbcTemplate;
-import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
 import com.cannontech.services.systemDataPublisher.service.model.DataCompletenessSummary;
-import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.ImmutableSet;
@@ -36,37 +28,10 @@ import com.google.common.collect.ImmutableSet;
 @Repository
 public class SystemDataPublisherDaoImpl implements SystemDataPublisherDao {
 
-    @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private NetworkManagerJdbcTemplate networkManagerJdbcTemplate;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RecentPointValueDao rpvDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private RawPointHistoryDao rphDao; 
-
-    private static final ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
-    private static final Logger log = YukonLogManager.getLogger(SystemDataPublisherDaoImpl.class);
-
-    @Override
-    public List<Map<String, Object>> getSystemData(CloudDataConfiguration cloudDataConfiguration) {
-        List<Map<String, Object>> systemData = null;
-        try {
-            systemData = jdbcTemplate.query(cloudDataConfiguration.getSource(), columnMapRowMapper);
-        } catch (EmptyResultDataAccessException e) {
-            log.debug("No result found for field = " + cloudDataConfiguration.getField());
-        }
-        return systemData;
-    }
-
-    @Override
-    public List<Map<String, Object>> getNMSystemData(CloudDataConfiguration cloudDataConfiguration) {
-        List<Map<String, Object>> nmSystemData = null;
-        try {
-            nmSystemData = networkManagerJdbcTemplate.query(cloudDataConfiguration.getSource(), columnMapRowMapper);
-        } catch (EmptyResultDataAccessException e) {
-            log.debug("No result found for NM field = " + cloudDataConfiguration.getField());
-        }
-        return nmSystemData;
-    }
 
     @Override
     public DataCollectionSummary getReadRate(String deviceGroupName) {
