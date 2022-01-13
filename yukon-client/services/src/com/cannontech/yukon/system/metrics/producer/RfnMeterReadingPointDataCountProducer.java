@@ -17,16 +17,9 @@ public class RfnMeterReadingPointDataCountProducer extends YukonMetricIntervalPr
     public YukonMetric produce() {
         YukonMetric yukonMetric = null;
         if (shouldProduce()) {
-            try {
-                int pointDataCount = MeterReadingArchiveRequestListener.getPointDataCount();
-                yukonMetric = new YukonMetric();
-                yukonMetric.setPointInfo(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_POINT_DATA_GENERATED_COUNT);
-                yukonMetric.setTimestamp(new DateTime());
-                yukonMetric.setValue(pointDataCount);
-                debug(yukonMetric, log);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            int pointDataCount = MeterReadingArchiveRequestListener.getPointDataCount();
+            yukonMetric = new YukonMetric(getYukonMetricPointInfo(), pointDataCount, new DateTime());
+            debug(yukonMetric, log);
         }
         return yukonMetric;
     }
